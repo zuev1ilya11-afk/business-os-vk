@@ -1,7 +1,13 @@
 const { test, expect } = require('@playwright/test');
 
-test('orders can be created, edited twice, and employee can be added', async ({ page }) => {
-  const data = { orders: [], users: [], masters: [] };
+test('core buttons, owner finance, editing, team and master schedule work', async ({ page }) => {
+  const seedMaster = { vk_user_id: 'master_seed', full_name: 'Александр Мастер', phone: '70000000000', city: 'Москва', role: 'master', is_active: true, specialization: 'Монтаж', work_start: '09:00', work_end: '18:00' };
+  const data = {
+    orders: [{ id: 'DONE-1', status: 'Выполнена', client: 'Клиент', address: 'Адрес', work: 'Монтаж', amount: 2300, original_amount: 2800, master_vk_id: 'master_seed', master_name: 'Александр Мастер', master_payout: 1270.75, manager_payout: 367.54, dispatcher_payout: 275.66, extra_work_amount: 300, uncompleted_work_amount: 500 }],
+    users: [seedMaster],
+    masters: [seedMaster],
+    masterSchedule: []
+  };
 
   await page.route('https://unpkg.com/**', async route => {
     await route.fulfill({ status: 200, contentType: 'application/javascript', body: 'window.vkBridge={send:()=>Promise.resolve({})};' });
@@ -16,9 +22,9 @@ test('orders can be created, edited twice, and employee can be added', async ({ 
     let result = { ok: true };
 
     if (action === 'bootstrap') {
-      result = { ok: true, user: { full_name: 'Илья', role: 'owner', city: 'Москва' }, orders: data.orders, users: data.users, masters: data.masters, sources: [{ source: 'VK' }], settings: {} };
+      result = { ok: true, user: { full_name: 'Илья', role: 'owner', city: 'Москва' }, orders: data.orders, users: data.users, masters: data.masters, sources: [{ source: 'VK' }], settings: {}, masterSchedule: data.masterSchedule };
     } else if (action === 'createOrder') {
-      const order = { id: 'TEST-1', status: payload.master_vk_id ? 'Назначена' : (payload.status || 'Новая'), master_name: '', master_payout: 0, ...payload };
+      const order = { id: 'TEST-1', status: payload.status || 'В работе', master_name: '', master_payout: 0, ...payload };
       data.orders.unshift(order); result = { ok: true, order };
     } else if (action === 'updateOrder') {
       const i = data.orders.findIndex(x => x.id === payload.id);
@@ -29,12 +35,19 @@ test('orders can be created, edited twice, and employee can be added', async ({ 
       const master = user.role === 'master' ? { ...user, specialization: payload.specialization || '', work_start: payload.work_start || '09:00', work_end: payload.work_end || '18:00' } : null;
       data.users.push(user); if (master) data.masters.push(master);
       result = { ok: true, user, master };
+    } else if (action === 'saveMasterSchedule') {
+      data.masterSchedule = (payload.days || []).map(d => ({ ...d, master_vk_id: payload.master_vk_id, week_start: payload.week_start }));
+      result = { ok: true, schedule: data.masterSchedule };
     }
     await route.fulfill({ status: 200, contentType: 'application/javascript', body: `${callback}(${JSON.stringify(result)});` });
   });
 
   await page.goto('/');
   await expect(page.getByText('Business OS', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('Допработы', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('300 ₽', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('Невыполненные работы', { exact: true })).toBeVisible();
+  await expect(page.getByText('− 500 ₽', { exact: true })).toBeVisible();
 
   await page.getByRole('button', { name: 'Заявки' }).click();
   await page.getByRole('button', { name: '+ Новая' }).click();
@@ -59,7 +72,21 @@ test('orders can be created, edited twice, and employee can be added', async ({ 
 
   await page.getByRole('button', { name: 'Команда' }).click();
   await page.getByRole('button', { name: '+ Сотрудник' }).click();
-  await page.locator('input[name="full_name"]').fill('Александр');
+  await page.locator('input[name="full_name"]').fill('Новый мастер');
   await page.getByRole('button', { name: 'Добавить' }).click();
-  await expect(page.getByText('Александр')).toBeVisible();
+  await expect(page.getByText('Новый мастер')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Профиль' }).click();
+  await page.getByRole('button', { name: 'Войти как Александр Мастер' }).click();
+  await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toBeVisible();
+  await page.getByRole('button', { name: 'График' }).click();
+  await expect(page.getByRole('button', { name: 'Все дни' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Будни' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Снять все' })).toBeVisible();
+  await page.getByRole('button', { name: 'Все дни' }).click();
+  await page.locator('#masterCommonStart').selectOption('8');
+  await page.locator('#masterCommonEnd').selectOption('19');
+  await page.getByRole('button', { name: 'Сохранить график недели' }).click();
+  await expect(page.getByText('График сохранён')).toBeVisible();
+  await expect(page.locator('input[type="time"]')).toHaveCount(0);
 });
