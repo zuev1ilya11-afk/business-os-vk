@@ -1,0 +1,1 @@
+window.BUSINESS_OS_CONFIG={SUPABASE_URL:'https://obsropbslfwtanyspjbi.supabase.co',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_v8sKozzutNihEkVEygYRfg_2iv6WZ2q',VK_APP_ID:54758847};
