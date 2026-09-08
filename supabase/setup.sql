@@ -1,15 +1,23 @@
 -- Business OS secure Supabase schema
+-- RESET ONLY Business OS public tables. auth.users is preserved.
+
 create extension if not exists pgcrypto;
 
-do $$ begin
-  create type public.user_role as enum ('owner','manager','dispatcher','master');
-exception when duplicate_object then null; end $$;
+drop trigger if exists on_auth_user_created on auth.users;
+drop function if exists public.handle_new_user() cascade;
+drop function if exists public.master_set_order_status(bigint, public.order_status) cascade;
+drop function if exists public.current_role() cascade;
+drop function if exists public.touch_updated_at() cascade;
 
-do $$ begin
-  create type public.order_status as enum ('Новая','Назначена','В работе','Выполнена','Отменена');
-exception when duplicate_object then null; end $$;
+drop table if exists public.orders cascade;
+drop table if exists public.profiles cascade;
+drop type if exists public.order_status cascade;
+drop type if exists public.user_role cascade;
 
-create table if not exists public.profiles (
+create type public.user_role as enum ('owner','manager','dispatcher','master');
+create type public.order_status as enum ('Новая','Назначена','В работе','Выполнена','Отменена');
+
+create table public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   full_name text not null default 'Сотрудник',
   role public.user_role not null default 'master',
@@ -18,7 +26,7 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now()
 );
 
-create table if not exists public.orders (
+create table public.orders (
   id bigint generated always as identity primary key,
   client text not null,
   phone text,
@@ -46,9 +54,14 @@ begin
   return new;
 end $$;
 
-drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users
 for each row execute function public.handle_new_user();
+
+-- Backfill profiles for users that may already exist before this schema reset.
+insert into public.profiles(id, full_name)
+select u.id, coalesce(u.raw_user_meta_data->>'full_name', split_part(u.email,'@',1), 'Сотрудник')
+from auth.users u
+on conflict (id) do nothing;
 
 create or replace function public.current_role()
 returns public.user_role language sql stable security definer set search_path=public as $$
@@ -58,7 +71,6 @@ $$;
 alter table public.profiles enable row level security;
 alter table public.orders enable row level security;
 
--- Profiles: authenticated staff can see active team; only owner manages roles.
 drop policy if exists profiles_read on public.profiles;
 create policy profiles_read on public.profiles for select to authenticated
 using (is_active = true or id = auth.uid());
@@ -67,7 +79,6 @@ drop policy if exists profiles_owner_update on public.profiles;
 create policy profiles_owner_update on public.profiles for update to authenticated
 using (public.current_role()='owner') with check (public.current_role()='owner');
 
--- Orders: owner/manager/dispatcher see their city; master sees only assigned orders.
 drop policy if exists orders_read on public.orders;
 create policy orders_read on public.orders for select to authenticated using (
   public.current_role()='owner'
@@ -78,6 +89,8 @@ create policy orders_read on public.orders for select to authenticated using (
 drop policy if exists orders_insert on public.orders;
 create policy orders_insert on public.orders for insert to authenticated with check (
   public.current_role() in ('owner','manager','dispatcher')
+  and created_by=auth.uid()
+  and (public.current_role()='owner' or city=(select city from public.profiles where id=auth.uid()))
 );
 
 drop policy if exists orders_update_staff on public.orders;
@@ -89,7 +102,6 @@ create policy orders_update_staff on public.orders for update to authenticated u
   or (public.current_role() in ('manager','dispatcher') and city=(select city from public.profiles where id=auth.uid()))
 );
 
--- Masters may only change status through this RPC.
 create or replace function public.master_set_order_status(p_order_id bigint, p_status public.order_status)
 returns void language plpgsql security definer set search_path=public as $$
 begin
@@ -103,8 +115,8 @@ grant execute on function public.master_set_order_status(bigint,public.order_sta
 
 create or replace function public.touch_updated_at()
 returns trigger language plpgsql as $$ begin new.updated_at=now(); return new; end $$;
-drop trigger if exists trg_orders_updated_at on public.orders;
-create trigger trg_orders_updated_at before update on public.orders for each row execute function public.touch_updated_at();
+create trigger trg_orders_updated_at before update on public.orders
+for each row execute function public.touch_updated_at();
 
 grant usage on schema public to authenticated;
 grant select on public.profiles to authenticated;
