@@ -1,1 +1,1 @@
-window.BUSINESS_OS_CONFIG={VK_APP_ID:54758847,GAS_WEB_APP_URL:'https://script.google.com/macros/s/AKfycbwdynzF1ts2mqHBI5BE4pmCGzAqD9aUjM9VtNjod3SQKcpvtcGdUhfIkYRp2rqCgPTr/exec'};
+window.BUSINESS_OS_CONFIG={VK_APP_ID:54758847,GAS_WEB_APP_URL:'https://script.google.com/macros/s/AKfycbxPZZmFuqa0Tdt7xtwha-O31CesRkLs7a3W36YUW1a00rUqhPUJQLnBInMlw-eAL_Ln/exec'};
