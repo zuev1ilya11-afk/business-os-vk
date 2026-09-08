@@ -1,4 +1,5 @@
 -- Business OS secure Supabase schema
+-- VK ID authentication edition
 -- RESET ONLY Business OS public tables. auth.users is preserved.
 
 create extension if not exists pgcrypto;
@@ -19,12 +20,16 @@ create type public.order_status as enum ('Новая','Назначена','В �
 
 create table public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
+  vk_user_id bigint unique,
   full_name text not null default 'Сотрудник',
   role public.user_role not null default 'master',
   city text not null default 'Москва',
+  avatar_url text,
   is_active boolean not null default true,
   created_at timestamptz not null default now()
 );
+
+create index profiles_vk_user_id_idx on public.profiles(vk_user_id);
 
 create table public.orders (
   id bigint generated always as identity primary key,
@@ -49,7 +54,7 @@ create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path=public as $$
 begin
   insert into public.profiles(id, full_name)
-  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', split_part(new.email,'@',1)))
+  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', split_part(new.email,'@',1), 'Сотрудник'))
   on conflict (id) do nothing;
   return new;
 end $$;
@@ -57,7 +62,6 @@ end $$;
 create trigger on_auth_user_created after insert on auth.users
 for each row execute function public.handle_new_user();
 
--- Backfill profiles for users that may already exist before this schema reset.
 insert into public.profiles(id, full_name)
 select u.id, coalesce(u.raw_user_meta_data->>'full_name', split_part(u.email,'@',1), 'Сотрудник')
 from auth.users u
@@ -123,6 +127,6 @@ grant select on public.profiles to authenticated;
 grant select,insert,update on public.orders to authenticated;
 grant usage,select on sequence public.orders_id_seq to authenticated;
 
--- After your FIRST signup, promote yourself once in SQL Editor by replacing the email:
--- update public.profiles p set role='owner', full_name='Илья'
--- from auth.users u where p.id=u.id and u.email='YOUR_EMAIL';
+-- After your first successful VK login, promote your VK account once:
+-- update public.profiles set role='owner', full_name='Илья'
+-- where vk_user_id=YOUR_VK_USER_ID;
