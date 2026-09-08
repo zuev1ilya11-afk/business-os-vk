@@ -42,13 +42,19 @@ Deno.serve(async (req) => {
     const VK_APP_SECRET = Deno.env.get('VK_APP_SECRET');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    if (!VK_APP_SECRET || !SUPABASE_URL || !SERVICE_ROLE) throw new Error('Server secrets are not configured');
+
+    const missing = [
+      !VK_APP_SECRET ? 'VK_APP_SECRET' : null,
+      !SUPABASE_URL ? 'SUPABASE_URL' : null,
+      !SERVICE_ROLE ? 'SUPABASE_SERVICE_ROLE_KEY' : null,
+    ].filter(Boolean);
+    if (missing.length) throw new Error(`Missing server secrets: ${missing.join(', ')}`);
 
     const body = await req.json();
-    const verified = await verifyVkLaunchParams(body.launchParams || '', VK_APP_SECRET, '54758847');
+    const verified = await verifyVkLaunchParams(body.launchParams || '', VK_APP_SECRET!, '54758847');
     if (!verified) return new Response(JSON.stringify({ error: 'Invalid VK signature' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-    const admin = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { autoRefreshToken: false, persistSession: false } });
+    const admin = createClient(SUPABASE_URL!, SERVICE_ROLE!, { auth: { autoRefreshToken: false, persistSession: false } });
     const fullName = [body.firstName, body.lastName].filter(Boolean).join(' ') || `VK ${verified.vkUserId}`;
     const avatar = body.photo200 || body.photo100 || null;
 
