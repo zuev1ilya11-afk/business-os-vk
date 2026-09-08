@@ -11,17 +11,33 @@ function base64Url(bytes: Uint8Array) {
   return btoa(binary).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 }
 
-async function verifyVkLaunchParams(raw: string, secret: string, expectedAppId: string) {
+async function verifyVkLaunchParams(raw: unknown, secret: string, expectedAppId: string) {
+  if (typeof raw !== 'string' || !raw) return null;
   const params = new URLSearchParams(raw.startsWith('?') ? raw.slice(1) : raw);
+  // Reject ambiguous signed fields instead of authenticating the first duplicate.
+  const seen = new Set<string>();
+  for (const [name] of params) {
+    if (name !== 'sign' && !name.startsWith('vk_')) continue;
+    if (seen.has(name)) return null;
+    seen.add(name);
+  }
   const sign = params.get('sign');
   const appId = params.get('vk_app_id');
   const vkUserId = params.get('vk_user_id');
   if (!sign || !appId || !vkUserId || appId !== expectedAppId) return null;
+  if (!/^[A-Za-z0-9_-]{43}$/.test(sign)) return null;
+  if (!/^[1-9]\d*$/.test(vkUserId) || !Number.isSafeInteger(Number(vkUserId))) return null;
 
   const vkPairs = [...params.entries()]
     .filter(([key]) => key.startsWith('vk_'))
     .sort(([a], [b]) => a.localeCompare(b));
-  const canonical = new URLSearchParams(vkPairs).toString();
+  // VK's Node/TypeScript algorithm: sort vk_* keys, then URI-encode values.
+  // URLSearchParams above decodes transport escaping once. Do not decode again
+  // or use its form serializer here: it turns spaces into '+' and escapes ~!'.
+  // https://github.com/VKCOM/vk-apps-launch-params/blob/master/examples/node.js
+  const canonical = vkPairs
+    .map(([name, value]) => `${name}=${encodeURIComponent(value)}`)
+    .join('&');
   const key = await crypto.subtle.importKey(
     'raw',
     new TextEncoder().encode(secret),
@@ -32,7 +48,12 @@ async function verifyVkLaunchParams(raw: string, secret: string, expectedAppId: 
   const digest = new Uint8Array(
     await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(canonical)),
   );
-  if (base64Url(digest) !== sign) return null;
+  const expectedSign = base64Url(digest);
+  let mismatch = 0;
+  for (let i = 0; i < expectedSign.length; i++) {
+    mismatch |= expectedSign.charCodeAt(i) ^ sign.charCodeAt(i);
+  }
+  if (mismatch !== 0) return null;
   return { vkUserId: Number(vkUserId), appId: Number(appId) };
 }
 
