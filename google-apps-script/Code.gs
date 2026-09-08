@@ -7,7 +7,7 @@ function doGet(e) {
   let lock;
   try {
     const action = e.parameter.action || 'bootstrap';
-    if (action === 'health') return jsonp_(callback, {ok:true,version:'2026-09-08-mobile-1'});
+    if (action === 'health') return jsonp_(callback, {ok:true,version:'2026-09-08-mobile-2'});
     const launchParams = e.parameter.launch_params || '';
     const vk = verifyVk_(launchParams);
     if (!vk) return jsonp_(callback, { ok:false, error:'INVALID_VK_SIGNATURE' });
@@ -22,6 +22,7 @@ function doGet(e) {
     else if (action === 'createOrder') result = createOrder_(user, parsePayload_(e.parameter.payload));
     else if (action === 'updateOrder') result = updateOrder_(user, parsePayload_(e.parameter.payload));
     else if (action === 'setUserRole') result = setUserRole_(user, parsePayload_(e.parameter.payload));
+    else if (action === 'upsertUser') result = upsertUser_(user, parsePayload_(e.parameter.payload));
     else result = { ok:false, error:'UNKNOWN_ACTION' };
 
     return jsonp_(callback, result);
@@ -38,21 +39,18 @@ function verifyVk_(raw) {
   const secret = PropertiesService.getScriptProperties().getProperty('VK_APP_SECRET');
   if (!secret) throw new Error('VK_APP_SECRET is not configured');
   const p = parseQuery_(raw);
-  if (!p || !/^[A-Za-z0-9_-]{43}$/.test(p.sign || '') || p.vk_app_id !== VK_APP_ID || !p.vk_user_id) return null;
+  if (!p || !p.sign || p.vk_app_id !== VK_APP_ID || !p.vk_user_id) return null;
   const keys = Object.keys(p).filter(k => k.indexOf('vk_') === 0).sort();
-  // Serialize decoded vk_* parameters like URLSearchParams (form encoding).
-  // sign and application query parameters are never part of the HMAC input.
+  if (!keys.length) return null;
   const canonical = keys.map(k => formEncode_(k) + '=' + formEncode_(p[k])).join('&');
   const sig = Utilities.computeHmacSha256Signature(canonical, secret, Utilities.Charset.UTF_8);
   const computed = Utilities.base64EncodeWebSafe(sig).replace(/=+$/,'');
-  if (computed !== p.sign) return null;
+  if (computed !== String(p.sign)) return null;
   return { userId:String(p.vk_user_id), appId:p.vk_app_id };
 }
 
 function formEncode_(value) {
-  // Apps Script has no browser URLSearchParams. Spaces become '+', literal
-  // plus becomes '%2B', and only ASCII alphanumerics, '*', '-', '.', '_' stay raw.
-  return encodeURIComponent(value)
+  return encodeURIComponent(String(value))
     .replace(/[!'()~]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase())
     .replace(/%20/g, '+');
 }
@@ -61,8 +59,6 @@ function parseQuery_(raw) {
   raw = String(raw || '').replace(/^\?/,'');
   const out = Object.create(null);
   if (!raw) return out;
-  // e.parameter already removed the outer request encoding. Decode each
-  // inner key/value exactly once, never decode the entire launch_params string.
   try {
     for (const part of raw.split('&')) {
       if (!part) continue;
@@ -121,7 +117,6 @@ function createOrder_(user,p) {
   if (!['owner','manager','dispatcher'].includes(String(user.role))) return {ok:false,error:'FORBIDDEN'};
   const s=sheet_('Orders');
   let headers=s.getRange(1,1,1,s.getLastColumn()).getValues()[0].map(String);
-  // Persist the form request ID in the same row for safe retries after timeout.
   if (p.request_id && !/^[A-Za-z0-9_-]{8,100}$/.test(p.request_id)) throw new Error('BAD_PAYLOAD');
   if (p.request_id) {
     const existing=rows_('Orders').find(o=>String(o.created_by_vk_id)===String(user.vk_user_id) && o.request_id===p.request_id);
@@ -170,7 +165,44 @@ function setUserRole_(user,p){
   if (obj.role==='owner' && p.role!=='owner' && rows_('Users').filter(u=>u.role==='owner'&&truthy_(u.is_active)).length<=1) return {ok:false,error:'LAST_OWNER'};
   obj.role=p.role;
   s.getRange(rowIdx+1,1,1,headers.length).setValues([headers.map(h=>cellValue_(obj[h]))]);
+  syncMaster_(obj);
   return {ok:true,user:obj};
+}
+
+function upsertUser_(user,p){
+  if(String(user.role)!=='owner') return {ok:false,error:'FORBIDDEN'};
+  const vkId=String(p.vk_user_id||'').trim();
+  const fullName=String(p.full_name||'').trim();
+  const role=String(p.role||'master');
+  const city=String(p.city||user.city||'Москва').trim();
+  if(!/^\d{2,20}$/.test(vkId) || !fullName) return {ok:false,error:'BAD_USER'};
+  if(!['owner','manager','dispatcher','master'].includes(role)) return {ok:false,error:'BAD_ROLE'};
+  const s=sheet_('Users'), data=s.getDataRange().getValues(), headers=data[0].map(String), idIdx=headers.indexOf('vk_user_id');
+  let rowIdx=data.findIndex((r,i)=>i>0&&String(r[idIdx])===vkId);
+  let obj={vk_user_id:vkId,full_name:fullName,role,city,is_active:p.is_active===false?false:true,phone:String(p.phone||''),comment:String(p.comment||'')};
+  if(rowIdx>0){
+    const old=rowObject_(headers,data[rowIdx]);
+    obj=Object.assign(old,obj);
+    s.getRange(rowIdx+1,1,1,headers.length).setValues([headers.map(h=>cellValue_(obj[h]))]);
+  } else appendObject_(s,headers,obj);
+  syncMaster_(obj);
+  return {ok:true,user:obj};
+}
+
+function syncMaster_(u){
+  const s=sheet_('Masters'),data=s.getDataRange().getValues(),headers=data[0].map(String),idIdx=headers.indexOf('vk_user_id');
+  const rowIdx=data.findIndex((r,i)=>i>0&&String(r[idIdx])===String(u.vk_user_id));
+  if(String(u.role)==='master' && truthy_(u.is_active)){
+    const m={vk_user_id:String(u.vk_user_id),full_name:u.full_name||'',phone:u.phone||'',city:u.city||'Москва',specialization:'',is_active:true,work_start:'09:00',work_end:'18:00'};
+    if(rowIdx>0){
+      const old=rowObject_(headers,data[rowIdx]);
+      const merged=Object.assign(old,m);
+      s.getRange(rowIdx+1,1,1,headers.length).setValues([headers.map(h=>cellValue_(merged[h]))]);
+    } else appendObject_(s,headers,m);
+  } else if(rowIdx>0){
+    const old=rowObject_(headers,data[rowIdx]); old.is_active=false;
+    s.getRange(rowIdx+1,1,1,headers.length).setValues([headers.map(h=>cellValue_(old[h]))]);
+  }
 }
 
 function nextOrderId_(){ const ids=rows_('Orders').map(x=>Number(String(x.id).replace(/\D/g,''))).filter(Number.isFinite); return 'З-'+String((ids.length?Math.max.apply(null,ids):1000)+1); }
