@@ -2,8 +2,8 @@ const SPREADSHEET_ID = '1lt3WoH6pRJkwsC5XbJi90wvbA9nYu9XqNIhJcKS6w_w';
 const VK_APP_ID = '54758847';
 
 function doGet(e) {
+  const callback = safeCallback_(e.parameter.callback || 'callback');
   try {
-    const callback = safeCallback_(e.parameter.callback || 'callback');
     const action = e.parameter.action || 'bootstrap';
     const launchParams = e.parameter.launch_params || '';
     const vk = verifyVk_(launchParams);
@@ -21,7 +21,7 @@ function doGet(e) {
 
     return jsonp_(callback, result);
   } catch (err) {
-    return jsonp_('callback', { ok:false, error:String(err && err.message || err) });
+    return jsonp_(callback, { ok:false, error:String(err && err.message || err) });
   }
 }
 
@@ -29,25 +29,44 @@ function verifyVk_(raw) {
   const secret = PropertiesService.getScriptProperties().getProperty('VK_APP_SECRET');
   if (!secret) throw new Error('VK_APP_SECRET is not configured');
   const p = parseQuery_(raw);
-  if (!p.sign || p.vk_app_id !== VK_APP_ID || !p.vk_user_id) return null;
+  if (!p || !/^[A-Za-z0-9_-]{43}$/.test(p.sign || '') || p.vk_app_id !== VK_APP_ID || !p.vk_user_id) return null;
   const keys = Object.keys(p).filter(k => k.indexOf('vk_') === 0).sort();
-  const canonical = keys.map(k => encodeURIComponent(k) + '=' + encodeURIComponent(p[k])).join('&');
+  // Serialize decoded vk_* parameters like URLSearchParams (form encoding).
+  // sign and application query parameters are never part of the HMAC input.
+  const canonical = keys.map(k => formEncode_(k) + '=' + formEncode_(p[k])).join('&');
   const sig = Utilities.computeHmacSha256Signature(canonical, secret, Utilities.Charset.UTF_8);
   const computed = Utilities.base64EncodeWebSafe(sig).replace(/=+$/,'');
   if (computed !== p.sign) return null;
   return { userId:String(p.vk_user_id), appId:p.vk_app_id };
 }
 
+function formEncode_(value) {
+  // Apps Script has no browser URLSearchParams. Spaces become '+', literal
+  // plus becomes '%2B', and only ASCII alphanumerics, '*', '-', '.', '_' stay raw.
+  return encodeURIComponent(value)
+    .replace(/[!'()~]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase())
+    .replace(/%20/g, '+');
+}
+
 function parseQuery_(raw) {
   raw = String(raw || '').replace(/^\?/,'');
-  const out = {};
+  const out = Object.create(null);
   if (!raw) return out;
-  raw.split('&').forEach(part => {
-    const i = part.indexOf('=');
-    const k = decodeURIComponent(i < 0 ? part : part.slice(0,i));
-    const v = decodeURIComponent((i < 0 ? '' : part.slice(i+1)).replace(/\+/g,' '));
-    out[k] = v;
-  });
+  // e.parameter already removed the outer request encoding. Decode each
+  // inner key/value exactly once, never decode the entire launch_params string.
+  try {
+    for (const part of raw.split('&')) {
+      if (!part) continue;
+      const i = part.indexOf('=');
+      const k = decodeURIComponent((i < 0 ? part : part.slice(0,i)).replace(/\+/g,' '));
+      if (k !== 'sign' && k.indexOf('vk_') !== 0) continue;
+      if (Object.prototype.hasOwnProperty.call(out, k)) return null;
+      const v = decodeURIComponent((i < 0 ? '' : part.slice(i+1)).replace(/\+/g,' '));
+      out[k] = v;
+    }
+  } catch (err) {
+    return null;
+  }
   return out;
 }
 
