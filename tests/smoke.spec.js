@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-test('core buttons, owner finance, editing, team and master schedule work', async ({ page }) => {
+test('core buttons, owner finance, team calendar, editing, team and master schedule work', async ({ page }) => {
   const seedMaster = { vk_user_id: 'master_seed', full_name: 'Александр Мастер', phone: '70000000000', city: 'Москва', role: 'master', is_active: true, specialization: 'Монтаж', work_start: '09:00', work_end: '18:00' };
   const data = {
     orders: [{ id: 'DONE-1', status: 'Выполнена', client: 'Клиент', address: 'Адрес', work: 'Монтаж', amount: 2300, original_amount: 2800, master_vk_id: 'master_seed', master_name: 'Александр Мастер', master_payout: 1270.75, manager_payout: 367.54, dispatcher_payout: 275.66, extra_work_amount: 300, uncompleted_work_amount: 500 }],
@@ -48,6 +48,11 @@ test('core buttons, owner finance, editing, team and master schedule work', asyn
   await expect(page.getByText('300 ₽', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('Невыполненные работы', { exact: true })).toBeVisible();
   await expect(page.getByText('− 500 ₽', { exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: 'График' }).click();
+  await expect(page.getByText('График мастеров', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Эта неделя' })).toBeVisible();
+  await expect(page.getByText('График недели не заполнен')).toBeVisible();
 
   await page.getByRole('button', { name: 'Заявки' }).click();
   await page.getByRole('button', { name: '+ Новая' }).click();
