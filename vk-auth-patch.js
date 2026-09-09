@@ -1,5 +1,6 @@
 (()=>{
-  const local=/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(location.hostname);
+  const forceVkAuth=new URLSearchParams(location.search).has('force_vk_auth');
+  const local=/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(location.hostname)&&!forceVkAuth;
   const SESSION_KEY='bos_vk_session_v2';
   window.BOS_LOCAL_DEV=local;window.BOS_VK_LAUNCH_PARAMS='';let launchPromise=null,tokenAuthPromise=null;
   function getSession(){try{return sessionStorage.getItem(SESSION_KEY)||localStorage.getItem(SESSION_KEY)||''}catch(_){return ''}}
@@ -12,38 +13,10 @@
   async function ensureLaunchParams(){if(window.BOS_VK_LAUNCH_PARAMS)return window.BOS_VK_LAUNCH_PARAMS;if(launchPromise)return launchPromise;launchPromise=(async()=>{let raw=immediateLaunch();if(!raw&&!local)raw=await bridgeLaunch();window.BOS_VK_LAUNCH_PARAMS=raw||'';return window.BOS_VK_LAUNCH_PARAMS})().finally(()=>{launchPromise=null});return launchPromise}
   window.BOS_ENSURE_VK_LAUNCH_PARAMS=ensureLaunchParams;
   window.BOS_STORE_SESSION=setSession;
-
-  async function tokenSession(){
-    if(getSession())return getSession();
-    if(local)return '';
-    if(tokenAuthPromise)return tokenAuthPromise;
-    tokenAuthPromise=(async()=>{
-      if(!window.vkBridge||typeof window.vkBridge.send!=='function')throw new Error('VK Bridge недоступен');
-      await window.vkBridge.send('VKWebAppInit',{}).catch(()=>{});
-      let t;
-      try{t=await window.vkBridge.send('VKWebAppGetAuthToken',{app_id:Number(cfg.VK_APP_ID||54758847),scope:''})}catch(_){throw new Error('Не удалось подтвердить аккаунт VK. Откройте приложение во ВКонтакте и разрешите вход.')}
-      const access=String(t?.access_token||'');if(!access)throw new Error('VK не выдал данные авторизации');
-      const r=await fetch('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:access})});
-      const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось подтвердить аккаунт VK');
-      if(!d.session_token)throw new Error('Сервер не создал сессию');setSession(d.session_token);return d.session_token;
-    })().finally(()=>{tokenAuthPromise=null});
-    return tokenAuthPromise;
-  }
+  async function tokenSession(){if(getSession())return getSession();if(local)return '';if(tokenAuthPromise)return tokenAuthPromise;tokenAuthPromise=(async()=>{if(!window.vkBridge||typeof window.vkBridge.send!=='function')throw new Error('VK Bridge недоступен');await window.vkBridge.send('VKWebAppInit',{}).catch(()=>{});let t;try{t=await window.vkBridge.send('VKWebAppGetAuthToken',{app_id:Number(cfg.VK_APP_ID||54758847),scope:''})}catch(_){throw new Error('Не удалось подтвердить аккаунт VK. Откройте приложение во ВКонтакте и разрешите вход.')}const access=String(t?.access_token||'');if(!access)throw new Error('VK не выдал данные авторизации');const r=await fetch('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:access})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось подтвердить аккаунт VK');if(!d.session_token)throw new Error('Сервер не создал сессию');setSession(d.session_token);return d.session_token})().finally(()=>{tokenAuthPromise=null});return tokenAuthPromise}
   window.BOS_ENSURE_VK_SESSION=tokenSession;
   window.BOS_AUTH_HEADERS=async function(){const h={'Content-Type':'application/json'},session=getSession(),launch=await ensureLaunchParams();if(session)h['X-BOS-Session']=session;if(launch)h['X-VK-Launch-Params']=launch;if(local)h['X-BOS-Local-Dev']='1';return h};
-
-  async function requestApi(action,payload={},attempt=0){
-    const url=cfg.API_URL||cfg.GAS_WEB_APP_URL;if(!url)throw new Error('Не настроен API');
-    let session=getSession(),launch=await ensureLaunchParams();
-    if(!session&&!launch&&!local){try{session=await tokenSession()}catch(e){throw e}}
-    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),25000);const headers=await window.BOS_AUTH_HEADERS();
-    try{
-      const r=await fetch(url,{method:'POST',headers,body:JSON.stringify({action,...payload}),signal:controller.signal});let d;try{d=await r.json()}catch(_){throw new Error('Сервер вернул неверный ответ')}
-      if(d?.session_token)setSession(d.session_token);
-      if(r.status===401&&attempt<2&&!local){clearSession();window.BOS_VK_LAUNCH_PARAMS='';try{await tokenSession()}catch(e){throw e}return requestApi(action,payload,attempt+1)}
-      if(!r.ok||d?.ok===false)throw new Error(d?.error||('Ошибка сервера '+r.status));return d;
-    }catch(e){if(e&&e.name==='AbortError')throw new Error('Сервер не ответил. Проверьте интернет и повторите.');throw e}finally{clearTimeout(timer)}
-  }
+  async function requestApi(action,payload={},attempt=0){const url=cfg.API_URL||cfg.GAS_WEB_APP_URL;if(!url)throw new Error('Не настроен API');let session=getSession(),launch=await ensureLaunchParams();if(!session&&!launch&&!local){try{session=await tokenSession()}catch(e){throw e}}const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),25000);const headers=await window.BOS_AUTH_HEADERS();try{const r=await fetch(url,{method:'POST',headers,body:JSON.stringify({action,...payload}),signal:controller.signal});let d;try{d=await r.json()}catch(_){throw new Error('Сервер вернул неверный ответ')}if(d?.session_token)setSession(d.session_token);if(r.status===401&&attempt<2&&!local){clearSession();window.BOS_VK_LAUNCH_PARAMS='';try{await tokenSession()}catch(e){throw e}return requestApi(action,payload,attempt+1)}if(!r.ok||d?.ok===false)throw new Error(d?.error||('Ошибка сервера '+r.status));return d}catch(e){if(e&&e.name==='AbortError')throw new Error('Сервер не ответил. Проверьте интернет и повторите.');throw e}finally{clearTimeout(timer)}}
   api=(action,payload={})=>requestApi(action,payload,0);
   init=async function(){try{$('#content').innerHTML='<section class="hero"><h2>Проверяем доступ…</h2><p class="muted">Вход через ВКонтакте</p></section>';if(!getSession()){const launch=await ensureLaunchParams();if(!launch&&!local)await tokenSession()}await reloadData(false)}catch(e){state.busy=false;$('#content').innerHTML=`<section class="hero"><h2>Не удалось войти</h2><p class="muted">${esc(e.message)}</p><button class="primary" onclick="init()">Повторить</button></section>`}};
   setTimeout(()=>init(),0);
