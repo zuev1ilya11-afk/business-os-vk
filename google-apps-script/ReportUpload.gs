@@ -12,8 +12,9 @@ function doPost(e){
 }
 
 function archiveSigningKey_(){
-  const syncKey=PropertiesService.getScriptProperties().getProperty('bos_sync_key')||'';
-  if(!syncKey) throw new Error('bos_sync_key is not configured');
+  const props=PropertiesService.getScriptProperties();
+  const syncKey=props.getProperty('SUPABASE_SYNC_KEY')||props.getProperty('bos_sync_key')||'';
+  if(!syncKey) throw new Error('SUPABASE_SYNC_KEY is not configured');
   const digest=Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,syncKey,Utilities.Charset.UTF_8);
   return digest.map(b=>('0'+((b<0?b+256:b)&255).toString(16)).slice(-2)).join('');
 }
