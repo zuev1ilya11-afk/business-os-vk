@@ -2,13 +2,16 @@ const BOS_SYNC_SPREADSHEET_ID='1lt3WoH6pRJkwsC5XbJi90wvbA9nYu9XqNIhJcKS6w_w';
 const BOS_SYNC_API_URL='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/sheets-sync-api';
 const BOS_SYNC_KEY_PROP='SUPABASE_SYNC_KEY';
 
+function saveBusinessOsSyncKey(){
+  const key='PASTE_SYNC_KEY_HERE';
+  if(!key||key==='PASTE_SYNC_KEY_HERE') throw new Error('Вставьте ключ вместо PASTE_SYNC_KEY_HERE и запустите ещё раз.');
+  PropertiesService.getScriptProperties().setProperty(BOS_SYNC_KEY_PROP,key.trim());
+  console.log('Ключ синхронизации сохранён.');
+}
+
 function setupBusinessOsSync(){
-  const ui=SpreadsheetApp.getUi();
-  const r=ui.prompt('Business OS Sync','Вставьте ключ синхронизации Supabase',ui.ButtonSet.OK_CANCEL);
-  if(r.getSelectedButton()!==ui.Button.OK)return;
-  const key=String(r.getResponseText()||'').trim();
-  if(!key)throw new Error('Ключ не указан');
-  PropertiesService.getScriptProperties().setProperty(BOS_SYNC_KEY_PROP,key);
+  const key=PropertiesService.getScriptProperties().getProperty(BOS_SYNC_KEY_PROP);
+  if(!key) throw new Error('Сначала запустите saveBusinessOsSyncKey().');
   ScriptApp.getProjectTriggers().forEach(t=>{
     if(['syncOrderOnEdit','syncOrderOnFormSubmit','pushUnsyncedSheetOrders','pullSupabaseUpdatesToSheet'].includes(t.getHandlerFunction())) ScriptApp.deleteTrigger(t);
   });
@@ -17,7 +20,7 @@ function setupBusinessOsSync(){
   ScriptApp.newTrigger('pushUnsyncedSheetOrders').timeBased().everyMinutes(1).create();
   ScriptApp.newTrigger('pullSupabaseUpdatesToSheet').timeBased().everyMinutes(5).create();
   const health=callBosSync_({action:'health'});
-  ui.alert('Готово',`Синхронизация включена. Сервер: ${health.version||'OK'}\nНовые заявки из таблицы, формы или бота попадут в Mini App автоматически.`,ui.ButtonSet.OK);
+  console.log('Синхронизация включена. Сервер: '+(health.version||'OK'));
 }
 
 function syncOrderOnEdit(e){
@@ -94,11 +97,11 @@ function testBusinessOsSync(){
   const h=callBosSync_({action:'health'});
   pushUnsyncedSheetOrders();
   pullSupabaseUpdatesToSheet();
-  SpreadsheetApp.getUi().alert('Проверка завершена',`Связь с Supabase работает: ${h.version||'OK'}`,SpreadsheetApp.getUi().ButtonSet.OK);
+  console.log('Связь с Supabase работает: '+(h.version||'OK'));
 }
 
 function callBosSync_(payload){
-  const key=PropertiesService.getScriptProperties().getProperty(BOS_SYNC_KEY_PROP);if(!key)throw new Error('Не настроен SUPABASE_SYNC_KEY. Запустите setupBusinessOsSync().');
+  const key=PropertiesService.getScriptProperties().getProperty(BOS_SYNC_KEY_PROP);if(!key)throw new Error('Не настроен SUPABASE_SYNC_KEY. Запустите saveBusinessOsSyncKey().');
   const r=UrlFetchApp.fetch(BOS_SYNC_API_URL,{method:'post',contentType:'application/json',headers:{'X-Sync-Key':key},payload:JSON.stringify(payload),muteHttpExceptions:true});
   let out={};try{out=JSON.parse(r.getContentText())}catch(_){throw new Error('Некорректный ответ Supabase')}
   if(r.getResponseCode()>=400)throw new Error(out.error||('HTTP '+r.getResponseCode()));return out;
