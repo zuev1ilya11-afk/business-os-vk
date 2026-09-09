@@ -11,9 +11,15 @@ function doPost(e){
   }
 }
 
+function archiveSigningKey_(){
+  const syncKey=PropertiesService.getScriptProperties().getProperty('bos_sync_key')||'';
+  if(!syncKey) throw new Error('bos_sync_key is not configured');
+  const digest=Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,syncKey,Utilities.Charset.UTF_8);
+  return digest.map(b=>('0'+((b<0?b+256:b)&255).toString(16)).slice(-2)).join('');
+}
+
 function verifyArchiveRequest_(p){
-  const secret=PropertiesService.getScriptProperties().getProperty('VK_APP_SECRET')||'';
-  if(!secret) throw new Error('VK_APP_SECRET is not configured');
+  const secret=archiveSigningKey_();
   const ts=Number(p.archive_ts||0);
   if(!Number.isFinite(ts)||Math.abs(Date.now()-ts)>5*60*1000) throw new Error('ARCHIVE_REQUEST_EXPIRED');
   const orderId=String(p.order_id||'').trim(),token=String(p.upload_token||'');
