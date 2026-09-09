@@ -30,6 +30,10 @@ jobs:
       - name: One-time Drive archive E2E for order 2
         run: |
           set -e
-          response=$(curl -fsS https://obsropbslfwtanyspjbi.supabase.co/functions/v1/archive-order-2-once)
+          body_file=$(mktemp)
+          code=$(curl -sS -o "$body_file" -w '%{http_code}' https://obsropbslfwtanyspjbi.supabase.co/functions/v1/archive-order-2-once)
+          response=$(cat "$body_file")
+          echo "HTTP $code"
           echo "$response"
+          test "$code" = "200"
           echo "$response" | grep '"ok":true'
