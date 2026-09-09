@@ -29,7 +29,7 @@ for(const s of sizes){
     const kpis=page.locator('.masterKpi');
     const count=await kpis.count();
     for(let i=0;i<count;i++){const box=await kpis.nth(i).boundingBox();expect(box.width).toBeGreaterThan(100);expect(box.height).toBeGreaterThan(80)}
-    await page.getByRole('button',{name:/График/}).click();
+    await page.locator('nav button[data-page="dispatch"]').click();
     await expect(page.getByText('Мой календарь')).toBeVisible();
     await expect(page.getByRole('button',{name:'Сохранить график недели'})).toBeVisible();
   });
