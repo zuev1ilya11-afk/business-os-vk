@@ -1,1 +1,1 @@
-window.BUSINESS_OS_CONFIG={VK_APP_ID:54758847,GAS_WEB_APP_URL:'https://script.google.com/macros/s/AKfycbysoAJVkL4but9HNrERFUrN7tGf9bkTB7GnxT6SOnxeirRsCOfMT7jeaLKpRPUGnVo/exec'};
+window.BUSINESS_OS_CONFIG={VK_APP_ID:54758847,API_URL:'https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',GAS_WEB_APP_URL:'https://script.google.com/macros/s/AKfycbysoAJVkL4but9HNrERFUrN7tGf9bkTB7GnxT6SOnxeirRsCOfMT7jeaLKpRPUGnVo/exec'};
