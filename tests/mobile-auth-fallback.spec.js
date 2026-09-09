@@ -18,7 +18,7 @@ test('mobile VK auth falls back to access token and can create an order',async({
     }
     return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true})});
   });
-  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await page.goto('/?force_vk_auth=1',{waitUntil:'domcontentloaded'});
   await expect(page.getByText('Загруженность мастеров')).toBeVisible();
   expect(sessionCalls).toBeGreaterThan(0);
   await page.getByRole('button',{name:/Заявки/}).first().click();
