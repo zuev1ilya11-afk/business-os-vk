@@ -9,11 +9,20 @@
   async function call(action,body={}){const h={'Content-Type':'application/json'},s=getSession();if(s)h['X-BOS-Session']=s;let r;try{r=await fetch(API,{method:'POST',headers:h,body:JSON.stringify({action,...body})})}catch(_){throw new Error('Не удалось подключиться к серверу')};const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||('Ошибка сервера '+r.status));return d}
   async function loginViaVk(){
     const c=document.querySelector('#content');if(!c)return;
-    c.innerHTML='<section class="hero"><h2>Вход через VK</h2><p class="muted" id="bosVkMsg">Подтверждаем аккаунт…</p></section>';
+    c.innerHTML='<section class="hero"><h2>Вход через VK</h2><p class="muted">Подтверждаем аккаунт…</p></section>';
     clearSession();setManual(false);
     try{
-      if(window.BOS_ENSURE_VK_SESSION){const d=await window.BOS_ENSURE_VK_SESSION();if(d?.session_token)setSession(d.session_token)}
-      if(!getSession())throw new Error('VK не создал сессию');
+      let launch='';
+      if(window.BOS_ENSURE_VK_LAUNCH_PARAMS)launch=await window.BOS_ENSURE_VK_LAUNCH_PARAMS();
+      if(launch){
+        const url=(window.BUSINESS_OS_CONFIG||{}).API_URL;
+        const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','X-VK-Launch-Params':launch},body:JSON.stringify({action:'bootstrap'})});
+        const d=await r.json().catch(()=>({}));
+        if(r.ok&&d?.ok&&d?.session_token)setSession(d.session_token);
+        else if(d?.registration_required&&window.BOS_SHOW_PHONE_REGISTRATION){setManual(false);return window.BOS_SHOW_PHONE_REGISTRATION()}
+      }
+      if(!getSession()&&window.BOS_ENSURE_VK_SESSION){const d=await window.BOS_ENSURE_VK_SESSION();if(d?.session_token)setSession(d.session_token)}
+      if(!getSession())throw new Error('Не удалось подтвердить аккаунт VK');
       location.reload();
     }catch(e){
       setManual(true);
