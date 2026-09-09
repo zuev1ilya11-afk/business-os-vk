@@ -26,27 +26,3 @@ jobs:
 
       - name: Google Apps Script archive deployment health
         run: npx playwright test tests/gas-archive-health.spec.js
-
-      - name: One-time Drive archive E2E for order 2
-        run: |
-          set -e
-          body_file=$(mktemp)
-          code=$(curl -sS -o "$body_file" -w '%{http_code}' https://obsropbslfwtanyspjbi.supabase.co/functions/v1/archive-order-2-once)
-          response=$(cat "$body_file")
-          echo "HTTP $code"
-          echo "$response"
-          test "$code" = "200"
-          echo "$response" | grep '"ok":true'
-
-      - name: Create staff + order E2E
-        run: |
-          set -e
-          body_file=$(mktemp)
-          code=$(curl -sS -o "$body_file" -w '%{http_code}' https://obsropbslfwtanyspjbi.supabase.co/functions/v1/e2e-create-staff-order-once)
-          response=$(cat "$body_file")
-          echo "HTTP $code"
-          echo "$response"
-          test "$code" = "200"
-          echo "$response" | grep '"ok":true'
-          echo "$response" | grep '"employee_created":true'
-          echo "$response" | grep '"order_created":true'
