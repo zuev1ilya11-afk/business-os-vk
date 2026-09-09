@@ -4,8 +4,10 @@ const GAS='https://script.google.com/macros/s/AKfycbx6l6V_jjZdbWQGlj0DcR4Uf4wvMc
 
 test('Google Apps Script archive deployment is reachable',async({request})=>{
   const r=await request.post(GAS,{form:{action:'ping'}});
-  expect(r.ok()).toBeTruthy();
   const text=await r.text();
+  console.log('GAS_HEALTH_STATUS',r.status());
+  console.log('GAS_HEALTH_BODY',text.slice(0,500));
+  expect(r.ok()).toBeTruthy();
   let body;
   expect(()=>{body=JSON.parse(text)}).not.toThrow();
   expect(body).toEqual(expect.objectContaining({ok:false,error:'UNKNOWN_ACTION'}));
