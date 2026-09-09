@@ -12,7 +12,7 @@ openOrder=function(id){
   const o=state.orders.find(x=>String(x.id)===String(id));if(!o)return;
   if(typeof isMasterPreview==='function'&&isMasterPreview()){
     const done=o.status==='Выполнена';
-    openModal(`<h2>${esc(o.id)}</h2><p><b>${esc(o.work)}</b></p><p>${esc(o.client)} · ${esc(o.phone||'')}</p><p>${esc(o.address)}</p><p><b>Когда:</b> ${esc(o.scheduled_date||'—')} ${esc(o.scheduled_time||'')}</p><p><b>Сумма заявки:</b> ${money(o.amount)}</p><p><b>Моя выплата:</b> ${money(o.master_payout||payout(o.amount))}</p><p><span class="status info">${esc(o.status||'В работе')}</span></p>${reportLinksHtml(o)}${!done?`<button class="primary wide" onclick="openMasterReportForm('${esc(o.id)}')">Оформить отчёт и завершить</button>`:''}<button class="secondary wide" onclick="closeModal()">Закрыть</button>`);
+    openModal(`<h2>${esc(o.id)}</h2><p><b>${esc(o.work)}</b></p><p>${esc(o.client)} · ${esc(o.phone||'')}</p><p>${esc(o.address)}</p><p><b>Когда:</b> ${esc(o.scheduled_date||'—')} ${esc(o.scheduled_time||'')}</p><p><b>Моя выплата:</b> ${money(o.master_payout||payout(o.amount))}</p><p><span class="status info">${esc(o.status||'В работе')}</span></p>${reportLinksHtml(o)}${!done?`<button class="primary wide" onclick="openMasterReportForm('${esc(o.id)}')">Оформить отчёт и завершить</button>`:''}<button class="secondary wide" onclick="closeModal()">Закрыть</button>`);
     return;
   }
   baseReportOpenOrder(id);
