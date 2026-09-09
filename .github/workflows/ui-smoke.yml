@@ -14,4 +14,18 @@ jobs:
           node-version: 24
       - run: npm install
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test tests/*.spec.js
+
+      - name: Core UI smoke
+        run: npx playwright test tests/smoke.spec.js
+
+      - name: Master mobile flow
+        run: npx playwright test tests/master-mobile.spec.js
+
+      - name: Mobile VK auth fallback
+        run: npx playwright test tests/mobile-auth-fallback.spec.js
+
+      - name: Google Apps Script archive health
+        run: npx playwright test tests/gas-archive-health.spec.js
+
+      - name: Signed GAS bridge health
+        run: npx playwright test tests/gas-bridge-health.spec.js
