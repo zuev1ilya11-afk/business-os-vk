@@ -1,9 +1,7 @@
 let __reportUploadPromise=null;
 submitReportPost=function(fields){
   const url='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-api';
-  const headers={'Content-Type':'application/json'};
-  if(window.BOS_VK_LAUNCH_PARAMS)headers['X-VK-Launch-Params']=window.BOS_VK_LAUNCH_PARAMS;
-  __reportUploadPromise=fetch(url,{method:'POST',headers,body:JSON.stringify(fields)}).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось загрузить отчёт');return d});
+  __reportUploadPromise=(async()=>{const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{'Content-Type':'application/json'};const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(fields)});const d=await r.json().catch(()=>({}));if(d?.session_token&&window.BOS_STORE_SESSION)window.BOS_STORE_SESSION(d.session_token);if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось загрузить отчёт');return d})();
   return __reportUploadPromise;
 };
 waitForReport=async function(id,token,timeout){
