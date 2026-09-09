@@ -2,7 +2,8 @@ const {test,expect}=require('@playwright/test');
 
 test('mobile VK auth falls back to access token and can create an order',async({page})=>{
   await page.setViewportSize({width:320,height:700});
-  await page.route('https://unpkg.com/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:`window.vkBridge={send:async(name)=>{if(name==='VKWebAppGetAuthToken')return {access_token:'test_vk_access_token'};if(name==='VKWebAppGetLaunchParams')return {};return {}}};`}));
+  let authScope='';
+  await page.route('https://unpkg.com/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:`window.vkBridge={send:async(name,params)=>{if(name==='VKWebAppGetAuthToken'){window.__authScope=params&&params.scope;return {access_token:'test_vk_access_token'}};if(name==='VKWebAppGetLaunchParams')return {};return {}}};`}));
   let sessionCalls=0,created=false;
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',async route=>{sessionCalls++;const b=route.request().postDataJSON();expect(b.access_token).toBe('test_vk_access_token');await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,session_token:'1105117085.9999999999.testsignature'})})});
   const owner={id:'owner1',vk_user_id:'1105117085',external_id:'1105117085',full_name:'Владелец',role:'owner',city:'Москва',is_active:true};
@@ -21,6 +22,7 @@ test('mobile VK auth falls back to access token and can create an order',async({
   await page.goto('/?force_vk_auth=1',{waitUntil:'domcontentloaded'});
   await expect(page.getByText('Загруженность мастеров')).toBeVisible();
   expect(sessionCalls).toBeGreaterThan(0);
+  expect(await page.evaluate(()=>window.__authScope)).toBe('friends');
   await page.locator('nav button[data-page="orders"]').click();
   await page.getByRole('button',{name:/Новая/}).click();
   const form=page.locator('#orderForm');
@@ -28,6 +30,7 @@ test('mobile VK auth falls back to access token and can create an order',async({
   await form.locator('[name=address]').fill('Адрес');
   await form.locator('[name=work]').fill('Карниз');
   await form.locator('[name=original_amount]').fill('3788');
+  await expect(form.locator('#calcPay')).toContainText('2 092,87');
   const rows=page.locator('.orderTotalRow');expect(await rows.count()).toBe(2);
   for(let i=0;i<2;i++){
     const row=rows.nth(i),label=row.locator('span'),value=row.locator('b');
