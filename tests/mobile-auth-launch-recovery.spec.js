@@ -1,0 +1,20 @@
+const {test,expect}=require('@playwright/test');
+
+test('mobile VK auth recovers through signed launch params when token auth fails',async({page})=>{
+  await page.setViewportSize({width:320,height:700});
+  await page.route('https://unpkg.com/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:`let n=0;window.vkBridge={send:async(name)=>{if(name==='VKWebAppGetAuthToken')throw new Error('denied');if(name==='VKWebAppGetLaunchParams'){n++;if(n<2)return {};return {vk_app_id:'54758847',vk_user_id:'123456789',vk_language:'ru',sign:'signed_test_value'}};return {}}};`}));
+  let bootstrap=false;
+  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',async route=>{
+    const req=route.request(),h=req.headers(),b=req.postDataJSON()||{};
+    if(b.action==='bootstrap'){
+      expect(h['x-vk-launch-params']).toContain('vk_app_id=54758847');
+      expect(h['x-vk-launch-params']).toContain('vk_user_id=123456789');
+      bootstrap=true;
+      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,user:{full_name:'Первый пользователь',role:'owner',city:'Москва',vk_user_id:'123456789'},orders:[],users:[],masters:[],masterSchedule:[],claims:[],sources:[{source:'VK'}],settings:{}})});
+    }
+    return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true})});
+  });
+  await page.goto('/?force_vk_auth=1',{waitUntil:'domcontentloaded'});
+  await expect.poll(()=>bootstrap,{timeout:20000}).toBeTruthy();
+  await expect(page.getByText('Загруженность мастеров')).toBeVisible();
+});
