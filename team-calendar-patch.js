@@ -34,6 +34,7 @@ function teamCalendarHtml(){
 }
 
 pages.dispatch=function(){
-  if(isMasterPreview())return masterCalendarBaseDispatch();
+  const masterNow=(typeof liveMasterMode==='function'&&liveMasterMode())||String(state.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview());
+  if(masterNow)return masterCalendarBaseDispatch();
   return teamCalendarHtml();
 };
