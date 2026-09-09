@@ -1,133 +1,26 @@
 (()=>{
   const forceVkAuth=new URLSearchParams(location.search).has('force_vk_auth');
   const local=/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(location.hostname)&&!forceVkAuth;
-  const SESSION_KEY='bos_vk_session_v2';
+  const SESSION_KEY='bos_vk_session_v2', MANUAL_KEY='bos_manual_logout_v1';
   const AUTH_URL='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api';
-  window.BOS_LOCAL_DEV=local;
-  window.BOS_VK_LAUNCH_PARAMS='';
-
+  window.BOS_LOCAL_DEV=local;window.BOS_VK_LAUNCH_PARAMS='';
   function getSession(){try{return sessionStorage.getItem(SESSION_KEY)||localStorage.getItem(SESSION_KEY)||''}catch(_){return ''}}
   function setSession(v){if(!v)return;try{sessionStorage.setItem(SESSION_KEY,v);localStorage.setItem(SESSION_KEY,v)}catch(_){}}
   function clearSession(){try{sessionStorage.removeItem(SESSION_KEY);localStorage.removeItem(SESSION_KEY)}catch(_){}}
+  function manual(){try{return localStorage.getItem(MANUAL_KEY)==='1'}catch(_){return false}}
   function regError(msg='Требуется регистрация по номеру телефона'){const e=new Error(msg);e.code='REGISTRATION_REQUIRED';return e}
   function signed(raw){raw=String(raw||'').replace(/^\?/,'');const p=new URLSearchParams(raw);return p.has('vk_app_id')&&p.has('vk_user_id')&&p.has('sign')?raw:''}
   function fromObject(obj){if(!obj)return '';const src=obj.launch_params||obj;const p=new URLSearchParams();Object.keys(src).filter(k=>k==='sign'||k.startsWith('vk_')).sort().forEach(k=>{const v=src[k];if(v!==undefined&&v!==null)p.set(k,String(v))});return signed(p.toString())}
   function immediateLaunch(){let raw=signed(location.search);if(raw)return raw;const hash=String(location.hash||'');const q=hash.includes('?')?hash.slice(hash.indexOf('?')+1):hash.replace(/^#/,'');raw=signed(q);if(raw)return raw;try{const ref=new URL(document.referrer);raw=signed(ref.search);if(raw)return raw}catch(_){}return ''}
-
-  async function getLaunchParams(){
-    if(window.BOS_VK_LAUNCH_PARAMS)return window.BOS_VK_LAUNCH_PARAMS;
-    let raw=immediateLaunch();
-    if(!raw&&!local&&window.vkBridge&&typeof window.vkBridge.send==='function'){
-      try{
-        await window.vkBridge.send('VKWebAppInit',{}).catch(()=>{});
-        const d=await window.vkBridge.send('VKWebAppGetLaunchParams',{});
-        raw=fromObject(d);
-      }catch(_){}
-    }
-    window.BOS_VK_LAUNCH_PARAMS=raw||'';
-    return window.BOS_VK_LAUNCH_PARAMS;
-  }
-
-  async function getAccessToken(){
-    if(!window.vkBridge||typeof window.vkBridge.send!=='function')throw new Error('VK Bridge недоступен');
-    await window.vkBridge.send('VKWebAppInit',{}).catch(()=>{});
-    const app_id=Number(cfg.VK_APP_ID||54758847);
-    const timeout=ms=>new Promise((_,reject)=>setTimeout(()=>reject(new Error('VK_AUTH_TIMEOUT')),ms));
-    const r=await Promise.race([window.vkBridge.send('VKWebAppGetAuthToken',{app_id,scope:''}),timeout(10000)]);
-    if(!r?.access_token)throw new Error('VK не выдал токен авторизации');
-    return String(r.access_token);
-  }
-
-  async function createBosSession(){
-    if(getSession())return {ok:true,session_token:getSession()};
-    if(local)return {ok:true};
-    const access=await getAccessToken();
-    const r=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:access})});
-    const d=await r.json().catch(()=>({}));
-    if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось подтвердить аккаунт VK');
-    if(!d.session_token)throw new Error('Сервер не создал сессию');
-    setSession(d.session_token);
-    if(d.registration_required)throw regError();
-    return d;
-  }
-
-  async function authHeaders(){
-    const h={'Content-Type':'application/json'};
-    const session=getSession();
-    if(session)h['X-BOS-Session']=session;
-    else {
-      const launch=await getLaunchParams();
-      if(launch)h['X-VK-Launch-Params']=launch;
-    }
-    if(local)h['X-BOS-Local-Dev']='1';
-    return h;
-  }
-
-  async function requestApi(action,payload={},retry=true){
-    const url=cfg.API_URL||cfg.GAS_WEB_APP_URL;
-    if(!url)throw new Error('Не настроен API');
-
-    if(!local&&!getSession()){
-      try{await createBosSession()}
-      catch(e){
-        if(e?.code==='REGISTRATION_REQUIRED')throw e;
-        const launch=await getLaunchParams();
-        if(!launch)throw e;
-      }
-    }
-
-    const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),25000);
-    try{
-      const r=await fetch(url,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action,...payload}),signal:controller.signal});
-      let d={};try{d=await r.json()}catch(_){throw new Error('Сервер вернул неверный ответ')}
-      if(d?.session_token)setSession(d.session_token);
-      if(d?.registration_required)throw regError(d.error||undefined);
-      if(r.status===401&&retry&&!local){
-        clearSession();
-        window.BOS_VK_LAUNCH_PARAMS='';
-        return requestApi(action,payload,false);
-      }
-      if(!r.ok||d?.ok===false)throw new Error(d?.error||('Ошибка сервера '+r.status));
-      return d;
-    }catch(e){
-      if(e?.name==='AbortError')throw new Error('Сервер не ответил. Проверьте интернет и повторите.');
-      throw e;
-    }finally{clearTimeout(timer)}
-  }
-
-  api=(action,payload={})=>requestApi(action,payload,true);
-  window.BOS_AUTH_HEADERS=authHeaders;
-  window.BOS_ENSURE_VK_LAUNCH_PARAMS=getLaunchParams;
-  window.BOS_ENSURE_VK_SESSION=createBosSession;
-  window.BOS_STORE_SESSION=setSession;
-
-  function showPhoneRegistration(){
-    state.busy=false;
-    $('#content').innerHTML=`<section class="hero"><h2>Регистрация</h2><p class="muted">Введите номер телефона, который владелец указал при добавлении вас в команду.</p><form id="phoneRegForm" class="form"><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 999 123-45-67" required><button class="primary wide" type="submit">Продолжить</button><p id="phoneRegMsg" class="muted"></p></form></section>`;
-    const form=$('#phoneRegForm');
-    form.onsubmit=async e=>{
-      e.preventDefault();if(state.busy)return;
-      const msg=$('#phoneRegMsg');msg.textContent='Проверяем номер…';setBusy(form,true);
-      try{
-        const d=await requestApi('registerByPhone',{phone:form.elements.phone.value},true);
-        if(d?.session_token)setSession(d.session_token);
-        state.busy=false;
-        await reloadData(false);
-      }catch(err){msg.textContent=err.message;setBusy(form,false)}finally{state.busy=false}
-    };
-  }
-
+  async function getLaunchParams(){if(window.BOS_VK_LAUNCH_PARAMS)return window.BOS_VK_LAUNCH_PARAMS;let raw=immediateLaunch();if(!raw&&!local&&window.vkBridge?.send){try{await window.vkBridge.send('VKWebAppInit',{}).catch(()=>{});const d=await window.vkBridge.send('VKWebAppGetLaunchParams',{});raw=fromObject(d)}catch(_){}}window.BOS_VK_LAUNCH_PARAMS=raw||'';return window.BOS_VK_LAUNCH_PARAMS}
+  async function getAccessToken(){if(!window.vkBridge?.send)throw new Error('VK Bridge недоступен');await window.vkBridge.send('VKWebAppInit',{}).catch(()=>{});const app_id=Number(cfg.VK_APP_ID||54758847);const t=await window.vkBridge.send('VKWebAppGetAuthToken',{app_id,scope:''});if(!t?.access_token)throw new Error('VK не выдал токен авторизации');return String(t.access_token)}
+  async function authRequest(payload){const r=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось подтвердить аккаунт VK');return d}
+  async function createBosSession(){if(getSession())return{ok:true,session_token:getSession()};if(local)return{ok:true};let d=null,last=null;const launch=await getLaunchParams();if(launch){try{d=await authRequest({launch_params:launch})}catch(e){last=e}}if(!d){try{const access=await getAccessToken();d=await authRequest({access_token:access})}catch(e){last=e}}if(!d?.session_token)throw last||new Error('Не удалось подтвердить аккаунт VK');setSession(d.session_token);if(d.registration_required)throw regError();return d}
+  async function authHeaders(){const h={'Content-Type':'application/json'},session=getSession();if(session)h['X-BOS-Session']=session;if(local)h['X-BOS-Local-Dev']='1';return h}
+  async function requestApi(action,payload={},retry=true){const url=cfg.API_URL||cfg.GAS_WEB_APP_URL;if(!url)throw new Error('Не настроен API');if(!local&&!getSession())await createBosSession();const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),25000);try{const r=await fetch(url,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action,...payload}),signal:controller.signal});let d={};try{d=await r.json()}catch(_){throw new Error('Сервер вернул неверный ответ')}if(d?.session_token)setSession(d.session_token);if(d?.registration_required)throw regError(d.error||undefined);if(r.status===401&&retry&&!local){clearSession();window.BOS_VK_LAUNCH_PARAMS='';await createBosSession();return requestApi(action,payload,false)}if(!r.ok||d?.ok===false)throw new Error(d?.error||('Ошибка сервера '+r.status));return d}catch(e){if(e?.name==='AbortError')throw new Error('Сервер не ответил. Проверьте интернет и повторите.');throw e}finally{clearTimeout(timer)}}
+  api=(action,payload={})=>requestApi(action,payload,true);window.BOS_AUTH_HEADERS=authHeaders;window.BOS_ENSURE_VK_LAUNCH_PARAMS=getLaunchParams;window.BOS_ENSURE_VK_SESSION=createBosSession;window.BOS_STORE_SESSION=setSession;
+  function showPhoneRegistration(){state.busy=false;$('#content').innerHTML=`<section class="hero"><h2>Регистрация</h2><p class="muted">Введите номер телефона, который владелец указал при добавлении вас в команду.</p><form id="phoneRegForm" class="form"><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 999 123-45-67" required><button class="primary wide" type="submit">Продолжить</button><p id="phoneRegMsg" class="muted"></p></form></section>`;const form=$('#phoneRegForm');form.onsubmit=async e=>{e.preventDefault();if(state.busy)return;const msg=$('#phoneRegMsg');msg.textContent='Проверяем номер…';setBusy(form,true);try{const d=await requestApi('registerByPhone',{phone:form.elements.phone.value},true);if(d?.session_token)setSession(d.session_token);state.busy=false;await reloadData(false)}catch(err){msg.textContent=err.message;setBusy(form,false)}finally{state.busy=false}}}
   window.BOS_SHOW_PHONE_REGISTRATION=showPhoneRegistration;
-  init=async function(){
-    try{
-      $('#content').innerHTML='<section class="hero"><h2>Проверяем доступ…</h2><p class="muted">Вход через ВКонтакте</p></section>';
-      await reloadData(false);
-    }catch(e){
-      state.busy=false;
-      if(e?.code==='REGISTRATION_REQUIRED')return showPhoneRegistration();
-      $('#content').innerHTML=`<section class="hero"><h2>Не удалось войти</h2><p class="muted">${esc(e.message)}</p><button class="primary" onclick="init()">Повторить</button></section>`;
-    }
-  };
+  init=async function(){if(manual()&&!getSession())return;try{$('#content').innerHTML='<section class="hero"><h2>Проверяем доступ…</h2><p class="muted">Вход через ВКонтакте</p></section>';await reloadData(false)}catch(e){state.busy=false;if(e?.code==='REGISTRATION_REQUIRED')return showPhoneRegistration();$('#content').innerHTML=`<section class="hero"><h2>Не удалось войти</h2><p class="muted">${esc(e.message)}</p><button class="primary" onclick="init()">Повторить</button></section>`}};
   setTimeout(()=>init(),0);
 })();
