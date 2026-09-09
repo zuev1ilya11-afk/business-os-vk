@@ -26,3 +26,10 @@ jobs:
 
       - name: Google Apps Script archive deployment health
         run: npx playwright test tests/gas-archive-health.spec.js
+
+      - name: One-time Drive archive E2E for order 2
+        run: |
+          set -e
+          response=$(curl -fsS https://obsropbslfwtanyspjbi.supabase.co/functions/v1/archive-order-2-once)
+          echo "$response"
+          echo "$response" | grep '"ok":true'
