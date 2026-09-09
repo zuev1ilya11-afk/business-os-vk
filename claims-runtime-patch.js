@@ -1,0 +1,1 @@
+claimsApi=async function(action,payload={}){const r=await fetch('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,actor_role:state.user?.role||'owner',...payload})});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Ошибка сервера');return d};
