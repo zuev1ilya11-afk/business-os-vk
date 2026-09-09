@@ -3,7 +3,10 @@ const { test, expect } = require('@playwright/test');
 test('full Mini App UI loads and main actions work against Supabase API contract', async ({ page }) => {
   const seedMaster = { vk_user_id: 'master_seed', full_name: 'Александр Мастер', phone: '70000000000', city: 'Москва', role: 'master', is_active: true, specialization: 'Монтаж', work_start: '09:00', work_end: '18:00' };
   const data = {
-    orders: [{ id: 'DONE-1', status: 'Выполнена', client: 'Клиент', address: 'Адрес', work: 'Монтаж', amount: 2300, original_amount: 2800, master_vk_id: 'master_seed', master_name: 'Александр Мастер', master_payout: 1270.75, manager_payout:367.54, dispatcher_payout:275.66, extra_work_amount:300, uncompleted_work_amount:500 }],
+    orders: [
+      { id:'ACTIVE-1', status:'В работе', client:'Клиент 2', address:'Адрес 2', work:'Шторы', amount:2800, scheduled_date:'2099-09-10', scheduled_time:'09:00', time_slot:'09:00–10:00', master_vk_id:'master_seed', master_name:'Александр Мастер', wall_material:'Кирпич', wall_over_3m:true, possible_extra_work:true, comment:'Позвонить заранее' },
+      { id: 'DONE-1', status: 'Выполнена', client: 'Клиент', address: 'Адрес', work: 'Монтаж', amount: 2300, original_amount: 2800, master_vk_id: 'master_seed', master_name: 'Александр Мастер', master_payout: 1270.75, manager_payout:367.54, dispatcher_payout:275.66, extra_work_amount:300, uncompleted_work_amount:500 }
+    ],
     users: [seedMaster], masters: [seedMaster], masterSchedule: []
   };
 
@@ -23,22 +26,32 @@ test('full Mini App UI loads and main actions work against Supabase API contract
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api', route => route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,claims:[],orders:[],masters:[]})}));
 
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await expect(page.getByText('Business OS', { exact:true }).first()).toBeVisible();
-  await expect(page.getByText('Google Sheets синхронизированы с приложением.')).toBeVisible();
-  await expect(page.getByText('Допработы', { exact:true }).first()).toBeVisible();
-  await expect(page.getByText('300 ₽', { exact:true }).first()).toBeVisible();
-  await expect(page.getByText('Невыполненные работы', { exact:true }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name:'Домашний мастер' }).first()).toBeVisible();
+  await expect(page.getByText('VK MINI APP')).toHaveCount(0);
+  await expect(page.getByText('Загруженность мастеров')).toBeVisible();
+  await expect(page.getByText('Ближайшие заявки')).toBeVisible();
+  await expect(page.getByText('Кирпич')).toBeVisible();
+  await expect(page.getByText('> 3 м')).toBeVisible();
 
-  await page.getByRole('button', { name:/Заявки/ }).click();
+  const metric=page.locator('.dashMetric.buttonCard').first();
+  await expect(metric).toBeVisible();
+  await metric.click();
+  await expect(page.getByRole('heading',{name:'Заявки'})).toBeVisible();
+
   await page.getByRole('button', { name:'+ Новая' }).click();
   await page.locator('input[name="client"]').fill('Тест');
   await page.locator('input[name="address"]').fill('Тестовый адрес');
   await page.locator('input[name="work"]').fill('Монтаж');
   await page.locator('input[name="original_amount"]').fill('1000');
+  await page.locator('select[name="time_slot"]').selectOption({label:'09:00–10:00'});
+  await page.locator('select[name="wall_material"]').selectOption('Кирпич');
+  await page.locator('input[name="wall_over_3m"]').check();
+  await page.locator('textarea[name="comment"]').fill('Комментарий тест');
   await page.getByRole('button', { name:'Сохранить' }).click();
   await expect(page.getByText('TEST-1')).toBeVisible();
 
   await page.getByText('TEST-1').click();
+  await expect(page.getByText('Комментарий тест')).toBeVisible();
   await page.getByRole('button', { name:'Редактировать' }).click();
   await page.locator('input[name="work"]').fill('Монтаж 2');
   await page.getByRole('button', { name:'Сохранить' }).click();
@@ -52,4 +65,7 @@ test('full Mini App UI loads and main actions work against Supabase API contract
 
   await page.getByRole('button', { name:/График/ }).click();
   await expect(page.getByText('График мастеров', { exact:true })).toBeVisible();
+
+  const profile=page.locator('nav [data-action="profile"]');
+  await expect(profile).toBeVisible();
 });
