@@ -20,8 +20,8 @@ for(const s of sizes){
     await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,claims:[],orders:[]})}));
     await page.goto('/',{waitUntil:'domcontentloaded'});
     await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toBeVisible();
-    await expect(page.getByText('Моя выплата')).toBeVisible();
-    await expect(page.getByText('Общая зарплата')).toBeVisible();
+    await expect(page.getByText('Моя выплата',{exact:true})).toBeVisible();
+    await expect(page.getByText('Общая зарплата',{exact:true})).toBeVisible();
     await expect(page.getByText('Выручка')).toHaveCount(0);
     await expect(page.getByText('Сумма заявок')).toHaveCount(0);
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
