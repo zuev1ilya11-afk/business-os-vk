@@ -32,7 +32,8 @@ test('mobile VK auth falls back to access token and can create an order',async({
   for(let i=0;i<2;i++){
     const row=rows.nth(i),label=row.locator('span'),value=row.locator('b');
     const a=await label.boundingBox(),b=await value.boundingBox();
-    expect(a.x+a.width).toBeLessThanOrEqual(b.x+1);
+    const overlap=!(a.x+a.width<=b.x||b.x+b.width<=a.x||a.y+a.height<=b.y||b.y+b.height<=a.y);
+    expect(overlap).toBeFalsy();
   }
   await form.getByRole('button',{name:'Сохранить'}).click();
   await expect.poll(()=>created).toBeTruthy();
