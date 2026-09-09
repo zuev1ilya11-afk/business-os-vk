@@ -13,5 +13,6 @@ jobs:
         with:
           node-version: 24
       - run: npm install
+      - run: node --test tests/*.test.cjs tests/*.test.mjs
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test tests/*.spec.js
