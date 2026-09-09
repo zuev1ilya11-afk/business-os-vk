@@ -9,10 +9,10 @@ test('mobile VK auth falls back to access token and can create an order',async({
   const master={id:'m1',vk_user_id:'1001',external_id:'1001',full_name:'Мастер Тест',role:'master',city:'Москва',is_active:true};
   let orders=[];
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',async route=>{
-    const req=route.request();expect(req.headers()['x-bos-session']).toBeTruthy();
-    const b=req.postDataJSON()||{};
+    const req=route.request(),b=req.postDataJSON()||{};
     if(b.action==='bootstrap')return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,user:owner,orders,users:[owner,master],masters:[master],masterSchedule:[],claims:[],sources:[{source:'VK'}],settings:{}})});
     if(b.action==='createOrder'){
+      expect(req.headers()['x-bos-session']).toBeTruthy();
       created=true;const o={...b,id:'99',amount:Number(b.original_amount||0),master_payout:0};orders=[o];
       return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:o})});
     }
@@ -21,7 +21,7 @@ test('mobile VK auth falls back to access token and can create an order',async({
   await page.goto('/?force_vk_auth=1',{waitUntil:'domcontentloaded'});
   await expect(page.getByText('Загруженность мастеров')).toBeVisible();
   expect(sessionCalls).toBeGreaterThan(0);
-  await page.getByRole('button',{name:/Заявки/}).first().click();
+  await page.locator('nav button[data-page="orders"]').click();
   await page.getByRole('button',{name:/Новая/}).click();
   const form=page.locator('#orderForm');
   await form.locator('[name=client]').fill('Тест');
