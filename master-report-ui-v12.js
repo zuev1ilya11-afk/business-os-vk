@@ -11,8 +11,8 @@ function reportToggleState(){
 window.openMasterReportForm=function(id){
   const o=state.orders.find(x=>String(x.id)===String(id));if(!o)return;
   openModal(`<h2>Отчёт по заявке ${esc(o.id)}</h2><form id="masterReportForm" class="form reportCompactForm">
-    <label>Акт выполненных работ *</label><input id="mrAct" type="file" accept="image/*,.pdf" required>
-    <label>Фото выполненной работы *</label><input id="mrPhotos" type="file" accept="image/*" capture="environment" multiple required><p class="muted reportHint">До 5 фото.</p>
+    <label>Акт выполненных работ *</label><input id="mrAct" type="file" accept="image/*,.pdf,application/pdf" required>
+    <label>Фото выполненной работы *</label><input id="mrPhotos" type="file" accept="image/*" multiple required><p class="muted reportHint">Выберите до 5 фото из файлов или галереи.</p>
     <div class="reportQuestion"><b>Были ли допработы?</b><div class="reportChoices">${reportRadio('mrExtra','false','Нет',true)}${reportRadio('mrExtra','true','Да',false)}</div></div>
     <div id="mrExtraBox" class="reportConditional" style="display:none"><input id="mrExtraDesc" placeholder="Какие допработы"><input id="mrExtraAmount" type="number" min="0" step="0.01" placeholder="Сумма допработ"></div>
     <div class="reportQuestion"><b>Все ли на заявке выполнено?</b><div class="reportChoices">${reportRadio('mrAllDone','true','Да',true)}${reportRadio('mrAllDone','false','Нет',false)}</div></div>
@@ -50,16 +50,19 @@ async function reportUploadRequest(fields){
   const url=preview?'https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-upload-gateway':'https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-api';
   let lastErr;
   for(let attempt=0;attempt<2;attempt++){
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),45000);
     try{
-      const r=await fetch(url,{method:'POST',headers:await cleanReportHeaders(),body:JSON.stringify(fields)});
+      const r=await fetch(url,{method:'POST',headers:await cleanReportHeaders(),body:JSON.stringify(fields),signal:controller.signal});
       let d={};try{d=await r.json()}catch(_){throw new Error(`Сервер не смог обработать отчёт (${r.status})`)}
       if(d?.session_token&&window.BOS_STORE_SESSION)window.BOS_STORE_SESSION(d.session_token);
       if(r.status===401&&attempt===0){clearStoredReportSession();if(window.BOS_ENSURE_VK_SESSION){try{await window.BOS_ENSURE_VK_SESSION()}catch(_){}}lastErr=new Error(d.error||'Доступ не подтверждён');await new Promise(r=>setTimeout(r,500));continue}
       if(!r.ok||!d.ok)throw new Error(d.error||`Ошибка загрузки (${r.status})`);return d;
-    }catch(e){lastErr=e;if(attempt===0)await new Promise(r=>setTimeout(r,900));}
+    }catch(e){lastErr=e;if(e?.name==='AbortError')lastErr=new Error('Сервер слишком долго не отвечает. Повторите отправку.');if(attempt===0)await new Promise(r=>setTimeout(r,700));}
+    finally{clearTimeout(timer)}
   }
-  const msg=String(lastErr?.message||lastErr||'');
-  if(/failed to fetch|networkerror|load failed/i.test(msg))throw new Error('Связь с сервером загрузки прервана. Повторите отправку ещё раз.');
+  const text=String(lastErr?.message||lastErr||'');
+  if(/failed to fetch|networkerror|load failed/i.test(text))throw new Error('Связь с сервером загрузки прервана. Повторите отправку ещё раз.');
   throw lastErr;
 }
 async function submitMasterReportV12(e,id){
@@ -74,7 +77,8 @@ async function submitMasterReportV12(e,id){
     const token='report_'+Date.now()+'_'+Math.random().toString(36).slice(2);
     const fields={action:'uploadMasterReport',order_id:id,upload_token:token,report_type:'work',act_name:actP.name,act_mime:actP.mime,act_data:actP.data,measurement_name:'',measurement_mime:'',measurement_data:'',photos_json:JSON.stringify(photoP),extra_work_done:extra,extra_work_description:extra?$('#mrExtraDesc').value.trim():'',extra_work_amount:extra?Number($('#mrExtraAmount').value||0):0,uncompleted_work_done:unfinished,uncompleted_work_description:unfinished?$('#mrUnfinishedDesc').value.trim():'',uncompleted_work_amount:unfinished?Number($('#mrUnfinishedAmount').value||0):0};
     if(typeof isMasterPreview==='function'&&isMasterPreview()&&typeof liveMasterUser==='function'){const mu=liveMasterUser();fields.acting_master_vk_id=mu?.vk_user_id||mu?.external_id||mu?.id||''}
-    msg.textContent='Отправляем отчёт…';const d=await reportUploadRequest(fields);let saved=d.order;
+    msg.textContent='Загружаем файлы и сохраняем отчёт…';const d=await reportUploadRequest(fields);let saved=d.order;
+    msg.textContent='Отчёт сохранён';
     try{const fresh=await api('bootstrap');if(fresh?.ok){Object.assign(state,{orders:fresh.orders||state.orders,masters:fresh.masters||state.masters,users:fresh.users||state.users,masterSchedule:fresh.masterSchedule||state.masterSchedule});saved=state.orders.find(x=>String(x.id)===String(id))||saved}}catch(_){ }
     if(saved){const i=state.orders.findIndex(x=>String(x.id)===String(id));if(i>=0)state.orders[i]=saved}
     state.busy=false;closeModal();show('orders');
