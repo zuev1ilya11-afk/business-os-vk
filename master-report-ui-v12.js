@@ -33,11 +33,16 @@ async function compactFilePayload(file,photo=false){
   }
   const data=await readDataUrl(file);return{name:file.name,mime:file.type||'application/octet-stream',data:data.split(',')[1]};
 }
+function storedReportSession(){try{return sessionStorage.getItem('bos_vk_session_v2')||localStorage.getItem('bos_vk_session_v2')||''}catch(_){return ''}}
+function clearStoredReportSession(){try{sessionStorage.removeItem('bos_vk_session_v2');localStorage.removeItem('bos_vk_session_v2')}catch(_){}}
 async function cleanReportHeaders(){
-  if(window.BOS_ENSURE_VK_SESSION){try{await window.BOS_ENSURE_VK_SESSION()}catch(_){}}
-  const raw=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};
   const h={'Content-Type':'application/json'};
-  const session=raw['X-BOS-Session']||raw['x-bos-session'];if(session)h['X-BOS-Session']=session;
+  let session=storedReportSession();
+  if(!session&&window.BOS_ENSURE_VK_SESSION){try{await window.BOS_ENSURE_VK_SESSION();session=storedReportSession()}catch(_){}}
+  if(session)h['X-BOS-Session']=session;
+  let launch=window.BOS_VK_LAUNCH_PARAMS||'';
+  if(!launch&&window.BOS_ENSURE_VK_LAUNCH_PARAMS){try{launch=await window.BOS_ENSURE_VK_LAUNCH_PARAMS()}catch(_){}}
+  if(launch)h['X-VK-Launch-Params']=launch;
   return h;
 }
 async function reportUploadRequest(fields){
@@ -49,11 +54,12 @@ async function reportUploadRequest(fields){
       const r=await fetch(url,{method:'POST',headers:await cleanReportHeaders(),body:JSON.stringify(fields)});
       let d={};try{d=await r.json()}catch(_){throw new Error(`Сервер не смог обработать отчёт (${r.status})`)}
       if(d?.session_token&&window.BOS_STORE_SESSION)window.BOS_STORE_SESSION(d.session_token);
+      if(r.status===401&&attempt===0){clearStoredReportSession();if(window.BOS_ENSURE_VK_SESSION){try{await window.BOS_ENSURE_VK_SESSION()}catch(_){}}lastErr=new Error(d.error||'Доступ не подтверждён');await new Promise(r=>setTimeout(r,500));continue}
       if(!r.ok||!d.ok)throw new Error(d.error||`Ошибка загрузки (${r.status})`);return d;
     }catch(e){lastErr=e;if(attempt===0)await new Promise(r=>setTimeout(r,900));}
   }
   const msg=String(lastErr?.message||lastErr||'');
-  if(/failed to fetch|networkerror|load failed/i.test(msg))throw new Error('Связь с сервером загрузки прервана. Фото уже сжаты; повторите отправку ещё раз.');
+  if(/failed to fetch|networkerror|load failed/i.test(msg))throw new Error('Связь с сервером загрузки прервана. Повторите отправку ещё раз.');
   throw lastErr;
 }
 async function submitMasterReportV12(e,id){
