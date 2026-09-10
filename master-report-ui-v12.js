@@ -25,27 +25,35 @@ window.openMasterReportForm=function(id){
 };
 async function compactFilePayload(file,photo=false){
   if(!file)throw new Error('Файл не выбран');
-  const maxRaw=photo?10*1024*1024:6*1024*1024;if(file.size>maxRaw)throw new Error(`Файл ${file.name} слишком большой`);
+  const maxRaw=photo?12*1024*1024:7*1024*1024;if(file.size>maxRaw)throw new Error(`Файл ${file.name} слишком большой`);
   if(file.type.startsWith('image/')){
-    const img=await loadImageFile(file),max=photo?1280:1600,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+    const img=await loadImageFile(file),max=photo?1024:1200,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
     const c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-    const data=c.toDataURL('image/jpeg',photo?.68:.74);return{name:file.name.replace(/\.[^.]+$/,'.jpg'),mime:'image/jpeg',data:data.split(',')[1]};
+    const data=c.toDataURL('image/jpeg',photo?.55:.62);return{name:file.name.replace(/\.[^.]+$/,'.jpg'),mime:'image/jpeg',data:data.split(',')[1]};
   }
   const data=await readDataUrl(file);return{name:file.name,mime:file.type||'application/octet-stream',data:data.split(',')[1]};
 }
+async function cleanReportHeaders(){
+  if(window.BOS_ENSURE_VK_SESSION){try{await window.BOS_ENSURE_VK_SESSION()}catch(_){}}
+  const raw=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};
+  const h={'Content-Type':'application/json'};
+  const session=raw['X-BOS-Session']||raw['x-bos-session'];if(session)h['X-BOS-Session']=session;
+  return h;
+}
 async function reportUploadRequest(fields){
-  const url='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-upload-gateway';
+  const preview=typeof isMasterPreview==='function'&&isMasterPreview();
+  const url=preview?'https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-upload-gateway':'https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-api';
   let lastErr;
   for(let attempt=0;attempt<2;attempt++){
     try{
-      const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{'Content-Type':'application/json'};
-      const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(fields)});
-      const d=await r.json().catch(()=>({}));if(d?.session_token&&window.BOS_STORE_SESSION)window.BOS_STORE_SESSION(d.session_token);
+      const r=await fetch(url,{method:'POST',headers:await cleanReportHeaders(),body:JSON.stringify(fields)});
+      let d={};try{d=await r.json()}catch(_){throw new Error(`Сервер не смог обработать отчёт (${r.status})`)}
+      if(d?.session_token&&window.BOS_STORE_SESSION)window.BOS_STORE_SESSION(d.session_token);
       if(!r.ok||!d.ok)throw new Error(d.error||`Ошибка загрузки (${r.status})`);return d;
-    }catch(e){lastErr=e;if(attempt===0)await new Promise(r=>setTimeout(r,700));}
+    }catch(e){lastErr=e;if(attempt===0)await new Promise(r=>setTimeout(r,900));}
   }
   const msg=String(lastErr?.message||lastErr||'');
-  if(/failed to fetch|networkerror|load failed/i.test(msg))throw new Error('Не удалось отправить отчёт. Проверьте интернет и повторите.');
+  if(/failed to fetch|networkerror|load failed/i.test(msg))throw new Error('Связь с сервером загрузки прервана. Фото уже сжаты; повторите отправку ещё раз.');
   throw lastErr;
 }
 async function submitMasterReportV12(e,id){
