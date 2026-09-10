@@ -1,1 +1,54 @@
-<!doctype html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#08101b"><title>Домашний мастер</title><link rel="stylesheet" href="styles.css?v=20260909-55"><link rel="stylesheet" href="ui-v2.css?v=20260909-55"><link rel="stylesheet" href="form-mobile-fix.css?v=20260909-55"><link rel="stylesheet" href="visual-v3.css?v=20260909-55"></head><body><div id="app"><header><div class="brandWrap"><div class="brandLogo">🏠🔧</div><div class="brandText"><h1>Домашний мастер</h1><div class="brandSub">Business OS v2</div><div id="roleBadge" class="roleBadge">—</div></div></div><button class="avatar" id="profileBtn" aria-label="Профиль">П</button></header><main id="content"><section class="hero"><h2>Домашний мастер</h2><p class="muted">Запуск приложения…</p></section></main><nav><button data-page="home" class="active">Главная</button><button data-page="orders">Заявки</button><button data-page="dispatch">График</button><button data-page="team">Команда</button><button data-page="profile">Профиль</button></nav></div><div id="modalRoot"></div><script src="app-v2.js?v=20260909-3"></script></body></html>
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08101b">
+<title>Домашний мастер</title>
+<link rel="stylesheet" href="styles.css?v=20260910-1">
+<link rel="stylesheet" href="ui-v2.css?v=20260910-1">
+<link rel="stylesheet" href="form-mobile-fix.css?v=20260910-1">
+<style>
+body{margin:0;background:#08101b;color:#f4f7fb;font-family:Arial,sans-serif}#app{max-width:760px;margin:0 auto;padding:18px 16px 92px}header{display:none;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.brand{display:flex;gap:12px;align-items:center}.logo,.avatar{width:48px;height:48px;border-radius:16px;background:#2690ff;display:grid;place-items:center;font-weight:800}.sub,.muted{color:#94a6bb}.card,.hero{background:#132235;border:1px solid #30465f;border-radius:22px;padding:20px;margin:14px 0}.form{display:grid;gap:12px}.form input,.form select,.form textarea{box-sizing:border-box;width:100%;min-height:50px;border-radius:14px;border:1px solid #30465f;background:#17283c;color:#fff;padding:12px 14px;font-size:16px}button{border:0;border-radius:14px;min-height:48px;padding:10px 16px;font-size:16px}.primary{background:#3195ff;color:#fff;font-weight:800}.secondary{background:#27313e;color:#fff}.wide{width:100%}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.metric strong{display:block;font-size:28px;margin-top:8px}.row{display:flex;justify-content:space-between;align-items:center;gap:12px}nav{display:none;position:fixed;left:0;right:0;bottom:0;background:#09111c;border-top:1px solid #25374b;padding:8px 4px calc(8px + env(safe-area-inset-bottom));grid-template-columns:repeat(5,1fr);z-index:20}nav button{background:transparent;color:#94a6bb;padding:6px 2px;font-size:12px;min-height:50px}nav button.active{color:#55aaff;font-weight:800}@media(min-width:800px){nav{left:50%;transform:translateX(-50%);max-width:760px}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div id="app">
+<header id="topbar"><div class="brand"><div class="logo">🏠</div><div><b>Домашний мастер</b><div class="sub">Business OS v2</div><div id="roleBadge" class="sub"></div></div></div><button id="profileBtn" class="avatar">П</button></header>
+<main id="content"><section class="hero"><h2>Business OS v2</h2><p class="muted">Инициализация…</p></section></main>
+<nav id="nav"><button data-page="home" class="active">Главная</button><button data-page="orders">Заявки</button><button data-page="dispatch">График</button><button data-page="team">Команда</button><button data-page="profile">Профиль</button></nav>
+</div>
+<script>
+(function(){
+'use strict';
+var API='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api';
+var PIN_API='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/test-pin-session';
+var KEY='bos_v2_session';
+var state={user:null,orders:[],users:[],masters:[],page:'home'};
+function el(id){return document.getElementById(id)}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function session(){try{return localStorage.getItem(KEY)||''}catch(e){return ''}}
+function save(v){try{localStorage.setItem(KEY,v)}catch(e){}}
+function clear(){try{localStorage.removeItem(KEY)}catch(e){}}
+function shell(on){el('topbar').style.display=on?'flex':'none';el('nav').style.display=on?'grid':'none'}
+function role(r){return {owner:'Владелец',manager:'Руководитель',dispatcher:'Диспетчер',master:'Мастер'}[r]||r||'Сотрудник'}
+function money(n){return Number(n||0).toLocaleString('ru-RU')+' ₽'}
+function setContent(html){el('content').innerHTML=html}
+function showLogin(msg){shell(false);setContent('<section class="hero" style="margin-top:60px"><div class="muted">BUSINESS OS v2</div><h2>Вход</h2><p class="muted">Временный простой вход для тестирования приложения.</p><form id="pinForm" class="form"><input id="pin" inputmode="numeric" maxlength="6" placeholder="6-значный PIN" required><button class="primary wide" type="submit">Войти</button><p id="loginMsg" class="muted">'+esc(msg||'')+'</p></form></section>');el('pinForm').onsubmit=function(e){e.preventDefault();loginByPin()}}
+function loginByPin(){var m=el('loginMsg');m.textContent='Входим…';fetch(PIN_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:el('pin').value})}).then(function(r){return r.json().then(function(d){return {r:r,d:d}})}).then(function(x){if(!x.r.ok||!x.d.ok)throw new Error(x.d.error||'Ошибка входа');save(x.d.session_token);return load()}).catch(function(e){m.textContent=e.message||'Ошибка входа'})}
+function api(action,payload){return fetch(API,{method:'POST',headers:{'Content-Type':'application/json','X-BOS-Session':session()},body:JSON.stringify(Object.assign({action:action},payload||{}))}).then(function(r){return r.json().then(function(d){if(r.status===401){clear();throw new Error('Сессия завершена')}if(!r.ok||d.ok===false)throw new Error(d.error||('Ошибка сервера '+r.status));return d})})}
+function load(){shell(false);setContent('<section class="hero"><h2>Загружаем данные…</h2><p class="muted">Подключаем рабочую базу</p></section>');return api('bootstrap').then(function(d){state.user=d.user||{};state.orders=d.orders||[];state.users=d.users||[];state.masters=d.masters||[];shell(true);el('roleBadge').textContent=role(state.user.role);el('profileBtn').textContent=(state.user.full_name||'П').charAt(0).toUpperCase();show('home')}).catch(function(e){clear();showLogin(e.message)})}
+function nav(page){var bs=document.querySelectorAll('#nav button');for(var i=0;i<bs.length;i++)bs[i].classList.toggle('active',bs[i].getAttribute('data-page')===page)}
+function show(page){state.page=page;nav(page);if(page==='home')home();else if(page==='orders')orders();else if(page==='dispatch')dispatch();else if(page==='team')team();else profile()}
+function home(){var active=state.orders.filter(function(o){return o.status==='В работе'}).length;setContent('<h2>Главная</h2><div class="grid"><section class="card metric"><span class="muted">Заявок</span><strong>'+state.orders.length+'</strong></section><section class="card metric"><span class="muted">В работе</span><strong>'+active+'</strong></section><section class="card metric"><span class="muted">Мастеров</span><strong>'+state.masters.length+'</strong></section></div><section class="card"><h3>'+esc(state.user.full_name||'Пользователь')+'</h3><p class="muted">'+esc(role(state.user.role))+'</p><p class="muted">Google Drive и сложная VK-авторизация пока отключены.</p></section>')}
+function orders(){var h='<div class="row"><h2>Заявки</h2><b>'+state.orders.length+'</b></div>';if(!state.orders.length)h+='<section class="card"><p class="muted">Заявок пока нет.</p></section>';for(var i=0;i<state.orders.length;i++){var o=state.orders[i];h+='<section class="card"><div class="row"><b>'+esc(o.work||'Заявка')+'</b><span>'+esc(o.status||'')+'</span></div><p>'+esc(o.client||'')+'</p><p class="muted">'+esc(o.address||'')+'</p><b>'+money(o.amount)+'</b></section>'}setContent(h)}
+function dispatch(){var arr=state.orders.filter(function(o){return o.scheduled_date});var h='<h2>График</h2>';if(!arr.length)h+='<section class="card"><p class="muted">Запланированных заявок пока нет.</p></section>';for(var i=0;i<arr.length;i++){var o=arr[i];h+='<section class="card"><b>'+esc(o.scheduled_date||'')+' '+esc(o.scheduled_time||'')+'</b><p>'+esc(o.work||'Заявка')+'</p><p class="muted">'+esc(o.master_name||'Мастер не назначен')+'</p></section>'}setContent(h)}
+function team(){var h='<h2>Команда</h2>';if(!state.users.length)h+='<section class="card"><p class="muted">Сотрудников пока нет.</p></section>';for(var i=0;i<state.users.length;i++){var u=state.users[i];h+='<section class="card"><div class="row"><b>'+esc(u.full_name||'')+'</b><span>'+esc(role(u.role))+'</span></div><p class="muted">'+esc(u.phone||'')+'</p></section>'}setContent(h)}
+function profile(){setContent('<h2>Профиль</h2><section class="card"><h3>'+esc(state.user.full_name||'')+'</h3><p class="muted">'+esc(role(state.user.role))+'</p><button id="logout" class="secondary wide">Выйти</button></section>');el('logout').onclick=function(){clear();state.user=null;showLogin('')}}
+function bind(){var bs=document.querySelectorAll('#nav button');for(var i=0;i<bs.length;i++)bs[i].onclick=function(){show(this.getAttribute('data-page'))};el('profileBtn').onclick=function(){show('profile')}}
+function start(){bind();if(session())load();else showLogin('')}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+</body>
+</html>
