@@ -12,6 +12,19 @@ pages.home=function(){if(!mpLive())return oldHome();const u=mpUser(),orders=type
 const oldTeam=pages.team;
 pages.team=function(){if(!mpLive())return oldTeam();const u=mpUser(),orders=typeof ownOrders==='function'?ownOrders():[],done=typeof completedOwnOrders==='function'?completedOwnOrders():orders.filter(o=>o.status==='Выполнена');return `<section class="card masterInfoCompact"><h2>${esc(u?.full_name||'Мастер')}</h2><div class="masterInfoLine"><span>Город</span><b>${esc(u?.city||mpMaster()?.city||'—')}</b></div><div class="masterInfoLine"><span>Район</span><b>${esc(mpDistrict())}</b></div><div class="masterInfoLine"><span>Телефон</span><b>${esc(u?.phone||'—')}</b></div><div class="masterInfoLine"><span>График</span><b class="masterScheduleMini">${mpScheduleSummary()}</b></div></section><div class="grid masterHomeGrid"><div class="card metric"><span class="muted">Выполнено</span><strong>${done.length}</strong></div><div class="card metric"><span class="muted">Моя выплата</span><strong>${money(typeof ownPayoutTotal==='function'?ownPayoutTotal():0)}</strong></div></div><section class="card"><div class="row"><div><h3 style="margin:0">График работы</h3><div class="muted masterScheduleMini">${mpScheduleSummary()}</div></div><button class="secondary" onclick="show('dispatch')">Изменить</button></div></section>${typeof isMasterPreview==='function'&&isMasterPreview()?'<button class="secondary wide" onclick="exitMasterPreview()">← Вернуться к владельцу</button>':''}`};
 const oldShow=window.show;
-window.show=function(name){oldShow(name);if(!mpLive())return;const labels=['Главная','Заявки','График','Профиль'];document.querySelectorAll('nav button').forEach((b,i)=>{if(labels[i])b.textContent=labels[i]});const nav=document.querySelector('nav');if(nav){const buttons=[...nav.querySelectorAll('button')];buttons.slice(4).forEach(b=>{if((b.textContent||'').trim()==='Профиль')b.style.display='none'})}}
+window.show=function(name){
+  oldShow(name);
+  const buttons=[...document.querySelectorAll('nav button')];
+  if(!mpLive()){
+    buttons.forEach(b=>{b.style.display=''});
+    const dispatcher=(typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(state.user?.role||'')==='dispatcher';
+    const labels=dispatcher?['Главная','Заявки','График','Мастера']:['Главная','Заявки','График','Команда'];
+    buttons.slice(0,4).forEach((b,i)=>{if(labels[i])b.textContent=labels[i]});
+    return;
+  }
+  const labels=['Главная','Заявки','График','Профиль'];
+  buttons.slice(0,4).forEach((b,i)=>{if(labels[i])b.textContent=labels[i]});
+  buttons.slice(4).forEach(b=>{if((b.textContent||'').trim()==='Профиль')b.style.display='none';else b.style.display=''})
+}
 const style=document.createElement('style');style.textContent='.masterInfoCompact{padding:14px 16px}.masterInfoCompact h2{margin:0 0 10px;font-size:20px}.masterInfoLine{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;padding:6px 0;border-top:1px solid rgba(255,255,255,.06);font-size:13px}.masterInfoLine span{color:var(--muted,#9badc0);flex:0 0 auto}.masterInfoLine b{text-align:right;font-size:13px}.masterScheduleMini{font-size:12px!important;font-weight:600!important;line-height:1.35}.masterHomeGrid{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:560px){.masterHomeGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.masterHomeGrid .card{padding:10px 8px}.masterHomeGrid .metric span{font-size:11px}.masterHomeGrid .metric strong{font-size:16px}}';document.head.appendChild(style);
 })();
