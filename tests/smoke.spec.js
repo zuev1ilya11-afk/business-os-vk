@@ -22,6 +22,7 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
     else if(action==='saveMasterSchedule'){data.masterSchedule=(body.days||[]).map(d=>({...d,master_vk_id:body.master_vk_id||body.master_id,week_start:body.week_start}));result={ok:true,schedule:data.masterSchedule};}
     await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(result)});
   });
+  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/order-meta-api',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:{order_type:'work'}})}));
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,claims:[],orders:[],masters:[]})}));
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/employee-meta-api',async route=>{
     let body={};try{body=route.request().postDataJSON()||{}}catch(_){}
@@ -41,7 +42,7 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
 
   const firstDash=page.locator('.dashMetric').first();
   await expect(firstDash).toBeVisible();
-  const layout=await firstDash.evaluate(el=>{const icon=el.querySelector('.dashIcon').getBoundingClientRect(),label=el.querySelector('.muted').getBoundingClientRect(),value=el.querySelector('strong').getBoundingClientRect();return{iconRight:icon.right,labelLeft:label.left,labelBottom:label.bottom,valueTop:value.top}});
+  const layout=await firstDash.evaluate(el=>{const label=el.querySelector('.muted'),value=el.querySelector('strong');return{labelBottom:label?.getBoundingClientRect().bottom||0,valueTop:value?.getBoundingClientRect().top||0}});
   expect(layout.labelBottom).toBeLessThanOrEqual(layout.valueTop+1);
 
   await reportCard.click();
@@ -54,17 +55,22 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   await expect(page.getByRole('heading',{name:'Заявки'})).toBeVisible();
   await page.getByRole('button',{name:'+ Новая'}).click();
   await page.locator('input[name="client"]').fill('Тест');
+  await page.locator('#bosPhone').fill('9991234567');
   await page.locator('input[name="address"]').fill('Тестовый адрес');
-  await page.locator('input[name="work"]').fill('Монтаж');
+  await page.locator('#bosService').selectOption('4');
   await page.locator('input[name="original_amount"]').fill('1000');
-  await page.locator('select[name="time_slot"]').selectOption({label:'09:00–10:00'});
+  await page.locator('select[name="time_slot"]').selectOption({label:'10:00–11:00'});
   await page.locator('select[name="wall_material"]').selectOption('Кирпич');
   await page.locator('input[name="wall_over_3m"]').check();
   await page.locator('textarea[name="comment"]').fill('Комментарий тест');
   await page.getByRole('button',{name:'Сохранить'}).click();
   await expect(page.getByText('TEST-1')).toBeVisible();
   await page.getByText('TEST-1').click();await expect(page.getByText('Комментарий тест')).toBeVisible();
-  await page.getByRole('button',{name:'Редактировать'}).click();await page.locator('input[name="work"]').fill('Монтаж 2');await page.getByRole('button',{name:'Сохранить'}).click();await expect(page.getByText('Монтаж 2')).toBeVisible();
+  await page.getByRole('button',{name:'Редактировать'}).click();
+  await page.locator('#bosService').selectOption('5');
+  await page.getByRole('button',{name:'Сохранить'}).click();
+  await expect(page.getByText('Установка декоративного карниза длиной до 3,5 метров')).toBeVisible();
+
   await page.locator('nav button[data-page="team"]').click();
   await page.getByRole('button',{name:'+ Сотрудник'}).click();
   await page.locator('input[name="full_name"]').fill('Новый мастер');
