@@ -2,7 +2,8 @@
   let managerPreviewUser=null;
   const isOwner=()=>String(state?.user?.role||'')==='owner';
   const isManagerPreview=()=>!!managerPreviewUser;
-  const roleLabel=r=>({owner:'Владелец',manager:'Руководитель',dispatcher:'Диспетчер',master:'Мастер'}[r]||r);
+  window.BOS_IS_MANAGER_PREVIEW=isManagerPreview;
+  window.BOS_MANAGER_PREVIEW_USER=()=>managerPreviewUser;
 
   function updateManagerNav(){
     if(!isManagerPreview())return;
@@ -10,6 +11,7 @@
     document.querySelectorAll('nav button').forEach((b,i)=>{if(labels[i])b.textContent=labels[i]});
     const badge=document.querySelector('#roleBadge');if(badge)badge.textContent='Руководитель · тест';
     const avatar=document.querySelector('#profileBtn');if(avatar)avatar.textContent=(managerPreviewUser.full_name||'Р').trim().split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();
+    const ownerTools=document.querySelector('#ownerToolsBtn');if(ownerTools)ownerTools.style.display='none';
   }
 
   const previousShow=window.show;
@@ -32,18 +34,5 @@
       return;
     }
     previousProfile();
-    if(!isOwner())return;
-    const modal=document.querySelector('#modalRoot .modal');if(!modal)return;
-    const managers=(state.users||[]).filter(u=>u.role==='manager');
-    if(!managers.length)return;
-    const block=document.createElement('section');block.className='card';block.style.marginTop='14px';
-    block.innerHTML=`<h3>Посмотреть как руководитель</h3><p class="muted">Тест интерфейса без смены реальной авторизации.</p>${managers.map(u=>{const id=String(u.id||u.vk_user_id||u.external_id||'');return `<button class="primary wide" style="margin:8px 0;text-align:left" onclick="enterManagerPreview('${esc(id)}')">Войти как ${esc(u.full_name||'Руководитель')}</button>`}).join('')}`;
-    modal.appendChild(block);
   };
-
-  document.addEventListener('click',e=>{
-    if(!isManagerPreview())return;
-    const p=e.target.closest?.('#profileBtn');if(!p)return;
-    e.preventDefault();e.stopImmediatePropagation();window.openOwnerProfile();
-  },true);
 })();
