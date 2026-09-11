@@ -13,6 +13,13 @@
   function unlock(){if(gate)gate.style.display='none';body.classList.add('bos-auth-ok')}
   async function json(url,payload,headers={}){const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(payload)});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw Object.assign(new Error(d.error||('Ошибка сервера '+r.status)),{status:r.status,data:d});return d}
   async function validate(){const s=getSession();if(!s)return false;try{await json(MINI,{action:'bootstrap'},{'X-BOS-Session':s});return true}catch(_){clearSession();return false}}
+  async function loadAuthorizedApp(){
+    if(typeof reloadData!=='function')throw new Error('Приложение не готово к запуску');
+    await reloadData(false);
+    if(!state?.user?.role)throw new Error('Не удалось определить роль сотрудника');
+    try{if(typeof updateNavForRole==='function')updateNavForRole()}catch(_){ }
+    try{show(state.page||'home')}catch(_){ }
+  }
   function startScreen(msg=''){
     show(`<div class="authLogo">Домашний мастер</div><h1>Вход в приложение</h1><p class="muted">Для работы необходимо авторизоваться.</p>${msg?`<p class="authError">${escs(msg)}</p>`:''}<button id="authVk" class="primary wide">Войти через VK</button><button id="authPass" class="wide">Войти по логину и паролю</button>`);
     document.getElementById('authVk').onclick=vkLogin;
@@ -38,5 +45,9 @@
     document.getElementById('authPhoneForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,m=document.getElementById('authPhoneMsg');m.textContent='Проверяем…';try{const d=await json(MINI,{action:'registerByPhone',phone:f.elements.phone.value},{'X-BOS-Session':getSession()});if(d.session_token)setSession(d.session_token);location.reload()}catch(err){m.textContent=err.message}};
   }
   window.BOS_FORCE_AUTH_SCREEN=()=>{clearSession();startScreen()};
-  (async()=>{show(`<div class="authLogo">Домашний мастер</div><h1>Проверяем вход…</h1><p class="muted">Пожалуйста, подождите.</p>`);if(await validate())unlock();else startScreen()})();
+  (async()=>{
+    show(`<div class="authLogo">Домашний мастер</div><h1>Проверяем вход…</h1><p class="muted">Пожалуйста, подождите.</p>`);
+    if(!await validate())return startScreen();
+    try{await loadAuthorizedApp();unlock()}catch(err){clearSession();startScreen(err.message||'Не удалось загрузить приложение')}
+  })();
 })();
