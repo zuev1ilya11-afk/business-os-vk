@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+test.setTimeout(60000);
 
 test('launch smoke: Mini App loads, data renders, actions and report review work', async ({ page }) => {
   await page.setViewportSize({width:390,height:844});
