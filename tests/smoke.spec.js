@@ -29,7 +29,8 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   await expect(page.getByText('VK MINI APP')).toHaveCount(0);
   await expect(page.getByText('Загруженность мастеров')).toBeVisible();
   await expect(page.getByText('Отчёты на проверку')).toBeVisible();
-  await expect(page.getByText('REPORT-1 · Монтаж')).toBeVisible();
+  const reportCard=page.locator('.reportReviewCard').filter({hasText:'REPORT-1 · Монтаж'});
+  await expect(reportCard).toBeVisible();
 
   const firstDash=page.locator('.dashMetric.buttonCard').first();
   await expect(firstDash).toBeVisible();
@@ -37,7 +38,7 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   expect(layout.iconRight).toBeLessThanOrEqual(layout.labelLeft);
   expect(layout.labelBottom).toBeLessThanOrEqual(layout.valueTop+1);
 
-  await page.getByText('REPORT-1 · Монтаж').click();
+  await reportCard.click();
   await expect(page.getByRole('heading',{name:'Проверка отчёта REPORT-1'})).toBeVisible();
   await expect(page.getByRole('link',{name:'📄 Открыть акт'})).toBeVisible();
   await page.getByRole('button',{name:'Принять'}).click();
