@@ -2,6 +2,7 @@ const { test, expect } = require('@playwright/test');
 
 test('launch smoke: Mini App loads, data renders, actions and report review work', async ({ page }) => {
   await page.setViewportSize({width:390,height:844});
+  await page.addInitScript(()=>localStorage.setItem('bos_vk_session_v2','test-session-owner'));
   const seedMaster = { vk_user_id:'master_seed', full_name:'Александр Мастер', phone:'70000000000', city:'Москва', role:'master', is_active:true, specialization:'Монтаж', work_start:'09:00', work_end:'18:00' };
   const data={orders:[
     {id:'ACTIVE-1',status:'В работе',client:'Клиент 2',address:'Адрес 2',work:'Шторы',amount:2800,original_amount:2800,scheduled_date:'2099-09-10',scheduled_time:'09:00',time_slot:'09:00–10:00',master_vk_id:'master_seed',master_name:'Александр Мастер',wall_material:'Кирпич',wall_over_3m:true,possible_extra_work:true,comment:'Позвонить заранее'},
@@ -23,6 +24,7 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,claims:[],orders:[],masters:[]})}));
 
   await page.goto('/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#authGate')).toBeHidden();
   await expect(page.getByRole('heading',{name:'Домашний мастер'}).first()).toBeVisible();
   await expect(page.getByText('VK MINI APP')).toHaveCount(0);
   await expect(page.getByText('Загруженность мастеров')).toBeVisible();
