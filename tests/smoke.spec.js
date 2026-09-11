@@ -65,7 +65,7 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   await page.locator('textarea[name="comment"]').fill('Комментарий тест');
   await page.getByRole('button',{name:'Сохранить'}).click();
   await expect(page.getByText('TEST-1')).toBeVisible();
-  await page.getByText('TEST-1').click();await expect(page.getByText('Комментарий тест')).toBeVisible();
+  await page.getByText('TEST-1').click();await expect(page.getByText('Комментарий тест',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Редактировать'}).click();
   await page.locator('#bosService').selectOption('5');
   await page.getByRole('button',{name:'Сохранить'}).click();
