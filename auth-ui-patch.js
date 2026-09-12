@@ -1,6 +1,7 @@
 (()=>{
-  const PASS_API='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/password-session-api';
-  const VK_API='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api';
+  const GATEWAY='https://business-os-api-gateway.netlify.app/api/proxy/';
+  const PASS_API=GATEWAY+'password-session-api';
+  const VK_API=GATEWAY+'vk-session-api';
   const SESSION_KEY='bos_vk_session_v2', MANUAL_KEY='bos_manual_logout_v1';
   function getSession(){try{return sessionStorage.getItem(SESSION_KEY)||localStorage.getItem(SESSION_KEY)||''}catch(_){return ''}}
   function setSession(v){if(!v)return;try{sessionStorage.setItem(SESSION_KEY,v);localStorage.setItem(SESSION_KEY,v)}catch(_){}}

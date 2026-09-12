@@ -25,11 +25,13 @@ test('new employee registers by phone without VK ID',async({page})=>{
   await page.route('**/api/proxy/mini-app-api',miniAppHandler);
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',miniAppHandler);
   await page.goto('/?force_vk_auth=1',{waitUntil:'domcontentloaded'});
-  const phone=page.locator('input[name="phone"]').filter({visible:true});
-  await expect(phone).toBeVisible({timeout:20000});
+  const registrationForm=page.locator('#authPhoneForm');
+  await expect(registrationForm).toBeVisible({timeout:20000});
+  const phone=registrationForm.locator('input[name="phone"]');
+  await expect(phone).toBeVisible();
   await expect(page.locator('input[name="vk_user_id"]')).toHaveCount(0);
   await phone.fill('+7 999 123-45-67');
-  await page.getByRole('button',{name:'Продолжить'}).click();
+  await registrationForm.getByRole('button',{name:'Продолжить'}).click();
   await expect.poll(()=>registered).toBeTruthy();
   await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toBeVisible({timeout:10000});
 });

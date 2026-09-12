@@ -32,5 +32,11 @@ jobs:
       - name: Phone registration
         run: npx playwright test tests/phone-registration.spec.js
 
+      - name: Password login gateway
+        run: npx playwright test tests/password-login-gateway.spec.js
+
+      - name: Claims gateway
+        run: npx playwright test tests/claims-gateway.spec.js
+
       - name: Google Apps Script archive deployment health
         run: npx playwright test tests/gas-archive-health.spec.js
