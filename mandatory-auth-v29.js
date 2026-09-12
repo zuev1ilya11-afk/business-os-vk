@@ -7,27 +7,112 @@
   const gate=document.getElementById('authGate');
   const body=document.body;
   const forceVk=new URLSearchParams(location.search).has('force_vk_auth');
+
   function getSession(){try{return sessionStorage.getItem(KEY)||localStorage.getItem(KEY)||''}catch(_){return ''}}
   function setSession(v){if(!v)return;try{sessionStorage.setItem(KEY,v);localStorage.setItem(KEY,v)}catch(_){}}
   function clearSession(){try{sessionStorage.removeItem(KEY);localStorage.removeItem(KEY)}catch(_){}}
   function escs(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
   function showGate(html){if(!gate)return;gate.innerHTML=`<div class="authGateCard">${html}</div>`;gate.style.display='flex';body.classList.remove('bos-auth-ok')}
   function unlock(){if(gate)gate.style.display='none';body.classList.add('bos-auth-ok')}
-  async function post(url,payload,headers={}){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);try{const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(payload),signal:controller.signal});const d=await r.json().catch(()=>({}));if(!r.ok||d?.ok===false){const e=new Error(d?.error||('Ошибка сервера '+r.status));e.status=r.status;e.data=d;throw e}return d}catch(e){if(e?.name==='AbortError')throw new Error('Сервер не ответил. Повторите попытку.');if(/load failed|failed to fetch|networkerror|network request failed/i.test(String(e?.message||'')))throw new Error('Не удалось связаться с сервером. Проверьте интернет и повторите попытку.');throw e}finally{clearTimeout(timer)}}
-  function signed(raw){raw=String(raw||'').replace(/^\?/,'');const p=new URLSearchParams(raw);return p.has('vk_app_id')&&p.has('vk_user_id')&&p.has('sign')?raw:''}
-  function launchFromPage(){let raw=signed(location.search);if(raw)return raw;const h=String(location.hash||'');raw=signed(h.includes('?')?h.slice(h.indexOf('?')+1):h.replace(/^#/,''));return raw}
-  function fromObject(obj){const src=obj?.launch_params||obj;if(!src)return '';const p=new URLSearchParams();Object.keys(src).filter(k=>k==='sign'||k.startsWith('vk_')).sort().forEach(k=>{if(src[k]!=null)p.set(k,String(src[k]))});return signed(p.toString())}
-  async function getVkLaunch(){const immediate=launchFromPage();if(immediate)return immediate;if(!window.vkBridge?.send)return '';try{await window.vkBridge.send('VKWebAppInit',{}).catch(()=>{});return fromObject(await window.vkBridge.send('VKWebAppGetLaunchParams',{}))}catch(_){return ''}}
+
+  async function post(url,payload,headers={}){
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),20000);
+    try{
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(payload),signal:controller.signal});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok||d?.ok===false){const e=new Error(d?.error||('Ошибка сервера '+r.status));e.status=r.status;e.data=d;throw e}
+      return d;
+    }catch(e){
+      if(e?.name==='AbortError')throw new Error('Сервер не ответил. Повторите попытку.');
+      if(/load failed|failed to fetch|networkerror|network request failed/i.test(String(e?.message||'')))throw new Error('Не удалось связаться с сервером. Проверьте интернет и повторите попытку.');
+      throw e;
+    }finally{clearTimeout(timer)}
+  }
+
+  function signed(raw){
+    raw=String(raw||'').replace(/^\?/,'');
+    const p=new URLSearchParams(raw);
+    return p.has('vk_app_id')&&p.has('vk_user_id')&&p.has('sign')?raw:'';
+  }
+  function launchFromPage(){
+    let raw=signed(location.search);if(raw)return raw;
+    const h=String(location.hash||'');
+    raw=signed(h.includes('?')?h.slice(h.indexOf('?')+1):h.replace(/^#/,''));
+    return raw;
+  }
+  function fromObject(obj){
+    const src=obj?.launch_params||obj;if(!src)return '';
+    const p=new URLSearchParams();
+    Object.keys(src).filter(k=>k==='sign'||k.startsWith('vk_')).sort().forEach(k=>{if(src[k]!=null)p.set(k,String(src[k]))});
+    return signed(p.toString());
+  }
+  async function getVkLaunch(){
+    const immediate=launchFromPage();if(immediate)return immediate;
+    if(!window.vkBridge?.send)return '';
+    try{
+      await window.vkBridge.send('VKWebAppInit',{}).catch(()=>{});
+      return fromObject(await window.vkBridge.send('VKWebAppGetLaunchParams',{}));
+    }catch(_){return ''}
+  }
   function isVkLaunch(){return forceVk||!!launchFromPage()}
-  async function validate(){const session=getSession();if(!session)return false;try{const d=await post(MINI,{action:'bootstrap'},{'X-BOS-Session':session});return !!d?.user?.role}catch(e){if(e?.status===401)clearSession();return false}}
-  async function vkSession(){const launch=await getVkLaunch();if(!launch)throw new Error('Не удалось получить параметры запуска VK. Закройте приложение и откройте его заново через ВКонтакте.');const d=await post(VK,{launch_params:launch});if(d?.session_token)setSession(d.session_token);if(d?.registration_required){phoneScreen();return 'registration'}if(!d?.session_token)throw new Error('VK не подтвердил вход.');return true}
-  async function sessionApi(action,payload={}){const session=getSession();if(!session)throw new Error('Требуется вход');return post(MINI,{action,...payload},{'X-BOS-Session':session})}
-  window.api=sessionApi;try{api=sessionApi}catch(_){}
-  window.BOS_STORE_SESSION=setSession;window.BOS_AUTH_HEADERS=async()=>({'Content-Type':'application/json','X-BOS-Session':getSession()});window.BOS_ENSURE_VK_LAUNCH_PARAMS=getVkLaunch;window.BOS_ENSURE_VK_SESSION=async()=>{if(getSession())return{ok:true,session_token:getSession()};await vkSession();return{ok:true,session_token:getSession()}};
-  async function loadApp(){if(typeof reloadData!=='function')throw new Error('Приложение не готово к запуску');await reloadData(false);if(!state?.user?.role)throw new Error('Не удалось определить роль сотрудника');try{if(typeof updateNavForRole==='function')updateNavForRole()}catch(_){}try{if(typeof window.show==='function')window.show(state.page||'home')}catch(_){}unlock()}
-  function passwordScreen(msg=''){showGate(`<div class="authLogo">Домашний мастер</div><h1>Вход по логину</h1>${msg?`<p class="authError">${escs(msg)}</p>`:'<p class="muted">Вход с компьютера</p>'}<form id="simplePassForm" class="form"><input name="login" autocomplete="username" placeholder="Логин" required><input name="password" type="password" autocomplete="current-password" placeholder="Пароль" required><button class="primary wide" type="submit">Войти</button><p id="simplePassMsg" class="muted"></p></form>`);document.getElementById('simplePassForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,m=document.getElementById('simplePassMsg');m.textContent='Проверяем…';try{const d=await post(PASS,{action:'login',login:f.elements.login.value,password:f.elements.password.value});if(!d?.session_token)throw new Error('Сервер не выдал сессию');setSession(d.session_token);await loadApp()}catch(err){m.textContent=err.message}}}
-  function retryVkScreen(msg){showGate(`<div class="authLogo">Домашний мастер</div><h1>Не удалось войти</h1><p class="authError">${escs(msg)}</p><button id="simpleVkRetry" class="primary wide">Повторить вход через VK</button>`);document.getElementById('simpleVkRetry').onclick=boot}
-  function phoneScreen(){showGate(`<div class="authLogo">Домашний мастер</div><h1>Регистрация сотрудника</h1><p class="muted">Введите номер телефона из карточки сотрудника.</p><form id="simplePhoneForm" class="form"><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 999 123-45-67" required><button class="primary wide" type="submit">Продолжить</button><p id="simplePhoneMsg" class="muted"></p></form>`);document.getElementById('simplePhoneForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,m=document.getElementById('simplePhoneMsg');m.textContent='Проверяем…';try{const d=await sessionApi('registerByPhone',{phone:f.elements.phone.value});if(d?.session_token)setSession(d.session_token);await loadApp()}catch(err){m.textContent=err.message}}}
-  async function boot(){showGate(`<div class="authLogo">Домашний мастер</div><h1>Проверяем вход…</h1><p class="muted">Пожалуйста, подождите.</p>`);if(await validate()){try{return await loadApp()}catch(e){return isVkLaunch()?retryVkScreen(e.message):passwordScreen(e.message)}}if(!isVkLaunch())return passwordScreen();try{const r=await vkSession();if(r==='registration')return;await loadApp()}catch(e){retryVkScreen(e.message)}}
-  window.BOS_FORCE_AUTH_SCREEN=()=>{clearSession();isVkLaunch()?boot():passwordScreen()};boot();
+
+  async function validate(){
+    const session=getSession();if(!session)return false;
+    try{const d=await post(MINI,{action:'bootstrap'},{'X-BOS-Session':session});return !!d?.user?.role}catch(e){if(e?.status===401)clearSession();return false}
+  }
+  async function vkSession(){
+    const launch=await getVkLaunch();
+    if(!launch)throw new Error('Не удалось получить параметры запуска VK. Закройте приложение и откройте его заново через ВКонтакте.');
+    const d=await post(VK,{launch_params:launch});
+    if(d?.session_token)setSession(d.session_token);
+    if(d?.registration_required){phoneScreen();return 'registration'}
+    if(!d?.session_token)throw new Error('VK не подтвердил вход.');
+    return true;
+  }
+
+  async function sessionApi(action,payload={}){
+    const session=getSession();
+    if(!session)throw new Error('Требуется вход');
+    return post(MINI,{action,...payload},{'X-BOS-Session':session});
+  }
+  window.api=sessionApi;try{api=sessionApi}catch(_){ }
+  window.BOS_STORE_SESSION=setSession;
+  window.BOS_AUTH_HEADERS=async()=>({'Content-Type':'application/json','X-BOS-Session':getSession()});
+  window.BOS_ENSURE_VK_LAUNCH_PARAMS=getVkLaunch;
+  window.BOS_ENSURE_VK_SESSION=async()=>getSession()?{ok:true,session_token:getSession()}:{ok:true,session_token:(await (async()=>{await vkSession();return getSession()})())};
+
+  async function loadApp(){
+    if(typeof reloadData!=='function')throw new Error('Приложение не готово к запуску');
+    await reloadData(false);
+    if(!state?.user?.role)throw new Error('Не удалось определить роль сотрудника');
+    try{if(typeof updateNavForRole==='function')updateNavForRole()}catch(_){}
+    try{if(typeof window.show==='function')window.show(state.page||'home')}catch(_){}
+    unlock();
+  }
+
+  function passwordScreen(msg=''){
+    showGate(`<div class="authLogo">Домашний мастер</div><h1>Вход по логину</h1>${msg?`<p class="authError">${escs(msg)}</p>`:'<p class="muted">Вход с компьютера</p>'}<form id="simplePassForm" class="form"><input name="login" autocomplete="username" placeholder="Логин" required><input name="password" type="password" autocomplete="current-password" placeholder="Пароль" required><button class="primary wide" type="submit">Войти</button><p id="simplePassMsg" class="muted"></p></form>`);
+    document.getElementById('simplePassForm').onsubmit=async e=>{
+      e.preventDefault();const f=e.currentTarget,m=document.getElementById('simplePassMsg');m.textContent='Проверяем…';
+      try{const d=await post(PASS,{action:'login',login:f.elements.login.value,password:f.elements.password.value});if(!d?.session_token)throw new Error('Сервер не выдал сессию');setSession(d.session_token);await loadApp()}catch(err){m.textContent=err.message}
+    };
+  }
+  function retryVkScreen(msg){
+    showGate(`<div class="authLogo">Домашний мастер</div><h1>Не удалось войти</h1><p class="authError">${escs(msg)}</p><button id="simpleVkRetry" class="primary wide">Повторить вход через VK</button>`);
+    document.getElementById('simpleVkRetry').onclick=boot;
+  }
+  function phoneScreen(){
+    showGate(`<div class="authLogo">Домашний мастер</div><h1>Регистрация сотрудника</h1><p class="muted">Введите номер телефона из карточки сотрудника.</p><form id="simplePhoneForm" class="form"><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 999 123-45-67" required><button class="primary wide" type="submit">Продолжить</button><p id="simplePhoneMsg" class="muted"></p></form>`);
+    document.getElementById('simplePhoneForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,m=document.getElementById('simplePhoneMsg');m.textContent='Проверяем…';try{const d=await sessionApi('registerByPhone',{phone:f.elements.phone.value});if(d?.session_token)setSession(d.session_token);await loadApp()}catch(err){m.textContent=err.message}};
+  }
+
+  async function boot(){
+    showGate(`<div class="authLogo">Домашний мастер</div><h1>Проверяем вход…</h1><p class="muted">Пожалуйста, подождите.</p>`);
+    if(await validate()){try{return await loadApp()}catch(e){return isVkLaunch()?retryVkScreen(e.message):passwordScreen(e.message)}}
+    if(!isVkLaunch())return passwordScreen();
+    try{const r=await vkSession();if(r==='registration')return;await loadApp()}catch(e){retryVkScreen(e.message)}
+  }
+  window.BOS_FORCE_AUTH_SCREEN=()=>{clearSession();isVkLaunch()?boot():passwordScreen()};
+  boot();
 })();
