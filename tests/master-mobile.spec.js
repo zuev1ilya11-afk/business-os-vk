@@ -10,15 +10,22 @@ for(const s of sizes){
       {id:'M-1',status:'В работе',client:'Клиент',address:'Невский проспект 1',work:'Карниз',scheduled_date:'2099-09-10',scheduled_time:'10:00',time_slot:'10:00–11:00',master_vk_id:'1001',master_name:'Александр Мастер',master_payout:1547,wall_material:'Кирпич',wall_over_3m:true,possible_extra_work:true,comment:'Позвонить заранее'},
       {id:'M-2',status:'Выполнена',client:'Клиент 2',address:'Адрес 2',work:'Шторы',scheduled_date:'2099-09-09',scheduled_time:'12:00',master_vk_id:'1001',master_name:'Александр Мастер',master_payout:1200,extra_work_amount:300,uncompleted_work_amount:200}
     ];
-    await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',async route=>{
+    const miniHandler=async route=>{
       let body={};try{body=route.request().postDataJSON()||{}}catch(_){}
       const action=body.action||'bootstrap';
       let result={ok:true};
-      if(action==='bootstrap')result={ok:true,user:master,orders,users:[master],masters:[master],masterSchedule:[],claims:[],sources:[{source:'VK'}],settings:{}};
+      if(action==='health')result={ok:true,version:'2026-09-12-netlify-gateway'};
+      else if(action==='bootstrap')result={ok:true,user:master,orders,users:[master],masters:[master],masterSchedule:[],claims:[],sources:[{source:'VK'}],settings:{}};
       else if(action==='saveMasterSchedule')result={ok:true,schedule:(body.days||[]).map(d=>({...d,master_vk_id:'1001',week_start:body.week_start}))};
       await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(result)});
-    });
-    await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,claims:[],orders:[]})}));
+    };
+    await page.route('**/api/proxy/mini-app-api',miniHandler);
+    await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',miniHandler);
+
+    const claimsHandler=route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,claims:[],orders:[]})});
+    await page.route('**/api/proxy/claims-api',claimsHandler);
+    await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api',claimsHandler);
+
     await page.goto('/',{waitUntil:'domcontentloaded'});
     await expect(page.locator('#authGate')).toBeHidden();
     await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toBeVisible();
