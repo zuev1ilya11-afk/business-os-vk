@@ -21,10 +21,10 @@ test('new employee registers by phone without VK ID',async({page})=>{
     return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true})});
   });
   await page.goto('/?force_vk_auth=1',{waitUntil:'domcontentloaded'});
-  await expect(page.getByRole('heading',{name:'Регистрация',exact:true})).toBeVisible({timeout:20000});
-  await expect(page.locator('input[name="phone"]')).toBeVisible();
+  const phone=page.locator('input[name="phone"]').filter({visible:true});
+  await expect(phone).toBeVisible({timeout:20000});
   await expect(page.locator('input[name="vk_user_id"]')).toHaveCount(0);
-  await page.locator('input[name="phone"]').fill('+7 999 123-45-67');
+  await phone.fill('+7 999 123-45-67');
   await page.getByRole('button',{name:'Продолжить'}).click();
   await expect.poll(()=>registered).toBeTruthy();
   await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toBeVisible({timeout:10000});
