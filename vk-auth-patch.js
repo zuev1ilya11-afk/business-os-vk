@@ -3,7 +3,7 @@
   const local=/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(location.hostname)&&!forceVkAuth;
   const SESSION_KEY='bos_vk_session_v2', MANUAL_KEY='bos_manual_logout_v1';
   const SUPABASE_PREFIX='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/';
-  const GATEWAY_PREFIX='https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai/api/proxy/';
+  const GATEWAY_PREFIX='https://business-os-api-gateway.netlify.app/api/proxy/';
   const AUTH_URL=GATEWAY_PREFIX+'vk-session-api';
   if(typeof window.fetch==='function'&&!window.BOS_API_GATEWAY_ROUTER){
     const previousFetch=window.fetch.bind(window);
