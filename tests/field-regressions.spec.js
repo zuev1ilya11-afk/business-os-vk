@@ -7,6 +7,40 @@ test('Netlify gateway allows staff administration endpoint',()=>{
   expect(source).toContain('"staff-admin-api"');
 });
 
+test('production HTML cache-busts the live field fix',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+  expect(html).toContain('schedule-identity-v46.js?v=20260912-v60');
+});
+
+test('staff admin falls back to direct Supabase when deployed gateway is stale',async({page})=>{
+  await page.setContent('<div></div>');
+  await page.addScriptTag({content:`
+    window.state={masters:[],masterSchedule:[],users:[],user:{role:'owner'}};
+    window.pages={dispatch:()=>'',home:()=>'',team:()=>''};
+    window.reloadData=async()=>{};
+    window.api=async()=>({ok:true});
+    window.masterSchedule=[];
+    window.fetchCalls=[];
+    window.fetch=async function(url){
+      window.fetchCalls.push(String(url));
+      if(String(url).includes('business-os-api-gateway.netlify.app')){
+        return new Response(JSON.stringify({ok:false,error:'SERVICE_NOT_ALLOWED'}),{status:404,headers:{'Content-Type':'application/json'}});
+      }
+      return new Response(JSON.stringify({ok:true,staff:[]}),{status:200,headers:{'Content-Type':'application/json'}});
+    };
+  `});
+  await page.addScriptTag({path:path.join(__dirname,'..','schedule-identity-v46.js')});
+  const result=await page.evaluate(async()=>{
+    const r=await fetch('https://business-os-api-gateway.netlify.app/api/proxy/staff-admin-api',{method:'POST'});
+    return {body:await r.json(),calls:window.fetchCalls};
+  });
+  expect(result.body.ok).toBe(true);
+  expect(result.calls).toEqual([
+    'https://business-os-api-gateway.netlify.app/api/proxy/staff-admin-api',
+    'https://obsropbslfwtanyspjbi.supabase.co/functions/v1/staff-admin-api'
+  ]);
+});
+
 test('master schedule presets change calendar draft and schedule save retries once',async({page})=>{
   await page.setContent(`
     <div id="masterMonthCalendar">
