@@ -25,7 +25,7 @@ test('new employee registers by phone without VK ID',async({page})=>{
   await page.route('**/api/proxy/mini-app-api',miniAppHandler);
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',miniAppHandler);
   await page.goto('/?force_vk_auth=1',{waitUntil:'domcontentloaded'});
-  const registrationForm=page.locator('#phoneRegForm');
+  const registrationForm=page.locator('#authPhoneForm');
   await expect(registrationForm).toBeVisible({timeout:20000});
   const phone=registrationForm.locator('input[name="phone"]');
   await expect(phone).toBeVisible();
