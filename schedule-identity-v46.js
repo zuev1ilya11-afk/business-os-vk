@@ -83,3 +83,25 @@ normalizeSchedule();
     syncPreset(kind);
   };
 })();
+(()=>{
+  if(window.BOS_STAFF_ADMIN_FETCH_FALLBACK_V60)return;
+  window.BOS_STAFF_ADMIN_FETCH_FALLBACK_V60=true;
+  const gateway='https://business-os-api-gateway.netlify.app/api/proxy/staff-admin-api';
+  const direct='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/staff-admin-api';
+  const nativeFetch=window.fetch.bind(window);
+  window.fetch=async function(input,init){
+    const url=typeof input==='string'?input:String(input?.url||'');
+    if(url!==gateway)return nativeFetch(input,init);
+    try{
+      const response=await nativeFetch(input,init);
+      if(response.status!==404)return response;
+      let data={};try{data=await response.clone().json()}catch(_){ }
+      if(String(data?.error||'')!=='SERVICE_NOT_ALLOWED')return response;
+      return nativeFetch(direct,init);
+    }catch(err){
+      const msg=String(err?.message||err||'');
+      if(!/load failed|failed to fetch|networkerror|network request failed/i.test(msg))throw err;
+      return nativeFetch(direct,init);
+    }
+  };
+})();
