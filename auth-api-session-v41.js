@@ -3,15 +3,27 @@
   function getSession(){
     try{return sessionStorage.getItem(SESSION_KEY)||localStorage.getItem(SESSION_KEY)||''}catch(_){return ''}
   }
+  function isLocalDev(){
+    try{return !!window.BOS_LOCAL_DEV||/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(location.hostname)&&!new URLSearchParams(location.search).has('force_vk_auth')}catch(_){return false}
+  }
+  let ensurePromise=null;
+  async function ensureSessionBeforeApi(){
+    if(isLocalDev()||getSession())return;
+    if(typeof window.BOS_ENSURE_VK_SESSION!=='function')return;
+    if(!ensurePromise)ensurePromise=Promise.resolve().then(()=>window.BOS_ENSURE_VK_SESSION()).finally(()=>{ensurePromise=null});
+    await ensurePromise;
+  }
   async function sessionApi(action,payload={}){
     const cfg=window.BUSINESS_OS_CONFIG||{};
     const url=cfg.API_URL||cfg.GAS_WEB_APP_URL;
     if(!url)return Promise.reject(new Error('Не настроен API'));
+    await ensureSessionBeforeApi();
     const controller=new AbortController();
     const timer=setTimeout(()=>controller.abort(),15000);
     const headers={'Content-Type':'application/json'};
     const session=getSession();
     if(session)headers['X-BOS-Session']=session;
+    if(isLocalDev())headers['X-BOS-Local-Dev']='1';
     try{
       const r=await fetch(url,{method:'POST',headers,body:JSON.stringify({action,...payload}),signal:controller.signal});
       let d;
