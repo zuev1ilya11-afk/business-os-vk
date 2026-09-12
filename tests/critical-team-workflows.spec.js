@@ -44,3 +44,51 @@ test('employee creation succeeds once even when district metadata fails',async({
   await expect.poll(()=>page.evaluate(()=>window.state.users.length)).toBe(1);
   await expect(page.locator('#modalRoot')).toContainText('Сотрудник создан');
 });
+
+async function mockTeamApp(page,role){
+  const user={id:'actor-1',external_id:role==='owner'?'owner_1':'dispatcher_1',vk_user_id:role==='owner'?'owner_1':'dispatcher_1',full_name:role==='owner'?'Владелец':'Диспетчер',role,city:'Санкт-Петербург',is_active:true};
+  const master={id:'master-id',external_id:'master_1',vk_user_id:'master_1',full_name:'Мастер Тест',role:'master',city:'Санкт-Петербург',is_active:true};
+  const orders=[{id:'ORDER-CRIT-1',status:'В работе',client:'Клиент',phone:'79990000000',address:'Невский 1',work:'Монтаж',amount:5000,original_amount:5000,scheduled_date:'2026-09-13',scheduled_time:'10:00',master_vk_id:'',master_name:''}];
+  const updates=[];
+  await page.addInitScript(()=>localStorage.setItem('bos_vk_session_v2','critical-session'));
+  const mini=async route=>{
+    let body={};try{body=route.request().postDataJSON()||{}}catch(_){}
+    if(body.action==='bootstrap')return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,user,orders,users:[master],masters:[master],masterSchedule:[],claims:[],sources:[{source:'VK'}],settings:{permissions:{can_manage_orders:true,can_manage_schedule:true,can_manage_staff:role==='owner',can_review_reports:true,can_view_finance:role==='owner'}}})});
+    if(body.action==='updateOrder'){
+      updates.push(body);
+      const i=orders.findIndex(o=>String(o.id)===String(body.id));
+      const assigned=String(body.master_vk_id||'');
+      orders[i]={...orders[i],...body,master_name:assigned?'Мастер Тест':orders[i].master_name};
+      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:orders[i]})});
+    }
+    return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true})});
+  };
+  await page.route('**/api/proxy/mini-app-api',mini);
+  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',mini);
+  const ok=route=>route.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"claims":[],"orders":[],"masters":[]}'});
+  await page.route('**/api/proxy/claims-api',ok);
+  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api',ok);
+  return {orders,master,updates};
+}
+
+test('owner can assign an order to a master through the real order modal',async({page})=>{
+  const {updates}=await mockTeamApp(page,'owner');
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#authGate')).toBeHidden();
+  await page.evaluate(()=>openOrder('ORDER-CRIT-1'));
+  await expect(page.locator('#quickMaster')).toBeVisible();
+  await page.locator('#quickMaster').selectOption('master_1');
+  await page.getByRole('button',{name:'Сохранить статус',exact:true}).click();
+  await expect.poll(()=>updates.some(x=>x.action==='updateOrder'&&x.id==='ORDER-CRIT-1'&&x.master_vk_id==='master_1')).toBe(true);
+});
+
+test('dispatcher can close an active order through the real order modal',async({page})=>{
+  const {updates}=await mockTeamApp(page,'dispatcher');
+  page.on('dialog',dialog=>dialog.accept());
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#authGate')).toBeHidden();
+  await page.evaluate(()=>openOrder('ORDER-CRIT-1'));
+  await expect(page.getByRole('button',{name:'Закрыть заявку',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Закрыть заявку',exact:true}).click();
+  await expect.poll(()=>updates.some(x=>x.action==='updateOrder'&&x.id==='ORDER-CRIT-1'&&x.status==='Выполнена')).toBe(true);
+});
