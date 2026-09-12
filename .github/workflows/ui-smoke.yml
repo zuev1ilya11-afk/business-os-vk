@@ -29,6 +29,9 @@ jobs:
       - name: Mobile VK launch recovery
         run: npx playwright test tests/mobile-auth-launch-recovery.spec.js
 
+      - name: API network fallback
+        run: npx playwright test tests/api-network-fallback.spec.js
+
       - name: Phone registration
         run: npx playwright test tests/phone-registration.spec.js
 
