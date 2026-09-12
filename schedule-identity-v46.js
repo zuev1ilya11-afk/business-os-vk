@@ -40,3 +40,14 @@ normalizeSchedule();
     return nextApi(action,payload);
   };
 })();
+(()=>{
+  if(window.BOS_STAFF_ADMIN_TEAM_V58||typeof pages==='undefined'||typeof pages.team!=='function')return;
+  window.BOS_STAFF_ADMIN_TEAM_V58=true;
+  const previousTeam=pages.team;
+  pages.team=function(){
+    const html=String(previousTeam.apply(this,arguments)||'');
+    const role=String(state?.user?.role||'');
+    if(!['owner','manager'].includes(role)||html.includes('Логины и пароли'))return html;
+    return html+`<section class="card"><h3>Управление сотрудниками</h3><p class="muted">Логины, пароли и восстановление отключённых сотрудников.</p><div class="two"><button class="secondary" onclick="openStaffAccess('all')">Логины и пароли</button><button class="secondary" onclick="openStaffAccess('inactive')">Отключённые</button></div></section>`;
+  };
+})();
