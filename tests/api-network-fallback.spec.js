@@ -1,13 +1,14 @@
 const {test,expect}=require('@playwright/test');
 
-test('VK Mini App falls back to Supabase when Netlify gateway is unreachable',async({page})=>{
+for(const failure of ['unreachable','hanging']){
+test(`VK Mini App falls back to Supabase when Netlify gateway is ${failure}`,async({page})=>{
   await page.setViewportSize({width:320,height:700});
   await page.route('https://unpkg.com/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:`window.vkBridge={send:async()=>({})};`}));
 
   let gatewayAttempts=0,directSession=false,directBootstrap=false;
   await page.route('**/api/proxy/**',route=>{
     gatewayAttempts++;
-    return route.abort('failed');
+    if(failure==='unreachable')return route.abort('failed');
   });
 
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',async route=>{
@@ -33,6 +34,8 @@ test('VK Mini App falls back to Supabase when Netlify gateway is unreachable',as
   await expect.poll(()=>directBootstrap,{timeout:15000}).toBeTruthy();
   await expect(page.getByText('Загруженность мастеров')).toBeVisible({timeout:10000});
 });
+
+}
 
 async function networkPage(page){
   await page.route('**/network-test',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><meta charset="UTF-8"><div id="content"></div>'}));
@@ -102,4 +105,37 @@ test('VK auth screen explains outage when both servers are unreachable',async({p
   await expect(page.locator('#authGate')).toContainText('Не удалось связаться с сервером',{timeout:20000});
   await expect(page.locator('#authGate')).not.toContainText('Load failed');
   expect(await page.evaluate(()=>document.body.classList.contains('bos-auth-ok'))).toBe(false);
+});
+
+
+test('hanging sign-in endpoints produce a connectivity error before auth timeout',async({page})=>{
+  await page.route('https://unpkg.com/**',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
+  await page.route('**/api/proxy/**',()=>{});
+  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/**',()=>{});
+  await page.goto('/?force_vk_auth=1&vk_app_id=54758847&vk_user_id=123456789&sign=signed_test_value');
+  await expect(page.locator('#authGate')).toContainText('Не удалось связаться с сервером',{timeout:10000});
+  expect(await page.evaluate(()=>window.BOS_NETWORK_LAST_ERROR.fallbackError.code)).toBe('BOS_FETCH_TIMEOUT');
+  expect(await page.evaluate(()=>document.body.classList.contains('bos-auth-ok'))).toBe(false);
+});
+
+test('caller cancellation during gateway wait does not start direct fallback',async({page})=>{
+  let directCalls=0;
+  await page.route(gateway,()=>{});
+  await page.route(direct,r=>{directCalls++;return r.fulfill({body:'unexpected'});});
+  await networkPage(page);
+  const name=await page.evaluate(async url=>{
+    const controller=new AbortController();
+    setTimeout(()=>controller.abort(),100);
+    try{await fetch(url,{method:'POST',body:JSON.stringify({action:'bootstrap'}),signal:controller.signal})}catch(e){return e.name}
+  },gateway);
+  expect(name).toBe('AbortError');expect(directCalls).toBe(0);
+});
+
+test('slow mutation is not replayed on a connection deadline',async({page})=>{
+  let directCalls=0;
+  await page.route(gateway,async r=>{await new Promise(resolve=>setTimeout(resolve,3000));await r.fulfill({body:'saved'});});
+  await page.route(direct,r=>{directCalls++;return r.fulfill({body:'unexpected'});});
+  await networkPage(page);
+  const body=await page.evaluate(async url=>(await fetch(url,{method:'POST',body:JSON.stringify({action:'createOrder'})})).text(),gateway);
+  expect(body).toBe('saved');expect(directCalls).toBe(0);
 });

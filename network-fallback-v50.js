@@ -6,7 +6,30 @@
   const SUPABASE='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/';
   function isNetworkError(err){
     if(err?.name==='AbortError')return false;
-    return /load failed|failed to fetch|networkerror|network request failed|network error/i.test(String(err?.message||err||''))||err?.name==='NetworkError';
+    return err?.code==='BOS_FETCH_TIMEOUT'||/load failed|failed to fetch|networkerror|network request failed|network error/i.test(String(err?.message||err||''))||err?.name==='NetworkError';
+  }
+  async function timedFetch(url,options,ms){
+    if(!ms)return nativeFetch(url,options);
+    const controller=new AbortController(),caller=options.signal;
+    let timer;
+    const abort=()=>controller.abort(caller.reason);
+    if(caller.aborted)abort();else caller.addEventListener('abort',abort,{once:true});
+    try{
+      return await Promise.race([
+        nativeFetch(url,{...options,signal:controller.signal}),
+        new Promise((_,reject)=>{timer=setTimeout(()=>{
+          const error=new Error('API connection timed out');
+          error.code='BOS_FETCH_TIMEOUT';
+          reject(error);controller.abort();
+        },ms)})
+      ]);
+    }finally{clearTimeout(timer);caller.removeEventListener('abort',abort)}
+  }
+  async function canRetryTimeout(raw,options){
+    const name=new URL(raw).pathname.slice('/api/proxy/'.length);
+    if(name==='vk-session-api')return true;
+    if(name!=='mini-app-api'||!options.body)return false;
+    try{return JSON.parse(await options.body.text()).action==='bootstrap'}catch(_){return false}
   }
   window.BOS_NATIVE_FETCH=nativeFetch;
   window.fetch=async function(input,init){
@@ -20,9 +43,12 @@
       integrity:primary.integrity,keepalive:primary.keepalive,signal:primary.signal};
     if(primary.body)options.body=await primary.blob();
     const fallback=SUPABASE+raw.slice(GATEWAY.length);
-    try{return await nativeFetch(raw,options)}catch(primaryError){
+    // Limit connection waits only for sign-in and read-only bootstrap.
+    // Do not replay order/payment mutations merely because their response is slow.
+    const bounded=await canRetryTimeout(raw,options);
+    try{return await timedFetch(raw,options,bounded?2500:0)}catch(primaryError){
       if(primary.signal.aborted||!isNetworkError(primaryError))throw primaryError;
-      try{return await nativeFetch(fallback,options)}catch(fallbackError){
+      try{return await timedFetch(fallback,options,bounded?4000:0)}catch(fallbackError){
         if(primary.signal.aborted||!isNetworkError(fallbackError))throw fallbackError;
         // Retain technical causes without copying session headers or request bodies.
         window.BOS_NETWORK_LAST_ERROR={primaryError,fallbackError};

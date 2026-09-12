@@ -27,6 +27,7 @@
     if(await validate())return true;
     const launchDirect=await directLaunchSession();
     if(launchDirect)return launchDirect;
+    if(window.BOS_AUTH_LAST_ERROR?.code==='BOS_NETWORK_UNAVAILABLE')throw window.BOS_AUTH_LAST_ERROR;
     let helperError=null;
     if(typeof window.BOS_ENSURE_VK_SESSION==='function'){
       try{await timeout(window.BOS_ENSURE_VK_SESSION(),12000);if(await validate())return true}
