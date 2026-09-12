@@ -12,6 +12,7 @@ const ALLOWED = new Set([
   "employee-meta-api",
   "profile-self-api",
   "claims-api",
+  "staff-admin-api",
 ]);
 
 const ALLOWED_ORIGINS = new Set([

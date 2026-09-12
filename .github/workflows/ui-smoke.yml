@@ -38,6 +38,9 @@ jobs:
       - name: Staff access administration
         run: npx playwright test tests/staff-admin.spec.js
 
+      - name: Field regressions
+        run: npx playwright test tests/field-regressions.spec.js
+
       - name: Phone registration
         run: npx playwright test tests/phone-registration.spec.js
 
