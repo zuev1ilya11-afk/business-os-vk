@@ -10,10 +10,10 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
     {id:'REPORT-1',status:'Выполнена',client:'Клиент отчёт',address:'Адрес отчёт',work:'Монтаж',amount:2300,original_amount:2800,master_vk_id:'master_seed',master_name:'Александр Мастер',master_payout:1270.75,extra_work_amount:300,uncompleted_work_amount:500,report_uploaded_at:'2026-09-09T03:00:00Z',report_review_status:'pending',report_act_url:'https://example.com/act.pdf',report_photo_urls:'["https://example.com/photo.jpg"]'}
   ],users:[seedMaster],masters:[seedMaster],masterSchedule:[]};
 
-  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api', async route=>{
+  const miniHandler = async route=>{
     let body={};try{body=route.request().postDataJSON()||{}}catch(_){}
     const action=body.action||'bootstrap';let result={ok:true};
-    if(action==='health') result={ok:true,version:'2026-09-09-launch2-auth'};
+    if(action==='health') result={ok:true,version:'2026-09-12-netlify-gateway'};
     else if(action==='bootstrap') result={ok:true,user:{full_name:'Илья',role:'owner',city:'Москва',vk_user_id:'1105117085'},orders:data.orders,users:data.users,masters:data.masters,sources:[{source:'VK'}],settings:{reports_drive_folder_url:'https://drive.google.com/drive/folders/test'},masterSchedule:data.masterSchedule};
     else if(action==='createOrder'){const order={id:'TEST-1',status:body.status||'В работе',master_name:'',master_payout:0,...body};delete order.action;data.orders.unshift(order);result={ok:true,order};}
     else if(action==='updateOrder'){const i=data.orders.findIndex(x=>String(x.id)===String(body.id));data.orders[i]={...data.orders[i],...body};delete data.orders[i].action;result={ok:true,order:data.orders[i]};}
@@ -21,15 +21,24 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
     else if(action==='addEmployee'){const user={id:'staff-test-id',vk_user_id:'staff_test',external_id:'staff_test',full_name:body.full_name,phone:body.phone||'',city:body.city||'Москва',role:body.role||'master',is_active:true};const master=user.role==='master'?{...user,specialization:body.specialization||'',work_start:body.work_start||'09:00',work_end:body.work_end||'18:00'}:null;data.users.push(user);if(master)data.masters.push(master);result={ok:true,user,master};}
     else if(action==='saveMasterSchedule'){data.masterSchedule=(body.days||[]).map(d=>({...d,master_vk_id:body.master_vk_id||body.master_id,week_start:body.week_start}));result={ok:true,schedule:data.masterSchedule};}
     await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(result)});
-  });
-  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/order-meta-api',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:{order_type:'work'}})}));
-  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,claims:[],orders:[],masters:[]})}));
-  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/employee-meta-api',async route=>{
+  };
+  await page.route('**/api/proxy/mini-app-api',miniHandler);
+  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',miniHandler);
+
+  const simpleOk = body=>route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(body)});
+  await page.route('**/api/proxy/order-meta-api',simpleOk({ok:true,order:{order_type:'work'}}));
+  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/order-meta-api',simpleOk({ok:true,order:{order_type:'work'}}));
+  await page.route('**/api/proxy/claims-api',simpleOk({ok:true,claims:[],orders:[],masters:[]}));
+  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api',simpleOk({ok:true,claims:[],orders:[],masters:[]}));
+
+  const employeeHandler=async route=>{
     let body={};try{body=route.request().postDataJSON()||{}}catch(_){}
     const user=data.users.find(x=>String(x.id)===String(body.id))||data.users[data.users.length-1];
     if(user){user.city=body.city||user.city;user.district=body.district||'';}
     await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,user})});
-  });
+  };
+  await page.route('**/api/proxy/employee-meta-api',employeeHandler);
+  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/employee-meta-api',employeeHandler);
 
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
