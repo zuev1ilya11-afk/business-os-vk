@@ -21,7 +21,7 @@ test('new employee registers by phone without VK ID',async({page})=>{
     return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true})});
   });
   await page.goto('/?force_vk_auth=1',{waitUntil:'domcontentloaded'});
-  await expect(page.getByRole('heading',{name:'Регистрация'})).toBeVisible({timeout:20000});
+  await expect(page.getByRole('heading',{name:'Регистрация',exact:true})).toBeVisible({timeout:20000});
   await expect(page.locator('input[name="phone"]')).toBeVisible();
   await expect(page.locator('input[name="vk_user_id"]')).toHaveCount(0);
   await page.locator('input[name="phone"]').fill('+7 999 123-45-67');
