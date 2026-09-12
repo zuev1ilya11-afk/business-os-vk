@@ -12,12 +12,17 @@
   window.fetch=async function(input,init){
     const raw=input instanceof Request?input.url:String(input);
     if(!raw.startsWith(GATEWAY))return nativeFetch(input,init);
-    // Validate and retain an unread body before the first fetch consumes it.
-    const primary=new Request(input,init),backup=primary.clone();
+    // Validate before sending; keep a replayable body for Request/stream inputs.
+    const primary=new Request(input,init);
+    const options={method:primary.method,headers:primary.headers,mode:primary.mode,
+      credentials:primary.credentials,cache:primary.cache,redirect:primary.redirect,
+      referrer:primary.referrer,referrerPolicy:primary.referrerPolicy,
+      integrity:primary.integrity,keepalive:primary.keepalive,signal:primary.signal};
+    if(primary.body)options.body=await primary.blob();
     const fallback=SUPABASE+raw.slice(GATEWAY.length);
-    try{return await nativeFetch(primary)}catch(primaryError){
+    try{return await nativeFetch(raw,options)}catch(primaryError){
       if(primary.signal.aborted||!isNetworkError(primaryError))throw primaryError;
-      try{return await nativeFetch(new Request(fallback,backup))}catch(fallbackError){
+      try{return await nativeFetch(fallback,options)}catch(fallbackError){
         if(primary.signal.aborted||!isNetworkError(fallbackError))throw fallbackError;
         // Retain technical causes without copying session headers or request bodies.
         window.BOS_NETWORK_LAST_ERROR={primaryError,fallbackError};

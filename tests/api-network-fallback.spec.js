@@ -35,7 +35,7 @@ test('VK Mini App falls back to Supabase when Netlify gateway is unreachable',as
 });
 
 async function networkPage(page){
-  await page.route('**/network-test',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><div id="content"></div>'}));
+  await page.route('**/network-test',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><meta charset="UTF-8"><div id="content"></div>'}));
   await page.goto('/network-test');
   await page.evaluate(()=>{window.cfg={};window.state={};window.reloadData=async()=>{};window.$=s=>document.querySelector(s);window.esc=String;});
   await page.addScriptTag({url:'/network-fallback-v50.js'});
