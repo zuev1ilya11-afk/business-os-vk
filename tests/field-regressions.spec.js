@@ -7,9 +7,11 @@ test('Netlify gateway allows staff administration endpoint',()=>{
   expect(source).toContain('"staff-admin-api"');
 });
 
-test('production HTML cache-busts the live field fix',()=>{
+test('production HTML loads and cache-busts live field fixes',()=>{
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
   expect(html).toContain('schedule-identity-v46.js?v=20260912-v60');
+  expect(html).toContain('live-field-hotfix-v60.js?v=20260912-v61');
+  expect(html).toContain('employee-form-v16.js?v=20260912-v61');
 });
 
 test('staff admin falls back to direct Supabase when deployed gateway is stale',async({page})=>{
@@ -29,7 +31,7 @@ test('staff admin falls back to direct Supabase when deployed gateway is stale',
       return new Response(JSON.stringify({ok:true,staff:[]}),{status:200,headers:{'Content-Type':'application/json'}});
     };
   `});
-  await page.addScriptTag({path:path.join(__dirname,'..','schedule-identity-v46.js')});
+  await page.addScriptTag({path:path.join(__dirname,'..','live-field-hotfix-v60.js')});
   const result=await page.evaluate(async()=>{
     const r=await fetch('https://business-os-api-gateway.netlify.app/api/proxy/staff-admin-api',{method:'POST'});
     return {body:await r.json(),calls:window.fetchCalls};
@@ -72,8 +74,10 @@ test('master schedule presets change calendar draft and schedule save retries on
       return {ok:true};
     };
     window.masterSchedule=[];
+    window.fetch=async()=>new Response(JSON.stringify({ok:true}),{status:200,headers:{'Content-Type':'application/json'}});
   `});
   await page.addScriptTag({path:path.join(__dirname,'..','schedule-identity-v46.js')});
+  await page.addScriptTag({path:path.join(__dirname,'..','live-field-hotfix-v60.js')});
 
   await page.evaluate(()=>window.setMasterSchedulePreset('weekdays'));
   const state=await page.evaluate(()=>window.calendarState);
