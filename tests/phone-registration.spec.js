@@ -27,5 +27,5 @@ test('new employee registers by phone without VK ID',async({page})=>{
   await page.locator('input[name="phone"]').fill('+7 999 123-45-67');
   await page.getByRole('button',{name:'Продолжить'}).click();
   await expect.poll(()=>registered).toBeTruthy();
-  await expect(page.getByText('Загруженность мастеров')).toBeVisible();
+  await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toBeVisible({timeout:10000});
 });
