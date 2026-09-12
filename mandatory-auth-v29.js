@@ -7,6 +7,7 @@
   const gate=document.getElementById('authGate');
   const body=document.body;
   const forceVk=new URLSearchParams(location.search).has('force_vk_auth');
+  let vkSessionPromise=null;
 
   function getSession(){try{return sessionStorage.getItem(KEY)||localStorage.getItem(KEY)||''}catch(_){return ''}}
   function setSession(v){if(!v)return;try{sessionStorage.setItem(KEY,v);localStorage.setItem(KEY,v)}catch(_){}}
@@ -62,13 +63,19 @@
     try{const d=await post(MINI,{action:'bootstrap'},{'X-BOS-Session':session});return !!d?.user?.role}catch(e){if(e?.status===401)clearSession();return false}
   }
   async function vkSession(){
+    const existing=getSession();if(existing)return {ok:true,session_token:existing};
     const launch=await getVkLaunch();
     if(!launch)throw new Error('Не удалось получить параметры запуска VK. Закройте приложение и откройте его заново через ВКонтакте.');
     const d=await post(VK,{launch_params:launch});
     if(d?.session_token)setSession(d.session_token);
-    if(d?.registration_required){phoneScreen();return 'registration'}
+    if(d?.registration_required){phoneScreen();return {ok:true,registration_required:true,session_token:getSession()}}
     if(!d?.session_token)throw new Error('VK не подтвердил вход.');
-    return true;
+    return d;
+  }
+  async function ensureVkSession(){
+    const existing=getSession();if(existing)return {ok:true,session_token:existing};
+    if(!vkSessionPromise)vkSessionPromise=vkSession().finally(()=>{vkSessionPromise=null});
+    return await vkSessionPromise;
   }
 
   async function sessionApi(action,payload={}){
@@ -80,7 +87,7 @@
   window.BOS_STORE_SESSION=setSession;
   window.BOS_AUTH_HEADERS=async()=>({'Content-Type':'application/json','X-BOS-Session':getSession()});
   window.BOS_ENSURE_VK_LAUNCH_PARAMS=getVkLaunch;
-  window.BOS_ENSURE_VK_SESSION=async()=>getSession()?{ok:true,session_token:getSession()}:{ok:true,session_token:(await (async()=>{await vkSession();return getSession()})())};
+  window.BOS_ENSURE_VK_SESSION=ensureVkSession;
 
   async function loadApp(){
     if(typeof reloadData!=='function')throw new Error('Приложение не готово к запуску');
@@ -111,7 +118,7 @@
     showGate(`<div class="authLogo">Домашний мастер</div><h1>Проверяем вход…</h1><p class="muted">Пожалуйста, подождите.</p>`);
     if(await validate()){try{return await loadApp()}catch(e){return isVkLaunch()?retryVkScreen(e.message):passwordScreen(e.message)}}
     if(!isVkLaunch())return passwordScreen();
-    try{const r=await vkSession();if(r==='registration')return;await loadApp()}catch(e){retryVkScreen(e.message)}
+    try{const r=await ensureVkSession();if(r?.registration_required)return;await loadApp()}catch(e){retryVkScreen(e.message)}
   }
   window.BOS_FORCE_AUTH_SCREEN=()=>{clearSession();isVkLaunch()?boot():passwordScreen()};
   boot();
