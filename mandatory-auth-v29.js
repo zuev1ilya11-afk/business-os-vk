@@ -13,6 +13,17 @@
   function unlock(){if(gate)gate.style.display='none';body.classList.add('bos-auth-ok')}
   async function json(url,payload,headers={}){const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(payload)});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw Object.assign(new Error(d.error||('Ошибка сервера '+r.status)),{status:r.status,data:d});return d}
   async function validate(){const s=getSession();if(!s)return false;try{await json(MINI,{action:'bootstrap'},{'X-BOS-Session':s});return true}catch(_){clearSession();return false}}
+  async function ensureSession(){
+    if(await validate())return true;
+    if(typeof window.BOS_ENSURE_VK_SESSION!=='function')return false;
+    try{
+      await window.BOS_ENSURE_VK_SESSION();
+      return await validate();
+    }catch(err){
+      if(err?.code==='REGISTRATION_REQUIRED'){phoneRegistration();return 'registration'}
+      return false;
+    }
+  }
   async function loadAuthorizedApp(){
     if(typeof reloadData!=='function')throw new Error('Приложение не готово к запуску');
     await reloadData(false);
@@ -47,7 +58,9 @@
   window.BOS_FORCE_AUTH_SCREEN=()=>{clearSession();startScreen()};
   (async()=>{
     showGate(`<div class="authLogo">Домашний мастер</div><h1>Проверяем вход…</h1><p class="muted">Пожалуйста, подождите.</p>`);
-    if(!await validate())return startScreen();
+    const ready=await ensureSession();
+    if(ready==='registration')return;
+    if(!ready)return startScreen();
     try{await loadAuthorizedApp();unlock()}catch(err){clearSession();startScreen(err.message||'Не удалось загрузить приложение')}
   })();
 })();
