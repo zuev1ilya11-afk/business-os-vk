@@ -5,6 +5,7 @@ const path=require('path');
 test('Netlify gateway allows staff administration endpoint',()=>{
   const source=fs.readFileSync(path.join(__dirname,'..','netlify','functions','proxy.mts'),'utf8');
   expect(source).toContain('"staff-admin-api"');
+  expect(source).toContain('"master-memo-api"');
 });
 
 test('production HTML loads and cache-busts live field fixes',()=>{
@@ -12,6 +13,35 @@ test('production HTML loads and cache-busts live field fixes',()=>{
   expect(html).toContain('schedule-identity-v46.js?v=20260912-v60');
   expect(html).toContain('live-field-hotfix-v60.js?v=20260912-v61');
   expect(html).toContain('employee-form-v16.js?v=20260912-v61');
+  expect(html).toContain('master-memo-runtime-v21.js?v=20260912-v62');
+  expect(html).toContain('manager-memo-editor-v45.js?v=20260912-v62');
+});
+
+test('master memo loads through gateway and offers Word download',async({page})=>{
+  await page.setContent('<div id="modalRoot"></div>');
+  await page.addScriptTag({content:`
+    window.state={user:{role:'master'},busy:false};
+    window.$=s=>document.querySelector(s);
+    window.esc=s=>String(s??'');
+    window.openModal=html=>{document.querySelector('#modalRoot').innerHTML='<div class="modal">'+html+'</div>'};
+    window.closeModal=()=>{};
+    window.setBusy=()=>{};
+    window.openOwnerTools=()=>{};
+    window.fetchCalls=[];
+    window.fetch=async(url)=>{
+      window.fetchCalls.push(String(url));
+      return new Response(JSON.stringify({ok:true,items:[{id:'memo-1',category:'tips',title:'Памятка мастеру',note:'Правила работы',file_name:'pamyatka-masteru.docx',file_url:'https://files.example/pamyatka-masteru.docx'}]}),{status:200,headers:{'Content-Type':'application/json'}});
+    };
+    window.BOS_AUTH_HEADERS=async()=>({'X-BOS-Session':'memo-session'});
+  `});
+  await page.addScriptTag({path:path.join(__dirname,'..','master-memo-runtime-v21.js')});
+  await page.evaluate(()=>window.openMasterMemoItem('tips'));
+  await expect(page.getByText('Памятка мастеру',{exact:true})).toBeVisible();
+  const download=page.getByRole('link',{name:'Скачать Word'});
+  await expect(download).toBeVisible();
+  await expect(download).toHaveAttribute('download','pamyatka-masteru.docx');
+  const calls=await page.evaluate(()=>window.fetchCalls);
+  expect(calls[0]).toBe('https://business-os-api-gateway.netlify.app/api/proxy/master-memo-api');
 });
 
 test('staff admin falls back to direct Supabase when deployed gateway is stale',async({page})=>{
