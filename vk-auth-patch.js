@@ -7,13 +7,41 @@
   const AUTH_URL=GATEWAY_PREFIX+'vk-session-api';
   if(typeof window.fetch==='function'&&!window.BOS_API_GATEWAY_ROUTER){
     const previousFetch=window.fetch.bind(window);
+    window.BOS_NATIVE_FETCH=previousFetch;
     window.BOS_API_GATEWAY_ROUTER=true;
+    const dualFetch=(primary,fallback,input,init)=>{
+      if(typeof input==='string'){
+        return previousFetch(primary,init).catch(err=>{
+          if(err?.name==='AbortError')throw err;
+          return previousFetch(fallback,init);
+        });
+      }
+      try{
+        const base=new Request(input,init);
+        const first=new Request(primary,base.clone());
+        const second=new Request(fallback,base.clone());
+        return previousFetch(first).catch(err=>{
+          if(err?.name==='AbortError')throw err;
+          return previousFetch(second);
+        });
+      }catch(_){
+        return previousFetch(primary,init).catch(err=>{
+          if(err?.name==='AbortError')throw err;
+          return previousFetch(fallback,init);
+        });
+      }
+    };
     window.fetch=function(input,init){
       const raw=typeof input==='string'?input:String(input&&input.url||'');
-      if(!raw.startsWith(SUPABASE_PREFIX))return previousFetch(input,init);
-      const routed=GATEWAY_PREFIX+raw.slice(SUPABASE_PREFIX.length);
-      if(typeof input==='string')return previousFetch(routed,init);
-      try{return previousFetch(new Request(routed,input),init)}catch(_){return previousFetch(routed,init)}
+      if(raw.startsWith(GATEWAY_PREFIX)){
+        const direct=SUPABASE_PREFIX+raw.slice(GATEWAY_PREFIX.length);
+        return dualFetch(raw,direct,input,init);
+      }
+      if(raw.startsWith(SUPABASE_PREFIX)){
+        const routed=GATEWAY_PREFIX+raw.slice(SUPABASE_PREFIX.length);
+        return dualFetch(routed,raw,input,init);
+      }
+      return previousFetch(input,init);
     };
   }
   window.BOS_LOCAL_DEV=local;window.BOS_VK_LAUNCH_PARAMS='';
