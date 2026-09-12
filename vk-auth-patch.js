@@ -2,7 +2,20 @@
   const forceVkAuth=new URLSearchParams(location.search).has('force_vk_auth');
   const local=/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(location.hostname)&&!forceVkAuth;
   const SESSION_KEY='bos_vk_session_v2', MANUAL_KEY='bos_manual_logout_v1';
-  const AUTH_URL='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api';
+  const SUPABASE_PREFIX='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/';
+  const GATEWAY_PREFIX='https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai/api/proxy/';
+  const AUTH_URL=GATEWAY_PREFIX+'vk-session-api';
+  if(typeof window.fetch==='function'&&!window.BOS_API_GATEWAY_ROUTER){
+    const previousFetch=window.fetch.bind(window);
+    window.BOS_API_GATEWAY_ROUTER=true;
+    window.fetch=function(input,init){
+      const raw=typeof input==='string'?input:String(input&&input.url||'');
+      if(!raw.startsWith(SUPABASE_PREFIX))return previousFetch(input,init);
+      const routed=GATEWAY_PREFIX+raw.slice(SUPABASE_PREFIX.length);
+      if(typeof input==='string')return previousFetch(routed,init);
+      try{return previousFetch(new Request(routed,input),init)}catch(_){return previousFetch(routed,init)}
+    };
+  }
   window.BOS_LOCAL_DEV=local;window.BOS_VK_LAUNCH_PARAMS='';
   function getSession(){try{return sessionStorage.getItem(SESSION_KEY)||localStorage.getItem(SESSION_KEY)||''}catch(_){return ''}}
   function setSession(v){if(!v)return;try{sessionStorage.setItem(SESSION_KEY,v);localStorage.setItem(SESSION_KEY,v)}catch(_){}}
