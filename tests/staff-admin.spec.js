@@ -42,7 +42,8 @@ test('owner can set employee credentials and restore disabled employee',async({p
   await expect(page.getByText('Загруженность мастеров')).toBeVisible();
   await page.locator('nav button[data-page="team"]').click();
   await page.getByRole('button',{name:'Логины и пароли'}).click();
-  await page.getByRole('button',{name:/Активный мастер/}).click();
+  const modal=page.locator('#modalRoot');
+  await modal.getByRole('button',{name:/Активный мастер/}).click();
   const form=page.locator('#staffCredForm');
   await form.locator('[name=login]').fill('master.new');
   await form.locator('[name=password]').fill('secret12');
@@ -50,10 +51,10 @@ test('owner can set employee credentials and restore disabled employee',async({p
   await expect.poll(()=>credentialsSaved).toBeTruthy();
   await expect(page.locator('#staffCredMsg')).toContainText('сохранены');
 
-  await page.getByRole('button',{name:/Назад/}).click();
-  await page.getByRole('button',{name:'Отключённые'}).first().click();
-  await page.getByRole('button',{name:/Отключённый диспетчер/}).click();
-  await page.getByRole('button',{name:'Вернуть сотрудника'}).click();
+  await modal.getByRole('button',{name:/Назад/}).click();
+  await modal.getByRole('button',{name:'Отключённые'}).click();
+  await modal.getByRole('button',{name:/Отключённый диспетчер/}).click();
+  await modal.getByRole('button',{name:'Вернуть сотрудника'}).click();
   await expect.poll(()=>restored).toBeTruthy();
 });
 
