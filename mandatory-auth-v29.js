@@ -11,22 +11,30 @@
   function escs(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
   function showGate(html){if(!gate)return;gate.innerHTML=`<div class="authGateCard">${html}</div>`;gate.style.display='flex';body.classList.remove('bos-auth-ok')}
   function unlock(){if(gate)gate.style.display='none';body.classList.add('bos-auth-ok')}
+  function timeout(p,ms,message='Авторизация заняла слишком много времени. Повторите вход через VK.'){
+    let timer;
+    return Promise.race([
+      Promise.resolve(p),
+      new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(message)),ms)})
+    ]).finally(()=>clearTimeout(timer));
+  }
   async function json(url,payload,headers={}){const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(payload)});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw Object.assign(new Error(d.error||('Ошибка сервера '+r.status)),{status:r.status,data:d});return d}
-  async function validate(){const s=getSession();if(!s)return false;try{await json(MINI,{action:'bootstrap'},{'X-BOS-Session':s});return true}catch(_){clearSession();return false}}
+  async function validate(){const s=getSession();if(!s)return false;try{await timeout(json(MINI,{action:'bootstrap'},{'X-BOS-Session':s}),10000,'Сервер не подтвердил вход. Повторите попытку.');return true}catch(_){clearSession();return false}}
   async function ensureSession(){
     if(await validate())return true;
     if(typeof window.BOS_ENSURE_VK_SESSION!=='function')return false;
     try{
-      await window.BOS_ENSURE_VK_SESSION();
+      await timeout(window.BOS_ENSURE_VK_SESSION(),15000);
       return await validate();
     }catch(err){
       if(err?.code==='REGISTRATION_REQUIRED'){phoneRegistration();return 'registration'}
+      window.BOS_AUTH_LAST_ERROR=err;
       return false;
     }
   }
   async function loadAuthorizedApp(){
     if(typeof reloadData!=='function')throw new Error('Приложение не готово к запуску');
-    await reloadData(false);
+    await timeout(reloadData(false),15000,'Не удалось загрузить данные приложения. Повторите вход.');
     if(!state?.user?.role)throw new Error('Не удалось определить роль сотрудника');
     try{if(typeof updateNavForRole==='function')updateNavForRole()}catch(_){ }
     try{if(typeof window.show==='function')window.show(state.page||'home')}catch(_){ }
@@ -39,28 +47,50 @@
   function passwordScreen(){
     showGate(`<div class="authLogo">Домашний мастер</div><h1>Вход по логину</h1><form id="authPassForm" class="form"><input name="login" autocomplete="username" placeholder="Логин" required><input name="password" type="password" autocomplete="current-password" placeholder="Пароль" required><button class="primary wide" type="submit">Войти</button><button id="authBack" class="wide" type="button">Назад</button><p id="authMsg" class="muted"></p></form>`);
     document.getElementById('authBack').onclick=()=>startScreen();
-    document.getElementById('authPassForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,m=document.getElementById('authMsg');m.textContent='Проверяем…';try{const d=await json(PASS,{action:'login',login:f.elements.login.value,password:f.elements.password.value});setSession(d.session_token);location.reload()}catch(err){m.textContent=err.message}};
+    document.getElementById('authPassForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,m=document.getElementById('authMsg');m.textContent='Проверяем…';try{const d=await timeout(json(PASS,{action:'login',login:f.elements.login.value,password:f.elements.password.value}),12000,'Сервер не ответил. Повторите вход.');setSession(d.session_token);location.reload()}catch(err){m.textContent=err.message}};
   }
   async function vkPayload(){
-    let launch='';try{if(window.BOS_ENSURE_VK_LAUNCH_PARAMS)launch=await window.BOS_ENSURE_VK_LAUNCH_PARAMS()}catch(_){ }
+    let launch='';try{if(window.BOS_ENSURE_VK_LAUNCH_PARAMS)launch=await timeout(window.BOS_ENSURE_VK_LAUNCH_PARAMS(),6000,'Не удалось получить параметры запуска VK.')}catch(_){ }
     if(launch)return {launch_params:launch};
-    if(window.vkBridge?.send){await window.vkBridge.send('VKWebAppInit',{}).catch(()=>{});const app_id=Number((window.BUSINESS_OS_CONFIG||{}).VK_APP_ID||54758847);const t=await window.vkBridge.send('VKWebAppGetAuthToken',{app_id,scope:''});if(t?.access_token)return {access_token:t.access_token}}
-    throw new Error('Не удалось получить данные VK. Откройте приложение через ВКонтакте.');
+    if(window.vkBridge?.send){
+      await timeout(window.vkBridge.send('VKWebAppInit',{}).catch(()=>{}),4000,'VK Bridge не ответил.');
+      const app_id=Number((window.BUSINESS_OS_CONFIG||{}).VK_APP_ID||54758847);
+      const t=await timeout(window.vkBridge.send('VKWebAppGetAuthToken',{app_id,scope:''}),15000);
+      if(t?.access_token)return {access_token:t.access_token};
+    }
+    throw new Error('Не удалось получить данные VK. Закройте приложение и откройте его заново через ВКонтакте.');
   }
   async function vkLogin(){
     showGate(`<div class="authLogo">Домашний мастер</div><h1>Вход через VK</h1><p class="muted">Подтверждаем аккаунт…</p>`);
-    try{const d=await json(VK,await vkPayload());setSession(d.session_token);if(d.registration_required)return phoneRegistration();location.reload()}catch(err){startScreen(err.message)}
+    try{const d=await timeout(json(VK,await vkPayload()),12000,'VK не подтвердил вход вовремя. Повторите попытку.');setSession(d.session_token);if(d.registration_required)return phoneRegistration();location.reload()}catch(err){startScreen(err.message)}
   }
   function phoneRegistration(){
     showGate(`<div class="authLogo">Домашний мастер</div><h1>Регистрация сотрудника</h1><p class="muted">Введите номер телефона, который указан у вас в карточке сотрудника.</p><form id="authPhoneForm" class="form"><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 999 123-45-67" required><button class="primary wide" type="submit">Продолжить</button><p id="authPhoneMsg" class="muted"></p></form>`);
-    document.getElementById('authPhoneForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,m=document.getElementById('authPhoneMsg');m.textContent='Проверяем…';try{const d=await json(MINI,{action:'registerByPhone',phone:f.elements.phone.value},{'X-BOS-Session':getSession()});if(d.session_token)setSession(d.session_token);location.reload()}catch(err){m.textContent=err.message}};
+    document.getElementById('authPhoneForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,m=document.getElementById('authPhoneMsg');m.textContent='Проверяем…';try{const d=await timeout(json(MINI,{action:'registerByPhone',phone:f.elements.phone.value},{'X-BOS-Session':getSession()}),12000,'Сервер не ответил. Повторите регистрацию.');if(d.session_token)setSession(d.session_token);location.reload()}catch(err){m.textContent=err.message}};
   }
   window.BOS_FORCE_AUTH_SCREEN=()=>{clearSession();startScreen()};
-  (async()=>{
+  let bootFinished=false;
+  async function boot(){
+    if(bootFinished)return;
     showGate(`<div class="authLogo">Домашний мастер</div><h1>Проверяем вход…</h1><p class="muted">Пожалуйста, подождите.</p>`);
-    const ready=await ensureSession();
-    if(ready==='registration')return;
-    if(!ready)return startScreen();
-    try{await loadAuthorizedApp();unlock()}catch(err){clearSession();startScreen(err.message||'Не удалось загрузить приложение')}
-  })();
+    try{
+      const ready=await timeout(ensureSession(),18000);
+      if(ready==='registration'){bootFinished=true;return}
+      if(!ready){bootFinished=true;return startScreen(window.BOS_AUTH_LAST_ERROR?.message||'')}
+      await loadAuthorizedApp();
+      bootFinished=true;
+      unlock();
+    }catch(err){
+      bootFinished=true;
+      startScreen(err?.message||'Не удалось завершить вход через VK. Повторите попытку.')
+    }
+  }
+  boot();
+  window.addEventListener('pageshow',()=>{
+    if(!bootFinished)return;
+    if(getSession()&&!body.classList.contains('bos-auth-ok'))location.reload();
+  });
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible'&&bootFinished&&getSession()&&!body.classList.contains('bos-auth-ok'))location.reload();
+  });
 })();
