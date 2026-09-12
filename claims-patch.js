@@ -1,4 +1,4 @@
-const CLAIMS_API='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api';
+const CLAIMS_API='https://business-os-api-gateway.netlify.app/api/proxy/claims-api';
 state.claims=state.claims||[];
 async function claimsApi(action,payload={}){const r=await fetch(CLAIMS_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,actor_role:state.user?.role||'owner',...payload})});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Ошибка сервера');return d}
 async function refreshClaims(){try{const d=await claimsApi('bootstrap');state.claims=d.claims||[];if(d.orders?.length)state.supabaseOrders=d.orders;if(d.masters?.length)state.claimMasters=d.masters}catch(e){console.warn(e)}return state.claims}
