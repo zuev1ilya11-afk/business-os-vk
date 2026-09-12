@@ -20,7 +20,7 @@ function b64u(a:Uint8Array){let s='';for(const b of a)s+=String.fromCharCode(b);
 async function hmac(m:string,s:string){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(s),{name:'HMAC',hash:'SHA-256'},false,['sign']);return b64u(new Uint8Array(await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(m))))}
 async function sess(t:string,s:string){const p=String(t||'').split('.');if(p.length!==3||Number(p[1])<Date.now()/1000)return null;return await hmac(`${p[0]}.${p[1]}`,s)===p[2]?p[0]:null}
 function norm(v:any){let d=String(v||'').replace(/\D/g,'');if(d.length===11&&d[0]==='8')d='7'+d.slice(1);if(d.length===10)d='7'+d;return d}
-const out=(s:any)=>({...s,vk_user_id:s.external_id});
+const out=(s:any)=>{const x={...(s||{})};delete x.password_hash;return {...x,vk_user_id:x.external_id}};
 const masterOrder=(o:any)=>{const x={...o};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
 const safeRequestId=(v:any)=>{const s=String(v||'').trim();return /^[A-Za-z0-9_-]{8,128}$/.test(s)?s:''};
 
@@ -36,7 +36,7 @@ Deno.serve(async r=>{
     const db=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
     const b=await r.json().catch(()=>({}));
     const a=String(b.action||'health');
-    if(a==='health')return j({ok:true,version:'2026-09-12-payout-idempotency-v12'});
+    if(a==='health')return j({ok:true,version:'2026-09-12-team-critical-v13'});
 
     if(a==='registerByPhone'){
       const uid=await sessionUid(r);
@@ -76,7 +76,7 @@ Deno.serve(async r=>{
       const all=st.data||[],vis=role==='master'?all.filter((x:any)=>x.id===me.id):all,map=new Map(all.map((x:any)=>[String(x.id),x]));
       let orders=(or.data||[]).map((o:any)=>({...o,id:String(o.id),master_vk_id:map.get(String(o.master_staff_id))?.external_id||'',master_name:o.master_name||map.get(String(o.master_staff_id))?.full_name||''}));
       if(role==='master')orders=orders.map(masterOrder);
-      return j({ok:true,user:out(me),orders,users:vis.map(out),masters:(role==='master'?vis:all.filter((x:any)=>x.role==='master')).map(out),masterSchedule:(sr.data||[]).filter((x:any)=>role!=='master'||x.staff_id===me.id),claims:(cl.data||[]).filter((x:any)=>role!=='master'||x.master_staff_id===me.id),sources:[{source:'VK'},{source:'Google Sheets'},{source:'Авито'}],settings:{permissions:{can_manage_orders:ops(role),can_manage_schedule:ops(role),can_manage_staff:role==='owner',can_review_reports:ops(role),can_view_finance:['owner','manager'].includes(role)}}});
+      return j({ok:true,user:out(me),orders,users:vis.map(out),masters:(role==='master'?vis:all.filter((x:any)=>x.role==='master')).map(out),masterSchedule:(sr.data||[]).filter((x:any)=>role!=='master'||x.staff_id===me.id),claims:(cl.data||[]).filter((x:any)=>role!=='master'||x.master_staff_id===me.id),sources:[{source:'VK'},{source:'Google Sheets'},{source:'Авито'}],settings:{permissions:{can_manage_orders:ops(role),can_manage_schedule:ops(role),can_manage_staff:['owner','manager'].includes(role),can_review_reports:ops(role),can_view_finance:['owner','manager'].includes(role)}}});
     }
 
     if(a==='createOrder'||a==='updateOrder'){
