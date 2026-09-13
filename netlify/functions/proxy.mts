@@ -14,6 +14,7 @@ const ALLOWED = new Set([
   "claims-api",
   "staff-admin-api",
   "staff-invite-api",
+  "hands-api",
 ]);
 
 const ALLOWED_ORIGINS = new Set([
