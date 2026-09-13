@@ -105,3 +105,47 @@ normalizeSchedule();
     }
   };
 })();
+(()=>{
+  if(window.BOS_MASTER_SCHEDULE_BULK_V64)return;
+  window.BOS_MASTER_SCHEDULE_BULK_V64=true;
+  let bulkKind='';
+  let bulkStart='10:00';
+  let bulkEnd='20:00';
+  const visibleDates=()=>[...document.querySelectorAll('#masterMonthCalendar .bosCalDay')].map(btn=>String(btn.getAttribute('onclick')||'').match(/(\d{4}-\d{2}-\d{2})/)?.[1]||'').filter(Boolean);
+  const shouldWork=(date,kind)=>kind==='all'||(kind==='weekdays'&&(()=>{const d=new Date(date+'T12:00:00').getDay();return d>=1&&d<=5})());
+  const setValue=(id,value)=>{const el=document.getElementById(id);if(!el||el.value===value)return;el.value=value;el.dispatchEvent(new Event('change',{bubbles:true}))};
+  function applyBulk(kind=bulkKind){
+    if(!['all','weekdays','off'].includes(kind))return;
+    bulkKind=kind;
+    const start=document.getElementById('bosBulkStart'),end=document.getElementById('bosBulkEnd');
+    if(start)bulkStart=start.value||bulkStart;if(end)bulkEnd=end.value||bulkEnd;
+    if(bulkEnd<=bulkStart){const h=Math.min(23,Number(bulkStart.slice(0,2))+1);bulkEnd=String(h).padStart(2,'0')+':00';if(end)end.value=bulkEnd}
+    for(const date of visibleDates()){
+      window.selectMasterCalendarDay?.(date);
+      const working=document.getElementById('calWorking');if(!working)continue;
+      const next=kind!=='off'&&shouldWork(date,kind);
+      if(working.checked!==next){working.checked=next;working.dispatchEvent(new Event('change',{bubbles:true}))}
+      if(next){setValue('calStart',bulkStart);setValue('calEnd',bulkEnd)}
+    }
+    queueInject();
+  }
+  window.setMasterSchedulePreset=applyBulk;
+  window.applyMasterScheduleBulk=applyBulk;
+  function hourOptions(value,from,to){let out='';for(let h=from;h<=to;h++){const v=String(h).padStart(2,'0')+':00';out+=`<option value="${v}" ${v===value?'selected':''}>${v}</option>`}return out}
+  function inject(){
+    const host=document.getElementById('masterMonthCalendar');if(!host)return;
+    const box=host.querySelector('.bosSchedulePresets.compact');if(!box)return;
+    box.classList.add('bosBulkSchedule');
+    box.innerHTML=`<div class="bosBulkTitle"><b>Быстро задать график</b><span>Выберите дни и время. Потом при необходимости нажмите отдельный день в календаре и измените только его.</span></div><div class="bosBulkButtons"><button type="button" class="secondary ${bulkKind==='all'?'active':''}" data-bulk-kind="all">Все дни</button><button type="button" class="secondary ${bulkKind==='weekdays'?'active':''}" data-bulk-kind="weekdays">Будни</button><button type="button" class="secondary ${bulkKind==='off'?'active':''}" data-bulk-kind="off">Убрать</button></div><div class="bosBulkTimes"><label>С<select id="bosBulkStart">${hourOptions(bulkStart,7,22)}</select></label><label>До<select id="bosBulkEnd">${hourOptions(bulkEnd,8,23)}</select></label></div>`;
+    box.querySelectorAll('[data-bulk-kind]').forEach(btn=>btn.addEventListener('click',()=>applyBulk(btn.dataset.bulkKind)));
+    const start=box.querySelector('#bosBulkStart'),end=box.querySelector('#bosBulkEnd');
+    start?.addEventListener('change',()=>{bulkStart=start.value;if(bulkKind&&bulkKind!=='off')applyBulk(bulkKind)});
+    end?.addEventListener('change',()=>{bulkEnd=end.value;if(bulkKind&&bulkKind!=='off')applyBulk(bulkKind)});
+  }
+  function queueInject(){inject();setTimeout(inject,0);setTimeout(inject,30)}
+  const render=window.renderMonthCalendar;if(typeof render==='function')window.renderMonthCalendar=function(){const out=render.apply(this,arguments);queueInject();return out};
+  const select=window.selectMasterCalendarDay;if(typeof select==='function')window.selectMasterCalendarDay=function(){const out=select.apply(this,arguments);queueInject();return out};
+  const dispatch=pages?.dispatch;if(typeof dispatch==='function')pages.dispatch=function(){const out=dispatch.apply(this,arguments);setTimeout(queueInject,0);return out};
+  const st=document.createElement('style');st.textContent='.bosSchedulePresets.compact.bosBulkSchedule{width:100%;margin:10px 0 0;display:grid;grid-template-columns:1fr;gap:10px;padding:12px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.025)}.bosBulkTitle{display:flex;flex-direction:column;gap:3px}.bosBulkTitle span{font-size:11px;color:var(--muted,#8ea0b5);line-height:1.35}.bosBulkButtons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.bosBulkButtons button.active{background:rgba(51,160,93,.2);border-color:rgba(72,190,116,.65)}.bosBulkTimes{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bosBulkTimes label{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:7px;font-size:12px}.bosBulkTimes select{min-width:0;width:100%}@media(max-width:420px){.bosBulkButtons{grid-template-columns:1fr 1fr}.bosBulkButtons button:last-child{grid-column:1/-1}}';document.head.appendChild(st);
+  queueInject();
+})();
