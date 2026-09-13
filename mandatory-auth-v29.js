@@ -21,7 +21,7 @@
     const timer=setTimeout(()=>controller.abort(),20000);
     try{
       const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(payload),signal:controller.signal});
-      const d=await r.json().catch(()=>({}));
+      const d=await r.json().catch(e=>{if(e?.name==='AbortError')throw e;if(r.ok)throw new Error('Сервер вернул некорректный ответ. Повторите попытку.');return {}});
       if(!r.ok||d?.ok===false){const e=new Error(d?.error||('Ошибка сервера '+r.status));e.status=r.status;e.data=d;throw e}
       return d;
     }catch(e){

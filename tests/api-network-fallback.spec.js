@@ -30,3 +30,7 @@ test('double password submit sends one auth request',async({page})=>{
 test('unresponsive VK Bridge cannot leave auth spinning forever',async({page})=>{
  await page.route('https://unpkg.com/**',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:()=>new Promise(()=>{})};'}));await page.goto('/?force_vk_auth=1');await expect(page.getByRole('button',{name:'Повторить вход через VK'})).toBeVisible({timeout:12000});
 });
+test('malformed success response is an error rather than an empty successful result',async({page})=>{
+ await page.goto('/');await page.route('**/api/proxy/mini-app-api',r=>r.fulfill({status:200,contentType:'application/json',body:'{"ok":'}));
+ expect(await page.evaluate(()=>BOS_POST('https://business-os-api-gateway.netlify.app/api/proxy/mini-app-api',{action:'bootstrap'}).then(()=> 'accepted',e=>e.message))).toBe('Сервер вернул некорректный ответ. Повторите попытку.');
+});
