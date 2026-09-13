@@ -9,7 +9,7 @@ function teamCard(u){
   if(u.role==='master'){
     const os=(state.orders||[]).filter(o=>String(o.master_vk_id||o.master_id||o.master_staff_id||'')===id||String(o.master_name||'')===String(u.full_name||''));
     const done=os.filter(o=>String(o.status)==='Выполнена');
-    const pay=done.reduce((s,o)=>s+Number(o.master_payout||payout(o.amount)),0);
+    const pay=done.reduce((s,o)=>s+Number(o.master_payout??payout(o.amount)),0);
     stats=`<div class="compactStats"><div><small>Выполнено</small><strong>${done.length}</strong></div><div><small>Выплата</small><strong>${money(pay)}</strong></div></div>`;
   }
   return `<button class="card compactTeamCard" onclick="openEmployeeProfile('${esc(id)}')"><div class="row"><div><b>${esc(u.full_name||u.name||'Сотрудник')}</b><small class="muted">${esc(u.city||'')}${u.phone?' · '+esc(u.phone):''}</small></div><span class="status info">${esc(roleName(u.role))}</span></div>${stats}</button>`;

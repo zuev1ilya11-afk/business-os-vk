@@ -65,3 +65,31 @@ test('empty optional order values are typed for Postgres',async()=>{
 test('duplicate staff login returns actionable conflict',async()=>{
  const db=database({business_staff:[employee('owner','owner'),employee('m'),employee('other','master',{login:'taken'})]});const r=await edge('staff-admin-api',db)({action:'setCredentials',id:'m',login:'taken',password:'new-password'});assert.equal(r.status,409);assert.match(r.body.error,/занят/);
 });
+test('claims creation/list/close enforce master ownership',async()=>{
+ const db=database({business_staff:[employee('owner','owner'),employee('m'),employee('other')],orders:[{id:'1',status:'Выполнена',master_staff_id:'m',report_uploaded_at:'2026-09-12'}]});const api=edge('claims-api',db);
+ assert.equal((await api({action:'reopenClaim',id:'1',reason:'Повторный монтаж'},'staff_other')).status,403);
+ assert.equal((await api({action:'reopenClaim',id:'1',reason:'Повторный монтаж'})).status,200);
+ assert.equal((await api({action:'bootstrap'},'staff_other')).body.claims.length,0);
+ assert.equal((await api({action:'closeClaim',id:'1'},'staff_other')).status,403);
+ assert.equal((await api({action:'closeClaim',id:'1'},'staff_m')).status,200);assert.equal(db.tables.order_claims[0].status,'closed');
+});
+test('master profile saves district/phone but cannot modify someone else',async()=>{
+ const db=database({business_staff:[employee('m'),employee('other','master',{phone:'+79990000002'})]});const api=edge('profile-self-api',db);
+ const r=await api({phone:'+79990000003',district:'Центральный',acting_master_vk_id:'staff_other',role:'owner'},'staff_m');assert.equal(r.status,200);assert.equal(db.tables.business_staff[0].district,'Центральный');assert.equal(db.tables.business_staff[0].role,'master');assert.equal(db.tables.business_staff[1].district,undefined);assert.ok(!JSON.stringify(r.body).includes('password_hash'));
+});
+test('memo text persists and role permissions are server enforced',async()=>{
+ const db=database({business_staff:[employee('boss','manager'),employee('m')]});const api=edge('master-memo-api',db);
+ const payload={action:'upload',category:'tips',title:'Инструкция',note:'Текст после обновления'};
+ assert.equal((await api(payload,'staff_m')).status,403);assert.equal((await api(payload,'staff_boss')).status,200);
+ const r=await api({action:'list'},'staff_m');assert.equal(r.body.items[0].note,payload.note);
+ assert.equal((await api({action:'delete',id:r.body.items[0].id},'staff_m')).status,403);
+});
+test('integration and Apps Script payroll agree with master 35 percent rule',()=>{
+ const fs=require('node:fs'),vm=require('node:vm'),{stripTypeScriptTypes}=require('node:module');
+ const source=stripTypeScriptTypes(fs.readFileSync('supabase/functions/integration-api/index.ts','utf8').replace(/^import .*?;\s*/,''),{mode:'transform'});
+ assert.equal(vm.runInNewContext(source+';payouts(1000,true).master_payout',{Deno:{serve:()=>{}}}),297.5);
+ assert.equal(vm.runInNewContext(fs.readFileSync('google-apps-script/Code.gs','utf8')+';masterPayout_(1000)'),297.5);
+});
+test('bootstrap includes orders beyond the default PostgREST page limit',async()=>{
+ const db=database({business_staff:[employee('owner','owner')],orders:Array.from({length:1205},(_,i)=>({id:String(i+1)}))});const r=await edge('mini-app-api',db)({action:'bootstrap'});assert.equal(r.body.orders.length,1205);
+});

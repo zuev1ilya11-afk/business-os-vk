@@ -19,7 +19,7 @@ function database(seed = {}) {
     }
     throw new Error(`Unexpected RPC ${name}`);
   },from(table){
-    let filters=[], mode='select', payload, columns='*', single=false, from=0, to=Infinity;
+    let filters=[], mode='select', payload, columns='*', single=false, from=0, to=999;
     const q={select(c='*'){columns=c;return q},eq(k,v){filters.push(x=>String(x[k])===String(v));return q},neq(k,v){filters.push(x=>String(x[k])!==String(v));return q},in(k,vs){filters.push(x=>vs.includes(x[k]));return q},order(){return q},limit(n){to=n-1;return q},range(a,b){from=a;to=b;return q},maybeSingle(){single=true;return q},single(){single=true;return q},insert(p){mode='insert';payload=p;return q},update(p){mode='update';payload=p;return q},upsert(p){mode='upsert';payload=p;return q},delete(){mode='delete';return q},then(resolve,reject){return Promise.resolve().then(()=>{
       db.calls.push({table,mode,payload:structuredClone(payload)});
       let rows=(tables[table]||[]).filter(x=>filters.every(f=>f(x)));

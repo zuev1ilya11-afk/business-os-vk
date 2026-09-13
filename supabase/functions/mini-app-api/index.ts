@@ -23,6 +23,16 @@ function norm(v:any){let d=String(v||'').replace(/\D/g,'');if(d.length===11&&d[0
 const out=(s:any)=>({...s,vk_user_id:s.external_id});
 const masterOrder=(o:any)=>{const x={...o};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
 const safeRequestId=(v:any)=>{const s=String(v||'').trim();return /^[A-Za-z0-9_-]{8,128}$/.test(s)?s:''};
+// PostgREST caps an unpaginated response at 1000 rows. Keep totals complete.
+async function allRows(query:any){
+  const data:any[]=[];
+  for(let offset=0;;offset+=1000){
+    const page=await query.range(offset,offset+999);
+    if(page.error)return page;
+    data.push(...(page.data||[]));
+    if((page.data||[]).length<1000)return {data,error:null};
+  }
+}
 
 async function sessionUid(r:Request){return await sess(r.headers.get('x-bos-session')||'',Deno.env.get('VK_APP_SECRET')||'')}
 async function actor(db:any,r:Request){const uid=await sessionUid(r);if(!uid)return null;return (await db.from('business_staff').select('*').eq('external_id',uid).eq('is_active',true).maybeSingle()).data||null}
@@ -64,13 +74,13 @@ Deno.serve(async r=>{
     const role=String(me.role||'');
 
     if(a==='bootstrap'){
-      let oq=db.from('orders').select('*').order('created_at',{ascending:false});
+      let oq=db.from('orders').select('*').order('created_at',{ascending:false}).order('id',{ascending:false});
       if(role==='master')oq=oq.eq('master_staff_id',me.id);
       const [or,st,sr,cl]=await Promise.all([
-        oq,
-        db.from('business_staff').select('*').eq('is_active',true).order('full_name'),
-        db.from('staff_schedule').select('*'),
-        db.from('order_claims').select('*').order('opened_at',{ascending:false})
+        allRows(oq),
+        allRows(db.from('business_staff').select('*').eq('is_active',true).order('full_name').order('id')),
+        allRows(db.from('staff_schedule').select('*').order('staff_id').order('work_date')),
+        allRows(db.from('order_claims').select('*').order('opened_at',{ascending:false}).order('id'))
       ]);
       for(const q of [or,st,sr,cl])if(q.error)throw q.error;
       const all=st.data||[],vis=role==='master'?all.filter((x:any)=>x.id===me.id):all,map=new Map(all.map((x:any)=>[String(x.id),x]));
