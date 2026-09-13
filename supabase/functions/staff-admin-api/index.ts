@@ -41,10 +41,15 @@ Deno.serve(async r=>{
       if(!target.is_active)return j({ok:false,error:'Сначала восстановите сотрудника'},400);
       const login=String(b.login||'').trim(),password=String(b.password||'');
       if(login.length<3)return j({ok:false,error:'Логин должен быть не короче 3 символов'},400);
+      if(login.length>64)return j({ok:false,error:'Логин слишком длинный'},400);
       if(password.length<6)return j({ok:false,error:'Пароль должен быть не короче 6 символов'},400);
+      if(password.length>128)return j({ok:false,error:'Пароль слишком длинный'},400);
       const q=await db.rpc('bos_set_staff_credentials',{p_staff_id:target.id,p_login:login,p_password:password});
-      if(q.error?.code==='23505')return j({ok:false,error:'Такой логин уже занят'},409);
-      if(q.error)throw q.error;
+      if(q.error){
+        const msg=String(q.error.message||'');
+        if(q.error.code==='23505'||msg.toLowerCase().includes('duplicate')||msg.includes('business_staff_login_unique'))return j({ok:false,error:'Такой логин уже занят. Выберите другой.'},409);
+        throw q.error;
+      }
       const fresh=await db.from('business_staff').select('id,external_id,full_name,role,phone,city,is_active,login,password_hash').eq('id',target.id).single();
       if(fresh.error)throw fresh.error;
       return j({ok:true,user:publicStaff(fresh.data)});
