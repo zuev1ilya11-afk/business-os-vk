@@ -6,13 +6,14 @@ test.setTimeout(60000);
 
 async function installOwnerBootstrap(page, createHandler){
   await page.addInitScript(()=>localStorage.setItem('bos_vk_session_v2','test-session-owner'));
+  const storedOrders=[];
   const master={id:'master-1',vk_user_id:'master_vk_1',external_id:'master_vk_1',full_name:'Мастер Тест',role:'master',city:'Москва'};
   const mini=async route=>{
     let body={};try{body=route.request().postDataJSON()||{}}catch(_){}
     if(body.action==='bootstrap'){
-      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,user:{full_name:'Владелец',role:'owner',city:'Москва',vk_user_id:'owner-test'},orders:[],users:[master],masters:[master],masterSchedule:[],claims:[],sources:[{source:'VK'}],settings:{}})});
+      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,user:{full_name:'Владелец',role:'owner',city:'Москва',vk_user_id:'owner-test'},orders:storedOrders,users:[master],masters:[master],masterSchedule:[],claims:[],sources:[{source:'VK'}],settings:{}})});
     }
-    if(body.action==='createOrder'&&createHandler)return createHandler(route,body);
+    if(body.action==='createOrder'&&createHandler)return createHandler(route,body,storedOrders);
     return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true})});
   };
   await page.route('**/api/proxy/mini-app-api',mini);
@@ -35,13 +36,15 @@ test('master payout is 35% of the amount remaining after 15% deduction',async({p
 test('retrying a failed create-order submission reuses the same request_id',async({page})=>{
   const seen=[];
   let attempts=0;
-  await installOwnerBootstrap(page,async(route,body)=>{
+  await installOwnerBootstrap(page,async(route,body,storedOrders)=>{
     seen.push(body.request_id);
     attempts++;
     if(attempts===1){
       return route.fulfill({status:500,contentType:'application/json',body:JSON.stringify({ok:false,error:'Временная ошибка сохранения'})});
     }
-    return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:{id:'IDEMP-1',status:'В работе',client:body.client,address:body.address,work:body.work,amount:Number(body.amount||body.original_amount||0),master_vk_id:body.master_vk_id||'',master_name:'Мастер Тест'}})});
+    const order={id:'IDEMP-1',status:'В работе',client:body.client,address:body.address,work:body.work,amount:Number(body.amount||body.original_amount||0),master_vk_id:body.master_vk_id||'',master_name:'Мастер Тест'};
+    storedOrders.push(order);
+    return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order})});
   });
 
   await page.goto('/',{waitUntil:'domcontentloaded'});
