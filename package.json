@@ -2,7 +2,9 @@
   "name": "business-os-vk",
   "private": true,
   "scripts": {
-    "test:ui": "playwright test"
+    "test:ui": "playwright test",
+    "test:server": "node --test tests/*.test.cjs",
+    "test": "npm run test:server && npm run test:ui"
   },
   "devDependencies": {
     "@playwright/test": "1.55.0"
