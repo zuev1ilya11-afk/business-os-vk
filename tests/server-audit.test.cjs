@@ -93,3 +93,14 @@ test('integration and Apps Script payroll agree with master 35 percent rule',()=
 test('bootstrap includes orders beyond the default PostgREST page limit',async()=>{
  const db=database({business_staff:[employee('owner','owner')],orders:Array.from({length:1205},(_,i)=>({id:String(i+1)}))});const r=await edge('mini-app-api',db)({action:'bootstrap'});assert.equal(r.body.orders.length,1205);
 });
+test('claims bootstrap includes all report orders and preserves master isolation',async()=>{
+ const db=database({business_staff:[employee('owner','owner'),employee('m')],orders:Array.from({length:1205},(_,i)=>({id:String(i+1),master_staff_id:i===1204?'m':'other'})),order_claims:Array.from({length:1205},(_,i)=>({id:String(i+1),master_staff_id:'m'}))});const api=edge('claims-api',db);const r=await api({action:'bootstrap'});assert.equal(r.body.orders.length,1205);assert.equal(r.body.claims.length,1205);assert.equal((await api({action:'bootstrap'},'staff_m')).body.orders.length,1);
+});
+test('GAS health signs with current sync key derivation and never sends report data',async()=>{
+ const {createHash,createHmac}=require('node:crypto');const {secret}=require('./helpers/edge.cjs');let called=false;
+ const api=edge('gas-bridge-health',database(),{fetch:async(url,init)=>{called=true;const p=new URLSearchParams(init.body);const key=createHash('sha256').update(secret).digest('hex');assert.equal(p.get('archive_sign'),createHmac('sha256',key).update([p.get('archive_ts'),'health-check','health'].join('|')).digest('base64url'));assert.equal(p.get('act_data'),null);return new Response('{"ok":false,"error":"ACT_REQUIRED"}') }});
+ const r=await api({});assert.equal(r.status,200);assert.ok(called);assert.equal(JSON.parse(r.body.body).error,'ACT_REQUIRED');
+});
+test('desktop dispatcher reaches archive validation and master cannot archive',async()=>{
+ const db=database({business_staff:[employee('d','dispatcher'),employee('m')],orders:[{id:'1'}]});const api=edge('drive-archive-api',db);assert.equal((await api({order_id:'1'},'staff_d')).body.error,'Отчёт ещё не загружен');assert.equal((await api({order_id:'1'},'staff_m')).status,403);
+});
