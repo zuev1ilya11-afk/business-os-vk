@@ -21,7 +21,7 @@
     const timer=setTimeout(()=>controller.abort(),20000);
     try{
       const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(payload),signal:controller.signal});
-      const d=await r.json().catch(()=>({}));
+      const d=await r.json().catch(e=>{if(e?.name==='AbortError')throw e;if(r.ok)throw new Error('Сервер вернул некорректный ответ. Повторите попытку.');return {}});
       if(!r.ok||d?.ok===false){const e=new Error(d?.error||('Ошибка сервера '+r.status));e.status=r.status;e.data=d;throw e}
       return d;
     }catch(e){
@@ -52,8 +52,12 @@
     const immediate=launchFromPage();if(immediate)return immediate;
     if(!window.vkBridge?.send)return '';
     try{
-      await window.vkBridge.send('VKWebAppInit',{}).catch(()=>{});
-      return fromObject(await window.vkBridge.send('VKWebAppGetLaunchParams',{}));
+      let timer;
+      try{return await Promise.race([(async()=>{
+        await window.vkBridge.send('VKWebAppInit',{}).catch(()=>{});
+        return fromObject(await window.vkBridge.send('VKWebAppGetLaunchParams',{}));
+      })(),new Promise(resolve=>{timer=setTimeout(()=>resolve(''),6000)})]);}
+      finally{clearTimeout(timer)}
     }catch(_){return ''}
   }
   function isVkLaunch(){return forceVk||!!launchFromPage()}
@@ -83,6 +87,7 @@
     if(!session)throw new Error('Требуется вход');
     return post(MINI,{action,...payload},{'X-BOS-Session':session});
   }
+  window.BOS_POST=post;
   window.api=sessionApi;try{api=sessionApi}catch(_){ }
   window.BOS_STORE_SESSION=setSession;
   window.BOS_AUTH_HEADERS=async()=>({'Content-Type':'application/json','X-BOS-Session':getSession()});
@@ -101,8 +106,8 @@
   function passwordScreen(msg=''){
     showGate(`<div class="authLogo">Домашний мастер</div><h1>Вход по логину</h1>${msg?`<p class="authError">${escs(msg)}</p>`:'<p class="muted">Вход с компьютера</p>'}<form id="simplePassForm" class="form"><input name="login" autocomplete="username" placeholder="Логин" required><input name="password" type="password" autocomplete="current-password" placeholder="Пароль" required><button class="primary wide" type="submit">Войти</button><p id="simplePassMsg" class="muted"></p></form>`);
     document.getElementById('simplePassForm').onsubmit=async e=>{
-      e.preventDefault();const f=e.currentTarget,m=document.getElementById('simplePassMsg');m.textContent='Проверяем…';
-      try{const d=await post(PASS,{action:'login',login:f.elements.login.value,password:f.elements.password.value});if(!d?.session_token)throw new Error('Сервер не выдал сессию');setSession(d.session_token);await loadApp()}catch(err){m.textContent=err.message}
+      e.preventDefault();const f=e.currentTarget,m=document.getElementById('simplePassMsg');if(f.dataset.pending)return;f.dataset.pending='1';const btn=f.querySelector('button');btn.disabled=true;m.textContent='Проверяем…';
+      try{const d=await post(PASS,{action:'login',login:f.elements.login.value,password:f.elements.password.value});if(!d?.session_token)throw new Error('Сервер не выдал сессию');setSession(d.session_token);await loadApp()}catch(err){m.textContent=err.message}finally{delete f.dataset.pending;btn.disabled=false}
     };
   }
   function retryVkScreen(msg){
