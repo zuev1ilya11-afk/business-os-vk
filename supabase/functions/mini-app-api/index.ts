@@ -14,15 +14,25 @@ const payouts=(a:any,has=true)=>{
     dispatcher_payout:round(x*.85*.94*.15)
   }
 };
-const j=(x:any,s=200)=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'Content-Type':'application/json'}});
+const j=(x:any,s=200)=>new Response(JSON.stringify(x,(key,value)=>['password_hash','password'].includes(key)?undefined:value),{status:s,headers:{...cors,'Content-Type':'application/json'}});
 
 function b64u(a:Uint8Array){let s='';for(const b of a)s+=String.fromCharCode(b);return btoa(s).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_')}
 async function hmac(m:string,s:string){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(s),{name:'HMAC',hash:'SHA-256'},false,['sign']);return b64u(new Uint8Array(await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(m))))}
-async function sess(t:string,s:string){const p=String(t||'').split('.');if(p.length!==3||Number(p[1])<Date.now()/1000)return null;return await hmac(`${p[0]}.${p[1]}`,s)===p[2]?p[0]:null}
+async function sess(t:string,s:string){const p=String(t||'').split('.');if(!s||p.length!==3||!/^[A-Za-z0-9_-]{1,128}$/.test(p[0])||!/^\d{1,12}$/.test(p[1])||Number(p[1])<=Date.now()/1000)return null;return await hmac(`${p[0]}.${p[1]}`,s)===p[2]?p[0]:null}
 function norm(v:any){let d=String(v||'').replace(/\D/g,'');if(d.length===11&&d[0]==='8')d='7'+d.slice(1);if(d.length===10)d='7'+d;return d}
 const out=(s:any)=>{const x={...(s||{})};delete x.password_hash;return {...x,vk_user_id:x.external_id}};
 const masterOrder=(o:any)=>{const x={...o};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
 const safeRequestId=(v:any)=>{const s=String(v||'').trim();return /^[A-Za-z0-9_-]{8,128}$/.test(s)?s:''};
+// PostgREST caps an unpaginated response at 1000 rows. Keep totals complete.
+async function allRows(query:any){
+  const data:any[]=[];
+  for(let offset=0;;offset+=1000){
+    const page=await query.range(offset,offset+999);
+    if(page.error)return page;
+    data.push(...(page.data||[]));
+    if((page.data||[]).length<1000)return {data,error:null};
+  }
+}
 
 async function sessionUid(r:Request){return await sess(r.headers.get('x-bos-session')||'',Deno.env.get('VK_APP_SECRET')||'')}
 async function actor(db:any,r:Request){const uid=await sessionUid(r);if(!uid)return null;return (await db.from('business_staff').select('*').eq('external_id',uid).eq('is_active',true).maybeSingle()).data||null}
@@ -64,13 +74,13 @@ Deno.serve(async r=>{
     const role=String(me.role||'');
 
     if(a==='bootstrap'){
-      let oq=db.from('orders').select('*').order('created_at',{ascending:false});
+      let oq=db.from('orders').select('*').order('created_at',{ascending:false}).order('id',{ascending:false});
       if(role==='master')oq=oq.eq('master_staff_id',me.id);
       const [or,st,sr,cl]=await Promise.all([
-        oq,
-        db.from('business_staff').select('*').eq('is_active',true).order('full_name'),
-        db.from('staff_schedule').select('*'),
-        db.from('order_claims').select('*').order('opened_at',{ascending:false})
+        allRows(oq),
+        allRows(db.from('business_staff').select('*').eq('is_active',true).order('full_name').order('id')),
+        allRows(db.from('staff_schedule').select('*').order('staff_id').order('work_date')),
+        allRows(db.from('order_claims').select('*').order('opened_at',{ascending:false}).order('id'))
       ]);
       for(const q of [or,st,sr,cl])if(q.error)throw q.error;
       const all=st.data||[],vis=role==='master'?all.filter((x:any)=>x.id===me.id):all,map=new Map(all.map((x:any)=>[String(x.id),x]));
@@ -99,16 +109,28 @@ Deno.serve(async r=>{
 
       let ms:any=undefined;
       if(a==='createOrder'||Object.prototype.hasOwnProperty.call(b,'master_vk_id')||Object.prototype.hasOwnProperty.call(b,'master_id'))ms=await staff(db,b.master_vk_id||b.master_id);
+      if((b.master_vk_id||b.master_id)&&(!ms||ms.role!=='master'||!ms.is_active))return j({ok:false,error:'Выберите активного мастера'},400);
+      for(const k of ['original_amount','amount','extra_work_amount','uncompleted_work_amount'])if(k in b&&(!Number.isFinite(Number(b[k]))||Number(b[k])<0))return j({ok:false,error:'Сумма должна быть конечным неотрицательным числом'},400);
       const original=round(b.original_amount??b.amount??cur?.original_amount??cur?.amount??0),unfinished=round(b.uncompleted_work_amount??cur?.uncompleted_work_amount??0),amount=round(original-unfinished),now=new Date().toISOString();
+      if(amount<0)return j({ok:false,error:'Невыполненные работы не могут превышать сумму заказа'},400);
       const p:any={updated_at:now,sync_status:'pending_sheet'};
       for(const k of ['status','client','phone','address','work','scheduled_date','scheduled_time','time_slot','source','city','comment','extra_work_done','extra_work_description','extra_work_amount','uncompleted_work_done','uncompleted_work_description','uncompleted_work_amount','wall_over_3m','wall_material','possible_extra_work'])if(a==='createOrder'||Object.prototype.hasOwnProperty.call(b,k))p[k]=b[k]??'';
+      for(const k of ['scheduled_date','scheduled_time'])if(k in p&&!p[k])p[k]=null;
+      for(const k of ['extra_work_done','uncompleted_work_done','wall_over_3m','possible_extra_work'])if(k in p)p[k]=p[k]===true||p[k]==='true'||p[k]==='on';
+      for(const k of ['extra_work_amount','uncompleted_work_amount'])if(k in p)p[k]=round(p[k]);
       p.original_amount=original;
       p.amount=amount;
       if(ms!==undefined){p.master_staff_id=ms?.id||null;p.master_name=ms?.full_name||''}
-      Object.assign(p,payouts(amount,ms===undefined?!!cur?.master_staff_id:!!ms));
+      // A comment/status edit must not overwrite an explicitly adjusted payout.
+      if(!cur||amount!==Number(cur.amount)||original!==Number(cur.original_amount??cur.amount))Object.assign(p,payouts(amount,ms===undefined?!!cur?.master_staff_id:!!ms));
+      else if(ms!==undefined&&ms?.id!==cur.master_staff_id)p.master_payout=payouts(amount,!!ms).master_payout;
       if(a==='createOrder'){
         Object.assign(p,{status:b.status||'В работе',client:String(b.client).trim(),address:String(b.address).trim(),work:String(b.work).trim(),source:b.source||'VK',city:b.city||'Санкт-Петербург',external_source:'mini_app',external_id:createExternalId||('app_'+crypto.randomUUID()),created_by_vk_id:me.external_id,source_updated_at:now});
         const q=await db.from('orders').insert(p).select().single();
+        if(q.error?.code==='23505'&&createExternalId){
+          const prior=await db.from('orders').select('*').eq('external_source','mini_app').eq('external_id',createExternalId).maybeSingle();
+          if(prior.data)return j({ok:true,order:prior.data,idempotent:true});
+        }
         if(q.error)throw q.error;
         return j({ok:true,order:q.data});
       }
