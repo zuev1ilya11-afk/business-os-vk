@@ -105,6 +105,9 @@ Deno.serve(async r=>{
       if(amount<0)return j({ok:false,error:'Невыполненные работы не могут превышать сумму заказа'},400);
       const p:any={updated_at:now,sync_status:'pending_sheet'};
       for(const k of ['status','client','phone','address','work','scheduled_date','scheduled_time','time_slot','source','city','comment','extra_work_done','extra_work_description','extra_work_amount','uncompleted_work_done','uncompleted_work_description','uncompleted_work_amount','wall_over_3m','wall_material','possible_extra_work'])if(a==='createOrder'||Object.prototype.hasOwnProperty.call(b,k))p[k]=b[k]??'';
+      for(const k of ['scheduled_date','scheduled_time'])if(k in p&&!p[k])p[k]=null;
+      for(const k of ['extra_work_done','uncompleted_work_done','wall_over_3m','possible_extra_work'])if(k in p)p[k]=p[k]===true||p[k]==='true'||p[k]==='on';
+      for(const k of ['extra_work_amount','uncompleted_work_amount'])if(k in p)p[k]=round(p[k]);
       p.original_amount=original;
       p.amount=amount;
       if(ms!==undefined){p.master_staff_id=ms?.id||null;p.master_name=ms?.full_name||''}

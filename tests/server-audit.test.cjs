@@ -53,3 +53,15 @@ test('concurrent retry returns same order and creates only one row',async()=>{
  const db=database({business_staff:[employee('owner','owner')]});const api=edge('mini-app-api',db);const b={action:'createOrder',client:'x',address:'x',work:'x',amount:1000,request_id:'request-audit-123'};
  const rs=await Promise.all([api(b),api(b)]);assert.deepEqual(rs.map(r=>r.status),[200,200]);assert.equal(db.tables.orders.length,1);assert.equal(rs[0].body.order.id,rs[1].body.order.id);
 });
+test('report rejects excessive deduction and negative extras',async()=>{
+ for(const values of [{uncompleted_work_amount:1001},{extra_work_amount:-1}]){
+ const db=database({business_staff:[employee('m')],orders:[{id:'1',master_staff_id:'m',original_amount:1000}]});
+ const r=await edge('report-api',db)({action:'finalizeMasterReport',order_id:'1',upload_token:'audit',act_url:'https://example.test/act',photo_urls:['https://example.test/photo'],...values},'staff_m');assert.equal(r.status,400);assert.equal(db.tables.orders[0].status,undefined);
+ }
+});
+test('empty optional order values are typed for Postgres',async()=>{
+ const db=database({business_staff:[employee('owner','owner')]});const r=await edge('mini-app-api',db)({action:'createOrder',client:'x',address:'x',work:'x',scheduled_date:'',scheduled_time:''});assert.equal(r.status,200);assert.equal(r.body.order.scheduled_date,null);assert.equal(r.body.order.scheduled_time,null);assert.equal(r.body.order.extra_work_done,false);assert.equal(r.body.order.extra_work_amount,0);
+});
+test('duplicate staff login returns actionable conflict',async()=>{
+ const db=database({business_staff:[employee('owner','owner'),employee('m'),employee('other','master',{login:'taken'})]});const r=await edge('staff-admin-api',db)({action:'setCredentials',id:'m',login:'taken',password:'new-password'});assert.equal(r.status,409);assert.match(r.body.error,/занят/);
+});

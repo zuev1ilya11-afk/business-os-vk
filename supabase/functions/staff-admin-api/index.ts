@@ -43,6 +43,7 @@ Deno.serve(async r=>{
       if(login.length<3)return j({ok:false,error:'Логин должен быть не короче 3 символов'},400);
       if(password.length<6)return j({ok:false,error:'Пароль должен быть не короче 6 символов'},400);
       const q=await db.rpc('bos_set_staff_credentials',{p_staff_id:target.id,p_login:login,p_password:password});
+      if(q.error?.code==='23505')return j({ok:false,error:'Такой логин уже занят'},409);
       if(q.error)throw q.error;
       const fresh=await db.from('business_staff').select('id,external_id,full_name,role,phone,city,is_active,login,password_hash').eq('id',target.id).single();
       if(fresh.error)throw fresh.error;
