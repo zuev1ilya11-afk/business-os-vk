@@ -14,6 +14,7 @@ const ALLOWED = new Set([
   "claims-api",
   "staff-admin-api",
   "staff-invite-api",
+  "order-meta-api",
   "hands-api",
 ]);
 
