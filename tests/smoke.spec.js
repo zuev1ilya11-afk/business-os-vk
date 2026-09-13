@@ -30,6 +30,11 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/order-meta-api',simpleOk({ok:true,order:{order_type:'work'}}));
   await page.route('**/api/proxy/claims-api',simpleOk({ok:true,claims:[],orders:[],masters:[]}));
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api',simpleOk({ok:true,claims:[],orders:[],masters:[]}));
+  await page.route('**/api/proxy/staff-admin-api',async route=>{
+    const body=route.request().postDataJSON()||{};
+    if(body.action==='setCredentials')return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,user:{id:body.id,login:body.login,has_password:true}})});
+    return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,staff:[]})});
+  });
 
   const employeeHandler=async route=>{
     let body={};try{body=route.request().postDataJSON()||{}}catch(_){}
@@ -85,7 +90,11 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   await page.locator('input[name="full_name"]').fill('Новый мастер');
   await expect(page.locator('input[name="vk_user_id"]')).toHaveCount(0);
   await page.locator('input[name="phone"]').fill('+79991234567');
-  await page.getByRole('button',{name:'Добавить'}).click();
+  await page.locator('input[name="login"]').fill('new.master');
+  await page.locator('input[name="password"]').fill('testpass1');
+  await page.getByRole('button',{name:'Добавить сотрудника и доступ'}).click();
+  await expect(page.getByText('Сотрудник и доступ созданы')).toBeVisible();
+  await page.getByRole('button',{name:'Закрыть'}).click();
   await expect(page.getByText('Новый мастер')).toBeVisible();
   await page.locator('nav button[data-page="dispatch"]').click();await expect(page.getByText('График мастеров',{exact:true})).toBeVisible();
 });

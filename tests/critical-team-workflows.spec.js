@@ -31,7 +31,10 @@ test('employee creation succeeds once even when district metadata fails',async({
       return {ok:true};
     };
     window.BOS_AUTH_HEADERS=async()=>({'Content-Type':'application/json','X-BOS-Session':'test'});
-    window.fetch=async()=>({ok:false,status:502,json:async()=>({ok:false,error:'metadata offline'})});
+    window.fetch=async(url,opts)=>{
+      if(String(url).includes('staff-admin-api'))return new Response(JSON.stringify({ok:true,user:{id:'staff-1',login:'critical.master',has_password:true}}),{status:200,headers:{'Content-Type':'application/json'}});
+      return new Response(JSON.stringify({ok:false,error:'metadata offline'}),{status:502,headers:{'Content-Type':'application/json'}});
+    };
   `});
   await page.addScriptTag({path:path.join(__dirname,'..','employee-form-v16.js')});
   await page.evaluate(()=>window.openEmployeeForm());
@@ -39,10 +42,12 @@ test('employee creation succeeds once even when district metadata fails',async({
   await page.locator('#empForm input[name="full_name"]').fill('Новый мастер');
   await page.locator('#empForm input[name="phone"]').fill('+7 999 123-45-67');
   await page.locator('#empForm input[name="district"]').fill('Центральный');
+  await page.locator('#empForm input[name="login"]').fill('critical.master');
+  await page.locator('#empForm input[name="password"]').fill('secret123');
   await page.locator('#empForm button[type="submit"]').click();
   await expect.poll(()=>page.evaluate(()=>window.addEmployeeCalls)).toBe(1);
   await expect.poll(()=>page.evaluate(()=>window.state.users.length)).toBe(1);
-  await expect(page.locator('#modalRoot')).toContainText('Сотрудник создан');
+  await expect(page.locator('#modalRoot')).toContainText('Сотрудник и доступ созданы');
 });
 
 async function mockTeamApp(page,role){
