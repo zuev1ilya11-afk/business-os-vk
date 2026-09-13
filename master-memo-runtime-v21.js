@@ -4,7 +4,7 @@ const MEMO_API='https://business-os-api-gateway.netlify.app/api/proxy/master-mem
 const MEMO_NAMES={acts:'Акты выполненных работ',measurements:'Листы замера',price:'Прайс услуг',tips:'Подсказки по работе'};
 function ownerMemoMode(){return String(state.user?.role||'')==='owner'&&!(typeof isMasterPreview==='function'&&isMasterPreview())&&!(typeof isDispatcherPreview==='function'&&isDispatcherPreview())}
 async function memoHeaders(){const base=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};const h={'Content-Type':'application/json'};const s=base['X-BOS-Session']||base['x-bos-session'];if(s)h['X-BOS-Session']=s;return h}
-async function memoApi(action,payload={}){const r=await fetch(MEMO_API,{method:'POST',headers:await memoHeaders(),body:JSON.stringify({action,...payload})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Ошибка работы с памяткой');return d}
+async function memoApi(action,payload={}){if(window.BOS_POST)return window.BOS_POST(MEMO_API,{action,...payload},await memoHeaders());const r=await fetch(MEMO_API,{method:'POST',headers:await memoHeaders(),body:JSON.stringify({action,...payload})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Ошибка работы с памяткой');return d}
 function readFile64(file){return new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(String(fr.result||'').split(',')[1]||'');fr.onerror=()=>reject(new Error('Не удалось прочитать файл'));fr.readAsDataURL(file)})}
 function isWordFile(name=''){return /\.(docx?|DOCX?)$/.test(String(name||''))}
 function fileButtonLabel(x){return isWordFile(x?.file_name)?'Скачать Word':'Скачать файл'}

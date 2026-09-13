@@ -12,6 +12,7 @@ const ALLOWED = new Set([
   "employee-meta-api",
   "profile-self-api",
   "claims-api",
+  "order-meta-api",
   "staff-admin-api",
   "staff-invite-api",
   "hands-api",

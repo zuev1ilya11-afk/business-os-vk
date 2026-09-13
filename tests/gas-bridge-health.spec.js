@@ -1,4 +1,6 @@
 const {test,expect}=require('@playwright/test');
+// APIRequestContext does not automatically honor the runner's HTTPS proxy.
+if(process.env.HTTPS_PROXY)test.use({proxy:{server:process.env.HTTPS_PROXY}});
 
 test('signed GAS bridge is reachable and configured',async({request})=>{
   const r=await request.get('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/gas-bridge-health');

@@ -6,7 +6,7 @@ const STAFF_DIRECT='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/staff-
 
 // The production Netlify gateway is deployed separately from GitHub Pages and can lag behind.
 // Retry staff-admin directly only when the gateway explicitly does not know the service or is unreachable.
-if(!window.BOS_STAFF_ADMIN_LIVE_FALLBACK_V60){
+if(!window.BOS_STAFF_ADMIN_LIVE_FALLBACK_V60&&!window.BOS_STAFF_ADMIN_FETCH_FALLBACK_V60){
   window.BOS_STAFF_ADMIN_LIVE_FALLBACK_V60=true;
   const nativeFetch=window.fetch.bind(window);
   window.fetch=async function(input,init){
@@ -51,6 +51,8 @@ function syncPreset(kind){
 // the same calendar draft that the Save button later sends to the API.
 window.setMasterSchedulePreset=function(kind){
   if(!['all','weekdays','off'].includes(kind))return;
+  window.BOS_SET_CALENDAR_PRESET?.(kind);
+  if(window.BOS_MASTER_CALENDAR&&window.applyMasterSchedulePreset){window.applyMasterSchedulePreset(kind);syncPreset(kind);return;}
   const dates=visibleDates();
   for(const date of dates){
     if(typeof window.selectMasterCalendarDay!=='function')break;
@@ -71,7 +73,7 @@ function networkLike(err){
 }
 
 // saveMasterSchedule is an upsert by staff/date, so one retry after a transport failure is safe.
-if(typeof window.api==='function'&&!window.BOS_SCHEDULE_SAVE_RETRY_V60){
+if(typeof window.api==='function'&&!window.BOS_SCHEDULE_SAVE_RETRY_V60&&!window.BOS_FIELD_SCHEDULE_FIX_V59){
   window.BOS_SCHEDULE_SAVE_RETRY_V60=true;
   const previousApi=window.api;
   const retryingApi=async function(action,payload={}){

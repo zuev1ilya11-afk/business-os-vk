@@ -10,7 +10,7 @@ function ownOrders(){return isMasterPreview()?state.orders.filter(o=>String(o.ma
 function completedOwnOrders(){return ownOrders().filter(o=>o.status==='Выполнена')}
 function ownExtraTotal(){return completedOwnOrders().reduce((a,o)=>a+Number(o.extra_work_amount||0),0)}
 function ownUncompletedTotal(){return completedOwnOrders().reduce((a,o)=>a+Number(o.uncompleted_work_amount||0),0)}
-function ownPayoutTotal(){return completedOwnOrders().reduce((a,o)=>a+Number(o.master_payout||payout(o.amount)),0)}
+function ownPayoutTotal(){return completedOwnOrders().reduce((a,o)=>a+Number(o.master_payout??payout(o.amount)),0)}
 function ownSalaryTotal(){return Math.max(0,ownPayoutTotal()+ownExtraTotal())}
 
 function ownerAdjustmentMetricHtml(){const done=state.orders.filter(o=>o.status==='Выполнена');const extras=done.reduce((a,o)=>a+Number(o.extra_work_amount||0),0);const uncompleted=done.reduce((a,o)=>a+Number(o.uncompleted_work_amount||0),0);return `<section class="card"><h3>Корректировки по выполненным заявкам</h3><div class="grid"><div class="metric"><span class="muted">Допработы</span><strong>${money(extras)}</strong></div><div class="metric"><span class="muted">Невыполненные</span><strong>− ${money(uncompleted)}</strong></div></div></section>`}
@@ -25,7 +25,7 @@ const ownerOrdersPage=pages.orders;
 pages.orders=function(){
   if(!isMasterPreview()) return ownerOrdersPage();
   const orders=ownOrders();
-  return `<div class="row"><div><h2>Мои заявки</h2><div class="muted">${orders.length} шт.</div></div></div>${orders.map(o=>`<section class="card" onclick="openOrder('${esc(o.id)}')"><div class="row"><b>${esc(o.id)}</b><span class="status info">${esc(o.status)}</span></div><h3>${esc(o.work)}</h3><p class="muted">${esc(o.client)} · ${esc(o.address)}</p><div class="row"><span>${esc(o.scheduled_date||'')} ${esc(o.scheduled_time||'')}</span></div>${o.status==='Выполнена'?`<p class="muted">Моя выплата: ${money(o.master_payout||payout(o.amount))}${Number(o.extra_work_amount||0)>0?` · Допработы: ${money(o.extra_work_amount)}`:''}${Number(o.uncompleted_work_amount||0)>0?` · Невыполнено: −${money(o.uncompleted_work_amount)}`:''}</p>`:''}</section>`).join('')||'<p class="muted">Заявок пока нет.</p>'}`;
+  return `<div class="row"><div><h2>Мои заявки</h2><div class="muted">${orders.length} шт.</div></div></div>${orders.map(o=>`<section class="card" onclick="openOrder('${esc(o.id)}')"><div class="row"><b>${esc(o.id)}</b><span class="status info">${esc(o.status)}</span></div><h3>${esc(o.work)}</h3><p class="muted">${esc(o.client)} · ${esc(o.address)}</p><div class="row"><span>${esc(o.scheduled_date||'')} ${esc(o.scheduled_time||'')}</span></div>${o.status==='Выполнена'?`<p class="muted">Моя выплата: ${money(o.master_payout??payout(o.amount))}${Number(o.extra_work_amount||0)>0?` · Допработы: ${money(o.extra_work_amount)}`:''}${Number(o.uncompleted_work_amount||0)>0?` · Невыполнено: −${money(o.uncompleted_work_amount)}`:''}</p>`:''}</section>`).join('')||'<p class="muted">Заявок пока нет.</p>'}`;
 };
 
 const ownerDispatchPage=pages.dispatch;
