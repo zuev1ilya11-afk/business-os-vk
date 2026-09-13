@@ -15,7 +15,7 @@ for(const s of sizes){
       const action=body.action||'bootstrap';
       let result={ok:true};
       if(action==='health')result={ok:true,version:'2026-09-12-netlify-gateway'};
-      else if(action==='bootstrap')result={ok:true,user:master,orders,users:[master],masters:[master],masterSchedule:[],claims:[],sources:[{source:'VK'}],settings:{}};
+      else if(action==='bootstrap')result={ok:true,user:master,orders,users:[master],masters:[master],masterSchedule:[],claims:[],sources:[{source:'VK'}],settings:{permissions:{can_manage_staff:false}}};
       else if(action==='saveMasterSchedule')result={ok:true,schedule:(body.days||[]).map(d=>({...d,master_vk_id:'1001',week_start:body.week_start}))};
       await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(result)});
     };
@@ -42,5 +42,19 @@ for(const s of sizes){
     await expect(page.getByText('Мой график')).toBeVisible();
     await expect(page.locator('#masterMonthCalendar')).toBeVisible();
     await expect(page.getByRole('button',{name:'Сохранить график'})).toBeVisible();
+
+    const teamButton=page.locator('nav button[data-page="team"]');
+    if(await teamButton.count()){
+      await teamButton.click();
+      await expect(page.getByRole('button',{name:'+ Сотрудник'})).toHaveCount(0);
+      await expect(page.getByText('Управление сотрудниками',{exact:true})).toHaveCount(0);
+      await expect(page.getByRole('button',{name:'Логины и пароли'})).toHaveCount(0);
+      await expect(page.getByRole('button',{name:'Отключённые'})).toHaveCount(0);
+    }
+
+    await page.evaluate(()=>window.openEmployeeForm?.());
+    await expect(page.getByText('Новый сотрудник',{exact:true})).toHaveCount(0);
+    await page.evaluate(()=>window.openStaffAccess?.('all'));
+    await expect(page.getByText('Доступы сотрудников',{exact:true})).toHaveCount(0);
   });
 }
