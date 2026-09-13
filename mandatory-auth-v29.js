@@ -87,6 +87,7 @@
     if(!session)throw new Error('Требуется вход');
     return post(MINI,{action,...payload},{'X-BOS-Session':session});
   }
+  window.BOS_POST=post;
   window.api=sessionApi;try{api=sessionApi}catch(_){ }
   window.BOS_STORE_SESSION=setSession;
   window.BOS_AUTH_HEADERS=async()=>({'Content-Type':'application/json','X-BOS-Session':getSession()});

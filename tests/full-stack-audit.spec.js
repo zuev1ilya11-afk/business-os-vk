@@ -30,3 +30,10 @@ test('manager adds memo text and sees it after reopening',async({page})=>{
 test('dispatcher report preserves explicit zero payout and resolves staff name',async({page})=>{
  const {db}=await fullStack(page,'dispatcher');Object.assign(db.tables.orders[0],{status:'Выполнена',completed_at:new Date().toISOString(),master_payout:0});await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();const report=await page.evaluate(()=>dispatcherReportData('month',new Date()));expect(report.totalPay).toBe(0);expect(report.rows[0].name).toBe('Тестовый мастер');
 });
+test('memo and claims requests stop on timeout and preserve retry UI',async({page})=>{
+ test.setTimeout(35000);await fullStack(page,'master');await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
+ await page.route('**/api/proxy/master-memo-api',()=>{});await page.route('**/api/proxy/claims-api',()=>{});
+ const claimResult=page.evaluate(()=>claimsApi('bootstrap').catch(e=>e.message));
+ await page.evaluate(()=>openMasterMemoItem('tips'));await expect(page.locator('#masterMemoItems')).toContainText('Сервер не ответил',{timeout:25000});
+ expect(await claimResult).toContain('Сервер не ответил');await page.getByRole('button',{name:'Закрыть',exact:true}).click();await expect(page.locator('.modal')).toHaveCount(0);
+});
