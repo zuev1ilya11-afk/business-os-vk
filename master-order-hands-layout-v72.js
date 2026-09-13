@@ -1,0 +1,16 @@
+(()=>{
+'use strict';
+if(window.BOS_MASTER_HANDS_LAYOUT_V72)return;window.BOS_MASTER_HANDS_LAYOUT_V72=true;
+const masterMode=()=>String(state.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
+const no=o=>{const x=String(o?.external_id||'');return x.startsWith('hands:')?x.slice(6):String(o?.id||'')};
+const dateTime=o=>{const d=String(o?.scheduled_date||'').slice(0,10);const t=String(o?.scheduled_time||o?.time_slot||'').slice(0,5);return [d||'Дата не назначена',t||'Время не назначено'].join(' · ')};
+const works=o=>String(o?.work||'Работа не указана').split(/\n+/).map(x=>x.trim()).filter(Boolean);
+const rows=o=>works(o).map(x=>{const m=x.match(/^(.*?)(?:\s*[×x]\s*([\d.,]+)\s*(.*))?$/i);const title=(m?.[1]||x).trim(),qty=(m?.[2]||'').trim(),unit=(m?.[3]||'').trim();return `<div class="bosHandsWorkRow"><span>${esc(title)}</span>${qty?`<b>${esc(qty)}${unit?' '+esc(unit):''}</b>`:''}</div>`}).join('');
+const baseOpen=window.openOrder;
+window.openOrder=function(id){if(!masterMode())return baseOpen.apply(this,arguments);const o=(state.orders||[]).find(x=>String(x.id)===String(id));if(!o)return;openModal(`<div class="bosHandsOrder"><div class="bosHandsHead"><b>№ ${esc(no(o))}</b><strong>${money(o.amount||0)}</strong></div><div class="bosHandsBlock"><span class="bosHandsIcon">⌖</span><div><b>${esc(o.address||'Адрес не указан')}</b></div></div><div class="bosHandsBlock"><span class="bosHandsIcon">◷</span><div>${esc(dateTime(o))}</div></div><div class="bosHandsBlock"><span class="bosHandsIcon">◉</span><div><b>${esc(o.client||'Клиент не указан')}</b>${o.phone?`<small>${esc(o.phone)}</small>`:''}</div></div><div class="bosHandsBlock bosHandsWorks"><span class="bosHandsIcon">⌕</span><div class="bosHandsWorkList">${rows(o)}</div></div></div>`)};
+function stripStaffManagement(){if(!masterMode())return;document.querySelectorAll('button,a,[role="button"],section,.card').forEach(el=>{const txt=(el.textContent||'').trim().toLowerCase();if(txt==='управление сотрудниками'||txt==='сотрудники'||txt==='команда сотрудников')el.style.display='none'})}
+const baseShow=window.show;window.show=function(){const r=baseShow.apply(this,arguments);setTimeout(stripStaffManagement,0);return r};
+const observer=new MutationObserver(()=>stripStaffManagement());observer.observe(document.documentElement,{childList:true,subtree:true});
+const s=document.createElement('style');s.textContent=`.bosHandsOrder{padding:0 2px}.bosHandsHead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:4px 0 10px}.bosHandsHead b{font-size:18px}.bosHandsHead strong{font-size:16px}.bosHandsBlock{display:grid;grid-template-columns:24px 1fr;gap:8px;padding:9px 0;border-top:1px solid rgba(255,255,255,.06);font-size:14px;line-height:1.35}.bosHandsIcon{color:var(--muted,#91a3b7);font-size:17px}.bosHandsBlock small{display:block;color:var(--muted,#91a3b7);font-size:13px;margin-top:2px}.bosHandsWorks{padding-bottom:2px}.bosHandsWorkList{min-width:0}.bosHandsWorkRow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:6px 0}.bosHandsWorkRow span{min-width:0}.bosHandsWorkRow b{flex:0 0 auto;color:var(--muted,#91a3b7);font-weight:600;white-space:nowrap}`;document.head.appendChild(s);
+setTimeout(stripStaffManagement,0);
+})();
