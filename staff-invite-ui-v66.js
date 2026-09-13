@@ -45,15 +45,16 @@
   const observer=new MutationObserver(replacePhoneRegistration);
   observer.observe(document.documentElement,{childList:true,subtree:true});
 
+  function appState(){try{return typeof state!=='undefined'?state:null}catch(_){return null}}
   function isLinked(u){return /^[1-9]\d*$/.test(String(u?.vk_user_id||u?.external_id||''))}
-  function findStaff(id){return (window.state?.users||[]).find(x=>String(x.id)===String(id)||String(x.vk_user_id||x.external_id)===String(id))}
+  function findStaff(id){return (appState()?.users||[]).find(x=>String(x.id)===String(id)||String(x.vk_user_id||x.external_id)===String(id))}
 
   const base=typeof window.openEmployeeProfile==='function'?window.openEmployeeProfile:null;
   if(base){
     window.openEmployeeProfile=function(id){
       const result=base.apply(this,arguments);
       try{
-        if(String(window.state?.user?.role||'')!=='owner')return result;
+        if(String(appState()?.user?.role||'')!=='owner')return result;
         const u=findStaff(id),modal=document.querySelector('.modal');
         if(!u||!modal||isLinked(u)||modal.querySelector('[data-staff-invite-card]'))return result;
         const section=document.createElement('section');
