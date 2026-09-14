@@ -10,7 +10,7 @@ function ownOrders(){return isMasterPreview()?state.orders.filter(o=>String(o.ma
 function completedOwnOrders(){return ownOrders().filter(o=>o.status==='Выполнена')}
 function ownExtraTotal(){return completedOwnOrders().reduce((a,o)=>a+Number(o.extra_work_amount||0),0)}
 function ownUncompletedTotal(){return completedOwnOrders().reduce((a,o)=>a+Number(o.uncompleted_work_amount||0),0)}
-function currentMasterPayout(o){const raw=o?.amount;if(raw!==null&&raw!==undefined&&raw!==''){const amount=Number(raw);if(Number.isFinite(amount))return payout(amount)}const stored=Number(o?.master_payout||0);return Number.isFinite(stored)?stored:0}
+function currentMasterPayout(o){const raw=o?.amount;if(raw!==null&&raw!==undefined&&raw!==''){const amount=Number(raw);if(Number.isFinite(amount))return amount*0.85*0.65}const stored=Number(o?.master_payout||0);return Number.isFinite(stored)?stored:0}
 function ownPayoutTotal(){return completedOwnOrders().reduce((a,o)=>a+currentMasterPayout(o),0)}
 function ownSalaryTotal(){return Math.max(0,ownPayoutTotal()+ownExtraTotal())}
 
