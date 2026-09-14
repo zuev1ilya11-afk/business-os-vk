@@ -46,7 +46,7 @@ window.dispatcherReportData=function(kind,anchor){
     row.pay+=reportPayout(order);
   });
   claims.forEach(claim=>{
-    const id=String(claim.master_id||'');
+    const id=String(claim.master_staff_id||claim.master_id||claim.master_vk_id||'');
     if(!id)return;
     const row=map[id]||(map[id]={id,name:reportMasterNameById(id),count:0,revenue:0,pay:0,revisit:0});
     row.revisit+=Number(claim.revisit_payment||0);
