@@ -48,26 +48,7 @@ Deno.serve(async r=>{
     const a=String(b.action||'health');
     if(a==='health')return j({ok:true,version:'2026-09-12-team-critical-v13'});
 
-    if(a==='registerByPhone'){
-      const uid=await sessionUid(r);
-      if(!uid)return j({ok:false,error:'Сессия VK не подтверждена'},401);
-      const existing=await db.from('business_staff').select('*').eq('external_id',uid).eq('is_active',true).maybeSingle();
-      if(existing.error)throw existing.error;
-      if(existing.data)return j({ok:true,user:out(existing.data)});
-      const phone=norm(b.phone);
-      if(phone.length!==11)return j({ok:false,error:'Введите корректный номер телефона'},400);
-      const all=await db.from('business_staff').select('*').eq('is_active',true);
-      if(all.error)throw all.error;
-      const matches=(all.data||[]).filter((x:any)=>norm(x.phone)===phone&&!/^\d+$/.test(String(x.external_id||'')));
-      if(matches.length===0)return j({ok:false,error:'Сотрудник с таким номером не найден. Обратитесь к владельцу.'},404);
-      if(matches.length>1)return j({ok:false,error:'Найдено несколько сотрудников с таким номером. Владелец должен исправить дубликаты.'},409);
-      const linked=await db.from('business_staff').select('id,full_name').eq('external_id',uid).maybeSingle();
-      if(linked.error)throw linked.error;
-      if(linked.data)return j({ok:false,error:'Этот аккаунт VK уже привязан к другому сотруднику'},409);
-      const u=await db.from('business_staff').update({external_id:uid,updated_at:new Date().toISOString()}).eq('id',matches[0].id).select().single();
-      if(u.error)throw u.error;
-      return j({ok:true,user:out(u.data),linked:true});
-    }
+    if(a==='registerByPhone')return j({ok:false,error:'Регистрация по телефону отключена. Используйте код приглашения владельца.'},410);
 
     const me=await actor(db,r);
     if(!me)return j({ok:false,error:'Доступ не подтверждён'},401);

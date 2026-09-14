@@ -19,3 +19,10 @@ test('database migration guards direct VK linking and keeps redeem atomic',()=>{
   assert.match(sql,/for update/i);
   assert.match(sql,/app\.staff_invite_redeem/);
 });
+
+test('mini-app API rejects legacy registerByPhone instead of linking staff',()=>{
+  const source=fs.readFileSync('supabase/functions/mini-app-api/index.ts','utf8');
+  assert.match(source,/if\(a==='registerByPhone'\)return j\(\{ok:false,error:'Регистрация по телефону отключена\. Используйте код приглашения владельца\.'\},410\)/);
+  assert.doesNotMatch(source,/matches=\(all\.data\|\|\[\]\)\.filter/);
+  assert.doesNotMatch(source,/update\(\{external_id:uid/);
+});
