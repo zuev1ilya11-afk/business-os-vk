@@ -15,8 +15,8 @@ test('master preview recalculates payout from current order amount instead of st
     enterMasterPreview(masterVkId);
   },{masterVkId:master.external_id});
 
-  const payoutCard=page.locator('.masterKpi').filter({hasText:'Моя выплата'});
-  const salaryCard=page.locator('.masterKpi').filter({hasText:'Общая зарплата'});
+  const payoutCard=page.getByText('Моя выплата',{exact:true}).locator('..');
+  const salaryCard=page.getByText('Общая зарплата',{exact:true}).locator('..');
   await expect(payoutCard).toContainText('552,5');
   await expect(payoutCard).not.toContainText('297,5');
   await expect(salaryCard).toContainText('552,5');
