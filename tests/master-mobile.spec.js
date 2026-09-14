@@ -33,6 +33,7 @@ for(const s of sizes){
     await expect(page.getByText('Общая зарплата',{exact:true})).toBeVisible();
     await expect(page.getByText('Выручка')).toHaveCount(0);
     await expect(page.getByText('Сумма заявок')).toHaveCount(0);
+    await expect(page.locator('.masterUpcomingCompact').first()).toContainText('1 547 ₽');
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
     const kpis=page.locator('.masterKpi');
