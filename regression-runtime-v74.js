@@ -34,6 +34,8 @@ function reportPayout(order){
 
 window.dispatcherReportData=function(kind,anchor){
   const bounds=reportPeriodBounds(kind,anchor);
+  // Claims reuse the original order row. While a claim is open the order is not completed;
+  // after it closes the original revenue/payout must remain in the completed report once.
   const orders=reportOrdersSource().filter(order=>String(order.status)==='Выполнена'&&reportDoneDate(order)>=bounds.start&&reportDoneDate(order)<=bounds.end);
   const claims=(state.claims||[]).filter(claim=>claim.status==='closed'&&String(claim.closed_at||claim.scheduled_date||'').slice(0,10)>=bounds.start&&String(claim.closed_at||claim.scheduled_date||'').slice(0,10)<=bounds.end);
   const map={};
@@ -61,6 +63,8 @@ window.dispatcherReportData=function(kind,anchor){
   };
 };
 
+// Calendar dates are local business dates. ISO conversion shifts midnight to the previous
+// day in positive UTC offsets (for example Europe/Amsterdam or Moscow), so format locally.
 window.ymd=function(date){
   const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');
   return `${y}-${m}-${d}`;
