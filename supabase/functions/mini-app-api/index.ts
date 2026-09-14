@@ -9,7 +9,7 @@ const round=(n:any)=>Math.round(Number(n||0)*100)/100;
 const payouts=(a:any,has=true)=>{
   const x=round(a);
   return{
-    master_payout:has?round(x*.85*.35):0,
+    master_payout:has?round(x*.85*.65):0,
     manager_payout:round(x*.85*.94*.20),
     dispatcher_payout:round(x*.85*.94*.15)
   }
@@ -21,7 +21,7 @@ async function hmac(m:string,s:string){const k=await crypto.subtle.importKey('ra
 async function sess(t:string,s:string){const p=String(t||'').split('.');if(!s||p.length!==3||!/^[A-Za-z0-9_-]{1,128}$/.test(p[0])||!/^\d{1,12}$/.test(p[1])||Number(p[1])<=Date.now()/1000)return null;return await hmac(`${p[0]}.${p[1]}`,s)===p[2]?p[0]:null}
 function norm(v:any){let d=String(v||'').replace(/\D/g,'');if(d.length===11&&d[0]==='8')d='7'+d.slice(1);if(d.length===10)d='7'+d;return d}
 const out=(s:any)=>{const x={...(s||{})};delete x.password_hash;return {...x,vk_user_id:x.external_id}};
-const masterOrder=(o:any)=>{const x={...o};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
+const masterOrder=(o:any)=>{const x={...o,master_payout:payouts(o?.amount,!!o?.master_staff_id).master_payout};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
 const safeRequestId=(v:any)=>{const s=String(v||'').trim();return /^[A-Za-z0-9_-]{8,128}$/.test(s)?s:''};
 // PostgREST caps an unpaginated response at 1000 rows. Keep totals complete.
 async function allRows(query:any){

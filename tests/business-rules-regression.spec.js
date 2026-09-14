@@ -25,12 +25,12 @@ async function installOwnerBootstrap(page, createHandler){
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/order-meta-api',route=>route.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"order":{"order_type":"work"}}'}));
 }
 
-test('master payout is 35% of the amount remaining after 15% deduction',async({page})=>{
+test('master payout subtracts 15% and then subtracts 35% from the remainder',async({page})=>{
   await installOwnerBootstrap(page);
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
-  const values=await page.evaluate(()=>[1000,5000,10000,25000,100000].map(v=>payout(v)));
-  expect(values).toEqual([297.5,1487.5,2975,7437.5,29750]);
+  const values=await page.evaluate(()=>[1000,4458,5000,10000,25000,100000].map(v=>payout(v)));
+  expect(values).toEqual([552.5,2463.05,2762.5,5525,13812.5,55250]);
 });
 
 test('retrying a failed create-order submission reuses the same request_id',async({page})=>{
@@ -72,11 +72,41 @@ test('retrying a failed create-order submission reuses the same request_id',asyn
   expect(seen[1]).toBe(seen[0]);
 });
 
-test('tracked mini-app API enforces corrected payout and request idempotency',async()=>{
-  const source=fs.readFileSync(path.join(__dirname,'..','supabase','functions','mini-app-api','index.ts'),'utf8');
-  expect(source).toContain('master_payout:has?round(x*.85*.35):0');
-  expect(source).not.toContain('master_payout:has?round(x*.85*.65):0');
-  expect(source).toContain('const requestId=a===\'createOrder\'?safeRequestId(b.request_id):\'\'');
-  expect(source).toContain(".eq('external_id',createExternalId).maybeSingle()");
-  expect(source).toContain('if(prior.data)return j({ok:true,order:prior.data,idempotent:true})');
+test('tracked APIs and fallbacks enforce corrected master payout',async()=>{
+  const mini=fs.readFileSync(path.join(__dirname,'..','supabase','functions','mini-app-api','index.ts'),'utf8');
+  const report=fs.readFileSync(path.join(__dirname,'..','supabase','functions','report-api','index.ts'),'utf8');
+  const hands=fs.readFileSync(path.join(__dirname,'..','supabase','functions','hands-api','index.ts'),'utf8');
+  const app=fs.readFileSync(path.join(__dirname,'..','app-public.js'),'utf8');
+  const sheets=fs.readFileSync(path.join(__dirname,'..','google-apps-script','Code.gs'),'utf8');
+  expect(mini).toContain('master_payout:has?round(x*.85*.65):0');
+  expect(mini).not.toContain('master_payout:has?round(x*.85*.35):0');
+  expect(report).toContain('master_payout:round(x*.85*.65)');
+  expect(hands).toContain('const masterPayout=(v:any)=>Math.round(money(v)*.85*.65*100)/100');
+  expect(app).toContain('const payout=a=>Math.round(Number(a||0)*.85*.65*100)/100');
+  expect(sheets).toContain('return round2_(n*0.85*0.65)');
+});
+
+test('master API and master order UI do not expose order totals',async()=>{
+  const mini=fs.readFileSync(path.join(__dirname,'..','supabase','functions','mini-app-api','index.ts'),'utf8');
+  const compact=fs.readFileSync(path.join(__dirname,'..','master-order-compact-v71.js'),'utf8');
+  const handsLayout=fs.readFileSync(path.join(__dirname,'..','master-order-hands-layout-v72.js'),'utf8');
+  expect(mini).toContain("for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k]");
+  expect(compact).toContain('Выплата: ${money(pay(o))}');
+  expect(handsLayout).toContain('Выплата: ${money(pay(o))}');
+  expect(compact).not.toContain('money(o.amount||0)');
+  expect(handsLayout).not.toContain('money(o.amount||0)');
+});
+
+test('old formula-derived payouts are backfilled without overwriting manual adjustments',async()=>{
+  const migration=fs.readFileSync(path.join(__dirname,'..','supabase','migrations','20260914145500_fix_master_payout_formula.sql'),'utf8');
+  expect(migration).toContain('0.85 * 0.65');
+  expect(migration).toContain('0.85 * 0.35');
+  expect(migration).toContain('<= 0.01');
+});
+
+test('tracked mini-app API keeps request idempotency',async()=>{
+  const mini=fs.readFileSync(path.join(__dirname,'..','supabase','functions','mini-app-api','index.ts'),'utf8');
+  expect(mini).toContain('const requestId=a===\'createOrder\'?safeRequestId(b.request_id):\'\'');
+  expect(mini).toContain(".eq('external_id',createExternalId).maybeSingle()");
+  expect(mini).toContain('if(prior.data)return j({ok:true,order:prior.data,idempotent:true})');
 });

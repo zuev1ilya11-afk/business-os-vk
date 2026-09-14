@@ -15,6 +15,7 @@ async function actor(db:any,r:Request){const uid=await sessionUid(r);if(!uid)ret
 const ops=(r:string)=>['owner','manager','dispatcher'].includes(r);
 const clean=(v:any)=>String(v??'').trim();
 const money=(v:any)=>{const n=Number(String(v??'0').replace(/\s/g,'').replace(',','.'));return Number.isFinite(n)?Math.round(n*100)/100:0};
+const masterPayout=(v:any)=>Math.round(money(v)*.85*.65*100)/100;
 const externalId=(v:any)=>clean(v).replace(/^hands:/,'');
 const localExternalId=(v:any)=>`hands:${externalId(v)}`;
 
@@ -62,7 +63,7 @@ async function importOrder(db:any,o:any,staffByName:Map<string,any>){
   const sched=schedule(o),specialist=clean(o?.specialist),staff=specialist?staffByName.get(specialist.toLocaleLowerCase('ru-RU')):null;
   const amount=money(o?.price);
   const base:any={
-    external_source:'hands',external_id:localExternalId(id),source:'Hands',client:clean(o?.client_name||o?.client),phone:phones(o),address:clean(o?.address),work:workText(o),status:localStatus(o),amount,original_amount:amount,scheduled_date:sched.scheduled_date,scheduled_time:sched.scheduled_time,master_name:specialist||staff?.full_name||'',source_updated_at:clean(o?.updated_at||o?.creation_time)||new Date().toISOString(),updated_at:new Date().toISOString(),sync_status:'synced'
+    external_source:'hands',external_id:localExternalId(id),source:'Hands',client:clean(o?.client_name||o?.client),phone:phones(o),address:clean(o?.address),work:workText(o),status:localStatus(o),amount,original_amount:amount,master_payout:staff?.id?masterPayout(amount):0,scheduled_date:sched.scheduled_date,scheduled_time:sched.scheduled_time,master_name:specialist||staff?.full_name||'',source_updated_at:clean(o?.updated_at||o?.creation_time)||new Date().toISOString(),updated_at:new Date().toISOString(),sync_status:'synced'
   };
   if(staff?.id)base.master_staff_id=staff.id;
   const prev=await db.from('orders').select('id').eq('external_source','hands').eq('external_id',localExternalId(id)).maybeSingle();

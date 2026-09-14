@@ -15,7 +15,7 @@ for(const width of [320,375,390,1280])test(`master real handler bootstrap fits $
 test('dispatcher creates and assigns order through handler, then sees assignment after reload',async({page})=>{
  const {db}=await fullStack(page,'dispatcher');await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.locator('nav [data-page=orders]').click();await page.getByRole('button',{name:'+ Новая'}).click();
  await page.locator('[name=client]').fill('Заказ аудита');await page.locator('#bosPhone').fill('9991234567');await page.locator('[name=address]').fill('Длинный адрес аудита, дом 123');await page.locator('#bosService').selectOption('4');await page.locator('[name=original_amount]').fill('1000');await page.locator('[name=master_vk_id]').selectOption('staff_m');await page.getByRole('button',{name:'Сохранить',exact:true}).click();
- await expect(page.locator('#orderForm')).toHaveCount(0);expect(db.tables.orders).toHaveLength(3);const order=db.tables.orders.find(x=>x.client==='Заказ аудита');expect(order.master_staff_id).toBe('m');expect(order.master_payout).toBe(297.5);
+ await expect(page.locator('#orderForm')).toHaveCount(0);expect(db.tables.orders).toHaveLength(3);const order=db.tables.orders.find(x=>x.client==='Заказ аудита');expect(order.master_staff_id).toBe('m');expect(order.master_payout).toBe(552.5);
  await page.reload();await expect(page.locator('#authGate')).toBeHidden();await page.locator('nav [data-page=orders]').click();await page.locator('#bosOrderSearch').fill('Заказ аудита');await expect(page.locator('.bosFilteredOrder')).toHaveCount(1);await expect(page.locator('.bosFilteredOrder')).toContainText('Тестовый мастер');
 });
 test('owner settings and team modals open and close without page errors',async({page})=>{

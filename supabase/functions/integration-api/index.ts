@@ -2,7 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const cors={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'content-type,authorization,x-api-key,x-vk-launch-params,x-bos-session','Access-Control-Allow-Methods':'GET,POST,OPTIONS'};
 const json=(x:any,s=200)=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'Content-Type':'application/json'}});
 const round=(n:any)=>Math.round(Number(n||0)*100)/100;
-const payouts=(a:any,has=false)=>{const n=round(a);return{master_payout:has?round(n*.85*.35):0,manager_payout:round(n*.85*.94*.20),dispatcher_payout:round(n*.85*.94*.15)}};
+const payouts=(a:any,has=false)=>{const n=round(a);return{master_payout:has?round(n*.85*.65):0,manager_payout:round(n*.85*.94*.20),dispatcher_payout:round(n*.85*.94*.15)}};
 function b64u(b:Uint8Array){let s='';for(const x of b)s+=String.fromCharCode(x);return btoa(s).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_')}
 async function hmac(m:string,s:string){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(s),{name:'HMAC',hash:'SHA-256'},false,['sign']);return b64u(new Uint8Array(await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(m))))}
 async function sha(s:string){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
