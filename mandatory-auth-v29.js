@@ -3,6 +3,7 @@
   const MINI=BASE+'mini-app-api';
   const VK=BASE+'vk-session-api';
   const PASS=BASE+'password-session-api';
+  const INVITE=BASE+'staff-invite-api';
   const KEY='bos_vk_session_v2';
   const gate=document.getElementById('authGate');
   const body=document.body;
@@ -72,7 +73,7 @@
     if(!launch)throw new Error('Не удалось получить параметры запуска VK. Закройте приложение и откройте его заново через ВКонтакте.');
     const d=await post(VK,{launch_params:launch});
     if(d?.session_token)setSession(d.session_token);
-    if(d?.registration_required){phoneScreen();return {ok:true,registration_required:true,session_token:getSession()}}
+    if(d?.registration_required){inviteScreen();return {ok:true,registration_required:true,session_token:getSession()}}
     if(!d?.session_token)throw new Error('VK не подтвердил вход.');
     return d;
   }
@@ -86,6 +87,11 @@
     const session=getSession();
     if(!session)throw new Error('Требуется вход');
     return post(MINI,{action,...payload},{'X-BOS-Session':session});
+  }
+  async function inviteApi(action,payload={}){
+    const session=getSession();
+    if(!session)throw new Error('Требуется подтверждённый вход VK');
+    return post(INVITE,{action,...payload},{'X-BOS-Session':session});
   }
   window.BOS_POST=post;
   window.api=sessionApi;try{api=sessionApi}catch(_){ }
@@ -114,9 +120,12 @@
     showGate(`<div class="authLogo">Домашний мастер</div><h1>Не удалось войти</h1><p class="authError">${escs(msg)}</p><button id="simpleVkRetry" class="primary wide">Повторить вход через VK</button>`);
     document.getElementById('simpleVkRetry').onclick=boot;
   }
-  function phoneScreen(){
-    showGate(`<div class="authLogo">Домашний мастер</div><h1>Регистрация сотрудника</h1><p class="muted">Введите номер телефона из карточки сотрудника.</p><form id="simplePhoneForm" class="form"><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 999 123-45-67" required><button class="primary wide" type="submit">Продолжить</button><p id="simplePhoneMsg" class="muted"></p></form>`);
-    document.getElementById('simplePhoneForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,m=document.getElementById('simplePhoneMsg');m.textContent='Проверяем…';try{const d=await sessionApi('registerByPhone',{phone:f.elements.phone.value});if(d?.session_token)setSession(d.session_token);await loadApp()}catch(err){m.textContent=err.message}};
+  function inviteScreen(){
+    showGate(`<div class="authLogo">Домашний мастер</div><h1>Вход по приглашению</h1><p class="muted">Введите одноразовый код, который выдал владелец. Код действует 1 час.</p><form id="simpleInviteForm" class="form"><input name="code" type="text" inputmode="text" autocomplete="one-time-code" autocapitalize="characters" maxlength="14" placeholder="Код приглашения" required><button class="primary wide" type="submit">Войти</button><p id="simpleInviteMsg" class="muted"></p></form>`);
+    document.getElementById('simpleInviteForm').onsubmit=async e=>{
+      e.preventDefault();const f=e.currentTarget,m=document.getElementById('simpleInviteMsg');if(f.dataset.pending)return;f.dataset.pending='1';const btn=f.querySelector('button');btn.disabled=true;m.textContent='Проверяем код…';
+      try{const d=await inviteApi('redeem',{code:f.elements.code.value});if(!d?.user?.role)throw new Error('Не удалось привязать сотрудника');await loadApp()}catch(err){m.textContent=err.message}finally{delete f.dataset.pending;btn.disabled=false}
+    };
   }
 
   async function boot(){
