@@ -34,7 +34,9 @@ function reportPayout(order){
 
 window.dispatcherReportData=function(kind,anchor){
   const bounds=reportPeriodBounds(kind,anchor);
-  const orders=reportOrdersSource().filter(order=>String(order.status)==='Выполнена'&&reportDoneDate(order)>=bounds.start&&reportDoneDate(order)<=bounds.end&&!order.is_claim);
+  // Claims reuse the original order row. While a claim is open the order is not completed;
+  // after it closes the original revenue/payout must remain in the completed report once.
+  const orders=reportOrdersSource().filter(order=>String(order.status)==='Выполнена'&&reportDoneDate(order)>=bounds.start&&reportDoneDate(order)<=bounds.end);
   const claims=(state.claims||[]).filter(claim=>claim.status==='closed'&&String(claim.closed_at||claim.scheduled_date||'').slice(0,10)>=bounds.start&&String(claim.closed_at||claim.scheduled_date||'').slice(0,10)<=bounds.end);
   const map={};
   orders.forEach(order=>{
