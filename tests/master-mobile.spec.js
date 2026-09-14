@@ -44,7 +44,8 @@ for(const s of sizes){
     await expect(page.getByText('Выплата: 2 463,05 ₽',{exact:true})).toBeVisible();
     await expect(page.getByText('4 458 ₽',{exact:true})).toHaveCount(0);
     await page.evaluate(()=>openOrder('M-1'));
-    await expect(page.getByText('Выплата: 2 463,05 ₽',{exact:true})).toBeVisible();
+    const modal=page.locator('.modal.show, .modal.open, .modal').filter({hasText:'№ M-1'}).last();
+    await expect(modal.getByText('Выплата: 2 463,05 ₽',{exact:true})).toBeVisible();
     await expect(page.getByText('Исходная сумма',{exact:true})).toHaveCount(0);
     await expect(page.getByText('Итоговая сумма заявки',{exact:true})).toHaveCount(0);
     await expect(page.getByText('4 458 ₽',{exact:true})).toHaveCount(0);
