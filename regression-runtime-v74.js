@@ -60,4 +60,55 @@ window.dispatcherReportData=function(kind,anchor){
     totalRevisit:claims.reduce((sum,claim)=>sum+Number(claim.revisit_payment||0),0)
   };
 };
+
+function isWorkingSchedule(row){
+  return row?.is_working===true||row?.is_working===1||String(row?.is_working||'').toLowerCase()==='true';
+}
+function scheduleMasterId(row){
+  return String(row?.staff_id||row?.master_staff_id||row?.master_id||row?.master_vk_id||row?.vk_user_id||'');
+}
+function orderMasterId(order){
+  return String(order?.master_staff_id||order?.master_id||order?.master_vk_id||'');
+}
+
+window.weeklyLoad=function(){
+  const start=weekStart(),days=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  return days.map((label,index)=>{
+    const d=new Date(start);d.setDate(start.getDate()+index);
+    const date=ymd(d);
+    const schedules=(state.masterSchedule||[]).filter(row=>String(row.work_date||row.date||'').slice(0,10)===date&&isWorkingSchedule(row));
+    const scheduledMasters=new Set(schedules.map(scheduleMasterId).filter(Boolean)).size;
+    const orders=(state.orders||[]).filter(order=>String(order.scheduled_date||'').slice(0,10)===date&&order.status!=='Отменена');
+    const workingMasters=new Set(orders.map(orderMasterId).filter(Boolean)).size;
+    const total=(state.masters||[]).length;
+    const available=Math.min(total,Math.max(scheduledMasters,workingMasters));
+    const busy=Math.min(workingMasters,total);
+    const off=Math.max(total-available,0);
+    const pct=total?Math.round(busy/total*100):0;
+    return{label,date,day:d.getDate(),busy,available,off,pct,total};
+  });
+};
+
+function explicitPayout(order){
+  const raw=order?.master_payout;
+  if(raw===null||raw===undefined||raw==='')return null;
+  const value=Number(raw);
+  return Number.isFinite(value)?value:null;
+}
+const previousOpenOrder=window.openOrder;
+if(typeof previousOpenOrder==='function')window.openOrder=function(id){
+  const result=previousOpenOrder.apply(this,arguments);
+  const order=(state.orders||[]).find(item=>String(item.id)===String(id));
+  const value=explicitPayout(order),node=document.getElementById('payoutPreview');
+  if(node&&order?.master_vk_id&&value!==null)node.textContent=money(value);
+  return result;
+};
+const previousOpenOrderForm=window.openOrderForm;
+if(typeof previousOpenOrderForm==='function')window.openOrderForm=function(id){
+  const result=previousOpenOrderForm.apply(this,arguments);
+  const order=id?(state.orders||[]).find(item=>String(item.id)===String(id)):null;
+  const value=explicitPayout(order),node=document.getElementById('calcPay');
+  if(node&&order?.master_vk_id&&value!==null)node.textContent=money(value);
+  return result;
+};
 })();
