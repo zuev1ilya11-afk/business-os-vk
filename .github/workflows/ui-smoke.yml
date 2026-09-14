@@ -21,11 +21,21 @@ jobs:
         run: npm run test:server
 
       - name: Complete Playwright suite
-        run: npm run test:ui -- --workers=2
+        run: |
+          set +e
+          npm run test:ui -- --workers=2 --reporter=line > playwright-output.txt 2>&1
+          code=$?
+          cat playwright-output.txt
+          echo "$code" > playwright-exit-code.txt
+          exit $code
 
-      - name: Upload test results
-        if: failure()
+      - name: Upload Playwright diagnostics
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
-          path: test-results/
+          name: playwright-diagnostics
+          path: |
+            playwright-output.txt
+            playwright-exit-code.txt
+            test-results/
+          if-no-files-found: ignore
