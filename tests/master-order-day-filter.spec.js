@@ -17,10 +17,10 @@ test('master orders can be filtered by day and upcoming orders are grouped by da
   await page.evaluate(({masterVkId})=>enterMasterPreview(masterVkId),{masterVkId:master.external_id});
 
   await expect(page.getByText('Ближайшие заявки')).toBeVisible();
-  const homeGroups=page.locator('.masterDayGroup');
-  await expect(homeGroups).toHaveCount(2);
-  await expect(homeGroups.nth(0)).toContainText('Монтаж');
-  await expect(homeGroups.nth(1)).toContainText('Вторая заявка');
+  const upcoming=page.locator('.masterUpcomingCompact');
+  await expect(upcoming).toHaveCount(2);
+  await expect(upcoming.nth(0)).toContainText('Монтаж');
+  await expect(upcoming.nth(1)).toContainText('Вторая заявка');
 
   await page.getByRole('button',{name:'Все',exact:true}).click();
   await expect(page.getByText('Мои заявки')).toBeVisible();
