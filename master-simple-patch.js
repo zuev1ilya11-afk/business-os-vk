@@ -43,7 +43,7 @@
   function dayFilters(all){
     const dates=[...new Set(sortOrders(all).map(o=>String(o.scheduled_date||'')).filter(Boolean))].slice(0,10);
     if(masterOrderDay!=='all'&&!dates.includes(masterOrderDay))masterOrderDay='all';
-    return `<div class="masterDayFilters"><button class="${masterOrderDay==='all'?'primary':'secondary'}" onclick="setMasterOrderDay('all')">Все</button>${dates.map(date=>`<button class="${masterOrderDay===date?'primary':'secondary'}" onclick="setMasterOrderDay('${esc(date)}')">${esc(dateLabel(date))}</button>`).join('')}</div>`;
+    return `<div class="masterDayFilters"><button data-master-filter-day="all" class="${masterOrderDay==='all'?'primary':'secondary'}" onclick="setMasterOrderDay('all')">Все</button>${dates.map(date=>`<button data-master-filter-day="${esc(date)}" class="${masterOrderDay===date?'primary':'secondary'}" onclick="setMasterOrderDay('${esc(date)}')">${esc(dateLabel(date))}</button>`).join('')}</div>`;
   }
   function groupedOrdersHtml(list,limitDays=0){
     let groups=groupByDate(list);
