@@ -72,15 +72,40 @@ test('retrying a failed create-order submission reuses the same request_id',asyn
   expect(seen[1]).toBe(seen[0]);
 });
 
-test('tracked APIs enforce corrected payout and hide order totals from masters',async()=>{
+test('tracked APIs and fallbacks enforce corrected master payout',async()=>{
   const mini=fs.readFileSync(path.join(__dirname,'..','supabase','functions','mini-app-api','index.ts'),'utf8');
   const report=fs.readFileSync(path.join(__dirname,'..','supabase','functions','report-api','index.ts'),'utf8');
   const hands=fs.readFileSync(path.join(__dirname,'..','supabase','functions','hands-api','index.ts'),'utf8');
+  const app=fs.readFileSync(path.join(__dirname,'..','app-public.js'),'utf8');
+  const sheets=fs.readFileSync(path.join(__dirname,'..','google-apps-script','Code.gs'),'utf8');
   expect(mini).toContain('master_payout:has?round(x*.85*.65):0');
   expect(mini).not.toContain('master_payout:has?round(x*.85*.35):0');
   expect(report).toContain('master_payout:round(x*.85*.65)');
   expect(hands).toContain('const masterPayout=(v:any)=>Math.round(money(v)*.85*.65*100)/100');
+  expect(app).toContain('const payout=a=>Math.round(Number(a||0)*.85*.65*100)/100');
+  expect(sheets).toContain('return round2_(n*0.85*0.65)');
+});
+
+test('master API and master order UI do not expose order totals',async()=>{
+  const mini=fs.readFileSync(path.join(__dirname,'..','supabase','functions','mini-app-api','index.ts'),'utf8');
+  const compact=fs.readFileSync(path.join(__dirname,'..','master-order-compact-v71.js'),'utf8');
+  const handsLayout=fs.readFileSync(path.join(__dirname,'..','master-order-hands-layout-v72.js'),'utf8');
   expect(mini).toContain("for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k]");
+  expect(compact).toContain('Выплата: ${money(pay(o))}');
+  expect(handsLayout).toContain('Выплата: ${money(pay(o))}');
+  expect(compact).not.toContain('money(o.amount||0)');
+  expect(handsLayout).not.toContain('money(o.amount||0)');
+});
+
+test('old formula-derived payouts are backfilled without overwriting manual adjustments',async()=>{
+  const migration=fs.readFileSync(path.join(__dirname,'..','supabase','migrations','20260914145500_fix_master_payout_formula.sql'),'utf8');
+  expect(migration).toContain('0.85 * 0.65');
+  expect(migration).toContain('0.85 * 0.35');
+  expect(migration).toContain('<= 0.01');
+});
+
+test('tracked mini-app API keeps request idempotency',async()=>{
+  const mini=fs.readFileSync(path.join(__dirname,'..','supabase','functions','mini-app-api','index.ts'),'utf8');
   expect(mini).toContain('const requestId=a===\'createOrder\'?safeRequestId(b.request_id):\'\'');
   expect(mini).toContain(".eq('external_id',createExternalId).maybeSingle()");
   expect(mini).toContain('if(prior.data)return j({ok:true,order:prior.data,idempotent:true})');
