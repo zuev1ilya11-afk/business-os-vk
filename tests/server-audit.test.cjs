@@ -35,10 +35,10 @@ test('master bootstrap and direct API cannot access others orders or escalate ro
  const r=await api({action:'bootstrap'},'staff_m');assert.deepEqual(r.body.orders.map(x=>x.id),['1']);
  for(const b of [{action:'updateOrder',id:'2',status:'Выполнена'},{action:'updateEmployee',id:'m',role:'owner'},{action:'createOrder',client:'x',address:'x',work:'x'}])assert.equal((await api(b,'staff_m')).status,403);
 });
-test('report finalization uses 35 percent master payout',async()=>{
+test('report finalization subtracts 15 percent and then 35 percent for master payout',async()=>{
  const db=database({business_staff:[employee('m')],orders:[{id:'1',master_staff_id:'m',original_amount:1000}]});
  const r=await edge('report-api',db)({action:'finalizeMasterReport',order_id:'1',upload_token:'audit',act_url:'https://example.test/act',photo_urls:['https://example.test/photo']},'staff_m');
- assert.equal(r.status,200);assert.equal(r.body.order.master_payout,297.5);assert.equal(r.body.order.manager_payout,159.8);assert.equal(r.body.order.dispatcher_payout,119.85);
+ assert.equal(r.status,200);assert.equal(r.body.order.master_payout,552.5);assert.equal(r.body.order.manager_payout,159.8);assert.equal(r.body.order.dispatcher_payout,119.85);
 });
 test('editing comment preserves manually adjusted payouts',async()=>{
  const db=database({business_staff:[employee('owner','owner')],orders:[{id:'1',amount:1000,original_amount:1000,master_staff_id:'m',master_payout:123,manager_payout:45,dispatcher_payout:67}]});
@@ -84,11 +84,11 @@ test('memo text persists and role permissions are server enforced',async()=>{
  const r=await api({action:'list'},'staff_m');assert.equal(r.body.items[0].note,payload.note);
  assert.equal((await api({action:'delete',id:r.body.items[0].id},'staff_m')).status,403);
 });
-test('integration and Apps Script payroll agree with master 35 percent rule',()=>{
+test('integration and Apps Script payroll agree with subtract-15-then-subtract-35 rule',()=>{
  const fs=require('node:fs'),vm=require('node:vm'),{stripTypeScriptTypes}=require('node:module');
  const source=stripTypeScriptTypes(fs.readFileSync('supabase/functions/integration-api/index.ts','utf8').replace(/^import .*?;\s*/,''),{mode:'transform'});
- assert.equal(vm.runInNewContext(source+';payouts(1000,true).master_payout',{Deno:{serve:()=>{}}}),297.5);
- assert.equal(vm.runInNewContext(fs.readFileSync('google-apps-script/Code.gs','utf8')+';masterPayout_(1000)'),297.5);
+ assert.equal(vm.runInNewContext(source+';payouts(1000,true).master_payout',{Deno:{serve:()=>{}}}),552.5);
+ assert.equal(vm.runInNewContext(fs.readFileSync('google-apps-script/Code.gs','utf8')+';masterPayout_(1000)'),552.5);
 });
 test('bootstrap includes orders beyond the default PostgREST page limit',async()=>{
  const db=database({business_staff:[employee('owner','owner')],orders:Array.from({length:1205},(_,i)=>({id:String(i+1)}))});const r=await edge('mini-app-api',db)({action:'bootstrap'});assert.equal(r.body.orders.length,1205);
