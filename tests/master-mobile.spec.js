@@ -7,7 +7,7 @@ for(const s of sizes){
     await page.addInitScript(()=>localStorage.setItem('bos_vk_session_v2','test-session-master'));
     const master={id:'m1',vk_user_id:'1001',external_id:'1001',full_name:'Александр Мастер',phone:'70000000000',city:'Санкт-Петербург',role:'master',is_active:true,specialization:'Монтаж',work_start:'09:00',work_end:'18:00'};
     const orders=[
-      {id:'M-1',status:'В работе',client:'Клиент',address:'Невский проспект 1',work:'Карниз',scheduled_date:'2099-09-10',scheduled_time:'10:00',time_slot:'10:00–11:00',master_vk_id:'1001',master_name:'Александр Мастер',master_payout:1547,wall_material:'Кирпич',wall_over_3m:true,possible_extra_work:true,comment:'Позвонить заранее'},
+      {id:'M-1',status:'В работе',client:'Клиент',address:'Невский проспект 1',work:'Карниз',scheduled_date:'2099-09-10',scheduled_time:'10:00',time_slot:'10:00–11:00',master_vk_id:'1001',master_name:'Александр Мастер',master_payout:2463.05,wall_material:'Кирпич',wall_over_3m:true,possible_extra_work:true,comment:'Позвонить заранее'},
       {id:'M-2',status:'Выполнена',client:'Клиент 2',address:'Адрес 2',work:'Шторы',scheduled_date:'2099-09-09',scheduled_time:'12:00',master_vk_id:'1001',master_name:'Александр Мастер',master_payout:1200,extra_work_amount:300,uncompleted_work_amount:200}
     ];
     const miniHandler=async route=>{
@@ -33,12 +33,23 @@ for(const s of sizes){
     await expect(page.getByText('Общая зарплата',{exact:true})).toBeVisible();
     await expect(page.getByText('Выручка')).toHaveCount(0);
     await expect(page.getByText('Сумма заявок')).toHaveCount(0);
-    await expect(page.locator('.masterUpcomingCompact').first()).toContainText('1 547 ₽');
+    await expect(page.locator('.masterUpcomingCompact').first()).toContainText('2 463,05 ₽');
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
     const kpis=page.locator('.masterKpi');
     const count=await kpis.count();
     for(let i=0;i<count;i++){const box=await kpis.nth(i).boundingBox();expect(box.width).toBeGreaterThan(100);expect(box.height).toBeGreaterThan(80)}
+
+    await page.locator('nav button[data-page="orders"]').click();
+    await expect(page.getByText('Выплата: 2 463,05 ₽',{exact:true})).toBeVisible();
+    await expect(page.getByText('4 458 ₽',{exact:true})).toHaveCount(0);
+    await page.evaluate(()=>openOrder('M-1'));
+    await expect(page.getByText('Выплата: 2 463,05 ₽',{exact:true})).toBeVisible();
+    await expect(page.getByText('Исходная сумма',{exact:true})).toHaveCount(0);
+    await expect(page.getByText('Итоговая сумма заявки',{exact:true})).toHaveCount(0);
+    await expect(page.getByText('4 458 ₽',{exact:true})).toHaveCount(0);
+    await page.evaluate(()=>closeModal());
+
     await page.locator('nav button[data-page="dispatch"]').click();
     await expect(page.getByText('Мой график')).toBeVisible();
     await expect(page.locator('#masterMonthCalendar')).toBeVisible();
