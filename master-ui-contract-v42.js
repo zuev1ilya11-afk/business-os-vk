@@ -20,7 +20,14 @@
     return Number.isFinite(stored)?stored:0;
   }
   function totalSalary(){
-    return masterOrders().filter(o=>String(o.status||'')==='Выполнена').reduce((sum,o)=>sum+masterPayout(o)+Number(o.extra_work_amount||0),0);
+    if(typeof ownPayoutTotal==='function'){
+      try{
+        const payout=Number(ownPayoutTotal());
+        const extra=typeof ownExtraTotal==='function'?Number(ownExtraTotal()):0;
+        if(Number.isFinite(payout)&&Number.isFinite(extra))return Math.max(0,payout+extra);
+      }catch(_){ }
+    }
+    return Math.max(0,masterOrders().filter(o=>String(o.status||'')==='Выполнена').reduce((sum,o)=>sum+masterPayout(o)+Number(o.extra_work_amount||0),0));
   }
   const previousHome=pages.home;
   pages.home=function(){
