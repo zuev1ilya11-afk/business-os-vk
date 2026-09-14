@@ -54,3 +54,30 @@ test('order views preserve an explicit zero master payout',async({page})=>{
   await expect(page.locator('#payoutPreview')).toHaveText('0 ₽');
   await expect(page.locator('#calcPay')).toHaveText('0 ₽');
 });
+
+test('closed claim keeps original order revenue and adds revisit payment separately',async({page})=>{
+  await page.setContent('<div></div>');
+  await page.addScriptTag({content:`
+    window.state={
+      masters:[],masterSchedule:[],
+      claims:[{id:'c1',status:'closed',master_staff_id:'m1',closed_at:'2026-09-16T10:00:00Z',revisit_payment:500}]
+    };
+    window.weekStart=()=>new Date('2026-09-14T12:00:00');
+    window.ymd=d=>d.toISOString().slice(0,10);
+    window.payout=a=>Number(a)*.85*.35;
+    window.money=n=>String(n)+' ₽';
+    window.reportPeriodBounds=()=>({start:'2026-09-14',end:'2026-09-20'});
+    window.reportOrdersSource=()=>[{id:'o1',status:'Выполнена',is_claim:true,master_staff_id:'m1',amount:10000,master_payout:2975,completed_at:'2026-09-16T10:00:00Z'}];
+    window.reportDoneDate=o=>String(o.completed_at||'').slice(0,10);
+    window.reportMasterNameById=()=> 'Мастер 1';
+    window.openOrder=()=>{};
+    window.openOrderForm=()=>{};
+  `});
+  await page.addScriptTag({path:path.join(__dirname,'..','regression-runtime-v74.js')});
+  const report=await page.evaluate(()=>dispatcherReportData('week','2026-09-14'));
+  expect(report.ordersCount).toBe(1);
+  expect(report.totalRevenue).toBe(10000);
+  expect(report.totalPay).toBe(2975);
+  expect(report.totalRevisit).toBe(500);
+  expect(report.rows).toEqual([{id:'m1',name:'Мастер 1',count:1,revenue:10000,pay:2975,revisit:500}]);
+});
