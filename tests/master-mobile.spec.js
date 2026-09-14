@@ -28,12 +28,17 @@ for(const s of sizes){
 
     await page.goto('/',{waitUntil:'domcontentloaded'});
     await expect(page.locator('#authGate')).toBeHidden();
-    await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toBeVisible();
+    await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toHaveCount(0);
     await expect(page.getByText('Моя выплата',{exact:true})).toBeVisible();
     await expect(page.getByText('Общая зарплата',{exact:true})).toBeVisible();
     await expect(page.getByText('Выручка')).toHaveCount(0);
     await expect(page.getByText('Сумма заявок')).toHaveCount(0);
-    await expect(page.locator('.masterUpcomingCompact').first()).toContainText('2 463,05 ₽');
+    const upcoming=page.locator('.bosMasterUpcomingCard').first();
+    await expect(upcoming).toContainText('№ M-1');
+    await expect(upcoming).toContainText('2 463,05 ₽');
+    await expect(upcoming).toContainText('10:00');
+    await expect(upcoming).not.toContainText('Невский');
+    await expect(upcoming).not.toContainText('Карниз');
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
     const kpis=page.locator('.masterKpi');
@@ -46,6 +51,7 @@ for(const s of sizes){
     await page.evaluate(()=>openOrder('M-1'));
     const modal=page.locator('.modal.show, .modal.open, .modal').filter({hasText:'№ M-1'}).last();
     await expect(modal.getByText('Выплата: 2 463,05 ₽',{exact:true})).toBeVisible();
+    await expect(page.getByRole('button',{name:'Отчитаться по заявке'})).toBeVisible();
     await expect(page.getByText('Исходная сумма',{exact:true})).toHaveCount(0);
     await expect(page.getByText('Итоговая сумма заявки',{exact:true})).toHaveCount(0);
     await expect(page.getByText('4 458 ₽',{exact:true})).toHaveCount(0);
@@ -59,6 +65,7 @@ for(const s of sizes){
     const teamButton=page.locator('nav button[data-page="team"]');
     if(await teamButton.count()){
       await teamButton.click();
+      await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toBeVisible();
       await expect(page.getByRole('button',{name:'+ Сотрудник'})).toHaveCount(0);
       await expect(page.getByText('Управление сотрудниками',{exact:true})).toHaveCount(0);
       await expect(page.getByRole('button',{name:'Логины и пароли'})).toHaveCount(0);
