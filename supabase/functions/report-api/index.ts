@@ -2,7 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const cors={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'content-type,apikey,authorization,x-vk-launch-params,x-bos-session','Access-Control-Allow-Methods':'POST,OPTIONS'};
 const json=(x:any,s=200)=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'Content-Type':'application/json'}});
 const round=(n:any)=>Math.round(Number(n||0)*100)/100;
-const payouts=(a:any)=>{const x=round(a);return{master_payout:round(x*.85*.35),manager_payout:round(x*.85*.94*.20),dispatcher_payout:round(x*.85*.94*.15)}};
+const payouts=(a:any)=>{const x=round(a);return{master_payout:round(x*.85*.65),manager_payout:round(x*.85*.94*.20),dispatcher_payout:round(x*.85*.94*.15)}};
 function bytes(b64:string){const raw=atob(String(b64||'').replace(/^data:[^;]+;base64,/,'')),out=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)out[i]=raw.charCodeAt(i);return out}
 function safe(s:string){return String(s||'file').replace(/[^a-zA-Z0-9._-]+/g,'_').slice(-120)}
 function b64u(a:Uint8Array){let s='';for(const b of a)s+=String.fromCharCode(b);return btoa(s).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_')}
