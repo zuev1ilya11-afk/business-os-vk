@@ -15,17 +15,10 @@ test('master preview recalculates payout from current order amount instead of st
     enterMasterPreview(masterVkId);
   },{masterVkId:master.external_id});
 
-  const debug=await page.evaluate(()=>({
-    orders:typeof ownOrders==='function'?ownOrders().map(o=>({id:o.id,status:o.status,amount:o.amount,master_payout:o.master_payout,extra_work_amount:o.extra_work_amount,uncompleted_work_amount:o.uncompleted_work_amount})):[],
-    ownPayoutTotal:typeof ownPayoutTotal==='function'?ownPayoutTotal():null,
-    ownExtraTotal:typeof ownExtraTotal==='function'?ownExtraTotal():null,
-    ownSalaryTotal:typeof ownSalaryTotal==='function'?ownSalaryTotal():null,
-    homeHtml:document.querySelector('#content')?.innerText||''
-  }));
-  console.log('MASTER_PAYOUT_DEBUG',JSON.stringify(debug));
-
   const payoutCard=page.locator('.masterKpi').filter({hasText:'Моя выплата'});
+  const salaryCard=page.locator('.masterKpi').filter({hasText:'Общая зарплата'});
   await expect(payoutCard).toContainText('552,5');
   await expect(payoutCard).not.toContainText('297,5');
-  await expect(page.getByText('Общая зарплата').locator('..')).toContainText('552,5');
+  await expect(salaryCard).toContainText('552,5');
+  await expect(salaryCard).not.toContainText('297,5');
 });
