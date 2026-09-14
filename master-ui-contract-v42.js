@@ -10,8 +10,24 @@
     const ids=new Set([state.user?.id,state.user?.vk_user_id,state.user?.user_id,state.user?.external_id].filter(Boolean).map(String));
     return (state.orders||[]).filter(o=>[o.master_id,o.master_vk_id,o.master_user_id,o.master_external_id].filter(Boolean).map(String).some(id=>ids.has(id)));
   }
+  function masterPayout(o){
+    const raw=o?.amount;
+    if(raw!==null&&raw!==undefined&&raw!==''){
+      const amount=Number(raw);
+      if(Number.isFinite(amount))return amount*0.85*0.65;
+    }
+    const stored=Number(o?.master_payout||0);
+    return Number.isFinite(stored)?stored:0;
+  }
   function totalSalary(){
-    return masterOrders().filter(o=>String(o.status||'')==='Выполнена').reduce((sum,o)=>sum+Number(o.master_payout||0)+Number(o.extra_work_amount||0),0);
+    if(typeof ownPayoutTotal==='function'){
+      try{
+        const payout=Number(ownPayoutTotal());
+        const extra=typeof ownExtraTotal==='function'?Number(ownExtraTotal()):0;
+        if(Number.isFinite(payout)&&Number.isFinite(extra))return Math.max(0,payout+extra);
+      }catch(_){ }
+    }
+    return Math.max(0,masterOrders().filter(o=>String(o.status||'')==='Выполнена').reduce((sum,o)=>sum+masterPayout(o)+Number(o.extra_work_amount||0),0));
   }
   const previousHome=pages.home;
   pages.home=function(){

@@ -38,7 +38,12 @@ test('master bootstrap and direct API cannot access others orders or escalate ro
 test('report finalization subtracts 15 percent and then 35 percent for master payout',async()=>{
  const db=database({business_staff:[employee('m')],orders:[{id:'1',master_staff_id:'m',original_amount:1000}]});
  const r=await edge('report-api',db)({action:'finalizeMasterReport',order_id:'1',upload_token:'audit',act_url:'https://example.test/act',photo_urls:['https://example.test/photo']},'staff_m');
- assert.equal(r.status,200);assert.equal(r.body.order.master_payout,552.5);assert.equal(r.body.order.manager_payout,159.8);assert.equal(r.body.order.dispatcher_payout,119.85);
+ assert.equal(r.status,200);
+ assert.equal(r.body.order.master_payout,552.5);
+ assert.equal(r.body.order.amount,undefined);
+ assert.equal(r.body.order.original_amount,undefined);
+ assert.equal(r.body.order.manager_payout,undefined);
+ assert.equal(r.body.order.dispatcher_payout,undefined);
 });
 test('editing comment preserves manually adjusted payouts',async()=>{
  const db=database({business_staff:[employee('owner','owner')],orders:[{id:'1',amount:1000,original_amount:1000,master_staff_id:'m',master_payout:123,manager_payout:45,dispatcher_payout:67}]});
