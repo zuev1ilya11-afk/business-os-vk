@@ -44,6 +44,10 @@ test('new employee redeems owner invite after signed VK launch',async({page})=>{
   await inviteForm.locator('input[name="code"]').fill('ABCD234567');
   await inviteForm.getByRole('button',{name:'Войти'}).click();
   await expect.poll(()=>registered).toBeTruthy();
+  await expect(page.locator('#authGate')).toBeHidden({timeout:10000});
+  await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toHaveCount(0);
+  await page.evaluate(()=>show('team'));
   await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toBeVisible({timeout:10000});
+  await expect(page.getByText('Управление сотрудниками',{exact:true})).toHaveCount(0);
   expect(await page.evaluate(()=>window.__authTokenCalls||0)).toBe(0);
 });
