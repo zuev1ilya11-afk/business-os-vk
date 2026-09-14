@@ -116,11 +116,4 @@ if(typeof previousOpenOrderForm==='function')window.openOrderForm=function(id){
   if(node&&order?.master_vk_id&&value!==null)node.textContent=money(value);
   return result;
 };
-
-if(!document.querySelector('script[data-bos-master-cabinet-final]')){
-  const script=document.createElement('script');
-  script.src='master-cabinet-final-v81.js?v=20260914-v81';
-  script.dataset.bosMasterCabinetFinal='1';
-  document.head.appendChild(script);
-}
 })();
