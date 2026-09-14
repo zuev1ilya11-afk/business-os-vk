@@ -9,7 +9,7 @@ const round=(n:any)=>Math.round(Number(n||0)*100)/100;
 const payouts=(a:any,has=true)=>{
   const x=round(a);
   return{
-    master_payout:has?round(x*.85*.35):0,
+    master_payout:has?round(x*.85*.65):0,
     manager_payout:round(x*.85*.94*.20),
     dispatcher_payout:round(x*.85*.94*.15)
   }
