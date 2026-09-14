@@ -8,9 +8,10 @@ test('order search and combined master/source filters affect rendered rows and r
  await page.locator('#bosOrderMaster').selectOption('Тестовый мастер');await expect(page.locator('.bosFilteredOrder')).toHaveCount(1);
 });
 for(const width of [320,375,390,1280])test(`master real handler bootstrap fits ${width}px and hides admin`,async({page})=>{
- await page.setViewportSize({width,height:844});await fullStack(page,'master');await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toBeVisible();
+ await page.setViewportSize({width,height:844});await fullStack(page,'master');await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toHaveCount(0);
  await expect(page.getByRole('button',{name:'Логины и пароли'})).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+ await page.evaluate(()=>show('team'));await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toBeVisible();await expect(page.getByText('Управление сотрудниками',{exact:true})).toHaveCount(0);
 });
 test('dispatcher creates and assigns order through handler, then sees assignment after reload',async({page})=>{
  const {db}=await fullStack(page,'dispatcher');await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.locator('nav [data-page=orders]').click();await page.getByRole('button',{name:'+ Новая'}).click();
