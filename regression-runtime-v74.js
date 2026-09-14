@@ -61,6 +61,13 @@ window.dispatcherReportData=function(kind,anchor){
   };
 };
 
+// Calendar dates are local business dates. ISO conversion shifts midnight to the previous
+// day in positive UTC offsets (for example Europe/Amsterdam or Moscow), so format locally.
+window.ymd=function(date){
+  const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+};
+
 function isWorkingSchedule(row){
   return row?.is_working===true||row?.is_working===1||String(row?.is_working||'').toLowerCase()==='true';
 }
