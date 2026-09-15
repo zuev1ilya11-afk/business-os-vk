@@ -1,0 +1,15 @@
+{
+  "name": "Домашний мастер — Business OS",
+  "short_name": "Business OS",
+  "description": "Рабочее приложение сервисной компании Домашний мастер",
+  "lang": "ru",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#08101b",
+  "theme_color": "#070b12",
+  "icons": [
+    {"src":"brand-logo.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
