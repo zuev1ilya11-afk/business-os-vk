@@ -2,11 +2,12 @@
 'use strict';
 const managementRoles=new Set(['owner','manager','dispatcher']);
 const previousOpenOrder=window.openOrder;
+const masterContext=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&!!isMasterPreview())||(typeof liveMasterMode==='function'&&!!liveMasterMode());
 const pick=(o,...keys)=>{for(const k of keys){const v=o?.[k];if(v!==undefined&&v!==null&&String(v).trim()!=='')return v}return ''};
 const line=(label,value)=>value?`<div class="bosOrderFact"><small>${esc(label)}</small><b>${esc(value)}</b></div>`:'';
 window.openOrder=function(id){
   const role=String(state?.user?.role||'');
-  if(!managementRoles.has(role)&&typeof previousOpenOrder==='function')return previousOpenOrder(id);
+  if(masterContext()||!managementRoles.has(role))return typeof previousOpenOrder==='function'?previousOpenOrder.apply(this,arguments):undefined;
   const o=state.orders.find(x=>String(x.id)===String(id));if(!o)return;
   const source=pick(o,'store','shop','store_name','shop_name','source');
   const work=pick(o,'work','works','work_description','service');
