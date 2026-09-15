@@ -9,13 +9,20 @@ on:
 jobs:
   smoke:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+
+      # ubuntu-latest already provides the browser runtime dependencies we need.
+      # Installing them again through apt made PR checks spend most of their time
+      # in `playwright install --with-deps` before any project tests could run.
+      - name: Install Chromium for Playwright
+        run: npx playwright install chromium
 
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server
