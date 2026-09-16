@@ -83,17 +83,17 @@ test('owner can assign an order to a master through the real order modal',async(
   await page.evaluate(()=>openOrder('ORDER-CRIT-1'));
   await expect(page.locator('#quickMaster')).toBeVisible();
   await page.locator('#quickMaster').selectOption('master_1');
-  await page.getByRole('button',{name:'Сохранить статус',exact:true}).click();
+  await page.getByRole('button',{name:'Сохранить',exact:true}).click();
   await expect.poll(()=>updates.some(x=>x.action==='updateOrder'&&x.id==='ORDER-CRIT-1'&&x.master_vk_id==='master_1')).toBe(true);
 });
 
 test('dispatcher can close an active order through the real order modal',async({page})=>{
   const {updates}=await mockTeamApp(page,'dispatcher');
-  page.on('dialog',dialog=>dialog.accept());
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
   await page.evaluate(()=>openOrder('ORDER-CRIT-1'));
-  await expect(page.getByRole('button',{name:'Закрыть заявку',exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'Закрыть заявку',exact:true}).click();
+  await expect(page.locator('#quickStatus')).toBeVisible();
+  await page.locator('#quickStatus').selectOption({label:'Выполнена'});
+  await page.getByRole('button',{name:'Сохранить',exact:true}).click();
   await expect.poll(()=>updates.some(x=>x.action==='updateOrder'&&x.id==='ORDER-CRIT-1'&&x.status==='Выполнена')).toBe(true);
 });
