@@ -1,7 +1,7 @@
 {
   "mode": "gaming",
   "status": "TEST_RENDER",
-  "attempt": 1,
+  "attempt": 2,
   "job_code": "GAME-0002",
   "game": "CS2",
   "content_type": "funny_stream_moment",
@@ -12,9 +12,13 @@
   "title": "cs2-skywhywalker-wtf-test",
   "hook_text": "ОН САМ НЕ ПОНЯЛ, ЧТО СЕЙЧАС ПРОИЗОШЛО",
   "voiceover": "",
+  "music": {
+    "enabled": true,
+    "volume": 0.09
+  },
   "ad": {
     "enabled": false
   },
   "publish": false,
-  "render_request": 4
+  "render_request": 5
 }
