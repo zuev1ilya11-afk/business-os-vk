@@ -45,7 +45,8 @@ test('master final cabinet keeps upcoming compact, report action, schedule summa
   await expect(page.locator('.bosMasterSavedSchedule')).toContainText('11.09');
 
   await page.evaluate(()=>show('team'));
-  await expect(page.getByText('Telegram',{exact:true})).toBeVisible();
+  await expect(page.getByRole('heading',{name:master.full_name,exact:true})).toBeVisible();
+  await expect(page.getByText('Санкт-Петербург',{exact:true})).toBeVisible();
   await expect(page.getByText('Телефон',{exact:true})).toBeVisible();
   await expect(page.getByText('Управление сотрудниками',{exact:true})).toHaveCount(0);
   await expect(page.getByRole('button',{name:'+ Сотрудник'})).toHaveCount(0);
