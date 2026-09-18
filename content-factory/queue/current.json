@@ -1,20 +1,20 @@
 {
   "mode": "gaming",
   "status": "TEST_RENDER",
-  "attempt": 2,
-  "job_code": "GAME-0001",
-  "game": "CS2",
+  "attempt": 1,
+  "job_code": "GAME-0008",
+  "game": "DOTA2",
   "content_type": "funny_stream_moment",
   "source_platform": "TWITCH",
-  "source_channel": "inkmate0",
-  "source_url": "https://www.twitch.tv/inkmate0/clip/CrackyInquisitivePassionfruitBatChest-8zqxJTu6vF4xEMnl",
+  "source_channel": "Stray228",
+  "source_url": "https://www.twitch.tv/stray228/clip/AwkwardSuaveKleeMoreCowbell-bYCzKbKBdgzEBum8",
   "segments": "",
-  "title": "cs2-inkmate0-funny-test",
-  "hook_text": "ЧТО ЗДЕСЬ ВООБЩЕ ПРОИЗОШЛО?",
+  "title": "dota-stray228-highlight-year-test",
+  "hook_text": "ХАЙЛАЙТ ГОДА ПО ВЕРСИИ STRAY228",
   "voiceover": "",
   "ad": {
     "enabled": false
   },
   "publish": false,
-  "render_request": 2
+  "render_request": 3
 }
