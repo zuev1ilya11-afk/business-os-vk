@@ -9,6 +9,11 @@
   roleChrome.async=false;
   document.head.appendChild(roleChrome);
 
+  const installApp=document.createElement('script');
+  installApp.src='./install-app-v84.js?v=20260918-v84';
+  installApp.async=false;
+  document.head.appendChild(installApp);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
