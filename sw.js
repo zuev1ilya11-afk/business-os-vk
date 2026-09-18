@@ -1,4 +1,4 @@
-const CACHE='business-os-shell-v2';
+const CACHE='business-os-shell-v3';
 const SHELL=['./','./index.html','./manifest.webmanifest','./brand-logo.svg'];
 
 self.addEventListener('install',event=>{
@@ -27,7 +27,7 @@ self.addEventListener('fetch',event=>{
 
   event.respondWith((async()=>{
     try{
-      const response=await fetch(request);
+      const response=await fetch(request,{cache:'no-store'});
       if(response&&response.ok){
         const copy=response.clone();
         caches.open(CACHE).then(cache=>cache.put(request,copy)).catch(()=>{});
