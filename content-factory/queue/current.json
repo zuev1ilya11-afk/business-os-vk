@@ -1,8 +1,18 @@
 {
   "mode": "gaming",
-  "status": "EMPTY",
-  "games": ["CS2", "DOTA2"],
-  "content_type": "funny_stream_moments",
-  "sources": ["TWITCH", "YOUTUBE", "VK_VIDEO"],
-  "items": []
+  "status": "TEST_RENDER",
+  "job_code": "GAME-0001",
+  "game": "CS2",
+  "content_type": "funny_stream_moment",
+  "source_platform": "TWITCH",
+  "source_channel": "inkmate0",
+  "source_url": "https://www.twitch.tv/inkmate0/clip/CrackyInquisitivePassionfruitBatChest-8zqxJTu6vF4xEMnl",
+  "segments": "",
+  "title": "cs2-inkmate0-funny-test",
+  "hook_text": "ЧТО ЗДЕСЬ ВООБЩЕ ПРОИЗОШЛО?",
+  "voiceover": "",
+  "ad": {
+    "enabled": false
+  },
+  "publish": false
 }
