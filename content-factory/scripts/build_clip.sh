@@ -3,10 +3,11 @@ set -euo pipefail
 
 SOURCE_URL="${1:?source URL required}"
 SEGMENTS="${2:-}"
-TITLE="${3:-clip}"
+TITLE="${3:-gaming-clip}"
 VOICEOVER="${4:-}"
 OUT_DIR="${OUT_DIR:-output}"
 VOICE_MODEL="${PIPER_VOICE_MODEL:-voice/ru_RU-dmitri-medium.onnx}"
+HOOK_TEXT="${HOOK_TEXT:-}"
 AD_ENABLED="${AD_ENABLED:-0}"
 ADVERTISER_NAME="${ADVERTISER_NAME:-}"
 AD_TEXT="${AD_TEXT:-}"
@@ -16,15 +17,15 @@ AD_DURATION="${AD_DURATION:-5}"
 mkdir -p "$OUT_DIR" work
 
 case "$SOURCE_URL" in
-  https://rutube.ru/*|https://www.rutube.ru/*|https://vk.com/video*|https://vkvideo.ru/*)
+  https://clips.twitch.tv/*|https://www.twitch.tv/*|https://twitch.tv/*|https://www.youtube.com/*|https://youtube.com/*|https://youtu.be/*|https://vk.com/video*|https://vkvideo.ru/*)
     ;;
   *)
-    echo "Unsupported source domain. Allowed: rutube.ru, vk.com/video*, vkvideo.ru" >&2
+    echo "Unsupported source domain. Allowed: Twitch, YouTube, VK Video." >&2
     exit 2
     ;;
 esac
 
-# Public sources only: no cookies, login or DRM workarounds.
+# Public sources only: no cookies, login, paywall or DRM workarounds.
 python -m yt_dlp \
   --no-playlist \
   --restrict-filenames \
@@ -39,15 +40,27 @@ if [[ -z "$SOURCE_FILE" ]]; then
   exit 3
 fi
 
-FILTER="scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1,fps=30"
-safe_title="$(printf '%s' "$TITLE" | tr ' /' '__' | LC_ALL=C tr -cd '[:alnum:]_.-' | cut -c1-80)"
-[[ -n "$safe_title" ]] || safe_title="clip"
+# Preserve the whole gameplay frame: blurred 9:16 background + centered 16:9 foreground.
+FILTER="split=2[fg][bg];[bg]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=24:8[bgv];[fg]scale=1080:-2:force_original_aspect_ratio=decrease[fgv];[bgv][fgv]overlay=(W-w)/2:(H-h)/2,setsar=1,fps=30"
+safe_title="$(python - "$TITLE" <<'PY'
+import re,sys
+s=re.sub(r'[^A-Za-z0-9_.-]+','-',sys.argv[1]).strip('-')[:80]
+print(s or 'gaming-clip')
+PY
+)"
 FINAL="$OUT_DIR/${safe_title}.mp4"
 
+render_range() {
+  local start="$1"
+  local duration="$2"
+  local out="$3"
+  ffmpeg -y -ss "$start" -t "$duration" -i "$SOURCE_FILE" \
+    -filter_complex "$FILTER" -c:v libx264 -preset veryfast -crf 21 \
+    -c:a aac -b:a 160k -movflags +faststart "$out"
+}
+
 if [[ -z "$SEGMENTS" ]]; then
-  ffmpeg -y -ss 0 -t 45 -i "$SOURCE_FILE" \
-    -vf "$FILTER" -c:v libx264 -preset veryfast -crf 21 \
-    -c:a aac -b:a 128k -movflags +faststart "$FINAL"
+  render_range 0 35 "$FINAL"
 else
   IFS=',' read -ra RANGES <<< "$SEGMENTS"
   idx=0
@@ -57,7 +70,7 @@ else
     start="${range%-*}"
     end="${range#*-}"
     if ! [[ "$start" =~ ^[0-9]+([.][0-9]+)?$ && "$end" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
-      echo "Invalid segment: $range (expected start-end, e.g. 0-5.5)" >&2
+      echo "Invalid segment: $range (expected start-end, e.g. 12-24.5)" >&2
       exit 4
     fi
     duration="$(python - <<PY
@@ -67,13 +80,20 @@ print(e-s)
 PY
 )"
     part="work/part_${idx}.mp4"
-    ffmpeg -y -ss "$start" -t "$duration" -i "$SOURCE_FILE" \
-      -vf "$FILTER" -c:v libx264 -preset veryfast -crf 21 \
-      -c:a aac -b:a 128k "$part"
+    render_range "$start" "$duration" "$part"
     printf "file '%s'\n" "$(basename "$part")" >> "$list_file"
     idx=$((idx+1))
   done
   (cd work && ffmpeg -y -f concat -safe 0 -i concat.txt -c copy ../"$FINAL")
+fi
+
+if [[ -n "$HOOK_TEXT" ]]; then
+  printf '%s\n' "$HOOK_TEXT" > work/hook.txt
+  HOOKED="work/${safe_title}_hook.mp4"
+  ffmpeg -y -i "$FINAL" \
+    -vf "drawbox=x=40:y=75:w=w-80:h=150:color=black@0.60:t=fill:enable='between(t,0,3.2)',drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:textfile=work/hook.txt:fontcolor=white:fontsize=42:x=(w-text_w)/2:y=115:enable='between(t,0,3.2)'" \
+    -c:v libx264 -preset veryfast -crf 21 -c:a copy -movflags +faststart "$HOOKED"
+  mv "$HOOKED" "$FINAL"
 fi
 
 if [[ -n "$VOICEOVER" ]]; then
@@ -83,7 +103,6 @@ if [[ -n "$VOICEOVER" ]]; then
   fi
 
   python -m piper -m "$VOICE_MODEL" -f work/voice_raw.wav -- "$VOICEOVER"
-
   video_duration="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$FINAL")"
   voice_duration="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 work/voice_raw.wav)"
   speed="$(python - <<PY
@@ -108,28 +127,25 @@ PY
       cp work/voice_raw.wav work/voice.wav
     fi
   else
-    echo "Voiceover is too long for the selected clip. Shorten narration or choose longer segments." >&2
+    echo "Voiceover is too long for the selected clip." >&2
     exit 6
   fi
 
   voice_duration="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 work/voice.wav)"
   python content-factory/scripts/make_srt.py \
-    --text "$VOICEOVER" \
-    --duration "$voice_duration" \
-    --words-per-caption 3 \
-    --output work/captions.srt
+    --text "$VOICEOVER" --duration "$voice_duration" \
+    --words-per-caption 3 --output work/captions.srt
 
   ENRICHED="work/${safe_title}_enriched.mp4"
   ffmpeg -y -i "$FINAL" -i work/voice.wav \
-    -filter_complex "[0:a]volume=0.16[bg];[1:a]volume=1.15[vo];[bg][vo]amix=inputs=2:duration=first:dropout_transition=0[aout]" \
+    -filter_complex "[0:a]volume=0.28[bg];[1:a]volume=1.12[vo];[bg][vo]amix=inputs=2:duration=first:dropout_transition=0[aout]" \
     -map 0:v:0 -map "[aout]" \
     -vf "subtitles=work/captions.srt:force_style='FontName=DejaVu Sans,FontSize=12,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=1,Outline=2,Shadow=0,Alignment=2,MarginV=42'" \
-    -c:v libx264 -preset veryfast -crf 21 \
-    -c:a aac -b:a 160k -movflags +faststart "$ENRICHED"
+    -c:v libx264 -preset veryfast -crf 21 -c:a aac -b:a 160k -movflags +faststart "$ENRICHED"
   mv "$ENRICHED" "$FINAL"
 fi
 
-# Optional paid sponsor overlay. For RU internet ads we require an advertiser name and ERID.
+# Paid sponsor slot. Requires advertiser identification and ERID before rendering.
 if [[ "$AD_ENABLED" == "1" || "$AD_ENABLED" == "true" ]]; then
   if [[ -z "$ADVERTISER_NAME" || -z "$AD_TEXT" || -z "$AD_ERID" ]]; then
     echo "Paid ad banner requires ADVERTISER_NAME, AD_TEXT and AD_ERID." >&2
@@ -147,7 +163,7 @@ PY
   printf 'РЕКЛАМА · %s\n%s\nerid: %s\n' "$ADVERTISER_NAME" "$AD_TEXT" "$AD_ERID" > work/ad_banner.txt
   ADDED="work/${safe_title}_ad.mp4"
   ffmpeg -y -i "$FINAL" \
-    -vf "drawbox=x=36:y=h-350:w=w-72:h=250:color=black@0.72:t=fill:enable='between(t,$AD_START,$AD_END)',drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:textfile=work/ad_banner.txt:fontcolor=white:fontsize=34:line_spacing=9:x=64:y=h-315:enable='between(t,$AD_START,$AD_END)'" \
+    -vf "drawbox=x=36:y=h-350:w=w-72:h=250:color=black@0.74:t=fill:enable='between(t,$AD_START,$AD_END)',drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:textfile=work/ad_banner.txt:fontcolor=white:fontsize=34:line_spacing=9:x=64:y=h-315:enable='between(t,$AD_START,$AD_END)'" \
     -c:v libx264 -preset veryfast -crf 21 -c:a copy -movflags +faststart "$ADDED"
   mv "$ADDED" "$FINAL"
 fi
