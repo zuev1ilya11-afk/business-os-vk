@@ -1,0 +1,123 @@
+name: Content Factory Gaming
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_url:
+        description: Public Twitch / YouTube / VK clip or VOD URL
+        required: true
+        type: string
+      segments:
+        description: 'Optional ranges, e.g. 12-26,41-52'
+        required: false
+        type: string
+      title:
+        description: Output title
+        required: false
+        default: gaming-clip
+        type: string
+      hook_text:
+        description: Optional hook shown at the top for the first seconds
+        required: false
+        type: string
+      voiceover:
+        description: Optional Russian narration
+        required: false
+        type: string
+      ad_enabled:
+        description: Enable paid sponsor banner
+        required: false
+        default: false
+        type: boolean
+      advertiser_name:
+        description: Advertiser name shown in banner
+        required: false
+        type: string
+      ad_text:
+        description: Sponsor CTA / offer text
+        required: false
+        type: string
+      ad_erid:
+        description: ERID issued by an advertising data operator
+        required: false
+        type: string
+      ad_start:
+        description: Sponsor banner start, seconds
+        required: false
+        default: '6'
+        type: string
+      ad_duration:
+        description: Sponsor banner duration, seconds
+        required: false
+        default: '5'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build-gaming-clip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install media tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq espeak-ng fonts-dejavu-core curl
+          python -m pip install --upgrade pip
+          python -m pip install 'yt-dlp==2026.8.19' 'piper-tts==1.6.0'
+          yt-dlp --version
+          ffmpeg -version | head -n 1
+
+      - name: Prepare free Russian TTS voice
+        if: ${{ inputs.voiceover != '' }}
+        run: |
+          mkdir -p voice
+          curl -fL --retry 3 -o voice/ru_RU-dmitri-medium.onnx \
+            https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/ru/ru_RU/dmitri/medium/ru_RU-dmitri-medium.onnx
+          curl -fL --retry 3 -o voice/ru_RU-dmitri-medium.onnx.json \
+            https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/ru/ru_RU/dmitri/medium/ru_RU-dmitri-medium.onnx.json
+
+      - name: Build vertical gaming clip
+        env:
+          OUT_DIR: output
+          HOOK_TEXT: ${{ inputs.hook_text }}
+          VOICEOVER: ${{ inputs.voiceover }}
+          PIPER_VOICE_MODEL: voice/ru_RU-dmitri-medium.onnx
+          AD_ENABLED: ${{ inputs.ad_enabled }}
+          ADVERTISER_NAME: ${{ inputs.advertiser_name }}
+          AD_TEXT: ${{ inputs.ad_text }}
+          AD_ERID: ${{ inputs.ad_erid }}
+          AD_START: ${{ inputs.ad_start }}
+          AD_DURATION: ${{ inputs.ad_duration }}
+        run: |
+          bash content-factory/scripts/build_clip.sh \
+            "${{ inputs.source_url }}" \
+            "${{ inputs.segments }}" \
+            "${{ inputs.title }}" \
+            "$VOICEOVER"
+
+      - name: Inspect output
+        run: |
+          ls -lah output
+          FILE="$(find output -type f -name '*.mp4' | head -n 1)"
+          ffprobe -v error \
+            -show_entries format=duration,size \
+            -show_entries stream=codec_name,width,height,r_frame_rate \
+            -of json "$FILE"
+
+      - name: Upload rendered clip
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-factory-gaming-${{ github.run_number }}
+          path: output/*.mp4
+          if-no-files-found: error
+          retention-days: 3
