@@ -1,18 +1,18 @@
 {
   "mode": "gaming",
-  "status": "TEST_RENDER",
-  "attempt": 1,
-  "job_code": "GAME-0010",
-  "game": "DOTA2",
+  "status": "QA_RERENDER",
+  "attempt": 2,
+  "job_code": "GAME-0002",
+  "game": "CS2",
   "content_type": "funny_stream_moment",
   "source_platform": "TWITCH",
-  "source_channel": "stariy_bog",
-  "source_url": "https://www.twitch.tv/stariy_bog/clip/KathishDeliciousWalletHoneyBadger-j1BXs-vGYUuTA40D",
+  "source_channel": "skywhywalker",
+  "source_url": "https://www.twitch.tv/skywhywalker/clip/FragileEnticingSparrowWow-rsNARi3T-IPNYeJP",
   "segments": "",
-  "title": "dota-stariy-bog-suspicious-v1",
-  "hook_text": "КОГДА МОМЕНТ ВЫГЛЯДИТ СЛИШКОМ ПОДОЗРИТЕЛЬНО",
+  "title": "cs2-skywhywalker-wtf-final",
+  "hook_text": "ЧТО ЭТО СЕЙЧАС БЫЛО?",
   "voiceover": "",
   "ad": {"enabled": false},
   "publish": false,
-  "render_request": 15
+  "render_request": 16
 }
