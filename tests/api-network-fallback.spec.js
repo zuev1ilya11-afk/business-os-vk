@@ -5,7 +5,7 @@ async function authPage(page){
 }
 for(const status of [401,403,500])test(`VK HTTP ${status} displays server error and does not retry a valid HTTP response`,async({page})=>{
  let attempts=0,direct=0;
- await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/**',r=>{direct++;return r.abort()});
+ await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.abort()});
  await page.route('**/api/proxy/vk-session-api',r=>{attempts++;return r.fulfill({status,contentType:'application/json',body:JSON.stringify({ok:false,error:`Проверка ${status}`})})});
  await authPage(page);await expect(page.locator('#authGate')).toContainText(`Проверка ${status}`);expect(attempts).toBe(1);expect(direct).toBe(0);
  await page.getByRole('button',{name:'Повторить вход через VK'}).click();await expect.poll(()=>attempts).toBe(2);
