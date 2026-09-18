@@ -8,6 +8,7 @@ test('production shell exposes an installable PWA without unsafe asset fallback'
   await expect(manifestLink).toHaveAttribute('href',/manifest\.webmanifest/);
   await expect(page.locator('script[src^="pwa-register.js"]')).toHaveCount(1);
   await expect(page.locator('meta[name="apple-mobile-web-app-capable"]')).toHaveAttribute('content','yes');
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./app-icon.svg');
 
   const manifestResponse=await request.get('/manifest.webmanifest');
   expect(manifestResponse.ok()).toBeTruthy();
@@ -16,6 +17,14 @@ test('production shell exposes an installable PWA without unsafe asset fallback'
   expect(manifest.display).toBe('standalone');
   expect(manifest.start_url).toBe('./');
   expect(manifest.scope).toBe('./');
+  expect(manifest.icons).toEqual(expect.arrayContaining([
+    expect.objectContaining({src:'app-icon.svg',purpose:'any'}),
+    expect.objectContaining({src:'app-icon.svg',purpose:'maskable'}),
+  ]));
+
+  const iconResponse=await request.get('/app-icon.svg');
+  expect(iconResponse.ok()).toBeTruthy();
+  expect(await iconResponse.text()).toContain('viewBox="0 0 512 512"');
 
   const workerResponse=await request.get('/sw.js');
   expect(workerResponse.ok()).toBeTruthy();
