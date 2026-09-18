@@ -16,6 +16,8 @@ const ALLOWED = new Set([
   "staff-invite-api",
   "order-meta-api",
   "hands-api",
+  "report-upload-gateway",
+  "drive-archive-api",
 ]);
 
 const ALLOWED_ORIGINS = new Set([
@@ -32,7 +34,7 @@ function corsHeaders(req: Request) {
   return {
     "Access-Control-Allow-Origin": allowOrigin,
     "Access-Control-Allow-Methods": "POST,OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type,X-BOS-Session,Authorization,apikey",
+    "Access-Control-Allow-Headers": "Content-Type,X-BOS-Session,X-VK-Launch-Params,Authorization,apikey",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
   };
@@ -69,7 +71,7 @@ export default async (req: Request) => {
   }
 
   const upstreamHeaders = new Headers();
-  for (const header of ["content-type", "x-bos-session", "authorization", "apikey"]) {
+  for (const header of ["content-type", "x-bos-session", "x-vk-launch-params", "authorization", "apikey"]) {
     const value = req.headers.get(header);
     if (value) upstreamHeaders.set(header, value);
   }
