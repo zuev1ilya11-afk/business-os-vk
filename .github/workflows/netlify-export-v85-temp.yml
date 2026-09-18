@@ -1,0 +1,26 @@
+name: Netlify export v85 temp
+
+on:
+  push:
+    branches:
+      - netlify-export-v85-temp
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Remove temporary workflow from snapshot
+        run: rm -f .github/workflows/netlify-export-v85-temp.yml
+      - name: Remove git metadata from snapshot
+        run: rm -rf .git
+      - name: Upload repository snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: business-os-netlify-v85
+          path: .
+          include-hidden-files: true
+          retention-days: 1
