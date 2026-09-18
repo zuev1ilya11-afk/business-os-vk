@@ -1,0 +1,22 @@
+name: Netlify export temp
+
+on:
+  push:
+    branches:
+      - netlify-export-temp
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Upload repository snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: business-os-netlify-snapshot
+          path: .
+          include-hidden-files: true
+          retention-days: 1
