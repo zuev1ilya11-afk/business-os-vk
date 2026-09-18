@@ -7,6 +7,12 @@ TITLE="${3:-clip}"
 VOICEOVER="${4:-}"
 OUT_DIR="${OUT_DIR:-output}"
 VOICE_MODEL="${PIPER_VOICE_MODEL:-voice/ru_RU-dmitri-medium.onnx}"
+AD_ENABLED="${AD_ENABLED:-0}"
+ADVERTISER_NAME="${ADVERTISER_NAME:-}"
+AD_TEXT="${AD_TEXT:-}"
+AD_ERID="${AD_ERID:-}"
+AD_START="${AD_START:-6}"
+AD_DURATION="${AD_DURATION:-5}"
 mkdir -p "$OUT_DIR" work
 
 case "$SOURCE_URL" in
@@ -121,6 +127,29 @@ PY
     -c:v libx264 -preset veryfast -crf 21 \
     -c:a aac -b:a 160k -movflags +faststart "$ENRICHED"
   mv "$ENRICHED" "$FINAL"
+fi
+
+# Optional paid sponsor overlay. For RU internet ads we require an advertiser name and ERID.
+if [[ "$AD_ENABLED" == "1" || "$AD_ENABLED" == "true" ]]; then
+  if [[ -z "$ADVERTISER_NAME" || -z "$AD_TEXT" || -z "$AD_ERID" ]]; then
+    echo "Paid ad banner requires ADVERTISER_NAME, AD_TEXT and AD_ERID." >&2
+    exit 7
+  fi
+  if ! [[ "$AD_START" =~ ^[0-9]+([.][0-9]+)?$ && "$AD_DURATION" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    echo "AD_START and AD_DURATION must be numeric seconds." >&2
+    exit 8
+  fi
+
+  AD_END="$(python - <<PY
+print(float('$AD_START') + float('$AD_DURATION'))
+PY
+)"
+  printf 'РЕКЛАМА · %s\n%s\nerid: %s\n' "$ADVERTISER_NAME" "$AD_TEXT" "$AD_ERID" > work/ad_banner.txt
+  ADDED="work/${safe_title}_ad.mp4"
+  ffmpeg -y -i "$FINAL" \
+    -vf "drawbox=x=36:y=h-350:w=w-72:h=250:color=black@0.72:t=fill:enable='between(t,$AD_START,$AD_END)',drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:textfile=work/ad_banner.txt:fontcolor=white:fontsize=34:line_spacing=9:x=64:y=h-315:enable='between(t,$AD_START,$AD_END)'" \
+    -c:v libx264 -preset veryfast -crf 21 -c:a copy -movflags +faststart "$ADDED"
+  mv "$ADDED" "$FINAL"
 fi
 
 ffprobe -v error -show_entries format=duration,size -show_entries stream=codec_name,width,height,r_frame_rate -of json "$FINAL"
