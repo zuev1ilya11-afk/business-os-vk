@@ -33,7 +33,8 @@ fi
 
 FILTER="scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1,fps=30"
 
-safe_title="$(printf '%s' "$TITLE" | tr ' /' '__' | tr -cd '[:alnum:]_-.А-Яа-яЁё' | cut -c1-80)"
+# Keep filenames portable across GitHub runners. Put '-' last so tr never treats it as a range.
+safe_title="$(printf '%s' "$TITLE" | tr ' /' '__' | LC_ALL=C tr -cd '[:alnum:]_.-' | cut -c1-80)"
 [[ -n "$safe_title" ]] || safe_title="clip"
 FINAL="$OUT_DIR/${safe_title}.mp4"
 
