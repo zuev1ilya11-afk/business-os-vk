@@ -4,6 +4,8 @@ if(window.BOS_INSTALL_APP_V84)return;
 window.BOS_INSTALL_APP_V84=true;
 
 let deferredPrompt=null;
+let syncTimer=null;
+let syncAttempt=0;
 
 function isIos(){
   return /iphone|ipad|ipod/i.test(navigator.userAgent)||
@@ -101,6 +103,24 @@ function syncControls(){
   document.querySelectorAll('.bosInstallAppBtn').forEach(button=>{button.hidden=hide});
 }
 
+function startSyncRetries(){
+  if(syncTimer!==null){
+    window.clearTimeout(syncTimer);
+    syncTimer=null;
+  }
+  syncAttempt=0;
+  const tick=()=>{
+    syncControls();
+    syncAttempt+=1;
+    if(syncAttempt>=6){
+      syncTimer=null;
+      return;
+    }
+    syncTimer=window.setTimeout(tick,Math.min(1200,120*syncAttempt));
+  };
+  tick();
+}
+
 const style=document.createElement('style');
 style.textContent=`
 .bosInstallAppBtn{border:1px solid rgba(255,255,255,.12);background:rgba(32,164,234,.12);color:inherit;border-radius:10px;padding:8px 11px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
@@ -122,8 +142,10 @@ window.addEventListener('appinstalled',()=>{
   deferredPrompt=null;
   hideControls();
 });
+window.addEventListener('pageshow',startSyncRetries);
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden)syncControls();
+});
 
-const observer=new MutationObserver(()=>syncControls());
-observer.observe(document.body,{childList:true,subtree:true});
-syncControls();
+startSyncRetries();
 })();
