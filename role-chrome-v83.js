@@ -1,6 +1,7 @@
 (()=>{
 'use strict';
 
+function appState(){try{return typeof state!=='undefined'&&state?state:null}catch(_){return null}}
 function isMasterRolePreview(){return typeof isMasterPreview==='function'&&!!isMasterPreview()}
 function isDispatcherRolePreview(){return typeof isDispatcherPreview==='function'&&!!isDispatcherPreview()}
 function isManagerRolePreview(){return !!window.BOS_IS_MANAGER_PREVIEW?.()}
@@ -8,13 +9,13 @@ function effectiveRole(){
   if(isManagerRolePreview())return'manager';
   if(isMasterRolePreview())return'master';
   if(isDispatcherRolePreview())return'dispatcher';
-  return String(window.state?.user?.role||'owner');
+  return String(appState()?.user?.role||'owner');
 }
 function effectiveUser(role){
-  if(role==='manager'&&isManagerRolePreview())return window.BOS_MANAGER_PREVIEW_USER?.()||state.user||{};
+  if(role==='manager'&&isManagerRolePreview())return window.BOS_MANAGER_PREVIEW_USER?.()||appState()?.user||{};
   if(role==='master'&&isMasterRolePreview()&&typeof previewUser!=='undefined'&&previewUser)return previewUser;
   if(role==='dispatcher'&&isDispatcherRolePreview()&&typeof dispatcherPreviewUser!=='undefined'&&dispatcherPreviewUser)return dispatcherPreviewUser;
-  return window.state?.user||{};
+  return appState()?.user||{};
 }
 function initials(user,fallback){
   const value=String(user?.full_name||user?.name||'').trim();
@@ -30,7 +31,7 @@ function syncRoleChrome(){
   const profile=document.querySelector('#profileBtn');
   if(profile&&role!=='owner')profile.textContent=initials(effectiveUser(role),role==='manager'?'Р':role==='dispatcher'?'Д':'М');
   const ownerTools=document.querySelector('#ownerToolsBtn');
-  if(ownerTools)ownerTools.style.display=role==='owner'&&String(window.state?.page||'home')==='home'?'grid':'none';
+  if(ownerTools)ownerTools.style.display=role==='owner'&&String(appState()?.page||'home')==='home'?'grid':'none';
 }
 
 const previousShow=window.show;
