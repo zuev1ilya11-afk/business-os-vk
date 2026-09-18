@@ -2,17 +2,17 @@
   "mode": "gaming",
   "status": "QA_RERENDER",
   "attempt": 2,
-  "job_code": "GAME-0003",
+  "job_code": "GAME-0005",
   "game": "CS2",
   "content_type": "funny_stream_moment",
   "source_platform": "TWITCH",
   "source_channel": "StRoGo",
-  "source_url": "https://www.twitch.tv/strogo/clip/FunSweetAsparagusFunRun-Jb8CXDVav54WyDpP",
+  "source_url": "https://www.twitch.tv/strogo/clip/BeautifulBlazingSnakeRaccAttack-4a_hJXNGQtduptIw",
   "segments": "",
-  "title": "cs2-strogo-mokrivskiy-final",
-  "hook_text": "КАК ЭТО ВЫШЛО ИЗ-ПОД КОНТРОЛЯ?",
+  "title": "cs2-strogo-proofs-final",
+  "hook_text": "ПРУФЫ ПРИШЛИ СЛИШКОМ БЫСТРО",
   "voiceover": "",
   "ad": {"enabled": false},
   "publish": false,
-  "render_request": 17
+  "render_request": 18
 }
