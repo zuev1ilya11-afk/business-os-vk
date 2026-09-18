@@ -20,6 +20,7 @@ const ALLOWED = new Set([
 
 const ALLOWED_ORIGINS = new Set([
   "https://zuev1ilya11-afk.github.io",
+  "https://business-os-public-xo8i66.v2.appdeploy.ai",
 ]);
 
 function corsHeaders(req: Request) {
