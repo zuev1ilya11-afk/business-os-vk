@@ -1,6 +1,6 @@
 {
   "mode": "gaming",
-  "status": "TEST_RENDER",
+  "status": "QUEUED",
   "job_code": "GAME-0001",
   "game": "CS2",
   "content_type": "funny_stream_moment",
@@ -14,5 +14,6 @@
   "ad": {
     "enabled": false
   },
-  "publish": false
+  "publish": false,
+  "render_request": 1
 }
