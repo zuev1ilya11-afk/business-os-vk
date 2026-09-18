@@ -1,0 +1,33 @@
+{
+  "mode": "gaming",
+  "games": ["CS2", "DOTA2"],
+  "content_type": "funny_stream_moments",
+  "platforms": ["TWITCH_CLIPS", "YOUTUBE", "VK_VIDEO"],
+  "preferred_creators": [
+    {"game": "DOTA2", "platform": "TWITCH", "channel": "Nix", "language": "ru"},
+    {"game": "CS2", "platform": "TWITCH", "channel": "Strogo", "language": "ru"},
+    {"game": "CS2", "platform": "TWITCH", "channel": "ohnePixel", "language": "en"}
+  ],
+  "selection": {
+    "max_source_age_hours": 24,
+    "min_duration_seconds": 8,
+    "target_duration_seconds": [15, 45],
+    "prefer_funny_reaction_fail": true,
+    "require_public_source": true,
+    "avoid_reuploads_when_original_available": true,
+    "no_auth_bypass": true,
+    "no_drm_bypass": true
+  },
+  "render": {
+    "aspect_ratio": "9:16",
+    "hook_seconds": 3.2,
+    "subtitles": true,
+    "preserve_gameplay_frame": true
+  },
+  "advertising": {
+    "enabled_by_default": false,
+    "requires_real_offer": true,
+    "requires_erid_when_applicable": true,
+    "preferred_category": "CS2_DOTA_SKINS"
+  }
+}
