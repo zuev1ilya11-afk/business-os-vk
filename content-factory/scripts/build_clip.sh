@@ -91,7 +91,7 @@ if [[ -n "$HOOK_TEXT" ]]; then
   printf '%s\n' "$HOOK_TEXT" > work/hook.txt
   HOOKED="work/${safe_title}_hook.mp4"
   ffmpeg -y -i "$FINAL" \
-    -vf "drawbox=x=40:y=75:w=w-80:h=150:color=black@0.60:t=fill:enable='between(t,0,3.2)',drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:textfile=work/hook.txt:fontcolor=white:fontsize=42:x=(w-text_w)/2:y=115:enable='between(t,0,3.2)'" \
+    -vf "drawbox=x=40:y=75:w=1000:h=150:color=black@0.60:t=fill:enable='between(t,0,3.2)',drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:textfile=work/hook.txt:fontcolor=white:fontsize=42:x=(w-text_w)/2:y=115:enable='between(t,0,3.2)'" \
     -c:v libx264 -preset veryfast -crf 21 -c:a copy -movflags +faststart "$HOOKED"
   mv "$HOOKED" "$FINAL"
 fi
@@ -163,7 +163,7 @@ PY
   printf 'РЕКЛАМА · %s\n%s\nerid: %s\n' "$ADVERTISER_NAME" "$AD_TEXT" "$AD_ERID" > work/ad_banner.txt
   ADDED="work/${safe_title}_ad.mp4"
   ffmpeg -y -i "$FINAL" \
-    -vf "drawbox=x=36:y=h-350:w=w-72:h=250:color=black@0.74:t=fill:enable='between(t,$AD_START,$AD_END)',drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:textfile=work/ad_banner.txt:fontcolor=white:fontsize=34:line_spacing=9:x=64:y=h-315:enable='between(t,$AD_START,$AD_END)'" \
+    -vf "drawbox=x=36:y=1570:w=1008:h=250:color=black@0.74:t=fill:enable='between(t,$AD_START,$AD_END)',drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:textfile=work/ad_banner.txt:fontcolor=white:fontsize=34:line_spacing=9:x=64:y=h-315:enable='between(t,$AD_START,$AD_END)'" \
     -c:v libx264 -preset veryfast -crf 21 -c:a copy -movflags +faststart "$ADDED"
   mv "$ADDED" "$FINAL"
 fi
