@@ -1,7 +1,7 @@
 {
   "mode": "gaming",
   "status": "TEST_RENDER",
-  "attempt": 2,
+  "attempt": 3,
   "job_code": "GAME-0008",
   "game": "DOTA2",
   "content_type": "funny_stream_moment",
@@ -9,16 +9,17 @@
   "source_channel": "Stray228",
   "source_url": "https://www.twitch.tv/stray228/clip/AwkwardSuaveKleeMoreCowbell-bYCzKbKBdgzEBum8",
   "segments": "",
-  "title": "dota-stray228-highlight-year-music",
+  "title": "dota-stray228-highlight-year-music-v2",
   "hook_text": "ХАЙЛАЙТ ГОДА ПО ВЕРСИИ STRAY228",
   "voiceover": "",
   "music": {
     "enabled": true,
-    "volume": 0.09
+    "volume": 0.075,
+    "style": "ambient"
   },
   "ad": {
     "enabled": false
   },
   "publish": false,
-  "render_request": 6
+  "render_request": 7
 }
