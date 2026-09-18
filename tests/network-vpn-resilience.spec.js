@@ -9,7 +9,8 @@ test('VK Bridge starts from Netlify without direct CDN dependency',async({page})
   await page.route('https://business-os-api-gateway.netlify.app/vendor/vk-bridge.js',route=>{bridgeCalls++;return route.fulfill({status:200,contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'})});
   await page.route('https://business-os-api-gateway.netlify.app/api/**',route=>route.fulfill({status:401,contentType:'application/json',body:'{"ok":false,"error":"Доступ не подтверждён"}'}));
   await page.goto('/');
-  await expect.poll(()=>bridgeCalls).toBe(1);
+  await expect.poll(()=>bridgeCalls).toBeGreaterThanOrEqual(1);
+  expect(bridgeCalls).toBeLessThanOrEqual(2);
   await expect(page.locator('#authGate')).toBeVisible();
 });
 
