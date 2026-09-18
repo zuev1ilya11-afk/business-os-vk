@@ -9,7 +9,8 @@ OUT_DIR="${OUT_DIR:-output}"
 VOICE_MODEL="${PIPER_VOICE_MODEL:-voice/ru_RU-dmitri-medium.onnx}"
 HOOK_TEXT="${HOOK_TEXT:-}"
 MUSIC_ENABLED="${MUSIC_ENABLED:-1}"
-MUSIC_VOLUME="${MUSIC_VOLUME:-0.09}"
+MUSIC_VOLUME="${MUSIC_VOLUME:-0.075}"
+MUSIC_STYLE="${MUSIC_STYLE:-auto}"
 AD_ENABLED="${AD_ENABLED:-0}"
 ADVERTISER_NAME="${ADVERTISER_NAME:-}"
 AD_TEXT="${AD_TEXT:-}"
@@ -99,21 +100,62 @@ if [[ -n "$HOOK_TEXT" ]]; then
   mv "$HOOKED" "$FINAL"
 fi
 
-# Quiet license-free synthetic gaming bed. Generated locally for each clip, no external music asset required.
+# Quiet synthetic background music. Three variants rotate automatically so clips do not all sound alike.
 if [[ "$MUSIC_ENABLED" == "1" || "$MUSIC_ENABLED" == "true" ]]; then
   if ! [[ "$MUSIC_VOLUME" =~ ^0([.][0-9]+)?$|^1([.]0+)?$ ]]; then
     echo "MUSIC_VOLUME must be between 0 and 1." >&2
     exit 9
   fi
+
+  if [[ "$MUSIC_STYLE" == "auto" ]]; then
+    lower_title="$(printf '%s' "$TITLE" | tr '[:upper:]' '[:lower:]')"
+    if [[ "$lower_title" == *dota* ]]; then
+      MUSIC_STYLE="ambient"
+    elif [[ "$lower_title" == *cs2* || "$lower_title" == *counter* ]]; then
+      MUSIC_STYLE="pulse"
+    else
+      style_pick="$(python - "$safe_title" <<'PY'
+import hashlib,sys
+print(int(hashlib.sha1(sys.argv[1].encode()).hexdigest()[:2],16)%3)
+PY
+)"
+      case "$style_pick" in
+        0) MUSIC_STYLE="pulse" ;;
+        1) MUSIC_STYLE="ambient" ;;
+        *) MUSIC_STYLE="bounce" ;;
+      esac
+    fi
+  fi
+
   video_duration="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$FINAL")"
   fade_out_start="$(python - <<PY
 v=float('$video_duration')
-print(max(0.0, v-0.45))
+print(max(0.0, v-0.55))
 PY
 )"
+
+  case "$MUSIC_STYLE" in
+    pulse)
+      MUSIC_EXPR='0.15*sin(2*PI*98*t)*(0.25+0.75*(sin(2*PI*2.15*t)*sin(2*PI*2.15*t)))+0.035*sin(2*PI*196*t)+0.018*sin(2*PI*392*t)'
+      MUSIC_FILTER='lowpass=f=2200,highpass=f=75'
+      ;;
+    ambient)
+      MUSIC_EXPR='0.10*sin(2*PI*82.41*t)+0.055*sin(2*PI*123.47*t)+0.035*sin(2*PI*164.81*t)+0.018*sin(2*PI*246.94*t)'
+      MUSIC_FILTER='lowpass=f=1350,highpass=f=55,aecho=0.7:0.45:90|180:0.16|0.08'
+      ;;
+    bounce)
+      MUSIC_EXPR='0.12*sin(2*PI*110*t)*(0.4+0.6*(sin(2*PI*1.65*t)*sin(2*PI*1.65*t)))+0.045*sin(2*PI*165*t)+0.025*sin(2*PI*220*t)'
+      MUSIC_FILTER='lowpass=f=1900,highpass=f=70'
+      ;;
+    *)
+      echo "Unknown MUSIC_STYLE: $MUSIC_STYLE" >&2
+      exit 10
+      ;;
+  esac
+
   ffmpeg -y -f lavfi \
-    -i "aevalsrc=0.16*sin(2*PI*110*t)*(0.35+0.65*(sin(2*PI*2*t)*sin(2*PI*2*t)))+0.045*sin(2*PI*220*t)+0.025*sin(2*PI*330*t):s=48000:d=$video_duration" \
-    -af "lowpass=f=1800,highpass=f=70,afade=t=in:st=0:d=0.30,afade=t=out:st=$fade_out_start:d=0.45" \
+    -i "aevalsrc=$MUSIC_EXPR:s=48000:d=$video_duration" \
+    -af "$MUSIC_FILTER,afade=t=in:st=0:d=0.35,afade=t=out:st=$fade_out_start:d=0.55" \
     -c:a pcm_s16le work/music.wav
 
   MUSICAL="work/${safe_title}_music.mp4"
