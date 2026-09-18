@@ -1,9 +1,8 @@
 {
-  "job_code": "JOB-0006",
-  "title": "trudno-byt-bogom-final-test",
-  "source_platform": "RUTUBE",
-  "source_owner": "Wink",
-  "source_url": "https://rutube.ru/video/90cfd55d2234d5e418900b3ab21eeb39/",
-  "segments": "0-15.5",
-  "voiceover": "Главное правило здесь — не вмешиваться. Но что делать, если рядом убивают тех, кого ты можешь спасти? «Трудно быть богом» строится на выборе: остаться наблюдателем или самому стать частью жестокой игры."
+  "mode": "gaming",
+  "status": "EMPTY",
+  "games": ["CS2", "DOTA2"],
+  "content_type": "funny_stream_moments",
+  "sources": ["TWITCH", "YOUTUBE", "VK_VIDEO"],
+  "items": []
 }
