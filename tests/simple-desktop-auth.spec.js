@@ -6,6 +6,7 @@ test('standalone desktop opens password login immediately and never calls VK aut
   await page.route('**/api/proxy/vk-session-api',async route=>{vkCalls++;await route.fulfill({status:500,contentType:'application/json',body:JSON.stringify({ok:false,error:'unexpected'})})});
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toContainText('Вход по логину',{timeout:5000});
+  await expect(page.locator('#app')).toBeHidden();
   expect(vkCalls).toBe(0);
 });
 
@@ -17,10 +18,12 @@ test('desktop password login creates BOS session and opens app',async({page})=>{
   await page.goto('/',{waitUntil:'domcontentloaded'});
   const form=page.locator('#simplePassForm');
   await expect(form).toBeVisible({timeout:5000});
+  await expect(page.locator('#app')).toBeHidden();
   await form.locator('[name=login]').fill('owner');
   await form.locator('[name=password]').fill('test-password');
   await form.getByRole('button',{name:'Войти'}).click();
   await expect.poll(()=>loginCalls).toBe(1);
   await expect.poll(()=>authenticatedBootstrapCalls).toBeGreaterThan(0);
+  await expect(page.locator('#app')).toBeVisible();
   await expect(page.getByText('Загруженность мастеров')).toBeVisible();
 });
