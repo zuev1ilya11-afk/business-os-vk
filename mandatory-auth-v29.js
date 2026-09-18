@@ -49,8 +49,18 @@
     Object.keys(src).filter(k=>k==='sign'||k.startsWith('vk_')).sort().forEach(k=>{if(src[k]!=null)p.set(k,String(src[k]))});
     return signed(p.toString());
   }
+  async function waitForBridge(){
+    if(window.vkBridge?.send)return true;
+    const ready=window.BOS_VK_BRIDGE_READY;
+    if(!ready||typeof ready.then!=='function')return false;
+    let timer;
+    try{return !!(await Promise.race([ready,new Promise(resolve=>{timer=setTimeout(()=>resolve(false),8000)})]))}
+    catch(_){return false}
+    finally{clearTimeout(timer)}
+  }
   async function getVkLaunch(){
     const immediate=launchFromPage();if(immediate)return immediate;
+    if(!window.vkBridge?.send)await waitForBridge();
     if(!window.vkBridge?.send)return '';
     try{
       let timer;
