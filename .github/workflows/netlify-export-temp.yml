@@ -13,10 +13,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Upload repository snapshot
+      - name: Prepare clean deployment snapshot
+        run: |
+          mkdir -p "$RUNNER_TEMP/business-os-netlify"
+          rsync -a --delete \
+            --exclude='.git/' \
+            --exclude='.netlify/' \
+            --exclude='.github/workflows/netlify-export-temp.yml' \
+            ./ "$RUNNER_TEMP/business-os-netlify/"
+      - name: Upload clean repository snapshot
         uses: actions/upload-artifact@v4
         with:
-          name: business-os-netlify-snapshot
-          path: .
+          name: business-os-netlify-clean
+          path: ${{ runner.temp }}/business-os-netlify
           include-hidden-files: true
           retention-days: 1
