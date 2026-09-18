@@ -56,6 +56,7 @@ render_range() {
   local out="$3"
   ffmpeg -y -ss "$start" -t "$duration" -i "$SOURCE_FILE" \
     -filter_complex "$FILTER" -c:v libx264 -preset veryfast -crf 21 \
+    -af "loudnorm=I=-16:LRA=11:TP=-1.5" \
     -c:a aac -b:a 160k -movflags +faststart "$out"
 }
 
