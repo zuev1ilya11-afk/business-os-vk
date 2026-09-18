@@ -2,17 +2,17 @@
   "mode": "gaming",
   "status": "TEST_RENDER",
   "attempt": 1,
-  "job_code": "GAME-0009",
+  "job_code": "GAME-0010",
   "game": "DOTA2",
   "content_type": "funny_stream_moment",
   "source_platform": "TWITCH",
-  "source_channel": "Koma",
-  "source_url": "https://www.twitch.tv/koma/clip/BlueIcyVelociraptorTBTacoRight-Mx7ja5OaFd-dpQK6",
+  "source_channel": "stariy_bog",
+  "source_url": "https://www.twitch.tv/stariy_bog/clip/KathishDeliciousWalletHoneyBadger-j1BXs-vGYUuTA40D",
   "segments": "",
-  "title": "dota-koma-block-v1",
-  "hook_text": "ТАКОГО БЛОКА ОН ТОЧНО НЕ ОЖИДАЛ",
+  "title": "dota-stariy-bog-suspicious-v1",
+  "hook_text": "КОГДА МОМЕНТ ВЫГЛЯДИТ СЛИШКОМ ПОДОЗРИТЕЛЬНО",
   "voiceover": "",
   "ad": {"enabled": false},
   "publish": false,
-  "render_request": 14
+  "render_request": 15
 }
