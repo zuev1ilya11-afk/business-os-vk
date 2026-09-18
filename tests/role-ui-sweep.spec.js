@@ -52,7 +52,9 @@ test('dispatcher role gets dispatcher navigation without owner tools',async({pag
   await bootAs(page,'dispatcher');
   await expect(page.locator('#ownerToolsBtn')).toBeHidden();
   await expect(page.locator('nav button[data-page="team"]')).toHaveText('Мастера');
-  await expect(page.locator('#content')).toContainText('КАБИНЕТ ДИСПЕТЧЕРА');
+  await expect(page.locator('#content')).toContainText('Заявки за месяц');
+  await expect(page.locator('#content')).toContainText('Требуют внимания');
+  await expect(page.getByRole('button',{name:'+ Сотрудник'})).toHaveCount(0);
 });
 
 test('master role sees only assigned orders and master navigation',async({page})=>{
