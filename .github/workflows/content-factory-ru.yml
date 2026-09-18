@@ -1,23 +1,27 @@
-name: Content Factory RU
+name: Content Factory Gaming
 
 on:
   workflow_dispatch:
     inputs:
       source_url:
-        description: Public RUTUBE/VK video URL
-        required: false
+        description: Public Twitch / YouTube / VK clip or VOD URL
+        required: true
         type: string
       segments:
-        description: 'Comma-separated ranges, e.g. 0-5,12-18,31-38'
+        description: 'Optional ranges, e.g. 12-26,41-52'
         required: false
         type: string
       title:
         description: Output title
         required: false
-        default: ru-clip
+        default: gaming-clip
+        type: string
+      hook_text:
+        description: Optional hook shown at the top for the first seconds
+        required: false
         type: string
       voiceover:
-        description: Russian narration text (optional)
+        description: Optional Russian narration
         required: false
         type: string
       ad_enabled:
@@ -47,17 +51,12 @@ on:
         required: false
         default: '5'
         type: string
-  push:
-    paths:
-      - 'content-factory/queue/current.json'
-      - 'content-factory/scripts/**'
-      - '.github/workflows/content-factory-ru.yml'
 
 permissions:
   contents: read
 
 jobs:
-  build-clip:
+  build-gaming-clip:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -78,66 +77,8 @@ jobs:
           yt-dlp --version
           ffmpeg -version | head -n 1
 
-      - name: Resolve job inputs
-        id: job
-        shell: bash
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          INPUT_SOURCE_URL: ${{ inputs.source_url }}
-          INPUT_SEGMENTS: ${{ inputs.segments }}
-          INPUT_TITLE: ${{ inputs.title }}
-          INPUT_VOICEOVER: ${{ inputs.voiceover }}
-          INPUT_AD_ENABLED: ${{ inputs.ad_enabled }}
-          INPUT_ADVERTISER_NAME: ${{ inputs.advertiser_name }}
-          INPUT_AD_TEXT: ${{ inputs.ad_text }}
-          INPUT_AD_ERID: ${{ inputs.ad_erid }}
-          INPUT_AD_START: ${{ inputs.ad_start }}
-          INPUT_AD_DURATION: ${{ inputs.ad_duration }}
-        run: |
-          set -euo pipefail
-          if [[ "$EVENT_NAME" == "workflow_dispatch" && -n "$INPUT_SOURCE_URL" ]]; then
-            SOURCE_URL="$INPUT_SOURCE_URL"
-            SEGMENTS="$INPUT_SEGMENTS"
-            TITLE="${INPUT_TITLE:-ru-clip}"
-            VOICEOVER="$INPUT_VOICEOVER"
-            AD_ENABLED="${INPUT_AD_ENABLED:-false}"
-            ADVERTISER_NAME="$INPUT_ADVERTISER_NAME"
-            AD_TEXT="$INPUT_AD_TEXT"
-            AD_ERID="$INPUT_AD_ERID"
-            AD_START="${INPUT_AD_START:-6}"
-            AD_DURATION="${INPUT_AD_DURATION:-5}"
-          else
-            SOURCE_URL="$(jq -r '.source_url' content-factory/queue/current.json)"
-            SEGMENTS="$(jq -r '.segments // ""' content-factory/queue/current.json)"
-            TITLE="$(jq -r '.title // "ru-clip"' content-factory/queue/current.json)"
-            VOICEOVER="$(jq -r '.voiceover // ""' content-factory/queue/current.json)"
-            AD_ENABLED="$(jq -r '.ad.enabled // false' content-factory/queue/current.json)"
-            ADVERTISER_NAME="$(jq -r '.ad.advertiser_name // ""' content-factory/queue/current.json)"
-            AD_TEXT="$(jq -r '.ad.text // ""' content-factory/queue/current.json)"
-            AD_ERID="$(jq -r '.ad.erid // ""' content-factory/queue/current.json)"
-            AD_START="$(jq -r '.ad.start // 6' content-factory/queue/current.json)"
-            AD_DURATION="$(jq -r '.ad.duration // 5' content-factory/queue/current.json)"
-          fi
-          [[ "$SOURCE_URL" != "null" && -n "$SOURCE_URL" ]]
-          {
-            echo "source_url=$SOURCE_URL"
-            echo "segments=$SEGMENTS"
-            echo "title=$TITLE"
-            echo 'voiceover<<__VOICEOVER__'
-            printf '%s\n' "$VOICEOVER"
-            echo '__VOICEOVER__'
-            echo "ad_enabled=$AD_ENABLED"
-            echo "advertiser_name=$ADVERTISER_NAME"
-            echo 'ad_text<<__ADTEXT__'
-            printf '%s\n' "$AD_TEXT"
-            echo '__ADTEXT__'
-            echo "ad_erid=$AD_ERID"
-            echo "ad_start=$AD_START"
-            echo "ad_duration=$AD_DURATION"
-          } >> "$GITHUB_OUTPUT"
-
       - name: Prepare free Russian TTS voice
-        if: ${{ steps.job.outputs.voiceover != '' }}
+        if: ${{ inputs.voiceover != '' }}
         run: |
           mkdir -p voice
           curl -fL --retry 3 -o voice/ru_RU-dmitri-medium.onnx \
@@ -145,22 +86,23 @@ jobs:
           curl -fL --retry 3 -o voice/ru_RU-dmitri-medium.onnx.json \
             https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/ru/ru_RU/dmitri/medium/ru_RU-dmitri-medium.onnx.json
 
-      - name: Build vertical clip
+      - name: Build vertical gaming clip
         env:
           OUT_DIR: output
-          VOICEOVER: ${{ steps.job.outputs.voiceover }}
+          HOOK_TEXT: ${{ inputs.hook_text }}
+          VOICEOVER: ${{ inputs.voiceover }}
           PIPER_VOICE_MODEL: voice/ru_RU-dmitri-medium.onnx
-          AD_ENABLED: ${{ steps.job.outputs.ad_enabled }}
-          ADVERTISER_NAME: ${{ steps.job.outputs.advertiser_name }}
-          AD_TEXT: ${{ steps.job.outputs.ad_text }}
-          AD_ERID: ${{ steps.job.outputs.ad_erid }}
-          AD_START: ${{ steps.job.outputs.ad_start }}
-          AD_DURATION: ${{ steps.job.outputs.ad_duration }}
+          AD_ENABLED: ${{ inputs.ad_enabled }}
+          ADVERTISER_NAME: ${{ inputs.advertiser_name }}
+          AD_TEXT: ${{ inputs.ad_text }}
+          AD_ERID: ${{ inputs.ad_erid }}
+          AD_START: ${{ inputs.ad_start }}
+          AD_DURATION: ${{ inputs.ad_duration }}
         run: |
           bash content-factory/scripts/build_clip.sh \
-            "${{ steps.job.outputs.source_url }}" \
-            "${{ steps.job.outputs.segments }}" \
-            "${{ steps.job.outputs.title }}" \
+            "${{ inputs.source_url }}" \
+            "${{ inputs.segments }}" \
+            "${{ inputs.title }}" \
             "$VOICEOVER"
 
       - name: Inspect output
@@ -175,7 +117,7 @@ jobs:
       - name: Upload rendered clip
         uses: actions/upload-artifact@v4
         with:
-          name: content-factory-ru-${{ github.run_number }}
+          name: content-factory-gaming-${{ github.run_number }}
           path: output/*.mp4
           if-no-files-found: error
           retention-days: 3
