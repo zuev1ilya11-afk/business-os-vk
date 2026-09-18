@@ -1,25 +1,19 @@
 {
   "mode": "gaming",
   "status": "TEST_RENDER",
-  "attempt": 3,
-  "job_code": "GAME-0008",
-  "game": "DOTA2",
+  "attempt": 1,
+  "job_code": "GAME-0002",
+  "game": "CS2",
   "content_type": "funny_stream_moment",
   "source_platform": "TWITCH",
-  "source_channel": "Stray228",
-  "source_url": "https://www.twitch.tv/stray228/clip/AwkwardSuaveKleeMoreCowbell-bYCzKbKBdgzEBum8",
+  "source_channel": "skywhywalker",
+  "source_url": "https://www.twitch.tv/skywhywalker/clip/FragileEnticingSparrowWow-rsNARi3T-IPNYeJP",
   "segments": "",
-  "title": "dota-stray228-highlight-year-music-v2",
-  "hook_text": "ХАЙЛАЙТ ГОДА ПО ВЕРСИИ STRAY228",
+  "title": "cs2-skywhywalker-wtf-v2",
+  "hook_text": "ОН САМ НЕ ПОНЯЛ, ЧТО СЕЙЧАС ПРОИЗОШЛО",
   "voiceover": "",
-  "music": {
-    "enabled": true,
-    "volume": 0.075,
-    "style": "ambient"
-  },
-  "ad": {
-    "enabled": false
-  },
+  "music": {"enabled": true, "volume": 0.075, "style": "electronic"},
+  "ad": {"enabled": false},
   "publish": false,
-  "render_request": 7
+  "render_request": 8
 }
