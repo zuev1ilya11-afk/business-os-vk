@@ -22,21 +22,28 @@
   async function gatewayFetch(input,init){
     const controller=new AbortController();
     const outer=outerSignal(input,init);
-    let timedOut=false;
     const abort=()=>controller.abort();
+    let timer=null;
     if(outer){
       if(outer.aborted)controller.abort();
       else outer.addEventListener('abort',abort,{once:true});
     }
-    const timer=setTimeout(()=>{timedOut=true;controller.abort()},GATEWAY_DEADLINE_MS);
     try{
-      if(input instanceof Request)return await lowerFetch(new Request(input.clone(),{signal:controller.signal}),init?{...init,signal:controller.signal}:{signal:controller.signal});
-      return await lowerFetch(input,init?{...init,signal:controller.signal}:{signal:controller.signal});
-    }catch(error){
-      if(timedOut){const e=new Error('Gateway timeout');e.name='BOSGatewayTimeout';throw e}
-      throw error;
+      const options=init?{...init,signal:controller.signal}:{signal:controller.signal};
+      const fetchPromise=input instanceof Request
+        ? lowerFetch(new Request(input.clone(),{signal:controller.signal}),options)
+        : lowerFetch(input,options);
+      const timeoutPromise=new Promise((_,reject)=>{
+        timer=setTimeout(()=>{
+          controller.abort();
+          const error=new Error('Gateway timeout');
+          error.name='BOSGatewayTimeout';
+          reject(error);
+        },GATEWAY_DEADLINE_MS);
+      });
+      return await Promise.race([fetchPromise,timeoutPromise]);
     }finally{
-      clearTimeout(timer);
+      if(timer)clearTimeout(timer);
       if(outer)outer.removeEventListener('abort',abort);
     }
   }
