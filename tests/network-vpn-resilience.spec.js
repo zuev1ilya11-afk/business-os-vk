@@ -1,17 +1,20 @@
 const {test,expect}=require('@playwright/test');
+const fs=require('node:fs');
 
-test('blocked VK CDN falls back to Netlify bridge',async({page})=>{
-  let fallbackCalls=0;
-  await page.route('https://unpkg.com/**',route=>route.abort('failed'));
-  await page.route('https://business-os-api-gateway.netlify.app/vendor/vk-bridge.js',route=>{fallbackCalls++;return route.fulfill({status:200,contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'})});
+test('VK Bridge starts from Netlify without direct CDN dependency',async({page})=>{
+  const html=fs.readFileSync('index.html','utf8');
+  expect(html).not.toContain('https://unpkg.com/');
+  expect(html).toContain('https://business-os-api-gateway.netlify.app/vendor/vk-bridge.js');
+  let bridgeCalls=0;
+  await page.route('https://business-os-api-gateway.netlify.app/vendor/vk-bridge.js',route=>{bridgeCalls++;return route.fulfill({status:200,contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'})});
   await page.route('https://business-os-api-gateway.netlify.app/api/**',route=>route.fulfill({status:401,contentType:'application/json',body:'{"ok":false,"error":"Доступ не подтверждён"}'}));
   await page.goto('/');
-  await expect.poll(()=>fallbackCalls).toBe(1);
+  await expect.poll(()=>bridgeCalls).toBeGreaterThanOrEqual(1);
   await expect(page.locator('#authGate')).toBeVisible();
 });
 
 test('legacy Supabase and Google URLs rewrite through Netlify',async({page})=>{
-  await page.route('https://unpkg.com/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
+  await page.route('https://business-os-api-gateway.netlify.app/vendor/vk-bridge.js',route=>route.fulfill({status:200,contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
   await page.route('https://business-os-api-gateway.netlify.app/api/**',route=>route.fulfill({status:401,contentType:'application/json',body:'{"ok":false,"error":"Доступ не подтверждён"}'}));
   await page.goto('/');
   const urls=await page.evaluate(()=>[

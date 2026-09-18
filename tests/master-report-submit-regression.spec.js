@@ -4,7 +4,7 @@ const path=require('path');
 
 test('master report submits act and photo through gateway before finalizing',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('bos_vk_session_v2','test-session-master'));
-  await page.route('https://unpkg.com/**',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
+  await page.route('https://business-os-api-gateway.netlify.app/vendor/vk-bridge.js',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
 
   const master={id:'m1',external_id:'staff_master',vk_user_id:'staff_master',full_name:'Мастер Тест',role:'master',city:'Москва',is_active:true};
   const order={id:'M-1',client:'Клиент',address:'Адрес',work:'Монтаж',status:'В работе',master_staff_id:'m1',master_vk_id:'staff_master',master_name:'Мастер Тест',master_payout:552.5,scheduled_date:'2099-09-10'};
