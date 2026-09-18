@@ -1,0 +1,23 @@
+name: Netlify source export
+
+on:
+  push:
+    branches:
+      - netlify-export-v88
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: netlify-source
+          include-hidden-files: true
+          path: |
+            .
+            !.git/**
+            !.github/**
+            !node_modules/**
+            !test-results/**
+            !playwright-report/**
