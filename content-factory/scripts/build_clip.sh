@@ -8,6 +8,8 @@ VOICEOVER="${4:-}"
 OUT_DIR="${OUT_DIR:-output}"
 VOICE_MODEL="${PIPER_VOICE_MODEL:-voice/ru_RU-dmitri-medium.onnx}"
 HOOK_TEXT="${HOOK_TEXT:-}"
+MUSIC_ENABLED="${MUSIC_ENABLED:-1}"
+MUSIC_VOLUME="${MUSIC_VOLUME:-0.09}"
 AD_ENABLED="${AD_ENABLED:-0}"
 ADVERTISER_NAME="${ADVERTISER_NAME:-}"
 AD_TEXT="${AD_TEXT:-}"
@@ -95,6 +97,31 @@ if [[ -n "$HOOK_TEXT" ]]; then
     -vf "drawbox=x=40:y=75:w=1000:h=150:color=black@0.60:t=fill:enable='between(t,0,3.2)',drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:textfile=work/hook.txt:fontcolor=white:fontsize=42:x=(w-text_w)/2:y=115:enable='between(t,0,3.2)'" \
     -c:v libx264 -preset veryfast -crf 21 -c:a copy -movflags +faststart "$HOOKED"
   mv "$HOOKED" "$FINAL"
+fi
+
+# Quiet license-free synthetic gaming bed. Generated locally for each clip, no external music asset required.
+if [[ "$MUSIC_ENABLED" == "1" || "$MUSIC_ENABLED" == "true" ]]; then
+  if ! [[ "$MUSIC_VOLUME" =~ ^0([.][0-9]+)?$|^1([.]0+)?$ ]]; then
+    echo "MUSIC_VOLUME must be between 0 and 1." >&2
+    exit 9
+  fi
+  video_duration="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$FINAL")"
+  fade_out_start="$(python - <<PY
+v=float('$video_duration')
+print(max(0.0, v-0.45))
+PY
+)"
+  ffmpeg -y -f lavfi \
+    -i "aevalsrc=0.16*sin(2*PI*110*t)*(0.35+0.65*(sin(2*PI*2*t)*sin(2*PI*2*t)))+0.045*sin(2*PI*220*t)+0.025*sin(2*PI*330*t):s=48000:d=$video_duration" \
+    -af "lowpass=f=1800,highpass=f=70,afade=t=in:st=0:d=0.30,afade=t=out:st=$fade_out_start:d=0.45" \
+    -c:a pcm_s16le work/music.wav
+
+  MUSICAL="work/${safe_title}_music.mp4"
+  ffmpeg -y -i "$FINAL" -i work/music.wav \
+    -filter_complex "[0:a]volume=1.0[src];[1:a]volume=$MUSIC_VOLUME[music];[src][music]amix=inputs=2:duration=first:dropout_transition=0,loudnorm=I=-16:LRA=11:TP=-1.5[aout]" \
+    -map 0:v:0 -map "[aout]" \
+    -c:v copy -c:a aac -b:a 160k -movflags +faststart "$MUSICAL"
+  mv "$MUSICAL" "$FINAL"
 fi
 
 if [[ -n "$VOICEOVER" ]]; then
