@@ -1,0 +1,94 @@
+name: Content Factory RU
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_url:
+        description: Public RUTUBE/VK video URL
+        required: false
+        type: string
+      segments:
+        description: 'Comma-separated ranges, e.g. 0-5,12-18,31-38'
+        required: false
+        type: string
+      title:
+        description: Output title
+        required: false
+        default: ru-clip
+        type: string
+  push:
+    paths:
+      - 'content-factory/queue/current.json'
+      - 'content-factory/scripts/**'
+      - '.github/workflows/content-factory-ru.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-clip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install media tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install --upgrade pip yt-dlp
+          yt-dlp --version
+          ffmpeg -version | head -n 1
+
+      - name: Resolve job inputs
+        id: job
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ inputs.source_url }}" ]]; then
+            SOURCE_URL='${{ inputs.source_url }}'
+            SEGMENTS='${{ inputs.segments }}'
+            TITLE='${{ inputs.title }}'
+          else
+            SOURCE_URL="$(jq -r '.source_url' content-factory/queue/current.json)"
+            SEGMENTS="$(jq -r '.segments // ""' content-factory/queue/current.json)"
+            TITLE="$(jq -r '.title // "ru-clip"' content-factory/queue/current.json)"
+          fi
+          [[ "$SOURCE_URL" != "null" && -n "$SOURCE_URL" ]]
+          {
+            echo "source_url=$SOURCE_URL"
+            echo "segments=$SEGMENTS"
+            echo "title=$TITLE"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build vertical clip
+        env:
+          OUT_DIR: output
+        run: |
+          bash content-factory/scripts/build_clip.sh \
+            "${{ steps.job.outputs.source_url }}" \
+            "${{ steps.job.outputs.segments }}" \
+            "${{ steps.job.outputs.title }}"
+
+      - name: Inspect output
+        run: |
+          ls -lah output
+          FILE="$(find output -type f -name '*.mp4' | head -n 1)"
+          ffprobe -v error \
+            -show_entries format=duration,size \
+            -show_entries stream=codec_name,width,height \
+            -of json "$FILE"
+
+      - name: Upload rendered clip
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-factory-ru-${{ github.run_number }}
+          path: output/*.mp4
+          if-no-files-found: error
+          retention-days: 3
