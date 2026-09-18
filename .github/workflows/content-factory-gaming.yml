@@ -51,6 +51,9 @@ on:
         required: false
         default: '5'
         type: string
+  push:
+    paths:
+      - 'content-factory/queue/current.json'
 
 permissions:
   contents: read
@@ -77,8 +80,68 @@ jobs:
           yt-dlp --version
           ffmpeg -version | head -n 1
 
+      - name: Resolve job inputs
+        id: job
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_SOURCE_URL: ${{ inputs.source_url }}
+          INPUT_SEGMENTS: ${{ inputs.segments }}
+          INPUT_TITLE: ${{ inputs.title }}
+          INPUT_HOOK_TEXT: ${{ inputs.hook_text }}
+          INPUT_VOICEOVER: ${{ inputs.voiceover }}
+          INPUT_AD_ENABLED: ${{ inputs.ad_enabled }}
+          INPUT_ADVERTISER_NAME: ${{ inputs.advertiser_name }}
+          INPUT_AD_TEXT: ${{ inputs.ad_text }}
+          INPUT_AD_ERID: ${{ inputs.ad_erid }}
+          INPUT_AD_START: ${{ inputs.ad_start }}
+          INPUT_AD_DURATION: ${{ inputs.ad_duration }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            SOURCE_URL="$INPUT_SOURCE_URL"
+            SEGMENTS="$INPUT_SEGMENTS"
+            TITLE="${INPUT_TITLE:-gaming-clip}"
+            HOOK_TEXT="$INPUT_HOOK_TEXT"
+            VOICEOVER="$INPUT_VOICEOVER"
+            AD_ENABLED="${INPUT_AD_ENABLED:-false}"
+            ADVERTISER_NAME="$INPUT_ADVERTISER_NAME"
+            AD_TEXT="$INPUT_AD_TEXT"
+            AD_ERID="$INPUT_AD_ERID"
+            AD_START="${INPUT_AD_START:-6}"
+            AD_DURATION="${INPUT_AD_DURATION:-5}"
+          else
+            SOURCE_URL="$(jq -r '.source_url // ""' content-factory/queue/current.json)"
+            SEGMENTS="$(jq -r '.segments // ""' content-factory/queue/current.json)"
+            TITLE="$(jq -r '.title // "gaming-clip"' content-factory/queue/current.json)"
+            HOOK_TEXT="$(jq -r '.hook_text // ""' content-factory/queue/current.json)"
+            VOICEOVER="$(jq -r '.voiceover // ""' content-factory/queue/current.json)"
+            AD_ENABLED="$(jq -r '.ad.enabled // false' content-factory/queue/current.json)"
+            ADVERTISER_NAME="$(jq -r '.ad.advertiser_name // ""' content-factory/queue/current.json)"
+            AD_TEXT="$(jq -r '.ad.text // ""' content-factory/queue/current.json)"
+            AD_ERID="$(jq -r '.ad.erid // ""' content-factory/queue/current.json)"
+            AD_START="$(jq -r '.ad.start // 6' content-factory/queue/current.json)"
+            AD_DURATION="$(jq -r '.ad.duration // 5' content-factory/queue/current.json)"
+          fi
+          [[ -n "$SOURCE_URL" ]]
+          {
+            echo "source_url=$SOURCE_URL"
+            echo "segments=$SEGMENTS"
+            echo "title=$TITLE"
+            echo "hook_text=$HOOK_TEXT"
+            echo "ad_enabled=$AD_ENABLED"
+            echo "advertiser_name=$ADVERTISER_NAME"
+            echo "ad_text=$AD_TEXT"
+            echo "ad_erid=$AD_ERID"
+            echo "ad_start=$AD_START"
+            echo "ad_duration=$AD_DURATION"
+            echo 'voiceover<<__VOICEOVER__'
+            printf '%s\n' "$VOICEOVER"
+            echo '__VOICEOVER__'
+          } >> "$GITHUB_OUTPUT"
+
       - name: Prepare free Russian TTS voice
-        if: ${{ inputs.voiceover != '' }}
+        if: ${{ steps.job.outputs.voiceover != '' }}
         run: |
           mkdir -p voice
           curl -fL --retry 3 -o voice/ru_RU-dmitri-medium.onnx \
@@ -89,20 +152,20 @@ jobs:
       - name: Build vertical gaming clip
         env:
           OUT_DIR: output
-          HOOK_TEXT: ${{ inputs.hook_text }}
-          VOICEOVER: ${{ inputs.voiceover }}
+          HOOK_TEXT: ${{ steps.job.outputs.hook_text }}
+          VOICEOVER: ${{ steps.job.outputs.voiceover }}
           PIPER_VOICE_MODEL: voice/ru_RU-dmitri-medium.onnx
-          AD_ENABLED: ${{ inputs.ad_enabled }}
-          ADVERTISER_NAME: ${{ inputs.advertiser_name }}
-          AD_TEXT: ${{ inputs.ad_text }}
-          AD_ERID: ${{ inputs.ad_erid }}
-          AD_START: ${{ inputs.ad_start }}
-          AD_DURATION: ${{ inputs.ad_duration }}
+          AD_ENABLED: ${{ steps.job.outputs.ad_enabled }}
+          ADVERTISER_NAME: ${{ steps.job.outputs.advertiser_name }}
+          AD_TEXT: ${{ steps.job.outputs.ad_text }}
+          AD_ERID: ${{ steps.job.outputs.ad_erid }}
+          AD_START: ${{ steps.job.outputs.ad_start }}
+          AD_DURATION: ${{ steps.job.outputs.ad_duration }}
         run: |
           bash content-factory/scripts/build_clip.sh \
-            "${{ inputs.source_url }}" \
-            "${{ inputs.segments }}" \
-            "${{ inputs.title }}" \
+            "${{ steps.job.outputs.source_url }}" \
+            "${{ steps.job.outputs.segments }}" \
+            "${{ steps.job.outputs.title }}" \
             "$VOICEOVER"
 
       - name: Inspect output
