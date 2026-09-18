@@ -2,7 +2,7 @@
 'use strict';
 
 function appState(){try{return typeof state!=='undefined'&&state?state:null}catch(_){return null}}
-function isMasterRolePreview(){return typeof isMasterPreview==='function'&&!!isMasterPreview()}
+function isMasterRolePreview(){return String(appState()?.user?.role||'')!=='master'&&typeof isMasterPreview==='function'&&!!isMasterPreview()}
 function isDispatcherRolePreview(){return typeof isDispatcherPreview==='function'&&!!isDispatcherPreview()}
 function isManagerRolePreview(){return !!window.BOS_IS_MANAGER_PREVIEW?.()}
 function isLiveMaster(){return !isMasterRolePreview()&&String(appState()?.user?.role||'')==='master'}
