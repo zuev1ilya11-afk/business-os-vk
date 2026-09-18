@@ -117,7 +117,7 @@ PY
   ffmpeg -y -i "$FINAL" -i work/voice.wav \
     -filter_complex "[0:a]volume=0.16[bg];[1:a]volume=1.15[vo];[bg][vo]amix=inputs=2:duration=first:dropout_transition=0[aout]" \
     -map 0:v:0 -map "[aout]" \
-    -vf "subtitles=work/captions.srt:force_style='FontName=DejaVu Sans,FontSize=28,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=1,Outline=4,Shadow=0,Alignment=2,MarginV=230'" \
+    -vf "subtitles=work/captions.srt:force_style='FontName=DejaVu Sans,FontSize=12,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=1,Outline=2,Shadow=0,Alignment=2,MarginV=42'" \
     -c:v libx264 -preset veryfast -crf 21 \
     -c:a aac -b:a 160k -movflags +faststart "$ENRICHED"
   mv "$ENRICHED" "$FINAL"
