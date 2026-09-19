@@ -10,8 +10,16 @@ const token = (uid, exp = Math.floor(Date.now()/1000)+3600) => {
 };
 function database(seed = {}) {
   const tables = structuredClone({business_staff:[],orders:[],staff_schedule:[],order_claims:[],master_memo_materials:[],...seed});
-  const db = {tables, calls:[], rpc:async(name,p)=>{
+  const rateLimits=new Map();
+  const db = {tables, rateLimits, calls:[], rpc:async(name,p)=>{
     db.calls.push({rpc:name,p});
+    if(name==='bos_consume_login_attempt'){
+      const now=Date.now(),windowMs=Number(p.p_window_seconds)*1000,limit=Number(p.p_limit),key=String(p.p_key_hash||'');
+      let row=rateLimits.get(key);
+      if(!row||now-row.started>=windowMs){row={started:now,attempts:1};rateLimits.set(key,row);return {data:{allowed:true,retry_after:0},error:null}}
+      if(row.attempts>=limit)return {data:{allowed:false,retry_after:Math.max(1,Math.ceil((row.started+windowMs-now)/1000))},error:null};
+      row.attempts++;return {data:{allowed:true,retry_after:0},error:null};
+    }
     if(name==='bos_verify_staff_credentials')return {data:tables.business_staff.find(x=>x.is_active&&x.login?.toLowerCase()===p.p_login.trim().toLowerCase()&&x.password_hash===p.p_password)?.id||null,error:null};
     if(name==='bos_set_staff_credentials'){
       if(tables.business_staff.some(x=>x.id!==p.p_staff_id&&x.login?.toLowerCase()===p.p_login.trim().toLowerCase()))return {data:null,error:{code:'23505',message:'duplicate key business_staff_login_unique'}};
@@ -40,7 +48,7 @@ function edge(slug,db,extra={}){
   const source=stripTypeScriptTypes(fs.readFileSync(filename,'utf8').replace(/^import .*?;\s*/,'') ,{mode:'transform'});
   const context={createClient:()=>db,Deno:{env:{get:k=>({VK_APP_SECRET:secret,BOS_SYNC_KEY:secret,SUPABASE_URL:'https://test.invalid',SUPABASE_SERVICE_ROLE_KEY:'test-key'}[k])},serve:fn=>handler=fn},crypto:webcrypto,Request,Response,Headers,URL,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,btoa,atob,console,fetch:()=>{throw new Error('Unexpected external fetch')},...extra};
   vm.runInNewContext(source,context,{filename});
-  return async(body,uid='100',session=token(uid))=>{const r=await handler(new Request('https://test.invalid',{method:'POST',headers:{'Content-Type':'application/json','X-BOS-Session':session},body:JSON.stringify(body)}));return {status:r.status,body:await r.json()}};
+  return async(body,uid='100',session=token(uid),headers={})=>{const r=await handler(new Request('https://test.invalid',{method:'POST',headers:{'Content-Type':'application/json','X-BOS-Session':session,...headers},body:JSON.stringify(body)}));return {status:r.status,body:await r.json(),headers:r.headers}};
 }
 const employee=(id,role='master',extra={})=>({id,external_id:id==='owner'?'100':`staff_${id}`,full_name:id,role,is_active:true,phone:'+79990000001',login:id,password_hash:'audit-password',...extra});
 module.exports={edge,database,token,employee,secret};
