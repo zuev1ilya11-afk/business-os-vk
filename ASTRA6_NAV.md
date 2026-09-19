@@ -29,8 +29,17 @@ Important invariants:
 - `tests/api-network-fallback.spec.js` — gateway timeout/offline fallback and no fallback for valid HTTP failures.
 - `tests/network-vpn-resilience.spec.js` — resilient bridge sources and API behavior under restricted-network conditions.
 - `tests/full-stack-audit.spec.js` — total-outage scenarios must stall/mock both the gateway and direct Supabase fallback.
+- `tests/mobile-auth-launch-recovery.spec.js` — VK launch recovery. Its Bridge mock is intentionally source-agnostic (`**/*vk-bridge*`) so changing CDN priority in `vk-init.js` does not create a false auth regression.
+- `tests/master-report-submit-regression.spec.js` — master report upload/finalize regression. Route handlers must record request payloads and fulfill the request before assertions are evaluated; throwing an assertion inside a Playwright route handler can leave the intercepted browser request unresolved and falsely look like a production submit hang.
 
 When updating tests, remember that the browser may contact either the gateway or direct Supabase after a retryable network failure. A test that intentionally simulates a total outage must intercept both paths.
+
+## Test-harness invariants
+
+1. Do not tie authentication tests to one VK Bridge CDN/provider unless the provider itself is what the test is validating.
+2. Do not put assertions that may throw before `route.fulfill()`, `route.abort()`, or `route.continue()` in Playwright request handlers. Record request state, resolve the intercepted request, then assert from the main test flow.
+3. A normal gateway-success report test should still assert that direct Supabase fallback was not used.
+4. Test changes must not weaken the product contract: launch parameters, BOS session propagation, uploaded report URLs, action order, and modal completion still need explicit assertions.
 
 ## Change discipline
 
