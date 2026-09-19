@@ -3,9 +3,16 @@ const {test,expect}=require('@playwright/test');
 test('mobile VK auth can read signed launch params from VK Bridge once',async({page})=>{
   await page.setViewportSize({width:320,height:700});
 
-  const bridgeBody=`window.vkBridge={send:async(name)=>{if(name==='VKWebAppGetLaunchParams')return {vk_app_id:'54758847',vk_user_id:'123456789',vk_language:'ru',sign:'signed_test_value'};return {}}};`;
-  // Keep this test independent of the current CDN/source priority in vk-init.js.
-  await page.route('**/*vk-bridge*',route=>route.fulfill({status:200,contentType:'application/javascript',body:bridgeBody}));
+  // Install a deterministic Bridge before any application script runs. This keeps
+  // the auth regression independent of the current CDN/source priority in vk-init.js.
+  await page.addInitScript(()=>{
+    window.vkBridge={
+      send:async(name)=>{
+        if(name==='VKWebAppGetLaunchParams')return {vk_app_id:'54758847',vk_user_id:'123456789',vk_language:'ru',sign:'signed_test_value'};
+        return {};
+      }
+    };
+  });
 
   let sessionByLaunch=false,bootstrap=false,sessionRequestBody=null;
   await page.route('**/api/proxy/vk-session-api',async route=>{
