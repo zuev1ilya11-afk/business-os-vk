@@ -11,7 +11,7 @@ async function hmac(m:string,s:string){const k=await crypto.subtle.importKey('ra
 async function sess(t:string,s:string){const p=String(t||'').split('.');if(!s||p.length!==3||!/^[A-Za-z0-9_-]{1,128}$/.test(p[0])||!/^\d{1,12}$/.test(p[1])||Number(p[1])<=Date.now()/1000)return null;const exp=await hmac(`${p[0]}.${p[1]}`,s);if(exp.length!==p[2].length)return null;let mismatch=0;for(let i=0;i<exp.length;i++)mismatch|=exp.charCodeAt(i)^p[2].charCodeAt(i);return mismatch===0?p[0]:null}
 async function actor(db:any,r:Request){const uid=await sess(r.headers.get('x-bos-session')||'',Deno.env.get('VK_APP_SECRET')||'');if(!uid)return null;return (await db.from('business_staff').select('*').eq('external_id',uid).eq('is_active',true).maybeSingle()).data||null}
 function canManage(actorRole:string,targetRole:string){if(targetRole==='owner')return false;if(actorRole==='owner')return['manager','dispatcher','master'].includes(targetRole);if(actorRole==='manager')return['dispatcher','master'].includes(targetRole);return false}
-const publicStaff=(s:any)=>({id:s.id,external_id:s.external_id,vk_user_id:s.external_id,full_name:s.full_name,role:s.role,phone:s.phone||'',city:s.city||'',is_active:!!s.is_active,login:s.login||'',has_password:!!s.password_hash});
+const publicStaff=(s:any,includeCredentials=false)=>({id:s.id,external_id:s.external_id,vk_user_id:s.external_id,full_name:s.full_name,role:s.role,phone:s.phone||'',city:s.city||'',is_active:!!s.is_active,login:includeCredentials?(s.login||''):'',has_password:includeCredentials?!!s.password_hash:false});
 
 Deno.serve(async r=>{
   if(r.method==='OPTIONS')return new Response('ok',{headers:cors});
@@ -26,7 +26,8 @@ Deno.serve(async r=>{
     if(action==='listStaff'){
       const q=await db.from('business_staff').select('id,external_id,full_name,role,phone,city,is_active,login,password_hash').order('full_name');
       if(q.error)throw q.error;
-      return j({ok:true,staff:(q.data||[]).filter((x:any)=>canManage(role,String(x.role||''))).map(publicStaff)});
+      const includeCredentials=role==='owner';
+      return j({ok:true,staff:(q.data||[]).filter((x:any)=>canManage(role,String(x.role||''))).map((x:any)=>publicStaff(x,includeCredentials))});
     }
 
     const targetId=String(b.id||'');
@@ -38,6 +39,7 @@ Deno.serve(async r=>{
     if(!canManage(role,String(target.role||'')))return j({ok:false,error:'Недостаточно прав для этого сотрудника'},403);
 
     if(action==='setCredentials'){
+      if(role!=='owner')return j({ok:false,error:'Менять логины и пароли может только владелец'},403);
       if(!target.is_active)return j({ok:false,error:'Сначала восстановите сотрудника'},400);
       const login=String(b.login||'').trim(),password=String(b.password||'');
       if(login.length<3)return j({ok:false,error:'Логин должен быть не короче 3 символов'},400);
@@ -52,18 +54,19 @@ Deno.serve(async r=>{
       }
       const fresh=await db.from('business_staff').select('id,external_id,full_name,role,phone,city,is_active,login,password_hash').eq('id',target.id).single();
       if(fresh.error)throw fresh.error;
-      return j({ok:true,user:publicStaff(fresh.data)});
+      return j({ok:true,user:publicStaff(fresh.data,true)});
     }
 
     if(action==='restoreEmployee'){
-      if(target.is_active)return j({ok:true,user:publicStaff(target),already_active:true});
+      if(target.is_active)return j({ok:true,user:publicStaff(target,role==='owner'),already_active:true});
       const q=await db.from('business_staff').update({is_active:true,updated_at:new Date().toISOString()}).eq('id',target.id).select('id,external_id,full_name,role,phone,city,is_active,login,password_hash').single();
       if(q.error)throw q.error;
-      return j({ok:true,user:publicStaff(q.data)});
+      return j({ok:true,user:publicStaff(q.data,role==='owner')});
     }
 
     return j({ok:false,error:'UNKNOWN_ACTION'},404);
   }catch(e){
-    return j({ok:false,error:e instanceof Error?e.message:String(e)},500);
+    console.error('staff-admin-api',e instanceof Error?e.name:'Error');
+    return j({ok:false,error:'Временная ошибка сервиса. Повторите позже.'},500);
   }
 });
