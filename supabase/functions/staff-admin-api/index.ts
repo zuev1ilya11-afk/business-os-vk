@@ -42,7 +42,7 @@ Deno.serve(async r=>{
       const login=String(b.login||'').trim(),password=String(b.password||'');
       if(login.length<3)return j({ok:false,error:'Логин должен быть не короче 3 символов'},400);
       if(login.length>64)return j({ok:false,error:'Логин слишком длинный'},400);
-      if(password.length<6)return j({ok:false,error:'Пароль должен быть не короче 6 символов'},400);
+      if(password.length<10)return j({ok:false,error:'Пароль должен быть не короче 10 символов'},400);
       if(password.length>128)return j({ok:false,error:'Пароль слишком длинный'},400);
       const q=await db.rpc('bos_set_staff_credentials',{p_staff_id:target.id,p_login:login,p_password:password});
       if(q.error){
