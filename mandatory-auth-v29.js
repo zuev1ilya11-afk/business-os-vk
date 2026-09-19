@@ -10,8 +10,16 @@
   const forceVk=new URLSearchParams(location.search).has('force_vk_auth');
   let vkSessionPromise=null;
 
-  function getSession(){try{return sessionStorage.getItem(KEY)||localStorage.getItem(KEY)||''}catch(_){return ''}}
-  function setSession(v){if(!v)return;try{sessionStorage.setItem(KEY,v);localStorage.setItem(KEY,v)}catch(_){}}
+  function getSession(){
+    try{
+      const current=sessionStorage.getItem(KEY)||'';
+      if(current)return current;
+      const legacy=localStorage.getItem(KEY)||'';
+      if(legacy){sessionStorage.setItem(KEY,legacy);localStorage.removeItem(KEY);return legacy}
+      return '';
+    }catch(_){return ''}
+  }
+  function setSession(v){if(!v)return;try{sessionStorage.setItem(KEY,v);localStorage.removeItem(KEY)}catch(_){}}
   function clearSession(){try{sessionStorage.removeItem(KEY);localStorage.removeItem(KEY)}catch(_){}}
   function escs(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
   function showGate(html){if(!gate)return;gate.innerHTML=`<div class="authGateCard">${html}</div>`;gate.style.display='flex';body.classList.remove('bos-auth-ok')}

@@ -1,7 +1,13 @@
 (()=>{
   const SESSION_KEY='bos_vk_session_v2';
   function getSession(){
-    try{return sessionStorage.getItem(SESSION_KEY)||localStorage.getItem(SESSION_KEY)||''}catch(_){return ''}
+    try{
+      const current=sessionStorage.getItem(SESSION_KEY)||'';
+      if(current)return current;
+      const legacy=localStorage.getItem(SESSION_KEY)||'';
+      if(legacy){sessionStorage.setItem(SESSION_KEY,legacy);localStorage.removeItem(SESSION_KEY);return legacy}
+      return '';
+    }catch(_){return ''}
   }
   function isLocalDev(){
     try{return !!window.BOS_LOCAL_DEV||/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(location.hostname)&&!new URLSearchParams(location.search).has('force_vk_auth')}catch(_){return false}
