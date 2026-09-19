@@ -23,6 +23,16 @@ test('new desktop passwords require at least ten characters',async()=>{
   assert.equal((await self({action:'setCredentials',login:'master-login',password:'123456789'},'staff_m')).status,400);
 });
 
+test('only owner can reset another employee credentials',async()=>{
+  const db=database({business_staff:[employee('owner','owner'),employee('mgr','manager'),employee('m')]});
+  const staff=edge('staff-admin-api',db);
+  const denied=await staff({action:'setCredentials',id:'m',login:'changed-login',password:'strong-pass-123'},'staff_mgr');
+  assert.equal(denied.status,403);
+  assert.equal(db.tables.business_staff.find(x=>x.id==='m').login,'m');
+  const ui=fs.readFileSync('employee-form-v16.js','utf8');
+  assert.match(ui,/function canAdminStaff\(\)\{return String\(state\.user\?\.role\|\|''\)==='owner'\}/);
+});
+
 test('BOS browser sessions are not persisted into localStorage',()=>{
   for(const file of ['mandatory-auth-v29.js','auth-api-session-v41.js']){
     const source=fs.readFileSync(file,'utf8');
