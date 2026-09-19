@@ -12,9 +12,9 @@ test('employee creation stays owner-only across UI and API',()=>{
   assert.match(api,/if\(role!=='owner'\)return j\(\{ok:false,error:'Только владелец может добавлять сотрудников'\},403\)/);
 });
 
-test('managers keep staff access administration without employee creation',()=>{
+test('credential administration stays owner-only in the employee UI',()=>{
   const ui=fs.readFileSync('employee-form-v16.js','utf8');
-  assert.match(ui,/function canAdminStaff\(\)\{return \['owner','manager'\]\.includes/);
+  assert.match(ui,/function canAdminStaff\(\)\{return String\(state\.user\?\.role\|\|''\)==='owner'\}/);
   assert.match(ui,/if\(!canAdminStaff\(\)\)return html\.replace/);
   assert.match(ui,/Управление сотрудниками/);
 });
