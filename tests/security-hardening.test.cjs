@@ -33,6 +33,17 @@ test('only owner can reset another employee credentials',async()=>{
   assert.match(ui,/function canAdminStaff\(\)\{return String\(state\.user\?\.role\|\|''\)==='owner'\}/);
 });
 
+test('integration administration requires a BOS session and ignores VK launch headers',async()=>{
+  const db=database({business_staff:[employee('owner','owner')],api_integrations:[]});
+  const api=edge('integration-api',db);
+  const launchOnly=await api({action:'listIntegrations'},'100','',{'X-VK-Launch-Params':'vk_app_id=54758847&vk_user_id=100&vk_ts=1&sign=fake'});
+  assert.equal(launchOnly.status,403);
+  const owner=await api({action:'listIntegrations'});
+  assert.equal(owner.status,200);
+  const source=fs.readFileSync('supabase/functions/integration-api/index.ts','utf8');
+  assert.doesNotMatch(source,/x-vk-launch-params/i);
+});
+
 test('BOS browser sessions are not persisted into localStorage',()=>{
   for(const file of ['mandatory-auth-v29.js','auth-api-session-v41.js']){
     const source=fs.readFileSync(file,'utf8');
