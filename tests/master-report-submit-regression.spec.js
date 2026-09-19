@@ -3,8 +3,11 @@ const fs=require('fs');
 const path=require('path');
 
 test('master report submits act and photo through gateway before finalizing',async({page})=>{
-  await page.addInitScript(()=>localStorage.setItem('bos_vk_session_v2','test-session-master'));
-  await page.route('https://business-os-api-gateway.netlify.app/vendor/vk-bridge.js',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
+  await page.addInitScript(()=>{
+    localStorage.setItem('bos_vk_session_v2','test-session-master');
+    // Keep report transport assertions independent of external VK Bridge CDN loading.
+    window.vkBridge={send:async()=>({})};
+  });
 
   const master={id:'m1',external_id:'staff_master',vk_user_id:'staff_master',full_name:'Мастер Тест',role:'master',city:'Москва',is_active:true};
   const order={id:'M-1',client:'Клиент',address:'Адрес',work:'Монтаж',status:'В работе',master_staff_id:'m1',master_vk_id:'staff_master',master_name:'Мастер Тест',master_payout:552.5,scheduled_date:'2099-09-10'};
@@ -17,7 +20,11 @@ test('master report submits act and photo through gateway before finalizing',asy
 
   const actions=[];
   let directCalls=0;
-  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-api',route=>{directCalls++;return route.fulfill({status:500,contentType:'application/json',body:'{"ok":false,"error":"direct endpoint should not be needed"}'})});
+  let finalizePayload=null;
+  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-api',route=>{
+    directCalls++;
+    return route.fulfill({status:500,contentType:'application/json',body:'{"ok":false,"error":"direct endpoint should not be needed"}'});
+  });
   await page.route('https://business-os-api-gateway.netlify.app/api/proxy/report-api',async route=>{
     const body=route.request().postDataJSON()||{};
     actions.push(body.action);
@@ -25,8 +32,7 @@ test('master report submits act and photo through gateway before finalizing',asy
       return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,url:`https://files.test/${body.file_kind}-${body.file_index}`})});
     }
     if(body.action==='finalizeMasterReport'){
-      expect(body.act_url).toContain('/act-0');
-      expect(body.photo_urls).toEqual(['https://files.test/photo-1']);
+      finalizePayload=body;
       return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:{id:'M-1',status:'Выполнена',master_payout:552.5},drive_archive_status:'pending'})});
     }
     return route.fulfill({status:400,contentType:'application/json',body:'{"ok":false,"error":"unexpected action"}'});
@@ -43,8 +49,12 @@ test('master report submits act and photo through gateway before finalizing',asy
   await page.getByRole('button',{name:'Отправить отчёт и завершить'}).click();
 
   await expect.poll(()=>actions,{timeout:15000}).toEqual(['uploadReportFile','uploadReportFile','finalizeMasterReport']);
-  expect(directCalls).toBe(0);
   await expect(page.locator('#masterReportForm')).toHaveCount(0);
+
+  expect(directCalls).toBe(0);
+  expect(finalizePayload).toBeTruthy();
+  expect(finalizePayload.act_url).toContain('/act-0');
+  expect(finalizePayload.photo_urls).toEqual(['https://files.test/photo-1']);
 });
 
 test('master report response strips order totals and other-role payouts',async()=>{

@@ -34,6 +34,7 @@ test('dispatcher report preserves explicit zero payout and resolves staff name',
 test('memo and claims requests stop on timeout and preserve retry UI',async({page})=>{
  test.setTimeout(35000);await fullStack(page,'master');await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
  await page.route('**/api/proxy/master-memo-api',()=>{});await page.route('**/api/proxy/claims-api',()=>{});
+ await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/master-memo-api',()=>{});await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api',()=>{});
  const claimResult=page.evaluate(()=>claimsApi('bootstrap').catch(e=>e.message));
  await page.evaluate(()=>openMasterMemoItem('tips'));await expect(page.locator('#masterMemoItems')).toContainText('Сервер не ответил',{timeout:25000});
  expect(await claimResult).toContain('Сервер не ответил');await page.getByRole('button',{name:'Закрыть',exact:true}).click();await expect(page.locator('.modal')).toHaveCount(0);

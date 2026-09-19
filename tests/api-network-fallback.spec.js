@@ -1,23 +1,28 @@
 const {test,expect}=require('@playwright/test');
-// main ea3d6f5 removed direct fallback. Exercise the active auth transport.
 async function authPage(page){
  await page.route('https://unpkg.com/**',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
  await page.goto('/?vk_app_id=54758847&vk_user_id=123456789&sign=test');
 }
-for(const status of [401,403,500])test(`VK HTTP ${status} displays server error and retries only on click`,async({page})=>{
+for(const status of [401,403,500])test(`VK HTTP ${status} displays server error and does not retry a valid HTTP response`,async({page})=>{
  let attempts=0,direct=0;
- await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/**',r=>{direct++;return r.abort()});
+ await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.abort()});
  await page.route('**/api/proxy/vk-session-api',r=>{attempts++;return r.fulfill({status,contentType:'application/json',body:JSON.stringify({ok:false,error:`Проверка ${status}`})})});
  await authPage(page);await expect(page.locator('#authGate')).toContainText(`Проверка ${status}`);expect(attempts).toBe(1);expect(direct).toBe(0);
  await page.getByRole('button',{name:'Повторить вход через VK'}).click();await expect.poll(()=>attempts).toBe(2);
 });
-test('offline gateway gives Russian error without direct fallback',async({page})=>{
- await page.route('**/api/proxy/**',r=>r.abort('failed'));await authPage(page);
- await expect(page.locator('#authGate')).toContainText('Не удалось связаться с сервером');await expect(page.getByRole('button',{name:'Повторить вход через VK'})).toBeVisible();
+test('offline gateway falls back to direct Supabase Edge API',async({page})=>{
+ let direct=0;
+ await page.route('**/api/proxy/**',r=>r.abort('failed'));
+ await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Прямой резерв отвечает"}'})});
+ await authPage(page);
+ await expect(page.locator('#authGate')).toContainText('Прямой резерв отвечает',{timeout:8000});expect(direct).toBe(1);await expect(page.getByRole('button',{name:'Повторить вход через VK'})).toBeVisible();
 });
-test('hanging gateway ends loader within transport deadline',async({page})=>{
- test.setTimeout(35000);await page.route('**/api/proxy/**',()=>{});await authPage(page);
- await expect(page.locator('#authGate')).toContainText('Сервер не ответил',{timeout:25000});await expect(page.getByRole('button',{name:'Повторить вход через VK'})).toBeVisible();
+test('hanging gateway switches to direct API before outer auth deadline',async({page})=>{
+ test.setTimeout(15000);let direct=0;
+ await page.route('**/api/proxy/**',()=>{});
+ await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Резерв после таймаута"}'})});
+ await authPage(page);
+ await expect(page.locator('#authGate')).toContainText('Резерв после таймаута',{timeout:8000});expect(direct).toBe(1);await expect(page.getByRole('button',{name:'Повторить вход через VK'})).toBeVisible();
 });
 test('failed password login keeps entered values for retry',async({page})=>{
  await page.route('**/api/proxy/password-session-api',r=>r.fulfill({status:500,contentType:'application/json',body:'{"ok":false,"error":"Временная ошибка"}'}));
