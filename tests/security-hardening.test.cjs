@@ -1,0 +1,33 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const {edge,database,employee}=require('./helpers/edge.cjs');
+
+test('password login is rate limited without revealing whether the account exists',async()=>{
+  const db=database({business_staff:[employee('m')]});
+  const api=edge('password-session-api',db);
+  for(let i=0;i<8;i++)assert.equal((await api({action:'login',login:'m',password:'wrong'})).status,401);
+  const blocked=await api({action:'login',login:'m',password:'wrong'});
+  assert.equal(blocked.status,429);
+  assert.match(blocked.body.error,/Слишком много попыток/);
+  assert.ok(Number(blocked.headers.get('retry-after'))>0);
+});
+
+test('new desktop passwords require at least ten characters',async()=>{
+  const db=database({business_staff:[employee('owner','owner'),employee('m')]});
+  const staff=edge('staff-admin-api',db);
+  assert.equal((await staff({action:'setCredentials',id:'m',login:'master-login',password:'123456789'})).status,400);
+  assert.equal((await staff({action:'setCredentials',id:'m',login:'master-login',password:'1234567890'})).status,200);
+
+  const self=edge('password-session-api',db);
+  assert.equal((await self({action:'setCredentials',login:'master-login',password:'123456789'},'staff_m')).status,400);
+});
+
+test('BOS browser sessions are not persisted into localStorage',()=>{
+  for(const file of ['mandatory-auth-v29.js','auth-api-session-v41.js']){
+    const source=fs.readFileSync(file,'utf8');
+    assert.doesNotMatch(source,/localStorage\.setItem\s*\([^)]*SESSION_KEY[^)]*,/);
+    assert.doesNotMatch(source,/localStorage\.setItem\s*\([^)]*KEY[^)]*,/);
+    assert.match(source,/localStorage\.removeItem/);
+  }
+});
