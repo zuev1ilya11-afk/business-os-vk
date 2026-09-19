@@ -3,8 +3,11 @@ const fs=require('fs');
 const path=require('path');
 
 test('master report submits act and photo through gateway before finalizing',async({page})=>{
-  await page.addInitScript(()=>localStorage.setItem('bos_vk_session_v2','test-session-master'));
-  await page.route('**/*vk-bridge*',r=>r.fulfill({status:200,contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
+  await page.addInitScript(()=>{
+    localStorage.setItem('bos_vk_session_v2','test-session-master');
+    // Keep report transport assertions independent of external VK Bridge CDN loading.
+    window.vkBridge={send:async()=>({})};
+  });
 
   const master={id:'m1',external_id:'staff_master',vk_user_id:'staff_master',full_name:'Мастер Тест',role:'master',city:'Москва',is_active:true};
   const order={id:'M-1',client:'Клиент',address:'Адрес',work:'Монтаж',status:'В работе',master_staff_id:'m1',master_vk_id:'staff_master',master_name:'Мастер Тест',master_payout:552.5,scheduled_date:'2099-09-10'};
