@@ -38,6 +38,12 @@ if [[ -z "$SOURCE_FILE" ]]; then
   exit 3
 fi
 
+SOURCE_DURATION="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$SOURCE_FILE")"
+if [[ -z "$SOURCE_DURATION" ]]; then
+  echo "Could not determine source duration." >&2
+  exit 11
+fi
+
 FILTER="split=2[fg][bg];[bg]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=24:8[bgv];[fg]scale=1080:-2:force_original_aspect_ratio=decrease[fgv];[bgv][fgv]overlay=(W-w)/2:(H-h)/2,setsar=1,fps=30"
 safe_title="$(python - "$TITLE" <<'PY'
 import re,sys
@@ -58,7 +64,8 @@ render_range() {
 }
 
 if [[ -z "$SEGMENTS" ]]; then
-  render_range 0 35 "$FINAL"
+  # Default to the complete source clip. Never cut a gameplay moment at an arbitrary time limit.
+  render_range 0 "$SOURCE_DURATION" "$FINAL"
 else
   IFS=',' read -ra RANGES <<< "$SEGMENTS"
   idx=0
