@@ -8,11 +8,17 @@ test('notification center shows dispatcher reschedule and unassigned alerts',asy
     localStorage.setItem('bos_force_test_owner_form_v2','1');
     localStorage.setItem('bos_test_auth_v1',JSON.stringify({email:'owner@test.ru',password:'owner-test'}));
   });
+  await page.route('**/api/proxy/password-session-api',async route=>{
+    let body={};try{body=route.request().postDataJSON()||{}}catch(_){}
+    const result=body.action==='login'
+      ?{ok:true,session_token:'test-session-owner',user:{id:'owner',vk_user_id:'1',external_id:'1',full_name:'Владелец',role:'owner',is_active:true}}
+      :{ok:true};
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(result)});
+  });
   await page.route('**/api/proxy/mini-app-api',async route=>{
     let body={};try{body=route.request().postDataJSON()||{}}catch(_){}
     const action=body.action||'bootstrap';let result={ok:true};
     if(action==='health')result={ok:true,version:'local'};
-    else if(action==='login')result={ok:true,token:'test-session-owner',user:{id:'owner',vk_user_id:'1',external_id:'1',full_name:'Владелец',role:'owner',is_active:true}};
     else if(action==='bootstrap')result={ok:true,user:{id:'owner',vk_user_id:'1',external_id:'1',full_name:'Владелец',role:'owner',is_active:true},orders:[
       {id:'N-1',status:'В работе',client:'Клиент',address:'Адрес 1',work:'Монтаж',scheduled_date:'2099-09-10',scheduled_time:'12:00',reschedule_requested:true,reschedule_reason:'Клиент попросил позже',reschedule_requested_at:'2099-09-09T12:00:00Z',master_vk_id:'1001',master_name:'Мастер'},
       {id:'N-2',status:'Новая',client:'Клиент 2',address:'Адрес 2',work:'Карниз',scheduled_date:'2099-09-10',scheduled_time:'14:00',master_vk_id:''}
@@ -23,9 +29,9 @@ test('notification center shows dispatcher reschedule and unassigned alerts',asy
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeVisible();
   await expect(page.locator('#bosNotificationBell')).toHaveCount(0);
-  await page.locator('#authEmail').fill('owner@test.ru');
-  await page.locator('#authPassword').fill('owner-test');
-  await page.getByRole('button',{name:'Войти'}).click();
+  await page.getByPlaceholder('Логин').fill('owner@test.ru');
+  await page.getByPlaceholder('Пароль').fill('owner-test');
+  await page.getByRole('button',{name:'Войти',exact:true}).click();
   await expect(page.locator('#authGate')).toBeHidden();
   const bell=page.locator('#bosNotificationBell');
   await expect(bell).toBeVisible();
