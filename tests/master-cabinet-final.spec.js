@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
-test('master final cabinet keeps upcoming compact, report action, schedule summary and no staff management',async({page})=>{
+test('master final cabinet keeps upcoming compact, workflow, schedule summary and no staff management',async({page})=>{
   const {db,master}=await fullStack(page,'owner');
   const order=db.tables.orders.find(o=>String(o.id)==='11');
   order.status='В работе';
@@ -26,10 +26,10 @@ test('master final cabinet keeps upcoming compact, report action, schedule summa
   await expect(card).not.toContainText('Монтаж');
 
   await card.click();
-  await expect(page.getByRole('button',{name:'Отчитаться по заявке'})).toBeVisible();
-  await page.getByRole('button',{name:'Отчитаться по заявке'}).click();
-  await expect(page.getByText('Отчёт по заявке 11')).toBeVisible();
-  await expect(page.getByRole('button',{name:'Отправить отчёт и завершить'})).toBeVisible();
+  await expect(page.locator('.bosMasterWorkflow')).toBeVisible();
+  await expect(page.locator('.bosMasterWorkflow')).toContainText('Назначена');
+  await expect(page.locator('.bosMasterWorkflow')).toContainText('В тестовом просмотре этапы не изменяются.');
+  await expect(page.getByRole('button',{name:'Отчитаться по заявке'})).toBeHidden();
   await page.evaluate(()=>closeModal());
 
   await page.evaluate(({masterVkId})=>{
