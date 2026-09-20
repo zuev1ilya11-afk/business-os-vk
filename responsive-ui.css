@@ -1,0 +1,250 @@
+/* Presentation only. Scope overrides above runtime-injected component styles. */
+:root {
+  --bos-page-width: 1280px;
+  --bos-gutter: 16px;
+  --bos-muted: #a3afbf;
+}
+
+body #app {
+  overflow: visible;
+  max-width: 760px;
+  padding: 0 max(var(--bos-gutter), env(safe-area-inset-right))
+    calc(108px + env(safe-area-inset-bottom))
+    max(var(--bos-gutter), env(safe-area-inset-left));
+}
+
+body #app > header {
+  gap: 12px;
+  margin-inline: 0;
+  padding-inline: 0;
+}
+
+body #app .brandWrap { min-width: 0; margin-right: auto; }
+body #app :is(.ownerToolsBtn, .bosInstallAppBtn--header) { margin-inline: 0; flex-shrink: 0; }
+body #app .roleBadge { align-self: flex-start; }
+body #app .avatar { flex-shrink: 0; }
+#content, #content > *, .modal > * { min-width: 0; }
+
+body #app > nav {
+  max-width: 760px;
+  gap: 4px;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-template-columns: none;
+  padding-inline: max(8px, env(safe-area-inset-left)) max(8px, env(safe-area-inset-right));
+}
+
+body #app > nav button {
+  min-height: 56px;
+  border-radius: 12px;
+  font-size: 11px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+body #app > nav button.active { background: rgba(90, 167, 255, .12); }
+
+:is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--bos-accent);
+  outline-offset: 3px;
+}
+
+#content .row { flex-wrap: wrap; }
+#content .row > *, .modal .row > * { min-width: 0; max-width: 100%; }
+#content .dashMetric > .muted { grid-column: 2; grid-row: 1; }
+#content .dashMetric strong { overflow-wrap: anywhere; }
+#content .dashOrderBody > :is(span, small) { white-space: normal; }
+#content :is(.ownerProblemTop, .opsCompactTop, .opsCompactMain, .masterJobTop) { flex-wrap: wrap; }
+#content .ownerProblemTop strong { white-space: normal; overflow-wrap: anywhere; }
+#content :is(.opsCompactAddress, .opsCompactWorks) { white-space: normal; overflow-wrap: anywhere; }
+#content :is(.card, .hero, .dashOrder, .masterWelcome, .masterKpi, .masterJob) { border-radius: var(--bos-radius); }
+#content .compactTeamCard { margin: 0; color: var(--bos-text); }
+
+#content .bosOrderFilters {
+  margin-inline: 0;
+  padding-inline: 0 !important;
+  scroll-padding-inline: 0;
+}
+
+#content .bosOrderFilters button,
+#content .bosCompactButtons button,
+#content .bosCompactBottom .primary { min-height: 44px !important; }
+
+#content :is(.ownerCalDay, .bosCalDay) { min-width: 0; }
+#content .bosCalDay small { white-space: normal; }
+#content .bosCompactBottom { flex-wrap: wrap; }
+#masterMonthCalendar > .card > .row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  gap: 8px;
+}
+#masterMonthCalendar > .card > .row button { padding-inline: 8px; }
+#masterMonthCalendar > .card > .row h3 { font-size: 16px; }
+#masterMonthCalendar > .card > .row .muted { font-size: 12px; }
+
+/* Keep wide reports inside their own scroll area, not the page. */
+:is(#content, .modal) table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+:is(#content, .modal) :is(th, td) {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--bos-line);
+  text-align: left;
+}
+
+:is(#content, .modal) th { color: var(--bos-muted); }
+
+#modalRoot .modal {
+  min-width: 0;
+  max-height: calc(100dvh - max(12px, env(safe-area-inset-top)));
+  scroll-padding-block: 56px 24px;
+  padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
+}
+
+#modalRoot .modalClose { width: 44px; height: 44px; }
+#modalRoot .bosOrderHead { flex-wrap: wrap; }
+#modalRoot .bosOrderHead h2 { overflow-wrap: anywhere; }
+#modalRoot .row { flex-wrap: wrap; }
+#modalRoot :is(input, select, textarea) { min-width: 0; max-width: 100%; }
+#modalRoot .bosOrderControls select {
+  min-height: 48px;
+  padding: 10px;
+  background: #0d1621;
+  color: var(--bos-text);
+  border: 1px solid var(--bos-line);
+  border-radius: 13px;
+  font-size: 16px;
+}
+
+#authGate {
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+
+#authGate .authGateCard { flex-shrink: 0; margin-block: auto; }
+
+@media (max-width: 767px) {
+  body #app { --bos-gutter: 12px; }
+  body #app > header { flex-wrap: wrap; }
+  body #app .brandWrap { order: -2; flex: 1 1 calc(100% - 60px); }
+  body #app .avatar { order: -1; }
+  body #app .brandText h1 { font-size: clamp(18px, 4.8vw, 24px); }
+  body #app .bosInstallAppBtn--header { width: auto; min-height: 44px; font-size: 12px; }
+  body #app .bosInstallAppBtn--header::after { display: none; }
+  #content .dashMetric {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    padding: 14px;
+    min-height: 144px;
+  }
+  #content .dashMetric > :is(.dashIcon, .muted, .metricLabel, strong, small) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  #content .dashMetric .dashIcon { width: 32px; height: 32px; font-size: 18px; }
+  #content .dashMetric > :is(.muted, .metricLabel) { font-size: 13px; }
+  #content .dashMetric .dashChevron { position: absolute; right: 12px; top: 16px; }
+  #content .dashMetric strong { font-size: clamp(20px, 5.5vw, 28px); }
+}
+
+@media (max-width: 359px) {
+  #authGate .authGateCard { padding: 18px; }
+  #modalRoot :is(.two, .bosOrderControls, .bosOrderFinance) { grid-template-columns: minmax(0, 1fr); }
+  #content .ownerCalGrid, #content .ownerCalWeek { gap: 3px; }
+}
+
+@media (min-width: 768px) {
+  body #app { --bos-gutter: 24px; max-width: 100%; }
+  body #app > nav { max-width: 760px; }
+  #content :is(#bosOrderList, .compactTeam) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  #content .masterDayGroup { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  #content .masterDayHeading { grid-column: 1 / -1; }
+  #content .bosHandsMiniCard { margin: 0; }
+  #content #bosOrderList > .muted { grid-column: 1 / -1; }
+  #content .dashMetrics { gap: 16px; }
+  #content .ownerCalDay { min-height: 88px; padding: 12px; }
+  #content .ownerCalDay :is(small, span) { font-size: 12px; }
+  #content .bosCalDay { min-height: 80px; }
+  #modalRoot .modalBackdrop {
+    align-items: center;
+    padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
+      max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+  }
+  #modalRoot .modal {
+    max-width: 720px;
+    max-height: 100%;
+    border-radius: var(--bos-radius);
+    padding: 60px 28px 28px;
+    box-shadow: 0 24px 80px #0008;
+  }
+}
+
+@media (min-width: 1024px) {
+  body #app {
+    max-width: var(--bos-page-width);
+    display: grid;
+    grid-template-columns: 176px minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    column-gap: 24px;
+    padding-bottom: max(32px, env(safe-area-inset-bottom));
+  }
+  body #app > header {
+    grid-column: 1 / -1;
+    position: static;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--bos-line);
+    background: none;
+    backdrop-filter: none;
+  }
+  body #app > main { grid-column: 2; grid-row: 2; }
+  body #app > nav {
+    grid-column: 1;
+    grid-row: 2;
+    position: sticky;
+    top: max(24px, env(safe-area-inset-top));
+    bottom: auto;
+    align-self: start;
+    width: 100%;
+    margin: 0;
+    padding: 8px;
+    grid-auto-flow: row;
+    grid-template-columns: minmax(0, 1fr);
+    border: 1px solid var(--bos-line);
+    border-radius: var(--bos-radius);
+    box-shadow: none;
+  }
+  body #app > nav button {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 12px;
+    font-size: 13px;
+    text-align: left;
+  }
+  #content:has(> .loadCard) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-content: start;
+    align-items: start;
+  }
+  #content:has(> .loadCard) > * { grid-column: 1 / -1; margin-block: 0; }
+  #content:has(> .loadCard) > :is(.loadCard, .dashMetrics) { grid-column: auto; }
+  #content .dashMetric { grid-template-columns: minmax(0, 1fr); gap: 6px; min-height: 144px; }
+  #content .dashMetric > :is(.dashIcon, .muted, .metricLabel, strong, small) { grid-column: 1; grid-row: auto; }
+  #content .dashMetric .dashChevron { position: absolute; top: 18px; right: 16px; }
+  #content .dashMetric strong { font-size: 26px; }
+  #content .masterKpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #content .masterSimple { gap: 20px; }
+}
+
+@media (min-width: 1440px) {
+  body #app { --bos-page-width: 1440px; grid-template-columns: 200px minmax(0, 1fr); column-gap: 32px; }
+  #content .compactTeam { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #content .ownerCalDay { min-height: 104px; }
+}
