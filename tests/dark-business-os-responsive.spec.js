@@ -96,13 +96,41 @@ test('mobile order form keeps fields and actions inside the viewport',async({pag
   await expectNoHorizontalOverflow(page,390,'owner form');
 });
 
-test('master mobile order cards and day filters remain touch friendly',async({page})=>{
+test('master mobile order cards and day filters remain touch friendly',async({page},testInfo)=>{
   await fullStack(page,'master');
   await page.setViewportSize({width:390,height:844});
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await page.evaluate(()=>show('orders'));
   await expect(page.getByText('Мои заявки',{exact:true})).toBeVisible();
+
+  const diagnostics=await page.evaluate(()=>{
+    const rect=el=>{
+      if(!el)return null;
+      const r=el.getBoundingClientRect();
+      const s=getComputedStyle(el);
+      return {
+        text:String(el.textContent||'').trim().slice(0,80),
+        x:r.x,y:r.y,left:r.left,right:r.right,width:r.width,height:r.height,
+        minHeight:s.minHeight,boxSizing:s.boxSizing,display:s.display,
+        overflowX:s.overflowX,paddingLeft:s.paddingLeft,paddingRight:s.paddingRight
+      };
+    };
+    return {
+      innerWidth:window.innerWidth,
+      documentClientWidth:document.documentElement.clientWidth,
+      documentScrollWidth:document.documentElement.scrollWidth,
+      bodyClientWidth:document.body.clientWidth,
+      bodyScrollWidth:document.body.scrollWidth,
+      content:rect(document.querySelector('#content')),
+      filters:[...document.querySelectorAll('.masterDayFilters button')].map(rect),
+      card:rect(document.querySelector('.bosHandsMiniCard'))
+    };
+  });
+  await testInfo.attach('master-mobile-layout.json',{
+    body:Buffer.from(JSON.stringify(diagnostics,null,2)),
+    contentType:'application/json'
+  });
 
   const filters=page.locator('.masterDayFilters button');
   expect(await filters.count()).toBeGreaterThan(0);
