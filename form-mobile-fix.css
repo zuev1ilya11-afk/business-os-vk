@@ -6,3 +6,38 @@ body:not(.bos-auth-ok) #app{visibility:hidden}
 @media(max-width:360px){#app{padding-left:9px;padding-right:9px}.modal{padding-left:10px;padding-right:10px}.dashMetrics,.grid{gap:7px}.dashMetric{padding:12px 8px;grid-template-columns:34px minmax(0,1fr) 12px;column-gap:6px}.dashMetric .dashIcon{width:32px;height:32px;font-size:16px}.dashMetric .metricLabel{font-size:12px}.dashMetric strong{font-size:22px}.dashMetric small{font-size:9.5px}.masterHomeGrid .metric{padding-left:10px;padding-right:10px}.brandText h1{font-size:22px}.brandLogo{width:42px;height:42px;font-size:20px}nav button{font-size:8.5px}}
 /* Keep the sticky mobile header aligned with the 12px app gutter introduced by ui-refresh-v1.css. */
 @media(max-width:767px){#app>header{margin-left:-12px!important;margin-right:-12px!important;padding-left:12px!important;padding-right:12px!important}}
+
+/* Dark Business OS — phase 2: order lists, mobile cards and forms. Presentation only. */
+#bosOrderList .opsCompactOrder{position:relative;overflow:hidden;background:linear-gradient(155deg,rgba(18,31,47,.98),rgba(10,20,31,.98));border-color:rgba(255,255,255,.085);box-shadow:0 8px 24px rgba(0,0,0,.14);min-height:132px;transition:transform .12s ease,border-color .12s ease,background .12s ease}
+#bosOrderList .opsCompactOrder:hover{border-color:rgba(90,167,255,.24);background:linear-gradient(155deg,rgba(21,37,56,.98),rgba(11,23,35,.98))}
+#bosOrderList .opsCompactOrder:active{transform:scale(.992)}
+#bosOrderList .opsCompactTop,#bosOrderList .opsCompactMain{min-width:0}
+#bosOrderList .opsCompactTop b{color:#9dccff;font-weight:800;letter-spacing:.01em}
+#bosOrderList .opsCompactTop span{font-variant-numeric:tabular-nums}
+#bosOrderList .opsCompactMain b,#bosOrderList .opsCompactAddress,#bosOrderList .opsCompactWorks{min-width:0;overflow-wrap:anywhere}
+#bosOrderList .opsCompactMain strong{font-variant-numeric:tabular-nums;white-space:nowrap}
+#bosOrderList .opsCompactBottom{align-items:center;row-gap:7px}
+#bosOrderList .opsCompactBottom>span:not(.status):not(.bosSourceChip):not(.bosRescheduleChip){min-width:0;overflow-wrap:anywhere}
+.masterOrdersDense .masterDayFilters{margin:2px -2px 10px;padding:4px 2px 7px;scroll-snap-type:x proximity;scrollbar-width:none}
+.masterOrdersDense .masterDayFilters::-webkit-scrollbar{display:none}
+.masterOrdersDense .masterDayFilters button{scroll-snap-align:start;min-height:40px;padding-inline:13px;border-radius:999px}
+.masterOrdersDense .bosHandsMiniCard{position:relative;overflow:hidden;padding:12px 13px;margin:8px 0;border-radius:16px;border-color:rgba(255,255,255,.085);background:linear-gradient(155deg,rgba(18,31,47,.98),rgba(10,20,31,.98));box-shadow:0 7px 22px rgba(0,0,0,.13);transition:transform .12s ease,border-color .12s ease,background .12s ease}
+.masterOrdersDense .bosHandsMiniCard:hover{border-color:rgba(90,167,255,.24);background:linear-gradient(155deg,rgba(21,37,56,.98),rgba(11,23,35,.98))}
+.masterOrdersDense .bosHandsMiniCard:active{transform:scale(.992)}
+.masterOrdersDense .bosHandsMiniHead b{color:#9dccff}.masterOrdersDense .bosHandsMiniClient b,.masterOrdersDense .bosHandsMiniAddress,.masterOrdersDense .bosHandsMiniWork span{min-width:0;overflow-wrap:anywhere}.masterOrdersDense .bosHandsMiniClient strong{font-variant-numeric:tabular-nums}
+.modal #orderForm{gap:13px}.modal #orderForm>input,.modal #orderForm>select,.modal #orderForm>textarea,.modal #orderForm .two>input,.modal #orderForm .two>select{width:100%;min-width:0;border-color:rgba(255,255,255,.11);background:#0b1521}.modal #orderForm>input:focus,.modal #orderForm>select:focus,.modal #orderForm>textarea:focus,.modal #orderForm .two>input:focus,.modal #orderForm .two>select:focus{border-color:rgba(90,167,255,.7);box-shadow:0 0 0 3px rgba(90,167,255,.1)}
+.modal #orderForm .orderConditions,.modal #orderForm .orderTotals,.modal .orderDetails{margin:2px 0;padding:14px;border-radius:16px;background:rgba(16,29,44,.9);border-color:rgba(255,255,255,.08);box-shadow:none}
+.modal #orderForm .orderConditions h3{margin:0 0 10px;font-size:15px}.modal #orderForm .checkRow{display:flex;align-items:flex-start;gap:10px;min-height:44px;padding:9px 10px;border:1px solid rgba(255,255,255,.075);border-radius:12px;background:rgba(255,255,255,.025)}.modal #orderForm .checkRow input{flex:0 0 auto;width:20px;height:20px;min-height:20px;margin:1px 0 0;appearance:auto;-webkit-appearance:auto}.modal #orderForm .checkRow span{min-width:0;line-height:1.35;overflow-wrap:anywhere}
+.modal .bosOrderFacts,.modal .bosOrderControls,.modal .bosOrderFinance{gap:10px}.modal .bosOrderFact,.modal .bosOrderBlock,.modal .bosOrderMoney{border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.025)}.modal .bosOrderFact b,.modal .bosOrderBlock p{overflow-wrap:anywhere}.modal .bosOrderControls select{min-height:48px;background:#0b1521;border:1px solid rgba(255,255,255,.11);border-radius:12px;color:inherit}.modal .bosOrderActions button{min-height:48px}.modal .bosHandsOrder{padding-bottom:4px}
+@media(min-width:768px){#bosOrderList{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px!important}#bosOrderList .opsCompactOrder{height:100%}.modal #orderForm{max-width:620px;margin-inline:auto}}
+@media(max-width:600px){
+ #content>.row:first-child{align-items:flex-start;gap:10px}#content>.row:first-child>div{min-width:0}#content>.row:first-child .primary{flex:0 0 auto;min-height:44px;padding-inline:13px}
+ #bosOrderList{gap:9px!important}#bosOrderList .opsCompactOrder{min-height:0;padding:12px!important;border-radius:15px!important}
+ #bosOrderList .opsCompactTop,#bosOrderList .opsCompactMain{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:7px 10px}
+ #bosOrderList .opsCompactTop span,#bosOrderList .opsCompactMain strong{max-width:46vw;text-align:right}
+ #bosOrderList .opsCompactWorks{font-size:12px;line-height:1.38}
+ .masterOrdersDense .bosHandsMiniCard{padding:12px!important;border-radius:15px!important}.masterOrdersDense .bosHandsMiniHead,.masterOrdersDense .bosHandsMiniClient{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:7px 10px}.masterOrdersDense .bosHandsMiniHead span,.masterOrdersDense .bosHandsMiniClient strong{max-width:48vw;text-align:right;white-space:normal}
+ .modal{width:100%;max-width:100%;max-height:calc(94dvh - env(safe-area-inset-top));padding-bottom:calc(18px + env(safe-area-inset-bottom));overflow-y:auto;overflow-x:hidden}
+ .modal .bosOrderFacts,.modal .bosOrderControls{grid-template-columns:1fr!important}.modal .bosOrderFinance{grid-template-columns:repeat(2,minmax(0,1fr))!important}.modal .bosOrderActions,.modal .two.bosOrderActions{grid-template-columns:1fr!important}.modal .bosOrderFact,.modal .bosOrderBlock,.modal .bosOrderMoney{min-width:0}.modal #orderForm .two{grid-template-columns:1fr!important}.modal #orderForm .orderConditions,.modal #orderForm .orderTotals,.modal .orderDetails{padding:12px}
+}
+@media(max-width:360px){#bosOrderList .opsCompactTop span,#bosOrderList .opsCompactMain strong,.masterOrdersDense .bosHandsMiniHead span,.masterOrdersDense .bosHandsMiniClient strong{max-width:43vw}.modal .bosOrderFinance{grid-template-columns:1fr!important}}
