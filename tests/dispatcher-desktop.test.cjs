@@ -1,0 +1,37 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+
+test('desktop dispatcher runtime is loaded and syntactically valid',()=>{
+  const ui=fs.readFileSync('dispatcher-desktop-v88.js','utf8');
+  const loader=fs.readFileSync('pwa-register.js','utf8');
+
+  assert.match(loader,/dispatcher-desktop-v88\.js/);
+  assert.doesNotThrow(()=>new Function(ui));
+  assert.match(ui,/const DESKTOP_MIN=1050/);
+  assert.match(ui,/String\(state\.user\?\.role\|\|''\)==='dispatcher'/);
+});
+
+test('desktop dispatcher exposes the core operational queue',()=>{
+  const ui=fs.readFileSync('dispatcher-desktop-v88.js','utf8');
+
+  assert.match(ui,/ДИСПЕТЧЕРСКАЯ/);
+  assert.match(ui,/Очередь заявок/);
+  assert.match(ui,/Без мастера/);
+  assert.match(ui,/Просрочено/);
+  assert.match(ui,/Нужно перенести/);
+  assert.match(ui,/reschedule_requested/);
+  assert.match(ui,/reschedule_reason/);
+  assert.match(ui,/Мастера сегодня/);
+  assert.match(ui,/Поиск по номеру, клиенту, телефону, адресу, работе/);
+});
+
+test('desktop dispatcher keeps existing backend actions and mobile fallback',()=>{
+  const ui=fs.readFileSync('dispatcher-desktop-v88.js','utf8');
+
+  assert.match(ui,/return previousOrders\(\)/);
+  assert.match(ui,/api\('updateOrder'/);
+  assert.match(ui,/openOrderForm\('/);
+  assert.match(ui,/href=\"tel:/);
+  assert.match(ui,/reloadData\(true\)/);
+});
