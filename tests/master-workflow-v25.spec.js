@@ -39,7 +39,7 @@ test('dispatcher v2.5 sees field workflow stage without changing order',async({p
   await page.setViewportSize({width:1600,height:950});
   const {db}=await fullStack(page,'dispatcher');
   db.tables.orders[0].scheduled_date=localDate();
-  db.tables.orders[0].scheduled_time='23:59';
+  db.tables.orders[0].scheduled_time='19:00';
   db.tables.orders[0].master_workflow_stage='started';
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
