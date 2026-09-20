@@ -59,6 +59,11 @@
   dispatchBoardV23.async=false;
   document.head.appendChild(dispatchBoardV23);
 
+  const dispatchControlV24=document.createElement('script');
+  dispatchControlV24.src='./dispatcher-control-v24.js?v=20260920-v24';
+  dispatchControlV24.async=false;
+  document.head.appendChild(dispatchControlV24);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
