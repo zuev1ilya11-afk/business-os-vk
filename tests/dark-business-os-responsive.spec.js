@@ -9,7 +9,7 @@ const viewports=[
 async function expectNoHorizontalOverflow(page,width,role){
   const layout=await page.evaluate(()=>{
     const vw=document.documentElement.clientWidth;
-    const visible=[...document.querySelectorAll('#app,#content,#app>header,#app>nav,.card,.hero,.dashMetric,.loadCard,.ownerProblemsCompact')]
+    const visible=[...document.querySelectorAll('#app,#content,#app>header,#app>nav,.card,.hero,.dashMetric,.loadCard,.ownerProblemsCompact,.modal,.form,.bosHandsMiniCard,.opsCompactOrder')]
       .filter(el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;});
     const outside=visible.filter(el=>{const r=el.getBoundingClientRect();return r.left<-1||r.right>vw+1;}).map(el=>el.className||el.id||el.tagName);
     return {overflow:document.documentElement.scrollWidth-vw,outside};
@@ -62,3 +62,55 @@ for(const role of ['owner','dispatcher','master']){
     }
   });
 }
+
+test('mobile order form keeps fields and actions inside the viewport',async({page})=>{
+  await fullStack(page,'owner');
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/');
+  await expect(page.locator('#authGate')).toBeHidden();
+  await page.evaluate(()=>openOrderForm());
+
+  const modal=page.locator('#modalRoot .modal');
+  await expect(modal).toBeVisible();
+  const modalBox=await modal.boundingBox();
+  expect(modalBox).not.toBeNull();
+
+  const controls=modal.locator('input,select,textarea,button.primary,button.secondary');
+  const count=await controls.count();
+  expect(count).toBeGreaterThan(5);
+  for(let i=0;i<count;i++){
+    const box=await controls.nth(i).boundingBox();
+    if(!box)continue;
+    expect(box.x).toBeGreaterThanOrEqual(modalBox.x-1);
+    expect(box.x+box.width).toBeLessThanOrEqual(modalBox.x+modalBox.width+1);
+    if(await controls.nth(i).evaluate(el=>el.matches('input,select,button')))expect(box.height).toBeGreaterThanOrEqual(44);
+  }
+
+  const columns=await modal.locator('#orderForm .two').first().evaluate(el=>getComputedStyle(el).gridTemplateColumns);
+  expect(columns.trim().split(/\s+/)).toHaveLength(1);
+  await expectNoHorizontalOverflow(page,390,'owner form');
+});
+
+test('master mobile order cards and day filters remain touch friendly',async({page})=>{
+  await fullStack(page,'master');
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/');
+  await expect(page.locator('#authGate')).toBeHidden();
+  await page.evaluate(()=>show('orders'));
+  await expect(page.getByText('Мои заявки',{exact:true})).toBeVisible();
+
+  const filters=page.locator('.masterDayFilters button');
+  expect(await filters.count()).toBeGreaterThan(0);
+  for(let i=0;i<await filters.count();i++){
+    const box=await filters.nth(i).boundingBox();
+    if(box)expect(box.height).toBeGreaterThanOrEqual(40);
+  }
+
+  const card=page.locator('.bosHandsMiniCard').first();
+  await expect(card).toBeVisible();
+  const cardBox=await card.boundingBox();
+  expect(cardBox).not.toBeNull();
+  expect(cardBox.x).toBeGreaterThanOrEqual(-1);
+  expect(cardBox.x+cardBox.width).toBeLessThanOrEqual(391);
+  await expectNoHorizontalOverflow(page,390,'master orders');
+});
