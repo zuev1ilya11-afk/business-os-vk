@@ -20,7 +20,7 @@ const orders=()=>Array.isArray(state?.orders)?state.orders:[];
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const timeMinutes=t=>{const m=String(t||'').match(/(\d{1,2}):(\d{2})/);return m?Number(m[1])*60+Number(m[2]):null};
 const fingerprint=o=>[o?.master_staff_id||o?.master_vk_id||o?.master_external_id||o?.master_id||'',o?.scheduled_date||'',o?.scheduled_time||o?.time_slot||'',o?.status||''].join('|');
-const keyBase=()=>`${role()}:${state?.user?.staff_id||state?.user?.external_id||state?.user?.vk_user_id||state?.user?.id||'anon'}`;
+const keyBase=()=>`${role()}:${state?.user?.external_id||state?.user?.vk_user_id||state?.user?.id||state?.user?.staff_id||'anon'}`;
 const readStore=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(`${key}:${keyBase()}`)||'')||fallback}catch(_){return fallback}};
 const writeStore=(key,value)=>{try{localStorage.setItem(`${key}:${keyBase()}`,JSON.stringify(value))}catch(_){}};
 const getEvents=()=>readStore(STORAGE,[]);
