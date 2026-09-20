@@ -1,0 +1,80 @@
+/* Dark Business OS — phase 3. Presentation layer only. */
+@media (min-width:1050px){
+  .dbV23Plan{gap:14px}
+  .dbV23Plan .dbV23Summary{gap:10px}
+  .dbV23Plan .dbV23Summary>div{background:linear-gradient(155deg,rgba(17,34,53,.98),rgba(10,21,34,.99));border-color:var(--bos-line);border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:11px 13px}
+  .dbV23Plan .dbV23Summary>div:first-child{min-width:180px}
+  .dbV23Plan .dbV23Summary strong{font-size:18px;font-variant-numeric:tabular-nums}
+  .dbV23Plan .dbV23Summary span{color:var(--bos-muted)}
+  .dbV23Plan .dbV23Summary .danger{box-shadow:inset 3px 0 0 var(--bos-bad),0 8px 24px rgba(0,0,0,.14)}
+  .dbV23Plan .dbV23Queue{background:linear-gradient(155deg,rgba(17,34,53,.96),rgba(10,21,34,.98));border-color:var(--bos-line);border-radius:16px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+  .dbV23Plan .dbV23QueueTitle span{color:var(--bos-muted)}
+  .dbV23Plan .dbV23QueueItems{gap:9px;scrollbar-width:thin;scrollbar-color:rgba(145,161,181,.3) transparent}
+  .dbV23Plan .dbV23QueueCard{background:#0b1725;border-color:rgba(145,161,181,.28);border-radius:12px;min-width:205px;padding:9px 10px;color:var(--bos-text)}
+  .dbV23Plan .dbV23QueueCard small{color:var(--bos-muted)}
+  .dbV23Plan .dbV23GridWrap{background:#0a1522;border-color:var(--bos-line);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.16);scrollbar-width:thin;scrollbar-color:rgba(145,161,181,.3) transparent}
+  .dbV23Plan .dbV23Corner,.dbV23Plan .dbV23MasterHead,.dbV23Plan .dbV23Time{background:#0f1d2d;border-color:var(--bos-line);color:var(--bos-text)}
+  .dbV23Plan .dbV23MasterHead span{color:var(--bos-muted)}
+  .dbV23Plan .dbV23Slot{border-color:rgba(255,255,255,.055);min-height:62px}
+  .dbV23Plan .dbV23Slot.off{background:repeating-linear-gradient(135deg,rgba(255,255,255,.012),rgba(255,255,255,.012) 6px,rgba(255,255,255,.04) 6px,rgba(255,255,255,.04) 12px)}
+  .dbV23Plan .dbV23Slot.conflict{box-shadow:inset 3px 0 0 var(--bos-bad)}
+  .dbV23Plan .dbV23Time.now,.dbV23Plan .dbV23Slot.now{background-color:rgba(22,131,255,.10)}
+  .dbV23Plan .dbV23Free{color:#64768d}
+  .dbV23Plan .dbV23Card{background:rgba(22,131,255,.12);border-color:rgba(90,167,255,.32);border-radius:10px;padding:6px 7px;color:var(--bos-text);box-shadow:0 4px 12px rgba(0,0,0,.12)}
+  .dbV23Plan .dbV23Card.warn{background:rgba(245,165,36,.11);border-color:rgba(245,165,36,.42)}
+  .dbV23Plan .dbV23Card small{color:var(--bos-muted)}
+
+  .dbV24Control{gap:14px}
+  .dbV24Control .dbV24Head{background:linear-gradient(155deg,rgba(17,34,53,.98),rgba(10,21,34,.99));border-color:var(--bos-line);border-radius:16px;padding:16px;box-shadow:0 10px 28px rgba(0,0,0,.15)}
+  .dbV24Control .dbV24Head>div:first-child>span{color:#78b8ff;letter-spacing:.08em;font-weight:700}
+  .dbV24Control .dbV24Head p,.dbV24Control .dbV24Total span{color:var(--bos-muted)}
+  .dbV24Control .dbV24Total{background:rgba(22,131,255,.09);border:1px solid rgba(90,167,255,.18);border-radius:13px;padding:9px 14px}
+  .dbV24Control .dbV24Total strong{font-size:30px;font-variant-numeric:tabular-nums}
+  .dbV24Control .dbV24Filters{gap:8px}
+  .dbV24Control .dbV24Filters button{min-height:38px;border-radius:999px;padding:7px 11px}
+  .dbV24Control .dbV24List{gap:9px;scrollbar-width:thin;scrollbar-color:rgba(145,161,181,.3) transparent}
+  .dbV24Control .dbV24Card{background:linear-gradient(155deg,rgba(17,34,53,.97),rgba(10,21,34,.99));border-color:var(--bos-line);border-radius:15px;padding:12px 13px;box-shadow:0 7px 22px rgba(0,0,0,.12)}
+  .dbV24Control .dbV24CardTop{align-items:flex-start}
+  .dbV24Control .dbV24CardTop>div{gap:3px}
+  .dbV24Control .dbV24CardTop strong{color:#c4d1df;white-space:nowrap}
+  .dbV24Control .dbV24Badge{border:1px solid rgba(22,131,255,.18);background:rgba(22,131,255,.11);color:#8fc7ff}
+  .dbV24Control .dbV24Badge.warn{border-color:rgba(245,165,36,.22);background:rgba(245,165,36,.11);color:#ffd184}
+  .dbV24Control .dbV24Badge.danger{border-color:rgba(240,79,95,.22);background:rgba(240,79,95,.11);color:#ff9eaa}
+  .dbV24Control .dbV24Meta span{color:var(--bos-muted)}
+  .dbV24Control .dbV24Actions{gap:7px}
+  .dbV24Control .dbV24Actions button,.dbV24Control .dbV24Actions a{min-height:38px;border-radius:11px;padding:7px 10px}
+  .dbV24Control .dbV24Empty{background:rgba(255,255,255,.018);border-color:rgba(255,255,255,.1)}
+}
+
+#content .compactTeam{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:10px;margin-top:10px}
+#content .compactTeamCard{min-width:0;min-height:132px;padding:14px;text-align:left;border-color:var(--bos-line);background:linear-gradient(155deg,rgba(17,34,53,.98),rgba(10,21,34,.99));border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.13);transition:transform .12s ease,border-color .12s ease,background .12s ease}
+#content .compactTeamCard:hover{border-color:rgba(90,167,255,.25);background:linear-gradient(155deg,rgba(20,39,60,.98),rgba(11,24,38,.99))}
+#content .compactTeamCard:active{transform:scale(.993)}
+#content .compactTeamCard>.row{align-items:flex-start;gap:10px}
+#content .compactTeamCard>.row>div{min-width:0}
+#content .compactTeamCard>.row b{display:block;overflow-wrap:anywhere}
+#content .compactTeamCard>.row small{line-height:1.35;overflow-wrap:anywhere}
+#content .compactTeamCard .status{flex:0 0 auto;border-radius:999px}
+#content .compactStats{gap:8px;margin-top:12px}
+#content .compactStats>div{min-width:0;padding:10px 11px;border:1px solid rgba(255,255,255,.055);border-radius:12px;background:rgba(255,255,255,.025)}
+#content .compactStats small{color:var(--bos-muted);line-height:1.25}
+#content .compactStats strong{font-size:15px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+
+.modal #empForm{gap:13px}
+.modal #empForm>input,.modal #empForm>select,.modal #empForm .two>input{width:100%;min-width:0;background:#0b1521;border-color:rgba(255,255,255,.11)}
+.modal #empForm>section.card{margin:2px 0;padding:14px;border-radius:16px;background:rgba(16,29,44,.9);border-color:rgba(255,255,255,.08);box-shadow:none}
+.modal #empForm>section.card h3{font-size:16px}
+.modal #empForm label{display:block;font-size:13px;font-weight:700;color:#dbe5f2;margin-top:1px}
+.modal #empForm input:read-only{color:#9aa9bb;background:#0d1723}
+
+@media(max-width:600px){
+  #content .compactTeam{grid-template-columns:1fr;gap:8px}
+  #content .compactTeamCard{min-height:0;padding:12px}
+  #content .compactStats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .modal #empForm .two{grid-template-columns:1fr!important}
+  .modal #empForm>section.card{padding:12px}
+}
+@media(max-width:360px){
+  #content .compactTeamCard>.row{display:grid;grid-template-columns:minmax(0,1fr) auto}
+  #content .compactStats{grid-template-columns:1fr}
+}
