@@ -4,12 +4,16 @@ const fs=require('node:fs');
 
 test('desktop dispatcher runtime is loaded and syntactically valid',()=>{
   const ui=fs.readFileSync('dispatcher-desktop-v89.js','utf8');
+  const compat=fs.readFileSync('dispatcher-desktop-compat-v90.js','utf8');
   const loader=fs.readFileSync('pwa-register.js','utf8');
 
   assert.match(loader,/dispatcher-desktop-v89\.js/);
+  assert.match(loader,/dispatcher-desktop-compat-v90\.js/);
   assert.doesNotThrow(()=>new Function(ui));
+  assert.doesNotThrow(()=>new Function(compat));
   assert.match(ui,/const DESKTOP_MIN=1050/);
   assert.match(ui,/String\(state\.user\?\.role\|\|''\)==='dispatcher'/);
+  assert.match(compat,/Сохранить изменения/);
 });
 
 test('desktop dispatcher exposes the core operational queue',()=>{
