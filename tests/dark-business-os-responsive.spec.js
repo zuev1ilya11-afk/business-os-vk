@@ -75,16 +75,21 @@ test('mobile order form keeps fields and actions inside the viewport',async({pag
   const modalBox=await modal.boundingBox();
   expect(modalBox).not.toBeNull();
 
-  const controls=modal.locator('input,select,textarea,button.primary,button.secondary');
-  const count=await controls.count();
-  expect(count).toBeGreaterThan(5);
-  for(let i=0;i<count;i++){
-    const box=await controls.nth(i).boundingBox();
-    if(!box)continue;
-    expect(box.x).toBeGreaterThanOrEqual(modalBox.x-1);
-    expect(box.x+box.width).toBeLessThanOrEqual(modalBox.x+modalBox.width+1);
-    if(await controls.nth(i).evaluate(el=>el.matches('input,select,button')))expect(box.height).toBeGreaterThanOrEqual(44);
+  const selectors=['input','select','textarea','button.primary','button.secondary'];
+  let count=0;
+  for(const selector of selectors){
+    const group=modal.locator(selector);
+    const groupCount=await group.count();
+    count+=groupCount;
+    for(let i=0;i<groupCount;i++){
+      const box=await group.nth(i).boundingBox();
+      if(!box)continue;
+      expect(box.x).toBeGreaterThanOrEqual(modalBox.x-1);
+      expect(box.x+box.width).toBeLessThanOrEqual(modalBox.x+modalBox.width+1);
+      expect(box.height).toBeGreaterThanOrEqual(44);
+    }
   }
+  expect(count).toBeGreaterThan(5);
 
   const columns=await modal.locator('#orderForm .two').first().evaluate(el=>getComputedStyle(el).gridTemplateColumns);
   expect(columns.trim().split(/\s+/)).toHaveLength(1);
