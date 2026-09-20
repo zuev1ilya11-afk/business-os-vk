@@ -19,6 +19,16 @@
   masterRescheduleCall.async=false;
   document.head.appendChild(masterRescheduleCall);
 
+  const dispatcherDesktop=document.createElement('script');
+  dispatcherDesktop.src='./dispatcher-desktop-v89.js?v=20260920-v89';
+  dispatcherDesktop.async=false;
+  document.head.appendChild(dispatcherDesktop);
+
+  const dispatcherDesktopCompat=document.createElement('script');
+  dispatcherDesktopCompat.src='./dispatcher-desktop-compat-v90.js?v=20260920-v90';
+  dispatcherDesktopCompat.async=false;
+  document.head.appendChild(dispatcherDesktopCompat);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
