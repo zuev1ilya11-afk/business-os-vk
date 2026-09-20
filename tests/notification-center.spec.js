@@ -1,4 +1,5 @@
 const {test,expect}=require('@playwright/test');
+const {fullStack}=require('./helpers/full-stack.cjs');
 
 test('notification center shows dispatcher reschedule and unassigned alerts',async({page})=>{
   await page.setViewportSize({width:1280,height:820});
@@ -34,4 +35,33 @@ test('notification center shows dispatcher reschedule and unassigned alerts',asy
   await expect(panel.getByText('Перенос заявки №N-1')).toBeVisible();
   await expect(panel.getByText('Клиент попросил позже')).toBeVisible();
   await expect(panel.getByText('Без мастера · №N-2')).toBeVisible();
+});
+
+test('master notifications support master_staff_id and schedule changes',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  const {db}=await fullStack(page,'master');
+  const order=db.tables.orders.find(o=>String(o.id)==='11');
+  order.scheduled_date='2099-09-10';
+  order.scheduled_time='10:00';
+  order.master_vk_id=null;
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#authGate')).toBeHidden();
+  const bell=page.locator('#bosNotificationBell');
+  await expect(bell).toBeVisible();
+  await expect(bell.locator('.bosNB')).toHaveText('1');
+  await bell.click();
+  let panel=page.getByRole('region',{name:'Центр уведомлений'});
+  await expect(panel.getByText('Новая заявка №11')).toBeVisible();
+  await panel.getByRole('button',{name:'Закрыть'}).click();
+
+  await page.evaluate(()=>{
+    const o=state.orders.find(x=>String(x.id)==='11');
+    o.scheduled_time='12:30';
+    window.bosRefreshNotifications();
+  });
+  await expect(bell.locator('.bosNB')).toHaveText('2');
+  await bell.click();
+  panel=page.getByRole('region',{name:'Центр уведомлений'});
+  await expect(panel.getByText('Изменено время заявки №11')).toBeVisible();
+  await expect(panel.getByText(/12:30/)).toBeVisible();
 });
