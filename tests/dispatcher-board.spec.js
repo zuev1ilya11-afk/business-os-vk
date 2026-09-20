@@ -51,5 +51,5 @@ test('mobile dispatcher keeps the existing non-board interface',async({page})=>{
   await page.locator('nav [data-page=orders]').click();
   await expect(page.locator('.dbBoard')).toHaveCount(0);
   await expect(page.locator('#bosOrderSearch')).toBeVisible();
-  await expect(page.getByRole('button',{name:'+ Новая заявка'})).toBeVisible();
+  await expect(page.getByRole('button',{name:'+ Новая',exact:true})).toBeVisible();
 });
