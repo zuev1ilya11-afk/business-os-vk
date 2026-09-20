@@ -45,8 +45,10 @@ function render(){
   if(enhancing||!isDispatcherDesktop()||!document.querySelector('.dbBoard'))return;enhancing=true;
   try{
     const detail=document.querySelector('.dbDetail'),o=selectedOrder();if(!detail||!o||!active(o))return;
-    let box=detail.querySelector('.dbSmartAssign');if(box)box.remove();box=document.createElement('section');box.className='dbSmartAssign';
-    const date=boardDate(),items=candidatesFor(o,date);box.innerHTML=`<div class="dbSmartHead"><div><b>Умный подбор мастера</b><span>${esc(date)} · рекомендация, назначение только после подтверждения</span></div></div><div class="dbSmartList">${items.length?items.map((c,i)=>`<div class="dbSmartCandidate${i===0?' best':''}"><div><strong>${i===0?'Лучший вариант · ':''}${esc(c.master.full_name||'Мастер')}</strong><span>${esc(c.reasons.join(' · '))}</span></div><div><b>${esc(c.time)}</b><button class="${i===0?'primary':'secondary'}" onclick="dispatchSmartAssign('${esc(o.id)}','${esc(masterVk(c.master))}','${esc(c.time)}')">Назначить</button></div></div>`).join(''):'<p class="muted">На выбранный день свободных мастеров не найдено.</p>'}</div>`;
+    const date=boardDate(),items=candidatesFor(o,date),key=[o.id,date,...items.map(c=>`${masterVk(c.master)}:${c.time}:${c.score}`)].join('|');
+    let box=detail.querySelector('.dbSmartAssign');if(box?.dataset.smartKey===key)return;if(box)box.remove();
+    box=document.createElement('section');box.className='dbSmartAssign';box.dataset.smartKey=key;
+    box.innerHTML=`<div class="dbSmartHead"><div><b>Умный подбор мастера</b><span>${esc(date)} · рекомендация, назначение только после подтверждения</span></div></div><div class="dbSmartList">${items.length?items.map((c,i)=>`<div class="dbSmartCandidate${i===0?' best':''}"><div><strong>${i===0?'Лучший вариант · ':''}${esc(c.master.full_name||'Мастер')}</strong><span>${esc(c.reasons.join(' · '))}</span></div><div><b>${esc(c.time)}</b><button class="${i===0?'primary':'secondary'}" onclick="dispatchSmartAssign('${esc(o.id)}','${esc(masterVk(c.master))}','${esc(c.time)}')">Назначить</button></div></div>`).join(''):'<p class="muted">На выбранный день свободных мастеров не найдено.</p>'}</div>`;
     const quick=detail.querySelector('.dbV21QuickMove');if(quick)quick.insertAdjacentElement('afterend',box);else detail.appendChild(box);
   }finally{enhancing=false}
 }
