@@ -22,6 +22,7 @@ test('notification center shows dispatcher reschedule and unassigned alerts',asy
   await page.route('**/api/proxy/claims-api',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,claims:[],orders:[]})}));
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeVisible();
+  await expect(page.locator('#bosNotificationBell')).toHaveCount(0);
   await page.locator('#authEmail').fill('owner@test.ru');
   await page.locator('#authPassword').fill('owner-test');
   await page.getByRole('button',{name:'Войти'}).click();
