@@ -29,6 +29,11 @@
   dispatcherDesktopCompat.async=false;
   document.head.appendChild(dispatcherDesktopCompat);
 
+  const dispatcherReschedule=document.createElement('script');
+  dispatcherReschedule.src='./dispatcher-reschedule-v91.js?v=20260920-v91';
+  dispatcherReschedule.async=false;
+  document.head.appendChild(dispatcherReschedule);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
