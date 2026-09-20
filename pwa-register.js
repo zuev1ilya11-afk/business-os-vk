@@ -39,6 +39,11 @@
   dispatchBoard.async=false;
   document.head.appendChild(dispatchBoard);
 
+  const dispatchBoardCompat=document.createElement('script');
+  dispatchBoardCompat.src='./dispatcher-board-compat-v93.js?v=20260920-v93';
+  dispatchBoardCompat.async=false;
+  document.head.appendChild(dispatchBoardCompat);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
