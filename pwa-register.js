@@ -64,11 +64,6 @@
   dispatchControlV24.async=false;
   document.head.appendChild(dispatchControlV24);
 
-  const masterWorkflowV25=document.createElement('script');
-  masterWorkflowV25.src='./master-workflow-v25.js?v=20260920-v25';
-  masterWorkflowV25.async=false;
-  document.head.appendChild(masterWorkflowV25);
-
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
