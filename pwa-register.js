@@ -54,6 +54,11 @@
   dispatcherSmartAssign.async=false;
   document.head.appendChild(dispatcherSmartAssign);
 
+  const dispatchBoardV23=document.createElement('script');
+  dispatchBoardV23.src='./dispatcher-board-v23.js?v=20260920-v23';
+  dispatchBoardV23.async=false;
+  document.head.appendChild(dispatchBoardV23);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
