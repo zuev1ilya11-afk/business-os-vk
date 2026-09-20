@@ -19,6 +19,11 @@
   masterRescheduleCall.async=false;
   document.head.appendChild(masterRescheduleCall);
 
+  const dispatcherDesktop=document.createElement('script');
+  dispatcherDesktop.src='./dispatcher-desktop-v88.js?v=20260920-v88';
+  dispatcherDesktop.async=false;
+  document.head.appendChild(dispatcherDesktop);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
