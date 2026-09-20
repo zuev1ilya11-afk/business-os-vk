@@ -12,7 +12,7 @@ test('master workflow v2.5 is loaded and keeps completion in the report flow',()
   assert.match(src,/Начать работу/);
   assert.match(src,/Завершить работу/);
   assert.match(src,/openMasterReportForm/);
-  const loader=fs.readFileSync('pwa-register.js','utf8');
+  const loader=fs.readFileSync('index.html','utf8');
   assert.match(loader,/master-workflow-v25\.js\?v=20260920-v25/);
 });
 

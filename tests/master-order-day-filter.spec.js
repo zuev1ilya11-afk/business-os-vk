@@ -30,7 +30,7 @@ test('master orders can be filtered by day and upcoming orders are grouped by da
   await expect(cards.nth(1)).not.toContainText('Вторая заявка');
 
   await page.getByRole('button',{name:'Все',exact:true}).click();
-  await expect(page.getByText('Мои заявки',{exact:true})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Мои заявки',exact:true})).toBeVisible();
   await expect(page.locator('.masterDayFilters')).toBeVisible();
   await expect(page.locator('.masterDayGroup')).toHaveCount(2);
 
