@@ -49,6 +49,11 @@
   dispatchBoardV21.async=false;
   document.head.appendChild(dispatchBoardV21);
 
+  const dispatcherSmartAssign=document.createElement('script');
+  dispatcherSmartAssign.src='./dispatcher-smart-assign-v22.js?v=20260920-v22';
+  dispatcherSmartAssign.async=false;
+  document.head.appendChild(dispatcherSmartAssign);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
