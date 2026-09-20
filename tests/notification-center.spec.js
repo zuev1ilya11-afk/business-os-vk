@@ -37,13 +37,14 @@ test('notification center shows dispatcher reschedule and unassigned alerts',asy
   await expect(panel.getByText('Без мастера · №N-2')).toBeVisible();
 });
 
-test('master notifications support master_staff_id and schedule changes',async({page})=>{
+test('master notifications support master_staff_id, new assignment and schedule changes',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const {db}=await fullStack(page,'master');
   const order=db.tables.orders.find(o=>String(o.id)==='11');
   order.scheduled_date='2099-09-10';
   order.scheduled_time='10:00';
   order.master_vk_id=null;
+  await page.addInitScript(()=>localStorage.setItem('bos_notification_snapshot_v26:master:staff_master',JSON.stringify({'11':'|2099-09-10|10:00|В работе'})));
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
   const bell=page.locator('#bosNotificationBell');
