@@ -51,7 +51,9 @@ for(const s of sizes){
     await page.evaluate(()=>openOrder('M-1'));
     const modal=page.locator('.modal.show, .modal.open, .modal').filter({hasText:'№ M-1'}).last();
     await expect(modal.getByText('Выплата: 2 463,05 ₽',{exact:true})).toBeVisible();
-    await expect(page.getByRole('button',{name:'Отчитаться по заявке'})).toBeVisible();
+    await expect(page.locator('.bosMasterWorkflow')).toBeVisible();
+    await expect(page.getByRole('button',{name:'Выехал'})).toBeVisible();
+    await expect(page.getByRole('button',{name:'Отчитаться по заявке'})).toBeHidden();
     await expect(page.getByText('Исходная сумма',{exact:true})).toHaveCount(0);
     await expect(page.getByText('Итоговая сумма заявки',{exact:true})).toHaveCount(0);
     await expect(page.getByText('4 458 ₽',{exact:true})).toHaveCount(0);
