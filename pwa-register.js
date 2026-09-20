@@ -44,6 +44,11 @@
   dispatchBoardCompat.async=false;
   document.head.appendChild(dispatchBoardCompat);
 
+  const dispatchBoardV21=document.createElement('script');
+  dispatchBoardV21.src='./dispatcher-board-v21.js?v=20260920-v21';
+  dispatchBoardV21.async=false;
+  document.head.appendChild(dispatchBoardV21);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
