@@ -49,10 +49,10 @@ test('master orders can be filtered by day and upcoming orders are grouped by da
 
   const allFilter=page.locator('[data-master-day-filter="all"]');
   const firstDateFilter=page.locator('[data-master-day-filter="2099-09-10"]');
-  const secondDateFilter=page.locator('[data-master-day-filter="2099-09-11"]');
   await expect(allFilter).toHaveAttribute('aria-pressed','true');
 
   await firstDateFilter.click();
+  await expect.poll(()=>page.evaluate(()=>String(window.__bosMasterOrderDay||'all'))).toBe('2099-09-10');
   await expect(page.locator('.masterDayGroup')).toHaveCount(1);
   await expect(page.locator('.masterDayGroup[data-master-day="2099-09-10"]')).toBeVisible();
   await expect(page.locator('.masterDayGroup[data-master-day="2099-09-11"]')).toHaveCount(0);
@@ -61,6 +61,7 @@ test('master orders can be filtered by day and upcoming orders are grouped by da
   await expect(page.locator('[data-master-day-filter="2099-09-10"]')).toHaveAttribute('aria-pressed','true');
 
   await page.locator('[data-master-day-filter="2099-09-11"]').click();
+  await expect.poll(()=>page.evaluate(()=>String(window.__bosMasterOrderDay||'all'))).toBe('2099-09-11');
   await expect(page.locator('.masterDayGroup')).toHaveCount(1);
   await expect(page.locator('.masterDayGroup[data-master-day="2099-09-11"]')).toBeVisible();
   await expect(page.getByText('Монтаж')).toHaveCount(0);
@@ -68,6 +69,7 @@ test('master orders can be filtered by day and upcoming orders are grouped by da
   await expect(page.locator('[data-master-day-filter="2099-09-11"]')).toHaveAttribute('aria-pressed','true');
 
   await page.locator('[data-master-day-filter="all"]').click();
+  await expect.poll(()=>page.evaluate(()=>String(window.__bosMasterOrderDay||'all'))).toBe('all');
   await expect(page.locator('.masterDayGroup')).toHaveCount(2);
   await expect(page.locator('[data-master-day-filter="all"]')).toHaveAttribute('aria-pressed','true');
 });
