@@ -34,6 +34,11 @@
   dispatcherReschedule.async=false;
   document.head.appendChild(dispatcherReschedule);
 
+  const dispatchBoard=document.createElement('script');
+  dispatchBoard.src='./dispatcher-board-v92.js?v=20260920-v92';
+  dispatchBoard.async=false;
+  document.head.appendChild(dispatchBoard);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
