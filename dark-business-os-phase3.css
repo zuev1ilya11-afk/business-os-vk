@@ -1,0 +1,66 @@
+/* Dark Business OS — phase 3. Presentation only: dispatch plan, master calendar and team surfaces. */
+.dbV23Plan,.dbV23Summary,.dbV23Queue,.dbV23QueueItems,.dbV23GridWrap,.dbV23Grid,.dbV23MasterHead,.dbV23Slot,#masterMonthCalendar,.bosCalGrid,.bosCalDay{min-width:0}
+
+@media(min-width:1050px){
+  .dbV23Plan{gap:14px}
+  .dbV23Summary{gap:10px}
+  .dbV23Summary>div{min-width:104px;padding:11px 13px;border-radius:14px;background:linear-gradient(155deg,rgba(19,35,53,.98),rgba(10,21,34,.98));border-color:rgba(255,255,255,.085);box-shadow:0 8px 22px rgba(0,0,0,.13)}
+  .dbV23Summary>div:first-child{min-width:180px}
+  .dbV23Summary b,.dbV23Summary strong{font-size:16px;color:#eef6ff}
+  .dbV23Summary span{color:#8fa7be}
+  .dbV23Summary .danger{box-shadow:inset 3px 0 0 #ef6666,0 8px 22px rgba(0,0,0,.13)}
+  .dbV23Queue{padding:12px;border-radius:16px;background:linear-gradient(155deg,rgba(17,31,47,.98),rgba(9,19,31,.98));border-color:rgba(255,255,255,.08);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+  .dbV23QueueTitle{align-items:center;margin-bottom:10px}.dbV23QueueTitle span{color:#8fa7be}
+  .dbV23QueueItems{gap:10px;scrollbar-width:thin;scrollbar-color:#274767 transparent}
+  .dbV23QueueCard{min-width:210px;padding:10px;border-radius:12px;background:#0d1a28;border-color:#365873}.dbV23QueueCard b{color:#dcebfa}.dbV23QueueCard span{color:#eef6ff}.dbV23QueueCard small{color:#8fa7be}
+  .dbV23GridWrap{max-height:calc(100vh - 320px);border-radius:16px;background:#09131f;border-color:rgba(255,255,255,.08);box-shadow:0 10px 28px rgba(0,0,0,.14);scrollbar-width:thin;scrollbar-color:#294968 transparent}
+  .dbV23Corner,.dbV23MasterHead,.dbV23Time{background:#0d1a29;color:#eaf4ff;border-color:rgba(255,255,255,.08)}
+  .dbV23MasterHead{padding:11px 10px}.dbV23MasterHead b{font-size:13px;overflow-wrap:anywhere}.dbV23MasterHead span{color:#89a3bb}
+  .dbV23Time{color:#9eb4c8;font-variant-numeric:tabular-nums}
+  .dbV23Slot{min-height:62px;border-color:rgba(255,255,255,.06);background:rgba(255,255,255,.008)}
+  .dbV23Slot.off{background:repeating-linear-gradient(135deg,rgba(255,255,255,.01),rgba(255,255,255,.01) 6px,rgba(255,255,255,.035) 6px,rgba(255,255,255,.035) 12px)}
+  .dbV23Time.now,.dbV23Slot.now{background-color:rgba(64,150,235,.09)}
+  .dbV23Free{color:#617b94}
+  .dbV23Card{padding:6px 7px;border-radius:10px;background:linear-gradient(155deg,rgba(31,91,145,.28),rgba(18,55,91,.25));border-color:rgba(91,175,255,.32);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+  .dbV23Card b{color:#d9edff}.dbV23Card span{color:#eff7ff}.dbV23Card small{color:#91abc2}
+  .dbV23Card.warn{border-color:#d89a42;background:linear-gradient(155deg,rgba(157,100,25,.24),rgba(81,55,21,.22))}
+}
+
+#masterMonthCalendar>section.card{border-color:rgba(255,255,255,.08);background:linear-gradient(155deg,rgba(18,32,49,.98),rgba(10,21,34,.98));box-shadow:0 8px 24px rgba(0,0,0,.12)}
+#masterMonthCalendar .bosCalHead{color:#8ca5bc}
+#masterMonthCalendar .bosCalDay{touch-action:manipulation;border-color:rgba(255,255,255,.08);background:#0c1826;transition:border-color .12s ease,background .12s ease,transform .12s ease}
+#masterMonthCalendar .bosCalDay:active{transform:scale(.97)}
+#masterMonthCalendar .bosCalDay b{color:#edf6ff}
+#masterMonthCalendar .bosCalDay small{color:#788fa5}
+#masterMonthCalendar .bosCalDay span{color:#8dcbff}
+#masterMonthCalendar .bosCalDay.working{background:linear-gradient(155deg,rgba(20,61,93,.96),rgba(13,39,63,.96));border-color:rgba(92,174,242,.38)}
+#masterMonthCalendar .bosCalDay.selected{outline:0;border-color:#69b9ff;box-shadow:0 0 0 2px rgba(88,178,255,.28),0 6px 16px rgba(0,0,0,.12)}
+#masterDayEditor .card{border-color:rgba(255,255,255,.08);background:rgba(15,29,44,.96)}
+#masterDayEditor select{min-height:48px;background:#0b1521;border:1px solid rgba(255,255,255,.11);border-radius:12px;color:inherit}
+#masterDayEditor .bosSwitch{min-height:44px;padding:6px 0}
+
+#app:has(nav [data-page="team"].active) #content{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px;align-content:start}
+#app:has(nav [data-page="team"].active) #content>.row:first-child,#app:has(nav [data-page="team"].active) #content>p.muted{grid-column:1/-1}
+#app:has(nav [data-page="team"].active) #content>section.card{margin:0;min-width:0;border-color:rgba(255,255,255,.08);background:linear-gradient(155deg,rgba(18,32,49,.98),rgba(10,21,34,.98));box-shadow:0 7px 20px rgba(0,0,0,.11)}
+#app:has(nav [data-page="team"].active) #content>section.card .row{align-items:flex-start;gap:10px}
+#app:has(nav [data-page="team"].active) #content>section.card b,#app:has(nav [data-page="team"].active) #content>section.card p{min-width:0;overflow-wrap:anywhere}
+#app:has(nav [data-page="team"].active) #content>section.card .status{flex:0 0 auto}
+
+@media(max-width:767px){
+  #masterMonthCalendar .bosCalGrid{gap:4px}
+  #masterMonthCalendar .bosCalDay{min-height:62px;padding:6px 4px;border-radius:10px}
+  #masterMonthCalendar .bosCalDay b{font-size:14px}
+  #masterMonthCalendar .bosCalDay small,#masterMonthCalendar .bosCalDay span{font-size:8px;line-height:1.15;overflow:hidden;text-overflow:ellipsis}
+  #masterDayEditor .row{align-items:flex-start;gap:10px}
+  #masterDayEditor .two{grid-template-columns:1fr 1fr;gap:9px}
+  #app:has(nav [data-page="team"].active) #content{grid-template-columns:1fr;gap:9px}
+  #app:has(nav [data-page="team"].active) #content>.row:first-child{align-items:flex-start;gap:10px}
+  #app:has(nav [data-page="team"].active) #content>.row:first-child .primary{flex:0 0 auto;min-height:44px;padding-inline:12px}
+}
+
+@media(max-width:380px){
+  #masterMonthCalendar .bosCalGrid{gap:3px}
+  #masterMonthCalendar .bosCalDay{min-height:58px;padding:5px 2px}
+  #masterMonthCalendar .bosCalDay small{display:none}
+  #masterDayEditor .two{grid-template-columns:1fr}
+}
