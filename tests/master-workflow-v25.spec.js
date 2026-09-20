@@ -46,7 +46,7 @@ test('dispatcher v2.5 sees field workflow stage without changing order',async({p
   await page.locator('nav [data-page=orders]').click();
   await expect(page.locator('.bosFieldOpsBar')).toBeVisible();
   await expect(page.locator('.bosFieldOpsBar')).toContainText('В работе: 1');
-  await expect(page.locator('.bosFieldStageChip').first()).toContainText('В работе');
+  await expect(page.locator('.dbOrderCard[data-order-id="11"]').first()).toContainText('В работе');
   expect(db.tables.orders[0].status).toBe('В работе');
   expect(db.tables.orders[0].amount).toBe(1000);
 });
