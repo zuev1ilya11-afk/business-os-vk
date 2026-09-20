@@ -29,7 +29,11 @@ function captureChanges(){
   if(isMaster())for(const o of orders().filter(x=>active(x)&&masterOwns(x))){
     const id=String(o.id),old=prev?.[id],now=current[id];
     if(!old)pushEvent({key:`new:${id}:${now}`,type:'new',order_id:id,title:`Новая заявка №${id}`,text:[o.scheduled_date,o.scheduled_time||o.time_slot,o.address].filter(Boolean).join(' · ')});
-    else if(old!==now){const [oldMaster,oldDate,oldTime]=old.split('|');const [nowMaster,nowDate,nowTime]=now.split('|');if(oldMaster!==nowMaster||oldDate!==nowDate||oldTime!==nowTime)pushEvent({key:`changed:${id}:${now}`,type:'changed',order_id:id,title:`Изменено время заявки №${id}`,text:[o.scheduled_date,o.scheduled_time||o.time_slot,o.address].filter(Boolean).join(' · ')})}
+    else if(old!==now){
+      const [oldMaster,oldDate,oldTime]=old.split('|'),[nowMaster,nowDate,nowTime]=now.split('|');
+      if(oldMaster!==nowMaster)pushEvent({key:`new:${id}:${now}`,type:'new',order_id:id,title:`Новая заявка №${id}`,text:[o.scheduled_date,o.scheduled_time||o.time_slot,o.address].filter(Boolean).join(' · ')});
+      else if(oldDate!==nowDate||oldTime!==nowTime)pushEvent({key:`changed:${id}:${now}`,type:'changed',order_id:id,title:`Изменено время заявки №${id}`,text:[o.scheduled_date,o.scheduled_time||o.time_slot,o.address].filter(Boolean).join(' · ')})
+    }
   }
   writeStore(SNAP,current);
 }
