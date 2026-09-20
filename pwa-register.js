@@ -20,21 +20,8 @@
   document.head.appendChild(masterRescheduleCall);
 
   const dispatcherDesktop=document.createElement('script');
-  dispatcherDesktop.src='./dispatcher-desktop-v88.js?v=20260920-v88';
+  dispatcherDesktop.src='./dispatcher-desktop-v89.js?v=20260920-v89';
   dispatcherDesktop.async=false;
-  dispatcherDesktop.onload=()=>{
-    const originalSearch=window.setDispatcherDesktopSearch;
-    if(typeof originalSearch==='function')window.setDispatcherDesktopSearch=function(value){
-      originalSearch(value);
-      requestAnimationFrame(()=>{
-        const input=document.getElementById('ddSearch');
-        if(!input)return;
-        input.focus();
-        const end=input.value.length;
-        try{input.setSelectionRange(end,end)}catch(_){}
-      });
-    };
-  };
   document.head.appendChild(dispatcherDesktop);
 
   if(!('serviceWorker' in navigator))return;
