@@ -30,12 +30,42 @@ test('master orders can be filtered by day and upcoming orders are grouped by da
   await expect(cards.nth(1)).not.toContainText('Вторая заявка');
 
   await page.getByRole('button',{name:'Все',exact:true}).click();
-  await expect(page.getByText('Мои заявки')).toBeVisible();
+  await expect(page.getByText('Мои заявки',{exact:true})).toBeVisible();
   await expect(page.locator('.masterDayFilters')).toBeVisible();
+  await expect(page.locator('.masterDayGroup')).toHaveCount(2);
 
-  const firstDateButton=page.locator('.masterDayFilters button').nth(1);
-  await firstDateButton.click();
+  const firstGroup=page.locator('.masterDayGroup[data-master-day="2099-09-10"]');
+  const secondGroup=page.locator('.masterDayGroup[data-master-day="2099-09-11"]');
+  await expect(firstGroup).toHaveCount(1);
+  await expect(secondGroup).toHaveCount(1);
+  await expect(firstGroup).toContainText('№ 11');
+  await expect(firstGroup).toContainText('10:00');
+  await expect(firstGroup).toContainText('Монтаж');
+  await expect(secondGroup).toContainText('№ day-filter-2');
+  await expect(secondGroup).toContainText('12:00');
+  await expect(secondGroup).toContainText('Вторая заявка');
+
+  const allFilter=page.locator('[data-master-day-filter="all"]');
+  const firstDateFilter=page.locator('[data-master-day-filter="2099-09-10"]');
+  const secondDateFilter=page.locator('[data-master-day-filter="2099-09-11"]');
+  await expect(allFilter).toHaveAttribute('aria-pressed','true');
+
+  await firstDateFilter.click();
   await expect(page.locator('.masterDayGroup')).toHaveCount(1);
+  await expect(page.locator('.masterDayGroup[data-master-day="2099-09-10"]')).toBeVisible();
+  await expect(page.locator('.masterDayGroup[data-master-day="2099-09-11"]')).toHaveCount(0);
   await expect(page.getByText('Монтаж')).toBeVisible();
   await expect(page.getByText('Вторая заявка')).toHaveCount(0);
+  await expect(page.locator('[data-master-day-filter="2099-09-10"]')).toHaveAttribute('aria-pressed','true');
+
+  await page.locator('[data-master-day-filter="2099-09-11"]').click();
+  await expect(page.locator('.masterDayGroup')).toHaveCount(1);
+  await expect(page.locator('.masterDayGroup[data-master-day="2099-09-11"]')).toBeVisible();
+  await expect(page.getByText('Монтаж')).toHaveCount(0);
+  await expect(page.getByText('Вторая заявка')).toBeVisible();
+  await expect(page.locator('[data-master-day-filter="2099-09-11"]')).toHaveAttribute('aria-pressed','true');
+
+  await page.locator('[data-master-day-filter="all"]').click();
+  await expect(page.locator('.masterDayGroup')).toHaveCount(2);
+  await expect(page.locator('[data-master-day-filter="all"]')).toHaveAttribute('aria-pressed','true');
 });
