@@ -4,6 +4,7 @@ if(window.BOS_INSTALL_APP_V84)return;
 window.BOS_INSTALL_APP_V84=true;
 
 let deferredPrompt=null;
+let installAccepted=false;
 let syncTimer=null;
 let syncAttempt=0;
 
@@ -58,8 +59,13 @@ async function requestInstall(){
     try{
       await promptEvent.prompt();
       const choice=await promptEvent.userChoice;
-      if(choice?.outcome==='accepted')hideControls();
-      else syncControls();
+      if(choice?.outcome==='accepted'){
+        installAccepted=true;
+        hideControls();
+      }else{
+        installAccepted=false;
+        syncControls();
+      }
       return;
     }catch(_){
       deferredPrompt=null;
@@ -99,7 +105,7 @@ function hideControls(){
 function syncControls(){
   ensureAuthButton();
   ensureHeaderButton();
-  const hide=isStandalone();
+  const hide=isStandalone()||installAccepted;
   document.querySelectorAll('.bosInstallAppBtn').forEach(button=>{button.hidden=hide});
 }
 
@@ -136,10 +142,12 @@ document.head.appendChild(style);
 window.addEventListener('beforeinstallprompt',event=>{
   event.preventDefault();
   deferredPrompt=event;
+  installAccepted=false;
   syncControls();
 });
 window.addEventListener('appinstalled',()=>{
   deferredPrompt=null;
+  installAccepted=true;
   hideControls();
 });
 window.addEventListener('pageshow',startSyncRetries);
