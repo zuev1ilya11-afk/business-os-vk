@@ -69,6 +69,11 @@
   masterWorkflowV25.async=false;
   document.head.appendChild(masterWorkflowV25);
 
+  const notificationCenterV26=document.createElement('script');
+  notificationCenterV26.src='./notification-center-v26.js?v=20260920-v26';
+  notificationCenterV26.async=false;
+  document.head.appendChild(notificationCenterV26);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
