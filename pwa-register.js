@@ -75,7 +75,7 @@
   document.head.appendChild(notificationCenterV26);
 
   const employeeLiveRefreshV27=document.createElement('script');
-  employeeLiveRefreshV27.src='./employee-live-refresh-v27.js?v=20260921-v28';
+  employeeLiveRefreshV27.src='./employee-live-refresh-v27.js?v=20260922-v29';
   employeeLiveRefreshV27.async=false;
   document.head.appendChild(employeeLiveRefreshV27);
 
