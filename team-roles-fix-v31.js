@@ -19,9 +19,21 @@ pages.team=function(){
   if(!ownerMode()&&!managerMode())return baseTeam();
   const people=(state.users||[]).filter(u=>u.role!=='owner'&&String(u.is_active??u.active??true)!=='false');
   const add=ownerMode()?'<button class="primary" onclick="openEmployeeForm()">+ Сотрудник</button>':'';
-  const access=typeof window.openStaffAccess==='function'?`<section class="card"><h3>Доступ сотрудников</h3><p class="muted">Здесь владелец может задать или изменить логин и пароль сотрудника.</p><div class="two"><button class="secondary" onclick="openStaffAccess('all')">Логины и пароли</button><button class="secondary" onclick="openStaffAccess('inactive')">Отключённые</button></div></section>`:'';
+  const access=ownerMode()&&typeof window.openStaffAccess==='function'?`<section class="card"><h3>Доступ сотрудников</h3><p class="muted">Здесь владелец может задать или изменить логин и пароль сотрудника.</p><div class="two"><button class="secondary" onclick="openStaffAccess('all')">Логины и пароли</button><button class="secondary" onclick="openStaffAccess('inactive')">Отключённые</button></div></section>`:'';
   return `<div class="row"><div><h2>Команда</h2><div class="muted">${people.length} сотрудников</div></div>${add}</div><div class="compactTeam">${people.map(teamCard).join('')||'<p class="muted">Сотрудников пока нет.</p>'}</div>${access}`;
 };
+
+function syncCredentialPolicy(){
+  document.querySelectorAll('#empForm input[name="password"],#staffCredForm input[name="password"]').forEach(input=>{
+    input.setAttribute('minlength','10');
+    input.setAttribute('maxlength','128');
+    input.placeholder='Не менее 10 символов';
+  });
+}
+const baseOpenEmployeeForm=window.openEmployeeForm;
+if(typeof baseOpenEmployeeForm==='function')window.openEmployeeForm=function(...args){const result=baseOpenEmployeeForm.apply(this,args);syncCredentialPolicy();return result};
+const baseOpenStaffAdminCard=window.openStaffAdminCard;
+if(typeof baseOpenStaffAdminCard==='function')window.openStaffAdminCard=function(...args){const result=baseOpenStaffAdminCard.apply(this,args);syncCredentialPolicy();return result};
 
 const baseTools=window.openOwnerTools;
 window.openOwnerTools=function(){
