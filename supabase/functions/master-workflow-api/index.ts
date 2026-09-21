@@ -11,8 +11,8 @@ async function hmac(m:string,s:string){const k=await crypto.subtle.importKey('ra
 async function sess(t:string,s:string){const p=String(t||'').split('.');if(!s||p.length!==3||!/^[A-Za-z0-9_-]{1,128}$/.test(p[0])||!/^\d{1,12}$/.test(p[1])||Number(p[1])<=Date.now()/1000)return null;return await hmac(`${p[0]}.${p[1]}`,s)===p[2]?p[0]:null}
 async function actor(db:any,r:Request){const uid=await sess(r.headers.get('x-bos-session')||'',Deno.env.get('VK_APP_SECRET')||'');if(!uid)return null;return (await db.from('business_staff').select('*').eq('external_id',uid).eq('is_active',true).maybeSingle()).data||null}
 const safeOrder=(o:any)=>{const x={...(o||{})};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
-const stages=['assigned','departed','started'];
-const stamp:any={departed:'master_departed_at',started:'master_started_at'};
+const activeStages=['assigned','departed','started'];
+const stamp:any={departed:'master_departed_at',arrived:'master_arrived_at',started:'master_started_at'};
 
 Deno.serve(async r=>{
   if(r.method==='OPTIONS')return new Response('ok',{headers:cors});
@@ -26,7 +26,7 @@ Deno.serve(async r=>{
     if(String(me.role||'')!=='master')return j({ok:false,error:'Действие доступно только мастеру'},403);
     if(action!=='setStage')return j({ok:false,error:'UNKNOWN_ACTION'},404);
     const stage=String(b.stage||'');
-    if(!['departed','started'].includes(stage))return j({ok:false,error:'Неверный этап работы'},400);
+    if(!['departed','arrived','started'].includes(stage))return j({ok:false,error:'Неверный этап работы'},400);
     const q=await db.from('orders').select('*').eq('id',b.id).maybeSingle();
     if(q.error)throw q.error;
     const cur=q.data;
@@ -34,9 +34,10 @@ Deno.serve(async r=>{
     if(String(cur.master_staff_id||'')!==String(me.id||''))return j({ok:false,error:'Можно менять этап только своей заявки'},403);
     if(['Выполнена','Отменена'].includes(String(cur.status||'')))return j({ok:false,error:'Завершённую или отменённую заявку менять нельзя'},409);
     const raw=String(cur.master_workflow_stage||'assigned');
-    const current=raw==='arrived'?'departed':stages.includes(raw)?raw:'assigned';
-    if(stage===current)return j({ok:true,order:safeOrder(cur),idempotent:true});
-    if(stages.indexOf(stage)!==stages.indexOf(current)+1)return j({ok:false,error:'Этапы нужно отмечать по порядку'},409);
+    const current=raw==='arrived'?'departed':activeStages.includes(raw)?raw:'assigned';
+    if(stage===raw)return j({ok:true,order:safeOrder(cur),idempotent:true});
+    const allowed=(stage==='departed'&&current==='assigned')||(stage==='arrived'&&current==='departed')||(stage==='started'&&current==='departed');
+    if(!allowed)return j({ok:false,error:'Этапы нужно отмечать по порядку'},409);
     const now=new Date().toISOString(),patch:any={master_workflow_stage:stage,updated_at:now,sync_status:'pending_sheet'};
     patch[stamp[stage]]=now;
     const u=await db.from('orders').update(patch).eq('id',cur.id).select('*').single();
