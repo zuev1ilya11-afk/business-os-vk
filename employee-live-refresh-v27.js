@@ -43,9 +43,9 @@ function renderChanged(){
 }
 
 async function syncEmployeeData(reason='manual'){
-  const manual=reason==='manual';
+  const urgent=['manual','modal-close','mutation'].includes(reason);
   const modal=document.querySelector('#modalRoot .modal');
-  if(!manual&&lastSync&&Date.now()-lastSync<MIN_AUTO_GAP)return false;
+  if(!urgent&&lastSync&&Date.now()-lastSync<MIN_AUTO_GAP)return false;
   if(inFlight||document.hidden||state?.busy||!authReady()||editingInline()||typeof api!=='function'||(modal&&!employeeProfileModal()))return false;
   inFlight=true;
   lastError='';
