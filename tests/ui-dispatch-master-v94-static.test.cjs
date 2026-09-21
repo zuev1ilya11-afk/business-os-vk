@@ -1,0 +1,15 @@
+const fs=require('node:fs');
+const assert=require('node:assert/strict');
+const ui=fs.readFileSync('ui-dispatch-master-v94.js','utf8');
+const master=fs.readFileSync('master-status-colors-v95.js','utf8');
+const loader=fs.readFileSync('pwa-register.js','utf8');
+assert.match(ui,/dbAttention>\.dbFilters/);
+assert.match(ui,/dbV21QuickDates \.dbDateNav/);
+assert.match(ui,/dbV94InlineList/);
+assert.match(ui,/name==='Список'/);
+assert.match(master,/bosMasterDone/);
+assert.match(master,/bosMasterReclamation/);
+assert.match(master,/bosMasterReschedule/);
+assert.match(loader,/ui-dispatch-master-v94\.js/);
+assert.match(loader,/master-status-colors-v95\.js/);
+console.log('ui dispatch/master v94-v95 static regressions ok');
