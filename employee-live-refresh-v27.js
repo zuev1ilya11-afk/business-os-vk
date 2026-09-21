@@ -12,14 +12,11 @@ const authReady=()=>{
   return !!state?.user&&document.body?.classList.contains('bos-auth-ok')&&(!gate||gate.style.display==='none'||getComputedStyle(gate).display==='none');
 };
 const idsOf=u=>[u?.vk_user_id,u?.external_id,u?.staff_id,u?.user_id,u?.id].filter(v=>v!=null&&v!=='').map(String);
-const idOf=u=>idsOf(u)[0]||'';
 const matchesId=(u,id)=>idsOf(u).includes(String(id));
 const normalizeOrders=list=>(list||[]).map(o=>({...o,status:['В работе','Выполнена','Отменена'].includes(String(o?.status))?String(o.status):String(o?.status||'В работе')}));
 const dataSignature=data=>JSON.stringify({
-  users:(data.users||[]).map(u=>[idOf(u),u.full_name,u.role,u.is_active??u.active,u.phone,u.city,u.district,u.specialization,u.work_start,u.work_end]),
-  masters:(data.masters||[]).map(u=>[idOf(u),u.full_name,u.is_active??u.active,u.phone,u.city,u.district,u.specialization,u.work_start,u.work_end]),
-  orders:(data.orders||[]).map(o=>[o.id,o.status,o.master_workflow_stage,o.master_vk_id,o.master_staff_id,o.master_name,o.scheduled_date,o.scheduled_time,o.amount,o.master_payout,o.reschedule_requested,o.reschedule_reason,o.updated_at]),
-  schedule:(data.masterSchedule||[]).map(s=>[s.id,s.staff_id,s.master_id,s.master_vk_id,s.work_date||s.date,s.is_working,s.work_start,s.work_end])
+  user:data.user,settings:data.settings,users:data.users||[],masters:data.masters||[],
+  orders:data.orders||[],schedule:data.masterSchedule||[]
 });
 const stateSignature=()=>dataSignature(state||{});
 
@@ -29,7 +26,7 @@ function renderChanged(){
   if(profile&&typeof window.openEmployeeProfile==='function'){
     const id=profile.dataset.bosEmployeeProfileId;
     const exists=(state.users||[]).some(u=>matchesId(u,id));
-    if(exists){window.openEmployeeProfile(id);return;}
+    if(exists){if(typeof show==='function'&&state.page)show(state.page);window.openEmployeeProfile(id);return;}
     if(typeof closeModal==='function')closeModal();
     if(typeof show==='function')show('team');
     return;
@@ -44,7 +41,9 @@ async function syncEmployeeData(reason='manual'){
   try{
     const before=stateSignature();
     const d=await api('bootstrap');
-    if(!d?.ok)return false;
+    // A background response must not roll back a save or interrupt a newly opened form.
+    if(!d?.ok||state.busy||before!==stateSignature()||!authReady()||
+      (document.querySelector('#modalRoot .modal')&&!employeeProfileModal()))return false;
     const normalizedOrders=normalizeOrders(d.orders||[]);
     Object.assign(state,{
       user:d.user||state.user,
@@ -55,6 +54,12 @@ async function syncEmployeeData(reason='manual'){
       settings:d.settings||state.settings||{},
       masterSchedule:d.masterSchedule||[]
     });
+    window.BOS_NORMALIZE_MASTER_SCHEDULE?.();
+    if(typeof isMasterPreview==='function'&&isMasterPreview()&&typeof previewUser!=='undefined'&&previewUser){
+      const current=(state.users||[]).find(u=>idsOf(previewUser).some(id=>matchesId(u,id)));
+      if(current)previewUser={...current};
+      else if(typeof exitMasterPreview==='function')exitMasterPreview();
+    }
     const changed=before!==stateSignature();
     lastSync=Date.now();
     if(changed)renderChanged();
