@@ -38,7 +38,8 @@ function renderChanged(){
 }
 
 async function syncEmployeeData(reason='manual'){
-  if(inFlight||document.hidden||state?.busy||!authReady()||typeof api!=='function')return false;
+  const modal=document.querySelector('#modalRoot .modal');
+  if(inFlight||document.hidden||state?.busy||!authReady()||typeof api!=='function'||(modal&&!employeeProfileModal()))return false;
   inFlight=true;
   try{
     const before=stateSignature();
@@ -83,5 +84,4 @@ window.addEventListener('focus',()=>syncEmployeeData('focus'));
 window.addEventListener('pageshow',()=>syncEmployeeData('pageshow'));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncEmployeeData('visible')});
 setInterval(()=>syncEmployeeData('poll'),POLL_MS);
-setTimeout(()=>syncEmployeeData('startup'),1200);
 })();
