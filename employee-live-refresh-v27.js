@@ -21,6 +21,12 @@ const dataSignature=data=>JSON.stringify({
 const stateSignature=()=>dataSignature(state||{});
 
 function employeeProfileModal(){return document.querySelector('#modalRoot .modal[data-bos-employee-profile-id]')}
+function editingInline(){
+  return [...document.querySelectorAll('#content input,#content select,#content textarea')].some(el=>
+    el===document.activeElement||(el.tagName==='SELECT'
+      ? el.value!==([...el.options].find(o=>o.defaultSelected)||el.options[0])?.value
+      : ['checkbox','radio'].includes(el.type)?el.checked!==el.defaultChecked:el.value!==el.defaultValue));
+}
 function renderChanged(){
   const profile=employeeProfileModal();
   if(profile&&typeof window.openEmployeeProfile==='function'){
@@ -36,13 +42,13 @@ function renderChanged(){
 
 async function syncEmployeeData(reason='manual'){
   const modal=document.querySelector('#modalRoot .modal');
-  if(inFlight||document.hidden||state?.busy||!authReady()||typeof api!=='function'||(modal&&!employeeProfileModal()))return false;
+  if(inFlight||document.hidden||state?.busy||!authReady()||editingInline()||typeof api!=='function'||(modal&&!employeeProfileModal()))return false;
   inFlight=true;
   try{
     const before=stateSignature();
     const d=await api('bootstrap');
     // A background response must not roll back a save or interrupt a newly opened form.
-    if(!d?.ok||state.busy||before!==stateSignature()||!authReady()||
+    if(!d?.ok||state.busy||before!==stateSignature()||!authReady()||editingInline()||
       (document.querySelector('#modalRoot .modal')&&!employeeProfileModal()))return false;
     const normalizedOrders=normalizeOrders(d.orders||[]);
     Object.assign(state,{

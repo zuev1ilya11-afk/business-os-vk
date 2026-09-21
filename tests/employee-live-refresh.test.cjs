@@ -9,7 +9,7 @@ function runtime({profile=false,preview=false}={}){
   fresh.users[0].phone=fresh.masters[0].phone='new';
   let renderedPhone='old',profilePhone='old';
   const modal=profile?{dataset:{bosEmployeeProfileId:'staff_m'}}:null;
-  const ctx={state,previewUser:preview?employee:null,document:{hidden:false,body:{classList:{contains:()=>true}},getElementById:()=>null,querySelector:()=>modal,addEventListener(){}},setInterval(){},getComputedStyle:()=>({display:'none'}),CustomEvent:class{},api:async()=>({ok:true,...fresh}),show(){renderedPhone=ctx.previewUser?.phone||state.users[0].phone},openEmployeeProfile(){profilePhone=state.users[0].phone},dispatchEvent(){},addEventListener(){},isMasterPreview:()=>preview};
+  const ctx={state,previewUser:preview?employee:null,document:{hidden:false,body:{classList:{contains:()=>true}},getElementById:()=>null,querySelector:()=>modal,querySelectorAll:()=>[],addEventListener(){}},setInterval(){},getComputedStyle:()=>({display:'none'}),CustomEvent:class{},api:async()=>({ok:true,...fresh}),show(){renderedPhone=ctx.previewUser?.phone||state.users[0].phone},openEmployeeProfile(){profilePhone=state.users[0].phone},dispatchEvent(){},addEventListener(){},isMasterPreview:()=>preview};
   ctx.window=ctx;
   vm.runInNewContext(fs.readFileSync('employee-live-refresh-v27.js','utf8'),ctx);
   return {ctx,state,fresh,rendered:()=>({renderedPhone,profilePhone})};
@@ -33,4 +33,17 @@ test('refresh does not overwrite a mutation completed while bootstrap was in fli
   complete({ok:true,...r.fresh});
   await refresh;
   assert.equal(r.state.users[0].phone,'saved-later');
+});
+
+test('refresh preserves an unsaved inline dispatch date',async()=>{
+  const r=runtime();
+  r.ctx.document.querySelectorAll=()=>[{tagName:'INPUT',type:'date',value:'2099-09-12',defaultValue:'2099-09-10'}];
+  assert.equal(await r.ctx.BOS_REFRESH_EMPLOYEE_DATA(),false);
+  assert.equal(r.state.users[0].phone,'old');
+});
+test('a default select option does not prevent background refresh',async()=>{
+  const r=runtime();
+  r.ctx.document.querySelectorAll=()=>[{tagName:'SELECT',value:'all',options:[{value:'all',selected:true,defaultSelected:false}]}];
+  assert.equal(await r.ctx.BOS_REFRESH_EMPLOYEE_DATA(),true);
+  assert.equal(r.state.users[0].phone,'new');
 });
