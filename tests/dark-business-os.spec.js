@@ -62,7 +62,7 @@ for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths
     if (role === 'master') {
       const call = modal.locator('a[href="tel:+79991234567"]').first();
       await expect(call).toBeVisible();
-      expect((await call.boundingBox()).height).toBeGreaterThanOrEqual(44);
+      expect(await call.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
       await expect(page.getByRole('button', {name: 'Нужно перенести', exact: true})).toBeVisible();
       await expect(page.getByRole('button', {name: 'Я на месте', exact: true})).toHaveCount(0);
       await page.evaluate(() => window.masterWorkflowCallAndAdvance(null, '11', 'departed'));
