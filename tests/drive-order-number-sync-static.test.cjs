@@ -1,0 +1,11 @@
+const fs=require('node:fs');
+const assert=require('node:assert/strict');
+const api=fs.readFileSync('supabase/functions/drive-archive-api/index.ts','utf8');
+const gas=fs.readFileSync('google-apps-script/ReportUpload.gs','utf8');
+assert.match(api,/function displayOrderNo/);
+assert.match(api,/order_no:orderNo/);
+assert.match(api,/order_no_sign:orderNoSign/);
+assert.match(gas,/const orderNo=String\(p\.order_no\|\|orderId\)/);
+assert.match(gas,/reportOrderFolder_\(orderNo,orderId\)/);
+assert.match(gas,/folder\.setName\(name\)/);
+console.log('Drive order number sync wiring ok');

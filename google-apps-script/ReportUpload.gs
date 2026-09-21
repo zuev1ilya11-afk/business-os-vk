@@ -29,10 +29,18 @@ function verifyArchiveRequest_(p){
   const bytes=Utilities.computeHmacSha256Signature(canonical,secret,Utilities.Charset.UTF_8);
   const expected=Utilities.base64EncodeWebSafe(bytes).replace(/=+$/,'');
   if(!constantTimeEqual_(expected,String(p.archive_sign||''))) throw new Error('INVALID_ARCHIVE_SIGNATURE');
+  const orderNo=String(p.order_no||'').trim();
+  if(orderNo){
+    const orderNoCanonical=[String(ts),orderId,token,orderNo].join('|');
+    const orderNoBytes=Utilities.computeHmacSha256Signature(orderNoCanonical,secret,Utilities.Charset.UTF_8);
+    const orderNoExpected=Utilities.base64EncodeWebSafe(orderNoBytes).replace(/=+$/,'');
+    if(!constantTimeEqual_(orderNoExpected,String(p.order_no_sign||''))) throw new Error('INVALID_ORDER_NUMBER_SIGNATURE');
+  }
 }
 
 function archiveReport_(p){
   const orderId=String(p.order_id||'').trim();
+  const orderNo=String(p.order_no||orderId).trim()||orderId;
   const reportType=String(p.report_type||'work');
   if(!['work','measurement'].includes(reportType)) throw new Error('BAD_REPORT_TYPE');
   if(!p.act_data) throw new Error('ACT_REQUIRED');
@@ -40,20 +48,30 @@ function archiveReport_(p){
   let photos=[];try{photos=JSON.parse(String(p.photos_json||'[]'))}catch(_){photos=[]}
   if(!Array.isArray(photos)||!photos.length) throw new Error('PHOTO_REQUIRED');
 
-  const folder=reportOrderFolder_(orderId);
+  const folder=reportOrderFolder_(orderNo,orderId);
   const act=saveNamedReportBlob_(folder,'Акт выполненных работ',p.act_name,p.act_mime,p.act_data);
   let measurement=null;
   if(reportType==='measurement') measurement=saveNamedReportBlob_(folder,'Лист замера',p.measurement_name,p.measurement_mime,p.measurement_data);
   const photoFiles=photos.slice(0,8).map((f,i)=>saveNamedReportBlob_(folder,'Фото выполненной работы '+(i+1),f.name,f.mime||'image/jpeg',f.data));
-  return {ok:true,order_id:orderId,drive_folder_id:folder.getId(),drive_folder_url:folder.getUrl(),act_url:act.getUrl(),measurement_url:measurement?measurement.getUrl():'',photo_urls:photoFiles.map(f=>f.getUrl())};
+  return {ok:true,order_id:orderId,order_no:orderNo,drive_folder_id:folder.getId(),drive_folder_url:folder.getUrl(),act_url:act.getUrl(),measurement_url:measurement?measurement.getUrl():'',photo_urls:photoFiles.map(f=>f.getUrl())};
 }
 
-function reportOrderFolder_(orderId){
+function reportOrderFolder_(orderNo,legacyOrderId){
   const root=DriveApp.getFolderById(REPORT_ARCHIVE_ROOT_ID);
-  const safe=String(orderId).replace(/[^0-9A-Za-zА-Яа-яЁё_-]/g,'_');
-  const name='Заявка '+safe;
-  const it=root.getFoldersByName(name);
-  return it.hasNext()?it.next():root.createFolder(name);
+  const safe=v=>String(v).replace(/[^0-9A-Za-zА-Яа-яЁё_-]/g,'_');
+  const name='Заявка '+safe(orderNo);
+  const exact=root.getFoldersByName(name);
+  if(exact.hasNext()) return exact.next();
+  const legacyName='Заявка '+safe(legacyOrderId||'');
+  if(legacyName!==name){
+    const legacy=root.getFoldersByName(legacyName);
+    if(legacy.hasNext()){
+      const folder=legacy.next();
+      folder.setName(name);
+      return folder;
+    }
+  }
+  return root.createFolder(name);
 }
 
 function saveNamedReportBlob_(folder,prefix,originalName,mime,data){
