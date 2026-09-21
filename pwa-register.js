@@ -74,6 +74,11 @@
   notificationCenterV26.async=false;
   document.head.appendChild(notificationCenterV26);
 
+  const employeeLiveRefreshV27=document.createElement('script');
+  employeeLiveRefreshV27.src='./employee-live-refresh-v27.js?v=20260921-v27';
+  employeeLiveRefreshV27.async=false;
+  document.head.appendChild(employeeLiveRefreshV27);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
