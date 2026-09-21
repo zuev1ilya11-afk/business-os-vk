@@ -79,6 +79,11 @@
   employeeLiveRefreshV27.async=false;
   document.head.appendChild(employeeLiveRefreshV27);
 
+  const uiDispatchMasterV94=document.createElement('script');
+  uiDispatchMasterV94.src='./ui-dispatch-master-v94.js?v=20260921-v94';
+  uiDispatchMasterV94.async=false;
+  document.head.appendChild(uiDispatchMasterV94);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
