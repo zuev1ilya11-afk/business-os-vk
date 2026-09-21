@@ -19,7 +19,7 @@ html:root {
   --bos-warning-soft: rgba(245, 165, 36, .12);
   --bos-danger-soft: rgba(240, 79, 95, .12);
   --bos-radius: 14px;
-  --bos-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+  --bos-shadow: 0 2px 8px rgba(0, 0, 0, .08);
   --bos-sidebar: 208px;
   --bg: var(--bos-bg);
   --surface: var(--bos-surface);
@@ -136,14 +136,14 @@ body #app { display: block; width: 100%; max-width: 900px; min-height: 100dvh; }
 }
 @media (min-width: 1024px) {
   body #app {
-    max-width: 1920px;
+    max-width: 1600px;
     padding: 0 28px 32px calc(var(--bos-sidebar) + 28px);
     overflow: visible;
   }
   #app > header { min-height: 88px; padding: 14px 0; }
   #app > nav {
     position: fixed;
-    inset: 0 auto 0 max(0px, calc((100vw - 1920px) / 2));
+    inset: 0 auto 0 max(0px, calc((100vw - 1600px) / 2));
     width: var(--bos-sidebar);
     max-width: none;
     height: 100vh;
@@ -189,14 +189,48 @@ body #app { display: block; width: 100%; max-width: 900px; min-height: 100dvh; }
   #content .bosOrderFilters { flex-wrap: wrap; margin-inline: 0; padding-inline: 0 !important; }
 }
 /* Existing order rows, controls and workflow; presentation only. */
-body :is(.primary, .secondary, .linkBtn) {
+body :is(.primary, .secondary, .linkBtn, .ghost, button.wide) {
   min-height: 44px;
+  min-width: 44px;
+  max-width: 100%;
   border-radius: 10px;
-  transition: background-color .15s, border-color .15s;
+  padding: 11px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  text-decoration: none;
+  transition: background-color .15s, border-color .15s, color .15s, opacity .15s;
+}
+/* Some auth/profile actions intentionally have only .wide; preserve their handlers. */
+body button.wide:not(.primary):not(.secondary):not(.linkBtn) {
+  background: var(--bos-surface-2);
+  border: 1px solid var(--bos-line);
+  color: var(--bos-text);
 }
 body .primary { background: var(--bos-accent-strong); color: var(--bos-text); box-shadow: none; }
 body :is(.secondary, .linkBtn) { background: var(--bos-surface-2); border-color: var(--bos-line); }
-#content :is(.bosOrderFilters, .masterDayFilters) button { min-height: 44px !important; }
+body :is(.linkBtn, .ghost) { color: var(--bos-accent-text); }
+body .ghost { background: transparent; border: 1px solid var(--bos-line); }
+body a:is(.primary, .secondary, .linkBtn) { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+body :is(.primary, .secondary, .linkBtn, .ghost, button.wide):active:not(:disabled) { filter: brightness(.9); }
+body :is(button:disabled, button[aria-disabled="true"]) { opacity: .55; box-shadow: none; }
+body :is(button[aria-busy="true"], form[data-pending="1"] button[type="submit"]) { cursor: progress; }
+body :is(button[aria-busy="true"], form[data-pending="1"] button[type="submit"])::after {
+  content: ""; display: inline-block; width: 12px; height: 12px; margin-left: 8px;
+  border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%;
+  vertical-align: -2px; animation: bos-button-spin .7s linear infinite;
+}
+@keyframes bos-button-spin { to { transform: rotate(360deg); } }
+/* Match existing destructive actions by identity, never by translated button text. */
+body :is(#bosLogout, #bosOwnerLogout, #avitoDisconnectBtn,
+  button[onclick^="deleteOwnerMemo("], button[onclick^="deleteManagerMemo("]) {
+  background: var(--bos-danger-soft) !important;
+  color: var(--bos-danger-text) !important;
+  border: 1px solid rgba(240, 79, 95, .3) !important;
+}
+#content :is(.bosOrderFilters, .masterDayFilters) button { min-height: 44px !important; flex: 0 0 auto; white-space: nowrap; }
+#content :is(.bosOrderFilters, .masterDayFilters) { margin-inline: 0; padding-inline: 0 !important; }
+#content .bosCompactSchedule button { min-height: 44px !important; padding: 10px !important; font-size: 13px !important; }
 #content #bosOrderList .opsCompactOrder, #content .masterOrdersDense .bosHandsMiniCard {
   background: var(--bos-surface);
   border-color: var(--bos-line);
@@ -219,6 +253,8 @@ body :is(.bosFieldStageChip.danger, .bosFieldOpsBar span.danger) { background: v
   background: var(--bos-surface);
   border-color: var(--bos-line);
   color: var(--bos-text);
+  overscroll-behavior: contain;
+  scroll-padding-block: 60px 24px;
 }
 #modalRoot :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea),
 #content .dbBoard :is(input, select, textarea) {
@@ -231,7 +267,7 @@ body :is(.bosFieldStageChip.danger, .bosFieldOpsBar span.danger) { background: v
 #content .dbBoard :is(input, select, textarea) { padding: 9px 12px; min-width: 0; max-width: 100%; }
 #modalRoot :is(input, textarea)::placeholder { color: var(--bos-muted); opacity: 1; }
 #modalRoot :is(input, select, textarea):focus-visible { outline: 2px solid var(--bos-accent-text); outline-offset: 2px; }
-#modalRoot .modalClose { width: 44px; height: 44px; background: var(--bos-surface-2); border-color: var(--bos-line); }
+#modalRoot .modalClose { width: 44px; height: 44px; padding: 0; border-radius: 10px; background: var(--bos-surface-2); border-color: var(--bos-line); }
 #modalRoot .bosClientCallAction { min-height: 44px; background: var(--bos-success-soft); color: var(--bos-success); }
 #modalRoot .bosMasterWorkflow { background: var(--bos-bg); border-color: var(--bos-line); padding: 16px; }
 #modalRoot .bosMwHead { flex-wrap: wrap; }
@@ -275,6 +311,10 @@ body :is(.bosFieldStageChip.danger, .bosFieldOpsBar span.danger) { background: v
 }
 @media (hover: hover) {
   body .primary:hover:not(:disabled) { background: var(--bos-accent-hover); }
+  body :is(.secondary, .linkBtn, .ghost, button.wide:not(.primary)):hover:not(:disabled) {
+    border-color: var(--bos-accent-text);
+    filter: brightness(1.08);
+  }
   #content #bosOrderList .opsCompactOrder:hover, #content .masterOrdersDense .bosHandsMiniCard:hover { background: var(--bos-surface-2); }
 }
 @media (min-width: 1024px) and (max-width: 1599px) {
@@ -361,6 +401,52 @@ body :is(.bosFieldStageChip.danger, .bosFieldOpsBar span.danger) { background: v
   #content .dashMetric small { grid-column: 1 / -1; font-size: 12px; }
   #content .dashMetric .dashChevron { grid-column: 2; grid-row: 2; align-self: center; }
   #content .dashMetric:has(.dashChevron) strong { grid-column: 1 / -1; padding-right: 16px; }
+}
+/* Shared form/profile polish; keep card buttons' internal grid/flex layouts intact. */
+body :is(.form, .authGateCard) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea) {
+  min-width: 0; max-width: 100%; min-height: 48px;
+  padding: 11px 12px; border: 1px solid var(--bos-line); border-radius: 10px;
+  background: var(--bos-bg); color: var(--bos-text); font-size: 16px;
+}
+body :is(.form, .authGateCard) textarea { min-height: 100px; resize: vertical; }
+body :is(input, textarea)::placeholder { color: var(--bos-muted); opacity: 1; }
+body :is(input[type="checkbox"], input[type="radio"]) { accent-color: var(--bos-accent); }
+body input[type="file"] { white-space: normal; overflow-wrap: anywhere; }
+body input[type="file"]::file-selector-button {
+  min-height: 44px; margin: 0 10px 4px 0; padding: 8px 12px;
+  border: 1px solid var(--bos-line); border-radius: 8px;
+  background: var(--bos-surface-2); color: var(--bos-text); font: inherit; cursor: pointer;
+}
+body .form { gap: 12px; }
+body .form > .wide { margin-top: 4px; }
+body #authGate { background: var(--bos-bg); padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)); }
+body #authGate .authGateCard {
+  margin-block: auto; min-width: 0; flex-shrink: 0; padding: 24px;
+  background: var(--bos-surface); border-color: var(--bos-line);
+  border-radius: 18px; box-shadow: var(--bos-shadow);
+}
+body #authGate .authGateCard h1 { font-size: 24px; line-height: 1.25; }
+body :is(.ownerProfileLine, .masterProfileLine) { gap: 12px; padding-block: 10px; }
+body :is(.ownerProfileLine, .masterProfileLine) > * { min-width: 0; overflow-wrap: anywhere; }
+body :is(.ownerToolAction, .ownerPreviewBtn) { gap: 12px; text-align: left; }
+body :is(.ownerToolAction, .ownerPreviewBtn) > :last-child { flex-shrink: 0; }
+body :is(.ownerToolAction, .ownerPreviewBtn) > span { min-width: 0; overflow-wrap: anywhere; }
+body :is(.row, .bosMwHead):has(> button) { flex-wrap: wrap; }
+body .row > :is(button.primary, button.secondary, button.linkBtn) { flex-shrink: 0; white-space: nowrap; }
+body :is(.card, .hero, .modal) h3 { font-size: 17px; line-height: 1.35; }
+body :is(.card, .hero) > :last-child { margin-bottom: 0; }
+body :is(.status, .softChip) { max-width: 100%; font-weight: 600; }
+#modalRoot .modalBackdrop { backdrop-filter: none; -webkit-backdrop-filter: none; }
+#app > nav { backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: none; }
+#app > header button { min-width: 44px; min-height: 44px; border-radius: 10px; box-shadow: none; }
+@media (max-width: 520px) {
+  body :is(.card, .hero) { padding: 14px; }
+  #app > header { flex-wrap: wrap; justify-content: flex-end; gap: 8px; padding-block: 12px; }
+  #app > header .brandWrap { flex: 1 0 100%; }
+  #app > nav button { font-size: 11px; font-weight: 600; overflow-wrap: normal; }
+  #modalRoot .modal { padding-inline: 14px; border-radius: 18px 18px 0 0; }
+  #modalRoot .form .two { grid-template-columns: minmax(0, 1fr); }
+  #modalRoot :is(.ownerProfileLine, .masterProfileLine) { flex-wrap: wrap; }
 }
 @media (prefers-reduced-motion: reduce) {
   html body *, html body *::before, html body *::after {
