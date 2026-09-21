@@ -11,7 +11,9 @@ const authReady=()=>{
   const gate=document.getElementById('authGate');
   return !!state?.user&&document.body?.classList.contains('bos-auth-ok')&&(!gate||gate.style.display==='none'||getComputedStyle(gate).display==='none');
 };
-const idOf=u=>String(u?.vk_user_id||u?.external_id||u?.id||'');
+const idsOf=u=>[u?.vk_user_id,u?.external_id,u?.staff_id,u?.user_id,u?.id].filter(v=>v!=null&&v!=='').map(String);
+const idOf=u=>idsOf(u)[0]||'';
+const matchesId=(u,id)=>idsOf(u).includes(String(id));
 const normalizeOrders=list=>(list||[]).map(o=>({...o,status:['В работе','Выполнена','Отменена'].includes(String(o?.status))?String(o.status):String(o?.status||'В работе')}));
 const dataSignature=data=>JSON.stringify({
   users:(data.users||[]).map(u=>[idOf(u),u.full_name,u.role,u.is_active??u.active,u.phone,u.city,u.district,u.specialization,u.work_start,u.work_end]),
@@ -26,7 +28,7 @@ function renderChanged(){
   const profile=employeeProfileModal();
   if(profile&&typeof window.openEmployeeProfile==='function'){
     const id=profile.dataset.bosEmployeeProfileId;
-    const exists=(state.users||[]).some(u=>idOf(u)===String(id));
+    const exists=(state.users||[]).some(u=>matchesId(u,id));
     if(exists){window.openEmployeeProfile(id);return;}
     if(typeof closeModal==='function')closeModal();
     if(typeof show==='function')show('team');
