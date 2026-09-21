@@ -84,6 +84,11 @@
   uiDispatchMasterV94.async=false;
   document.head.appendChild(uiDispatchMasterV94);
 
+  const masterStatusColorsV95=document.createElement('script');
+  masterStatusColorsV95.src='./master-status-colors-v95.js?v=20260921-v95';
+  masterStatusColorsV95.async=false;
+  document.head.appendChild(masterStatusColorsV95);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
