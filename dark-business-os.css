@@ -1,0 +1,371 @@
+/* Presentation only. Existing roles, routes, data and click handlers stay authoritative. */
+html:root {
+  --bos-bg: #07111f;
+  --bos-surface: #0d1a29;
+  --bos-surface-2: #112235;
+  --bos-line: rgba(255, 255, 255, .09);
+  --bos-text: #f5f8fc;
+  --bos-muted: #a2b2c6;
+  --bos-accent: #1683ff;
+  --bos-accent-strong: #0964d4;
+  --bos-accent-hover: #1474e0;
+  --bos-accent-text: #70b7ff;
+  --bos-success: #18c985;
+  --bos-warning: #f5a524;
+  --bos-danger: #f04f5f;
+  --bos-danger-text: #ff929e;
+  --bos-accent-soft: rgba(22, 131, 255, .14);
+  --bos-success-soft: rgba(24, 201, 133, .12);
+  --bos-warning-soft: rgba(245, 165, 36, .12);
+  --bos-danger-soft: rgba(240, 79, 95, .12);
+  --bos-radius: 14px;
+  --bos-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+  --bos-sidebar: 208px;
+  --bg: var(--bos-bg);
+  --surface: var(--bos-surface);
+  --surface2: var(--bos-surface-2);
+  --card: var(--bos-surface);
+  --line: var(--bos-line);
+  --text: var(--bos-text);
+  --muted: var(--bos-muted);
+  --accent: var(--bos-accent);
+  --accent2: var(--bos-accent-text);
+  --good: var(--bos-success);
+  --warn: var(--bos-warning);
+  --bad: var(--bos-danger-text);
+  --shadow: var(--bos-shadow);
+  color-scheme: dark;
+  background: var(--bos-bg);
+}
+html body {
+  background: var(--bos-bg);
+  color: var(--bos-text);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+body :is(h1, h2, h3) { color: var(--bos-text); letter-spacing: -.025em; }
+body h2 { font-size: clamp(20px, 2vw, 26px); }
+body :is(.muted, .brandSub) { color: var(--bos-muted); }
+body :is(.card, .hero, .dashOrder, .masterWelcome, .masterKpi, .masterJob) {
+  background: var(--bos-surface);
+  border: 1px solid var(--bos-line);
+  border-radius: var(--bos-radius);
+  box-shadow: var(--bos-shadow);
+  min-width: 0;
+}
+body :is(.card, .hero) { padding: 18px; }
+body :is(.eyebrow, .ddEyebrow) { color: var(--bos-accent-text); }
+body :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--bos-accent-text);
+  outline-offset: 3px;
+}
+body :is(button, a) { touch-action: manipulation; }
+body button:disabled { opacity: .55; cursor: not-allowed; }
+body button[aria-busy="true"] { cursor: progress; }
+
+/* 2. Shell: retain the existing navigation buttons and their role-dependent labels. */
+body #app { display: block; width: 100%; max-width: 900px; min-height: 100dvh; }
+#app > header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--bos-line);
+  background: var(--bos-bg);
+  box-shadow: none;
+}
+#app > header .brandWrap { flex: 1; min-width: 0; gap: 10px; }
+#app > header .brandText { min-width: 0; }
+#app > header .brandText h1 { font-size: 20px; line-height: 1.2; }
+#app > header .brandLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--bos-accent-soft);
+  box-shadow: none;
+}
+#app > header .brandLogo img { width: 36px !important; height: 36px !important; }
+#app > header .roleBadge {
+  color: var(--bos-accent-text);
+  background: var(--bos-accent-soft);
+  border-color: var(--bos-line);
+  padding: 3px 8px;
+  font-size: 11px;
+  margin-top: 5px;
+}
+#app > header :is(.avatar, #ownerToolsBtn) {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 12px;
+  background: var(--bos-surface-2);
+  border: 1px solid var(--bos-line);
+  color: var(--bos-accent-text);
+  box-shadow: none;
+}
+#app > nav {
+  background: var(--bos-bg);
+  border-color: var(--bos-line);
+}
+#app > nav button {
+  color: var(--bos-muted);
+  border-radius: 10px;
+  min-height: 48px;
+  transition: color .15s, background-color .15s;
+}
+#app > nav button.active { color: var(--bos-accent-text); background: var(--bos-accent-soft); }
+#app > nav button::before {
+  content: "";
+  width: 21px;
+  height: 21px;
+  background: currentColor;
+  mask: var(--bos-nav-icon) center / contain no-repeat;
+  -webkit-mask: var(--bos-nav-icon) center / contain no-repeat;
+  filter: none;
+  opacity: 1;
+}
+#app > nav [data-page="home"] { --bos-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linejoin='round'%3E%3Cpath d='m3 10 9-7 9 7v11h-6v-7H9v7H3Z'/%3E%3C/svg%3E"); }
+#app > nav [data-page="orders"] { --bos-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round'%3E%3Crect x='5' y='3' width='14' height='18' rx='2'/%3E%3Cpath d='M9 8h6M9 12h6M9 16h4'/%3E%3C/svg%3E"); }
+#app > nav [data-page="dispatch"] { --bos-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M7 3v5m10-5v5M3 11h18M8 15h1m6 0h1m-8 3h1'/%3E%3C/svg%3E"); }
+#app > nav :is([data-page="team"], [data-action="profile"]) { --bos-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round'%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3Cpath d='M4 21v-2a8 8 0 0 1 16 0v2'/%3E%3C/svg%3E"); }
+@media (hover: hover) {
+  #app > nav button:hover { color: var(--bos-text); background: var(--bos-surface-2); }
+}
+@media (min-width: 1024px) {
+  body #app {
+    max-width: 1920px;
+    padding: 0 28px 32px calc(var(--bos-sidebar) + 28px);
+    overflow: visible;
+  }
+  #app > header { min-height: 88px; padding: 14px 0; }
+  #app > nav {
+    position: fixed;
+    inset: 0 auto 0 max(0px, calc((100vw - 1920px) / 2));
+    width: var(--bos-sidebar);
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+    margin: 0;
+    padding: 24px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 0;
+    border-right: 1px solid var(--bos-line);
+    border-radius: 0;
+    box-shadow: none;
+    overflow-y: auto;
+  }
+  #app > nav::before {
+    content: "Business OS";
+    display: block;
+    color: var(--bos-text);
+    font-size: 21px;
+    font-weight: 750;
+    letter-spacing: -.04em;
+    padding: 0 10px 26px;
+  }
+  #app > nav button {
+    flex: 0 0 auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 550;
+    text-align: left;
+  }
+  #app > nav button[data-action="profile"] { margin-top: auto; }
+  #app > #content { width: 100%; max-width: 100%; padding: 24px 0; min-width: 0; }
+  /* The board's viewport-sized rule predates the sidebar. Keep its scroll inside the board. */
+  body #app > #content:has(.dbBoard, .ddDesktop) { width: 100%; padding: 24px 0; }
+  #content .dbTop { position: static; margin: 0; background: transparent; backdrop-filter: none; }
+  #content .dbLayout { grid-template-columns: 230px minmax(0, 1fr) 300px; }
+  #content .ddWorkspace { grid-template-columns: minmax(240px, 1fr) minmax(320px, 1.4fr); }
+  #content .ddMasters { display: block; grid-column: 1 / -1; }
+  #content .bosOrderFilters { flex-wrap: wrap; margin-inline: 0; padding-inline: 0 !important; }
+}
+/* Existing order rows, controls and workflow; presentation only. */
+body :is(.primary, .secondary, .linkBtn) {
+  min-height: 44px;
+  border-radius: 10px;
+  transition: background-color .15s, border-color .15s;
+}
+body .primary { background: var(--bos-accent-strong); color: var(--bos-text); box-shadow: none; }
+body :is(.secondary, .linkBtn) { background: var(--bos-surface-2); border-color: var(--bos-line); }
+#content :is(.bosOrderFilters, .masterDayFilters) button { min-height: 44px !important; }
+#content #bosOrderList .opsCompactOrder, #content .masterOrdersDense .bosHandsMiniCard {
+  background: var(--bos-surface);
+  border-color: var(--bos-line);
+  box-shadow: none;
+}
+#content :is(.bosHandsMiniHead b, .opsCompactTop b) { color: var(--bos-accent-text); }
+#content :is(.bosHandsMiniHead, .bosHandsMiniClient) { gap: 8px 12px; }
+#content .bosHandsMiniClient b { font-size: 15px; line-height: 1.4; }
+#content .bosHandsMiniAddress { font-size: 13px; line-height: 1.5; margin-top: 8px; }
+#content .bosHandsMiniWorks { padding-top: 10px; margin-top: 10px; }
+body :is(.status, .bosMwState, .bosMwTodayStage, .bosFieldStageChip) {
+  background: var(--bos-accent-soft);
+  color: var(--bos-accent-text);
+}
+body :is(.status.ok, .status[data-status="Выполнена"]) { background: var(--bos-success-soft); color: var(--bos-success); }
+body :is(.status.new, .bosRescheduleChip) { background: var(--bos-warning-soft); color: var(--bos-warning); }
+body :is(.status.bad, .status[data-status="Отменена"], .status[data-status="Рекламация"]) { background: var(--bos-danger-soft); color: var(--bos-danger-text); }
+body :is(.bosFieldStageChip.danger, .bosFieldOpsBar span.danger) { background: var(--bos-danger-soft) !important; color: var(--bos-danger-text) !important; }
+#modalRoot .modal {
+  background: var(--bos-surface);
+  border-color: var(--bos-line);
+  color: var(--bos-text);
+}
+#modalRoot :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea),
+#content .dbBoard :is(input, select, textarea) {
+  background-color: var(--bos-bg);
+  border-color: var(--bos-line);
+  color: var(--bos-text);
+  min-height: 48px;
+  border-radius: 10px;
+}
+#content .dbBoard :is(input, select, textarea) { padding: 9px 12px; min-width: 0; max-width: 100%; }
+#modalRoot :is(input, textarea)::placeholder { color: var(--bos-muted); opacity: 1; }
+#modalRoot :is(input, select, textarea):focus-visible { outline: 2px solid var(--bos-accent-text); outline-offset: 2px; }
+#modalRoot .modalClose { width: 44px; height: 44px; background: var(--bos-surface-2); border-color: var(--bos-line); }
+#modalRoot .bosClientCallAction { min-height: 44px; background: var(--bos-success-soft); color: var(--bos-success); }
+#modalRoot .bosMasterWorkflow { background: var(--bos-bg); border-color: var(--bos-line); padding: 16px; }
+#modalRoot .bosMwHead { flex-wrap: wrap; }
+#modalRoot .bosMwStep.done i, #modalRoot .bosMwStep.done::before { background: var(--bos-accent); }
+#modalRoot .bosMwStep b { font-size: 10px; }
+#modalRoot .bosMwStep small { font-size: 9px; }
+#modalRoot .bosMwActions > * { min-height: 48px; }
+#modalRoot .bosRescheduleAction { color: var(--bos-warning); background: var(--bos-warning-soft); }
+@media (min-width: 1280px) {
+  #content #bosOrderList { grid-template-columns: minmax(0, 1fr); gap: 0 !important; border: 1px solid var(--bos-line); border-radius: var(--bos-radius); overflow: hidden; }
+  #content #bosOrderList .opsCompactOrder {
+    display: grid; grid-template-columns: 130px minmax(160px, 1fr) minmax(180px, 1.4fr) minmax(150px, .8fr);
+    gap: 8px 20px; align-items: start; min-height: 110px;
+    border: 0; border-bottom: 1px solid var(--bos-line); border-radius: 0 !important; padding: 18px !important;
+  }
+  #content #bosOrderList .opsCompactOrder:last-child { border-bottom: 0; }
+  #content .opsCompactTop { grid-column: 1; grid-row: 1 / 3; flex-direction: column; align-items: flex-start; }
+  #content .opsCompactMain { grid-column: 2; grid-row: 1; flex-direction: column; align-items: flex-start; margin: 0 !important; }
+  #content .opsCompactAddress { grid-column: 3; grid-row: 1; margin: 0 !important; }
+  #content .opsCompactWorks { grid-column: 2 / 4; grid-row: 2; border: 0; padding: 0 !important; margin: 0 !important; color: var(--bos-muted); }
+  #content .opsCompactBottom { grid-column: 4; grid-row: 1 / 3; flex-direction: column; align-items: flex-start !important; margin: 0 !important; }
+}
+@media (max-width: 1023px) {
+  #content:has(> .ownerProblemsCompact) { display: flex; flex-direction: column; }
+  #content:has(> .ownerProblemsCompact) > .dashMetrics { order: -3; }
+  #content:has(> .ownerProblemsCompact) > .ownerProblemsCompact { order: -2; }
+  #content:has(> .ownerProblemsCompact) > .loadCard { order: -1; }
+  #app > nav { max-width: 900px; padding-bottom: calc(9px + env(safe-area-inset-bottom)); }
+  #app > nav button { min-height: 54px; white-space: normal; line-height: 1.25; }
+}
+@media (max-width: 520px) {
+  #modalRoot .bosHandsHead { flex-wrap: wrap; }
+  #modalRoot .bosMasterWorkflow { padding: 12px; }
+  #modalRoot .bosMwSteps { grid-template-columns: 1fr; gap: 10px; }
+  #modalRoot .bosMwStep { grid-template-columns: 12px minmax(0, 1fr); align-items: center; justify-items: start; gap: 10px; text-align: left; }
+  #modalRoot .bosMwStep::before { top: calc(-100% + 6px); left: 5px; right: auto; width: 2px; height: 100%; }
+  #modalRoot .bosMwStep span { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+  #modalRoot .bosMwStep b { font-size: 12px; }
+  #modalRoot .bosMwStep small { font-size: 10px; margin: 0; }
+  #content .bosMwTodayMain b { overflow-wrap: anywhere; }
+}
+@media (hover: hover) {
+  body .primary:hover:not(:disabled) { background: var(--bos-accent-hover); }
+  #content #bosOrderList .opsCompactOrder:hover, #content .masterOrdersDense .bosHandsMiniCard:hover { background: var(--bos-surface-2); }
+}
+@media (min-width: 1024px) and (max-width: 1599px) {
+  #content .dbLayout { grid-template-columns: 220px minmax(0, 1fr); }
+  #content #dispatchBoardDetail { grid-column: 1 / -1; }
+  #content :is(.dbToolbar, .dbFilters) { flex-wrap: wrap; }
+}
+/* 3. Dashboard: style existing metrics only; no extra counters or calculations. */
+#content :is(.dashMetrics, .masterKpis) { gap: 12px; }
+#content :is(.dashMetric, .masterKpi) {
+  margin: 0;
+  border-radius: var(--bos-radius);
+  min-height: 124px;
+  background: var(--bos-surface);
+  border: 1px solid var(--bos-line);
+}
+#content .dashMetric {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 5px 12px;
+  padding: 18px;
+  align-content: center;
+}
+#content .dashMetric > :is(.muted, .metricLabel) { grid-column: 2; grid-row: 1; font-size: 13px; color: var(--bos-muted); }
+#content .dashMetric strong { font-size: clamp(23px, 2.1vw, 30px); line-height: 1.2; overflow-wrap: anywhere; }
+#content .dashMetric small { font-size: 11px; color: var(--bos-muted); }
+#content .dashMetric .dashIcon {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--bos-accent-soft);
+  color: var(--bos-accent-text);
+}
+#content .dashMetric::before, #content .metric::before { content: none; }
+#content .dashMetric:nth-child(2) .dashIcon { background: var(--bos-success-soft); color: var(--bos-success); }
+#content .dashMetric:nth-child(3) .dashIcon { background: var(--bos-warning-soft); color: var(--bos-warning); }
+#content .dashMetric .dashChevron { grid-column: 3; }
+#content .dashMetric:has(.dashChevron) { grid-template-columns: 40px minmax(0, 1fr) 14px; }
+#content :is(.loadCard, .ownerProblemsCompact) { min-width: 0; }
+#content .loadCard { background: var(--bos-surface); }
+#content .barBusy { background: linear-gradient(var(--bos-accent), var(--bos-accent-strong)); }
+#content .barFree { background: var(--bos-success); }
+#content .ownerProblemRow { background: var(--bos-surface); box-shadow: none; border-radius: 10px; }
+#content .ownerProblemTop { flex-wrap: wrap; }
+#content .ownerProblemTop strong { white-space: normal; }
+#content .ownerProblemComment { color: var(--bos-text) !important; }
+#content .ownerProblemMeta { color: var(--bos-muted) !important; }
+@media (min-width: 1024px) {
+  #content:has(> .ownerProblemsCompact) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+  #content:has(> .ownerProblemsCompact) > .dashMetrics { grid-column: 1 / -1; grid-row: 1; margin: 0; }
+  #content:has(> .ownerProblemsCompact) > .loadCard { grid-column: 2; grid-row: 2; margin: 0; }
+  #content:has(> .ownerProblemsCompact) > .card:not(.loadCard) { grid-column: 2; margin: 0; }
+  #content > .ownerProblemsCompact {
+    grid-column: 1;
+    grid-row: 2 / 4;
+    margin: 0;
+    padding: 18px;
+    background: var(--bos-surface);
+    border: 1px solid var(--bos-line);
+    border-radius: var(--bos-radius);
+  }
+  #content .ownerProblemsCompact h2, #content .loadCard h2 { font-size: 20px; }
+  #content .compactTeam { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1280px) {
+  #content > .dashMetrics { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  #content .dashMetric, #content .dashMetric:has(.dashChevron) {
+    grid-template-columns: 28px minmax(0, 1fr);
+    padding: 14px 12px;
+    gap: 8px;
+    min-height: 140px;
+  }
+  #content .dashMetric .dashIcon { width: 28px; height: 28px; font-size: 16px; grid-row: 1; }
+  #content .dashMetric > :is(.muted, .metricLabel) { font-size: 12px; overflow-wrap: normal; }
+  #content .dashMetric strong { grid-column: 1 / -1; font-size: 25px; }
+  #content .dashMetric small { grid-column: 1 / -1; font-size: 12px; }
+  #content .dashMetric .dashChevron { grid-column: 2; grid-row: 2; align-self: center; }
+  #content .dashMetric:has(.dashChevron) strong { grid-column: 1 / -1; padding-right: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body *, html body *::before, html body *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
