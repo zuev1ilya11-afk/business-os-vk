@@ -3,9 +3,11 @@
 if(window.BOS_EMPLOYEE_LIVE_REFRESH_V27)return;
 window.BOS_EMPLOYEE_LIVE_REFRESH_V27=true;
 
-const POLL_MS=20000;
+const POLL_MS=15000;
+const MIN_AUTO_GAP=2500;
 let inFlight=false;
 let lastSync=0;
+let lastError='';
 
 const authReady=()=>{
   const gate=document.getElementById('authGate');
@@ -41,9 +43,13 @@ function renderChanged(){
 }
 
 async function syncEmployeeData(reason='manual'){
+  const manual=reason==='manual';
   const modal=document.querySelector('#modalRoot .modal');
+  if(!manual&&lastSync&&Date.now()-lastSync<MIN_AUTO_GAP)return false;
   if(inFlight||document.hidden||state?.busy||!authReady()||editingInline()||typeof api!=='function'||(modal&&!employeeProfileModal()))return false;
   inFlight=true;
+  lastError='';
+  window.BOS_LAST_REFRESH_ERROR='';
   try{
     const before=stateSignature();
     const d=await api('bootstrap');
@@ -72,7 +78,10 @@ async function syncEmployeeData(reason='manual'){
     window.bosRefreshNotifications?.();
     window.dispatchEvent(new CustomEvent('bos:employee-data-refreshed',{detail:{changed,reason,at:lastSync}}));
     return changed;
-  }catch(_){
+  }catch(err){
+    lastError=String(err?.message||'Не удалось обновить данные');
+    window.BOS_LAST_REFRESH_ERROR=lastError;
+    window.dispatchEvent(new CustomEvent('bos:employee-data-refresh-error',{detail:{reason,error:lastError}}));
     return false;
   }finally{
     inFlight=false;
@@ -80,6 +89,36 @@ async function syncEmployeeData(reason='manual'){
 }
 
 window.BOS_REFRESH_EMPLOYEE_DATA=syncEmployeeData;
+window.BOS_REFRESH_NOW=()=>syncEmployeeData('manual');
+
+function ensureRefreshButton(){
+  if(document.getElementById('bosManualRefresh'))return;
+  const profile=document.getElementById('profileBtn');
+  if(!profile?.parentNode)return;
+  const btn=document.createElement('button');
+  btn.id='bosManualRefresh';
+  btn.type='button';
+  btn.className='avatar bosManualRefresh';
+  btn.setAttribute('aria-label','Обновить данные');
+  btn.title='Обновить данные';
+  btn.textContent='↻';
+  btn.onclick=async()=>{
+    if(inFlight)return;
+    btn.disabled=true;btn.classList.add('isRefreshing');btn.title='Обновляем…';
+    await syncEmployeeData('manual');
+    btn.classList.remove('isRefreshing');btn.disabled=false;
+    if(window.BOS_LAST_REFRESH_ERROR){btn.title=window.BOS_LAST_REFRESH_ERROR;btn.textContent='!'}
+    else{btn.title='Данные обновлены';btn.textContent='✓'}
+    setTimeout(()=>{btn.textContent='↻';btn.title='Обновить данные'},1200);
+  };
+  profile.parentNode.insertBefore(btn,profile);
+}
+
+const style=document.createElement('style');
+style.textContent=`.bosManualRefresh{margin-left:auto!important;margin-right:8px!important;font-size:22px!important;line-height:1!important}.bosManualRefresh.isRefreshing{animation:bosRefreshSpin .75s linear infinite}@keyframes bosRefreshSpin{to{transform:rotate(360deg)}}`;
+document.head.appendChild(style);
+ensureRefreshButton();
+setTimeout(ensureRefreshButton,500);
 
 const baseOpenEmployeeProfile=window.openEmployeeProfile;
 if(typeof baseOpenEmployeeProfile==='function'){
@@ -91,8 +130,18 @@ if(typeof baseOpenEmployeeProfile==='function'){
   };
 }
 
+const baseCloseModal=window.closeModal;
+if(typeof baseCloseModal==='function'){
+  window.closeModal=function(){
+    const out=baseCloseModal.apply(this,arguments);
+    setTimeout(()=>syncEmployeeData('modal-close'),300);
+    return out;
+  };
+}
+
 window.addEventListener('focus',()=>syncEmployeeData('focus'));
 window.addEventListener('pageshow',()=>syncEmployeeData('pageshow'));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncEmployeeData('visible')});
+window.addEventListener('bos:data-mutated',()=>setTimeout(()=>syncEmployeeData('mutation'),250));
 setInterval(()=>syncEmployeeData('poll'),POLL_MS);
 })();
