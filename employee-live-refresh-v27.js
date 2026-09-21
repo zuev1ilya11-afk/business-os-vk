@@ -92,6 +92,7 @@ window.BOS_REFRESH_EMPLOYEE_DATA=syncEmployeeData;
 window.BOS_REFRESH_NOW=()=>syncEmployeeData('manual');
 
 function ensureRefreshButton(){
+  if(typeof document.createElement!=='function')return;
   if(document.getElementById('bosManualRefresh'))return;
   const profile=document.getElementById('profileBtn');
   if(!profile?.parentNode)return;
@@ -114,11 +115,13 @@ function ensureRefreshButton(){
   profile.parentNode.insertBefore(btn,profile);
 }
 
-const style=document.createElement('style');
-style.textContent=`.bosManualRefresh{margin-left:auto!important;margin-right:8px!important;font-size:22px!important;line-height:1!important}.bosManualRefresh.isRefreshing{animation:bosRefreshSpin .75s linear infinite}@keyframes bosRefreshSpin{to{transform:rotate(360deg)}}`;
-document.head.appendChild(style);
-ensureRefreshButton();
-setTimeout(ensureRefreshButton,500);
+if(typeof document.createElement==='function'&&document.head?.appendChild){
+  const style=document.createElement('style');
+  style.textContent=`.bosManualRefresh{margin-left:auto!important;margin-right:8px!important;font-size:22px!important;line-height:1!important}.bosManualRefresh.isRefreshing{animation:bosRefreshSpin .75s linear infinite}@keyframes bosRefreshSpin{to{transform:rotate(360deg)}}`;
+  document.head.appendChild(style);
+  ensureRefreshButton();
+  setTimeout(ensureRefreshButton,500);
+}
 
 const baseOpenEmployeeProfile=window.openEmployeeProfile;
 if(typeof baseOpenEmployeeProfile==='function'){
