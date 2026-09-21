@@ -36,7 +36,7 @@ test('notification center shows dispatcher reschedule and unassigned alerts',asy
   const bell=page.locator('#bosNotificationBell');
   await expect(bell).toBeVisible();
   await expect(bell.locator('.bosNB')).toHaveText('2');
-  await expect(bell.evaluate(el=>el.nextElementSibling?.id)).resolves.toBe('profileBtn');
+  expect(await bell.evaluate(el=>el.nextElementSibling?.id)).toBe('profileBtn');
   await bell.click();
   const panel=page.getByRole('region',{name:'Центр уведомлений'});
   await expect(panel).toBeVisible();
