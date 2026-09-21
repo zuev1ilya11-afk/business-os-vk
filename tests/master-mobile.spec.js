@@ -7,7 +7,7 @@ for(const s of sizes){
     await page.addInitScript(()=>localStorage.setItem('bos_vk_session_v2','test-session-master'));
     const master={id:'m1',vk_user_id:'1001',external_id:'1001',full_name:'Александр Мастер',phone:'70000000000',city:'Санкт-Петербург',role:'master',is_active:true,specialization:'Монтаж',work_start:'09:00',work_end:'18:00'};
     const orders=[
-      {id:'M-1',status:'В работе',client:'Клиент',address:'Невский проспект 1',work:'Карниз',scheduled_date:'2099-09-10',scheduled_time:'10:00',time_slot:'10:00–11:00',master_vk_id:'1001',master_name:'Александр Мастер',master_payout:2463.05,wall_material:'Кирпич',wall_over_3m:true,possible_extra_work:true,comment:'Позвонить заранее'},
+      {id:'M-1',status:'В работе',client:'Клиент',phone:'+79990000002',address:'Невский проспект 1',work:'Карниз',scheduled_date:'2099-09-10',scheduled_time:'10:00',time_slot:'10:00–11:00',master_vk_id:'1001',master_name:'Александр Мастер',master_payout:2463.05,wall_material:'Кирпич',wall_over_3m:true,possible_extra_work:true,comment:'Позвонить заранее'},
       {id:'M-2',status:'Выполнена',client:'Клиент 2',address:'Адрес 2',work:'Шторы',scheduled_date:'2099-09-09',scheduled_time:'12:00',master_vk_id:'1001',master_name:'Александр Мастер',master_payout:1200,extra_work_amount:300,uncompleted_work_amount:200}
     ];
     const miniHandler=async route=>{
@@ -51,8 +51,10 @@ for(const s of sizes){
     await page.evaluate(()=>openOrder('M-1'));
     const modal=page.locator('.modal.show, .modal.open, .modal').filter({hasText:'№ M-1'}).last();
     await expect(modal.getByText('Выплата: 2 463,05 ₽',{exact:true})).toBeVisible();
-    await expect(page.locator('.bosMasterWorkflow')).toBeVisible();
-    await expect(page.getByRole('button',{name:'Выехал'})).toBeVisible();
+    await expect(page.locator('.bosMasterWorkflow[data-bos-v26="1"]')).toBeVisible();
+    await expect(page.getByRole('link',{name:'Позвонить клиенту',exact:true})).toBeVisible();
+    await expect(page.getByRole('button',{name:'Нужно перенести',exact:true})).toBeVisible();
+    await expect(page.getByRole('button',{name:'Я на месте',exact:true})).toHaveCount(0);
     await expect(page.getByRole('button',{name:'Отчитаться по заявке'})).toBeHidden();
     await expect(page.getByText('Исходная сумма',{exact:true})).toHaveCount(0);
     await expect(page.getByText('Итоговая сумма заявки',{exact:true})).toHaveCount(0);

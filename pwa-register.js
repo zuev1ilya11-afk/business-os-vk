@@ -19,6 +19,11 @@
   masterRescheduleCall.async=false;
   document.head.appendChild(masterRescheduleCall);
 
+  const masterCallWorkflow=document.createElement('script');
+  masterCallWorkflow.src='./master-call-workflow-v26.js?v=20260921-v26';
+  masterCallWorkflow.async=false;
+  document.head.appendChild(masterCallWorkflow);
+
   const dispatcherDesktop=document.createElement('script');
   dispatcherDesktop.src='./dispatcher-desktop-v89.js?v=20260920-v89';
   dispatcherDesktop.async=false;
