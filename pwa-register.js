@@ -69,6 +69,11 @@
   dispatchControlV24.async=false;
   document.head.appendChild(dispatchControlV24);
 
+  const notificationCenterV26=document.createElement('script');
+  notificationCenterV26.src='./notification-center-v26.js?v=20260921-v26';
+  notificationCenterV26.async=false;
+  document.head.appendChild(notificationCenterV26);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
