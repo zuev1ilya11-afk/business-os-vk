@@ -7,7 +7,7 @@ test('employee profile refreshes from bootstrap after staff data changes',async(
   await expect(page.locator('#authGate')).toBeHidden();
   await page.waitForFunction(()=>typeof window.BOS_REFRESH_EMPLOYEE_DATA==='function');
 
-  await page.evaluate(id=>window.openEmployeeProfile(id),master.id);
+  await page.evaluate(id=>window.openEmployeeProfile(id),master.external_id);
   const modal=page.locator('#modalRoot .modal');
   await expect(modal).toBeVisible();
   await expect(modal).toContainText('+79990000001');
