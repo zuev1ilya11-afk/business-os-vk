@@ -1,7 +1,7 @@
 (()=>{
 'use strict';
 if(window.BOS_MASTER_CALL_WORKFLOW_V26)return;window.BOS_MASTER_CALL_WORKFLOW_V26=true;
-const API_URL='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/master-workflow-api';
+const PROFILE_URL='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/profile-self-api';
 const STAGES=['assigned','departed','started','completed'];
 const LABELS={assigned:'Назначена',departed:'Выехал',started:'Работа начата',completed:'Завершена',cancelled:'Отменена'};
 const TIMES={departed:'master_departed_at',started:'master_started_at',completed:'completed_at'};
@@ -10,6 +10,7 @@ let rendering=false;
 
 function masterMode(){return String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode())}
 function liveMaster(){return String(state?.user?.role||'')==='master'}
+function masterUser(){return typeof liveMasterUser==='function'?(liveMasterUser()||state?.user||{}):(state?.user||{})}
 function findOrder(id){return (state?.orders||[]).find(o=>String(o.id)===String(id))||null}
 function escv(v){return typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function phoneHref(v){let p=String(v||'').trim().replace(/[^\d+]/g,'');if(/^8\d{10}$/.test(p))p='+7'+p.slice(1);else if(/^\d{10}$/.test(p))p='+7'+p;return p}
@@ -28,7 +29,7 @@ function renderPanel(id){if(rendering||!masterMode())return;const o=findOrder(id
 function currentModalId(){const modal=workflowModal();if(!modal)return'';return String(modal.dataset.bosWorkflowOrderId||modal.querySelector('.bosMasterWorkflow')?.dataset?.orderId||'')}
 function clearWorkflowMarker(){const modal=document.querySelector('#modalRoot .modal');if(modal)delete modal.dataset.bosWorkflowOrderId}
 async function authHeaders(){const h=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};return {...h,'Content-Type':'application/json'}}
-async function stageCall(id,stage){const r=await fetch(API_URL,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action:'setStage',id,stage}),keepalive:true}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось изменить этап');return d}
+async function stageCall(id,stage){const m=masterUser(),phone=String(m?.phone||'').trim();if(!phone)throw new Error('У мастера не указан телефон в профиле');const r=await fetch(PROFILE_URL,{method:'POST',headers:await authHeaders(),body:JSON.stringify({phone,district:`@@BOS_WF1@@|${id}|${stage}`}),keepalive:true}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось изменить этап');const now=new Date().toISOString(),order={master_workflow_stage:stage,updated_at:now};if(stage==='departed')order.master_departed_at=now;if(stage==='started')order.master_started_at=now;return{ok:true,order}}
 function mergeOrder(id,data){const i=(state.orders||[]).findIndex(o=>String(o.id)===String(id));if(i>=0)state.orders[i]={...state.orders[i],...(data||{})}}
 function setMsg(id,text){const modal=modalFor(id);const el=modal?.querySelector('.bosMasterWorkflow .bosMwMsg');if(el)el.textContent=text||''}
 function refreshMasterUi(id){if(id)renderPanel(id);patchLegacyLabels()}
