@@ -26,7 +26,7 @@ function database(seed = {}) {
       if(mode==='insert'){
         if(table==='orders'&&tables.orders.some(x=>x.external_id===payload.external_id&&x.external_source===payload.external_source))return {data:null,error:{code:'23505',message:'duplicate key'}};
         rows=(Array.isArray(payload)?payload:[payload]).map(x=>({id:String((tables[table]||[]).length+1),...x}));tables[table].push(...rows);
-      } else if(mode==='update')rows.forEach(x=>Object.assign(x,payload));
+      } else if(mode==='update')rows.forEach(x=>Object.assign(x,db.beforeUpdate?db.beforeUpdate(table,x,{...payload}):payload));
       else if(mode==='delete')tables[table]=tables[table].filter(x=>!rows.includes(x));
       else if(mode==='upsert'){rows=payload;for(const p of payload){const x=tables[table].find(x=>x.staff_id===p.staff_id&&x.work_date===p.work_date);if(x)Object.assign(x,p);else tables[table].push({...p})}}
       rows=rows.slice(from,to+1).map(x=>columns==='*'?{...x}:Object.fromEntries(columns.split(',').map(k=>[k,x[k]])));

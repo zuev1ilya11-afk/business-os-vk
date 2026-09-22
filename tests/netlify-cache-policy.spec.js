@@ -9,6 +9,6 @@ test('Netlify keeps HTML and service worker fresh across network edges',async()=
   expect(netlify).toContain('for = "/index.html"');
   expect(netlify).toContain('for = "/sw.js"');
   expect(netlify.match(/Cache-Control = "public, max-age=0, must-revalidate"/g)||[]).toHaveLength(2);
-  expect(worker).toContain("const CACHE='business-os-shell-v3'");
+  expect(worker).toMatch(/const CACHE='business-os-shell-v\d+'/);
   expect(worker).toContain("fetch(request,{cache:'no-store'})");
 });

@@ -8,12 +8,14 @@ async function boot(page,role){
   return data;
 }
 for(const role of ['owner','manager'])test(`${role}: employee refresh updates open profile AND underlying team without reload`,async({page})=>{
+  await page.clock.install();
   const {db,master}=await boot(page,role);
   await page.locator('nav [data-page=team]').click();
   await page.getByRole('button',{name:/Тестовый мастер/}).click();
   Object.assign(db.tables.business_staff.find(x=>x.id===master.id),{phone:'+79990000099',city:'Пушкин'});
   db.tables.orders[0].status='Выполнена';
   db.tables.staff_schedule.push({staff_id:master.id,work_date:'2099-09-10',is_working:true,work_start:'12:00',work_end:'18:00'});
+  await page.clock.fastForward(2600);
   await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
   await expect(page.locator('#modalRoot')).toContainText('+79990000099');
   await expect(page.locator('#content')).toContainText('+79990000099');

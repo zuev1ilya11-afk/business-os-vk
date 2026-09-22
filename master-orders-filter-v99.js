@@ -55,7 +55,7 @@ window.setMasterOrdersFilter=function(v){window.__bosMasterOrderStatus=String(v|
 if(typeof window.setMasterOrderDay!=='function')window.setMasterOrderDay=function(day){window.__bosMasterOrderDay=String(day||'all');if(!rerender()&&typeof show==='function')show('orders')};
 
 const baseOrders=pages.orders;
-pages.orders=function(){if(!masterMode())return baseOrders();const all=own().slice(),list=sortOrders(all.filter(matches));return `<div class="masterSimple masterOrdersDense masterOrdersV99"><div class="masterSectionTitle"><div><h2>Мои заявки</h2><div class="muted">Текущие: ${counts(all).current} · Всего: ${all.length}</div></div></div>${statusFilters(all)}${dayFilters(list)}${list.length?grouped(list):`<div class="masterEmpty">${emptyText()}</div>`}</div>`};
+pages.orders=function(){if(!masterMode())return baseOrders();const all=own().slice(),list=sortOrders(all.filter(o=>matches(o)));return `<div class="masterSimple masterOrdersDense masterOrdersV99"><div class="masterSectionTitle"><div><h2>Мои заявки</h2><div class="muted">Текущие: ${counts(all).current} · Всего: ${all.length}</div></div></div>${statusFilters(all)}${dayFilters(list)}${list.length?grouped(list):`<div class="masterEmpty">${emptyText()}</div>`}</div>`};
 
 let lastWeek=weekStart();setInterval(()=>{const w=weekStart();if(w===lastWeek)return;lastWeek=w;if(masterMode()&&String(state?.page||'')==='orders')rerender()},60000);
 

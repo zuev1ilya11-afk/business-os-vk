@@ -16,7 +16,7 @@ test('employee profile refreshes from bootstrap after staff data changes',async(
   row.phone='+79990000099';
   row.city='Пушкин';
 
-  const changed=await page.evaluate(()=>window.BOS_REFRESH_EMPLOYEE_DATA('test'));
+  const changed=await page.evaluate(()=>window.BOS_REFRESH_EMPLOYEE_DATA('manual'));
   expect(changed).toBe(true);
   await expect(modal).toContainText('+79990000099');
   await expect(modal).toContainText('Пушкин');

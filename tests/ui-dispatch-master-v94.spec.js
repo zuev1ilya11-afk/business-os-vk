@@ -37,7 +37,10 @@ test('master orders use green red and orange status highlighting',async({page})=
   const done=page.locator('.bosHandsMiniCard,.masterCompactOrder').filter({hasText:'№ 11'}).first();
   const reclamation=page.locator('.bosHandsMiniCard,.masterCompactOrder').filter({hasText:'№ 13'}).first();
   const reschedule=page.locator('.bosHandsMiniCard,.masterCompactOrder').filter({hasText:'№ 14'}).first();
+  await page.getByRole('button',{name:/^Выполненные/}).click();
   await expect(done).toHaveClass(/bosMasterDone/);
+  await page.getByRole('button',{name:/^Рекламации/}).click();
   await expect(reclamation).toHaveClass(/bosMasterReclamation/);
+  await page.getByRole('button',{name:/^Текущие/}).click();
   await expect(reschedule).toHaveClass(/bosMasterReschedule/);
 });
