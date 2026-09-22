@@ -37,7 +37,7 @@ test('dispatcher new order card is grouped and touch friendly on mobile',async({
     const controls=[...node.querySelectorAll('input:not([type="checkbox"]):not([type="radio"]),select,textarea,.newOrderActions button')]
       .filter(el=>getComputedStyle(el).display!=='none')
       .map(el=>{const r=el.getBoundingClientRect();return {height:r.height,left:r.left,right:r.right}});
-    const visibleSections=[...node.querySelectorAll('.newOrderSection:not([hidden])'].map(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right}});
+    const visibleSections=[...node.querySelectorAll('.newOrderSection:not([hidden])')].map(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right}});
     return {
       pageOverflow:document.documentElement.scrollWidth-vw,
       controlsTouchSafe:controls.every(x=>x.height>=44),
