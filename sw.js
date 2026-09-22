@@ -1,4 +1,4 @@
-const CACHE='business-os-shell-v3';
+const CACHE='business-os-shell-v5';
 const SHELL=['./','./index.html','./manifest.webmanifest','./brand-logo.svg'];
 
 self.addEventListener('install',event=>{
