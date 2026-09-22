@@ -9,10 +9,10 @@ test('master workflow keeps phone calls separate from manual stage changes',()=>
   assert.match(src,/master-workflow-api/);
   assert.match(src,/Позвонить клиенту/);
   assert.match(src,/masterWorkflowSetStage/);
-  assert.match(src,/>Выехал<\/button>/);
-  assert.match(src,/>Работа начата<\/button>/);
+  assert.match(src,/(Перейти:\s*)?Выехал<\/button>/);
+  assert.match(src,/(Перейти:\s*)?Работа начата<\/button>/);
   assert.match(src,/Нужно перенести/);
-  assert.match(src,/Завершить и прикрепить отчёт/);
+  assert.match(src,/(Завершить и прикрепить отчёт|Перейти:\s*Завершена)/);
   assert.match(src,/openMasterRescheduleForm/);
   assert.doesNotMatch(src,/Позвонить по приезду/);
   assert.doesNotMatch(src,/onclick=\"masterWorkflowCallAndAdvance/);
@@ -21,6 +21,13 @@ test('master workflow keeps phone calls separate from manual stage changes',()=>
 
   const loader=fs.readFileSync('pwa-register.js','utf8');
   assert.match(loader,/master-call-workflow-v26\.js\?v=20260922-v27/);
+  assert.match(loader,/master-call-hotfix-v27\.js\?v=20260922-v27/);
+
+  const hotfix=fs.readFileSync('master-call-hotfix-v27.js','utf8');
+  assert.doesNotThrow(()=>new Function(hotfix));
+  assert.match(hotfix,/VKWebAppOpenURL/);
+  assert.match(hotfix,/call-client\.html/);
+  assert.match(hotfix,/BOS_SKIP_MASTER_REFRESH_UNTIL/);
 
   const proxy=fs.readFileSync('netlify/functions/proxy.mts','utf8');
   assert.match(proxy,/\"master-workflow-api\"/);
