@@ -74,16 +74,29 @@
     return /load failed|failed to fetch|networkerror|network request failed/i.test(String(error?.message||''));
   }
 
+  async function serviceNotAllowed(response){
+    if(!response||response.status!==404)return false;
+    try{const body=await response.clone().json();return String(body?.error||'')==='SERVICE_NOT_ALLOWED'}catch(_){return false}
+  }
+
+  async function directFallback(next,retryInput,init){
+    if(retryInput instanceof Request)return fetchRequestAt(next,retryInput,init);
+    return lowerFetch(next,init);
+  }
+
   window.fetch=async function(input,init){
     const raw=typeof input==='string'?input:input instanceof URL?input.href:input?.url||'';
     const next=directUrl(raw);
     if(!next)return lowerFetch(input,init);
     const outer=outerSignal(input,init);
     const retryInput=input instanceof Request?input.clone():input;
-    try{return await gatewayFetch(input,init)}catch(error){
+    try{
+      const response=await gatewayFetch(input,init);
+      if(await serviceNotAllowed(response))return directFallback(next,retryInput,init);
+      return response;
+    }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
-      if(retryInput instanceof Request)return fetchRequestAt(next,retryInput,init);
-      return lowerFetch(next,init);
+      return directFallback(next,retryInput,init);
     }
   };
 
