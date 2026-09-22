@@ -3,18 +3,27 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const {edge,database,employee}=require('./helpers/edge.cjs');
 
-test('master workflow v2.6 is loaded and uses call-driven stages',()=>{
+test('master workflow keeps phone calls separate from manual stage changes',()=>{
   const src=fs.readFileSync('master-call-workflow-v26.js','utf8');
   assert.doesNotThrow(()=>new Function(src));
   assert.match(src,/master-workflow-api/);
   assert.match(src,/Позвонить клиенту/);
-  assert.match(src,/Позвонить по приезду/);
+  assert.match(src,/masterWorkflowSetStage/);
+  assert.match(src,/>Выехал<\/button>/);
+  assert.match(src,/>Работа начата<\/button>/);
   assert.match(src,/Нужно перенести/);
   assert.match(src,/Завершить и прикрепить отчёт/);
   assert.match(src,/openMasterRescheduleForm/);
+  assert.doesNotMatch(src,/Позвонить по приезду/);
+  assert.doesNotMatch(src,/onclick=\"masterWorkflowCallAndAdvance/);
+  assert.doesNotMatch(src,/автоматический переход после звонка/);
   assert.doesNotMatch(src,/Я на месте/);
+
   const loader=fs.readFileSync('pwa-register.js','utf8');
-  assert.match(loader,/master-call-workflow-v26\.js\?v=20260921-v26/);
+  assert.match(loader,/master-call-workflow-v26\.js\?v=20260922-v27/);
+
+  const proxy=fs.readFileSync('netlify/functions/proxy.mts','utf8');
+  assert.match(proxy,/\"master-workflow-api\"/);
 });
 
 test('workflow migration remains backward-compatible and does not touch payouts',()=>{
@@ -25,7 +34,7 @@ test('workflow migration remains backward-compatible and does not touch payouts'
   assert.doesNotMatch(sql,/manager_payout\s*=/);
 });
 
-test('master workflow API supports direct v26 flow and legacy arrived clients without changing money',async()=>{
+test('master workflow API supports manual v26 flow and legacy arrived clients without changing money',async()=>{
   const me=employee('m','master',{full_name:'Мастер'}),other=employee('x','master',{full_name:'Другой'}),owner=employee('owner','owner');
   const db=database({business_staff:[me,other,owner],orders:[
     {id:'11',status:'В работе',master_staff_id:me.id,master_workflow_stage:'assigned',amount:2000,original_amount:2000,master_payout:1105},
