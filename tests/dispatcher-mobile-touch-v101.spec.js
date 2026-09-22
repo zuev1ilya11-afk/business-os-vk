@@ -14,7 +14,9 @@ test('dispatcher mobile controls keep usable touch targets and compact filters',
     page.locator('.dmNewOrder'),
     page.locator('.dmMetrics button').first(),
     page.locator('.dmShortcuts button').first(),
-    page.locator('.dmCardActions .secondary').first()
+    page.locator('.dmCardActions .secondary').first(),
+    page.locator('.dmAssignAction').first(),
+    page.locator('.dmDateTimeAction').first()
   ];
   for(const target of touchTargets){
     const box=await target.boundingBox();
