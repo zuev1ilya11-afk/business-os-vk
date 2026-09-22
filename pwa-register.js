@@ -20,7 +20,7 @@
   document.head.appendChild(masterRescheduleCall);
 
   const masterCallWorkflow=document.createElement('script');
-  masterCallWorkflow.src='./master-call-workflow-v26.js?v=20260921-v26';
+  masterCallWorkflow.src='./master-call-workflow-v26.js?v=20260922-v27';
   masterCallWorkflow.async=false;
   document.head.appendChild(masterCallWorkflow);
 
