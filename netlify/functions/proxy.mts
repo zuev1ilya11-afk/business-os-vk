@@ -7,6 +7,7 @@ const ALLOWED = new Set([
   "report-file-upload",
   "report-api",
   "master-memo-api",
+  "master-workflow-api",
   "avito-api",
   "integration-api",
   "employee-meta-api",
