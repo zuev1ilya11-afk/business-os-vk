@@ -27,9 +27,6 @@ jobs:
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server
 
-      - name: Mobile dispatcher regression
-        run: npx playwright test tests/dispatcher-mobile-v97.spec.js --workers=1
-
       - name: Complete Playwright suite
         run: npm run test:ui -- --workers=2
 
