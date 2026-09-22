@@ -91,7 +91,7 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   await expect(page.locator('input[name="vk_user_id"]')).toHaveCount(0);
   await page.locator('input[name="phone"]').fill('+79991234567');
   await page.locator('input[name="login"]').fill('new.master');
-  await page.locator('input[name="password"]').fill('testpass1');
+  await page.locator('input[name="password"]').fill('testpass10');
   await page.getByRole('button',{name:'Добавить сотрудника и доступ'}).click();
   await expect(page.getByText('Сотрудник и доступ созданы')).toBeVisible();
   await page.getByRole('button',{name:'Закрыть'}).click();
