@@ -6,7 +6,9 @@ const {edge,database,employee}=require('./helpers/edge.cjs');
 test('master workflow keeps phone calls separate from manual stage changes',()=>{
   const src=fs.readFileSync('master-call-workflow-v26.js','utf8');
   assert.doesNotThrow(()=>new Function(src));
-  assert.match(src,/master-workflow-api/);
+  assert.match(src,/profile-self-api/);
+  assert.match(src,/@@BOS_WF1@@\|/);
+  assert.match(src,/href=\"tel:\$\{escv\(href\)\}\"/);
   assert.match(src,/Позвонить клиенту/);
   assert.match(src,/masterWorkflowSetStage/);
   assert.match(src,/>Выехал<\/button>/);
@@ -23,7 +25,19 @@ test('master workflow keeps phone calls separate from manual stage changes',()=>
   assert.match(loader,/master-call-workflow-v26\.js\?v=20260922-v27/);
 
   const proxy=fs.readFileSync('netlify/functions/proxy.mts','utf8');
-  assert.match(proxy,/\"master-workflow-api\"/);
+  assert.match(proxy,/\"profile-self-api\"/);
+});
+
+test('profile bridge persists master workflow stages without touching money',()=>{
+  const sql=fs.readFileSync('supabase/migrations/20260922104500_master_workflow_profile_bridge.sql','utf8');
+  assert.match(sql,/@@BOS_WF1@@\|/);
+  assert.match(sql,/old\.role <> 'master'/);
+  assert.match(sql,/master_staff_id = old\.id/);
+  assert.match(sql,/requested_stage = 'departed'/);
+  assert.match(sql,/requested_stage = 'started'/);
+  assert.match(sql,/Этапы нужно отмечать по порядку/);
+  assert.doesNotMatch(sql,/master_payout\s*=/);
+  assert.doesNotMatch(sql,/manager_payout\s*=/);
 });
 
 test('workflow migration remains backward-compatible and does not touch payouts',()=>{
