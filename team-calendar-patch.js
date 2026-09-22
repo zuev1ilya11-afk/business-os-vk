@@ -10,6 +10,10 @@ function teamDaySchedule(masterId,date,week){
 function teamOrdersForMasterDay(masterId,date){
   return state.orders.filter(o=>String(o.master_vk_id||'')===String(masterId)&&String(o.scheduled_date||'')===String(date)&&o.status!=='Отменена').sort((a,b)=>String(a.scheduled_time||'').localeCompare(String(b.scheduled_time||'')));
 }
+function teamWorkTime(day){
+  const start=String(day?.work_start||'').slice(0,5),end=String(day?.work_end||'').slice(0,5);
+  return start&&end?`${start}–${end}`:start||end||'Время не указано';
+}
 function changeTeamCalendarWeek(delta){
   teamCalendarWeek=addDaysIso(teamCalendarWeek||mondayOf(),delta);
   show('dispatch');
@@ -22,7 +26,7 @@ function masterAvailabilityRow(master,date,week){
   const day=teamDaySchedule(master.vk_user_id,date,week);
   if(!day||!extraTruthy(day.is_working))return '';
   const orders=teamOrdersForMasterDay(master.vk_user_id,date);
-  return `<section class="card" style="margin:10px 0;padding:12px"><div class="row"><div><b>${esc(master.full_name)}</b><div class="muted">${esc(master.specialization||master.city||'Мастер')}</div></div><span class="status info">${esc((day.work_start||'')+'–'+(day.work_end||''))}</span></div>${orders.length?`<div style="margin-top:10px">${orders.map(o=>`<button class="secondary wide" style="margin-top:6px;text-align:left" onclick="openOrder('${esc(o.id)}')"><b>${esc(o.scheduled_time||'Без времени')}</b> · ${esc(o.work)}<br><span class="muted">${esc(o.address)} · ${esc(o.status)}</span></button>`).join('')}</div>`:'<p class="muted" style="margin:8px 0 0">Свободен — заявок нет</p>'}</section>`;
+  return `<section class="card" style="margin:10px 0;padding:12px"><div class="row"><div><b>${esc(master.full_name)}</b><div class="muted">${esc(master.specialization||master.city||'Мастер')}</div></div><span class="status bosPartDayChip" title="Время, указанное мастером">${esc(teamWorkTime(day))}</span></div>${orders.length?`<div style="margin-top:10px">${orders.map(o=>`<button class="secondary wide" style="margin-top:6px;text-align:left" onclick="openOrder('${esc(o.id)}')"><b>${esc(o.scheduled_time||'Без времени')}</b> · ${esc(o.work)}<br><span class="muted">${esc(o.address)} · ${esc(o.status)}</span></button>`).join('')}</div>`:'<p class="muted" style="margin:8px 0 0">Свободен — заявок нет</p>'}</section>`;
 }
 function teamCalendarHtml(){
   const week=teamCalendarWeek||mondayOf();
@@ -38,3 +42,7 @@ pages.dispatch=function(){
   if(masterNow)return masterCalendarBaseDispatch();
   return teamCalendarHtml();
 };
+
+const teamCalStyle=document.createElement('style');
+teamCalStyle.textContent='.bosPartDayChip{color:#fbbf24!important;background:rgba(245,158,11,.14)!important;border:1px solid rgba(245,158,11,.42)!important;box-shadow:inset 0 0 0 1px rgba(245,158,11,.06);white-space:nowrap;font-variant-numeric:tabular-nums}';
+document.head.appendChild(teamCalStyle);
