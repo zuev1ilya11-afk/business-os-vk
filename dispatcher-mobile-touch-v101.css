@@ -1,0 +1,103 @@
+@media (max-width: 760px) {
+  #content.dmExistingOrders {
+    overflow-x: hidden;
+  }
+
+  #content.dmExistingOrders > .bosDispatcherMobile,
+  #content.dmExistingOrders #bosOrderList,
+  #content.dmExistingOrders .opsCompactOrder,
+  #content.dmExistingOrders .opsCompactTop,
+  #content.dmExistingOrders .opsCompactMain {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dmMobileHeader {
+    align-items: flex-start;
+  }
+
+  .dmNewOrder {
+    min-height: 44px;
+    min-width: 96px;
+    touch-action: manipulation;
+  }
+
+  .dmMetrics button {
+    min-height: 56px;
+    padding: 8px 6px;
+    touch-action: manipulation;
+  }
+
+  .dmMetrics button span {
+    display: flex;
+    min-height: 20px;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    line-height: 1.15;
+  }
+
+  .dmShortcuts button,
+  #content.dmExistingOrders .bosOrderFilters button,
+  .dmCardActions .secondary {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  #content.dmExistingOrders .bosOrderFilterBox {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  #content.dmExistingOrders .bosOrderFilterBox input {
+    grid-column: 1 / -1;
+  }
+
+  #content.dmExistingOrders .bosOrderFilterBox input,
+  #content.dmExistingOrders .bosOrderFilterBox select {
+    min-width: 0;
+    min-height: 46px;
+    box-sizing: border-box;
+    font-size: 16px;
+  }
+
+  #content.dmExistingOrders .opsCompactMain > b {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #content.dmExistingOrders .opsCompactAddress,
+  #content.dmExistingOrders .opsCompactWorks {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .dmCardActions {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 350px) {
+  #content.dmExistingOrders .bosOrderFilterBox {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #content.dmExistingOrders .bosOrderFilterBox input {
+    grid-column: auto;
+  }
+
+  .dmMobileHeader {
+    gap: 8px;
+  }
+
+  .dmNewOrder {
+    min-width: 88px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
