@@ -109,6 +109,11 @@
   newOrderCardV104.async=false;
   document.head.appendChild(newOrderCardV104);
 
+  const dispatcherOrderPriorityV105=document.createElement('script');
+  dispatcherOrderPriorityV105.src='./dispatcher-order-priority-v105.js?v=20260923-v105';
+  dispatcherOrderPriorityV105.async=false;
+  document.head.appendChild(dispatcherOrderPriorityV105);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
