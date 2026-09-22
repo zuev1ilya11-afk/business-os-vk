@@ -14,10 +14,23 @@ test('mobile dispatcher layer preserves existing order workflow and stays mobile
   await expect(page.locator('.opsCompactOrder')).toHaveCount(2);
   await expect(page.locator('.dmCardActions')).toHaveCount(2);
   await expect(page.getByRole('button',{name:'Открыть'})).toHaveCount(2);
+  await expect(page.locator('.dmDateTimeAction')).toHaveCount(2);
+  await expect(page.locator('.dmAssignAction')).toHaveCount(1);
 
   await page.locator('.dmMetrics button').filter({hasText:'Без мастера'}).click();
   await expect(page.locator('.opsCompactOrder')).toHaveCount(1);
   await expect(page.locator('.opsCompactOrder')).toContainText('Борис');
+  await expect(page.getByRole('button',{name:'Назначить мастера'})).toBeVisible();
+  await expect(page.getByRole('button',{name:/Изменить дату и время|Перенести заявку/})).toBeVisible();
+
+  await page.getByRole('button',{name:'Назначить мастера'}).click();
+  await expect(page.locator('#quickMaster')).toBeVisible();
+  await expect(page.locator('#quickMaster')).toBeFocused();
+  await page.evaluate(()=>closeModal());
+
+  await page.getByRole('button',{name:/Изменить дату и время|Перенести заявку/}).click();
+  await expect(page.locator('#dispatcherRescheduleForm,#quickScheduledDate')).toBeVisible();
+  await page.evaluate(()=>closeModal());
 
   await page.setViewportSize({width:1024,height:768});
   await expect(page.locator('.bosDispatcherMobile')).toHaveCount(0);
