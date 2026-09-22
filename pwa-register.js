@@ -41,11 +41,11 @@
 
   const dispatchBoard=document.createElement('script');
   dispatchBoard.src='./dispatcher-board-v92.js?v=20260920-v92';
-  dispatcherDesktop.async=false;
+  dispatchBoard.async=false;
   document.head.appendChild(dispatchBoard);
 
   const dispatchBoardCompat=document.createElement('script');
-  dispatchBoardCompat.src='./dispatcher-board-compat-v90.js?v=20260920-v90';
+  dispatchBoardCompat.src='./dispatcher-board-compat-v93.js?v=20260920-v93';
   dispatchBoardCompat.async=false;
   document.head.appendChild(dispatchBoardCompat);
 
