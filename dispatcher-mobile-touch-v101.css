@@ -13,23 +13,23 @@
     box-sizing: border-box;
   }
 
-  .dmMobileHeader {
+  #content.dmExistingOrders .dmMobileHeader {
     align-items: flex-start;
   }
 
-  .dmNewOrder {
+  #content.dmExistingOrders .dmNewOrder {
     min-height: 44px;
     min-width: 96px;
     touch-action: manipulation;
   }
 
-  .dmMetrics button {
+  #content.dmExistingOrders .dmMetrics button {
     min-height: 56px;
     padding: 8px 6px;
     touch-action: manipulation;
   }
 
-  .dmMetrics button span {
+  #content.dmExistingOrders .dmMetrics button span {
     display: flex;
     min-height: 20px;
     align-items: center;
@@ -40,9 +40,9 @@
     line-height: 1.15;
   }
 
-  .dmShortcuts button,
+  #content.dmExistingOrders .dmShortcuts button,
   #content.dmExistingOrders .bosOrderFilters button,
-  .dmCardActions .secondary {
+  #content.dmExistingOrders .dmCardActions .secondary {
     min-height: 44px;
     touch-action: manipulation;
   }
@@ -77,7 +77,7 @@
     word-break: break-word;
   }
 
-  .dmCardActions {
+  #content.dmExistingOrders .dmCardActions {
     gap: 8px;
   }
 }
@@ -91,11 +91,11 @@
     grid-column: auto;
   }
 
-  .dmMobileHeader {
+  #content.dmExistingOrders .dmMobileHeader {
     gap: 8px;
   }
 
-  .dmNewOrder {
+  #content.dmExistingOrders .dmNewOrder {
     min-width: 88px;
     padding-left: 10px;
     padding-right: 10px;
