@@ -110,6 +110,7 @@ function injectOrderExtras(id){injectCall(id);injectRescheduleNotice(id)}
 const baseOpenOrder=window.openOrder;
 if(typeof baseOpenOrder==='function')window.openOrder=function(id){
   const out=baseOpenOrder.apply(this,arguments);
+  injectOrderExtras(id);
   setTimeout(()=>injectOrderExtras(id),0);
   setTimeout(()=>injectOrderExtras(id),80);
   return out;
@@ -137,6 +138,7 @@ function injectReportAction(id){
 const baseOpenReport=window.openMasterReportForm;
 if(typeof baseOpenReport==='function')window.openMasterReportForm=function(id){
   const out=baseOpenReport.apply(this,arguments);
+  injectReportAction(id);
   setTimeout(()=>injectReportAction(id),0);
   setTimeout(()=>injectReportAction(id),50);
   return out;
