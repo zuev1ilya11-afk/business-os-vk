@@ -94,6 +94,11 @@
   masterOrdersFilterV99.async=false;
   document.head.appendChild(masterOrdersFilterV99);
 
+  const managementOrderDeleteV100=document.createElement('script');
+  managementOrderDeleteV100.src='./management-order-delete-v100.js?v=20260922-v100';
+  managementOrderDeleteV100.async=false;
+  document.head.appendChild(managementOrderDeleteV100);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
