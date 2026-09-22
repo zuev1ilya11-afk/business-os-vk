@@ -15,7 +15,7 @@
   document.head.appendChild(installApp);
 
   const masterRescheduleCall=document.createElement('script');
-  masterRescheduleCall.src='./master-reschedule-call-v87.js?v=20260919-v87';
+  masterRescheduleCall.src='./master-reschedule-call-v87.js?v=20260922-v87c';
   masterRescheduleCall.async=false;
   document.head.appendChild(masterRescheduleCall);
 
