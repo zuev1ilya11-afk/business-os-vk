@@ -28,7 +28,7 @@ test('owner can set employee credentials and restore disabled employee',async({p
     expect(route.request().headers()['x-bos-session']).toBe('admin.9999999999.testsignature');
     if(b.action==='listStaff')return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,staff})});
     if(b.action==='setCredentials'){
-      credentialsSaved=b.id==='master1'&&b.login==='master.new'&&b.password==='secret12';
+      credentialsSaved=b.id==='master1'&&b.login==='master.new'&&b.password==='secret1234';
       return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,user:{...staff[0],login:b.login,has_password:true}})});
     }
     if(b.action==='restoreEmployee'){
@@ -46,7 +46,7 @@ test('owner can set employee credentials and restore disabled employee',async({p
   await modal.getByRole('button',{name:/Активный мастер/}).click();
   const form=page.locator('#staffCredForm');
   await form.locator('[name=login]').fill('master.new');
-  await form.locator('[name=password]').fill('secret12');
+  await form.locator('[name=password]').fill('secret1234');
   await form.getByRole('button',{name:'Сохранить логин и пароль'}).click();
   await expect.poll(()=>credentialsSaved).toBeTruthy();
   await expect(page.locator('#staffCredMsg')).toContainText('сохранены');
