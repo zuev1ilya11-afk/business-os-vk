@@ -59,6 +59,27 @@ window.dmFilter=function(filter){
   if(typeof window.setBosOrderFilter==='function')return window.setBosOrderFilter(filter);
   if(typeof show==='function')show('orders');
 };
+window.dmAssignMaster=function(id){
+  if(typeof openOrder!=='function')return;
+  openOrder(String(id));
+  requestAnimationFrame(()=>{
+    const select=document.getElementById('quickMaster');
+    if(!select)return;
+    select.scrollIntoView({block:'center'});
+    select.focus();
+  });
+};
+window.dmEditDateTime=function(id){
+  if(typeof window.openDispatcherReschedule==='function')return window.openDispatcherReschedule(String(id));
+  if(typeof openOrder!=='function')return;
+  openOrder(String(id));
+  requestAnimationFrame(()=>{
+    const field=document.getElementById('quickScheduledDate')||document.getElementById('quickScheduledTime');
+    if(!field)return;
+    field.scrollIntoView({block:'center'});
+    field.focus();
+  });
+};
 
 function orderIdFromCard(card){
   const raw=card.getAttribute('onclick')||'';
@@ -81,6 +102,24 @@ function decorateCards(content){
       call.setAttribute('aria-label','Позвонить клиенту');
       call.addEventListener('click',event=>event.stopPropagation());
       actions.appendChild(call);
+    }
+    if(unassigned(order)){
+      const assign=document.createElement('button');
+      assign.type='button';
+      assign.className='secondary dmAssignAction';
+      assign.textContent='Назначить';
+      assign.setAttribute('aria-label','Назначить мастера');
+      assign.addEventListener('click',event=>{event.stopPropagation();window.dmAssignMaster(order.id)});
+      actions.appendChild(assign);
+    }
+    if(active(order)){
+      const timing=document.createElement('button');
+      timing.type='button';
+      timing.className='secondary dmDateTimeAction'+(reschedule(order)?' needsAttention':'');
+      timing.textContent=reschedule(order)?'Перенести':'Дата / время';
+      timing.setAttribute('aria-label',reschedule(order)?'Перенести заявку':'Изменить дату и время');
+      timing.addEventListener('click',event=>{event.stopPropagation();window.dmEditDateTime(order.id)});
+      actions.appendChild(timing);
     }
     const open=document.createElement('button');
     open.type='button';
@@ -154,7 +193,7 @@ style.textContent=`
   .dmShortcuts{display:flex;gap:7px;overflow-x:auto;padding:1px 0 3px;scrollbar-width:none}.dmShortcuts::-webkit-scrollbar{display:none}.dmShortcuts button{flex:0 0 auto;min-height:38px;padding:7px 11px;white-space:nowrap;font-size:11px;border-radius:999px}
   #content.dmExistingOrders>.row:first-of-type{display:none}#content.dmExistingOrders .bosOrderFilters{padding-top:2px;margin-left:-1px;margin-right:-1px}#content.dmExistingOrders .bosOrderFilters button{min-height:36px;border-radius:999px}#content.dmExistingOrders .bosOrderFilterBox{margin:3px 0 10px;padding:9px;border-radius:14px}#content.dmExistingOrders .bosOrderFilterBox input,#content.dmExistingOrders .bosOrderFilterBox select{min-height:42px}
   #content.dmExistingOrders #bosOrderList{display:flex;flex-direction:column;gap:9px}#content.dmExistingOrders .opsCompactOrder{margin:0;padding:12px 13px;border-radius:16px;border-color:rgba(255,255,255,.09);box-shadow:0 7px 22px rgba(0,0,0,.12)}#content.dmExistingOrders .opsCompactTop{align-items:center}#content.dmExistingOrders .opsCompactTop b{font-size:13px}#content.dmExistingOrders .opsCompactTop span{font-size:11px}#content.dmExistingOrders .opsCompactMain{margin-top:7px;align-items:flex-start}#content.dmExistingOrders .opsCompactMain b{font-size:15px;line-height:1.25}#content.dmExistingOrders .opsCompactMain strong{font-size:15px;white-space:nowrap}#content.dmExistingOrders .opsCompactAddress{margin-top:5px;font-size:12px;line-height:1.35}#content.dmExistingOrders .opsCompactWorks{margin-top:8px;padding-top:8px;line-height:1.35}#content.dmExistingOrders .opsCompactBottom{margin-top:9px;gap:5px}#content.dmExistingOrders .opsCompactBottom .status,#content.dmExistingOrders .bosSourceChip,#content.dmExistingOrders .bosRescheduleChip{min-height:24px;box-sizing:border-box;padding:4px 7px}
-  .dmCardActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,.07)}.dmCardActions:has(.dmOpenAction:only-child){grid-template-columns:1fr}.dmCardActions .secondary{min-height:40px;margin:0;border-radius:10px;font-size:12px}.dmCallAction{display:flex;align-items:center;justify-content:center;text-decoration:none}.dmOpenAction{width:100%}
+  .dmCardActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,.07)}.dmCardActions:has(.dmOpenAction:only-child){grid-template-columns:1fr}.dmCardActions .secondary{min-height:40px;margin:0;border-radius:10px;font-size:12px}.dmCallAction{display:flex;align-items:center;justify-content:center;text-decoration:none}.dmOpenAction{width:100%}.dmDateTimeAction.needsAttention{border-color:rgba(242,176,65,.55);color:#f2c46d}
 }
 @media(max-width:390px){.dmMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}.dmMetrics button span{font-size:10px}.dmMobileTitle h2{font-size:22px}}
 `;
