@@ -24,11 +24,6 @@
   masterCallWorkflow.async=false;
   document.head.appendChild(masterCallWorkflow);
 
-  const masterCallHotfix=document.createElement('script');
-  masterCallHotfix.src='./master-call-hotfix-v27.js?v=20260922-v27';
-  masterCallHotfix.async=false;
-  document.head.appendChild(masterCallHotfix);
-
   const dispatcherDesktop=document.createElement('script');
   dispatcherDesktop.src='./dispatcher-desktop-v89.js?v=20260920-v89';
   dispatcherDesktop.async=false;
@@ -46,11 +41,11 @@
 
   const dispatchBoard=document.createElement('script');
   dispatchBoard.src='./dispatcher-board-v92.js?v=20260920-v92';
-  dispatchBoard.async=false;
+  dispatcherDesktop.async=false;
   document.head.appendChild(dispatchBoard);
 
   const dispatchBoardCompat=document.createElement('script');
-  dispatchBoardCompat.src='./dispatcher-board-compat-v93.js?v=20260920-v93';
+  dispatchBoardCompat.src='./dispatcher-board-compat-v90.js?v=20260920-v90';
   dispatchBoardCompat.async=false;
   document.head.appendChild(dispatchBoardCompat);
 
