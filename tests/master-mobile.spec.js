@@ -63,7 +63,7 @@ for(const s of sizes){
 
     await page.locator('nav button[data-page="dispatch"]').click();
     await expect(page.getByText('Мой график')).toBeVisible();
-    await expect(page.locator('#masterMonthCalendar')).toBeVisible();
+    await expect(page.locator('.usScheduleCard .usGrid')).toBeVisible();
     await expect(page.getByRole('button',{name:'Сохранить график'})).toBeVisible();
 
     const teamButton=page.locator('nav button[data-page="team"]');
