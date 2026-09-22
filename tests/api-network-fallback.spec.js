@@ -17,6 +17,13 @@ test('offline gateway falls back to direct Supabase Edge API',async({page})=>{
  await authPage(page);
  await expect(page.locator('#authGate')).toContainText('Прямой резерв отвечает',{timeout:8000});expect(direct).toBe(1);await expect(page.getByRole('button',{name:'Повторить вход через VK'})).toBeVisible();
 });
+test('stale gateway SERVICE_NOT_ALLOWED falls back to direct Supabase Edge API',async({page})=>{
+ let direct=0;
+ await page.route('**/api/proxy/vk-session-api',r=>r.fulfill({status:404,contentType:'application/json',body:'{"ok":false,"error":"SERVICE_NOT_ALLOWED"}'}));
+ await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Прямой резерв после SERVICE_NOT_ALLOWED"}'})});
+ await authPage(page);
+ await expect(page.locator('#authGate')).toContainText('Прямой резерв после SERVICE_NOT_ALLOWED',{timeout:8000});expect(direct).toBe(1);
+});
 test('hanging gateway switches to direct API before outer auth deadline',async({page})=>{
  test.setTimeout(15000);let direct=0;
  await page.route('**/api/proxy/**',()=>{});
