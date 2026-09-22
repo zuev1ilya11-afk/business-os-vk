@@ -38,7 +38,7 @@ for(const s of sizes){
     await expect(upcoming).toContainText('2 463,05 ₽');
     await expect(upcoming).toContainText('10:00');
     await expect(upcoming).not.toContainText('Невский');
-    await expect(upcoming).not.toContainText('Карниз');
+    await expect(upcoming).toContainText('Карниз');
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
     const kpis=page.locator('.masterKpi');

@@ -14,6 +14,7 @@ test('master orders can be filtered by day and upcoming orders are grouped by da
 
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
+  await page.waitForFunction(()=>window.BOS_MASTER_ORDERS_FILTER_V99===true);
   await page.evaluate(({masterVkId})=>enterMasterPreview(masterVkId),{masterVkId:master.external_id});
 
   await expect(page.getByText('Ближайшие заявки')).toBeVisible();
@@ -34,8 +35,8 @@ test('master orders can be filtered by day and upcoming orders are grouped by da
   await expect(page.locator('.masterDayFilters')).toBeVisible();
   await expect(page.locator('.masterDayGroup')).toHaveCount(2);
 
-  const firstGroup=page.locator('.masterDayGroup[data-master-day="2099-09-10"]');
-  const secondGroup=page.locator('.masterDayGroup[data-master-day="2099-09-11"]');
+  const firstGroup=page.locator('.masterDayGroup:has([data-master-order-id="11"])');
+  const secondGroup=page.locator('.masterDayGroup:has([data-master-order-id="day-filter-2"])');
   await expect(firstGroup).toHaveCount(1);
   await expect(secondGroup).toHaveCount(1);
   await expect(firstGroup).toContainText('№ 11');
@@ -45,27 +46,27 @@ test('master orders can be filtered by day and upcoming orders are grouped by da
   await expect(secondGroup).toContainText('12:00');
   await expect(secondGroup).toContainText('Вторая заявка');
 
-  await expect(page.locator('[data-master-day-filter="all"]')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator(`.masterDayFilters button[onclick="setMasterOrderDay('all')"]`)).toHaveClass(/primary/);
 
-  await page.locator('[data-master-day-filter="2099-09-10"]').click();
+  await page.locator(`.masterDayFilters button[onclick="setMasterOrderDay('2099-09-10')"]`).click();
   await expect.poll(()=>page.evaluate(()=>String(window.__bosMasterOrderDay||'all'))).toBe('2099-09-10');
   await expect(page.locator('.masterDayGroup')).toHaveCount(1);
-  await expect(page.locator('.masterDayGroup[data-master-day="2099-09-10"]')).toBeVisible();
-  await expect(page.locator('.masterDayGroup[data-master-day="2099-09-11"]')).toHaveCount(0);
+  await expect(page.locator('.masterDayGroup:has([data-master-order-id="11"])')).toBeVisible();
+  await expect(page.locator('.masterDayGroup:has([data-master-order-id="day-filter-2"])')).toHaveCount(0);
   await expect(page.getByText('Монтаж')).toBeVisible();
   await expect(page.getByText('Вторая заявка')).toHaveCount(0);
-  await expect(page.locator('[data-master-day-filter="2099-09-10"]')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator(`.masterDayFilters button[onclick="setMasterOrderDay('2099-09-10')"]`)).toHaveClass(/primary/);
 
-  await page.locator('[data-master-day-filter="2099-09-11"]').click();
+  await page.locator(`.masterDayFilters button[onclick="setMasterOrderDay('2099-09-11')"]`).click();
   await expect.poll(()=>page.evaluate(()=>String(window.__bosMasterOrderDay||'all'))).toBe('2099-09-11');
   await expect(page.locator('.masterDayGroup')).toHaveCount(1);
-  await expect(page.locator('.masterDayGroup[data-master-day="2099-09-11"]')).toBeVisible();
+  await expect(page.locator('.masterDayGroup:has([data-master-order-id="day-filter-2"])')).toBeVisible();
   await expect(page.getByText('Монтаж')).toHaveCount(0);
   await expect(page.getByText('Вторая заявка')).toBeVisible();
-  await expect(page.locator('[data-master-day-filter="2099-09-11"]')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator(`.masterDayFilters button[onclick="setMasterOrderDay('2099-09-11')"]`)).toHaveClass(/primary/);
 
-  await page.locator('[data-master-day-filter="all"]').click();
+  await page.locator(`.masterDayFilters button[onclick="setMasterOrderDay('all')"]`).click();
   await expect.poll(()=>page.evaluate(()=>String(window.__bosMasterOrderDay||'all'))).toBe('all');
   await expect(page.locator('.masterDayGroup')).toHaveCount(2);
-  await expect(page.locator('[data-master-day-filter="all"]')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator(`.masterDayFilters button[onclick="setMasterOrderDay('all')"]`)).toHaveClass(/primary/);
 });

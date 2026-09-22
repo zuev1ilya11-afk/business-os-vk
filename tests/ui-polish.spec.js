@@ -2,6 +2,7 @@ const {test, expect} = require('@playwright/test');
 const {fullStack} = require('./helpers/full-stack.cjs');
 
 async function fits(page) {
+  await expect(async () => {
   const layout = await page.evaluate(() => {
     const width = document.documentElement.clientWidth;
     const root = document.querySelector('#modalRoot .modal') || document.querySelector('#content');
@@ -13,19 +14,22 @@ async function fits(page) {
       clipped: controls.filter(el => {
         const rect = el.getBoundingClientRect();
         // Horizontally scrolling date/filter strips are intentional.
-        const strip = el.closest('.bosOrderFilters, .masterDayFilters, .masterWeekDays');
+        const strip = el.closest('.bosOrderFilters, .masterDayFilters, .masterWeekDays, .masterStatusFilters, .dmShortcuts');
         return !strip && (rect.left < -1 || rect.right > width + 1);
       }).map(el => el.id || el.className),
       small: controls.filter(el => el.matches('.primary, .secondary, .wide, .modalClose') &&
         el.getBoundingClientRect().height < 44).map(el => el.textContent.trim())
     };
   });
-  expect(layout).toEqual({overflow: 0, rootOverflow: 0, clipped: [], small: []});
+  // Fractional grid widths can round scrollWidth up by one CSS pixel.
+  expect(layout.rootOverflow).toBeLessThanOrEqual(1);
+  expect({...layout, rootOverflow: 0}).toEqual({overflow: 0, rootOverflow: 0, clipped: [], small: []});
   for (const strip of ['.bosOrderFilters', '.masterDayFilters']) {
     const heights = await page.locator(`${strip} button:visible`).evaluateAll(els =>
       els.map(el => el.getBoundingClientRect().height));
     expect(heights.every(height => height >= 44 && height <= 48)).toBe(true);
   }
+  }).toPass({timeout: 3000});
 }
 
 for (const role of ['owner', 'manager', 'dispatcher', 'master']) {

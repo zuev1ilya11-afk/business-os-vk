@@ -60,17 +60,17 @@ for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths
     const modal = page.locator('#modalRoot .modal');
     expect(await modal.evaluate(el => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1);
     if (role === 'master') {
-      const call = modal.locator('a[href="tel:+79991234567"]').first();
+      const call = modal.locator('.bosMasterWorkflow[data-bos-v26="1"] .bosMwCallAction');
       await expect(call).toBeVisible();
       expect(await call.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
       await expect(page.getByRole('button', {name: 'Нужно перенести', exact: true})).toBeVisible();
       await expect(page.getByRole('button', {name: 'Я на месте', exact: true})).toHaveCount(0);
-      await page.evaluate(() => window.masterWorkflowCallAndAdvance(null, '11', 'departed'));
+      await page.getByRole('button', {name: 'Выехал', exact: true}).click();
       await expect(page.locator('.bosMasterWorkflow')).toContainText('Выехал');
-      expect(db.tables.orders[0].master_workflow_stage).toBe('departed');
+      await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('departed');
       expect(db.tables.orders[0].master_payout).toBe(552.5);
-      await expect(page.getByRole('link', {name: 'Позвонить по приезду', exact: true})).toBeVisible();
-      await page.evaluate(() => window.masterWorkflowCallAndAdvance(null, '11', 'started'));
+      await expect(page.getByRole('link', {name: 'Позвонить клиенту', exact: true})).toBeVisible();
+      await page.getByRole('button', {name: 'Работа начата', exact: true}).click();
       await expect(page.locator('.bosMasterWorkflow')).toContainText('Работа начата');
       await page.getByRole('button', {name: 'Завершить и прикрепить отчёт', exact: true}).click();
       await expect(page.locator('#masterReportForm')).toBeVisible();
