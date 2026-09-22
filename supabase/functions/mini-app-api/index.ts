@@ -38,6 +38,7 @@ async function sessionUid(r:Request){return await sess(r.headers.get('x-bos-sess
 async function actor(db:any,r:Request){const uid=await sessionUid(r);if(!uid)return null;return (await db.from('business_staff').select('*').eq('external_id',uid).eq('is_active',true).maybeSingle()).data||null}
 async function staff(db:any,v:any){if(!v)return null;let q=await db.from('business_staff').select('*').eq('external_id',String(v)).maybeSingle();if(q.data)return q.data;q=await db.from('business_staff').select('*').eq('id',String(v)).maybeSingle();return q.data||null}
 const ops=(r:string)=>['owner','manager','dispatcher'].includes(r);
+const leadership=(r:string)=>['owner','manager'].includes(r);
 function canManage(a:string,t:string){if(t==='owner')return false;if(a==='owner')return['manager','dispatcher','master'].includes(t);if(a==='manager')return['dispatcher','master'].includes(t);if(a==='dispatcher')return t==='master';return false}
 
 Deno.serve(async r=>{
@@ -122,6 +123,16 @@ Deno.serve(async r=>{
       const q=await db.from('orders').update(p).eq('id',b.id).select().single();
       if(q.error)throw q.error;
       return j({ok:true,order:q.data});
+    }
+
+    if(a==='deleteOrder'){
+      if(!leadership(role))return j({ok:false,error:'Недостаточно прав'},403);
+      const id=String(b.id||'').trim();
+      if(!id)return j({ok:false,error:'Заявка не указана'},400);
+      const q=await db.from('orders').delete().eq('id',id).select('id').maybeSingle();
+      if(q.error)throw q.error;
+      if(!q.data)return j({ok:false,error:'Заявка не найдена'},404);
+      return j({ok:true,id:String(q.data.id)});
     }
 
     if(a==='reviewReport'){
