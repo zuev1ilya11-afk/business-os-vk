@@ -89,6 +89,11 @@
   masterStatusColorsV95.async=false;
   document.head.appendChild(masterStatusColorsV95);
 
+  const masterOrdersFilterV99=document.createElement('script');
+  masterOrdersFilterV99.src='./master-orders-filter-v99.js?v=20260922-v99';
+  masterOrdersFilterV99.async=false;
+  document.head.appendChild(masterOrdersFilterV99);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
