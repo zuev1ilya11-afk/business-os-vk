@@ -99,6 +99,11 @@
   managementOrderDeleteV100.async=false;
   document.head.appendChild(managementOrderDeleteV100);
 
+  const unifiedScheduleV102=document.createElement('script');
+  unifiedScheduleV102.src='./unified-schedule-v102.js?v=20260923-v102';
+  unifiedScheduleV102.async=false;
+  document.head.appendChild(unifiedScheduleV102);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})

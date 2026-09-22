@@ -62,7 +62,9 @@ for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths
     if (role === 'master') {
       const call = modal.locator('.bosMasterWorkflow[data-bos-v26="1"] .bosMwCallAction');
       await expect(call).toBeVisible();
-      expect(await call.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+      await expect.poll(async () => call.evaluateAll(els => Math.max(0, ...els
+        .filter(el => el.getClientRects().length)
+        .map(el => el.getBoundingClientRect().height)))).toBeGreaterThanOrEqual(44);
       await expect(page.getByRole('button', {name: 'Нужно перенести', exact: true})).toBeVisible();
       await expect(page.getByRole('button', {name: 'Я на месте', exact: true})).toHaveCount(0);
       await page.getByRole('button', {name: 'Выехал', exact: true}).click();
