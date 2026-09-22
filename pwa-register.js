@@ -24,6 +24,11 @@
   masterCallWorkflow.async=false;
   document.head.appendChild(masterCallWorkflow);
 
+  const masterCallHotfix=document.createElement('script');
+  masterCallHotfix.src='./master-call-hotfix-v27.js?v=20260922-v27';
+  masterCallHotfix.async=false;
+  document.head.appendChild(masterCallHotfix);
+
   const dispatcherDesktop=document.createElement('script');
   dispatcherDesktop.src='./dispatcher-desktop-v89.js?v=20260920-v89';
   dispatcherDesktop.async=false;
