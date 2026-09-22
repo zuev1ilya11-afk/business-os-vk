@@ -43,7 +43,7 @@ for (const role of ['owner', 'manager', 'dispatcher', 'master']) {
         await page.locator(`nav [data-page="${screen}"]`).click();
         await expect(page.locator(`nav [data-page="${screen}"]`)).toHaveClass(/active/);
         if (role === 'master' && screen === 'dispatch')
-          await expect(page.locator('.bosCompactSchedule')).toBeVisible();
+          await expect(page.locator('.usScheduleCard')).toBeVisible();
         await fits(page);
         if (role === 'owner' && width === 1440 && screen === 'home')
           await page.screenshot({path: testInfo.outputPath('desktop-home.png')});
