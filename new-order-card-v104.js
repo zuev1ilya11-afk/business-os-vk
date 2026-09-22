@@ -46,11 +46,6 @@ function groupedField(group,label,wide=false){
   return wrapper;
 }
 
-function removeDirectLabelFor(control){
-  const label=directLabelFor(control);
-  if(label)label.remove();
-}
-
 function enhanceNewOrderForm(){
   const form=document.getElementById('orderForm');
   if(!form||form.dataset.newOrderCard==='1')return;
@@ -98,7 +93,6 @@ function enhanceNewOrderForm(){
   const dateGroup=dateInput?.closest('.two');
   if(dateGroup){
     const dateField=groupedField(dateGroup,'Дата и время',true);
-    workAfterLabels(dateGroup);
     dateInput.setAttribute('aria-label','Дата');
     const slot=form.elements.time_slot;
     if(slot)slot.setAttribute('aria-label','Время');
@@ -166,8 +160,6 @@ function enhanceNewOrderForm(){
   if(status)status.addEventListener('change',()=>requestAnimationFrame(syncCompletion));
   requestAnimationFrame(syncCompletion);
 }
-
-function workAfterLabels(){}
 
 window.openOrderForm=function(id){
   const result=previousOpenOrderForm.apply(this,arguments);
