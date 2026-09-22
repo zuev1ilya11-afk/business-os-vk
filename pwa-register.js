@@ -104,6 +104,11 @@
   unifiedScheduleV102.async=false;
   document.head.appendChild(unifiedScheduleV102);
 
+  const newOrderCardV104=document.createElement('script');
+  newOrderCardV104.src='./new-order-card-v104.js?v=20260923-v104';
+  newOrderCardV104.async=false;
+  document.head.appendChild(newOrderCardV104);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
