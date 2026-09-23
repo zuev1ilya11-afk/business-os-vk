@@ -134,6 +134,11 @@
   dispatcherSmartAssignV119.async=false;
   document.head.appendChild(dispatcherSmartAssignV119);
 
+  const dispatcherFreeSlotsV120=document.createElement('script');
+  dispatcherFreeSlotsV120.src='./dispatcher-free-slots-v120.js?v=20260923-v120';
+  dispatcherFreeSlotsV120.async=false;
+  document.head.appendChild(dispatcherFreeSlotsV120);
+
   const masterUpcomingClaimsV110=document.createElement('script');
   masterUpcomingClaimsV110.src='./master-upcoming-claims-v110.js?v=20260923-v111';
   masterUpcomingClaimsV110.async=false;
