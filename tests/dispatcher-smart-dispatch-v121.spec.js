@@ -20,10 +20,11 @@ test('unassigned order shows ranked inline options and one-action assignment pre
   await page.waitForFunction(()=>window.BOS_DISPATCHER_SMART_DISPATCH_V121===true);
   await page.locator('nav [data-page=orders]').click();
   await page.getByRole('button',{name:'Список',exact:true}).click();
-  await expect(page.locator('#bosOrderList')).toBeVisible();
 
-  const card=page.locator('#bosOrderList .opsCompactOrder').filter({hasText:'Борис'});
-  const smart=card.locator('.dsd121');
+  const orderId=String(db.tables.orders[1].id);
+  const card=page.locator(`.dbSchedule [data-order-id="${orderId}"]`).first();
+  await expect(card).toBeVisible();
+  const smart=page.locator(`.dbSchedule .dsd121[data-order-id="${orderId}"]`);
   await expect(smart).toBeVisible();
   await expect(smart.locator('.dsd121Candidate')).toHaveCount(3);
   const best=smart.locator('.dsd121Candidate').first();
@@ -39,5 +40,5 @@ test('unassigned order shows ranked inline options and one-action assignment pre
   await expect.poll(()=>db.tables.orders[1].scheduled_time).toBe('10:00');
   expect(db.tables.orders[1].amount).toBe(2000);
   expect(db.tables.orders[1].master_payout).toBe(1105);
-  await expect(page.locator('#bosOrderList .opsCompactOrder').filter({hasText:'Борис'}).locator('.dsd121')).toHaveCount(0);
+  await expect(page.locator(`.dsd121[data-order-id="${orderId}"]`)).toHaveCount(0);
 });
