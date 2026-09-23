@@ -12,8 +12,8 @@ test('mobile dispatcher gets cancel, master profile and visible reschedule reaso
   await expect(page.getByRole('button',{name:'Отменить заявку'})).toHaveCount(2);
 
   const assigned=page.locator('.opsCompactOrder').filter({hasText:'Анна'});
-  await expect(assigned.getByRole('button',{name:'Открыть профиль мастера'})).toBeVisible();
-  await assigned.getByRole('button',{name:'Открыть профиль мастера'}).click();
+  await expect(assigned.getByRole('button',{name:'Профиль назначенного мастера'})).toBeVisible();
+  await assigned.getByRole('button',{name:'Профиль назначенного мастера'}).click();
   await expect(page.locator('#modalRoot')).toContainText('Тестовый мастер');
   await page.evaluate(()=>closeModal());
 
@@ -37,19 +37,28 @@ test('mobile dispatcher gets cancel, master profile and visible reschedule reaso
   await expect.poll(()=>page.evaluate(()=>state.orders.find(o=>String(o.id)==='12')?.status)).toBe('Отменена');
 });
 
-test('desktop dispatcher detail exposes the same safe quick actions',async({page})=>{
+test('desktop dispatcher current board exposes the same safe quick actions',async({page})=>{
   await fullStack(page,'dispatcher');
   await page.setViewportSize({width:1280,height:850});
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
 
   await page.locator('nav button[data-page="orders"]').click();
-  await expect(page.locator('.ddDesktop')).toBeVisible();
-  await expect(page.getByRole('button',{name:'Открыть профиль мастера'})).toBeVisible();
+  await expect(page.locator('.dbBoard')).toBeVisible();
   await expect(page.getByRole('button',{name:'Отменить заявку'})).toBeVisible();
 
+  await page.evaluate(()=>{
+    const order=state.orders.find(o=>String(o.id)==='12');
+    const master=state.masters[0];
+    order.master_staff_id=master.id;
+    order.master_name=master.full_name;
+    show('orders');
+  });
+  await expect(page.locator('.dbBoard')).toBeVisible();
+  await expect(page.getByRole('button',{name:'Профиль назначенного мастера'})).toBeVisible();
+
   await page.getByRole('button',{name:'Отменить заявку'}).click();
-  await expect(page.locator('.dwv114CancelSummary')).toContainText('Анна');
+  await expect(page.locator('.dwv114CancelSummary')).toContainText('Борис');
   await page.getByRole('button',{name:'Не отменять'}).click();
-  await expect(page.locator('.ddDetail')).toBeVisible();
+  await expect(page.locator('.dbDetail')).toBeVisible();
 });
