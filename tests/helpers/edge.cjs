@@ -13,6 +13,7 @@ function database(seed = {}) {
   const db = {tables, calls:[], rpc:async(name,p)=>{
     db.calls.push({rpc:name,p});
     if(name==='bos_verify_staff_credentials')return {data:tables.business_staff.find(x=>x.is_active&&x.login?.toLowerCase()===p.p_login.trim().toLowerCase()&&x.password_hash===p.p_password)?.id||null,error:null};
+    if(name==='bos_consume_login_attempt')return {data:[{allowed:true,retry_after:0}],error:null};
     if(name==='bos_set_staff_credentials'){
       if(tables.business_staff.some(x=>x.id!==p.p_staff_id&&x.login?.toLowerCase()===p.p_login.trim().toLowerCase()))return {data:null,error:{code:'23505',message:'duplicate key business_staff_login_unique'}};
       Object.assign(tables.business_staff.find(x=>x.id===p.p_staff_id),{login:p.p_login,password_hash:p.p_password});return {data:null,error:null};
