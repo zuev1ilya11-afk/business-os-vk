@@ -6,8 +6,9 @@ let saving=false,queued=false;
 
 function masterMode(){return String(state?.user?.role||'')==='master'}
 function orderById(id){return (state?.orders||[]).find(o=>String(o.id)===String(id))||null}
-function hasSchedule(o){return !!String(o?.scheduled_date||'').slice(0,10)||!!String(o?.scheduled_time||o?.time_slot||'').slice(0,5)}
-function eligible(o){return masterMode()&&o&&!hasSchedule(o)&&!['Выполнена','Отменена'].includes(String(o.status||''))}
+function stageOf(o){const s=String(o?.master_workflow_stage||'assigned');return s==='arrived'?'departed':['assigned','departed','started'].includes(s)?s:'assigned'}
+function calledDone(o){return !!o?.master_called_at||['departed','started'].includes(stageOf(o))||!!o?.report_uploaded_at}
+function eligible(o){return masterMode()&&o&&calledDone(o)&&stageOf(o)!=='started'&&!o?.report_uploaded_at&&!['Выполнена','Отменена'].includes(String(o.status||''))}
 function escv(v){return typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function localToday(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 async function authHeaders(){const h=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};return {...h,'Content-Type':'application/json'}}
@@ -22,7 +23,8 @@ function mergeOrder(id,data){const i=(state.orders||[]).findIndex(o=>String(o.id
 window.openMasterAgreement=function(id){
   const o=orderById(id);if(!eligible(o))return;
   const number=String(o.external_id||'').startsWith('hands:')?String(o.external_id).slice(6):String(o.id||'');
-  openModal(`<h2>Договориться по заявке № ${escv(number)}</h2><p class="muted bosMasterAgreementHint">После звонка клиенту выберите согласованные дату и время выезда.</p><form id="masterAgreementForm" class="form"><label>Дата *</label><input type="date" name="scheduled_date" required min="${localToday()}"><label>Время *</label><input type="time" name="scheduled_time" required step="900"><p class="muted">Дата и время сохранятся в заявке. Если после этого потребуется перенос, используйте «Нужно перенести».</p><button class="primary wide" type="submit">Сохранить договорённость</button><button class="secondary wide" type="button" onclick="openOrder('${escv(o.id)}')">Отмена</button><p id="masterAgreementMsg" class="muted"></p></form>`);
+  const currentDate=String(o.scheduled_date||'').slice(0,10),currentTime=String(o.scheduled_time||o.time_slot||'').slice(0,5);
+  openModal(`<h2>Договорённость по заявке № ${escv(number)}</h2><p class="muted bosMasterAgreementHint">Укажите согласованные с клиентом дату и время. До начала работы их можно изменить здесь.</p><form id="masterAgreementForm" class="form"><label>Дата *</label><input type="date" name="scheduled_date" required min="${localToday()}" value="${escv(currentDate)}"><label>Время *</label><input type="time" name="scheduled_time" required step="900" value="${escv(currentTime)}"><p class="muted">После сохранения заявка перейдёт к этапу «Работа».</p><button class="primary wide" type="submit">Сохранить договорённость</button><button class="secondary wide" type="button" onclick="openOrder('${escv(o.id)}')">Отмена</button><p id="masterAgreementMsg" class="muted"></p></form>`);
   const form=document.getElementById('masterAgreementForm');
   form.onsubmit=async e=>{
     e.preventDefault();if(saving||state.busy)return;
@@ -41,13 +43,13 @@ function injectListButtons(){
     const id=String(card.dataset.masterOrderId||''),o=orderById(id),next=card.nextElementSibling;
     if(!eligible(o)){if(next?.classList?.contains('bosMasterAgreementBtn'))next.remove();return}
     if(next?.classList?.contains('bosMasterAgreementBtn'))return;
-    const btn=document.createElement('button');btn.type='button';btn.className='primary wide bosMasterAgreementBtn';btn.dataset.orderId=id;btn.textContent='Договориться';btn.onclick=e=>{e.preventDefault();e.stopPropagation();window.openMasterAgreement(id)};card.insertAdjacentElement('afterend',btn);
+    const btn=document.createElement('button');btn.type='button';btn.className='primary wide bosMasterAgreementBtn';btn.dataset.orderId=id;btn.textContent=o?.master_agreed_at?'Изменить договорённость':'Договориться';btn.onclick=e=>{e.preventDefault();e.stopPropagation();window.openMasterAgreement(id)};card.insertAdjacentElement('afterend',btn);
   });
 }
 function injectModalButton(id){
   const o=orderById(id),modal=document.querySelector('#modalRoot .modal');
   if(!eligible(o)||!modal||modal.querySelector('.bosMasterAgreementModalBtn'))return;
-  const btn=document.createElement('button');btn.type='button';btn.className='primary wide bosMasterAgreementModalBtn';btn.textContent='Договориться';btn.onclick=()=>window.openMasterAgreement(id);
+  const btn=document.createElement('button');btn.type='button';btn.className='primary wide bosMasterAgreementModalBtn';btn.textContent=o?.master_agreed_at?'Изменить договорённость':'Договориться';btn.onclick=()=>window.openMasterAgreement(id);
   const workflow=modal.querySelector('.bosMasterWorkflow');
   if(workflow)workflow.insertAdjacentElement('beforebegin',btn);else{const close=[...modal.querySelectorAll('button')].find(b=>(b.textContent||'').trim()==='Закрыть');if(close)modal.insertBefore(btn,close);else modal.appendChild(btn)}
 }
