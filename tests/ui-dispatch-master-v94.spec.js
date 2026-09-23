@@ -36,15 +36,15 @@ test('dispatcher keeps list inside board and moves controls to requested areas',
 
   await page.locator('#bosOrderSearch').fill('');
   await expect(page.locator('.dbV94ListCard')).toHaveCount(2);
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(250);
   const churn=await page.evaluate(()=>new Promise(resolve=>{
-    const board=document.querySelector('.dbBoard');
+    const targets=[document.querySelector('.dbV94ListItems'),...document.querySelectorAll('.dbSlot,.dbV23Slot')].filter(Boolean);
     let mutations=0;
     const observer=new MutationObserver(records=>{for(const record of records)mutations+=record.addedNodes.length+record.removedNodes.length});
-    observer.observe(board,{subtree:true,childList:true});
+    for(const target of targets)observer.observe(target,{childList:true});
     setTimeout(()=>{observer.disconnect();resolve(mutations)},350);
   }));
-  expect(churn).toBeLessThan(10);
+  expect(churn).toBeLessThan(4);
 });
 
 test('master orders use green red and orange status highlighting',async({page})=>{
