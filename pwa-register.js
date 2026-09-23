@@ -139,6 +139,11 @@
   sessionRefreshV113.async=false;
   document.head.appendChild(sessionRefreshV113);
 
+  const masterWorkflowV115=document.createElement('script');
+  masterWorkflowV115.src='./master-workflow-v115.js?v=20260923-v115';
+  masterWorkflowV115.async=false;
+  document.head.appendChild(masterWorkflowV115);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
