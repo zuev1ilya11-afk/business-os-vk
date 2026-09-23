@@ -62,7 +62,7 @@ test('dispatcher sees early master workflow progress on current dispatch board',
   await page.locator('nav [data-page=orders]').click();
   await expect(page.locator('.dbBoard')).toBeVisible();
   await expect(page.locator('.mwv2OpsBar')).toContainText('Договорено: 1');
-  await expect(page.locator('[data-order-id="11"] .bosFieldStageChip').first()).toContainText('Договорено');
+  await expect(page.locator('[data-order-id="11"] .mwv2FieldStageChip').first()).toContainText('Договорено');
 
   await page.locator('[data-order-id="11"].dbOrderCard').first().click();
   await expect(page.locator('#dispatchBoardDetail .mwv2DispatcherFlow')).toBeVisible();
