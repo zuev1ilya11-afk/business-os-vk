@@ -17,6 +17,19 @@ test('dispatcher keeps list inside board and moves controls to requested areas',
   await expect(page.locator('.dbV94InlineList')).toBeVisible();
   await expect(page.locator('.dbListMode')).toHaveCount(0);
 
+  const geometry=await page.locator('.dbV94InlineList').evaluate(el=>{
+    const root=el.getBoundingClientRect(),head=el.querySelector('.dbV94ListHead').getBoundingClientRect(),list=el.querySelector('.dbV94ListItems').getBoundingClientRect();
+    return {headOffset:head.top-root.top,listGap:list.top-head.bottom};
+  });
+  expect(geometry.headOffset).toBeLessThan(30);
+  expect(geometry.listGap).toBeLessThan(30);
+
+  const firstCard=page.locator('.dbV94ListCard').first();
+  await expect(firstCard).toBeVisible();
+  const cardBox=await firstCard.evaluate(el=>({height:el.getBoundingClientRect().height,scrollHeight:el.scrollHeight}));
+  expect(cardBox.height).toBeGreaterThanOrEqual(68);
+  expect(cardBox.height+1).toBeGreaterThanOrEqual(cardBox.scrollHeight);
+
   await page.locator('#bosOrderSearch').fill('Анна');
   await expect(page.locator('.dbV94ListCard')).toHaveCount(1);
   await expect(page.locator('.dbV94ListCard')).toContainText('Анна');
