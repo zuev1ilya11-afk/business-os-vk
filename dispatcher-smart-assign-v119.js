@@ -10,7 +10,7 @@ function dispatcherMode(){return String(state?.user?.role||'')==='dispatcher'||(
 function active(o){return !!o&&!['Выполнена','Отменена'].includes(String(o.status||''))}
 function norm(v){return String(v??'').trim().toLowerCase().replace(/ё/g,'е')}
 function values(v){if(Array.isArray(v))return v.flatMap(values);return String(v??'').split(/[,;|/]/).map(norm).filter(Boolean)}
-function safe(v){return typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+function safe(v){return typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]))}
 function pad(n){return String(n).padStart(2,'0')}
 function localToday(){const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
 function dateOf(o){return String(o?.scheduled_date||'').slice(0,10)}
@@ -39,8 +39,11 @@ function scheduleFor(m,date){
 function workHours(m,date){
   const row=scheduleFor(m,date);
   if(row&&(row.is_working===false||String(row.is_working)==='false'))return [];
-  const start=toMinutes(row?.work_start||m?.work_start||'10:00')??600;
-  const end=toMinutes(row?.work_end||m?.work_end||'21:00')??1260;
+  const personalStart=toMinutes(m?.work_start),personalEnd=toMinutes(m?.work_end);
+  if(!row&&(personalStart===null||personalEnd===null))return [];
+  const start=toMinutes(row?.work_start)??personalStart;
+  const end=toMinutes(row?.work_end)??personalEnd;
+  if(start===null||end===null||end<=start)return [];
   return HOURS.filter(h=>h*60>=start&&(h+1)*60<=end);
 }
 function busyIntervals(m,date,ignoreId){
@@ -103,16 +106,25 @@ function candidateHtml(c,index,buttonLabel){
   const name=c.master?.full_name||c.master?.name||'Мастер';
   return `<div class="dsa119Candidate${index===0?' best':''}" data-master="${safe(c.master_key)}"><div class="dsa119CandidateMain"><div class="dsa119CandidateTitle"><b>${index===0?'Рекомендуем · ':''}${safe(name)}</b><span>${safe(loadText(c))}</span></div><p>${safe(c.reasons.join(' · '))}</p><div class="dsa119Times">${c.free_times.map(t=>`<span>${safe(t)}</span>`).join('')}</div></div><button type="button" class="${index===0?'primary':'secondary'} dsa119Pick" data-master="${safe(c.master_key)}" data-time="${safe(c.best_time)}">${safe(buttonLabel)} ${safe(c.best_time)}</button></div>`;
 }
+function allowedByForm(form,candidate){
+  const select=form?.elements?.master_vk_id;if(!select)return true;
+  const option=[...select.options].find(o=>String(o.value)===String(candidate.master_key));
+  return !option||!option.disabled;
+}
 function renderFormSmart(box,form){
   const draft=formDraft(form),date=draft.scheduled_date;
-  if(!date){box.innerHTML='<div class="dsa119Head"><div><b>Умный подбор мастера</b><span>Выберите дату — покажу свободных мастеров и окна.</span></div></div>';return}
-  const items=candidatesFor(draft,date);
+  if(!date){box.hidden=true;box.replaceChildren();return}
+  box.hidden=false;
+  const items=candidatesFor(draft,date).filter(c=>allowedByForm(form,c));
   box.innerHTML=`<div class="dsa119Head"><div><b>Умный подбор мастера</b><span>${safe(date)} · учитываем город, загрузку, график и занятое время</span></div></div><div class="dsa119List">${items.length?items.map((c,i)=>candidateHtml(c,i,'Выбрать')).join(''):'<p class="muted">На выбранный день свободных мастеров не найдено.</p>'}</div>`;
   box.querySelectorAll('.dsa119Pick').forEach(button=>button.addEventListener('click',()=>{
     const master=form.elements.master_vk_id,time=form.elements.time_slot;
-    if(master){master.value=button.dataset.master||'';master.dispatchEvent(new Event('change',{bubbles:true}))}
     const slot=slotFor(button.dataset.time||'');
     if(time&&[...time.options].some(o=>o.value===slot||o.textContent===slot)){time.value=slot;time.dispatchEvent(new Event('change',{bubbles:true}))}
+    if(master){
+      const option=[...master.options].find(o=>String(o.value)===String(button.dataset.master));
+      if(option&&!option.disabled){master.value=button.dataset.master||'';master.dispatchEvent(new Event('change',{bubbles:true}))}
+    }
     box.querySelectorAll('.dsa119Candidate').forEach(x=>x.classList.toggle('selected',x.dataset.master===button.dataset.master));
   }));
 }
@@ -127,8 +139,8 @@ function enhanceOrderForm(){
   if(!date||!slot)return;
   const plan=date.closest('.newOrderSection')||date.closest('.two')?.parentElement||form;
   const target=plan.querySelector('.newOrderGrid')||plan;
-  const box=document.createElement('section');box.className='dsa119Form';target.appendChild(box);
-  const refresh=()=>renderFormSmart(box,form);
+  const box=document.createElement('section');box.className='dsa119Form';box.hidden=true;target.appendChild(box);
+  const refresh=()=>requestAnimationFrame(()=>renderFormSmart(box,form));
   date.addEventListener('change',refresh);slot.addEventListener('change',refresh);service?.addEventListener('change',refresh);
   refresh();
 }
@@ -178,9 +190,10 @@ function decorateMobileCards(){
 function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;decorateMobileCards()})}
 
 const previousOpenOrderForm=window.openOrderForm;
-if(typeof previousOpenOrderForm==='function')window.openOrderForm=function(){
+if(typeof previousOpenOrderForm==='function')window.openOrderForm=function enhanceNewOrderFormSmartAssign(){
   const result=previousOpenOrderForm.apply(this,arguments);
-  if(arguments[0]===undefined||arguments[0]===null||arguments[0]==='')requestAnimationFrame(()=>requestAnimationFrame(enhanceOrderForm));
+  const id=arguments[0];
+  if(dispatcherMode()&&(id===undefined||id===null||id===''))requestAnimationFrame(()=>requestAnimationFrame(enhanceOrderForm));
   return result;
 };
 
@@ -190,7 +203,7 @@ window.addEventListener('resize',schedule);
 
 const style=document.createElement('style');
 style.textContent=`
-.dsa119Form{grid-column:1/-1;display:grid;gap:9px;margin-top:2px;padding:11px;border:1px solid rgba(77,166,255,.22);border-radius:13px;background:rgba(57,137,214,.06)}.dsa119Head>div{display:grid;gap:3px}.dsa119Head b{font-size:13px}.dsa119Head span{font-size:11px;line-height:1.35;color:#8fa4b8}.dsa119List{display:grid;gap:8px}.dsa119Candidate{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025)}.dsa119Candidate.best{border-color:rgba(77,166,255,.34)}.dsa119Candidate.selected{box-shadow:inset 3px 0 0 rgba(77,166,255,.75)}.dsa119CandidateMain{display:grid;gap:4px;min-width:0}.dsa119CandidateTitle{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.dsa119CandidateTitle b{font-size:12px}.dsa119CandidateTitle span{font-size:10px;color:#91a6b9}.dsa119Candidate p{margin:0;font-size:10.5px;line-height:1.35;color:#8fa4b8}.dsa119Times{display:flex;gap:5px;flex-wrap:wrap}.dsa119Times span{padding:3px 6px;border-radius:999px;background:rgba(77,166,255,.1);color:#a9d6ff;font-size:10px}.dsa119Pick{flex:0 0 auto;min-height:40px}.dsa119DateLabel{display:flex!important;flex-direction:column;gap:6px;margin:10px 0 12px!important}.dsa119DateLabel span{font-size:11px;font-weight:700;color:#9fb3c8}.dsa119DateLabel input{min-height:46px}
+.dsa119Form{grid-column:1/-1;display:grid;gap:9px;margin-top:2px;padding:11px;border:1px solid rgba(77,166,255,.22);border-radius:13px;background:rgba(57,137,214,.06)}.dsa119Form[hidden]{display:none!important}.dsa119Head>div{display:grid;gap:3px}.dsa119Head b{font-size:13px}.dsa119Head span{font-size:11px;line-height:1.35;color:#8fa4b8}.dsa119List{display:grid;gap:8px}.dsa119Candidate{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025)}.dsa119Candidate.best{border-color:rgba(77,166,255,.34)}.dsa119Candidate.selected{box-shadow:inset 3px 0 0 rgba(77,166,255,.75)}.dsa119CandidateMain{display:grid;gap:4px;min-width:0}.dsa119CandidateTitle{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.dsa119CandidateTitle b{font-size:12px}.dsa119CandidateTitle span{font-size:10px;color:#91a6b9}.dsa119Candidate p{margin:0;font-size:10.5px;line-height:1.35;color:#8fa4b8}.dsa119Times{display:flex;gap:5px;flex-wrap:wrap}.dsa119Times span{padding:3px 6px;border-radius:999px;background:rgba(77,166,255,.1);color:#a9d6ff;font-size:10px}.dsa119Pick{flex:0 0 auto;min-height:44px}.dsa119DateLabel{display:flex!important;flex-direction:column;gap:6px;margin:10px 0 12px!important}.dsa119DateLabel span{font-size:11px;font-weight:700;color:#9fb3c8}.dsa119DateLabel input{min-height:46px}
 @media(max-width:760px){.dsa119Form{grid-column:auto}.dsa119Candidate{align-items:stretch;flex-direction:column}.dsa119Pick{width:100%;min-height:46px}.dmCardActions .dsa119CardAction{min-height:46px;border-color:rgba(77,166,255,.42);color:#acd9ff;font-weight:800}}
 `;
 document.head.appendChild(style);
