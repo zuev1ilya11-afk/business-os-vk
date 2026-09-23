@@ -23,6 +23,13 @@ test('dispatcher mobile schedule shows day load, conflicts and quick actions',as
   await expect(page.locator('.dmv2Metrics')).toContainText('Конфликтов2');
   await expect(page.locator('.dmv2MasterCard').filter({hasText:'Тестовый мастер'})).toContainText('2 заяв.');
   await expect(page.locator('.dmv2MasterCard').filter({hasText:'Тестовый мастер'})).toContainText('Конфликт');
+  await expect(page.locator('.usScheduleCard')).toBeVisible();
+
+  await page.locator('.dmv2DayNav').getByRole('button',{name:'→',exact:true}).click();
+  await expect(page.locator('.dmv2Metrics')).toContainText('Заявок0');
+  await page.locator('.dmv2DayNav').getByRole('button',{name:'←',exact:true}).click();
+  await expect(page.locator('.dmv2Metrics')).toContainText('Заявок3');
+  await expect(page.locator('.dmv2Metrics')).toContainText('Конфликтов2');
 
   const unassigned=page.locator('.dmv2Unassigned .dmv2Order').filter({hasText:'Борис'});
   await expect(unassigned).toBeVisible();
