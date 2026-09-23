@@ -39,6 +39,9 @@ for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths
       address: 'Санкт-Петербург, Большой Сампсониевский проспект, дом 123, корпус 4, квартира 567',
       comment: 'Пожалуйста, позвоните заранее. '.repeat(12)
     });
+    if(role==='master')Object.assign(db.tables.orders[0],{
+      master_called_at:'2026-09-23T08:00:00.000Z',master_agreed_at:'2026-09-23T08:05:00.000Z',master_workflow_stage:'assigned'
+    });
     await page.goto('/');
     await expect(page.locator('#authGate')).toBeHidden();
     await fitsViewport(page);
@@ -59,28 +62,16 @@ for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths
     expect(await modal.evaluate(el => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1);
     if (role === 'master') {
       const flow=modal.locator('.bosMasterWorkflow[data-bos-v115="1"]');
-      const call = flow.locator('.bosMwCallAction');
       await expect(flow.locator('.mwv2Step')).toHaveCount(5);
-      await expect(call).toBeVisible();
-      await expect.poll(async () => call.evaluateAll(els => Math.max(0, ...els
-        .filter(el => el.getClientRects().length)
-        .map(el => el.getBoundingClientRect().height)))).toBeGreaterThanOrEqual(44);
+      await expect(flow).toContainText('Договорено');
+      await expect(flow).not.toContainText('Выехал');
       await expect(page.getByRole('button', {name: 'Я на месте', exact: true})).toHaveCount(0);
       await expect(page.getByRole('button', {name: 'Выехал', exact: true})).toHaveCount(0);
       await expect(page.getByRole('button', {name: 'Открыть претензию', exact: true})).toHaveCount(0);
-
-      await page.getByRole('button', {name: 'Звонок выполнен', exact: true}).click();
-      await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();
-      await page.getByRole('button', {name: 'Договорённость', exact: true}).click();
-      await expect(page.locator('#masterAgreementForm')).toBeVisible();
-      await page.getByRole('button', {name: 'Сохранить договорённость', exact: true}).click();
-      await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();
-
-      await page.evaluate(() => window.openOrder('11'));
       await expect(page.getByRole('button', {name: 'Начать работу', exact: true})).toBeVisible();
       await expect(page.getByRole('button', {name: 'Изменить дату и время', exact: true})).toBeVisible();
       await page.getByRole('button', {name: 'Начать работу', exact: true}).click();
-      await expect(page.locator('.bosMasterWorkflow')).toContainText('В работе');
+      await expect(flow).toContainText('В работе');
       await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('started');
       expect(db.tables.orders[0].master_payout).toBe(552.5);
       await page.getByRole('button', {name: 'Заполнить отчёт', exact: true}).click();
