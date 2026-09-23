@@ -12,9 +12,9 @@ test('mobile dispatcher highlights overlapping orders for the same master and fi
   await page.evaluate(masterId=>{
     const a=state.orders.find(o=>String(o.id)==='11');
     const b=state.orders.find(o=>String(o.id)==='12');
-    Object.assign(a,{master_staff_id:masterId,master_name:'Тестовый мастер',scheduled_date:'2099-09-10',scheduled_time:'10:00'});
-    Object.assign(b,{master_staff_id:masterId,master_name:'Тестовый мастер',scheduled_date:'2099-09-10',scheduled_time:'10:30'});
-    state.orders.push({id:'13',client:'Без конфликта',address:'Третий адрес',work:'Монтаж',status:'В работе',scheduled_date:'2099-09-10',scheduled_time:'14:00'});
+    Object.assign(a,{master_staff_id:masterId,master_name:'Тестовый мастер',scheduled_date:'2099-09-10',scheduled_time:'10:00',time_slot:'10:00–11:00'});
+    Object.assign(b,{master_staff_id:masterId,master_name:'Тестовый мастер',scheduled_date:'2099-09-10',scheduled_time:'10:30',time_slot:'10:30–11:30'});
+    state.orders.push({id:'13',client:'Без конфликта',address:'Третий адрес',work:'Монтаж',status:'В работе',scheduled_date:'2099-09-10',scheduled_time:'14:00',time_slot:'14:00–15:00'});
     show('orders');
     setTimeout(()=>window.BOS_DISPATCHER_CONFLICTS.refresh(),0);
   },master.id);
@@ -27,10 +27,11 @@ test('mobile dispatcher highlights overlapping orders for the same master and fi
 
   await page.getByRole('button',{name:'Показать конфликты времени'}).click();
   await expect(page.locator('.opsCompactOrder:visible')).toHaveCount(2);
-  await expect(page.locator('.opsCompactOrder:visible')).not.toContainText('Без конфликта');
+  await expect(page.locator('.opsCompactOrder:visible').filter({hasText:'Без конфликта'})).toHaveCount(0);
 
   await page.locator('.dmShortcuts button').filter({hasText:'Все'}).click();
   await expect(page.locator('.opsCompactOrder:visible')).toHaveCount(3);
+  await expect(page.locator('.opsCompactOrder:visible').filter({hasText:'Без конфликта'})).toHaveCount(1);
 });
 
 test('conflict decoration stays mobile dispatcher only',async({page})=>{
