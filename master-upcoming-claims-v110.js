@@ -2,7 +2,8 @@
 'use strict';
 if(window.BOS_MASTER_UPCOMING_CLAIMS_V111)return;window.BOS_MASTER_UPCOMING_CLAIMS_V111=true;
 
-const masterMode=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
+const previewMode=()=>typeof isMasterPreview==='function'&&isMasterPreview();
+const masterMode=()=>String(state?.user?.role||'')==='master'||previewMode()||(typeof liveMasterMode==='function'&&liveMasterMode());
 const liveUser=()=>typeof liveMasterUser==='function'?liveMasterUser():(state?.user||{});
 const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const moneyv=v=>typeof money==='function'?money(v):`${Math.round(Number(v)||0).toLocaleString('ru-RU')} ₽`;
@@ -10,7 +11,7 @@ const dateOnly=v=>String(v||'').slice(0,10);
 
 function masterIds(){
   const u=liveUser()||{},out=new Set([u.id,u.staff_id,u.master_id,u.vk_user_id,u.external_id].filter(Boolean).map(String));
-  if(typeof isMasterPreview==='function'&&isMasterPreview()&&typeof ownOrders==='function'){
+  if(previewMode()&&typeof ownOrders==='function'){
     for(const o of ownOrders()||[])[o?.master_staff_id,o?.master_id,o?.master_vk_id,o?.staff_id].filter(Boolean).map(String).forEach(x=>out.add(x));
   }
   const rows=[...(state?.masters||[]),...(state?.users||[])];
@@ -21,8 +22,9 @@ function masterIds(){
   return out;
 }
 function mine(c){
+  if(String(state?.user?.role||'')==='master'&&!previewMode())return true;
   const values=[c?.master_staff_id,c?.master_id,c?.master_vk_id,c?.staff_id,c?.vk_user_id,c?.external_id].filter(Boolean).map(String),ids=masterIds();
-  return values.length?values.some(x=>ids.has(x)):String(state?.user?.role||'')==='master';
+  return values.length?values.some(x=>ids.has(x)):false;
 }
 function linkedOrder(c){
   const id=String(c?.order_id||'');
@@ -102,8 +104,9 @@ function renderClaims(){
   days.dataset.bosClaimsSig=sig;
 }
 
+window.BOS_renderMasterUpcomingClaims=renderClaims;
 const baseRefresh=window.refreshClaims;
-if(typeof baseRefresh==='function')window.refreshClaims=async function(){const out=await baseRefresh.apply(this,arguments);setTimeout(renderClaims,0);return out};
+if(typeof baseRefresh==='function')window.refreshClaims=async function(){const out=await baseRefresh.apply(this,arguments);renderClaims();return out};
 const baseShow=window.show;
 if(typeof baseShow==='function')window.show=function(){const out=baseShow.apply(this,arguments);setTimeout(renderClaims,0);setTimeout(renderClaims,100);return out};
 let queued=false;const observer=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;renderClaims()})});
