@@ -24,7 +24,7 @@ Deno.serve(async r=>{
     const db=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
     const b=await r.json().catch(()=>({}));
     const action=String(b.action||'health');
-    if(action==='health')return j({ok:true,version:'2026-09-23-master-workflow-v2'});
+    if(action==='health')return j({ok:true,version:'2026-09-23-master-workflow-v3-simple'});
     const me=await actor(db,r);
     if(!me)return j({ok:false,error:'Доступ не подтверждён'},401);
     if(String(me.role||'')!=='master')return j({ok:false,error:'Действие доступно только мастеру'},403);
@@ -56,9 +56,9 @@ Deno.serve(async r=>{
 
     if(action==='setAgreementSchedule'){
       if(!cur.master_called_at)return j({ok:false,error:'Сначала отметьте звонок клиенту'},409);
-      const existingDate=String(cur.scheduled_date||'').slice(0,10);
-      const existingTime=String(cur.scheduled_time||cur.time_slot||'').slice(0,5);
-      if(existingDate||existingTime)return j({ok:false,error:'Дата или время уже назначены. Подтвердите договорённость или используйте запрос на перенос.'},409);
+      const rawStage=String(cur.master_workflow_stage||'assigned');
+      const currentStage=rawStage==='arrived'?'departed':activeStages.includes(rawStage)?rawStage:'assigned';
+      if(currentStage==='started'||cur.report_uploaded_at)return j({ok:false,error:'После начала работы дату и время договорённости менять нельзя'},409);
       const date=String(b.scheduled_date||'').slice(0,10),time=String(b.scheduled_time||'').slice(0,5);
       if(!validDate(date)||!validTime(time))return j({ok:false,error:'Укажите корректные дату и время'},400);
       const today=new Date().toISOString().slice(0,10);
@@ -76,7 +76,8 @@ Deno.serve(async r=>{
     const raw=String(cur.master_workflow_stage||'assigned');
     const current=raw==='arrived'?'departed':activeStages.includes(raw)?raw:'assigned';
     if(stage===raw)return j({ok:true,order:safeOrder(cur),idempotent:true});
-    const allowed=(stage==='departed'&&current==='assigned')||(stage==='arrived'&&current==='departed')||(stage==='started'&&current==='departed');
+    if(stage==='started'&&current==='assigned'&&!cur.master_agreed_at)return j({ok:false,error:'Сначала сохраните договорённость с клиентом'},409);
+    const allowed=(stage==='departed'&&current==='assigned')||(stage==='arrived'&&current==='departed')||(stage==='started'&&(current==='assigned'||current==='departed'));
     if(!allowed)return j({ok:false,error:'Этапы нужно отмечать по порядку'},409);
     const now=new Date().toISOString(),patch:any={master_workflow_stage:stage,updated_at:now,sync_status:'pending_sheet'};
     patch[stamp[stage]]=now;
