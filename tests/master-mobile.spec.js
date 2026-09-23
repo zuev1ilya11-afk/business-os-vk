@@ -51,10 +51,12 @@ for(const s of sizes){
     await page.evaluate(()=>openOrder('M-1'));
     const modal=page.locator('.modal.show, .modal.open, .modal').filter({hasText:'№ M-1'}).last();
     await expect(modal.getByText('Выплата: 2 463,05 ₽',{exact:true})).toBeVisible();
-    await expect(page.locator('.bosMasterWorkflow[data-bos-v26="1"]')).toBeVisible();
+    await expect(page.locator('.bosMasterWorkflow[data-bos-v115="1"]')).toBeVisible();
+    await expect(page.locator('.bosMasterWorkflow[data-bos-v115="1"] .mwv2Step')).toHaveCount(5);
     await expect(page.getByRole('link',{name:'Позвонить клиенту',exact:true})).toBeVisible();
-    await expect(page.getByRole('button',{name:'Нужно перенести',exact:true})).toBeVisible();
+    await expect(page.getByRole('button',{name:'Выехал',exact:true})).toHaveCount(0);
     await expect(page.getByRole('button',{name:'Я на месте',exact:true})).toHaveCount(0);
+    await expect(page.getByRole('button',{name:'Открыть претензию',exact:true})).toHaveCount(0);
     await expect(page.getByRole('button',{name:'Отчитаться по заявке'})).toBeHidden();
     await expect(page.getByText('Исходная сумма',{exact:true})).toHaveCount(0);
     await expect(page.getByText('Итоговая сумма заявки',{exact:true})).toHaveCount(0);

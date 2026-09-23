@@ -14,17 +14,14 @@ test('master agrees unscheduled order only after recorded client call',async({pa
 
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
-  await page.locator('nav [data-page=orders]').click();
-  await expect(page.getByRole('button',{name:'Договориться',exact:true})).toHaveCount(0);
-
   await page.evaluate(()=>window.openOrder('11'));
   await expect(page.locator('.bosMasterWorkflow[data-bos-v115="1"]')).toBeVisible();
-  await expect(page.getByRole('button',{name:'Указать дату и время',exact:true})).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'Договорённость',exact:true})).toHaveCount(0);
   await page.getByRole('button',{name:'Звонок выполнен',exact:true}).click();
   await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();
-  await page.getByRole('button',{name:'Указать дату и время',exact:true}).click();
+  await page.getByRole('button',{name:'Договорённость',exact:true}).click();
 
-  await expect(page.getByRole('heading',{name:/Договориться по заявке/})).toBeVisible();
+  await expect(page.getByRole('heading',{name:/Договорённость по заявке/})).toBeVisible();
   await page.locator('#masterAgreementForm input[name="scheduled_date"]').fill('2099-09-15');
   await page.locator('#masterAgreementForm input[name="scheduled_time"]').fill('14:30');
   await page.getByRole('button',{name:'Сохранить договорённость',exact:true}).click();
@@ -35,21 +32,38 @@ test('master agrees unscheduled order only after recorded client call',async({pa
   expect(db.tables.orders.find(o=>String(o.id)==='11')?.master_agreed_at).toBeTruthy();
 });
 
-test('scheduled order requires explicit agreement confirmation after the call',async({page})=>{
+test('master can change existing agreement date and time before work starts',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const {db}=await fullStack(page,'master');
-  db.tables.orders[0].scheduled_time='12:00';
-  db.tables.orders[0].time_slot='12:00–13:00';
-  db.tables.orders[0].phone='+79990000002';
-  db.tables.orders[0].master_called_at=null;
-  db.tables.orders[0].master_agreed_at=null;
+  const order=db.tables.orders[0];
+  order.scheduled_date='2099-09-10';
+  order.scheduled_time='12:00';
+  order.time_slot='12:00–13:00';
+  order.phone='+79990000002';
+  order.master_called_at=null;
+  order.master_agreed_at=null;
 
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await page.evaluate(()=>window.openOrder('11'));
   await page.getByRole('button',{name:'Звонок выполнен',exact:true}).click();
-  await expect(page.getByRole('button',{name:'Подтвердить договорённость',exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'Подтвердить договорённость',exact:true}).click();
+  await page.getByRole('button',{name:'Договорённость',exact:true}).click();
+
+  const date=page.locator('#masterAgreementForm input[name="scheduled_date"]');
+  const time=page.locator('#masterAgreementForm input[name="scheduled_time"]');
+  await expect(date).toHaveValue('2099-09-10');
+  await expect(time).toHaveValue('12:00');
+  await date.fill('2099-09-16');
+  await time.fill('13:30');
+  await page.getByRole('button',{name:'Сохранить договорённость',exact:true}).click();
+
   await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();
-  await expect(page.getByRole('button',{name:'Выехал',exact:true})).toBeVisible();
+  expect(db.tables.orders[0].scheduled_date).toBe('2099-09-16');
+  expect(db.tables.orders[0].scheduled_time).toBe('13:30');
+  expect(db.tables.orders[0].time_slot).toBe('13:30–14:30');
+
+  await page.evaluate(()=>window.openOrder('11'));
+  await expect(page.getByRole('button',{name:'Начать работу',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Изменить дату и время',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Выехал',exact:true})).toHaveCount(0);
 });

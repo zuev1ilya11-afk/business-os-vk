@@ -27,7 +27,6 @@ async function fitsViewport(page) {
   }
 }
 
-// Fixtures belong only to tests; the application continues to use its existing APIs.
 for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths) {
   test(`dark UI ${role} at ${width}px keeps navigation, content and actions usable`, async ({page}, testInfo) => {
     await page.setViewportSize({width, height: 900});
@@ -39,6 +38,9 @@ for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths
       client: 'Анна Александровна Константинопольская',
       address: 'Санкт-Петербург, Большой Сампсониевский проспект, дом 123, корпус 4, квартира 567',
       comment: 'Пожалуйста, позвоните заранее. '.repeat(12)
+    });
+    if(role==='master')Object.assign(db.tables.orders[0],{
+      master_called_at:'2026-09-23T08:00:00.000Z',master_agreed_at:'2026-09-23T08:05:00.000Z',master_workflow_stage:'assigned'
     });
     await page.goto('/');
     await expect(page.locator('#authGate')).toBeHidden();
@@ -54,57 +56,29 @@ for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths
         await page.screenshot({path: testInfo.outputPath(`${role}-${width}-orders.png`), fullPage: true});
       }
     }
-    // Existing entrypoint opens the real order modal; clicks below exercise its visible controls.
     await page.evaluate(() => window.openOrder('11'));
     await expect(page.locator('#modalRoot .modal')).toBeVisible();
     const modal = page.locator('#modalRoot .modal');
     expect(await modal.evaluate(el => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1);
     if (role === 'master') {
-      const call = modal.locator('.bosMasterWorkflow[data-bos-v26="1"] .bosMwCallAction');
-      await expect(call).toBeVisible();
-      await expect.poll(async () => call.evaluateAll(els => Math.max(0, ...els
-        .filter(el => el.getClientRects().length)
-        .map(el => el.getBoundingClientRect().height)))).toBeGreaterThanOrEqual(44);
-      await expect(page.getByRole('button', {name: 'Нужно перенести', exact: true})).toBeVisible();
+      const flow=modal.locator('.bosMasterWorkflow[data-bos-v115="1"]');
+      await expect(flow.locator('.mwv2Step')).toHaveCount(5);
+      await expect(flow).toContainText('Договорено');
+      await expect(flow).not.toContainText('Выехал');
       await expect(page.getByRole('button', {name: 'Я на месте', exact: true})).toHaveCount(0);
       await expect(page.getByRole('button', {name: 'Выехал', exact: true})).toHaveCount(0);
-
-      await page.getByRole('button', {name: 'Звонок выполнен', exact: true}).click();
-      await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();
-      await expect(page.getByRole('button', {name: 'Подтвердить договорённость', exact: true})).toBeVisible();
-      await page.getByRole('button', {name: 'Подтвердить договорённость', exact: true}).click();
-      await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();
-      await expect(page.getByRole('button', {name: 'Выехал', exact: true})).toBeVisible();
-
-      await page.getByRole('button', {name: 'Выехал', exact: true}).click();
-      await expect(page.locator('.bosMasterWorkflow')).toContainText('В дороге');
-      await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('departed');
-      expect(db.tables.orders[0].master_payout).toBe(552.5);
-      await expect(page.getByRole('link', {name: 'Позвонить клиенту', exact: true})).toBeVisible();
-      await page.getByRole('button', {name: 'Работа начата', exact: true}).click();
-      await expect(page.locator('.bosMasterWorkflow')).toContainText('В работе');
+      await expect(page.getByRole('button', {name: 'Открыть претензию', exact: true})).toHaveCount(0);
+      await expect(page.getByRole('button', {name: 'Начать работу', exact: true})).toBeVisible();
+      await expect(page.getByRole('button', {name: 'Изменить дату и время', exact: true})).toBeVisible();
+      await page.getByRole('button', {name: 'Начать работу', exact: true}).click();
+      await expect(flow).toContainText('В работе');
       await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('started');
-      await page.getByRole('button', {name: 'Завершить и прикрепить отчёт', exact: true}).click();
+      expect(db.tables.orders[0].master_payout).toBe(552.5);
+      await page.getByRole('button', {name: 'Заполнить отчёт', exact: true}).click();
       await expect(page.locator('#masterReportForm')).toBeVisible();
-      await expect(page.getByRole('button', {name: 'Нужно перенести', exact: true})).toBeVisible();
       expect(db.tables.orders[0].status).toBe('В работе');
-      if (width === 390) {
-        await page.getByRole('button', {name: 'Нужно перенести', exact: true}).click();
-        const reason = page.getByLabel('Причина переноса *', {exact: true});
-        await page.getByRole('button', {name: 'Отправить запрос на перенос'}).click();
-        await expect(reason).toBeVisible();
-        expect(await reason.evaluate(el => el.validity.valueMissing)).toBe(true);
-        await reason.fill('Клиент просит приехать завтра');
-        await page.getByRole('button', {name: 'Отправить запрос на перенос'}).click();
-        await expect(page.locator('#masterRescheduleForm')).toHaveCount(0);
-        // Verify the existing profile bridge contract through the real handler.
-        expect(db.calls.some(c => c.table === 'business_staff' && c.mode === 'update' &&
-          c.payload?.district === '@@BOS_R1@@|11|Клиент просит приехать завтра')).toBe(true);
-        await page.evaluate(() => window.openOrder('11'));
-        await expect(page.locator('.bosRescheduleNotice')).toContainText('Клиент просит приехать завтра');
-        expect(db.tables.orders[0].amount).toBe(1000);
-        expect(db.tables.orders[0].master_payout).toBe(552.5);
-      }
+      expect(db.tables.orders[0].amount).toBe(1000);
+      expect(db.tables.orders[0].master_payout).toBe(552.5);
     }
     if (process.env.BOS_UI_SCREENSHOTS && [390, 1440].includes(width)) {
       await page.screenshot({path: testInfo.outputPath(`${role}-${width}-modal.png`)});
