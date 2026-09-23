@@ -144,6 +144,16 @@
   masterWorkflowV115.async=false;
   document.head.appendChild(masterWorkflowV115);
 
+  const masterWorkflowV116=document.createElement('script');
+  masterWorkflowV116.src='./master-workflow-v116.js?v=20260923-v116';
+  masterWorkflowV116.async=false;
+  document.head.appendChild(masterWorkflowV116);
+
+  const claimsRoleV117=document.createElement('script');
+  claimsRoleV117.src='./claims-role-v117.js?v=20260923-v117';
+  claimsRoleV117.async=false;
+  document.head.appendChild(claimsRoleV117);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
