@@ -147,12 +147,8 @@ function applyCustomFilters(root){
   const list=root.querySelector('#bosOrderList');
   if(!list)return;
   const cards=[...list.querySelectorAll(':scope > .opsCompactOrder')];
-  let visible=0;
-  cards.forEach(card=>{
-    const show=customMatch(orderById(idFromCard(card)));
-    card.hidden=!show;
-    if(show)visible++;
-  });
+  cards.forEach(card=>card.classList.toggle('dmv3FilteredOut',!customMatch(orderById(idFromCard(card)))));
+  const visible=cards.filter(card=>!card.classList.contains('dmv3FilteredOut')&&!card.hidden).length;
   let empty=list.querySelector(':scope > .dmv3Empty');
   if(cards.length&&visible===0){
     if(!empty){empty=document.createElement('p');empty.className='muted dmv3Empty';empty.textContent='По выбранным фильтрам заявок нет.';list.appendChild(empty)}
@@ -163,8 +159,7 @@ function applyCustomFilters(root){
 function cleanup(root){
   root.querySelectorAll('.dmv3TomorrowFilter,.dmv3TomorrowShortcut,.dmv3StatusAction,.dmv3Empty').forEach(node=>node.remove());
   root.querySelectorAll('#dmv3City,#dmv3Status').forEach(node=>node.remove());
-  root.querySelectorAll('.dmv3AttentionDanger,.dmv3AttentionWarn,.dmv3AttentionNeutral').forEach(node=>node.classList.remove('dmv3AttentionDanger','dmv3AttentionWarn','dmv3AttentionNeutral'));
-  root.querySelectorAll('#bosOrderList .opsCompactOrder[hidden]').forEach(node=>node.hidden=false);
+  root.querySelectorAll('.dmv3AttentionDanger,.dmv3AttentionWarn,.dmv3AttentionNeutral,.dmv3FilteredOut').forEach(node=>node.classList.remove('dmv3AttentionDanger','dmv3AttentionWarn','dmv3AttentionNeutral','dmv3FilteredOut'));
 }
 function sync(){
   queued=false;
@@ -189,12 +184,13 @@ const style=document.createElement('style');
 style.textContent=`
 #content .bosOrderFilterBox.dmv3FilterBox{grid-template-columns:minmax(220px,1.4fr) repeat(4,minmax(125px,.7fr))}
 #content .dmv3TomorrowFilter small{opacity:.75;margin-left:3px}
+#content .opsCompactOrder.dmv3FilteredOut{display:none!important}
 #content .opsCompactOrder.dmv3AttentionDanger{border-color:rgba(229,92,92,.46)!important;box-shadow:inset 3px 0 0 rgba(229,92,92,.7),0 6px 18px rgba(0,0,0,.12)!important}
 #content .opsCompactOrder.dmv3AttentionWarn{border-color:rgba(242,176,65,.42)!important;box-shadow:inset 3px 0 0 rgba(242,176,65,.72),0 6px 18px rgba(0,0,0,.12)!important}
 #content .opsCompactOrder.dmv3AttentionNeutral{border-color:rgba(92,169,238,.3)!important}
 #content .dmv3Empty{padding:18px 4px;text-align:center}
 @media(max-width:1050px){#content .bosOrderFilterBox.dmv3FilterBox{grid-template-columns:repeat(2,minmax(0,1fr))}#content .bosOrderFilterBox.dmv3FilterBox input{grid-column:1/-1}}
-@media(max-width:620px){#content .bosOrderFilterBox.dmv3FilterBox{grid-template-columns:1fr}#content .bosOrderFilterBox.dmv3FilterBox input{grid-column:auto}.dmCardActions .dmv3StatusAction{min-height:46px}}
+@media(max-width:350px){#content .bosOrderFilterBox.dmv3FilterBox{grid-template-columns:1fr}#content .bosOrderFilterBox.dmv3FilterBox input{grid-column:auto}}
 `;
 document.head.appendChild(style);
 })();
