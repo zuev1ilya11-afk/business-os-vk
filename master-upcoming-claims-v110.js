@@ -3,13 +3,16 @@
 if(window.BOS_MASTER_UPCOMING_CLAIMS_V110)return;window.BOS_MASTER_UPCOMING_CLAIMS_V110=true;
 
 const masterMode=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
-const liveUser=()=>typeof liveMasterUser==='function'?liveMasterUser():(typeof isMasterPreview==='function'&&isMasterPreview()?window.previewUser:(state?.user||{}));
+const liveUser=()=>typeof liveMasterUser==='function'?liveMasterUser():(state?.user||{});
 const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const moneyv=v=>typeof money==='function'?money(v):`${Math.round(Number(v)||0).toLocaleString('ru-RU')} ₽`;
 const dateOnly=v=>String(v||'').slice(0,10);
 
 function masterIds(){
   const u=liveUser()||{},out=new Set([u.id,u.staff_id,u.master_id,u.vk_user_id,u.external_id].filter(Boolean).map(String));
+  if(typeof isMasterPreview==='function'&&isMasterPreview()&&typeof ownOrders==='function'){
+    for(const o of ownOrders()||[])[o?.master_staff_id,o?.master_id,o?.master_vk_id,o?.staff_id].filter(Boolean).map(String).forEach(x=>out.add(x));
+  }
   const rows=[...(state?.masters||[]),...(state?.users||[])];
   for(const m of rows){
     const vals=[m?.id,m?.staff_id,m?.master_id,m?.vk_user_id,m?.external_id].filter(Boolean).map(String);
