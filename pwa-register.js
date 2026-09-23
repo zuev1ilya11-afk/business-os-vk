@@ -129,6 +129,11 @@
   dispatcherOrdersV3.async=false;
   document.head.appendChild(dispatcherOrdersV3);
 
+  const dispatcherSmartAssignV119=document.createElement('script');
+  dispatcherSmartAssignV119.src='./dispatcher-smart-assign-v119.js?v=20260923-v119';
+  dispatcherSmartAssignV119.async=false;
+  document.head.appendChild(dispatcherSmartAssignV119);
+
   const masterUpcomingClaimsV110=document.createElement('script');
   masterUpcomingClaimsV110.src='./master-upcoming-claims-v110.js?v=20260923-v111';
   masterUpcomingClaimsV110.async=false;
