@@ -7,7 +7,7 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   const seedMaster = { vk_user_id:'master_seed', full_name:'Александр Мастер', phone:'70000000000', city:'Москва', role:'master', is_active:true, specialization:'Монтаж', work_start:'09:00', work_end:'18:00' };
   const data={orders:[
     {id:'ACTIVE-1',status:'В работе',client:'Клиент 2',address:'Адрес 2',work:'Шторы',amount:2800,original_amount:2800,scheduled_date:'2099-09-10',scheduled_time:'09:00',time_slot:'09:00–10:00',master_vk_id:'master_seed',master_name:'Александр Мастер',wall_material:'Кирпич',wall_over_3m:true,possible_extra_work:true,comment:'Позвонить заранее'},
-    {id:'REPORT-1',status:'Выполнена',client:'Клиент отчёт',address:'Адрес отчёт',work:'Монтаж',amount:2300,original_amount:2800,master_vk_id:'master_seed',master_name:'Александр Мастер',master_payout:1270.75,extra_work_amount:300,uncompleted_work_amount:500,report_uploaded_at:'2026-09-09T03:00:00Z',report_review_status:'pending',report_act_url:'https://example.com/act.pdf',report_photo_urls:'["https://example.com/photo.jpg"]'}
+    {id:'REPORT-1',status:'В работе',client:'Клиент отчёт',address:'Адрес отчёт',work:'Монтаж',amount:2300,original_amount:2800,master_vk_id:'master_seed',master_name:'Александр Мастер',master_payout:1270.75,extra_work_amount:300,uncompleted_work_amount:500,report_uploaded_at:'2026-09-09T03:00:00Z',report_review_status:'pending',report_act_url:'https://example.com/act.pdf',report_photo_urls:'["https://example.com/photo.jpg"]'}
   ],users:[seedMaster],masters:[seedMaster],masterSchedule:[]};
 
   const miniHandler = async route=>{
@@ -44,6 +44,15 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   };
   await page.route('**/api/proxy/employee-meta-api',employeeHandler);
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/employee-meta-api',employeeHandler);
+  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/order-lifecycle-api',async route=>{
+    const body=route.request().postDataJSON()||{};
+    if(body.action==='reviewReport'){
+      const i=data.orders.findIndex(x=>String(x.id)===String(body.id));
+      data.orders[i]={...data.orders[i],report_review_status:body.decision,report_review_comment:body.comment||'',status:body.decision==='approved'?'Выполнена':'В работе',drive_archive_status:body.decision==='approved'?'archived':data.orders[i].drive_archive_status};
+      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:data.orders[i]})});
+    }
+    return route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({ok:false,error:'unexpected lifecycle action'})});
+  });
 
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
