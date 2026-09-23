@@ -114,6 +114,11 @@
   dispatcherOrderPriorityV105.async=false;
   document.head.appendChild(dispatcherOrderPriorityV105);
 
+  const orderLifecycleV106=document.createElement('script');
+  orderLifecycleV106.src='./order-lifecycle-v106.js?v=20260923-v106';
+  orderLifecycleV106.async=false;
+  document.head.appendChild(orderLifecycleV106);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
