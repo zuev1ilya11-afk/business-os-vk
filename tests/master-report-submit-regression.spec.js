@@ -76,3 +76,14 @@ test('master report submit handler is stable and gateway-first',async()=>{
   expect(uploader).toContain('form.onsubmit=e=>window.BOS_MASTER_REPORT_SUBMIT(e,id)');
   expect(uploader.indexOf('REPORT_PROXY')).toBeLessThan(uploader.indexOf('REPORT_DIRECT'));
 });
+
+test('large report act images are compressed before binary size limit',async()=>{
+  const uploader=fs.readFileSync(path.join(__dirname,'..','report-chunk-upload-v23.js'),'utf8');
+  expect(uploader).toContain('const MAX_IMAGE_INPUT=30*1024*1024');
+  expect(uploader).toContain('const MAX_BINARY_INPUT=7*1024*1024');
+  const imageCheck=uploader.indexOf("const isImage=String(file.type||'').startsWith('image/')");
+  const binaryLimit=uploader.indexOf('if(file.size>MAX_BINARY_INPUT)');
+  expect(imageCheck).toBeGreaterThan(-1);
+  expect(binaryLimit).toBeGreaterThan(imageCheck);
+  expect(uploader).not.toContain('const maxRaw=photo?12*1024*1024:7*1024*1024');
+});
