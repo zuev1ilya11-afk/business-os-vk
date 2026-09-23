@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-if(window.BOS_MASTER_UPCOMING_CLAIMS_V110)return;window.BOS_MASTER_UPCOMING_CLAIMS_V110=true;
+if(window.BOS_MASTER_UPCOMING_CLAIMS_V111)return;window.BOS_MASTER_UPCOMING_CLAIMS_V111=true;
 
 const masterMode=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
 const liveUser=()=>typeof liveMasterUser==='function'?liveMasterUser():(state?.user||{});
@@ -59,14 +59,39 @@ function claimCard(c){
   const o=linkedOrder(c),no=orderNo(o,c);
   return `<button type="button" class="bosMasterUpcomingCard bosMasterUpcomingClaim" data-claim-id="${escv(c.id)}" onclick="${openAction(c,o)}"><strong class="bosUpcomingNo">№ ${escv(no)} <span class="bosUpcomingClaimBadge">Рекламация</span></strong><span class="bosUpcomingWork">${escv(claimText(c))}</span><small class="bosUpcomingMeta">${escv(claimMeta(c))}</small></button>`;
 }
+function upcomingSection(){
+  const root=document.getElementById('content');if(!root)return null;
+  const h=[...root.querySelectorAll('h2,h3')].find(x=>(x.textContent||'').trim()==='Ближайшие заявки');
+  return h?.closest('section')||h?.parentElement||null;
+}
+function ensureDays(claims){
+  let days=document.querySelector('.bosMasterUpcomingDays');
+  if(days||!claims.length)return days;
+  const section=upcomingSection(),empty=section?.querySelector('.masterEmpty');
+  if(!section||!empty)return null;
+  days=document.createElement('div');
+  days.className='bosMasterUpcomingDays';
+  days.dataset.bosClaimsOnly='1';
+  empty.replaceWith(days);
+  return days;
+}
+function restoreEmpty(days){
+  if(!days||days.dataset.bosClaimsOnly!=='1')return;
+  if(days.querySelector('.bosMasterUpcomingCard:not(.bosMasterUpcomingClaim)'))return;
+  const empty=document.createElement('div');
+  empty.className='masterEmpty';
+  empty.textContent='Ближайших выездов пока нет';
+  days.replaceWith(empty);
+}
 function renderClaims(){
   if(!masterMode()||String(state?.page||'')!=='home')return;
-  const days=document.querySelector('.bosMasterUpcomingDays');if(!days)return;
   const claims=(state?.claims||[]).filter(c=>String(c?.status||'')==='open'&&mine(c)).sort((a,b)=>String((a.scheduled_date||'0000')+(a.scheduled_time||'00:00')).localeCompare(String((b.scheduled_date||'0000')+(b.scheduled_time||'00:00'))));
+  const days=ensureDays(claims);if(!days)return;
   const sig=JSON.stringify(claims.map(c=>[c.id,c.order_id,c.status,c.scheduled_date,c.scheduled_time,c.reason,c.required_work,c.pay_revisit,c.revisit_payment]));
   const needsDecorate=claims.some(c=>{const card=existingCard(linkedOrder(c));return card&&String(card.dataset.claimId||'')!==String(c.id||'')});
   if(days.dataset.bosClaimsSig===sig&&!needsDecorate)return;
   days.querySelector('.bosMasterClaimDay')?.remove();
+  if(!claims.length){days.dataset.bosClaimsSig=sig;restoreEmpty(days);return}
   const extra=[];
   for(const c of claims){const o=linkedOrder(c),card=existingCard(o);if(!decorate(card,c))extra.push(c)}
   if(extra.length){
