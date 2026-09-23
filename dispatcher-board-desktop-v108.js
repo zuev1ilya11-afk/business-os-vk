@@ -18,20 +18,23 @@ const masterIds=m=>[m?.id,m?.staff_id,m?.master_staff_id,m?.vk_user_id,m?.extern
 const orderMasterIds=o=>[o?.master_staff_id,o?.master_id,o?.master_vk_id].filter(Boolean).map(String);
 const sameMaster=(m,o)=>{const ids=masterIds(m),oid=orderMasterIds(o);return ids.some(x=>oid.includes(x))||String(m?.full_name||'')===String(o?.master_name||'')};
 
-function newestValue(o){
-  const raw=o?.created_at||o?.createdAt||o?.created_date||o?.created||'';
-  const parsed=Date.parse(raw);
-  if(Number.isFinite(parsed))return parsed;
+function sequenceValue(o){
   const number=Number(String(noOf(o)).replace(/\D/g,''));
   if(Number.isFinite(number)&&number>0)return number;
   const id=Number(String(o?.id||'').replace(/\D/g,''));
   return Number.isFinite(id)?id:0;
 }
+function newestValue(o){
+  const raw=o?.created_at||o?.createdAt||o?.created_date||o?.created||'';
+  const parsed=Date.parse(raw);
+  return Number.isFinite(parsed)?parsed:sequenceValue(o);
+}
 function tripValue(o){return `${dateOf(o)||'9999-99-99'} ${timeOf(o)||'99:99'}`}
 function listComparator(a,b){
-  if(listSort==='trip')return tripValue(a).localeCompare(tripValue(b));
-  if(listSort==='oldest')return newestValue(a)-newestValue(b);
-  return newestValue(b)-newestValue(a);
+  if(listSort==='trip')return tripValue(a).localeCompare(tripValue(b))||sequenceValue(b)-sequenceValue(a);
+  const age=newestValue(a)-newestValue(b);
+  if(listSort==='oldest')return age||sequenceValue(a)-sequenceValue(b);
+  return -age||sequenceValue(b)-sequenceValue(a);
 }
 function orderById(id){return (state?.orders||[]).find(o=>String(o?.id)===String(id))||null}
 function listCardId(card){return String(card?.dataset?.orderId||'')}
