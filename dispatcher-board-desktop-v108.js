@@ -91,7 +91,8 @@ function injectCompletedOrders(){
     slot.insertAdjacentHTML('beforeend',completedCard(o));
   }
   const count=(state?.orders||[]).filter(o=>String(o?.status||'')!=='Отменена'&&dateOf(o)===date&&filterMatch(o)).length;
-  const stat=document.querySelector('.dbDayStats b');if(stat)stat.textContent=String(count);
+  const stat=document.querySelector('.dbDayStats b');
+  if(stat&&stat.textContent!==String(count))stat.textContent=String(count);
 }
 
 function enableAttentionDrop(){
@@ -126,7 +127,11 @@ function enhance(){
   fitBoard();
   sortInlineList();
 }
-function scheduleEnhance(){if(queued)return;queued=true;requestAnimationFrame(enhance)}
+function scheduleEnhance(){
+  if(queued||!dispatcherDesktop()||!ordersPage())return;
+  queued=true;
+  requestAnimationFrame(enhance);
+}
 
 const root=document.getElementById('content');
 if(root)new MutationObserver(scheduleEnhance).observe(root,{childList:true,subtree:true});
