@@ -82,9 +82,12 @@ Deno.serve(async r=>{
       for(const k of a==='createOrder'?['client','address','work']:[])if(!String(b[k]||'').trim())return j({ok:false,error:'Заполните обязательные поля'},400);
 
       const requestId=a==='createOrder'?safeRequestId(b.request_id):'';
-      const createExternalId=requestId?`app_${me.id}_${requestId}`:'';
+      const avitoChat=a==='createOrder'?String(b.avito_chat_id||''):'';
+      if(avitoChat&&!/^[\w:-]{1,200}$/.test(avitoChat))return j({ok:false,error:'Некорректный ID диалога Авито'},400);
+      const createExternalId=avitoChat?`avito_chat_${avitoChat}`:requestId?`app_${me.id}_${requestId}`:'';
+      const createSource=avitoChat?'avito':'mini_app';
       if(createExternalId){
-        const prior=await db.from('orders').select('*').eq('external_id',createExternalId).maybeSingle();
+        const prior=await db.from('orders').select('*').eq('external_source',createSource).eq('external_id',createExternalId).maybeSingle();
         if(prior.error)throw prior.error;
         if(prior.data)return j({ok:true,order:prior.data,idempotent:true});
       }
@@ -108,9 +111,15 @@ Deno.serve(async r=>{
       else if(ms!==undefined&&ms?.id!==cur.master_staff_id)p.master_payout=payouts(amount,!!ms).master_payout;
       if(a==='createOrder'){
         Object.assign(p,{status:b.status||'В работе',client:String(b.client).trim(),address:String(b.address).trim(),work:String(b.work).trim(),source:b.source||'VK',city:b.city||'Санкт-Петербург',external_source:'mini_app',external_id:createExternalId||('app_'+crypto.randomUUID()),created_by_vk_id:me.external_id,source_updated_at:now});
+        if(avitoChat){
+          p.external_source='avito';p.source='Авито';p.avito_chat_id=avitoChat;
+          p.avito_item_id=String(b.avito_item_id||'').slice(0,200)||null;
+          const itemUrl=String(b.avito_item_url||'').slice(0,2000);
+          p.avito_item_url=/^https:\/\/([a-z0-9-]+\.)?avito\.ru\//i.test(itemUrl)?itemUrl:null;
+        }
         const q=await db.from('orders').insert(p).select().single();
         if(q.error?.code==='23505'&&createExternalId){
-          const prior=await db.from('orders').select('*').eq('external_source','mini_app').eq('external_id',createExternalId).maybeSingle();
+          const prior=await db.from('orders').select('*').eq('external_source',createSource).eq('external_id',createExternalId).maybeSingle();
           if(prior.data)return j({ok:true,order:prior.data,idempotent:true});
         }
         if(q.error)throw q.error;
