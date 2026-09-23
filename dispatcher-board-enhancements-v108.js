@@ -6,6 +6,7 @@ const SORT_KEY='bosDispatcherOrderSort';
 let dndInstalled=false;
 let busyDrop=false;
 let enhanceScheduled=false;
+let contentObserver=null;
 
 const dispatcherDesktop=()=>window.innerWidth>=MIN_DESKTOP&&((typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(state?.user?.role||'')==='dispatcher');
 const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -124,14 +125,22 @@ function installDnD(){
   document.addEventListener('dragover',e=>{if(e.target.closest?.('.dbTray,.dbSlot,.dbV23Slot')){e.preventDefault();if(e.dataTransfer)e.dataTransfer.dropEffect='move'}},true);
   document.addEventListener('drop',e=>{if(e.target.closest?.('.dbTray')){e.stopImmediatePropagation();clearAssignmentFromDrop(e)}},true);
 }
+const content=document.getElementById('content');
+function observeContent(){
+  if(contentObserver&&content?.isConnected)contentObserver.observe(content,{subtree:true,childList:true});
+}
 function enhance(){
   enhanceScheduled=false;
   if(!dispatcherDesktop()||String(state?.page||'')!=='orders'||!document.querySelector('.dbBoard'))return;
-  installDnD();ensureSortControl();sortVisibleList();injectCompleted();fitBoard();
+  contentObserver?.disconnect();
+  try{
+    installDnD();ensureSortControl();sortVisibleList();injectCompleted();fitBoard();
+  }finally{
+    observeContent();
+  }
 }
 function scheduleEnhance(){if(enhanceScheduled)return;enhanceScheduled=true;requestAnimationFrame(enhance)}
-const content=document.getElementById('content');
-if(content){const observer=new MutationObserver(()=>{if(document.querySelector('.dbBoard'))scheduleEnhance()});observer.observe(content,{subtree:true,childList:true})}
+if(content){contentObserver=new MutationObserver(()=>{if(document.querySelector('.dbBoard'))scheduleEnhance()});observeContent()}
 window.addEventListener('resize',scheduleEnhance);setTimeout(scheduleEnhance,0);
 const style=document.createElement('style');style.textContent=`
 @media(min-width:${MIN_DESKTOP}px){
