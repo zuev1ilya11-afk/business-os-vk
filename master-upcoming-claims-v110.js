@@ -61,7 +61,8 @@ function renderClaims(){
   const days=document.querySelector('.bosMasterUpcomingDays');if(!days)return;
   const claims=(state?.claims||[]).filter(c=>String(c?.status||'')==='open'&&mine(c)).sort((a,b)=>String((a.scheduled_date||'0000')+(a.scheduled_time||'00:00')).localeCompare(String((b.scheduled_date||'0000')+(b.scheduled_time||'00:00'))));
   const sig=JSON.stringify(claims.map(c=>[c.id,c.order_id,c.status,c.scheduled_date,c.scheduled_time,c.reason,c.required_work,c.pay_revisit,c.revisit_payment]));
-  if(days.dataset.bosClaimsSig===sig)return;
+  const needsDecorate=claims.some(c=>{const card=existingCard(linkedOrder(c));return card&&String(card.dataset.claimId||'')!==String(c.id||'')});
+  if(days.dataset.bosClaimsSig===sig&&!needsDecorate)return;
   days.querySelector('.bosMasterClaimDay')?.remove();
   const extra=[];
   for(const c of claims){const o=linkedOrder(c),card=existingCard(o);if(!decorate(card,c))extra.push(c)}
