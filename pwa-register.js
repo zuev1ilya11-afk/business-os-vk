@@ -119,6 +119,11 @@
   orderLifecycleV106.async=false;
   document.head.appendChild(orderLifecycleV106);
 
+  const dispatcherOrderWorkflowV114=document.createElement('script');
+  dispatcherOrderWorkflowV114.src='./dispatcher-order-workflow-v114.js?v=20260923-v114';
+  dispatcherOrderWorkflowV114.async=false;
+  document.head.appendChild(dispatcherOrderWorkflowV114);
+
   const masterUpcomingClaimsV110=document.createElement('script');
   masterUpcomingClaimsV110.src='./master-upcoming-claims-v110.js?v=20260923-v111';
   masterUpcomingClaimsV110.async=false;
