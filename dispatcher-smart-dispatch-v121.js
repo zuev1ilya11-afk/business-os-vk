@@ -123,7 +123,7 @@ function targetCards(root){
   if(compact.length)return compact;
   if(!listTabActive(root))return [];
   const seen=new Set();
-  return [...root.querySelectorAll('.dbSchedule .dbOrderCard[data-order-id]')].filter(card=>{
+  return [...root.querySelectorAll('.dbSchedule .dbV94ListCard[data-order-id]')].filter(card=>{
     const id=orderIdFromCard(card);
     if(!id||seen.has(id))return false;
     seen.add(id);return true;
