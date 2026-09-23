@@ -67,13 +67,23 @@ for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths
         .map(el => el.getBoundingClientRect().height)))).toBeGreaterThanOrEqual(44);
       await expect(page.getByRole('button', {name: 'Нужно перенести', exact: true})).toBeVisible();
       await expect(page.getByRole('button', {name: 'Я на месте', exact: true})).toHaveCount(0);
+      await expect(page.getByRole('button', {name: 'Выехал', exact: true})).toHaveCount(0);
+
+      await page.getByRole('button', {name: 'Звонок выполнен', exact: true}).click();
+      await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();
+      await expect(page.getByRole('button', {name: 'Подтвердить договорённость', exact: true})).toBeVisible();
+      await page.getByRole('button', {name: 'Подтвердить договорённость', exact: true}).click();
+      await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();
+      await expect(page.getByRole('button', {name: 'Выехал', exact: true})).toBeVisible();
+
       await page.getByRole('button', {name: 'Выехал', exact: true}).click();
-      await expect(page.locator('.bosMasterWorkflow')).toContainText('Выехал');
+      await expect(page.locator('.bosMasterWorkflow')).toContainText('В дороге');
       await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('departed');
       expect(db.tables.orders[0].master_payout).toBe(552.5);
       await expect(page.getByRole('link', {name: 'Позвонить клиенту', exact: true})).toBeVisible();
       await page.getByRole('button', {name: 'Работа начата', exact: true}).click();
-      await expect(page.locator('.bosMasterWorkflow')).toContainText('Работа начата');
+      await expect(page.locator('.bosMasterWorkflow')).toContainText('В работе');
+      await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('started');
       await page.getByRole('button', {name: 'Завершить и прикрепить отчёт', exact: true}).click();
       await expect(page.locator('#masterReportForm')).toBeVisible();
       await expect(page.getByRole('button', {name: 'Нужно перенести', exact: true})).toBeVisible();
