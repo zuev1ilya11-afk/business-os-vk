@@ -8,7 +8,7 @@ test('unassigned order shows ranked inline options and one-action assignment pre
   const {db,master}=await fullStack(page,'dispatcher');
   db.tables.business_staff.push(
     {id:'m2',external_id:'staff_m2',full_name:'Московский мастер',role:'master',is_active:true,phone:'+79990000002',login:'m2',password_hash:'audit-password',city:'Москва'},
-    {id:'m3',external_id:'staff_m3',full_name:'Второй мастер',role:'master',is_active:true,phone:'+79990000003',login:'m3',password_hash:'audit-password',city:'Санкт-Петербург'}
+    {id:'m3',external_id:'staff_m3',full_name:'Второй мастер',role:'master',is_active:true,phone:'+79990000003',login:'m3',password_hash:'audit-password',city:'Москва'}
   );
   db.tables.staff_schedule.push(workingDay(master.id),workingDay('m2'),workingDay('m3'));
   Object.assign(db.tables.orders[0],{scheduled_date:today(),scheduled_time:'11:00',time_slot:'11:00–12:00',city:'Санкт-Петербург'});
