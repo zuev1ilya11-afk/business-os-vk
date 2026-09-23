@@ -120,7 +120,7 @@
   document.head.appendChild(orderLifecycleV106);
 
   const dispatchBoardDesktopV108=document.createElement('script');
-  dispatchBoardDesktopV108.src='./dispatcher-board-desktop-v108.js?v=20260923-v108';
+  dispatchBoardDesktopV108.src='./dispatcher-board-desktop-v108.js?v=20260923-v108b';
   dispatchBoardDesktopV108.async=false;
   document.head.appendChild(dispatchBoardDesktopV108);
 
