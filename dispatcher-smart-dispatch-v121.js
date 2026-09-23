@@ -94,7 +94,6 @@ async function assign(orderId,masterValue,time,date,button){
   const order=orderById(orderId),master=masterByKey(masterValue);
   if(!order||!master||!unassigned(order)||state.busy)return false;
   const name=master.full_name||master.name||'мастера';
-  if(!confirm(`Назначить ${name} на ${date} ${time}?`))return false;
   const box=button?.closest?.('.dsd121');
   const buttons=box?[...box.querySelectorAll('button')]:[];
   state.busy=true;buttons.forEach(x=>x.disabled=true);if(button)button.textContent='Назначаем…';
