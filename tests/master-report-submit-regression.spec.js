@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 const fs=require('fs');
 const path=require('path');
 
-test('master report submits act and photo through gateway before finalizing',async({page})=>{
+test('master report uploads through gateway and finalizes through lifecycle API',async({page})=>{
   await page.addInitScript(()=>{
     localStorage.setItem('bos_vk_session_v2','test-session-master');
     // Keep report transport assertions independent of external VK Bridge CDN loading.
@@ -18,7 +18,7 @@ test('master report submits act and photo through gateway before finalizing',asy
   await page.route('**/api/proxy/claims-api',ok);
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api',ok);
 
-  const actions=[];
+  const uploadActions=[];
   let directCalls=0;
   let finalizePayload=null;
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-api',route=>{
@@ -27,19 +27,24 @@ test('master report submits act and photo through gateway before finalizing',asy
   });
   await page.route('https://business-os-api-gateway.netlify.app/api/proxy/report-api',async route=>{
     const body=route.request().postDataJSON()||{};
-    actions.push(body.action);
+    uploadActions.push(body.action);
     if(body.action==='uploadReportFile'){
       return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,url:`https://files.test/${body.file_kind}-${body.file_index}`})});
     }
+    return route.fulfill({status:400,contentType:'application/json',body:'{"ok":false,"error":"unexpected action"}'});
+  });
+  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/order-lifecycle-api',async route=>{
+    const body=route.request().postDataJSON()||{};
     if(body.action==='finalizeMasterReport'){
       finalizePayload=body;
-      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:{id:'M-1',status:'Выполнена',master_payout:552.5},drive_archive_status:'pending'})});
+      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:{id:'M-1',status:'В работе',report_review_status:'pending',completed_at:null,master_payout:552.5},drive_archive_status:'pending'})});
     }
-    return route.fulfill({status:400,contentType:'application/json',body:'{"ok":false,"error":"unexpected action"}'});
+    return route.fulfill({status:400,contentType:'application/json',body:'{"ok":false,"error":"unexpected lifecycle action"}'});
   });
 
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
+  await page.waitForFunction(()=>window.BOS_ORDER_LIFECYCLE_V106===true);
   await page.evaluate(()=>openMasterReportForm('M-1'));
   await expect(page.locator('#masterReportForm')).toBeVisible();
 
@@ -48,11 +53,11 @@ test('master report submits act and photo through gateway before finalizing',asy
   await page.locator('#mrPhotos').setInputFiles({name:'photo.png',mimeType:'image/png',buffer:png});
   await page.getByRole('button',{name:'Отправить отчёт и завершить'}).click();
 
-  await expect.poll(()=>actions,{timeout:15000}).toEqual(['uploadReportFile','uploadReportFile','finalizeMasterReport']);
+  await expect.poll(()=>uploadActions,{timeout:15000}).toEqual(['uploadReportFile','uploadReportFile']);
+  await expect.poll(()=>finalizePayload,{timeout:15000}).toBeTruthy();
   await expect(page.locator('#masterReportForm')).toHaveCount(0);
 
   expect(directCalls).toBe(0);
-  expect(finalizePayload).toBeTruthy();
   expect(finalizePayload.act_url).toContain('/act-0');
   expect(finalizePayload.photo_urls).toEqual(['https://files.test/photo-1']);
 });

@@ -87,13 +87,13 @@ test('owner can assign an order to a master through the real order modal',async(
   await expect.poll(()=>updates.some(x=>x.action==='updateOrder'&&x.id==='ORDER-CRIT-1'&&x.master_vk_id==='master_1')).toBe(true);
 });
 
-test('dispatcher can close an active order through the real order modal',async({page})=>{
+test('dispatcher cannot manually complete an active order before report approval',async({page})=>{
   const {updates}=await mockTeamApp(page,'dispatcher');
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
+  await page.waitForFunction(()=>window.BOS_ORDER_LIFECYCLE_V106===true);
   await page.evaluate(()=>openOrder('ORDER-CRIT-1'));
   await expect(page.locator('#quickStatus')).toBeVisible();
-  await page.locator('#quickStatus').selectOption({label:'Выполнена'});
-  await page.getByRole('button',{name:'Сохранить',exact:true}).click();
-  await expect.poll(()=>updates.some(x=>x.action==='updateOrder'&&x.id==='ORDER-CRIT-1'&&x.status==='Выполнена')).toBe(true);
+  await expect(page.locator('#quickStatus option',{hasText:'Выполнена'})).toBeDisabled();
+  expect(updates.some(x=>x.action==='updateOrder'&&x.id==='ORDER-CRIT-1'&&x.status==='Выполнена')).toBe(false);
 });
