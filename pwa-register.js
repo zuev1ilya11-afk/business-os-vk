@@ -139,6 +139,11 @@
   dispatcherFreeSlotsV120.async=false;
   document.head.appendChild(dispatcherFreeSlotsV120);
 
+  const dispatcherSmartDispatchV121=document.createElement('script');
+  dispatcherSmartDispatchV121.src='./dispatcher-smart-dispatch-v121.js?v=20260923-v121';
+  dispatcherSmartDispatchV121.async=false;
+  document.head.appendChild(dispatcherSmartDispatchV121);
+
   const masterUpcomingClaimsV110=document.createElement('script');
   masterUpcomingClaimsV110.src='./master-upcoming-claims-v110.js?v=20260923-v111';
   masterUpcomingClaimsV110.async=false;
