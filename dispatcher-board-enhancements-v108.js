@@ -5,6 +5,7 @@ const MIN_DESKTOP=1050;
 const SORT_KEY='bosDispatcherOrderSort';
 let dndInstalled=false;
 let busyDrop=false;
+let enhanceScheduled=false;
 
 const dispatcherDesktop=()=>window.innerWidth>=MIN_DESKTOP&&((typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(state?.user?.role||'')==='dispatcher');
 const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -34,14 +35,17 @@ function sortVisibleList(){
   const host=document.querySelector('.dbV94ListItems');if(!host)return;
   const mode=document.getElementById('bosOrderSort')?.value||sortValue();
   const map=new Map((state.orders||[]).map(o=>[String(o.id),o]));
-  const cards=[...host.querySelectorAll(':scope > .dbV94ListCard')];
-  cards.sort((a,b)=>{
+  const current=[...host.querySelectorAll(':scope > .dbV94ListCard')];
+  if(current.length<2)return;
+  const sorted=current.slice().sort((a,b)=>{
     const ao=map.get(String(a.dataset.orderId||''))||{},bo=map.get(String(b.dataset.orderId||''))||{};
     if(mode==='oldest')return createdTs(ao)-createdTs(bo);
     if(mode==='schedule')return scheduledTs(ao)-scheduledTs(bo)||createdTs(bo)-createdTs(ao);
     return createdTs(bo)-createdTs(ao);
   });
-  for(const card of cards)host.appendChild(card);
+  const stable=current.every((card,i)=>card===sorted[i]);
+  if(stable)return;
+  for(const card of sorted)host.appendChild(card);
 }
 function completedCard(o){
   const number=String(o?.external_id||'').startsWith('hands:')?String(o.external_id).slice(6):String(o?.id||'');
@@ -51,23 +55,37 @@ function injectCompleted(){
   if(!dispatcherDesktop())return;
   const board=document.querySelector('.dbBoard');if(!board)return;
   const date=document.getElementById('dispatchBoardDate')?.value||'';if(!date)return;
-  board.querySelectorAll('[data-bos-completed="1"]').forEach(n=>n.remove());
   const done=(state.orders||[]).filter(o=>isDone(o)&&dateOf(o)===date&&orderMasterIds(o).length>0);
+  const doneIds=new Set(done.map(o=>String(o.id)));
+  const existing=[...board.querySelectorAll('[data-bos-completed="1"]')];
+  for(const node of existing)if(!doneIds.has(String(node.dataset.orderId||'')))node.remove();
   if(!done.length)return;
   const masters=state.masters||[];
-  board.querySelectorAll('.dbTimelineRow').forEach(row=>{
-    const name=String(row.querySelector('.dbMasterCell b')?.textContent||'').trim();
-    const master=masters.find(m=>String(m.full_name||'').trim()===name);if(!master)return;
-    for(const o of done.filter(x=>sameMaster(master,x))){
-      const h=hourOf(o);if(h===null)continue;
-      const slot=row.querySelector(`.dbSlot[data-hour="${h}"]`);if(slot)slot.insertAdjacentHTML('beforeend',completedCard(o));
+  const place=(slot,o)=>{
+    if(!slot)return;
+    const id=String(o.id);
+    const node=[...board.querySelectorAll('[data-bos-completed="1"]')].find(n=>String(n.dataset.orderId||'')===id);
+    if(node?.parentElement===slot)return;
+    node?.remove();
+    slot.insertAdjacentHTML('beforeend',completedCard(o));
+  };
+  const rows=[...board.querySelectorAll('.dbTimelineRow')];
+  if(rows.length){
+    for(const row of rows){
+      const name=String(row.querySelector('.dbMasterCell b')?.textContent||'').trim();
+      const master=masters.find(m=>String(m.full_name||'').trim()===name);if(!master)continue;
+      for(const o of done.filter(x=>sameMaster(master,x))){
+        const h=hourOf(o);if(h===null)continue;
+        place(row.querySelector(`.dbSlot[data-hour="${h}"]`),o);
+      }
     }
-  });
-  board.querySelectorAll('.dbV23Slot').forEach(slot=>{
+    return;
+  }
+  for(const slot of board.querySelectorAll('.dbV23Slot')){
     const master=String(slot.dataset.master||''),time=String(slot.dataset.time||'').slice(0,2);
-    const m=masters.find(x=>masterIds(x).includes(master));if(!m)return;
-    const h=Number(time);for(const o of done.filter(x=>sameMaster(m,x)&&hourOf(x)===h))slot.insertAdjacentHTML('beforeend',completedCard(o));
-  });
+    const m=masters.find(x=>masterIds(x).includes(master));if(!m)continue;
+    const h=Number(time);for(const o of done.filter(x=>sameMaster(m,x)&&hourOf(x)===h))place(slot,o);
+  }
 }
 function fitBoard(){
   if(!dispatcherDesktop())return;
@@ -76,7 +94,8 @@ function fitBoard(){
   const head=timeline.querySelector('.dbTimelineHead');
   const available=Math.max(260,window.innerHeight-wrap.getBoundingClientRect().top-18-(head?.getBoundingClientRect().height||44));
   const rowH=Math.max(52,Math.min(150,Math.floor(available/rows.length)));
-  timeline.style.setProperty('--bos-dispatch-row-h',rowH+'px');
+  const value=rowH+'px';
+  if(timeline.style.getPropertyValue('--bos-dispatch-row-h')!==value)timeline.style.setProperty('--bos-dispatch-row-h',value);
 }
 async function clearAssignmentFromDrop(event){
   event?.preventDefault?.();event?.stopPropagation?.();
@@ -105,9 +124,15 @@ function installDnD(){
   document.addEventListener('dragover',e=>{if(e.target.closest?.('.dbTray,.dbSlot,.dbV23Slot')){e.preventDefault();if(e.dataTransfer)e.dataTransfer.dropEffect='move'}},true);
   document.addEventListener('drop',e=>{if(e.target.closest?.('.dbTray')){e.stopImmediatePropagation();clearAssignmentFromDrop(e)}},true);
 }
-function enhance(){if(!dispatcherDesktop())return;installDnD();ensureSortControl();sortVisibleList();injectCompleted();fitBoard()}
-const observer=new MutationObserver(()=>requestAnimationFrame(enhance));observer.observe(document.documentElement,{subtree:true,childList:true});
-window.addEventListener('resize',()=>requestAnimationFrame(enhance));setTimeout(enhance,0);
+function enhance(){
+  enhanceScheduled=false;
+  if(!dispatcherDesktop()||String(state?.page||'')!=='orders'||!document.querySelector('.dbBoard'))return;
+  installDnD();ensureSortControl();sortVisibleList();injectCompleted();fitBoard();
+}
+function scheduleEnhance(){if(enhanceScheduled)return;enhanceScheduled=true;requestAnimationFrame(enhance)}
+const content=document.getElementById('content');
+if(content){const observer=new MutationObserver(()=>{if(document.querySelector('.dbBoard'))scheduleEnhance()});observer.observe(content,{subtree:true,childList:true})}
+window.addEventListener('resize',scheduleEnhance);setTimeout(scheduleEnhance,0);
 const style=document.createElement('style');style.textContent=`
 @media(min-width:${MIN_DESKTOP}px){
 .dbLayout{grid-template-columns:220px minmax(0,1fr) 270px!important}.dbTray{min-height:180px;border:1px dashed rgba(112,183,255,.20);border-radius:10px;padding:6px!important}.dbTray.dropping{border-color:#70b7ff;background:rgba(22,131,255,.08)}.dbDropHint{margin-top:8px}
