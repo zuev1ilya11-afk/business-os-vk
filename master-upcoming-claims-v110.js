@@ -40,7 +40,7 @@ function openAction(c,o){return o&&typeof window.openOrder==='function'?`openOrd
 function existingCard(o){
   if(!o)return null;
   const id=String(o.id);
-  return [...document.querySelectorAll('.bosMasterUpcomingCard')].find(card=>String(card.getAttribute('onclick')||'').includes(`'${id}'`))||null;
+  return [...document.querySelectorAll('.bosMasterUpcomingCard')].find(card=>!card.closest('.bosMasterClaimDay')&&String(card.getAttribute('onclick')||'').includes(`'${id}'`))||null;
 }
 function decorate(card,c){
   if(!card)return false;
