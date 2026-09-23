@@ -140,9 +140,14 @@
   document.head.appendChild(sessionRefreshV113);
 
   const masterWorkflowV115=document.createElement('script');
-  masterWorkflowV115.src='./master-workflow-v115.js?v=20260923-v115';
+  masterWorkflowV115.src='./master-workflow-v115.js?v=20260923-v115-simple';
   masterWorkflowV115.async=false;
   document.head.appendChild(masterWorkflowV115);
+
+  const claimRoleGuardV116=document.createElement('script');
+  claimRoleGuardV116.src='./claim-role-guard-v116.js?v=20260923-v116';
+  claimRoleGuardV116.async=false;
+  document.head.appendChild(claimRoleGuardV116);
 
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
