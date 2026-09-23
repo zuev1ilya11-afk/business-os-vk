@@ -51,30 +51,35 @@ function candidateNode(candidate,index,order,date){
   return node;
 }
 function boxFor(card,orderId){
-  const inside=card.querySelector?.(':scope > .dsd121');
-  if(inside)return inside;
-  const next=card.nextElementSibling;
-  return next?.classList?.contains('dsd121')&&String(next.dataset.orderId||'')===String(orderId)?next:null;
+  const scope=card?.closest?.('.dbV94ListItems')||card?.closest?.('#bosOrderList')||card?.parentElement||document.getElementById('content');
+  const boxes=[...(scope?.querySelectorAll?.('.dsd121[data-order-id]')||[])].filter(node=>String(node.dataset.orderId||'')===String(orderId));
+  const inside=boxes.find(node=>node.parentElement===card);
+  const box=inside||boxes[0]||null;
+  boxes.forEach(node=>{if(node!==box)node.remove()});
+  return box;
 }
 function renderCard(card,order){
   let box=boxFor(card,order?.id);
   if(!unassigned(order)||order?.reschedule_requested){box?.remove();return}
   const date=dateOf(order),items=recommendations(order);
   if(!items.length){box?.remove();return}
-  const signature=candidateSignature(items,date);
-  if(box?.dataset.signature===signature)return;
+  const compact=card.classList.contains('opsCompactOrder');
   if(!box){
     box=document.createElement('section');
     box.className='dsd121';
     box.dataset.orderId=String(order.id);
-    if(card.classList.contains('opsCompactOrder')){
+  }
+  if(compact){
+    if(box.parentElement!==card){
       const actions=card.querySelector(':scope > .dmCardActions');
       card.insertBefore(box,actions||null);
-    }else{
-      box.classList.add('dsd121BoardList');
-      card.insertAdjacentElement('afterend',box);
     }
+  }else{
+    box.classList.add('dsd121BoardList');
+    if(box.previousElementSibling!==card)card.insertAdjacentElement('afterend',box);
   }
+  const signature=candidateSignature(items,date);
+  if(box.dataset.signature===signature)return;
   box.dataset.signature=signature;
   box.replaceChildren();
   const head=document.createElement('div');head.className='dsd121Head';
