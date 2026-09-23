@@ -3,7 +3,6 @@
 const MOBILE_MAX=760;
 let conflictFilter=false;
 let scheduled=false;
-let observer=null;
 
 function dispatcherMode(){return (typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(state.user?.role||'')==='dispatcher'}
 function mobileMode(){return window.innerWidth<=MOBILE_MAX}
@@ -40,39 +39,42 @@ function render(){
   scheduled=false;
   const content=document.getElementById('content');
   if(!content)return;
-  if(observer)observer.disconnect();
-  try{
-    if(!dispatcherMode()||!mobileMode()||!ordersPage()){clearDecorations(content);return}
-    const ids=conflictIds();
-    clearDecorations(content);
-    const mobile=content.querySelector(':scope > .bosDispatcherMobile');
-    if(mobile&&ids.size){
-      const bar=document.createElement('button');
-      bar.type='button';bar.className='dmConflictBar';bar.setAttribute('aria-label','Показать конфликты времени');
-      bar.innerHTML=`<span>⚠ Конфликты времени</span><b>${ids.size}</b>`;
-      bar.onclick=()=>window.dmFilter('conflict');
-      mobile.appendChild(bar);
+  if(!dispatcherMode()||!mobileMode()||!ordersPage()){clearDecorations(content);return}
+  const ids=conflictIds();
+  clearDecorations(content);
+  const mobile=content.querySelector(':scope > .bosDispatcherMobile');
+  if(mobile&&ids.size){
+    const bar=document.createElement('button');
+    bar.type='button';bar.className='dmConflictBar';bar.setAttribute('aria-label','Показать конфликты времени');
+    bar.innerHTML=`<span>⚠ Конфликты времени</span><b>${ids.size}</b>`;
+    bar.onclick=()=>window.dmFilter('conflict');
+    mobile.appendChild(bar);
+  }
+  let visible=0;
+  content.querySelectorAll('.opsCompactOrder').forEach(card=>{
+    const id=cardId(card),hit=ids.has(String(id));
+    if(hit){
+      card.classList.add('dmConflictOrder');
+      const badge=document.createElement('div');badge.className='dmConflictBadge';badge.textContent='⚠ Пересечение по времени у мастера';
+      const actions=card.querySelector('.dmCardActions');
+      if(actions)card.insertBefore(badge,actions);else card.appendChild(badge);
     }
-    let visible=0;
-    content.querySelectorAll('.opsCompactOrder').forEach(card=>{
-      const id=cardId(card),hit=ids.has(String(id));
-      if(hit){
-        card.classList.add('dmConflictOrder');
-        const badge=document.createElement('div');badge.className='dmConflictBadge';badge.textContent='⚠ Пересечение по времени у мастера';
-        const actions=card.querySelector('.dmCardActions');
-        if(actions)card.insertBefore(badge,actions);else card.appendChild(badge);
-      }
-      if(conflictFilter){card.hidden=!hit;if(hit)visible++}else card.hidden=false;
-    });
-    if(conflictFilter&&!visible){
-      const empty=document.createElement('div');empty.className='card dmConflictEmpty';empty.textContent='Конфликтов времени нет.';
-      const list=content.querySelector('#bosOrderList');if(list)list.appendChild(empty);
-    }
-  }finally{
-    if(observer)observer.observe(content,{childList:true,subtree:true});
+    if(conflictFilter){card.hidden=!hit;if(hit)visible++}else card.hidden=false;
+  });
+  if(conflictFilter&&!visible){
+    const empty=document.createElement('div');empty.className='card dmConflictEmpty';empty.textContent='Конфликтов времени нет.';
+    const list=content.querySelector('#bosOrderList');if(list)list.appendChild(empty);
   }
 }
 function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(render)}
+
+const baseShow=window.show;
+if(typeof baseShow==='function')window.show=function(page,...args){
+  const result=baseShow.apply(this,[page,...args]);
+  if(String(page)==='orders')setTimeout(schedule,0);
+  else{conflictFilter=false;setTimeout(schedule,0)}
+  return result;
+};
 
 const baseFilter=window.dmFilter;
 window.dmFilter=function(filter){
@@ -88,8 +90,6 @@ window.dmFilter=function(filter){
 };
 window.BOS_DISPATCHER_CONFLICTS={ids:()=>Array.from(conflictIds()),refresh:schedule};
 
-const content=document.getElementById('content');
-if(content){observer=new MutationObserver(schedule);observer.observe(content,{childList:true,subtree:true})}
 window.addEventListener('resize',schedule);
 queueMicrotask(schedule);
 
