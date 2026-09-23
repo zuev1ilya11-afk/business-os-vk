@@ -9,7 +9,7 @@ function dateOffset(days){
 
 test('dispatcher orders v3 adds tomorrow, city, status and quick status action',async({page})=>{
   const {db}=await fullStack(page,'dispatcher');
-  Object.assign(db.tables.orders[0],{scheduled_date:dateOffset(1),city:'Санкт-Петербург',status:'Назначена'});
+  Object.assign(db.tables.orders[0],{scheduled_date:dateOffset(1),city:'Санкт-Петербург',status:'В работе'});
   Object.assign(db.tables.orders[1],{scheduled_date:dateOffset(0),city:'Москва',status:'В работе'});
 
   await page.setViewportSize({width:390,height:844});
@@ -27,7 +27,7 @@ test('dispatcher orders v3 adds tomorrow, city, status and quick status action',
   await expect(page.locator('#bosOrderList .opsCompactOrder:visible')).toContainText('Анна');
 
   await page.locator('#dmv3City').selectOption({label:'Санкт-Петербург'});
-  await page.locator('#dmv3Status').selectOption({label:'Назначена'});
+  await page.locator('#dmv3Status').selectOption({label:'В работе'});
   await expect(page.locator('#bosOrderList .opsCompactOrder:visible')).toHaveCount(1);
   await expect(page.locator('#content h2 + .muted')).toHaveText('Найдено: 1');
 
