@@ -88,6 +88,9 @@
     const raw=typeof input==='string'?input:input instanceof URL?input.href:input?.url||'';
     const next=directUrl(raw);
     if(!next)return lowerFetch(input,init);
+    // Avito POSTs can send messages. A timed-out response is not proof that the
+    // provider rejected the message, so never replay this service automatically.
+    if(new URL(next).pathname.endsWith('/avito-api'))return lowerFetch(input,init);
     const outer=outerSignal(input,init);
     const retryInput=input instanceof Request?input.clone():input;
     try{

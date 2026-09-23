@@ -4,6 +4,9 @@ const {edge,database,employee,secret}=require('./helpers/edge.cjs');
 const {webcrypto}=require('node:crypto');
 function setup(fetcher,role='owner',connected=true,configured=true){
  const db=database({business_staff:[employee('owner',role),employee('dispatch','dispatcher')],avito_connections:connected?[{id:1,is_active:true,avito_user_id:42,account_name:'Shop',client_secret:'never-return'}]:[]});
+ // Model singleton connection upsert separately from the schedule-only shared mock.
+ const originalFrom=db.from;
+ db.from=function(table){const q=originalFrom.call(db,table);if(table==='avito_connections')q.upsert=payload=>db.tables.avito_connections.some(x=>x.id===payload.id)?q.update(payload).eq('id',payload.id):q.insert(payload);return q};
  let handler;const calls=[];
  edge('avito-api',db,{AbortController,setTimeout,clearTimeout,crypto:webcrypto,Deno:{env:{get:k=>({VK_APP_SECRET:secret,SUPABASE_URL:'https://test.invalid',SUPABASE_SERVICE_ROLE_KEY:'test',...(configured?{AVITO_CLIENT_ID:'server-id',AVITO_CLIENT_SECRET:'server-secret'}:{})}[k])},serve:fn=>handler=fn},fetch:async(url,init)=>{calls.push({url,init});return fetcher(url,init,calls)}});
  const {token}=require('./helpers/edge.cjs');
@@ -64,4 +67,24 @@ test('Avito createOrder is linked and idempotent across dispatchers, payroll unc
  const a=await call(data);assert.equal(a.status,200);assert.equal(a.body.order.avito_chat_id,'chat-1');assert.equal(a.body.order.external_source,'avito');assert.equal(a.body.order.source,'Авито');
  const b=await call(data,'staff_d');assert.equal(b.body.idempotent,true);assert.equal(a.body.order.id,b.body.order.id);assert.equal(db.tables.orders.length,1);
  assert.equal((await call({...data,avito_chat_id:'../bad'})).status,400);
+});
+
+test('connect validates provider access, stores no secrets, disconnect revokes local access',async()=>{
+ const x=setup(url=>url.endsWith('/token')?normal(url):url.endsWith('/self')?response({id:42,name:'Account'}):response({chats:[]}),'owner',false);
+ assert.equal((await x.call({action:'connect'})).status,200);assert.equal(x.db.tables.avito_connections[0].client_secret,'');assert.equal(x.db.tables.avito_connections[0].is_active,true);
+ assert.equal((await x.call({action:'disconnect'})).status,200);assert.equal((await x.call({action:'chats'})).body.code,'NOT_CONNECTED');
+ const denied=setup(url=>url.endsWith('/token')?normal(url):url.endsWith('/self')?response({id:42}):response({},403),'owner',false);
+ assert.equal((await denied.call({action:'connect'})).status,403);assert.equal(denied.db.tables.avito_connections.length,0);
+});
+test('expired token is renewed and simultaneous order creates converge',async()=>{
+ const x=setup(url=>url.endsWith('/token')?response({access_token:'short',expires_in:1}):response({chats:[]}));await x.call({action:'chats'});await x.call({action:'chats'});assert.equal(x.calls.filter(x=>x.url.endsWith('/token')).length,2);
+ const db=database({business_staff:[employee('owner','owner')],orders:[]}),call=edge('mini-app-api',db);
+ const order={action:'createOrder',client:'C',address:'A',work:'W',avito_chat_id:'same-chat'};
+ const results=await Promise.all([call(order),call(order)]);assert.equal(db.tables.orders.length,1);assert.ok(results.every(x=>x.status===200));
+});
+test('Avito gateway failures never replay a send through direct fallback',async()=>{
+ const fs=require('node:fs'),vm=require('node:vm');const calls=[];
+ const window={fetch:async(url)=>{calls.push(url);throw new TypeError('network unavailable')}};
+ vm.runInNewContext(fs.readFileSync('network-direct-v86.js','utf8'),{window,URL,Request,Headers,AbortController,setTimeout,clearTimeout,location:{href:'https://app.invalid'}});
+ await assert.rejects(window.fetch('https://business-os-api-gateway.netlify.app/api/proxy/avito-api',{method:'POST',body:JSON.stringify({action:'sendMessage'})}));assert.equal(calls.length,1);
 });
