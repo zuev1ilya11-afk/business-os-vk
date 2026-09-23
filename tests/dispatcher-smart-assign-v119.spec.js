@@ -2,10 +2,12 @@ const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const workingDay=staff_id=>({id:`schedule_${staff_id}`,staff_id,work_date:today(),is_working:true,work_start:'10:00',work_end:'21:00'});
 
 test('new dispatcher order shows ranked masters, load and free windows before save',async({page})=>{
   const {db}=await fullStack(page,'dispatcher');
   db.tables.business_staff.push({id:'m2',external_id:'staff_m2',full_name:'Московский мастер',role:'master',is_active:true,phone:'+79990000002',login:'m2',password_hash:'audit-password',city:'Москва'});
+  db.tables.staff_schedule.push(workingDay('m'),workingDay('m2'));
   Object.assign(db.tables.orders[0],{scheduled_date:today(),scheduled_time:'11:00',time_slot:'11:00–12:00',city:'Санкт-Петербург'});
 
   await page.setViewportSize({width:390,height:844});
@@ -35,6 +37,7 @@ test('new dispatcher order shows ranked masters, load and free windows before sa
 
 test('mobile dispatcher can confirm a recommended master for an unassigned order',async({page})=>{
   const {db}=await fullStack(page,'dispatcher');
+  db.tables.staff_schedule.push(workingDay('m'));
   Object.assign(db.tables.orders[0],{scheduled_date:today(),scheduled_time:'11:00',time_slot:'11:00–12:00',city:'Санкт-Петербург'});
   Object.assign(db.tables.orders[1],{scheduled_date:today(),scheduled_time:'11:00',time_slot:'11:00–12:00',city:'Санкт-Петербург'});
 
