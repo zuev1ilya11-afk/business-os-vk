@@ -19,6 +19,8 @@ test('unassigned order shows ranked inline options and one-action assignment pre
   await expect(page.locator('#authGate')).toBeHidden();
   await page.waitForFunction(()=>window.BOS_DISPATCHER_SMART_DISPATCH_V121===true);
   await page.locator('nav [data-page=orders]').click();
+  await page.getByRole('button',{name:'Список',exact:true}).click();
+  await expect(page.locator('#bosOrderList')).toBeVisible();
 
   const card=page.locator('#bosOrderList .opsCompactOrder').filter({hasText:'Борис'});
   const smart=card.locator('.dsd121');
