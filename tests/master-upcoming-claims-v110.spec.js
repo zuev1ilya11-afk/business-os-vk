@@ -21,10 +21,9 @@ async function boot(page,{orders=[],claims=[],visibleOrderIds=[],refreshedClaims
   await page.addScriptTag({content:fs.readFileSync(path.join(__dirname,'..','master-upcoming-claims-v110.js'),'utf8')});
 }
 
-test('open claim appears after refresh when master has no ordinary upcoming orders',async({page})=>{
+test('server-filtered open claim appears after refresh when master has no ordinary upcoming orders',async({page})=>{
   const refreshedClaims=[
-    {id:'c1',order_id:'11',master_staff_id:'m1',status:'open',reason:'Исправить крепление',scheduled_date:null,scheduled_time:null,pay_revisit:false},
-    {id:'c2',order_id:'22',master_staff_id:'m2',status:'open',reason:'Чужая рекламация',scheduled_date:null}
+    {id:'c1',order_id:'11',master_staff_id:'server-master-uuid',status:'open',reason:'Исправить крепление',scheduled_date:null,scheduled_time:null,pay_revisit:false}
   ];
   await boot(page,{
     orders:[{id:'11',status:'Выполнена',master_staff_id:'m1',work:'Монтаж',scheduled_date:'2026-09-01'}],
@@ -41,7 +40,6 @@ test('open claim appears after refresh when master has no ordinary upcoming orde
   await expect(group).toContainText('Рекламация');
   await expect(group).toContainText('Исправить крепление');
   await expect(group).toContainText('Дата не назначена');
-  await expect(group).not.toContainText('Чужая рекламация');
   await group.locator('.bosMasterUpcomingCard').click();
   await expect.poll(()=>page.evaluate(()=>window.__opened)).toBe('order:11');
 });
@@ -49,7 +47,7 @@ test('open claim appears after refresh when master has no ordinary upcoming orde
 test('claim already present as upcoming order is decorated instead of duplicated',async({page})=>{
   await boot(page,{
     orders:[{id:'11',status:'В работе',master_staff_id:'m1',is_claim:true,scheduled_date:'2099-09-10',scheduled_time:'10:00'}],
-    claims:[{id:'c1',order_id:'11',master_staff_id:'m1',status:'open',required_work:'Переделать монтаж',scheduled_date:'2099-09-10',scheduled_time:'10:00',pay_revisit:true,revisit_payment:500}],
+    claims:[{id:'c1',order_id:'11',master_staff_id:'server-master-uuid',status:'open',required_work:'Переделать монтаж',scheduled_date:'2099-09-10',scheduled_time:'10:00',pay_revisit:true,revisit_payment:500}],
     visibleOrderIds:['11']
   });
   await expect(page.locator('.bosMasterUpcomingCard')).toHaveCount(1);
