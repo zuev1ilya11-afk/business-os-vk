@@ -124,6 +124,16 @@
   masterUpcomingClaimsV110.async=false;
   document.head.appendChild(masterUpcomingClaimsV110);
 
+  const androidNavigationV112=document.createElement('script');
+  androidNavigationV112.src='./android-navigation-v112.js?v=20260923-v112';
+  androidNavigationV112.async=false;
+  document.head.appendChild(androidNavigationV112);
+
+  const sessionRefreshV113=document.createElement('script');
+  sessionRefreshV113.src='./session-refresh-v113.js?v=20260923-v113';
+  sessionRefreshV113.async=false;
+  document.head.appendChild(sessionRefreshV113);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
