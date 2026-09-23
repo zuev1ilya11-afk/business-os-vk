@@ -37,5 +37,5 @@ test('dispatcher orders v3 adds tomorrow, city, status and quick status action',
   const status=page.locator('#quickStatus');
   await expect(status).toBeVisible();
   await expect(status).toBeFocused();
-  await expect(status.locator('option[value="Выполнена"]')).toBeDisabled();
+  await expect(status.getByRole('option',{name:'Выполнена'})).toBeDisabled();
 });
