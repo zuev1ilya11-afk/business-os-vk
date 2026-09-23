@@ -124,6 +124,11 @@
   dispatcherOrderWorkflowV114.async=false;
   document.head.appendChild(dispatcherOrderWorkflowV114);
 
+  const dispatcherOrdersV3=document.createElement('script');
+  dispatcherOrdersV3.src='./dispatcher-orders-v3.js?v=20260923-v118';
+  dispatcherOrdersV3.async=false;
+  document.head.appendChild(dispatcherOrdersV3);
+
   const masterUpcomingClaimsV110=document.createElement('script');
   masterUpcomingClaimsV110.src='./master-upcoming-claims-v110.js?v=20260923-v111';
   masterUpcomingClaimsV110.async=false;
