@@ -9,6 +9,8 @@ test('master advances with explicit stage buttons, exposes reschedule, and finis
   db.tables.orders[0].scheduled_date=localDate();
   db.tables.orders[0].scheduled_time='10:00';
   db.tables.orders[0].master_workflow_stage='assigned';
+  db.tables.orders[0].master_called_at=null;
+  db.tables.orders[0].master_agreed_at=null;
   db.tables.orders[0].phone='+79990000002';
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
@@ -17,19 +19,24 @@ test('master advances with explicit stage buttons, exposes reschedule, and finis
   await expect(page.locator('.bosMasterWorkflow[data-bos-v26="1"]')).toBeVisible();
   await expect(page.getByRole('button',{name:'Нужно перенести'})).toBeVisible();
   await expect(page.getByRole('button',{name:'Я на месте'})).toHaveCount(0);
-  await expect(page.getByRole('button',{name:'Выехал',exact:true})).toBeVisible();
-  await page.evaluate(()=>window.masterWorkflowCallAndAdvance(null,'11','departed'));
-  expect(db.tables.orders[0].master_workflow_stage).toBe('assigned');
+  await expect(page.getByRole('button',{name:'Выехал',exact:true})).toHaveCount(0);
   await expect(page.getByRole('link',{name:'Позвонить клиенту',exact:true})).toBeVisible();
 
+  await page.getByRole('button',{name:'Звонок выполнен',exact:true}).click();
+  await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();
+  await expect(page.getByRole('button',{name:'Подтвердить договорённость',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Подтвердить договорённость',exact:true}).click();
+  await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();
+  await expect(page.getByRole('button',{name:'Выехал',exact:true})).toBeVisible();
+
   await page.getByRole('button',{name:'Выехал',exact:true}).click();
-  await expect(page.locator('.bosMasterWorkflow')).toContainText('Выехал');
+  await expect(page.locator('.bosMasterWorkflow')).toContainText('В дороге');
   await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('departed');
   expect(db.tables.orders[0].master_departed_at).toBeTruthy();
   await expect(page.getByRole('link',{name:'Позвонить клиенту',exact:true})).toBeVisible();
 
   await page.getByRole('button',{name:'Работа начата',exact:true}).click();
-  await expect(page.locator('.bosMasterWorkflow')).toContainText('Работа начата');
+  await expect(page.locator('.bosMasterWorkflow')).toContainText('В работе');
   await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('started');
   expect(db.tables.orders[0].master_started_at).toBeTruthy();
   await expect(page.getByRole('button',{name:'Завершить и прикрепить отчёт'})).toBeVisible();
