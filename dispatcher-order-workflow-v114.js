@@ -82,7 +82,7 @@ function addButton(actions,o,kind){
     if(!profileId||actions.querySelector('.dwv114MasterAction'))return;
     const b=document.createElement('button');
     b.type='button';b.className='secondary dwv114Action dwv114MasterAction';b.textContent='Мастер';
-    b.setAttribute('aria-label','Открыть профиль мастера');
+    b.setAttribute('aria-label','Профиль назначенного мастера');
     b.addEventListener('click',e=>{e.stopPropagation();window.openDispatcherAssignedMaster(String(o.id))});
     actions.appendChild(b);
     return;
@@ -122,11 +122,13 @@ function decorateMobileDispatch(){
   });
 }
 function selectedDesktopOrder(){
-  const id=document.querySelector('.ddQueueCard.isSelected')?.dataset?.orderId||'';
-  return orderById(id);
+  const boardId=document.querySelector('.dbOrderCard.selected[data-order-id]')?.dataset?.orderId||'';
+  const classicId=document.querySelector('.ddQueueCard.isSelected')?.dataset?.orderId||'';
+  return orderById(boardId||classicId);
 }
 function decorateDesktop(){
-  const actions=document.querySelector('.ddDetailActions'),o=selectedDesktopOrder();
+  const actions=document.querySelector('.dbDetailActions')||document.querySelector('.ddDetailActions');
+  const o=selectedDesktopOrder();
   if(!actions||!o)return;
   addButton(actions,o,'master');
   addButton(actions,o,'cancel');
@@ -155,7 +157,7 @@ window.addEventListener('resize',schedule);
 
 const style=document.createElement('style');
 style.textContent=`
-.dwv114Reason{display:flex;flex-direction:column;gap:3px;margin:9px 0 0;padding:8px 10px;border:1px solid rgba(242,176,65,.3);border-radius:10px;background:rgba(242,176,65,.08)}.dwv114Reason span{font-size:10px;font-weight:700;color:#d2a84f}.dwv114Reason b{font-size:12px;line-height:1.35;color:#f1d49a}.dwv114CancelSummary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}.dwv114CancelSummary>div{display:flex;flex-direction:column;gap:4px;min-width:0}.dwv114CancelSummary span{font-size:11px;color:#8fa4b8}.dwv114CancelSummary b{overflow-wrap:anywhere}.dwv114CancelWarning{display:flex;flex-direction:column;gap:5px;padding:12px;border:1px solid rgba(229,92,92,.32);border-radius:12px;background:rgba(229,92,92,.08)}.dwv114CancelWarning span{font-size:12px;line-height:1.4;color:#aebdca}.dwv114CancelButtons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.dwv114CancelButtons button{min-height:46px}.dwv114CancelConfirm{background:linear-gradient(135deg,#b94a4a,#d65d5d)!important;border-color:rgba(255,150,150,.45)!important}.ddDetailActions .dwv114CancelAction{border-color:rgba(229,92,92,.32);color:#ff9a9a}.dmCardActions .dwv114CancelAction,.dmv2Actions .dwv114CancelAction{border-color:rgba(229,92,92,.32);color:#ff9a9a}
+.dwv114Reason{display:flex;flex-direction:column;gap:3px;margin:9px 0 0;padding:8px 10px;border:1px solid rgba(242,176,65,.3);border-radius:10px;background:rgba(242,176,65,.08)}.dwv114Reason span{font-size:10px;font-weight:700;color:#d2a84f}.dwv114Reason b{font-size:12px;line-height:1.35;color:#f1d49a}.dwv114CancelSummary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}.dwv114CancelSummary>div{display:flex;flex-direction:column;gap:4px;min-width:0}.dwv114CancelSummary span{font-size:11px;color:#8fa4b8}.dwv114CancelSummary b{overflow-wrap:anywhere}.dwv114CancelWarning{display:flex;flex-direction:column;gap:5px;padding:12px;border:1px solid rgba(229,92,92,.32);border-radius:12px;background:rgba(229,92,92,.08)}.dwv114CancelWarning span{font-size:12px;line-height:1.4;color:#aebdca}.dwv114CancelButtons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.dwv114CancelButtons button{min-height:46px}.dwv114CancelConfirm{background:linear-gradient(135deg,#b94a4a,#d65d5d)!important;border-color:rgba(255,150,150,.45)!important}.ddDetailActions .dwv114CancelAction,.dbDetailActions .dwv114CancelAction{border-color:rgba(229,92,92,.32);color:#ff9a9a}.dmCardActions .dwv114CancelAction,.dmv2Actions .dwv114CancelAction{border-color:rgba(229,92,92,.32);color:#ff9a9a}
 @media(max-width:760px){.dwv114CancelSummary{grid-template-columns:1fr}.dwv114CancelButtons{grid-template-columns:1fr}.dwv114CancelButtons button{min-height:50px}.dmCardActions .dwv114Action{min-height:40px}.dmv2Actions .dwv114Action{min-height:40px}}
 `;
 document.head.appendChild(style);
