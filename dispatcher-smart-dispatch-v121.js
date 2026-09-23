@@ -50,17 +50,30 @@ function candidateNode(candidate,index,order,date){
   node.appendChild(button);
   return node;
 }
+function boxFor(card,orderId){
+  const inside=card.querySelector?.(':scope > .dsd121');
+  if(inside)return inside;
+  const next=card.nextElementSibling;
+  return next?.classList?.contains('dsd121')&&String(next.dataset.orderId||'')===String(orderId)?next:null;
+}
 function renderCard(card,order){
-  let box=card.querySelector(':scope > .dsd121');
+  let box=boxFor(card,order?.id);
   if(!unassigned(order)||order?.reschedule_requested){box?.remove();return}
   const date=dateOf(order),items=recommendations(order);
   if(!items.length){box?.remove();return}
   const signature=candidateSignature(items,date);
   if(box?.dataset.signature===signature)return;
   if(!box){
-    box=document.createElement('section');box.className='dsd121';
-    const actions=card.querySelector(':scope > .dmCardActions');
-    card.insertBefore(box,actions||null);
+    box=document.createElement('section');
+    box.className='dsd121';
+    box.dataset.orderId=String(order.id);
+    if(card.classList.contains('opsCompactOrder')){
+      const actions=card.querySelector(':scope > .dmCardActions');
+      card.insertBefore(box,actions||null);
+    }else{
+      box.classList.add('dsd121BoardList');
+      card.insertAdjacentElement('afterend',box);
+    }
   }
   box.dataset.signature=signature;
   box.replaceChildren();
@@ -95,21 +108,41 @@ async function assign(orderId,masterValue,time,date,button){
     return false;
   }finally{state.busy=false}
 }
-window.assignDispatcherRecommendation121=(orderId,masterValue,time,date)=>assign(orderId,masterValue,time,dateOf(orderById(orderId)),null);
+window.assignDispatcherRecommendation121=(orderId,masterValue,time,date)=>assign(orderId,masterValue,time,date||dateOf(orderById(orderId)),null);
 window.__dispatcherSmartDispatch121=orderId=>{
   const order=orderById(orderId);if(!order)return [];
   return recommendations(order).map(c=>({master_key:c.master_key,master_name:c.master?.full_name||c.master?.name||'',best_time:c.best_time,score:c.score,reasons:[...(c.reasons||[])]}));
 };
 
 function cleanup(root){root?.querySelectorAll?.('.dsd121')?.forEach(node=>node.remove())}
+function listTabActive(root){
+  return [...root.querySelectorAll('.dbViewTabs button')].some(button=>button.classList.contains('primary')&&String(button.textContent||'').trim()==='Список');
+}
+function targetCards(root){
+  const compact=[...root.querySelectorAll('#bosOrderList .opsCompactOrder')];
+  if(compact.length)return compact;
+  if(!listTabActive(root))return [];
+  const seen=new Set();
+  return [...root.querySelectorAll('.dbSchedule [data-order-id]:not(.dsd121)')].filter(card=>{
+    const id=orderIdFromCard(card);
+    if(!id||seen.has(id))return false;
+    seen.add(id);return true;
+  });
+}
 function sync(){
   queued=false;
   const root=document.getElementById('content');if(!root)return;
   if(!dispatcherMode()||!ordersPage()){cleanup(root);return}
   if(typeof window.__dispatchSmartDraftCandidates!=='function'){setTimeout(schedule,60);return}
-  root.querySelectorAll('#bosOrderList .opsCompactOrder').forEach(card=>{
-    const order=orderById(orderIdFromCard(card));
-    if(order)renderCard(card,order);else card.querySelector(':scope > .dsd121')?.remove();
+  const cards=targetCards(root);
+  if(!cards.length){if(!listTabActive(root)&&!root.querySelector('#bosOrderList'))cleanup(root);return}
+  cards.forEach(card=>{
+    const id=orderIdFromCard(card),order=orderById(id);
+    if(order)renderCard(card,order);else boxFor(card,id)?.remove();
+  });
+  root.querySelectorAll('.dsd121[data-order-id]').forEach(box=>{
+    const id=String(box.dataset.orderId||'');
+    if(!orderById(id)||!unassigned(orderById(id)))box.remove();
   });
 }
 function schedule(){if(queued)return;queued=true;requestAnimationFrame(sync)}
@@ -124,6 +157,7 @@ window.addEventListener('resize',schedule);
 const style=document.createElement('style');
 style.textContent=`
 #content .dsd121{margin:10px 0 2px;padding:10px;border:1px solid rgba(86,156,214,.24);border-radius:12px;background:rgba(63,126,181,.07)}
+#content .dsd121.dsd121BoardList{margin:0 0 8px;width:100%;box-sizing:border-box}
 #content .dsd121Head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px}
 #content .dsd121Head>span{font-size:12px;font-weight:800;letter-spacing:.02em;color:var(--accent,#62a8ea)}
 #content .dsd121Head>small{font-size:11px;color:var(--muted,#8e9baa);text-align:right}
