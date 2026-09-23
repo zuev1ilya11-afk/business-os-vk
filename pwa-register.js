@@ -119,6 +119,11 @@
   orderLifecycleV106.async=false;
   document.head.appendChild(orderLifecycleV106);
 
+  const masterUpcomingClaimsV110=document.createElement('script');
+  masterUpcomingClaimsV110.src='./master-upcoming-claims-v110.js?v=20260923-v110';
+  masterUpcomingClaimsV110.async=false;
+  document.head.appendChild(masterUpcomingClaimsV110);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
