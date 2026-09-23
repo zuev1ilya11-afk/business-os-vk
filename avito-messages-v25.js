@@ -5,8 +5,10 @@ const contract={status:'status',connect:'connect',disconnect:'disconnect',sync:'
 window.BOS_AVITO_CONTRACT=Object.freeze({...contract});
 function apiEnabled(){return window.BUSINESS_OS_CONFIG?.AVITO_API_ENABLED===true}
 function apiUrl(){return window.BUSINESS_OS_CONFIG?.AVITO_API_URL||DEFAULT_API}
+let retryUntil=0;
 async function avitoCall(action,data={}){
   if(!apiEnabled())throw new Error('Авито API пока не подключён');
+  if(Date.now()<retryUntil)throw Object.assign(new Error('Авито ограничил частоту запросов. Подождите перед повтором.'),{status:429,retryAfter:Math.ceil((retryUntil-Date.now())/1000)});
   const h=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};h['Content-Type']='application/json';
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),18000);
   try{
@@ -14,6 +16,7 @@ async function avitoCall(action,data={}){
     const d=await r.json().catch(()=>({}));
     if(!r.ok||!d.ok){
       const fallback=r.status===401?'Войдите в Business OS повторно':r.status===403?'Недостаточно прав для работы с Авито':r.status===429?'Слишком много запросов. Подождите перед повтором.':'Авито временно недоступен. Повторите позже.';
+      if(r.status===429)retryUntil=Date.now()+Math.min(3600,Math.max(30,Number(d.retry_after)||30))*1000;
       const message=typeof d.error==='string'&&/[а-яА-Я]/.test(d.error)?d.error:fallback;
       throw Object.assign(new Error(message),{status:r.status,retryAfter:Math.max(0,Number(d.retry_after)||0)});
     }
@@ -29,7 +32,7 @@ function pollView(root,refresh){
   observer.observe(document.getElementById('modalRoot'),{childList:true,subtree:true});
   const tick=async()=>{
     if(stopped||!root.isConnected)return;
-    if(!document.hidden){try{await refresh();delay=30000}catch(e){delay=Math.min(300000,Math.max(delay*2,(e.retryAfter||0)*1000));if(e.status===401||e.status===403){observer.disconnect();return}}}
+    if(!document.hidden){try{await refresh();delay=30000}catch(e){delay=Math.max(Math.min(300000,delay*2),Math.min(3600000,(e.retryAfter||0)*1000));if(e.status===401||e.status===403){observer.disconnect();return}}}
     if(!stopped&&root.isConnected)timer=setTimeout(tick,delay);
   };
   timer=setTimeout(tick,delay);

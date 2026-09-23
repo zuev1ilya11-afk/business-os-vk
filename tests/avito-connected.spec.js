@@ -54,3 +54,12 @@ test('connection screen uses server secrets, provider data is rendered as text, 
  x.chat.client='<img src=x onerror=alert(1)>';await page.evaluate(()=>openAvitoInbox());await expect(page.locator('.avitoChatRow')).toContainText('<img');await expect(page.locator('.avitoChatRow img')).toHaveCount(0);
  x.failChats();await page.locator('#avitoRefresh').click();await expect(page.locator('#avitoInboxStatus')).toContainText('временно недоступен');
 });
+
+test('429 blocks manual requests and polling until the provider cooldown expires',async({page})=>{
+ await connected(page);await page.clock.install();let count=0;
+ await page.route('**/api/proxy/avito-api',async route=>{count++;await route.fulfill({status:429,contentType:'application/json',body:JSON.stringify({ok:false,error:'Подождите',retry_after:90})})});
+ await page.evaluate(()=>openAvitoInbox());expect(count).toBe(1);
+ await page.locator('#avitoRefresh').click();expect(count).toBe(1);
+ await page.clock.runFor(60000);expect(count).toBe(1);
+ await page.clock.runFor(31000);await page.locator('#avitoRefresh').click();expect(count).toBe(2);
+});
