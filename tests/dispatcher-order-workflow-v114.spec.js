@@ -47,18 +47,16 @@ test('desktop dispatcher current board exposes the same safe quick actions',asyn
   await expect(page.locator('.dbBoard')).toBeVisible();
   await expect(page.getByRole('button',{name:'Отменить заявку'})).toBeVisible();
 
-  await page.evaluate(()=>{
-    const order=state.orders.find(o=>String(o.id)==='12');
-    const master=state.masters[0];
-    order.master_staff_id=master.id;
-    order.master_name=master.full_name;
-    show('orders');
-  });
-  await expect(page.locator('.dbBoard')).toBeVisible();
+  const search=page.getByPlaceholder('Поиск по заявкам');
+  await search.fill('Анна');
+  const assigned=page.locator('.dbOrderCard').filter({hasText:'Анна'});
+  await expect(assigned).toBeVisible();
+  await assigned.click();
+  await expect(page.locator('.dbDetail')).toContainText('Анна');
   await expect(page.getByRole('button',{name:'Профиль назначенного мастера'})).toBeVisible();
 
   await page.getByRole('button',{name:'Отменить заявку'}).click();
-  await expect(page.locator('.dwv114CancelSummary')).toContainText('Борис');
+  await expect(page.locator('.dwv114CancelSummary')).toContainText('Анна');
   await page.getByRole('button',{name:'Не отменять'}).click();
   await expect(page.locator('.dbDetail')).toBeVisible();
 });
