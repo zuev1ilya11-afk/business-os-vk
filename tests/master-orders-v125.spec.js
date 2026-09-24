@@ -8,6 +8,7 @@ test('master orders v125 stays readable on mobile and shows concise real work',a
   Object.assign(order,{
     phone:'+79990000002',
     client:'Пичуева Анна Пичуева',
+    created_at:'2026-09-20T08:15:00.000Z',
     scheduled_date:'2099-09-10',
     scheduled_time:'10:00',
     master_workflow_stage:'started',
@@ -19,7 +20,7 @@ test('master orders v125 stays readable on mobile and shows concise real work',a
   await page.setViewportSize({width:390,height:844});
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
-  await page.waitForFunction(()=>window.BOS_MASTER_ORDERS_V125===true);
+  await page.waitForFunction(()=>window.BOS_MASTER_ORDERS_V125===true&&window.BOS_MASTER_ORDER_FOCUS_V126===true);
   await page.locator('nav button[data-page="orders"]').click();
 
   const card=page.locator('.masterV125Card[data-master-order-id="11"]');
@@ -27,6 +28,8 @@ test('master orders v125 stays readable on mobile and shows concise real work',a
   await expect(card.locator('.masterV125When strong')).toHaveText('10:00');
   await expect(card.locator('.masterV125Stage')).toHaveText('В работе');
   await expect(card).toContainText('Пичуева Анна Пичуева');
+  await expect(card.locator('.masterV126Received')).toContainText('Дата поступления');
+  await expect(card.locator('.masterV126Received')).toContainText('20.09.2026');
   await expect(card.locator('.masterV125Work')).toHaveText('Шторы ×2 · Мин. стоимость');
   await expect(card).not.toContainText('Подрезка');
   await expect(card).not.toContainText('Дополнительные работы');
