@@ -189,6 +189,11 @@
   masterHomeOrdersV124.async=false;
   document.head.appendChild(masterHomeOrdersV124);
 
+  const masterOrdersV125=document.createElement('script');
+  masterOrdersV125.src='./master-orders-v125.js?v=20260924-v125';
+  masterOrdersV125.async=false;
+  document.head.appendChild(masterOrdersV125);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
