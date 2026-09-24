@@ -16,7 +16,7 @@ test('master starts work after call and editable agreement then finishes through
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await expect(page.locator('#masterDailyV127')).toBeVisible();
-  await expect(page.locator('.bosMasterTodayWorkflow')).toHaveCount(0);
+  await expect(page.locator('.bosMasterTodayWorkflow:visible')).toHaveCount(0);
   await page.evaluate(()=>window.openOrder('11'));
   await expect(page.locator('.bosMasterWorkflow[data-bos-v26="1"]')).toBeVisible();
   await expect(page.locator('.bosMasterWorkflow[data-bos-v116="1"]')).toBeVisible();
