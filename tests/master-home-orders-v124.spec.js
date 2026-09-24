@@ -29,7 +29,7 @@ test('master home keeps time and stage readable and shows concise real upcoming 
   const today=page.locator('.bosMwTodayCard[data-order-id="11"]');
   await expect(today).toBeVisible();
   await expect(today.locator('.bosMwTodayTime')).toHaveText('10:00');
-  await expect(today.locator('.mwv2TodayStage')).toHaveText('В работе');
+  await expect(today.locator('.mwv2TodayStage')).toHaveText('Заполнить отчёт');
 
   const layout=await today.evaluate(card=>{
     const time=card.querySelector('.bosMwTodayTime'),main=card.querySelector('.bosMwTodayMain'),stage=card.querySelector('.mwv2TodayStage');
