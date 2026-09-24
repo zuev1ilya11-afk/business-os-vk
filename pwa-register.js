@@ -144,6 +144,11 @@
   dispatcherSmartDispatchV121.async=false;
   document.head.appendChild(dispatcherSmartDispatchV121);
 
+  const dispatcherUnassignedQueueV122=document.createElement('script');
+  dispatcherUnassignedQueueV122.src='./dispatcher-unassigned-queue-v122.js?v=20260924-v122';
+  dispatcherUnassignedQueueV122.async=false;
+  document.head.appendChild(dispatcherUnassignedQueueV122);
+
   const masterUpcomingClaimsV110=document.createElement('script');
   masterUpcomingClaimsV110.src='./master-upcoming-claims-v110.js?v=20260923-v111';
   masterUpcomingClaimsV110.async=false;
