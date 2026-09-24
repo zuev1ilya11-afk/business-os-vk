@@ -16,8 +16,13 @@ test('mobile dispatcher highlights overlapping orders for the same master and fi
     Object.assign(b,{master_staff_id:masterId,master_name:'Тестовый мастер',scheduled_date:'2099-09-10',scheduled_time:'10:30',time_slot:'10:30–11:30'});
     state.orders.push({id:'13',client:'Без конфликта',address:'Третий адрес',work:'Монтаж',status:'В работе',scheduled_date:'2099-09-10',scheduled_time:'14:00',time_slot:'14:00–15:00'});
     show('orders');
-    setTimeout(()=>window.BOS_DISPATCHER_CONFLICTS.refresh(),0);
   },master.id);
+
+  // The mobile dispatcher opens on the "Сегодня" shortcut. This regression
+  // uses a fixed future date intentionally, so select "Все" before checking
+  // conflict decoration instead of depending on the default day filter.
+  await page.locator('.dmShortcuts button').filter({hasText:'Все'}).click();
+  await page.evaluate(()=>window.BOS_DISPATCHER_CONFLICTS.refresh());
 
   await expect(page.locator('.dmConflictBar')).toBeVisible();
   await expect(page.locator('.dmConflictBar')).toContainText('2');
