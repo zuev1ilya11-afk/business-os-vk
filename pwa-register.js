@@ -219,6 +219,11 @@
   masterProfileSummaryV129.async=false;
   document.head.appendChild(masterProfileSummaryV129);
 
+  const masterMoneyV130=document.createElement('script');
+  masterMoneyV130.src='./master-money-v130.js?v=20260924-v130';
+  masterMoneyV130.async=false;
+  document.head.appendChild(masterMoneyV130);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
