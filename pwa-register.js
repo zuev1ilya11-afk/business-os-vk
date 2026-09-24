@@ -194,6 +194,11 @@
   masterOrdersV125.async=false;
   document.head.appendChild(masterOrdersV125);
 
+  const masterOrdersV125Compat=document.createElement('script');
+  masterOrdersV125Compat.src='./master-orders-v125-compat.js?v=20260924-v125b';
+  masterOrdersV125Compat.async=false;
+  document.head.appendChild(masterOrdersV125Compat);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
