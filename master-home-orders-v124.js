@@ -21,7 +21,7 @@ function qtyFrom(line){
 }
 function cleanTitle(line){
   return String(line||'')
-    .replace(/\s*[×x]\s*[\d]+(?:[.,]\d+)?\s*(?:шт\.?|piece|pcs|комплект\w*|п\.?м\.?|м|км)?\s*$/i,'')
+    .replace(/\s*[×x]\s*[\d]+(?:[.,]\d+)?\s*(?:шт\.?|piece|pcs|комплект[а-яa-z]*|п\.?м\.?|м|км)?\s*$/i,'')
     .replace(/\s+—\s+.*$/,'')
     .replace(/\s+/g,' ')
     .trim();
@@ -29,23 +29,20 @@ function cleanTitle(line){
 function classify(title){
   const t=String(title||'').toLowerCase().replace(/ё/g,'е');
   if(!t)return'';
-  if(/подрезк/.test(t)||/(?:^|\s)доп\.?\s*работ/.test(t)||/дополнительн\w*\s+работ/.test(t))return'';
-  if(/минимальн\w*\s+стоимост/.test(t))return'Мин. стоимость';
-  if(/римск\w*\s+штор/.test(t))return'Римские шторы';
-  if(/рулонн\w*\s+штор|день[\s-]*ночь/.test(t))return'Шторы';
+  if(/подрезк/.test(t)||/(?:^|\s)доп\.?\s*работ/.test(t)||/дополнительн[а-яa-z]*\s+работ/.test(t))return'';
+  if(/минимальн[а-яa-z]*\s+стоимост/.test(t))return'Мин. стоимость';
+  if(/римск[а-яa-z]*\s+штор/.test(t))return'Римские шторы';
+  if(/рулонн[а-яa-z]*\s+штор|день[\s-]*ночь/.test(t))return'Шторы';
   if(/плиссе/.test(t))return'Плиссе';
   if(/жалюз/.test(t))return'Жалюзи';
   if(/карниз/.test(t))return'Карниз';
   if(/замер/.test(t))return'Замер';
   if(/штор/.test(t))return'Шторы';
-  return cleanTitle(title)
-    .replace(/^(?:монтаж|установка)\s+/i,'')
-    .replace(/^(?:демонтаж)\s+/i,'Демонтаж ')
-    .trim();
+  return'';
 }
 function summarize(order){
   const source=workSource(order);
-  if(!source)return'Работы не указаны';
+  if(!source)return'Уточнить у клиента';
   const raw=source.split(/\n+/).map(x=>x.trim()).filter(Boolean);
   const items=[];
   for(const line of raw){
@@ -56,7 +53,7 @@ function summarize(order){
     if(!item){item={label,qty:0,explicit:false};items.push(item)}
     if(qty.explicit){item.qty+=qty.value;item.explicit=true}
   }
-  if(!items.length)return'Работы указаны в карточке';
+  if(!items.length)return'Уточнить у клиента';
   return items.slice(0,3).map(item=>{
     if(item.label==='Мин. стоимость')return item.label;
     if(item.explicit&&item.qty>1)return `${item.label} ×${Number.isInteger(item.qty)?item.qty:String(item.qty).replace('.',',')}`;
