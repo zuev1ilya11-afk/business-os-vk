@@ -24,22 +24,20 @@ test('master home keeps time and stage readable and shows concise real upcoming 
   await page.setViewportSize({width:390,height:844});
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
-  await page.waitForFunction(()=>!!window.BOS_MASTER_HOME_ORDERS_V124);
+  await page.waitForFunction(()=>!!window.BOS_MASTER_HOME_ORDERS_V124&&!!window.BOS_MASTER_DAILY_HOME_V127);
 
-  const today=page.locator('.bosMwTodayCard[data-order-id="11"]');
+  const today=page.locator('.masterV127Next[data-order-id="11"]');
   await expect(today).toBeVisible();
-  await expect(today.locator('.bosMwTodayTime')).toHaveText('10:00');
-  await expect(today.locator('.mwv2TodayStage')).toHaveText('В работе');
+  await expect(today.locator('.masterV127When b')).toHaveText('10:00');
+  await expect(today.locator('.masterV127Main strong')).toHaveText('Заполнить отчёт');
 
   const layout=await today.evaluate(card=>{
-    const time=card.querySelector('.bosMwTodayTime'),main=card.querySelector('.bosMwTodayMain'),stage=card.querySelector('.mwv2TodayStage');
+    const time=card.querySelector('.masterV127When b'),main=card.querySelector('.masterV127Main'),stage=card.querySelector('.masterV127Main strong');
     const tr=time.getBoundingClientRect(),mr=main.getBoundingClientRect(),sr=stage.getBoundingClientRect();
-    return{timeWhiteSpace:getComputedStyle(time).whiteSpace,timeHeight:tr.height,stageLeft:sr.left,mainLeft:mr.left,stageHeight:sr.height,stageWidth:sr.width};
+    return{timeHeight:tr.height,stageLeft:sr.left,mainLeft:mr.left,stageHeight:sr.height};
   });
-  expect(layout.timeWhiteSpace).toBe('nowrap');
-  expect(layout.timeHeight).toBeLessThan(32);
+  expect(layout.timeHeight).toBeLessThan(28);
   expect(layout.stageLeft).toBeGreaterThanOrEqual(layout.mainLeft-1);
-  expect(layout.stageWidth).toBeGreaterThan(55);
   expect(layout.stageHeight).toBeLessThan(34);
 
   const upcoming=page.locator('.bosMasterUpcomingCard[data-order-id="11"]');

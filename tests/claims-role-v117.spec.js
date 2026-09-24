@@ -18,7 +18,7 @@ test('dispatcher can open claim from completed order',async({page})=>{
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await page.evaluate(()=>window.openOrder('11'));
-  const button=page.getByRole('button',{name:'Открыть рекламацию',exact:true});
+  const button=page.locator('#modalRoot').getByRole('button',{name:'Открыть рекламацию',exact:true});
   await expect(button).toBeVisible();
   await button.click();
   await expect(page.locator('#claimForm')).toBeVisible();
