@@ -118,7 +118,9 @@ function ensurePanel(root){
   panel=document.createElement('section');
   panel.className='duq122';
   const anchor=root.querySelector('.dbViewTabs')||root.querySelector('.dbSchedule')||root.querySelector('#bosOrderList')||root.firstElementChild;
-  if(anchor)root.insertBefore(panel,anchor);else root.appendChild(panel);
+  let directAnchor=anchor;
+  while(directAnchor&&directAnchor.parentElement!==root)directAnchor=directAnchor.parentElement;
+  if(directAnchor&&directAnchor.parentElement===root)root.insertBefore(panel,directAnchor);else root.prepend(panel);
   return panel;
 }
 function render(root,orders){
