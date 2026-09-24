@@ -81,10 +81,9 @@ function detailTotal(kind,rows,s){
   return rows.reduce((a,o)=>a+salary(o),0);
 }
 function detailRow(o,kind){
-  const date=completedDay(o)||dateOnly(o?.scheduled_date)||'—',before=num(o?.original_amount),after=num(o?.amount),base=payout(o),extras=extra(o),deduct=deduction(o),total=salary(o),paid=explicitPaid(o),description=kind==='extras'?(o?.extra_work_description||''):kind==='deductions'?(o?.uncompleted_work_description||''):'';
-  const amountLine=before&&before!==after?`<span>До вычета <b>${escv(moneyv(before))}</b></span>`:'';
+  const date=completedDay(o)||dateOnly(o?.scheduled_date)||'—',base=payout(o),extras=extra(o),deduct=deduction(o),total=salary(o),paid=explicitPaid(o),description=kind==='extras'?(o?.extra_work_description||''):kind==='deductions'?(o?.uncompleted_work_description||''):'';
   const paidLine=paid!==null?`<span>Выплачено <b>${escv(moneyv(paid))}</b></span>`:'';
-  return `<article class="masterMoneyV130Row" data-v130-order="${escv(String(o?.id||''))}" role="button" tabindex="0"><div class="masterMoneyV130RowHead"><b>№ ${escv(orderNo(o))}</b><small>${escv(date)}</small></div>${description?`<p>${escv(description)}</p>`:''}<div class="masterMoneyV130Breakdown">${amountLine}<span>Сумма для расчёта <b>${escv(moneyv(after))}</b></span><span>Выплата мастеру <b>${escv(moneyv(base))}</b></span>${extras?`<span class="positive">Допработы <b>+ ${escv(moneyv(extras))}</b></span>`:''}${deduct?`<span class="negative">Вычет <b>− ${escv(moneyv(deduct))}</b><em>уже учтён в сумме заявки</em></span>`:''}${paidLine}<span class="total">Итого начислено <b>${escv(moneyv(total))}</b></span></div></article>`;
+  return `<article class="masterMoneyV130Row" data-v130-order="${escv(String(o?.id||''))}" role="button" tabindex="0"><div class="masterMoneyV130RowHead"><b>№ ${escv(orderNo(o))}</b><small>${escv(date)}</small></div>${description?`<p>${escv(description)}</p>`:''}<div class="masterMoneyV130Breakdown"><span>Выплата мастеру <b>${escv(moneyv(base))}</b></span>${extras?`<span class="positive">Допработы <b>+ ${escv(moneyv(extras))}</b></span>`:''}${deduct?`<span class="negative">Вычет <b>− ${escv(moneyv(deduct))}</b><em>уже учтён в сумме заявки</em></span>`:''}${paidLine}<span class="total">Итого начислено <b>${escv(moneyv(total))}</b></span></div></article>`;
 }
 function openDetails(kind){
   if(!masterMode())return;
@@ -100,12 +99,11 @@ function openDetails(kind){
 }
 window.openMasterMoneyV130=openDetails;
 function decorate(panel){
-  const map={'Моя выплата':'base','Допработы':'extras','Вычеты':'deductions','ЗП за неделю':'week','ЗП за месяц':'month'};
+  const map={'Моя выплата':'base','Допработы':'extras','Вычеты':'deductions','ЗП за неделю':'week','ЗП за месяц':'month','Общая зарплата':'accrued'};
   panel.querySelectorAll('.masterV129Metric').forEach(card=>{
     const label=(card.querySelector('span')?.textContent||'').trim(),kind=map[label];if(!kind)return;
     card.dataset.masterMoneyKind=kind;card.setAttribute('role','button');card.setAttribute('tabindex','0');card.setAttribute('aria-label',`${label}: открыть расшифровку`);card.title='Открыть расшифровку';card.classList.add('masterMoneyV130Clickable');
   });
-  const total=panel.querySelector('.masterV129Total');if(total){total.dataset.masterMoneyKind='accrued';total.setAttribute('role','button');total.setAttribute('tabindex','0');total.setAttribute('aria-label','Общая зарплата: открыть расшифровку');total.classList.add('masterMoneyV130Clickable')}
 }
 function render(){
   queued=false;if(!masterMode()||String(state?.page||'')!=='team')return;

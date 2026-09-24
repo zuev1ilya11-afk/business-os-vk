@@ -36,17 +36,28 @@ test('master v130 shows money summary and drilldown by order',async({page})=>{
   await extraCard.click();
   await expect(page.locator('#modalRoot')).toContainText('Установка дополнительного крепления');
   await expect(page.locator('#modalRoot')).toContainText(/100/);
+  await expect(page.locator('#modalRoot')).not.toContainText('Сумма для расчёта');
+  await expect(page.locator('#modalRoot')).not.toContainText('До вычета');
   await page.evaluate(()=>closeModal());
 
   await panel.getByText('Вычеты',{exact:true}).locator('..').click();
   await expect(page.locator('#modalRoot')).toContainText('Не установлен один держатель');
   await expect(page.locator('#modalRoot')).toContainText('повторно из зарплаты не вычитается');
+  await expect(page.locator('#modalRoot')).not.toContainText('Сумма для расчёта');
   await page.evaluate(()=>closeModal());
 
   await panel.getByText('ЗП за неделю',{exact:true}).locator('..').click();
   await expect(page.locator('#modalRoot')).toContainText('№ 11');
   await expect(page.locator('#modalRoot')).toContainText(/552[,.]5/);
   await expect(page.locator('#modalRoot')).toContainText('Итого начислено');
+  await expect(page.locator('#modalRoot')).not.toContainText('Сумма для расчёта');
+  await page.evaluate(()=>closeModal());
+
+  const totalCard=panel.getByText('Общая зарплата',{exact:true}).locator('..');
+  await expect(totalCard).toHaveAttribute('role','button');
+  await totalCard.click();
+  await expect(page.locator('#modalRoot')).toContainText('Все начисления');
+  await expect(page.locator('#modalRoot')).not.toContainText('Сумма для расчёта');
   await page.evaluate(()=>closeModal());
 
   await money.getByText('Выплачено',{exact:true}).locator('..').click();
