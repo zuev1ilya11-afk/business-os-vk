@@ -209,6 +209,11 @@
   masterDailyHomeV127.async=false;
   document.head.appendChild(masterDailyHomeV127);
 
+  const masterDaySummaryV128=document.createElement('script');
+  masterDaySummaryV128.src='./master-day-summary-v128.js?v=20260924-v128';
+  masterDaySummaryV128.async=false;
+  document.head.appendChild(masterDaySummaryV128);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
