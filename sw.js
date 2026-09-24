@@ -1,4 +1,5 @@
-const CACHE='business-os-shell-v5';
+const CACHE='business-os-shell-v6';
+const REV='20260924-v130-hotfix1';
 const SHELL=['./','./index.html','./manifest.webmanifest','./brand-logo.svg'];
 
 self.addEventListener('install',event=>{
@@ -10,11 +11,13 @@ self.addEventListener('install',event=>{
 });
 
 self.addEventListener('activate',event=>{
-  event.waitUntil(
-    caches.keys()
-      .then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key))))
-      .then(()=>self.clients.claim())
-  );
+  event.waitUntil((async()=>{
+    const keys=await caches.keys();
+    await Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)));
+    await self.clients.claim();
+    const clients=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+    await Promise.all(clients.map(client=>client.navigate(client.url).catch(()=>null)));
+  })());
 });
 
 self.addEventListener('fetch',event=>{
@@ -27,7 +30,13 @@ self.addEventListener('fetch',event=>{
 
   event.respondWith((async()=>{
     try{
-      const response=await fetch(request,{cache:'no-store'});
+      let networkRequest=request;
+      if(url.pathname.endsWith('/pwa-register.js')){
+        const freshUrl=new URL(request.url);
+        freshUrl.searchParams.set('_sw',REV);
+        networkRequest=new Request(freshUrl.toString(),request);
+      }
+      const response=await fetch(networkRequest,{cache:'no-store'});
       if(response&&response.ok){
         const copy=response.clone();
         caches.open(CACHE).then(cache=>cache.put(request,copy)).catch(()=>{});
