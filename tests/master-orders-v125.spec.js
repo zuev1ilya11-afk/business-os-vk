@@ -44,5 +44,5 @@ test('master orders v125 stays readable on mobile and shows concise real work',a
   await card.getByRole('button',{name:'Открыть заявку',exact:true}).click();
   await expect(page.locator('.bosMasterWorkflow')).toBeVisible();
   await expect(page.getByRole('button',{name:'Нужно перенести',exact:true})).toBeVisible();
-  await expect(page.getByRole('button',{name:/Завершить/})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Заполнить отчёт',exact:true})).toBeVisible();
 });
