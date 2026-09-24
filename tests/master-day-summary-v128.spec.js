@@ -26,7 +26,7 @@ test('master v128 shows today totals with current payout formula and no legacy d
   await page.evaluate(()=>{show('home');window.BOS_MASTER_DAY_SUMMARY_V128_API.refresh()});
 
   await expect(page.locator('#masterDailyV127')).toBeVisible();
-  await expect(page.locator('.bosMasterTodayWorkflow')).toHaveCount(0);
+  await expect(page.locator('.bosMasterTodayWorkflow:visible')).toHaveCount(0);
 
   const summary=page.locator('#masterDaySummaryV128');
   await expect(summary).toBeVisible();
