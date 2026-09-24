@@ -5,7 +5,7 @@ window.BOS_MASTER_CABINET_V141=true;
 
 let queued=false;
 const num=v=>{const n=Number(v);return Number.isFinite(n)?n:0};
-const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const moneyv=v=>typeof money==='function'?money(v):`${num(v).toLocaleString('ru-RU',{minimumFractionDigits:0,maximumFractionDigits:2})} ₽`;
 const masterMode=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
 const completed=o=>String(o?.status||'')==='Выполнена'||String(o?.report_review_status||'')==='approved';
@@ -26,9 +26,8 @@ function mine(){
 }
 function doneRows(){return mine().filter(completed).sort((a,b)=>String(completedDay(b)||'').localeCompare(String(completedDay(a)||''))||String(b?.id||'').localeCompare(String(a?.id||''),'ru',{numeric:true}))}
 function todayRows(){const today=todayIso();return doneRows().filter(o=>completedDay(o)===today)}
-function metricCard(){
-  const rows=todayRows(),total=rows.reduce((a,o)=>a+salary(o),0);
-  return `<div class="masterV129Metric period masterCabinetV141Today masterMoneyV130Clickable" data-master-cabinet-v141="today" role="button" tabindex="0" aria-label="ЗП сегодня: открыть расшифровку" title="Открыть расшифровку"><span>ЗП сегодня</span><strong>${escv(moneyv(total))}</strong></div>`;
+function metricCard(total){
+  return `<div class="masterV129Metric period masterCabinetV141Today" data-master-cabinet-v141="today" data-v141-total="${escv(String(total))}" role="button" tabindex="0" aria-label="ЗП сегодня: открыть расшифровку" title="Открыть расшифровку"><span>ЗП сегодня</span><strong>${escv(moneyv(total))}</strong></div>`;
 }
 function previewRow(o){
   const day=completedDay(o)||'—',work=String(o?.work||o?.description||o?.service_name||'').trim(),client=String(o?.client||o?.client_name||'').trim(),extras=extra(o),deduct=deduction(o);
@@ -52,10 +51,16 @@ function render(){
   if(!masterMode()||String(state?.page||'')!=='team')return;
   const panel=document.getElementById('masterProfileSummaryV129');if(!panel)return;
   const metrics=panel.querySelector('.masterV129Metrics');if(!metrics)return;
-  const rows=doneRows(),today=todayRows(),sig=JSON.stringify(rows.map(o=>[o.id,o.status,o.report_review_status,completedDay(o),o.amount,o.master_payout,o.extra_work_amount,o.uncompleted_work_amount]));
-  let todayCard=panel.querySelector('.masterCabinetV141Today');
-  const wrap=document.createElement('div');wrap.innerHTML=metricCard();const freshCard=wrap.firstElementChild;
-  if(todayCard)todayCard.replaceWith(freshCard);else{const week=[...metrics.querySelectorAll('.masterV129Metric')].find(x=>(x.querySelector('span')?.textContent||'').trim()==='ЗП за неделю');if(week)week.insertAdjacentElement('beforebegin',freshCard);else metrics.appendChild(freshCard)}
+  const rows=doneRows(),today=todayRows(),todayTotal=today.reduce((a,o)=>a+salary(o),0),sig=JSON.stringify(rows.map(o=>[o.id,o.status,o.report_review_status,completedDay(o),o.amount,o.master_payout,o.extra_work_amount,o.uncompleted_work_amount]));
+  const todayCard=panel.querySelector('.masterCabinetV141Today');
+  if(!todayCard){
+    const wrap=document.createElement('div');wrap.innerHTML=metricCard(todayTotal);const freshCard=wrap.firstElementChild;
+    const week=[...metrics.querySelectorAll('.masterV129Metric')].find(x=>(x.querySelector('span')?.textContent||'').trim()==='ЗП за неделю');
+    if(week)week.insertAdjacentElement('beforebegin',freshCard);else metrics.appendChild(freshCard);
+  }else if(todayCard.dataset.v141Total!==String(todayTotal)){
+    todayCard.dataset.v141Total=String(todayTotal);
+    const strong=todayCard.querySelector('strong');if(strong)strong.textContent=moneyv(todayTotal);
+  }
   let completedBox=document.getElementById('masterCabinetV141Completed');
   if(completedBox?.dataset.sig!==sig){const boxWrap=document.createElement('div');boxWrap.innerHTML=completedHtml(rows);const next=boxWrap.firstElementChild;next.dataset.sig=sig;if(completedBox)completedBox.replaceWith(next);else{const moneyBox=document.getElementById('masterMoneyV130');if(moneyBox)moneyBox.insertAdjacentElement('afterend',next);else panel.appendChild(next)}}
   panel.dataset.v141TodayCount=String(today.length);
