@@ -1,5 +1,5 @@
-const CACHE='business-os-shell-v6';
-const REV='20260924-v130-hotfix2';
+const CACHE='business-os-shell-v7';
+const REV='20260924-v136-received-date';
 const SHELL=['./','./index.html','./manifest.webmanifest','./brand-logo.svg'];
 
 self.addEventListener('install',event=>{
@@ -29,7 +29,7 @@ self.addEventListener('fetch',event=>{
   event.respondWith((async()=>{
     try{
       let networkRequest=request;
-      if(url.pathname.endsWith('/pwa-register.js')){
+      if(url.pathname.endsWith('/pwa-register.js')||url.pathname.endsWith('/master-order-focus-v126.js')){
         const freshUrl=new URL(request.url);
         freshUrl.searchParams.set('_sw',REV);
         networkRequest=new Request(freshUrl.toString(),request);
