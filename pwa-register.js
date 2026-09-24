@@ -204,6 +204,11 @@
   masterOrderFocusV126.async=false;
   document.head.appendChild(masterOrderFocusV126);
 
+  const masterDailyHomeV127=document.createElement('script');
+  masterDailyHomeV127.src='./master-daily-home-v127.js?v=20260924-v127';
+  masterDailyHomeV127.async=false;
+  document.head.appendChild(masterDailyHomeV127);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
