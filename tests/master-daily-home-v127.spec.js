@@ -6,6 +6,9 @@ test('master v127 home shows next job and attention queue on mobile',async({page
   const next=db.tables.orders.find(o=>String(o.id)==='11')||db.tables.orders[0];
   const attention=db.tables.orders.find(o=>String(o.id)==='12')||db.tables.orders[1];
 
+  for(const o of db.tables.orders){
+    if(o!==next&&o!==attention)Object.assign(o,{status:'Выполнена',report_review_status:'approved'});
+  }
   Object.assign(next,{
     master_staff_id:master.id,
     client:'Анна Пичуева',
