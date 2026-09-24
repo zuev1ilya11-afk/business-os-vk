@@ -13,7 +13,7 @@ test('master cabinet v141 shows today salary and recent completed orders in prof
   Object.assign(primary,{
     status:'Выполнена',report_review_status:'approved',scheduled_date:today,completed_at:`${today}T12:00:00`,
     amount:1000,original_amount:1000,master_payout:552.5,extra_work_amount:100,uncompleted_work_amount:0,
-    extra_work_description:'Дополнительное крепление',master_staff_id:master.id,master_name:master.full_name,work:'Установка карниза'
+    extra_work_description:'Дополнительное крепление',master_staff_id:master.id,master_name:master.full_name,work:'Установка карниза',client:'Клиент кабинета',address:'Очень длинный адрес '+ 'домкорпус'.repeat(30)
   });
   Object.assign(secondary,{
     id:String(secondary.id||'14102'),status:'Выполнена',report_review_status:'approved',scheduled_date:yesterday,completed_at:`${yesterday}T12:00:00`,
@@ -40,14 +40,34 @@ test('master cabinet v141 shows today salary and recent completed orders in prof
   await expect(completed.locator('.masterCabinetV141Order')).toHaveCount(2);
   await expect(completed).toContainText('Установка карниза');
   await expect(completed).toContainText(/652[,.]5/);
-  await expect(completed).toContainText('вычет');
+  await expect(completed).toContainText('Вычет');
 
+  await expect(completed).toContainText('Клиент кабинета');
+  await expect(completed).toContainText('Очень длинный адрес');
+  await expect(completed).toContainText('Начисление');
+  await expect(completed).toContainText('Итого');
+  for(const label of ['ЗП за неделю','ЗП за месяц','Допработы','Вычеты','Общая зарплата']){
+    await expect(panel.locator('.masterV129Metric').filter({has:page.getByText(label,{exact:true})})).toBeVisible();
+  }
+  await expect(panel.locator('#masterMoneyV130')).toHaveCount(1);
   await todayCard.click();
   await expect(page.locator('#modalRoot')).toContainText('ЗП сегодня');
   await expect(page.locator('#modalRoot')).toContainText(/652[,.]5/);
   await expect(page.locator('#modalRoot')).toContainText('Допработы');
   await page.evaluate(()=>closeModal());
 
+  await page.setViewportSize({width:320,height:640});
+  const last=completed.locator('.masterCabinetV141Order').last();
+  await last.scrollIntoViewIfNeeded();
+  const reachable=await last.evaluate(el=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return el===hit||el.contains(hit)});
+  expect(reachable).toBe(true);
+  await last.click();
+  await expect(page.locator('#modalRoot .modal')).toBeVisible();
+  await expect(page.locator('#modalRoot')).toContainText('Заявка завершена');
+  await page.evaluate(()=>closeModal());
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
+  await page.locator('nav button[data-page="home"]').click();
+  await expect(page.locator('#masterMoneyV130')).toHaveCount(0);
+  await expect(page.locator('#masterCabinetV141Completed')).toHaveCount(0);
 });

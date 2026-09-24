@@ -225,7 +225,7 @@
   document.head.appendChild(masterMoneyV130);
 
   const masterCabinetV141=document.createElement('script');
-  masterCabinetV141.src='./master-cabinet-v141.js?v=20260925-v141';
+  masterCabinetV141.src='./master-cabinet-v141.js?v=20260925-v141b';
   masterCabinetV141.async=false;
   document.head.appendChild(masterCabinetV141);
 
