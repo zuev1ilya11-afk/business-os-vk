@@ -1,0 +1,1 @@
+Price memo v131 has Playwright and static regression coverage.
