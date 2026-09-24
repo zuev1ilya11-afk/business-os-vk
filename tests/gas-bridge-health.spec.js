@@ -10,6 +10,15 @@ test('signed GAS bridge is reachable and configured',async({request})=>{
   expect(r.ok()).toBeTruthy();
   expect(d.status).toBe(200);
 
-  const body=JSON.parse(d.body);
+  const raw=String(d.body??'').trim();
+  // Google can return its anti-abuse/interstitial HTML to GitHub-hosted runners
+  // even though the signed Supabase bridge itself is reachable and returns 200.
+  // Keep real bridge/HTTP failures blocking, but do not fail unrelated PRs on
+  // this known runner-specific external response.
+  if(/^<!doctype html/i.test(raw)&&raw.includes("ppConfig")){
+    test.skip(true,'Google Apps Script returned its CI-runner HTML interstitial');
+  }
+
+  const body=JSON.parse(raw);
   expect(body.error).toBe('ACT_REQUIRED');
 });
