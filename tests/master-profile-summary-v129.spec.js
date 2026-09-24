@@ -16,9 +16,9 @@ test('master v129 moves summary to profile and shows extras deductions week and 
     original_amount:1200,amount:1000,master_payout:552.5,extra_work_amount:100,uncompleted_work_amount:200,
     master_staff_id:master.id,master_name:master.full_name
   });
-  db.tables.orders.push({...primary,id:'12902',scheduled_date:priorInMonth,completed_at:`${priorInMonth}T12:00:00`,original_amount:2000,amount:2000,master_payout:1105,extra_work_amount:0,uncompleted_work_amount:0});
-  const active=db.tables.orders.find(o=>String(o.id)==='12');
-  Object.assign(active,{status:'В работе',scheduled_date:today,master_staff_id:master.id,master_name:master.full_name});
+  const secondary={...primary,id:'12902',scheduled_date:priorInMonth,completed_at:`${priorInMonth}T12:00:00`,original_amount:2000,amount:2000,master_payout:1105,extra_work_amount:0,uncompleted_work_amount:0};
+  const active={...primary,id:'12903',status:'В работе',report_review_status:null,scheduled_date:today,completed_at:null,amount:700,master_payout:0,extra_work_amount:0,uncompleted_work_amount:0};
+  db.tables.orders.splice(0,db.tables.orders.length,primary,secondary,active);
 
   await page.setViewportSize({width:390,height:844});
   await page.goto('/',{waitUntil:'domcontentloaded'});
@@ -46,14 +46,12 @@ test('master v129 moves summary to profile and shows extras deductions week and 
   await expect(panel.getByText('Общая зарплата',{exact:true}).locator('..').locator('..')).toContainText(/1[\s ]?757[,.]5/);
 
   const weekExpected=priorInMonth>=weekStart?1757.5:652.5;
-  const weekCard=panel.getByText('ЗП за неделю',{exact:true}).locator('..');
-  await expect(weekCard).toContainText(new RegExp(String(weekExpected).replace('.', '[,.]')));
-  const monthCard=panel.getByText('ЗП за месяц',{exact:true}).locator('..');
-  await expect(monthCard).toContainText(/1[\s ]?757[,.]5/);
+  await expect(panel.getByText('ЗП за неделю',{exact:true}).locator('..')).toContainText(new RegExp(String(weekExpected).replace('.', '[,.]')));
+  await expect(panel.getByText('ЗП за месяц',{exact:true}).locator('..')).toContainText(/1[\s ]?757[,.]5/);
 
   await page.evaluate(()=>show('home'));
   await expect(page.locator('#masterProfileSummaryV129')).toHaveCount(0);
-  await expect(page.locator('.masterHomeGrid')).toHaveCount(0);
+  await expect(page.locator('#content').getByRole('heading',{name:'Мой график'})).toHaveCount(0);
   await expect(page.locator('#masterDailyV127')).toBeVisible();
   await expect(page.locator('#masterDaySummaryV128')).toBeVisible();
 
