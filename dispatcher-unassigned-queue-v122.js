@@ -3,8 +3,11 @@
 if(window.BOS_DISPATCHER_UNASSIGNED_QUEUE_V122)return;
 window.BOS_DISPATCHER_UNASSIGNED_QUEUE_V122=true;
 
+const DESKTOP_MIN=1050;
+const MOBILE_COLLAPSE_MAX=620;
 let queued=false;
 let expanded=false;
+let mobileExpanded=false;
 const pad=n=>String(n).padStart(2,'0');
 const isoDate=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const today=()=>isoDate(new Date());
@@ -17,6 +20,7 @@ const orderDate=o=>String(o?.scheduled_date||'').slice(0,10);
 const orderTime=o=>String(o?.scheduled_time||o?.time_slot||'').slice(0,5);
 const safe=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const money=v=>Number(v||0).toLocaleString('ru-RU');
+const compactMobile=()=>window.innerWidth<=MOBILE_COLLAPSE_MAX;
 
 function urgency(order){
   if(order?.reschedule_requested)return 0;
@@ -57,7 +61,13 @@ function bestFor(order){
   try{return window.__dispatcherSmartDispatch121(order.id)?.[0]||null}catch(error){console.warn('Unassigned queue v122 recommendation failed',error);return null}
 }
 function signatureFor(orders){
-  return `${expanded?'all':'top'}|${orders.map(order=>{const best=bestFor(order);return `${order.id}:${order.updated_at||''}:${order.master_staff_id||''}:${orderDate(order)}:${orderTime(order)}:${order.reschedule_requested?'r':''}:${best?.master_key||''}:${best?.best_time||''}`}).join('|')}`;
+  return `${expanded?'all':'top'}|${mobileExpanded?'mobile-open':'mobile-closed'}|${window.innerWidth}|${orders.map(order=>{const best=bestFor(order);return `${order.id}:${order.updated_at||''}:${order.master_staff_id||''}:${orderDate(order)}:${orderTime(order)}:${order.reschedule_requested?'r':''}:${best?.master_key||''}:${best?.best_time||''}`}).join('|')}`;
+}
+function desktopListActive(root){
+  if(window.innerWidth<DESKTOP_MIN)return true;
+  if(root.querySelector('.dbV94InlineList'))return true;
+  const listButton=[...root.querySelectorAll('.dbViewTabs button')].find(button=>String(button.textContent||'').trim()==='Список');
+  return !!listButton?.classList.contains('primary');
 }
 function openOrderSafe(id){
   if(typeof openOrder==='function')openOrder(id);
@@ -132,7 +142,15 @@ function render(root,orders){
   const head=document.createElement('div');
   head.className='duq122Head';
   head.innerHTML=`<div><b>Очередь без мастера</b><small>${orders.length?`Сначала самые срочные · ${orders.length} шт.`:'Все активные заявки распределены'}</small></div>`;
+  if(compactMobile()&&orders.length){
+    const toggle=document.createElement('button');
+    toggle.type='button';toggle.className='secondary duq122Toggle';
+    toggle.textContent=mobileExpanded?'Скрыть очередь':`Показать очередь · ${orders.length}`;
+    toggle.addEventListener('click',()=>{mobileExpanded=!mobileExpanded;panel.dataset.signature='';schedule()});
+    head.appendChild(toggle);
+  }
   panel.appendChild(head);
+  if(compactMobile()&&!mobileExpanded)return;
   if(!orders.length){
     const empty=document.createElement('div');empty.className='duq122Empty';empty.textContent='Неназначенных активных заявок нет.';panel.appendChild(empty);return;
   }
@@ -152,18 +170,20 @@ function cleanup(root){root?.querySelectorAll?.(':scope > .duq122')?.forEach(nod
 function sync(){
   queued=false;
   const root=document.getElementById('content');if(!root)return;
-  if(!dispatcherMode()||!ordersPage()){cleanup(root);return}
+  if(!dispatcherMode()||!ordersPage()||!desktopListActive(root)){cleanup(root);return}
   if(typeof window.__dispatcherSmartDispatch121!=='function'){setTimeout(schedule,80);return}
   render(root,queueOrders());
 }
 function schedule(){if(queued)return;queued=true;requestAnimationFrame(sync)}
 function start(){
   const root=document.getElementById('content');
-  if(root)new MutationObserver(schedule).observe(root,{childList:true,subtree:true});
+  if(root)new MutationObserver(()=>{
+    if(dispatcherMode())schedule();else cleanup(root);
+  }).observe(root,{childList:true,subtree:true});
   schedule();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-window.addEventListener('resize',schedule);
+window.addEventListener('resize',()=>{if(window.innerWidth>MOBILE_COLLAPSE_MAX)mobileExpanded=false;schedule()});
 window.__dispatcherUnassignedQueue122=()=>queueOrders().map(order=>({id:String(order.id),urgency:urgencyMeta(order)[0],best:bestFor(order)}));
 
 const style=document.createElement('style');
@@ -191,11 +211,11 @@ style.textContent=`
 #content .duq122Pick b{font-size:11px}
 #content .duq122Pick small{margin-top:3px;color:var(--muted,#8e9baa);font-size:10px}
 #content .duq122Actions{display:flex;gap:6px;justify-content:flex-end}
-#content .duq122Actions button{min-height:36px;padding:7px 10px;font-size:11px}
-#content .duq122More{display:block;margin:9px auto 0;min-height:34px;font-size:11px}
+#content .duq122Actions button,#content .duq122More,#content .duq122Toggle{min-height:44px;padding:8px 10px;font-size:11px}
+#content .duq122More{display:block;margin:9px auto 0}
 #content .duq122Empty{padding:12px;text-align:center;color:var(--muted,#8e9baa);font-size:12px}
 @media(max-width:900px){#content .duq122Item{grid-template-columns:1fr auto}#content .duq122Pick{grid-column:1/2}#content .duq122Actions{grid-column:2/3;grid-row:1/3}}
-@media(max-width:620px){#content>.duq122{padding:10px;margin-bottom:10px}#content .duq122Item{grid-template-columns:1fr;gap:8px}#content .duq122Pick,#content .duq122Actions{grid-column:auto;grid-row:auto}#content .duq122Actions{justify-content:stretch}#content .duq122Actions button{flex:1;min-height:44px}#content .duq122Meta span{max-width:100%}}
+@media(max-width:620px){#content>.duq122{padding:10px;margin-bottom:10px}#content .duq122Head{align-items:stretch;margin-bottom:0;flex-direction:column}#content .duq122Head:has(+.duq122List){margin-bottom:10px}#content .duq122Toggle{width:100%}#content .duq122Item{grid-template-columns:1fr;gap:8px}#content .duq122Pick,#content .duq122Actions{grid-column:auto;grid-row:auto}#content .duq122Actions{justify-content:stretch}#content .duq122Actions button{flex:1}#content .duq122Meta span{max-width:100%}}
 `;
 document.head.appendChild(style);
 })();
