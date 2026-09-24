@@ -214,6 +214,11 @@
   masterDaySummaryV128.async=false;
   document.head.appendChild(masterDaySummaryV128);
 
+  const masterProfileSummaryV129=document.createElement('script');
+  masterProfileSummaryV129.src='./master-profile-summary-v129.js?v=20260924-v129';
+  masterProfileSummaryV129.async=false;
+  document.head.appendChild(masterProfileSummaryV129);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
