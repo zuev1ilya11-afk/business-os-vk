@@ -5,11 +5,12 @@ const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${Str
 const monday=()=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return iso(d)};
 const addDays=(date,n)=>{const d=new Date(`${date}T12:00:00`);d.setDate(d.getDate()+n);return iso(d)};
 
-test('master v129 moves summary to profile and shows extras deductions week and month salary',async({page})=>{
+test('master v129 shows compact profile money metrics without duplicate schedule',async({page})=>{
   const {db,master}=await fullStack(page,'master');
   const today=iso(new Date()),weekStart=monday(),previousWeek=addDays(weekStart,-2);
   const monthStart=`${today.slice(0,8)}01`;
   const priorInMonth=previousWeek>=monthStart?previousWeek:today;
+  const oldDateObj=new Date();oldDateObj.setHours(12,0,0,0);oldDateObj.setMonth(oldDateObj.getMonth()-1);oldDateObj.setDate(15);const previousMonth=iso(oldDateObj);
   const primary=db.tables.orders.find(o=>String(o.id)==='11');
   Object.assign(primary,{
     status:'Выполнена',report_review_status:'approved',scheduled_date:today,completed_at:`${today}T12:00:00`,
@@ -17,8 +18,9 @@ test('master v129 moves summary to profile and shows extras deductions week and 
     master_staff_id:master.id,master_name:master.full_name
   });
   const secondary={...primary,id:'12902',scheduled_date:priorInMonth,completed_at:`${priorInMonth}T12:00:00`,original_amount:2000,amount:2000,master_payout:1105,extra_work_amount:0,uncompleted_work_amount:0};
+  const older={...primary,id:'12904',scheduled_date:previousMonth,completed_at:`${previousMonth}T12:00:00`,original_amount:1000,amount:1000,master_payout:552.5,extra_work_amount:50,uncompleted_work_amount:0};
   const active={...primary,id:'12903',status:'В работе',report_review_status:null,scheduled_date:today,completed_at:null,amount:700,master_payout:0,extra_work_amount:0,uncompleted_work_amount:0};
-  db.tables.orders.splice(0,db.tables.orders.length,primary,secondary,active);
+  db.tables.orders.splice(0,db.tables.orders.length,primary,secondary,older,active);
 
   await page.setViewportSize({width:390,height:844});
   await page.goto('/',{waitUntil:'domcontentloaded'});
@@ -33,17 +35,15 @@ test('master v129 moves summary to profile and shows extras deductions week and 
 
   const panel=page.locator('#masterProfileSummaryV129');
   await expect(panel).toBeVisible();
-  await expect(panel.getByRole('heading',{name:'Мой график'})).toBeVisible();
-  await expect(panel.getByRole('button',{name:'Изменить'})).toBeVisible();
-  await expect(panel.locator('.masterV129Day')).toHaveCount(7);
+  await expect(panel.locator('.masterV129Schedule')).toHaveCount(0);
+  await expect(panel.locator('.masterV129Metric')).toHaveCount(8);
   await expect(panel.getByText('В работе',{exact:true}).locator('..')).toContainText('1');
-  await expect(panel.getByText('Выполнено',{exact:true}).locator('..')).toContainText('2');
-  await expect(panel.getByText('Допработы',{exact:true}).locator('..')).toContainText(/100/);
+  await expect(panel.getByText('Выполнено',{exact:true}).locator('..')).toContainText('3');
+  await expect(panel.getByText('Допработы',{exact:true}).locator('..')).toContainText(/150/);
   await expect(panel.getByText('Вычеты',{exact:true}).locator('..')).toContainText(/200/);
   await expect(panel.getByText('ЗП за неделю',{exact:true})).toBeVisible();
   await expect(panel.getByText('ЗП за месяц',{exact:true})).toBeVisible();
-  await expect(panel).toContainText('Вычеты уже учтены');
-  await expect(panel.getByText('Общая зарплата',{exact:true}).locator('..').locator('..')).toContainText(/1[\s ]?757[,.]5/);
+  await expect(panel.getByText('Общая зарплата',{exact:true}).locator('..')).toContainText(/2[\s ]?360/);
 
   const weekExpected=priorInMonth>=weekStart?1757.5:652.5;
   await expect(panel.getByText('ЗП за неделю',{exact:true}).locator('..')).toContainText(new RegExp(String(weekExpected).replace('.', '[,.]')));
