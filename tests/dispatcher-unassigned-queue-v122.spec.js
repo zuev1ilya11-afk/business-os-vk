@@ -16,6 +16,8 @@ test('unassigned queue prioritizes urgent orders and assigns best recommendation
   await expect(page.locator('#authGate')).toBeHidden();
   await page.waitForFunction(()=>window.BOS_DISPATCHER_UNASSIGNED_QUEUE_V122===true);
   await page.locator('nav [data-page=orders]').click();
+  await expect(page.locator('.duq122')).toHaveCount(0);
+  await page.locator('.dbViewTabs button').filter({hasText:'Список'}).click();
 
   const queue=page.locator('.duq122');
   await expect(queue).toBeVisible();
