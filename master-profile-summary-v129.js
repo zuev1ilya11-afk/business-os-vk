@@ -7,7 +7,7 @@ let queued=false;
 const num=v=>{const n=Number(v);return Number.isFinite(n)?n:0};
 const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const moneyv=v=>typeof money==='function'?money(v):`${num(v).toLocaleString('ru-RU',{minimumFractionDigits:0,maximumFractionDigits:2})} ₽`;
-const masterMode=()=>String(state?.user?.role||'')==='master';
+const masterMode=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&!!isMasterPreview());
 const completed=o=>String(o?.status||'')==='Выполнена'||String(o?.report_review_status||'')==='approved';
 const active=o=>o&&!['Выполнена','Отменена'].includes(String(o?.status||''));
 const truthy=v=>v===true||v===1||String(v).toLowerCase()==='true'||String(v)==='1';
@@ -22,7 +22,10 @@ function mine(){
   if(!ids.size)return all;
   return all.filter(o=>[o.master_staff_id,o.master_id,o.master_vk_id,o.staff_id,o.vk_user_id,o.external_id].filter(Boolean).map(String).some(x=>ids.has(x)));
 }
-function liveUser(){return typeof liveMasterUser==='function'?(liveMasterUser()||state?.user||{}):(state?.user||{})}
+function liveUser(){
+  if(typeof isMasterPreview==='function'&&isMasterPreview()&&typeof previewUser!=='undefined'&&previewUser)return previewUser;
+  return typeof liveMasterUser==='function'?(liveMasterUser()||state?.user||{}):(state?.user||{});
+}
 function masterRow(){
   const u=liveUser(),ids=new Set([u.id,u.staff_id,u.master_id,u.vk_user_id,u.user_id,u.external_id,typeof liveMasterId==='function'?liveMasterId():null].filter(Boolean).map(String));
   return (state?.masters||[]).find(m=>[m?.id,m?.staff_id,m?.master_id,m?.vk_user_id,m?.user_id,m?.external_id].filter(Boolean).map(String).some(x=>ids.has(x)))||u;
