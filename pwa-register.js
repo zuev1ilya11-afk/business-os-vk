@@ -210,7 +210,7 @@
   document.head.appendChild(masterDailyHomeV127);
 
   const masterDaySummaryV128=document.createElement('script');
-  masterDaySummaryV128.src='./master-day-summary-v128.js?v=20260924-v128';
+  masterDaySummaryV128.src='./master-day-summary-v128.js?v=20260925-sync';
   masterDaySummaryV128.async=false;
   document.head.appendChild(masterDaySummaryV128);
 
