@@ -1,0 +1,60 @@
+(()=>{
+'use strict';
+if(window.BOS_MASTER_ORDER_FOCUS_V126)return;
+window.BOS_MASTER_ORDER_FOCUS_V126=true;
+let queued=false;
+const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const masterMode=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
+const liveMaster=()=>String(state?.user?.role||'')==='master';
+const orderById=id=>(state?.orders||[]).find(o=>String(o.id)===String(id))||null;
+const stageOf=o=>{if(String(o?.status||'')==='Выполнена')return'completed';if(String(o?.status||'')==='Отменена')return'cancelled';const s=String(o?.master_workflow_stage||'assigned');return s==='arrived'?'departed':['assigned','departed','started'].includes(s)?s:'assigned'};
+const reportUploaded=o=>!!o?.report_uploaded_at||!!o?.report_act_url;
+const reportRejected=o=>reportUploaded(o)&&String(o?.report_review_status||'pending')==='rejected';
+const reportApproved=o=>String(o?.status||'')==='Выполнена'||String(o?.report_review_status||'')==='approved';
+const progressed=o=>['departed','started','completed'].includes(stageOf(o))||reportUploaded(o);
+const calledDone=o=>!!o?.master_called_at||progressed(o);
+const agreementDone=o=>!!o?.master_agreed_at||progressed(o);
+const workDone=o=>['started','completed'].includes(stageOf(o))||reportUploaded(o);
+const phoneHref=v=>{let p=String(v||'').trim().replace(/[^\d+]/g,'');if(/^8\d{10}$/.test(p))p='+7'+p.slice(1);else if(/^\d{10}$/.test(p))p='+7'+p;return p};
+function nextStep(o){
+  if(String(o?.status||'')==='Отменена')return{tone:'muted',title:'Заявка отменена',hint:'Дополнительных действий не требуется.'};
+  if(reportApproved(o))return{tone:'done',title:'Заявка завершена',hint:'Отчёт принят, работа по заявке закончена.'};
+  if(reportRejected(o))return{tone:'danger',title:'Исправьте отчёт',hint:o?.report_review_comment||'Отчёт вернули на доработку. Исправьте его и отправьте повторно.'};
+  if(reportUploaded(o))return{tone:'waiting',title:'Отчёт на проверке',hint:'Дождитесь проверки диспетчером или руководителем.'};
+  if(workDone(o))return{tone:'active',title:'Заполните отчёт',hint:'Работа отмечена начатой. После завершения прикрепите отчёт.'};
+  if(agreementDone(o))return{tone:'active',title:'Начните работу',hint:'Дата и время согласованы. Когда приступите к заказу, отметьте начало работы.'};
+  if(calledDone(o))return{tone:'waiting',title:'Зафиксируйте договорённость',hint:'Уточните с клиентом дату и время и сохраните договорённость.'};
+  return{tone:'attention',title:'Позвоните клиенту',hint:'Свяжитесь с клиентом и после разговора отметьте выполненный звонок.'};
+}
+function focusHtml(o){const step=nextStep(o),phone=phoneHref(o?.phone||o?.client_phone),call=liveMaster()&&phone&&!calledDone(o)?`<a class="secondary masterV126QuickCall" href="tel:${escv(phone)}">Позвонить сейчас</a>`:'';return `<section class="masterV126Focus ${escv(step.tone)}" aria-label="Следующий шаг"><div class="masterV126FocusText"><small>СЛЕДУЮЩИЙ ШАГ</small><h3>${escv(step.title)}</h3><p>${escv(step.hint)}</p></div>${call}</section>`}
+function decoratePhone(modal,o){const phone=phoneHref(o?.phone||o?.client_phone);if(!phone)return;const blocks=[...modal.querySelectorAll('.bosHandsBlock')];const clientBlock=blocks.find(x=>x.querySelector('small')&&(x.textContent||'').includes(String(o?.client||'')))||blocks.find(x=>x.querySelector('small'));if(!clientBlock)return;const old=clientBlock.querySelector('small');if(!old||old.querySelector('a'))return;const label=(old.textContent||o?.phone||o?.client_phone||'').trim();if(!label)return;old.innerHTML=`<a class="masterV126Phone" href="tel:${escv(phone)}">${escv(label)}</a>`}
+function decorate(){
+  queued=false;
+  if(!masterMode())return;
+  const modal=document.querySelector('#modalRoot .modal');
+  if(!modal||modal.querySelector('#masterReportForm,#masterAgreementForm,#masterRescheduleForm'))return;
+  const panel=modal.querySelector('.bosMasterWorkflow');
+  const id=String(panel?.dataset?.orderId||modal.dataset?.bosWorkflowOrderId||'');
+  const o=orderById(id);
+  if(!o)return;
+  const sig=JSON.stringify([o.id,o.status,o.master_called_at,o.master_agreed_at,o.master_workflow_stage,o.report_uploaded_at,o.report_act_url,o.report_review_status,o.report_review_comment,o.completed_at,o.phone,o.client_phone]);
+  let focus=modal.querySelector('.masterV126Focus');
+  if(!focus){focus=document.createElement('div');const anchor=panel||modal.querySelector('.bosHandsOrder');if(panel)panel.insertAdjacentElement('beforebegin',focus);else if(anchor)anchor.insertAdjacentElement('afterend',focus);else modal.prepend(focus)}
+  if(focus.dataset.sig!==sig){focus.outerHTML=focusHtml(o);focus=modal.querySelector('.masterV126Focus');if(focus)focus.dataset.sig=sig}
+  decoratePhone(modal,o);
+  const primary=panel?.querySelector('.mwv2Actions .primary,.bosMwActions .primary');
+  panel?.querySelectorAll('.masterV126PrimaryAction').forEach(x=>x.classList.remove('masterV126PrimaryAction'));
+  if(primary)primary.classList.add('masterV126PrimaryAction');
+}
+function schedule(){if(queued)return;queued=true;requestAnimationFrame(decorate)}
+const baseOpen=window.openOrder;
+if(typeof baseOpen==='function')window.openOrder=function(){const out=baseOpen.apply(this,arguments);setTimeout(schedule,30);setTimeout(schedule,180);return out};
+new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
+window.addEventListener('resize',schedule);
+setTimeout(schedule,0);
+const style=document.createElement('style');style.textContent=`
+.masterV126Focus{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 2px;padding:13px 14px;border:1px solid rgba(96,165,250,.24);border-radius:14px;background:rgba(37,99,235,.09)}
+.masterV126FocusText{min-width:0}.masterV126Focus small{display:block;font-size:10px;letter-spacing:.08em;color:var(--muted,#91a3b7);font-weight:800}.masterV126Focus h3{margin:3px 0 3px;font-size:17px;line-height:1.2}.masterV126Focus p{margin:0;color:var(--muted,#91a3b7);font-size:12px;line-height:1.35}.masterV126Focus.attention{border-color:rgba(245,158,11,.34);background:rgba(245,158,11,.08)}.masterV126Focus.danger{border-color:rgba(239,68,68,.34);background:rgba(239,68,68,.08)}.masterV126Focus.done{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}.masterV126Focus.muted{opacity:.82}.masterV126QuickCall{flex:0 0 auto;min-height:42px;display:flex;align-items:center;justify-content:center;text-decoration:none}.masterV126Phone{color:inherit;text-decoration:underline;text-decoration-color:rgba(96,165,250,.55);text-underline-offset:3px;font-weight:700}.masterV126PrimaryAction{box-shadow:0 0 0 2px rgba(96,165,250,.16)}
+@media(max-width:520px){.masterV126Focus{align-items:stretch;flex-direction:column;margin-top:10px}.masterV126QuickCall{width:100%;box-sizing:border-box}.bosMasterWorkflow[data-bos-v116="1"] .mwv2Actions,.bosMasterWorkflow[data-bos-v115="1"] .mwv2Actions{position:sticky;bottom:calc(7px + env(safe-area-inset-bottom));z-index:6;padding:9px;margin:8px -5px 0;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(12,22,34,.96);box-shadow:0 8px 26px rgba(0,0,0,.32);backdrop-filter:blur(10px)}.bosMasterWorkflow .mwv2Actions>*{min-width:0}.masterV126Focus h3{font-size:18px}}
+`;document.head.appendChild(style);
+})();

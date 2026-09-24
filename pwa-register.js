@@ -199,6 +199,11 @@
   masterOrdersV125Compat.async=false;
   document.head.appendChild(masterOrdersV125Compat);
 
+  const masterOrderFocusV126=document.createElement('script');
+  masterOrderFocusV126.src='./master-order-focus-v126.js?v=20260924-v126';
+  masterOrderFocusV126.async=false;
+  document.head.appendChild(masterOrderFocusV126);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
