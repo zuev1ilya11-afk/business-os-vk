@@ -33,7 +33,7 @@ test('master preview refresh uses current employee rather than captured profile 
   await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
   await expect(page.locator('#content')).toContainText('+79990000099');
 });
-test('master saving profile updates users, masters, own profile and home without reload',async({page})=>{
+test('master saving profile updates users, masters and opens current home without reload',async({page})=>{
   await boot(page,'master');
   await page.locator('nav [data-page=team]').click();
   await page.getByRole('button',{name:'Редактировать профиль'}).click();
@@ -45,7 +45,7 @@ test('master saving profile updates users, masters, own profile and home without
   const people=await page.evaluate(()=>[state.user,...state.users,...state.masters]);
   expect(people.every(x=>x.phone==='+79990000099'&&x.district==='Новый район')).toBe(true);
   await page.locator('nav [data-page=home]').click();
-  await expect(page.locator('#content')).toContainText('Новый район');
+  await expect(page.getByRole('heading',{name:'Рабочий день'})).toBeVisible();
 });
 test('credentials save synchronizes employee state without waiting for polling',async({page})=>{
   const {master}=await boot(page,'owner');

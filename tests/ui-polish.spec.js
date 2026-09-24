@@ -14,7 +14,7 @@ async function fits(page) {
       clipped: controls.filter(el => {
         const rect = el.getBoundingClientRect();
         // Horizontally scrolling date/filter strips are intentional.
-        const strip = el.closest('.bosOrderFilters, .masterDayFilters, .masterWeekDays, .masterStatusFilters, .dmShortcuts');
+        const strip = el.closest('.bosOrderFilters, .masterDayFilters, .masterWeekDays, .masterV129Week, .masterStatusFilters, .dmShortcuts');
         return !strip && (rect.left < -1 || rect.right > width + 1);
       }).map(el => el.id || el.className),
       small: controls.filter(el => el.matches('.primary, .secondary, .wide, .modalClose') &&

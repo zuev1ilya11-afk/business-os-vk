@@ -154,7 +154,7 @@ function applyCustomFilters(root){
     if(!empty){empty=document.createElement('p');empty.className='muted dmv3Empty';empty.textContent='По выбранным фильтрам заявок нет.';list.appendChild(empty)}
   }else empty?.remove();
   const count=root.querySelector(':scope > .row h2 + .muted')||root.querySelector('h2 + .muted');
-  if(count&&cards.length)count.textContent=`Найдено: ${visible}`;
+  if(count&&cards.length&&count.textContent!==`Найдено: ${visible}`)count.textContent=`Найдено: ${visible}`;
 }
 function cleanup(root){
   root.querySelectorAll('.dmv3TomorrowFilter,.dmv3TomorrowShortcut,.dmv3StatusAction,.dmv3Empty').forEach(node=>node.remove());
@@ -174,7 +174,11 @@ function schedule(){if(queued)return;queued=true;requestAnimationFrame(sync)}
 
 const start=()=>{
   const root=document.getElementById('content');
-  if(root)new MutationObserver(schedule).observe(root,{childList:true,subtree:true});
+  if(root)new MutationObserver(()=>{
+    // Keep replacement cards filtered before the next paint, not one frame later.
+    if(dispatcherMode()&&ordersPage())applyCustomFilters(root);
+    schedule();
+  }).observe(root,{childList:true,subtree:true});
   schedule();
 };
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
