@@ -7,7 +7,7 @@ let queued=false;
 const num=v=>{const n=Number(v);return Number.isFinite(n)?n:0};
 const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const moneyv=v=>typeof money==='function'?money(v):`${num(v).toLocaleString('ru-RU',{minimumFractionDigits:0,maximumFractionDigits:2})} ₽`;
-const masterMode=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
+const masterMode=()=>String(state?.user?.role||'')==='master';
 const completed=o=>String(o?.status||'')==='Выполнена'||String(o?.report_review_status||'')==='approved';
 const active=o=>o&&!['Выполнена','Отменена'].includes(String(o?.status||''));
 const truthy=v=>v===true||v===1||String(v).toLowerCase()==='true'||String(v)==='1';
@@ -19,7 +19,7 @@ function mine(){
   if(typeof ownOrders==='function')return (ownOrders()||[]).filter(Boolean);
   const all=(state?.orders||[]).filter(Boolean),u=state?.user||{};
   const ids=new Set([u.id,u.staff_id,u.master_id,u.vk_user_id,u.external_id].filter(Boolean).map(String));
-  if(!ids.size)return String(u.role||'')==='master'?all:[];
+  if(!ids.size)return all;
   return all.filter(o=>[o.master_staff_id,o.master_id,o.master_vk_id,o.staff_id,o.vk_user_id,o.external_id].filter(Boolean).map(String).some(x=>ids.has(x)));
 }
 function liveUser(){return typeof liveMasterUser==='function'?(liveMasterUser()||state?.user||{}):(state?.user||{})}
@@ -73,15 +73,18 @@ function profileHtml(t){
   return `<section id="masterProfileSummaryV129" class="masterV129Panel">${scheduleHtml(t)}<div class="masterV129Metrics">${metric('В работе',String(t.active.length))}${metric('Выполнено',String(t.done.length))}${metric('Моя выплата',moneyv(t.base))}${metric('Допработы',`+ ${moneyv(t.extras)}`,'positive')}${metric('Вычеты',t.deductions?`− ${moneyv(t.deductions)}`:moneyv(0),'negative')}${metric('ЗП за неделю',moneyv(t.weekSalary),'period')}${metric('ЗП за месяц',moneyv(t.monthSalary),'period')}</div><div class="masterV129Total"><span><small>Общая зарплата</small><em>Вычеты уже учтены в суммах завершённых заявок и повторно не вычитаются</em></span><strong>${escv(moneyv(t.total))}</strong></div></section>`;
 }
 function removeByHeading(root,names){
-  root.querySelectorAll('section.card').forEach(section=>{const h=section.querySelector('h2,h3');if(h&&names.includes((h.textContent||'').trim()))section.remove()});
+  [...root.querySelectorAll('h2,h3')].forEach(h=>{
+    if(h.closest('#masterProfileSummaryV129')||!names.includes((h.textContent||'').trim()))return;
+    const block=h.closest('section.card,section');
+    if(block)block.remove();
+  });
 }
 function cleanupHome(root){
-  root.querySelectorAll('.masterInfoCompact,.masterHomeGrid,.masterKpis').forEach(el=>el.remove());
-  removeByHeading(root,['Расчёт зарплаты','Зарплата','График работы']);
+  root.querySelectorAll('.masterKpis').forEach(el=>el.remove());
+  removeByHeading(root,['Мой график','Расчёт зарплаты','Зарплата','График работы']);
 }
 function cleanupProfile(root){
-  root.querySelectorAll('.masterHomeGrid,.masterKpis').forEach(el=>el.remove());
-  removeByHeading(root,['Расчёт зарплаты','Зарплата','График работы']);
+  removeByHeading(root,['Зарплата','Расчёт зарплаты','График этой недели','График работы']);
 }
 function signature(t){return JSON.stringify({orders:t.orders.map(o=>[o.id,o.status,o.report_review_status,o.completed_at,o.report_reviewed_at,o.scheduled_date,o.amount,o.master_payout,o.extra_work_amount,o.uncompleted_work_amount]),schedule:(state?.masterSchedule||[]).filter(scheduleMine).map(r=>[r.work_date||r.date,r.is_working,r.work_start,r.work_end]),user:[liveUser()?.city,liveUser()?.district,liveUser()?.phone]})}
 function render(){
@@ -100,8 +103,6 @@ window.openMasterProfileDayV129=function(date){
   if(typeof window.setMasterOrderDay==='function'){window.setMasterOrderDay(date);return}
   window.show?.('orders');
 };
-const baseShow=window.show;
-if(typeof baseShow==='function')window.show=function(){const out=baseShow.apply(this,arguments);setTimeout(schedule,0);setTimeout(schedule,100);return out};
 new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
 setTimeout(schedule,0);
 window.BOS_MASTER_PROFILE_SUMMARY_V129_API={refresh:schedule,totals,payout,completedDay};
