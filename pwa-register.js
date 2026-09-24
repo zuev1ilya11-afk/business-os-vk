@@ -184,6 +184,11 @@
   claimsRoleV117.async=false;
   document.head.appendChild(claimsRoleV117);
 
+  const masterHomeOrdersV124=document.createElement('script');
+  masterHomeOrdersV124.src='./master-home-orders-v124.js?v=20260924-v124';
+  masterHomeOrdersV124.async=false;
+  document.head.appendChild(masterHomeOrdersV124);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
