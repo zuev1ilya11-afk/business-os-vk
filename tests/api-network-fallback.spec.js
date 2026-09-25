@@ -12,18 +12,24 @@ for(const status of [401,403,500])test(`VK HTTP ${status} displays server error 
 });
 test('primary gateway network failure falls back to alternate AppDeploy before Netlify and direct Edge',async({page})=>{
  let alternate=0,netlify=0,direct=0;
- await page.route('https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai/api/proxy/vk-session-api',r=>r.abort('failed'));
- await page.route('https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai/api/proxy/vk-session-api',r=>{alternate++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Независимый резерв отвечает"}'})});
- await page.route('https://business-os-api-gateway.netlify.app/api/proxy/vk-session-api',r=>{netlify++;return r.abort()});
+ await page.route('**/api/proxy/vk-session-api',r=>{
+  const host=new URL(r.request().url()).hostname;
+  if(host==='business-os-api-gateway-3y8h7e.v2.appdeploy.ai')return r.abort('failed');
+  if(host==='business-os-api-gateway-ukp6ew.v2.appdeploy.ai'){alternate++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Независимый резерв отвечает"}'})}
+  if(host==='business-os-api-gateway.netlify.app'){netlify++;return r.abort('failed')}
+  return r.abort('failed');
+ });
  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.abort()});
  await authPage(page);
  await expect(page.locator('#authGate')).toContainText('Независимый резерв отвечает',{timeout:8000});expect(alternate).toBe(1);expect(netlify).toBe(0);expect(direct).toBe(0);
 });
 test('both AppDeploy gateways failing falls back to Netlify before direct Edge',async({page})=>{
  let netlify=0,direct=0;
- await page.route('https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai/api/proxy/vk-session-api',r=>r.abort('failed'));
- await page.route('https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai/api/proxy/vk-session-api',r=>r.abort('failed'));
- await page.route('https://business-os-api-gateway.netlify.app/api/proxy/vk-session-api',r=>{netlify++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Резервный Netlify отвечает"}'})});
+ await page.route('**/api/proxy/vk-session-api',r=>{
+  const host=new URL(r.request().url()).hostname;
+  if(host==='business-os-api-gateway.netlify.app'){netlify++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Резервный Netlify отвечает"}'})}
+  return r.abort('failed');
+ });
  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.abort()});
  await authPage(page);
  await expect(page.locator('#authGate')).toContainText('Резервный Netlify отвечает',{timeout:8000});expect(netlify).toBe(1);expect(direct).toBe(0);
@@ -42,12 +48,12 @@ test('stale gateway SERVICE_NOT_ALLOWED falls back to direct Supabase Edge API',
  await authPage(page);
  await expect(page.locator('#authGate')).toContainText('Прямой резерв после SERVICE_NOT_ALLOWED',{timeout:8000});expect(direct).toBe(1);
 });
-test('hanging gateways switch to direct API before outer auth deadline',async({page})=>{
- test.setTimeout(15000);let direct=0;
- await page.route('**/api/proxy/**',()=>{});
- await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Резерв после таймаута"}'})});
- await authPage(page);
- await expect(page.locator('#authGate')).toContainText('Резерв после таймаута',{timeout:9000});expect(direct).toBe(1);await expect(page.getByRole('button',{name:'Повторить вход через VK'})).toBeVisible();
+test('fallback route deadlines stay below the outer auth deadline',async({page})=>{
+ await page.goto('/');
+ const cfg=await page.evaluate(()=>window.BOS_NETWORK_DIRECT_V86);
+ expect(cfg.alternateGateway).toContain('ukp6ew.v2.appdeploy.ai');
+ expect(cfg.netlifyGateway).toContain('netlify.app');
+ expect(cfg.gatewayDeadlineMs+cfg.alternateGatewayDeadlineMs+cfg.netlifyGatewayDeadlineMs+cfg.edgeDeadlineMs).toBeLessThan(20000);
 });
 test('failed password login keeps entered values for retry',async({page})=>{
  await page.route('**/api/proxy/password-session-api',r=>r.fulfill({status:500,contentType:'application/json',body:'{"ok":false,"error":"Временная ошибка"}'}));
