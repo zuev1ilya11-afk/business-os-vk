@@ -47,6 +47,17 @@ test('failed password login keeps entered values for retry',async({page})=>{
 test('double password submit sends one auth request',async({page})=>{
  let calls=0;await page.route('**/api/proxy/password-session-api',async r=>{calls++;await new Promise(resolve=>setTimeout(resolve,300));await r.fulfill({status:401,contentType:'application/json',body:'{"ok":false,"error":"Неверный пароль"}'})});await page.goto('/');await page.locator('#simplePassForm [name=login]').fill('audit');await page.locator('#simplePassForm [name=password]').fill('test-password');await page.locator('#simplePassForm').evaluate(f=>{f.requestSubmit();f.requestSubmit()});await expect(page.locator('#simplePassMsg')).toHaveText('Неверный пароль');expect(calls).toBe(1);
 });
+test('direct password fallback sends a simple POST without CORS preflight',async({page})=>{
+ let methods=[],contentType='';
+ await page.route('https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e/api/proxy/password-session-api',r=>r.abort('failed'));
+ await page.route('https://business-os-api-gateway.netlify.app/api/proxy/password-session-api',r=>r.abort('failed'));
+ await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/password-session-api',r=>{
+   methods.push(r.request().method());contentType=r.request().headers()['content-type']||'';
+   return r.fulfill({status:401,headers:{'Access-Control-Allow-Origin':'*','Content-Type':'application/json'},body:'{"ok":false,"error":"Неверный пароль"}'});
+ });
+ await page.goto('/');await page.locator('#simplePassForm [name=login]').fill('audit');await page.locator('#simplePassForm [name=password]').fill('test-password');await page.getByRole('button',{name:'Войти',exact:true}).click();
+ await expect(page.locator('#simplePassMsg')).toHaveText('Неверный пароль',{timeout:8000});expect(methods).toEqual(['POST']);expect(contentType.toLowerCase()).toContain('text/plain');
+});
 test('unresponsive VK Bridge cannot leave auth spinning forever',async({page})=>{
  await page.route('https://unpkg.com/**',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:()=>new Promise(()=>{})};'}));await page.goto('/?force_vk_auth=1');await expect(page.getByRole('button',{name:'Повторить вход через VK'})).toBeVisible({timeout:12000});
 });
