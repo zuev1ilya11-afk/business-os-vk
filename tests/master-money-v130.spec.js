@@ -68,11 +68,12 @@ test('master v130 shows money summary and drilldown by order',async({page})=>{
   expect(overflow).toBeLessThanOrEqual(1);
 });
 
-test('master v130 money block is not shown for dispatcher',async({page})=>{
+test('master v130 money module is not loaded for dispatcher',async({page})=>{
   await fullStack(page,'dispatcher');
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
-  await page.waitForFunction(()=>window.BOS_MASTER_MONEY_V130===true);
+  expect(await page.evaluate(()=>window.BOS_MASTER_MONEY_V130===true)).toBe(false);
+  await expect(page.locator('script[src*="master-money-v130.js"]')).toHaveCount(0);
   await page.evaluate(()=>show('team'));
   await expect(page.locator('#masterMoneyV130')).toHaveCount(0);
 });
