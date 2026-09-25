@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 const fs=require('fs');
 const path=require('path');
 
-test('startup uses alternate gateway first with Netlify and direct Edge fallbacks',()=>{
+test('startup keeps Netlify primary with alternate gateway and direct Edge fallbacks',()=>{
   const root=path.join(__dirname,'..');
   const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
   const network=fs.readFileSync(path.join(root,'network-direct-v86.js'),'utf8');
@@ -13,11 +13,10 @@ test('startup uses alternate gateway first with Netlify and direct Edge fallback
   expect(html).toContain('<script src="config.js?v=20260911-v39"></script>');
   expect(html.indexOf('network-direct-v86.js')).toBeLessThan(html.indexOf('config.js'));
 
-  expect(network).toContain("const PRIMARY_GATEWAY='https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai'");
-  expect(network).toContain("const SECONDARY_GATEWAY='https://business-os-api-gateway.netlify.app'");
+  expect(network).toContain("const PRIMARY_GATEWAY='https://business-os-api-gateway.netlify.app'");
+  expect(network).toContain("const SECONDARY_GATEWAY='https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai'");
   expect(network).toContain("const EDGE='https://obsropbslfwtanyspjbi.supabase.co/functions/v1'");
   expect(network).toContain("url.pathname.startsWith('/api/proxy/')");
   expect(network).toContain('return info?`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`:\'\'');
-  expect(config).toContain("const GATEWAY='https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai'");
-  expect(config).toContain("REPORT_GATEWAY='https://business-os-api-gateway.netlify.app'");
+  expect(config).toContain("const GATEWAY='https://business-os-api-gateway.netlify.app'");
 });
