@@ -1,6 +1,6 @@
 (()=>{
-  const PRIMARY_GATEWAY='https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai';
-  const SECONDARY_GATEWAY='https://business-os-api-gateway.netlify.app';
+  const PRIMARY_GATEWAY='https://business-os-api-gateway.netlify.app';
+  const SECONDARY_GATEWAY='https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai';
   const EDGE='https://obsropbslfwtanyspjbi.supabase.co/functions/v1';
   const GATEWAY_DEADLINE_MS=2200;
   const EDGE_DEADLINE_MS=3500;
