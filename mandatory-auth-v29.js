@@ -1,5 +1,5 @@
 (()=>{
-  const BASE='https://business-os-api-gateway.netlify.app/api/proxy/';
+  const BASE='https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai/api/proxy/';
   const MINI=BASE+'mini-app-api';
   const VK=BASE+'vk-session-api';
   const PASS=BASE+'password-session-api';
@@ -120,7 +120,7 @@
   }
 
   function passwordScreen(msg=''){
-    showGate(`<div class="authLogo">Домашний мастер</div><h1>Вход по логину</h1>${msg?`<p class="authError">${escs(msg)}</p>`:'<p class="muted">Вход с компьютера</p>'}<form id="simplePassForm" class="form"><input name="login" autocomplete="username" placeholder="Логин" required><input name="password" type="password" autocomplete="current-password" placeholder="Пароль" required><button class="primary wide" type="submit">Войти</button><p id="simplePassMsg" class="muted"></p></form>`);
+    showGate(`<div class="authLogo">Домашний мастер</div><h1>Вход по логину</h1>${msg?`<p class="authError">${escs(msg)}</p>`:''}<form id="simplePassForm" class="form"><input name="login" autocomplete="username" placeholder="Логин" required><input name="password" type="password" autocomplete="current-password" placeholder="Пароль" required><button class="primary wide" type="submit">Войти</button><p id="simplePassMsg" class="muted"></p></form>`);
     document.getElementById('simplePassForm').onsubmit=async e=>{
       e.preventDefault();const f=e.currentTarget,m=document.getElementById('simplePassMsg');if(f.dataset.pending)return;f.dataset.pending='1';const btn=f.querySelector('button');btn.disabled=true;m.textContent='Проверяем…';
       try{const d=await post(PASS,{action:'login',login:f.elements.login.value,password:f.elements.password.value});if(!d?.session_token)throw new Error('Сервер не выдал сессию');setSession(d.session_token);await loadApp()}catch(err){m.textContent=err.message}finally{delete f.dataset.pending;btn.disabled=false}

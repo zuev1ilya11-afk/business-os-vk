@@ -1,9 +1,11 @@
 (()=>{
   const GATEWAY='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai';
-  const ALT_GATEWAY='https://business-os-api-gateway.netlify.app';
+  const ALT_GATEWAY='https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai';
+  const NETLIFY_GATEWAY='https://business-os-api-gateway.netlify.app';
   const EDGE='https://obsropbslfwtanyspjbi.supabase.co/functions/v1';
-  const GATEWAY_DEADLINE_MS=2200;
-  const ALT_GATEWAY_DEADLINE_MS=2200;
+  const GATEWAY_DEADLINE_MS=1800;
+  const ALT_GATEWAY_DEADLINE_MS=1800;
+  const NETLIFY_GATEWAY_DEADLINE_MS=2200;
   const EDGE_DEADLINE_MS=3500;
   if(typeof window.fetch!=='function'||window.BOS_NETWORK_DIRECT_V86)return;
 
@@ -12,7 +14,7 @@
   function proxyInfo(raw){
     let url;
     try{url=new URL(raw,location.href)}catch(_){return null}
-    if(url.origin!==GATEWAY&&url.origin!==ALT_GATEWAY)return null;
+    if(url.origin!==GATEWAY&&url.origin!==ALT_GATEWAY&&url.origin!==NETLIFY_GATEWAY)return null;
     if(!url.pathname.startsWith('/api/proxy/'))return null;
     const slug=decodeURIComponent(url.pathname.slice('/api/proxy/'.length)).replace(/^\/+|\/+$/g,'');
     if(!slug||slug.includes('/'))return null;
@@ -106,15 +108,18 @@
     const outer=outerSignal(input,init);
     let primaryInput=input;
     let alternateInput=input;
+    let netlifyInput=input;
     let edgeInput=input;
     if(input instanceof Request){
       primaryInput=input.clone();
       alternateInput=input.clone();
+      netlifyInput=input.clone();
       edgeInput=input.clone();
     }
 
-    // Even legacy modules that still point at Netlify are sent through the
-    // independent gateway first. This keeps old cached/auth code VPN-independent.
+    // Route through two independent AppDeploy gateways before Netlify and the
+    // direct Edge endpoint. The second AppDeploy hostname is intentionally kept
+    // separate so mobile DNS/routing failures on one hostname do not block auth.
     try{
       const response=await fetchAt(proxyUrl(GATEWAY,info),primaryInput,init,GATEWAY_DEADLINE_MS,outer);
       if(!await serviceNotAllowed(response))return response;
@@ -129,18 +134,28 @@
       if(outer?.aborted||!retryable(error))throw error;
     }
 
+    try{
+      const response=await fetchAt(proxyUrl(NETLIFY_GATEWAY,info),netlifyInput,init,NETLIFY_GATEWAY_DEADLINE_MS,outer);
+      if(!await serviceNotAllowed(response))return response;
+    }catch(error){
+      if(outer?.aborted||!retryable(error))throw error;
+    }
+
     return fetchAt(`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`,edgeInput,init,EDGE_DEADLINE_MS,outer);
   };
 
   window.BOS_NETWORK_DIRECT_V86={
     gateway:GATEWAY,
     primaryGateway:GATEWAY,
+    alternateGateway:ALT_GATEWAY,
     secondaryGateway:ALT_GATEWAY,
+    netlifyGateway:NETLIFY_GATEWAY,
     edge:EDGE,
     directUrl,
     proxyInfo,
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,
     alternateGatewayDeadlineMs:ALT_GATEWAY_DEADLINE_MS,
+    netlifyGatewayDeadlineMs:NETLIFY_GATEWAY_DEADLINE_MS,
     edgeDeadlineMs:EDGE_DEADLINE_MS
   };
 })();
