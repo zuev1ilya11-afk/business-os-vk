@@ -1,13 +1,21 @@
 (()=>{
   // AppDeploy serves static pages and backend APIs on different hosts.
   const GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
+  const BACKUP_GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-ukp6ew';
   const LEGACY_GATEWAY='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai';
   const ALT_GATEWAY='https://business-os-api-gateway.netlify.app';
   const EDGE='https://obsropbslfwtanyspjbi.supabase.co/functions/v1';
-  const GATEWAY_DEADLINE_MS=2200;
-  const ALT_GATEWAY_DEADLINE_MS=2200;
-  const EDGE_DEADLINE_MS=3500;
-  const AUTH_FALLBACK_DEADLINE_MS=6000;
+  // Keep the complete failover chain below the outer 15s/20s app timeouts while
+  // giving slow cellular connections more room than the previous 2.2s budget.
+  const GATEWAY_DEADLINE_MS=2600;
+  const BACKUP_GATEWAY_DEADLINE_MS=2600;
+  const ALT_GATEWAY_DEADLINE_MS=3000;
+  const EDGE_DEADLINE_MS=5000;
+  const AUTH_GATEWAY_DEADLINE_MS=3500;
+  const AUTH_BACKUP_GATEWAY_DEADLINE_MS=3000;
+  const AUTH_FALLBACK_DEADLINE_MS=5000;
+  const AUTH_EDGE_DEADLINE_MS=6500;
+  const ROUTE_FAILURE_STATUSES=new Set([502,503,504]);
   if(typeof window.fetch!=='function'||window.BOS_NETWORK_DIRECT_V86)return;
 
   const lowerFetch=window.fetch.bind(window);
@@ -15,7 +23,7 @@
   function proxyInfo(raw){
     let url;
     try{url=new URL(raw,location.href)}catch(_){return null}
-    const base=[GATEWAY,LEGACY_GATEWAY,ALT_GATEWAY].find(base=>url.href.startsWith(base+'/api/proxy/'));
+    const base=[GATEWAY,BACKUP_GATEWAY,LEGACY_GATEWAY,ALT_GATEWAY].find(base=>url.href.startsWith(base+'/api/proxy/'));
     if(!base)return null;
     const prefix=new URL(base).pathname.replace(/\/$/,'')+'/api/proxy/';
     const slug=decodeURIComponent(url.pathname.slice(prefix.length)).replace(/^\/+|\/+$/g,'');
@@ -23,8 +31,8 @@
     return {origin:url.origin,slug,search:url.search};
   }
 
-  function proxyUrl(origin,info){
-    return `${origin}/api/proxy/${encodeURIComponent(info.slug)}${info.search}`;
+  function proxyUrl(base,info){
+    return `${base}/api/proxy/${encodeURIComponent(info.slug)}${info.search}`;
   }
 
   function directUrl(raw){
@@ -91,7 +99,7 @@
       const requestPromise=input instanceof Request
         ? fetchRequestAt(url,input,init,controller.signal)
         : lowerFetch(url,init?{...init,signal:controller.signal}:{signal:controller.signal});
-      // A successful password login exposes the session in a response header.
+      // A successful password login can expose the session in a response header.
       // Headers arrive before the body, so Android can finish auth even when a
       // cellular path stalls while delivering the JSON payload itself.
       const fetchPromise=Promise.resolve(requestPromise).then(async response=>{
@@ -135,6 +143,12 @@
     }catch(_){return false}
   }
 
+  async function shouldFailOver(response){
+    if(!response)return true;
+    if(ROUTE_FAILURE_STATUSES.has(response.status))return true;
+    return await serviceNotAllowed(response);
+  }
+
   window.fetch=async function(input,init){
     const raw=typeof input==='string'?input:input instanceof URL?input.href:input?.url||'';
     const info=proxyInfo(raw);
@@ -146,47 +160,87 @@
 
     const outer=outerSignal(input,init);
     const passwordAuth=info.slug==='password-session-api';
-    const fallbackResponse=async response=>
-      (passwordAuth&&[502,503,504].includes(response.status))||await serviceNotAllowed(response);
     let primaryInput=input;
+    let backupInput=input;
     let alternateInput=input;
     let edgeInput=input;
     if(input instanceof Request){
       primaryInput=input.clone();
+      backupInput=input.clone();
       alternateInput=input.clone();
       edgeInput=input.clone();
     }
 
-    // Even legacy modules that still point at Netlify are sent through the
-    // independent gateway first. This keeps old cached/auth code VPN-independent.
     try{
-      const response=await fetchAt(proxyUrl(GATEWAY,info),primaryInput,init,GATEWAY_DEADLINE_MS,outer,passwordAuth);
-      if(!await fallbackResponse(response))return response;
+      const response=await fetchAt(
+        proxyUrl(GATEWAY,info),
+        primaryInput,
+        init,
+        passwordAuth?AUTH_GATEWAY_DEADLINE_MS:GATEWAY_DEADLINE_MS,
+        outer,
+        passwordAuth
+      );
+      if(!await shouldFailOver(response))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
     }
 
     try{
-      const response=await fetchAt(proxyUrl(ALT_GATEWAY,info),alternateInput,init,passwordAuth?AUTH_FALLBACK_DEADLINE_MS:ALT_GATEWAY_DEADLINE_MS,outer,passwordAuth);
-      if(!await fallbackResponse(response))return response;
+      const response=await fetchAt(
+        proxyUrl(BACKUP_GATEWAY,info),
+        backupInput,
+        init,
+        passwordAuth?AUTH_BACKUP_GATEWAY_DEADLINE_MS:BACKUP_GATEWAY_DEADLINE_MS,
+        outer,
+        passwordAuth
+      );
+      if(!await shouldFailOver(response))return response;
+    }catch(error){
+      if(outer?.aborted||!retryable(error))throw error;
+    }
+
+    try{
+      const response=await fetchAt(
+        proxyUrl(ALT_GATEWAY,info),
+        alternateInput,
+        init,
+        passwordAuth?AUTH_FALLBACK_DEADLINE_MS:ALT_GATEWAY_DEADLINE_MS,
+        outer,
+        passwordAuth
+      );
+      if(!await shouldFailOver(response))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
     }
 
     const edgeInit=passwordAuth?directPasswordInit(edgeInput,init):init;
-    return fetchAt(`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`,edgeInput,edgeInit,passwordAuth?AUTH_FALLBACK_DEADLINE_MS:EDGE_DEADLINE_MS,outer,passwordAuth);
+    return fetchAt(
+      `${EDGE}/${encodeURIComponent(info.slug)}${info.search}`,
+      edgeInput,
+      edgeInit,
+      passwordAuth?AUTH_EDGE_DEADLINE_MS:EDGE_DEADLINE_MS,
+      outer,
+      passwordAuth
+    );
   };
 
   window.BOS_NETWORK_DIRECT_V86={
     gateway:GATEWAY,
     primaryGateway:GATEWAY,
+    backupGateway:BACKUP_GATEWAY,
     secondaryGateway:ALT_GATEWAY,
     edge:EDGE,
     directUrl,
     proxyInfo,
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,
+    backupGatewayDeadlineMs:BACKUP_GATEWAY_DEADLINE_MS,
     alternateGatewayDeadlineMs:ALT_GATEWAY_DEADLINE_MS,
     edgeDeadlineMs:EDGE_DEADLINE_MS,
+    authGatewayDeadlineMs:AUTH_GATEWAY_DEADLINE_MS,
+    authBackupGatewayDeadlineMs:AUTH_BACKUP_GATEWAY_DEADLINE_MS,
+    authAlternateGatewayDeadlineMs:AUTH_FALLBACK_DEADLINE_MS,
+    authEdgeDeadlineMs:AUTH_EDGE_DEADLINE_MS,
+    transientHttpFailover:true,
     passwordDirectSimpleCors:true,
     passwordBufferedResponse:true,
     passwordSessionHeaderFastPath:true
