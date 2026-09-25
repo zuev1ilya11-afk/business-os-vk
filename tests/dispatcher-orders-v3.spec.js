@@ -39,3 +39,28 @@ test('dispatcher orders v3 adds tomorrow, city, status and quick status action',
   await expect(status).toBeFocused();
   await expect(status.getByRole('option',{name:'Выполнена'})).toBeDisabled();
 });
+
+
+test('mobile dispatcher reassigns an active order through existing quick editor',async({page})=>{
+  const {db}=await fullStack(page,'dispatcher');
+  db.tables.business_staff.push({id:'m2',external_id:'staff_m2',vk_user_id:'staff_m2',full_name:'Второй мастер',role:'master',is_active:true,city:'Санкт-Петербург'});
+  Object.assign(db.tables.orders[0],{scheduled_date:dateOffset(0),scheduled_time:'10:00',address:'Длинный адрес '+ 'домкорпус'.repeat(25)});
+  await page.setViewportSize({width:320,height:700});
+  await page.goto('/');
+  await expect(page.locator('#authGate')).toBeHidden();
+  await page.locator('nav [data-page="orders"]').click();
+  const card=page.locator('#bosOrderList .opsCompactOrder').filter({hasText:'Анна'});
+  const reassign=card.getByRole('button',{name:'Переназначить мастера',exact:true});
+  await expect(reassign).toBeVisible();
+  await reassign.scrollIntoViewIfNeeded();
+  expect(await reassign.evaluate(el=>{const r=el.getBoundingClientRect();return r.height>=44&&el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))})).toBe(true);
+  await reassign.click();
+  await expect(page.locator('#quickMaster')).toBeFocused();
+  await page.locator('#quickMaster').selectOption({label:'Второй мастер'});
+  await page.locator('#modalRoot').getByRole('button',{name:'Сохранить',exact:true}).click();
+  await expect.poll(()=>db.tables.orders[0].master_staff_id).toBe('m2');
+  await expect(card).toContainText('Второй мастер');
+  expect(db.tables.orders[0].amount).toBe(1000);
+  expect(db.tables.orders[0].master_payout).toBe(552.5);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});

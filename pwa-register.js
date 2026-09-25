@@ -125,7 +125,7 @@
   document.head.appendChild(dispatcherOrderWorkflowV114);
 
   const dispatcherOrdersV3=document.createElement('script');
-  dispatcherOrdersV3.src='./dispatcher-orders-v3.js?v=20260923-v118';
+  dispatcherOrdersV3.src='./dispatcher-orders-v3.js?v=20260925-reassign';
   dispatcherOrdersV3.async=false;
   document.head.appendChild(dispatcherOrdersV3);
 
