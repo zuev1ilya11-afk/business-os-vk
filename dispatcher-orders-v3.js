@@ -134,6 +134,13 @@ function decorateCard(card){
   card.classList.toggle('dmv3AttentionWarn',!overdue(order)&&reschedule(order));
   card.classList.toggle('dmv3AttentionNeutral',!overdue(order)&&!reschedule(order)&&unassigned(order));
   const actions=card.querySelector(':scope > .dmCardActions');
+  if(actions&&active(order)&&!unassigned(order)&&!actions.querySelector('.dmv3ReassignAction')){
+    const button=document.createElement('button');
+    button.type='button';button.className='secondary dmv3ReassignAction';
+    button.textContent='Переназначить';button.setAttribute('aria-label','Переназначить мастера');
+    button.addEventListener('click',event=>{event.stopPropagation();window.dmAssignMaster?.(order.id)});
+    actions.insertBefore(button,actions.firstChild);
+  }
   if(actions&&active(order)&&!actions.querySelector('.dmv3StatusAction')){
     const button=document.createElement('button');
     button.type='button';button.className='secondary dmv3StatusAction';button.textContent='Статус';
@@ -157,7 +164,7 @@ function applyCustomFilters(root){
   if(count&&cards.length&&count.textContent!==`Найдено: ${visible}`)count.textContent=`Найдено: ${visible}`;
 }
 function cleanup(root){
-  root.querySelectorAll('.dmv3TomorrowFilter,.dmv3TomorrowShortcut,.dmv3StatusAction,.dmv3Empty').forEach(node=>node.remove());
+  root.querySelectorAll('.dmv3TomorrowFilter,.dmv3TomorrowShortcut,.dmv3StatusAction,.dmv3ReassignAction,.dmv3Empty').forEach(node=>node.remove());
   root.querySelectorAll('#dmv3City,#dmv3Status').forEach(node=>node.remove());
   root.querySelectorAll('.dmv3AttentionDanger,.dmv3AttentionWarn,.dmv3AttentionNeutral,.dmv3FilteredOut').forEach(node=>node.classList.remove('dmv3AttentionDanger','dmv3AttentionWarn','dmv3AttentionNeutral','dmv3FilteredOut'));
 }
