@@ -36,6 +36,7 @@ function corsHeaders(req: Request) {
     "Access-Control-Allow-Origin": allowOrigin,
     "Access-Control-Allow-Methods": "POST,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type,X-BOS-Session,X-VK-Launch-Params,Authorization,apikey",
+    "Access-Control-Expose-Headers": "X-BOS-Session",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
   };
@@ -49,6 +50,16 @@ function json(req: Request, status: number, body: unknown) {
       ...corsHeaders(req),
     },
   });
+}
+
+function sessionFromBody(body: ArrayBuffer) {
+  try {
+    const value = JSON.parse(new TextDecoder().decode(body));
+    const session = value && typeof value === "object" ? String(value.session_token || "") : "";
+    return /^[A-Za-z0-9_-]{1,128}\.[0-9]+\.[A-Za-z0-9_-]+$/.test(session) ? session : "";
+  } catch {
+    return "";
+  }
 }
 
 export default async (req: Request) => {
@@ -93,7 +104,13 @@ export default async (req: Request) => {
     const contentType = upstream.headers.get("content-type");
     if (contentType) responseHeaders.set("Content-Type", contentType);
 
-    return new Response(await upstream.arrayBuffer(), {
+    const upstreamBody = await upstream.arrayBuffer();
+    if (slug === "password-session-api" && upstream.ok) {
+      const session = sessionFromBody(upstreamBody);
+      if (session) responseHeaders.set("X-BOS-Session", session);
+    }
+
+    return new Response(upstreamBody, {
       status: upstream.status,
       headers: responseHeaders,
     });
