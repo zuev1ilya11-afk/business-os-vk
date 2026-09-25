@@ -15,15 +15,20 @@ const unassigned=o=>active(o)&&!o?.master_name&&!o?.master_vk_id&&!o?.master_id&
 const overdue=o=>{const date=orderDate(o);return active(o)&&!!date&&date<localToday()};
 const today=o=>active(o)&&orderDate(o)===localToday();
 const reschedule=o=>active(o)&&!!o?.reschedule_requested;
+const explicitUrgent=o=>{
+  const p=String(o?.priority||o?.urgency||'').trim().toLowerCase();
+  return o?.urgent===true||['urgent','high','critical','срочно','высокий','высокая'].includes(p);
+};
+const urgent=o=>overdue(o)||explicitUrgent(o);
 const orderIdFromCard=card=>String(card?.getAttribute('onclick')||'').match(/openOrder\('([^']+)'\)/)?.[1]||'';
 const orderForCard=card=>(state?.orders||[]).find(o=>String(o?.id)===orderIdFromCard(card));
 
 function flagsFor(order){
   const flags=[];
-  if(reschedule(order))flags.push(['Перенести','warn','dmFlagReschedule']);
-  if(overdue(order))flags.push(['Просрочено','danger','dmFlagOverdue']);
-  else if(today(order))flags.push(['Сегодня','today','dmFlagToday']);
+  if(urgent(order))flags.push(['Срочно','urgent','dmFlagUrgent']);
+  if(today(order))flags.push(['Сегодня','today','dmFlagToday']);
   if(unassigned(order))flags.push(['Без мастера','unassigned','dmFlagUnassigned']);
+  if(reschedule(order))flags.push(['Перенос','warn','dmFlagReschedule']);
   return flags;
 }
 
@@ -95,8 +100,8 @@ style.textContent=`
 @media(max-width:${MOBILE_MAX}px){
   .dmOperationalFlags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)}
   .dmOperationalFlag{display:inline-flex;align-items:center;min-height:24px;padding:3px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.1);font-size:10px;font-weight:800;line-height:1;letter-spacing:.01em;background:rgba(255,255,255,.045);color:#aebdcb}
+  .dmOperationalFlag.urgent{border-color:rgba(229,92,92,.5);background:rgba(229,92,92,.14);color:#ffaaaa}
   .dmOperationalFlag.warn{border-color:rgba(242,176,65,.34);background:rgba(242,176,65,.1);color:#f4c86d}
-  .dmOperationalFlag.danger{border-color:rgba(229,92,92,.38);background:rgba(229,92,92,.11);color:#ff9696}
   .dmOperationalFlag.today{border-color:rgba(73,163,255,.34);background:rgba(73,163,255,.1);color:#8dccff}
   .dmOperationalFlag.unassigned{border-color:rgba(170,183,198,.24);background:rgba(170,183,198,.08);color:#c1ccd7}
   #content.dmExistingOrders .dmCardActions .secondary{min-height:46px}
