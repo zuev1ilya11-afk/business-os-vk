@@ -13,6 +13,7 @@ const active=o=>!!o&&!['Выполнена','Отменена'].includes(String(
 const unassigned=o=>active(o)&&!o?.master_name&&!o?.master_vk_id&&!o?.master_id&&!o?.master_staff_id;
 const orderById=id=>(state?.orders||[]).find(o=>String(o?.id)===String(id))||null;
 const phoneOf=o=>{let p=String(o?.phone||o?.client_phone||'').trim().replace(/[^\d+]/g,'');if(/^8\d{10}$/.test(p))p='+7'+p.slice(1);else if(/^\d{10}$/.test(p))p='+7'+p;return p};
+const setText=(node,text)=>{if(node&&node.textContent!==text)node.textContent=text};
 
 function openStatus(id){
   if(typeof window.openDispatcherMobileQuick157==='function'){
@@ -76,13 +77,12 @@ function decorateMobileCard(actions){
   const order=orderById(id);if(!order)return;
   const smart=actions.querySelector('.dsa119CardAction');
   const legacy=actions.querySelector('.dmAssignAction');
-  if(smart){smart.textContent='Мастер';smart.classList.add('dq159MasterAction');legacy?.classList.add('dq159LegacyHidden')}
+  if(smart){setText(smart,'Мастер');smart.classList.add('dq159MasterAction');legacy?.classList.add('dq159LegacyHidden')}
   else legacy?.classList.remove('dq159LegacyHidden');
-  if(legacy&&!smart)legacy.textContent='Мастер';
-  const timing=actions.querySelector('.dmDateTimeAction');if(timing)timing.textContent=order.reschedule_requested?'Перенос':'Время';
-  const status=actions.querySelector('.drv157QuickAction');if(status)status.textContent='Статус';
-  const open=actions.querySelector('.dmOpenAction');if(open)open.textContent='Открыть';
-  [actions.querySelector('.dmCallAction'),status,smart||legacy,timing,open].filter(Boolean).forEach(node=>actions.appendChild(node));
+  if(legacy&&!smart)setText(legacy,'Мастер');
+  const timing=actions.querySelector('.dmDateTimeAction');setText(timing,order.reschedule_requested?'Перенос':'Время');
+  const status=actions.querySelector('.drv157QuickAction');setText(status,'Статус');
+  const open=actions.querySelector('.dmOpenAction');setText(open,'Открыть');
   actions.classList.add('dq159MobileActions');
 }
 function decorateMobile(){
@@ -121,7 +121,11 @@ const style=document.createElement('style');style.textContent=`
   .dmCardActions.dq159MobileActions,.dmv2Actions.dq159MobileActions{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
   .dq159MobileActions .dq159LegacyHidden{display:none!important}
   .dq159MobileActions .dq159MasterAction{border-color:rgba(73,163,255,.48);background:rgba(37,111,180,.22);color:#a9d7ff;font-weight:800}
-  .dq159MobileActions .dmOpenAction{grid-column:1/-1}
+  .dq159MobileActions .dmCallAction{order:1}
+  .dq159MobileActions .drv157QuickAction{order:2}
+  .dq159MobileActions .dsa119CardAction,.dq159MobileActions .dmAssignAction{order:3}
+  .dq159MobileActions .dmDateTimeAction{order:4}
+  .dq159MobileActions .dmOpenAction{order:5;grid-column:1/-1}
 }
 `;
 document.head.appendChild(style);
