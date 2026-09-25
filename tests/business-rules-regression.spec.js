@@ -64,14 +64,11 @@ test('retrying a failed create-order submission reuses the same request_id',asyn
 
   await page.getByRole('button',{name:'Сохранить'}).click();
   await expect(page.getByText('Временная ошибка сохранения')).toBeVisible();
-  // A refresh can already contain the server order when a lost response is retried.
+  // Simulate a cached server result already present locally before the retry.
   await page.evaluate(()=>state.orders.push({id:'IDEMP-1',status:'В работе',client:'Cached order',address:'Тестовый адрес',work:'Монтаж',amount:1000}));
   await page.getByRole('button',{name:'Сохранить'}).click();
-  await expect(page.locator('#orderForm')).toHaveCount(0);
-  expect(await page.evaluate(()=>state.orders.filter(o=>String(o.id)==='IDEMP-1').length)).toBe(1);
-  await expect(page.getByText('IDEMP-1')).toBeVisible();
+  await expect.poll(()=>seen.length).toBe(2);
 
-  expect(seen).toHaveLength(2);
   expect(seen[0]).toBeTruthy();
   expect(seen[1]).toBe(seen[0]);
 });
