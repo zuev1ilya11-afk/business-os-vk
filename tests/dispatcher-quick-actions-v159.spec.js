@@ -15,7 +15,7 @@ test('desktop dispatcher exposes quick actions directly under list cards',async(
   await page.locator('nav [data-page=orders]').click();
   await page.getByRole('button',{name:'Список',exact:true}).click();
 
-  const actions=page.locator('.dq159DesktopActions[data-order-id="12"]');
+  const actions=page.locator('.dbV94ListItems > .dq159DesktopActions[data-order-id="12"]');
   await expect(actions).toHaveCount(1);
   await expect(actions).toBeVisible();
   await expect(actions.getByRole('button',{name:'Статус'})).toBeVisible();
