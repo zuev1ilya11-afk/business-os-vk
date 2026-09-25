@@ -1,13 +1,17 @@
 (()=>{
-  // AppDeploy serves static pages and backend APIs on different hosts.
-  const GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
-  const LEGACY_GATEWAY='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai';
+  // Route API traffic through the actual deployed AppDeploy hostname first.
+  // Keep the previous /app URL only as an input alias so cached clients are recovered.
+  const GATEWAY='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai';
+  const LEGACY_GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
   const ALT_GATEWAY='https://business-os-api-gateway.netlify.app';
   const EDGE='https://obsropbslfwtanyspjbi.supabase.co/functions/v1';
   const GATEWAY_DEADLINE_MS=2200;
   const ALT_GATEWAY_DEADLINE_MS=2200;
   const EDGE_DEADLINE_MS=3500;
-  const AUTH_FALLBACK_DEADLINE_MS=6000;
+  // Password login can include mobile DNS/TLS setup plus an upstream cold start.
+  // Give the real primary enough time before trying providers that may be blocked on 4G/5G.
+  const AUTH_PRIMARY_DEADLINE_MS=12000;
+  const AUTH_FALLBACK_DEADLINE_MS=3500;
   if(typeof window.fetch!=='function'||window.BOS_NETWORK_DIRECT_V86)return;
 
   const lowerFetch=window.fetch.bind(window);
@@ -68,8 +72,8 @@
       const requestPromise=input instanceof Request
         ? fetchRequestAt(url,input,init,controller.signal)
         : lowerFetch(url,init?{...init,signal:controller.signal}:{signal:controller.signal});
-      // fetch resolves at headers. Keep password-login failover active until
-      // the small JSON response has arrived, including on a stalled mobile link.
+      // Fetch resolves when headers arrive. For password login keep failover active
+      // until the small JSON body arrives, because cellular links can stall mid-body.
       const fetchPromise=Promise.resolve(requestPromise).then(async response=>{
         if(bufferBody)await response.clone().arrayBuffer();
         return response;
@@ -126,34 +130,57 @@
       edgeInput=input.clone();
     }
 
-    // Even legacy modules that still point at Netlify are sent through the
-    // independent gateway first. This keeps old cached/auth code VPN-independent.
+    // Always normalize cached legacy/Netlify calls onto the real AppDeploy deployment first.
     try{
-      const response=await fetchAt(proxyUrl(GATEWAY,info),primaryInput,init,GATEWAY_DEADLINE_MS,outer,passwordAuth);
+      const response=await fetchAt(
+        proxyUrl(GATEWAY,info),
+        primaryInput,
+        init,
+        passwordAuth?AUTH_PRIMARY_DEADLINE_MS:GATEWAY_DEADLINE_MS,
+        outer,
+        passwordAuth
+      );
       if(!await fallbackResponse(response))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
     }
 
     try{
-      const response=await fetchAt(proxyUrl(ALT_GATEWAY,info),alternateInput,init,passwordAuth?AUTH_FALLBACK_DEADLINE_MS:ALT_GATEWAY_DEADLINE_MS,outer,passwordAuth);
+      const response=await fetchAt(
+        proxyUrl(ALT_GATEWAY,info),
+        alternateInput,
+        init,
+        passwordAuth?AUTH_FALLBACK_DEADLINE_MS:ALT_GATEWAY_DEADLINE_MS,
+        outer,
+        passwordAuth
+      );
       if(!await fallbackResponse(response))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
     }
 
-    return fetchAt(`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`,edgeInput,init,passwordAuth?AUTH_FALLBACK_DEADLINE_MS:EDGE_DEADLINE_MS,outer,passwordAuth);
+    return fetchAt(
+      `${EDGE}/${encodeURIComponent(info.slug)}${info.search}`,
+      edgeInput,
+      init,
+      passwordAuth?AUTH_FALLBACK_DEADLINE_MS:EDGE_DEADLINE_MS,
+      outer,
+      passwordAuth
+    );
   };
 
   window.BOS_NETWORK_DIRECT_V86={
     gateway:GATEWAY,
     primaryGateway:GATEWAY,
+    legacyGateway:LEGACY_GATEWAY,
     secondaryGateway:ALT_GATEWAY,
     edge:EDGE,
     directUrl,
     proxyInfo,
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,
     alternateGatewayDeadlineMs:ALT_GATEWAY_DEADLINE_MS,
-    edgeDeadlineMs:EDGE_DEADLINE_MS
+    edgeDeadlineMs:EDGE_DEADLINE_MS,
+    authPrimaryDeadlineMs:AUTH_PRIMARY_DEADLINE_MS,
+    authFallbackDeadlineMs:AUTH_FALLBACK_DEADLINE_MS
   };
 })();
