@@ -16,6 +16,7 @@ test('desktop dispatcher exposes quick actions directly under list cards',async(
   await page.getByRole('button',{name:'Список',exact:true}).click();
 
   const actions=page.locator('.dq159DesktopActions[data-order-id="12"]');
+  await expect(actions).toHaveCount(1);
   await expect(actions).toBeVisible();
   await expect(actions.getByRole('button',{name:'Статус'})).toBeVisible();
   await expect(actions.getByRole('button',{name:'Подобрать'})).toBeVisible();
@@ -32,7 +33,7 @@ test('desktop dispatcher exposes quick actions directly under list cards',async(
   await expect(page.locator('#dsa119ModalList')).toContainText('Тестовый мастер');
 });
 
-test('mobile dispatcher keeps one smart master action and orders common actions clearly',async({page})=>{
+test('mobile dispatcher keeps manual assignment and adds smart master action without duplicate mutation',async({page})=>{
   const {db,master}=await fullStack(page,'dispatcher');
   Object.assign(db.tables.orders[1],{scheduled_date:today(),scheduled_time:'11:00',time_slot:'11:00–12:00',city:'Санкт-Петербург'});
   db.tables.staff_schedule.push({id:'v159_mobile_work',staff_id:master.id,work_date:today(),is_working:true,work_start:'10:00',work_end:'21:00'});
@@ -46,13 +47,14 @@ test('mobile dispatcher keeps one smart master action and orders common actions 
   const card=page.locator('#bosOrderList .opsCompactOrder').filter({hasText:'Борис'});
   const actions=card.locator('.dmCardActions');
   await expect(actions).toBeVisible();
+  await expect(actions.locator('.dmAssignAction')).toBeVisible();
   await expect(actions.locator('.dsa119CardAction')).toBeVisible();
-  await expect(actions.locator('.dsa119CardAction')).toHaveText('Мастер');
-  await expect(actions.locator('.dmAssignAction')).toBeHidden();
-  await expect(actions.locator('.drv157QuickAction')).toHaveText('Статус');
-  await expect(actions.locator('.dmDateTimeAction')).toHaveText('Время');
-  await expect(actions.locator('.dmOpenAction')).toHaveText('Открыть');
+  await expect(actions.getByRole('button',{name:'Назначить мастера'})).toBeVisible();
+  await expect(actions.getByRole('button',{name:'Подобрать мастера'})).toBeVisible();
+  await expect(actions.locator('.dmDateTimeAction')).toBeVisible();
+  await expect(actions.locator('.drv157QuickAction')).toBeVisible();
+  await expect(actions.locator('.dmOpenAction')).toBeVisible();
 
-  await actions.locator('.dsa119CardAction').click();
+  await actions.getByRole('button',{name:'Подобрать мастера'}).click();
   await expect(page.getByRole('heading',{name:'Подобрать мастера'})).toBeVisible();
 });
