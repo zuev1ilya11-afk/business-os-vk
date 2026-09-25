@@ -125,6 +125,7 @@
     if(typeof reloadData!=='function')throw new Error('Приложение не готово к запуску');
     await reloadData(false);
     if(!state?.user?.role)throw new Error('Не удалось определить роль сотрудника');
+    if(typeof window.BOS_LOAD_ROLE_MODULES==='function')await window.BOS_LOAD_ROLE_MODULES(state.user.role);
     try{if(typeof updateNavForRole==='function')updateNavForRole()}catch(_){}
     try{if(typeof window.show==='function')window.show(state.page||'home')}catch(_){}
     unlock();
