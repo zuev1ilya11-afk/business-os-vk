@@ -63,3 +63,38 @@ test('master browses the shared catalog and searches additional work on a narrow
   await expect(page.locator('#bosCatalogEmpty')).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
+
+
+test('price materials show loading, safe error, retry and empty states while catalog stays usable',async({page})=>{
+  await fullStack(page,'master');
+  await page.goto('/');
+  await expect(page.locator('#authGate')).toBeHidden();
+  await page.locator('nav [data-page=team]').click();
+  let release;
+  const pending=new Promise(resolve=>{release=resolve});
+  let attempts=0;
+  await page.route('**/api/proxy/master-memo-api',async route=>{
+    attempts++;
+    if(attempts===1){
+      await pending;
+      return route.fulfill({status:500,contentType:'application/json',body:JSON.stringify({ok:false,error:'STACK_TRACE_INTERNAL_DATABASE_FAILURE'})});
+    }
+    return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,items:[]})});
+  });
+  await page.getByRole('button',{name:/Прайс услуг/}).click();
+  await page.locator('.bosPriceMaterials summary').click();
+  await expect(page.locator('#bosMasterPrice')).toHaveAttribute('aria-busy','true');
+  await expect(page.locator('#bosMasterPrice [role=status]')).toBeVisible();
+  await page.locator('#bosCatalogSearch').fill('карниз');
+  await expect(page.locator('.bosCatalogRow:visible').first()).toBeVisible();
+  release();
+  await expect(page.locator('#bosMasterPrice [role=alert]')).toContainText('Проверьте соединение');
+  await expect(page.locator('#modalRoot')).not.toContainText('STACK_TRACE');
+  await expect(page.locator('#bosMasterPrice')).toHaveAttribute('aria-busy','false');
+  await page.getByRole('button',{name:'Повторить загрузку'}).click();
+  await page.locator('.bosPriceMaterials summary').click();
+  await expect(page.locator('#bosMasterPrice')).toContainText('Материалы руководителя пока не добавлены');
+  await expect(page.locator('#bosMasterPrice')).toHaveAttribute('aria-busy','false');
+  await expect(page.locator('.bosCatalogRow').first()).toBeVisible();
+  expect(attempts).toBe(2);
+});
