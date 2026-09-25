@@ -57,3 +57,40 @@ for(const failure of ['network','timeout','body-timeout','502','504']){
     expect(await page.evaluate(()=>sessionStorage.getItem('bos_vk_session_v2'))).toBe(session);
   });
 }
+
+test('Android direct fallback completes login from session header when response body stalls',async({page})=>{
+  const primary='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
+  const secondary='https://business-os-api-gateway.netlify.app';
+  const direct='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/password-session-api';
+  const session='mobile.9999999999.testsignature';
+  let authenticatedBootstrap=0;
+  await page.route('https://unpkg.com/**',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
+  await page.addInitScript(({direct,session})=>{
+    const native=window.fetch.bind(window);
+    window.headerFastPathCalls=0;
+    window.fetch=(input,init)=>{
+      if(String(input)===direct){
+        window.headerFastPathCalls++;
+        return Promise.resolve(new Response(new ReadableStream({start(controller){
+          init.signal.addEventListener('abort',()=>controller.error(new DOMException('Aborted','AbortError')),{once:true});
+        }}),{status:200,headers:{'Content-Type':'application/json','X-BOS-Session':session,'Access-Control-Expose-Headers':'X-BOS-Session'}}));
+      }
+      return native(input,init);
+    };
+  },{direct,session});
+  await page.route(primary+'/api/proxy/password-session-api',r=>r.abort('failed'));
+  await page.route(secondary+'/api/proxy/password-session-api',r=>r.abort('failed'));
+  await page.route('**/api/proxy/mini-app-api',r=>{
+    if(r.request().headers()['x-bos-session']===session)authenticatedBootstrap++;
+    return r.fulfill({json:{ok:true,user:{full_name:'Мастер',role:'master',city:'Москва'},orders:[],users:[],masters:[],masterSchedule:[],claims:[],sources:[],settings:{}}});
+  });
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  const form=page.locator('#simplePassForm');
+  await form.locator('[name=login]').fill('mobile-test');
+  await form.locator('[name=password]').fill('test-password');
+  await form.getByRole('button',{name:'Войти',exact:true}).click();
+  await expect(page.locator('#authGate')).toBeHidden({timeout:10000});
+  expect(await page.evaluate(()=>window.headerFastPathCalls)).toBe(1);
+  expect(authenticatedBootstrap).toBeGreaterThan(0);
+  expect(await page.evaluate(()=>sessionStorage.getItem('bos_vk_session_v2'))).toBe(session);
+});
