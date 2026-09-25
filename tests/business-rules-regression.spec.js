@@ -51,6 +51,9 @@ test('retrying a failed create-order submission reuses the same request_id',asyn
   await expect(page.locator('#authGate')).toBeHidden();
   await page.locator('nav button[data-page="orders"]').click();
   await page.getByRole('button',{name:'+ Новая'}).click();
+  // The card moves inputs on the next animation frame; wait before focusing/filling.
+  const form=page.locator('#orderForm[data-new-order-card="1"]');
+  await expect(form.locator('.newOrderActions')).toBeVisible();
   await page.locator('input[name="client"]').fill('Идемпотентный тест');
   const phone=page.locator('#bosPhone');if(await phone.count())await phone.fill('9991234567');
   else await page.locator('input[name="phone"]').fill('9991234567');
@@ -62,15 +65,21 @@ test('retrying a failed create-order submission reuses the same request_id',asyn
   if(await original.count())await original.fill('1000');
   else await page.locator('input[name="amount"]').fill('1000');
 
-  await page.getByRole('button',{name:'Сохранить'}).click();
-  await expect(page.getByText('Временная ошибка сохранения')).toBeVisible();
+  await expect(form.locator('input[name="client"]')).toHaveValue('Идемпотентный тест');
+  const save=form.getByRole('button',{name:'Сохранить',exact:true});
+  await save.click();
+  await expect.poll(()=>seen.length).toBe(1);
+  await expect(form.locator('#formMsg')).toHaveText('Временная ошибка сохранения');
+  await expect(save).toBeEnabled();
   // Simulate a cached server result already present locally before the retry.
   await page.evaluate(()=>state.orders.push({id:'IDEMP-1',status:'В работе',client:'Cached order',address:'Тестовый адрес',work:'Монтаж',amount:1000}));
-  await page.getByRole('button',{name:'Сохранить'}).click();
+  await save.click();
   await expect.poll(()=>seen.length).toBe(2);
 
   expect(seen[0]).toBeTruthy();
   expect(seen[1]).toBe(seen[0]);
+  await expect(page.locator('#orderForm')).toHaveCount(0);
+  expect(await page.evaluate(()=>state.orders.filter(order=>order.id==='IDEMP-1').length)).toBe(1);
 });
 
 test('tracked APIs and fallbacks enforce corrected master payout',async()=>{

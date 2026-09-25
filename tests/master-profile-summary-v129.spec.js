@@ -61,11 +61,12 @@ test('master v129 shows compact profile money metrics without duplicate schedule
   expect(overflow).toBeLessThanOrEqual(1);
 });
 
-test('master v129 profile summary is not rendered for dispatcher',async({page})=>{
+test('master v129 profile module is not loaded for dispatcher',async({page})=>{
   await fullStack(page,'dispatcher');
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
-  await page.waitForFunction(()=>window.BOS_MASTER_PROFILE_SUMMARY_V129===true);
+  expect(await page.evaluate(()=>window.BOS_MASTER_PROFILE_SUMMARY_V129===true)).toBe(false);
+  await expect(page.locator('script[src*="master-profile-summary-v129.js"]')).toHaveCount(0);
   await page.evaluate(()=>show('team'));
   await expect(page.locator('#masterProfileSummaryV129')).toHaveCount(0);
 });
