@@ -67,7 +67,7 @@
       const timeoutPromise=new Promise((_,reject)=>{
         timer=setTimeout(()=>{
           controller.abort();
-          const error=new Error('Network route timeout');
+          const error=new Error('Сервер не ответил. Повторите попытку.');
           error.name='BOSRouteTimeout';
           reject(error);
         },deadlineMs);
@@ -104,8 +104,6 @@
     if(info.slug==='avito-api')return lowerFetch(input,init);
 
     const outer=outerSignal(input,init);
-    const firstOrigin=info.origin;
-    const secondOrigin=firstOrigin===GATEWAY?ALT_GATEWAY:GATEWAY;
     let primaryInput=input;
     let alternateInput=input;
     let edgeInput=input;
@@ -115,15 +113,17 @@
       edgeInput=input.clone();
     }
 
+    // Even legacy modules that still point at Netlify are sent through the
+    // independent gateway first. This keeps old cached/auth code VPN-independent.
     try{
-      const response=await fetchAt(proxyUrl(firstOrigin,info),primaryInput,init,GATEWAY_DEADLINE_MS,outer);
+      const response=await fetchAt(proxyUrl(GATEWAY,info),primaryInput,init,GATEWAY_DEADLINE_MS,outer);
       if(!await serviceNotAllowed(response))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
     }
 
     try{
-      const response=await fetchAt(proxyUrl(secondOrigin,info),alternateInput,init,ALT_GATEWAY_DEADLINE_MS,outer);
+      const response=await fetchAt(proxyUrl(ALT_GATEWAY,info),alternateInput,init,ALT_GATEWAY_DEADLINE_MS,outer);
       if(!await serviceNotAllowed(response))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
