@@ -48,6 +48,17 @@
     return {...(init||{}),headers};
   }
 
+  function passwordHeaderResponse(response){
+    if(!response?.ok)return null;
+    const session=String(response.headers.get('x-bos-session')||'').trim();
+    if(!/^[A-Za-z0-9_-]{1,128}\.[0-9]+\.[A-Za-z0-9_-]+$/.test(session))return null;
+    return new Response(JSON.stringify({ok:true,session_token:session}),{
+      status:response.status,
+      statusText:response.statusText,
+      headers:{'Content-Type':'application/json'}
+    });
+  }
+
   async function fetchRequestAt(url,input,init,signal){
     const req=new Request(input,init);
     const method=String(req.method||'GET').toUpperCase();
@@ -80,11 +91,19 @@
       const requestPromise=input instanceof Request
         ? fetchRequestAt(url,input,init,controller.signal)
         : lowerFetch(url,init?{...init,signal:controller.signal}:{signal:controller.signal});
-      // fetch resolves at headers. Keep password-login failover active until
-      // the small JSON response has arrived, including on a stalled mobile link.
+      // A successful password login exposes the session in a response header.
+      // Headers arrive before the body, so Android can finish auth even when a
+      // cellular path stalls while delivering the JSON payload itself.
       const fetchPromise=Promise.resolve(requestPromise).then(async response=>{
-        if(bufferBody)await response.clone().arrayBuffer();
-        return response;
+        if(!bufferBody)return response;
+        const headerResponse=passwordHeaderResponse(response);
+        if(headerResponse)return headerResponse;
+        const body=await response.arrayBuffer();
+        return new Response(body,{
+          status:response.status,
+          statusText:response.statusText,
+          headers:new Headers(response.headers)
+        });
       });
       const timeoutPromise=new Promise((_,reject)=>{
         timer=setTimeout(()=>{
@@ -168,6 +187,8 @@
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,
     alternateGatewayDeadlineMs:ALT_GATEWAY_DEADLINE_MS,
     edgeDeadlineMs:EDGE_DEADLINE_MS,
-    passwordDirectSimpleCors:true
+    passwordDirectSimpleCors:true,
+    passwordBufferedResponse:true,
+    passwordSessionHeaderFastPath:true
   };
 })();
