@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
-test('master order shows Yandex route button for client address',async({page})=>{
+test('master order client address is clickable and opens Yandex Maps route',async({page})=>{
   const {db}=await fullStack(page,'master');
   const order=db.tables.orders[0];
   Object.assign(order,{
@@ -22,12 +22,13 @@ test('master order shows Yandex route button for client address',async({page})=>
   await expect(card).toBeVisible();
   await card.getByRole('button',{name:'Открыть заявку',exact:true}).click();
 
-  const route=page.locator('.masterV149Route');
-  await expect(route).toBeVisible();
-  await expect(route).toContainText('Построить маршрут в Яндекс Картах');
-  const href=await route.getAttribute('href');
+  const address=page.locator('.bosHandsAddressLink');
+  await expect(address).toBeVisible();
+  await expect(address).toHaveText('Невский проспект, 28');
+  const href=await address.getAttribute('href');
   expect(href).toContain('https://yandex.ru/maps/?mode=routes');
   expect(href).toContain('rtt=auto');
   expect(decodeURIComponent(href)).toContain('Санкт-Петербург, Невский проспект, 28');
+  await expect(page.locator('.masterV149Route')).toBeHidden();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
