@@ -35,10 +35,14 @@ const SERVICES=[
 {n:'Монтаж внешнего угла-поворота для карниза',u:'шт.',p:380},
 {n:'Средство подмащивания для высоты от 3 метров',u:'шт.',p:830}
 ];
+// One catalog shared by the existing order form and the master's price view.
+window.BOS_SERVICE_CATALOG=SERVICES;
 const WALLS=['Не указан','Бетон','Кирпич','Газобетон','Гипсокартон','Дерево','Плитка','Металл','Другое'];
 const SLOTS=Array.from({length:11},(_,i)=>{const h=10+i;return `${String(h).padStart(2,'0')}:00–${String(h+1).padStart(2,'0')}:00`});
 const mid=m=>String(m?.vk_user_id||m?.external_id||m?.id||'');
-const serviceOptions=(selected='')=>'<option value="">Выберите услугу</option>'+SERVICES.map((s,i)=>`<option value="${i}" ${s.n===selected?'selected':''}>${esc(s.n)}${s.p!=null?' — '+money(s.p):''}</option>`).join('');
+const serviceOptions=(selected='')=>'<option value="">Выберите услугу</option>'+
+ (selected&&!SERVICES.some(s=>s.n===selected)?`<option value="legacy" selected>${esc(selected)} — работа из заявки</option>`:'')+
+ SERVICES.map((s,i)=>`<option value="${i}" ${s.n===selected?'selected':''}>${esc(s.n)}${s.p!=null?' — '+money(s.p):' — цена по согласованию'}${s.u?' / '+esc(s.u):''}</option>`).join('');
 const masterOptions=(selected='')=>'<option value="">Назначить позже</option>'+state.masters.map(m=>`<option value="${esc(mid(m))}" data-city="${esc(m.city||'')}" ${String(selected)===mid(m)?'selected':''}>${esc(m.full_name||'Мастер')}${m.city?' — '+esc(m.city):''}</option>`).join('');
 const slotOptions=(selected='')=>'<option value="">Выберите время</option>'+SLOTS.map(s=>`<option ${selected===s?'selected':''}>${s}</option>`).join('');
 function phoneDigits(v){let d=String(v||'').replace(/\D/g,'');if(d[0]==='7'||d[0]==='8')d=d.slice(1);return d.slice(0,10)}
@@ -46,8 +50,6 @@ function authHeaders(){return window.BOS_AUTH_HEADERS?window.BOS_AUTH_HEADERS():
 async function saveOrderType(id,type){const headers=await authHeaders();const r=await fetch('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/order-meta-api',{method:'POST',headers,body:JSON.stringify({action:'setOrderType',id,order_type:type})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось сохранить тип заявки');return d.order}
 window.openOrderForm=function(id){
  const o=id?state.orders.find(x=>String(x.id)===String(id)):null;
- const selService=Math.max(0,SERVICES.findIndex(s=>s.n===o?.work));
- const chosen=o?.work&&selService>=0?String(selService):'';
  const phone=phoneDigits(o?.phone);
  const slot=o?.time_slot||((o?.scheduled_time||'').slice(0,5)?`${(o.scheduled_time||'').slice(0,5)}–${String(Number((o.scheduled_time||'').slice(0,2))+1).padStart(2,'0')}:00`:'');
  openModal(`<h2>${o?'Редактировать заявку':'Новая заявка'}</h2><form id="orderForm" class="form">
@@ -65,11 +67,12 @@ window.openOrderForm=function(id){
  <label>Комментарий</label><textarea name="comment" placeholder="Комментарий к заявке">${esc(o?.comment||'')}</textarea>
  <button class="primary wide" type="submit">Сохранить</button><p id="formMsg" class="muted"></p></form>`);
  const form=$('#orderForm'),service=$('#bosService'),phoneEl=$('#bosPhone'),amount=form.elements.original_amount,master=form.elements.master_vk_id,info=$('#bosServiceInfo');
+ const selectedService=()=>service.value==='legacy'&&o?.work?{n:o.work,u:'Работа из ранее созданной заявки',p:null}:service.value!==''?SERVICES[Number(service.value)]:null;
  phoneEl.oninput=()=>phoneEl.value=phoneEl.value.replace(/\D/g,'').slice(0,10);
- const showService=()=>{const s=SERVICES[Number(service.value)];info.textContent=s?`${s.u||'Цена за услугу'}${s.p!=null?' · '+money(s.p):' · цена не указана в прайсе'}`:'';if(s&&s.p!=null&&!amount.value)amount.value=s.p;recalc()};
+ const showService=()=>{const s=selectedService();info.textContent=s?`${s.u||'Цена за услугу'}${s.p!=null?' · '+money(s.p):' · цена не указана в прайсе'}`:'';if(s&&s.p!=null&&!amount.value)amount.value=s.p;recalc()};
  const recalc=()=>{$('#bosMasterPay').textContent=money(master.value?payout(Number(amount.value||0)):0)};
- service.onchange=()=>{const s=SERVICES[Number(service.value)];if(s&&s.p!=null)amount.value=s.p;showService()};amount.oninput=recalc;master.onchange=()=>recalc();showService();
- form.onsubmit=async e=>{e.preventDefault();if(state.busy)return;const msg=$('#formMsg'),s=SERVICES[Number(service.value)];if(!s){msg.textContent='Выберите работу из списка';return}if(phoneEl.value.length!==10){msg.textContent='Введите 10 цифр телефона после +7';return}const f=Object.fromEntries(new FormData(form));const type=f.order_type;delete f.order_type;f.phone='+7'+phoneEl.value;f.work=s.n;f.original_amount=Number(f.original_amount||0);f.amount=f.original_amount;f.wall_over_3m=!!form.elements.wall_over_3m.checked;f.possible_extra_work=false;f.city=master.options[master.selectedIndex]?.dataset?.city||o?.city||state.user?.city||'';f.scheduled_time=f.time_slot?f.time_slot.split('–')[0]:'';if(o)f.id=o.id;msg.textContent='Сохраняем…';setBusy(form,true);try{const d=await api(o?'updateOrder':'createOrder',f);if(!d.ok)throw new Error(d.error);const meta=await saveOrderType(d.order.id,type);const merged={...d.order,...meta,...f,order_type:type};if(o){const i=state.orders.findIndex(x=>String(x.id)===String(o.id));state.orders[i]=merged}else{const i=state.orders.findIndex(x=>String(x.id)===String(merged.id));if(i>=0)state.orders[i]=merged;else state.orders.unshift(merged)};state.busy=false;closeModal();show('orders')}catch(err){msg.textContent=err.message;setBusy(form,false)}finally{state.busy=false}}
+ service.onchange=()=>{const s=selectedService();if(s&&s.p!=null)amount.value=s.p;showService()};amount.oninput=recalc;master.onchange=()=>recalc();showService();
+ form.onsubmit=async e=>{e.preventDefault();if(state.busy)return;const msg=$('#formMsg'),s=selectedService();if(!s){msg.textContent='Выберите работу из списка';return}if(phoneEl.value.length!==10){msg.textContent='Введите 10 цифр телефона после +7';return}const f=Object.fromEntries(new FormData(form));const type=f.order_type;delete f.order_type;f.phone='+7'+phoneEl.value;f.work=s.n;f.original_amount=Number(f.original_amount||0);f.amount=f.original_amount;f.wall_over_3m=!!form.elements.wall_over_3m.checked;f.possible_extra_work=false;f.city=master.options[master.selectedIndex]?.dataset?.city||o?.city||state.user?.city||'';f.scheduled_time=f.time_slot?f.time_slot.split('–')[0]:'';if(o)f.id=o.id;msg.textContent='Сохраняем…';setBusy(form,true);try{const d=await api(o?'updateOrder':'createOrder',f);if(!d.ok)throw new Error(d.error);const meta=await saveOrderType(d.order.id,type);const merged={...d.order,...meta,...f,order_type:type};if(o){const i=state.orders.findIndex(x=>String(x.id)===String(o.id));state.orders[i]=merged}else{const i=state.orders.findIndex(x=>String(x.id)===String(merged.id));if(i>=0)state.orders[i]=merged;else state.orders.unshift(merged)};state.busy=false;closeModal();show('orders')}catch(err){msg.textContent=err.message;setBusy(form,false)}finally{state.busy=false}}
 };
 const prevOpen=window.openOrder;
 window.openOrder=function(id){prevOpen(id);const o=state.orders.find(x=>String(x.id)===String(id)),modal=document.querySelector('.modal');if(!o||!modal)return;const has=modal.querySelector('.bosConditionsView');if(has)return;const box=document.createElement('section');box.className='card bosConditionsView';box.innerHTML=`<h3>Детали заявки</h3><p><b>Тип:</b> ${o.order_type==='measurement'?'Замер':'Обычная заявка'}</p><p><b>Условия:</b> ${o.wall_over_3m?'высота > 3 м':'высота до 3 м'} · ${esc(o.wall_material||'материал не указан')}</p>${o.comment?`<p><b>Комментарий:</b> ${esc(o.comment)}</p>`:''}`;modal.insertBefore(box,modal.children[1]||null)};
