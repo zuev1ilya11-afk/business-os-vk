@@ -93,9 +93,18 @@
   };
   window.BOS_ROLE_MODULES_V171={dispatcher:roleScripts.dispatcher.length,master:roleScripts.master.length};
 
+  const loadAfterLegacyUnlock=()=>{
+    if(!document.body.classList.contains('bos-auth-ok'))return;
+    let role='';
+    try{role=typeof state!=='undefined'?String(state?.user?.role||''):''}catch(_){}
+    if(role)window.BOS_LOAD_ROLE_MODULES(role).catch(error=>console.warn('Role module fallback failed',error));
+  };
+  new MutationObserver(loadAfterLegacyUnlock).observe(document.body,{attributes:true,attributeFilter:['class']});
+  loadAfterLegacyUnlock();
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=20260925-v167',{scope:'./',updateViaCache:'none'})
+    navigator.serviceWorker.register('./sw.js?v=20260925-v171',{scope:'./',updateViaCache:'none'})
       .then(registration=>registration.update().catch(()=>{}))
       .catch(error=>console.warn('PWA service worker registration failed',error));
   });
