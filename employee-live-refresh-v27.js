@@ -55,11 +55,13 @@ function decoratePresence(){
   for(const master of state?.masters||[]){
     const name=String(master?.full_name||'').trim();
     if(!name)continue;
-    const card=cards.find(el=>el.textContent?.includes(name)&&!el.querySelector(`.bosMasterPresence[data-master-presence="${CSS.escape(String(master?.id||master?.external_id||name))}"]`));
+    const presenceId=String(master?.id||master?.external_id||name);
+    const escapedId=globalThis.CSS?.escape?CSS.escape(presenceId):presenceId.replace(/["\\]/g,'\\$&');
+    const card=cards.find(el=>el.textContent?.includes(name)&&!el.querySelector(`.bosMasterPresence[data-master-presence="${escapedId}"]`));
     if(!card)continue;
     const p=presenceState(master),badge=document.createElement('div');
     badge.className=`bosMasterPresence ${p.online?'isOnline':'isOffline'}`;
-    badge.dataset.masterPresence=String(master?.id||master?.external_id||name);
+    badge.dataset.masterPresence=presenceId;
     badge.innerHTML=`<span class="bosPresenceDot" aria-hidden="true"></span><span>${lastSeenText(master)}</span>`;
     card.appendChild(badge);
   }
@@ -203,8 +205,10 @@ if(typeof baseCloseModal==='function'){
   };
 }
 
-const observer=new MutationObserver(()=>{if(String(state?.page||'')==='team')queueMicrotask(decoratePresence)});
-const content=document.getElementById('content');if(content)observer.observe(content,{childList:true,subtree:true});
+if(typeof MutationObserver==='function'){
+  const content=document.getElementById('content');
+  if(content)new MutationObserver(()=>{if(String(state?.page||'')==='team')queueMicrotask(decoratePresence)}).observe(content,{childList:true,subtree:true});
+}
 window.addEventListener('focus',()=>{touchPresence(true);syncEmployeeData('focus')});
 window.addEventListener('pageshow',()=>{touchPresence(true);syncEmployeeData('pageshow')});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){touchPresence(true);syncEmployeeData('visible')}});
