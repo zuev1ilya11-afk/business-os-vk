@@ -5,6 +5,7 @@
   const GATEWAY_DEADLINE_MS=2200;
   const ALT_GATEWAY_DEADLINE_MS=2200;
   const EDGE_DEADLINE_MS=3500;
+  const AUTH_DEADLINE_MS=12000;
   if(typeof window.fetch!=='function'||window.BOS_NETWORK_DIRECT_V86)return;
 
   const lowerFetch=window.fetch.bind(window);
@@ -30,6 +31,20 @@
 
   function outerSignal(input,init){
     return init?.signal||(input instanceof Request?input.signal:null)||null;
+  }
+
+  function requestAction(input,init){
+    try{
+      const raw=init?.body;
+      if(typeof raw!=='string')return '';
+      const data=JSON.parse(raw);
+      return String(data?.action||'');
+    }catch(_){return ''}
+  }
+
+  function resilientAuthRequest(info,input,init){
+    if(['password-session-api','vk-session-api','staff-invite-api'].includes(info.slug))return true;
+    return info.slug==='mini-app-api'&&requestAction(input,init)==='bootstrap';
   }
 
   async function fetchRequestAt(url,input,init,signal){
@@ -94,6 +109,32 @@
     }catch(_){return false}
   }
 
+  async function authRace(info,input,init,outer){
+    const makeInput=()=>input instanceof Request?input.clone():input;
+    const candidates=[
+      [proxyUrl(GATEWAY,info),makeInput()],
+      [proxyUrl(ALT_GATEWAY,info),makeInput()],
+      [`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`,makeInput()]
+    ];
+    const attempts=candidates.map(async([url,nextInput])=>{
+      const response=await fetchAt(url,nextInput,init,AUTH_DEADLINE_MS,outer);
+      if(await serviceNotAllowed(response)){
+        const error=new Error('Маршрут сервиса недоступен');
+        error.name='BOSServiceUnavailable';
+        throw error;
+      }
+      return response;
+    });
+    try{return await Promise.any(attempts)}catch(error){
+      if(error instanceof AggregateError){
+        const retry=error.errors?.find(retryable);
+        if(retry)throw retry;
+        if(error.errors?.[0])throw error.errors[0];
+      }
+      throw error;
+    }
+  }
+
   window.fetch=async function(input,init){
     const raw=typeof input==='string'?input:input instanceof URL?input.href:input?.url||'';
     const info=proxyInfo(raw);
@@ -104,6 +145,12 @@
     if(info.slug==='avito-api')return lowerFetch(input,init);
 
     const outer=outerSignal(input,init);
+
+    // Login/session validation is safe to retry and is especially sensitive to
+    // slow mobile-carrier routing. Race all independent routes and accept the
+    // first real HTTP response instead of failing after short sequential limits.
+    if(resilientAuthRequest(info,input,init))return authRace(info,input,init,outer);
+
     let primaryInput=input;
     let alternateInput=input;
     let edgeInput=input;
@@ -113,8 +160,6 @@
       edgeInput=input.clone();
     }
 
-    // Even legacy modules that still point at Netlify are sent through the
-    // independent gateway first. This keeps old cached/auth code VPN-independent.
     try{
       const response=await fetchAt(proxyUrl(GATEWAY,info),primaryInput,init,GATEWAY_DEADLINE_MS,outer);
       if(!await serviceNotAllowed(response))return response;
@@ -141,6 +186,7 @@
     proxyInfo,
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,
     alternateGatewayDeadlineMs:ALT_GATEWAY_DEADLINE_MS,
-    edgeDeadlineMs:EDGE_DEADLINE_MS
+    edgeDeadlineMs:EDGE_DEADLINE_MS,
+    authDeadlineMs:AUTH_DEADLINE_MS
   };
 })();
