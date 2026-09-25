@@ -13,8 +13,8 @@ test('startup uses independent gateway with Netlify and direct Edge fallbacks',(
   expect(html).toContain('<script src="config.js?v=20260911-v39"></script>');
   expect(html.indexOf('network-direct-v86.js')).toBeLessThan(html.indexOf('config.js'));
 
-  expect(network).toContain("const PRIMARY_GATEWAY='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai'");
-  expect(network).toContain("const SECONDARY_GATEWAY='https://business-os-api-gateway.netlify.app'");
+  expect(network).toContain("const GATEWAY='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai'");
+  expect(network).toContain("const ALT_GATEWAY='https://business-os-api-gateway.netlify.app'");
   expect(network).toContain("const EDGE='https://obsropbslfwtanyspjbi.supabase.co/functions/v1'");
   expect(network).toContain("url.pathname.startsWith('/api/proxy/')");
   expect(network).toContain('return info?`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`:\'\'');
