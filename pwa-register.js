@@ -231,7 +231,7 @@
 
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
+    navigator.serviceWorker.register('./sw.js?v=20260925-v167',{scope:'./',updateViaCache:'none'})
       .then(registration=>registration.update().catch(()=>{}))
       .catch(error=>console.warn('PWA service worker registration failed',error));
   });
