@@ -10,13 +10,13 @@ for(const status of [401,403,500])test(`VK HTTP ${status} displays server error 
  await authPage(page);await expect(page.locator('#authGate')).toContainText(`Проверка ${status}`);expect(attempts).toBe(1);expect(direct).toBe(0);
  await page.getByRole('button',{name:'Повторить вход через VK'}).click();await expect.poll(()=>attempts).toBe(2);
 });
-test('alternate primary gateway network failure falls back to Netlify before direct Edge',async({page})=>{
- let secondary=0,direct=0;
- await page.route('https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai/api/proxy/vk-session-api',r=>r.abort('failed'));
- await page.route('https://business-os-api-gateway.netlify.app/api/proxy/vk-session-api',r=>{secondary++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Резервный шлюз отвечает"}'})});
+test('Netlify network failure falls back to alternate gateway before direct Edge',async({page})=>{
+ let alternate=0,direct=0;
+ await page.route('https://business-os-api-gateway.netlify.app/api/proxy/vk-session-api',r=>r.abort('failed'));
+ await page.route('https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai/api/proxy/vk-session-api',r=>{alternate++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Резервный шлюз отвечает"}'})});
  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.abort()});
  await authPage(page);
- await expect(page.locator('#authGate')).toContainText('Резервный шлюз отвечает',{timeout:8000});expect(secondary).toBe(1);expect(direct).toBe(0);
+ await expect(page.locator('#authGate')).toContainText('Резервный шлюз отвечает',{timeout:8000});expect(alternate).toBe(1);expect(direct).toBe(0);
 });
 test('offline gateways fall back to direct Supabase Edge API',async({page})=>{
  let direct=0;
