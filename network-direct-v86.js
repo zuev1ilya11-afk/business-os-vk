@@ -1,5 +1,7 @@
 (()=>{
-  const GATEWAY='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai';
+  // AppDeploy serves static pages and backend APIs on different hosts.
+  const GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
+  const LEGACY_GATEWAY='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai';
   const ALT_GATEWAY='https://business-os-api-gateway.netlify.app';
   const EDGE='https://obsropbslfwtanyspjbi.supabase.co/functions/v1';
   const GATEWAY_DEADLINE_MS=2200;
@@ -13,9 +15,10 @@
   function proxyInfo(raw){
     let url;
     try{url=new URL(raw,location.href)}catch(_){return null}
-    if(url.origin!==GATEWAY&&url.origin!==ALT_GATEWAY)return null;
-    if(!url.pathname.startsWith('/api/proxy/'))return null;
-    const slug=decodeURIComponent(url.pathname.slice('/api/proxy/'.length)).replace(/^\/+|\/+$/g,'');
+    const base=[GATEWAY,LEGACY_GATEWAY,ALT_GATEWAY].find(base=>url.href.startsWith(base+'/api/proxy/'));
+    if(!base)return null;
+    const prefix=new URL(base).pathname.replace(/\/$/,'')+'/api/proxy/';
+    const slug=decodeURIComponent(url.pathname.slice(prefix.length)).replace(/^\/+|\/+$/g,'');
     if(!slug||slug.includes('/'))return null;
     return {origin:url.origin,slug,search:url.search};
   }

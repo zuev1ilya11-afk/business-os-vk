@@ -4,7 +4,7 @@ test.use({...devices['Pixel 7'],defaultBrowserType:'chromium'});
 
 for(const failure of ['network','timeout','body-timeout','502','504']){
   test(`Android password login uses fallback after primary ${failure}`,async({page})=>{
-    const primary='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai';
+    const primary='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
     const secondary='https://business-os-api-gateway.netlify.app';
     const session='mobile.9999999999.testsignature';
     let primaryCalls=0,alternateCalls=0,authenticatedBootstrap=0,directCalls=0;
