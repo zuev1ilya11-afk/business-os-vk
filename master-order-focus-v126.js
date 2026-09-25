@@ -17,7 +17,7 @@ const agreementDone=o=>!!o?.master_agreed_at||progressed(o);
 const workDone=o=>['started','completed'].includes(stageOf(o))||reportUploaded(o);
 const phoneHref=v=>{let p=String(v||'').trim().replace(/[^\d+]/g,'');if(/^8\d{10}$/.test(p))p='+7'+p.slice(1);else if(/^\d{10}$/.test(p))p='+7'+p;return p};
 const routeAddress=o=>{const address=String(o?.address||'').trim();if(!address)return'';const city=String(o?.city||'').trim();return city&&!address.toLowerCase().includes(city.toLowerCase())?`${city}, ${address}`:address};
-const yandexRouteHref=o=>{const destination=routeAddress(o);return destination?`https://yandex.ru/maps/?mode=routes&rtext=~${encodeURIComponent(destination)}&rtt=auto`:''};
+const yandexRouteHref=o=>{const destination=routeAddress(o);return destination?`https://yandex.ru/maps/?text=${encodeURIComponent(destination)}`:''};
 const receivedDate=v=>{const raw=String(v||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:(raw||'—')};
 function nextStep(o){
   if(String(o?.status||'')==='Отменена')return{tone:'muted',title:'Заявка отменена',hint:'Дополнительных действий не требуется.'};
