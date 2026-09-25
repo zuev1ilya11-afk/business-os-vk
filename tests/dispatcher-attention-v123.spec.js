@@ -3,7 +3,7 @@ const {fullStack}=require('./helpers/full-stack.cjs');
 
 const day=offset=>{const d=new Date();d.setDate(d.getDate()+offset);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 
-test('desktop dispatcher attention filters count and isolate operational problems without hiding unassigned queue',async({page})=>{
+test('desktop dispatcher groups operational problems into simple priority filters',async({page})=>{
   const {db,master}=await fullStack(page,'dispatcher');
   const today=day(0);
   Object.assign(db.tables.orders[0],{scheduled_date:day(-1),scheduled_time:'09:00',time_slot:'09:00–10:00'});
@@ -25,11 +25,13 @@ test('desktop dispatcher attention filters count and isolate operational problem
   const controls=page.locator('.da123Controls');
   await expect(controls).toBeVisible();
   await expect(controls.locator('[data-da123-filter="all"] b')).toHaveText('5');
-  await expect(controls.locator('[data-da123-filter="overdue"] b')).toHaveText('1');
+  await expect(controls.locator('[data-da123-filter="urgent"] b')).toHaveText('3');
+  await expect(controls.locator('[data-da123-filter="today"] b')).toHaveText('4');
   await expect(controls.locator('[data-da123-filter="unassigned"] b')).toHaveText('1');
-  await expect(controls.locator('[data-da123-filter="conflict"] b')).toHaveText('2');
   await expect(controls.locator('[data-da123-filter="reschedule"] b')).toHaveText('1');
 
+  await expect(controls).toContainText('Срочно');
+  await expect(controls).toContainText('Сегодня');
   await expect(page.locator('.dbV94ListCard[data-order-id="11"] .da123Badge.overdue')).toHaveText('Просрочено');
   await expect(page.locator('.dbV94ListCard[data-order-id="12"] .da123Badge.unassigned')).toHaveText('Без мастера');
   await expect(page.locator('.dbV94ListCard[data-order-id="13"] .da123Badge.conflict')).toHaveText('Конфликт');
@@ -42,12 +44,17 @@ test('desktop dispatcher attention filters count and isolate operational problem
   const smart=page.locator('.dsd121[data-order-id="12"]');
   await expect(smart).toBeVisible();
 
-  await controls.locator('[data-da123-filter="conflict"]').click();
-  await expect(page.locator('.dbV94ListCard:visible')).toHaveCount(2);
+  await controls.locator('[data-da123-filter="urgent"]').click();
+  await expect(page.locator('.dbV94ListCard:visible')).toHaveCount(3);
+  await expect(page.locator('.dbV94ListCard[data-order-id="11"]')).toBeVisible();
   await expect(page.locator('.dbV94ListCard[data-order-id="13"]')).toBeVisible();
   await expect(page.locator('.dbV94ListCard[data-order-id="14"]')).toBeVisible();
   await expect(smart).toBeHidden();
   await expect(unassignedQueue).toBeVisible();
+
+  await controls.locator('[data-da123-filter="today"]').click();
+  await expect(page.locator('.dbV94ListCard:visible')).toHaveCount(4);
+  await expect(page.locator('.dbV94ListCard[data-order-id="12"]')).toBeVisible();
 
   await controls.locator('[data-da123-filter="unassigned"]').click();
   await expect(page.locator('.dbV94ListCard:visible')).toHaveCount(1);
