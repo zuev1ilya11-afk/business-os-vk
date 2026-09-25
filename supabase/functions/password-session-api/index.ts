@@ -3,7 +3,8 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const cors={
   'Access-Control-Allow-Origin':'*',
   'Access-Control-Allow-Headers':'content-type,apikey,authorization,x-bos-session',
-  'Access-Control-Allow-Methods':'POST,OPTIONS'
+  'Access-Control-Allow-Methods':'POST,OPTIONS',
+  'Access-Control-Expose-Headers':'X-BOS-Session'
 };
 const out=(x:any,s=200,extra:Record<string,string>={})=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'Content-Type':'application/json',...extra}});
 const SESSION_TTL_SECONDS=60*60*24*365;
@@ -43,7 +44,8 @@ Deno.serve(async(req)=>{
       if(q.error)throw q.error;
       const uid=String(q.data.external_id||'');
       if(!validSubject(uid))return out({ok:false,error:'Некорректный идентификатор сотрудника. Обратитесь к владельцу.'},409);
-      return out({ok:true,session_token:await makeSession(uid,secret),user:{id:q.data.id,full_name:q.data.full_name,role:q.data.role,phone:q.data.phone,city:q.data.city}})
+      const session=await makeSession(uid,secret);
+      return out({ok:true,session_token:session,user:{id:q.data.id,full_name:q.data.full_name,role:q.data.role,phone:q.data.phone,city:q.data.city}},200,{'X-BOS-Session':session})
     }
 
     if(action==='refresh'){
