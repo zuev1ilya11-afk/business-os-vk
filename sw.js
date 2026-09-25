@@ -1,6 +1,16 @@
-const CACHE='business-os-shell-v10';
-const REV='20260925-v167';
+const CACHE='business-os-shell-v11';
+const REV='20260925-v169';
 const SHELL=['./','./index.html','./manifest.webmanifest','./brand-logo.svg'];
+const VERSIONED_STATIC=/\.(?:js|css|svg|png|webp|ico|woff2?|webmanifest)$/i;
+const NETWORK_FIRST_PATHS=[
+  '/index.html',
+  '/pwa-register.js',
+  '/network-direct-v86.js',
+  '/config.js',
+  '/mandatory-auth-v29.js',
+  '/auth-api-session-v41.js',
+  '/employee-live-refresh-v27.js'
+];
 
 self.addEventListener('install',event=>{
   event.waitUntil(
@@ -18,6 +28,36 @@ self.addEventListener('activate',event=>{
   );
 });
 
+async function networkFirst(request){
+  try{
+    const response=await fetch(request,{cache:'no-store'});
+    if(response&&response.ok){
+      const copy=response.clone();
+      caches.open(CACHE).then(cache=>cache.put(request,copy)).catch(()=>{});
+    }
+    return response;
+  }catch(error){
+    const cached=await caches.match(request);
+    if(cached)return cached;
+    if(request.mode==='navigate'){
+      const shell=await caches.match('./index.html');
+      if(shell)return shell;
+    }
+    throw error;
+  }
+}
+
+async function cacheFirst(request){
+  const cached=await caches.match(request);
+  if(cached)return cached;
+  const response=await fetch(request,{cache:'no-store'});
+  if(response&&response.ok){
+    const copy=response.clone();
+    caches.open(CACHE).then(cache=>cache.put(request,copy)).catch(()=>{});
+  }
+  return response;
+}
+
 self.addEventListener('fetch',event=>{
   const request=event.request;
   if(request.method!=='GET')return;
@@ -26,28 +66,22 @@ self.addEventListener('fetch',event=>{
   if(url.origin!==self.location.origin)return;
   if(url.pathname.includes('/api/')||url.pathname.includes('/.netlify/functions/'))return;
 
-  event.respondWith((async()=>{
-    try{
-      let networkRequest=request;
-      if(url.pathname.endsWith('/pwa-register.js')||url.pathname.endsWith('/master-order-focus-v126.js')||url.pathname.endsWith('/network-direct-v86.js')){
-        const freshUrl=new URL(request.url);
-        freshUrl.searchParams.set('_sw',REV);
-        networkRequest=new Request(freshUrl.toString(),request);
-      }
-      const response=await fetch(networkRequest,{cache:'no-store'});
-      if(response&&response.ok){
-        const copy=response.clone();
-        caches.open(CACHE).then(cache=>cache.put(request,copy)).catch(()=>{});
-      }
-      return response;
-    }catch(error){
-      const cached=await caches.match(request);
-      if(cached)return cached;
-      if(request.mode==='navigate'){
-        const shell=await caches.match('./index.html');
-        if(shell)return shell;
-      }
-      throw error;
+  const networkFirstRequired=request.mode==='navigate'||NETWORK_FIRST_PATHS.some(path=>url.pathname.endsWith(path));
+  if(networkFirstRequired){
+    let networkRequest=request;
+    if(!request.mode.includes?.('navigate')&&url.pathname!=='/'&&url.pathname!=='/index.html'){
+      const freshUrl=new URL(request.url);
+      freshUrl.searchParams.set('_sw',REV);
+      networkRequest=new Request(freshUrl.toString(),request);
     }
-  })());
+    event.respondWith(networkFirst(networkRequest).catch(()=>caches.match(request).then(cached=>cached||Promise.reject(new Error('Network unavailable')))));
+    return;
+  }
+
+  if(VERSIONED_STATIC.test(url.pathname)&&url.searchParams.has('v')){
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  event.respondWith(networkFirst(request));
 });
