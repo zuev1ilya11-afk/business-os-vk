@@ -15,7 +15,7 @@ test('desktop dispatcher gets a contextual next-action panel',async({page})=>{
   await page.waitForFunction(()=>window.BOS_DISPATCHER_RESPONSIVE_V157?.decorate);
   await page.locator('nav [data-page=orders]').click();
 
-  const card=page.locator('.ddQueueCard').filter({hasText:'Борис'});
+  const card=page.locator('.dbOrderCard').filter({hasText:'Борис'});
   await expect(card).toBeVisible();
   await card.click();
 
@@ -43,7 +43,7 @@ test('mobile dispatcher can open status and master quick edit from an order card
 
   await expect(page.getByRole('heading',{name:'Быстро изменить'})).toBeVisible();
   await expect(page.locator('#drv157Status')).toHaveValue('В работе');
-  await expect(page.locator('#drv157Master')).toBeVisible();
+  await expect(page.locator('#drv157Master')).toContainText('Тестовый мастер');
   await expect(page.getByRole('button',{name:'Сохранить'})).toBeVisible();
   await expect(page.getByRole('button',{name:'Открыть заявку'})).toBeVisible();
 });
