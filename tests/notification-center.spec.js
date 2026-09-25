@@ -63,6 +63,7 @@ test('master notifications support master_staff_id, new assignment and schedule 
   await expect(panel.getByText('Новая заявка №11')).toBeVisible();
   await panel.getByRole('button',{name:'Закрыть'}).click();
 
+  order.scheduled_time='12:30';
   await page.evaluate(()=>{
     const o=state.orders.find(x=>String(x.id)==='11');
     o.scheduled_time='12:30';
