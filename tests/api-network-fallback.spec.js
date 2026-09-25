@@ -10,10 +10,10 @@ for(const status of [401,403,500])test(`VK HTTP ${status} displays server error 
  await authPage(page);await expect(page.locator('#authGate')).toContainText(`Проверка ${status}`);expect(attempts).toBe(1);expect(direct).toBe(0);
  await page.getByRole('button',{name:'Повторить вход через VK'}).click();await expect.poll(()=>attempts).toBe(2);
 });
-test('Netlify network failure falls back to alternate gateway before direct Edge',async({page})=>{
+test('independent gateway network failure falls back to Netlify before direct Edge',async({page})=>{
  let alternate=0,direct=0;
- await page.route('https://business-os-api-gateway.netlify.app/api/proxy/vk-session-api',r=>r.abort('failed'));
- await page.route('https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai/api/proxy/vk-session-api',r=>{alternate++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Резервный шлюз отвечает"}'})});
+ await page.route('https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai/api/proxy/vk-session-api',r=>r.abort('failed'));
+ await page.route('https://business-os-api-gateway.netlify.app/api/proxy/vk-session-api',r=>{alternate++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Резервный шлюз отвечает"}'})});
  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.abort()});
  await authPage(page);
  await expect(page.locator('#authGate')).toContainText('Резервный шлюз отвечает',{timeout:8000});expect(alternate).toBe(1);expect(direct).toBe(0);
@@ -52,5 +52,5 @@ test('unresponsive VK Bridge cannot leave auth spinning forever',async({page})=>
 });
 test('malformed success response is an error rather than an empty successful result',async({page})=>{
  await page.goto('/');await page.route('**/api/proxy/mini-app-api',r=>r.fulfill({status:200,contentType:'application/json',body:'{"ok":'}));
- expect(await page.evaluate(()=>BOS_POST('https://business-os-api-gateway.netlify.app/api/proxy/mini-app-api',{action:'bootstrap'}).then(()=> 'accepted',e=>e.message))).toBe('Сервер вернул некорректный ответ. Повторите попытку.');
+ expect(await page.evaluate(()=>BOS_POST('https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai/api/proxy/mini-app-api',{action:'bootstrap'}).then(()=> 'accepted',e=>e.message))).toBe('Сервер вернул некорректный ответ. Повторите попытку.');
 });
