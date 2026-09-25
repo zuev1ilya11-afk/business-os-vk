@@ -1,0 +1,1 @@
+Business OS network transport now prefers the independent AppDeploy gateway, falls back to the existing Netlify gateway, and finally to direct Supabase Edge for eligible API calls. Avito send requests are never automatically replayed. The independent gateway also exposes the existing GAS report route.
