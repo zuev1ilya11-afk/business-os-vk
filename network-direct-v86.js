@@ -16,6 +16,7 @@
   const AUTH_FALLBACK_DEADLINE_MS=5000;
   const AUTH_EDGE_DEADLINE_MS=6500;
   const ROUTE_FAILURE_STATUSES=new Set([502,503,504]);
+  const SAFE_ACTIONS=new Set(['health','bootstrap','get','list','load','read','status']);
   if(typeof window.fetch!=='function'||window.BOS_NETWORK_DIRECT_V86)return;
 
   const lowerFetch=window.fetch.bind(window);
@@ -42,6 +43,23 @@
 
   function outerSignal(input,init){
     return init?.signal||(input instanceof Request?input.signal:null)||null;
+  }
+
+  async function requestAction(input,init){
+    let body=init?.body;
+    if(body==null&&input instanceof Request){
+      try{body=await input.clone().text()}catch(_){return ''}
+    }
+    if(typeof body!=='string')return '';
+    try{return String(JSON.parse(body)?.action||'')}
+    catch(_){return ''}
+  }
+
+  async function transientHttpFailoverAllowed(info,input,init){
+    const method=String(init?.method||(input instanceof Request?input.method:'GET')||'GET').toUpperCase();
+    if(method==='GET'||method==='HEAD')return true;
+    if(info.slug==='password-session-api'||info.slug==='vk-session-api')return true;
+    return SAFE_ACTIONS.has(await requestAction(input,init));
   }
 
   function directPasswordInit(input,init){
@@ -143,9 +161,9 @@
     }catch(_){return false}
   }
 
-  async function shouldFailOver(response){
+  async function shouldFailOver(response,allowTransientHttp){
     if(!response)return true;
-    if(ROUTE_FAILURE_STATUSES.has(response.status))return true;
+    if(allowTransientHttp&&ROUTE_FAILURE_STATUSES.has(response.status))return true;
     return await serviceNotAllowed(response);
   }
 
@@ -160,6 +178,7 @@
 
     const outer=outerSignal(input,init);
     const passwordAuth=info.slug==='password-session-api';
+    const allowTransientHttp=await transientHttpFailoverAllowed(info,input,init);
     let primaryInput=input;
     let backupInput=input;
     let alternateInput=input;
@@ -180,7 +199,7 @@
         outer,
         passwordAuth
       );
-      if(!await shouldFailOver(response))return response;
+      if(!await shouldFailOver(response,allowTransientHttp))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
     }
@@ -194,7 +213,7 @@
         outer,
         passwordAuth
       );
-      if(!await shouldFailOver(response))return response;
+      if(!await shouldFailOver(response,allowTransientHttp))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
     }
@@ -208,7 +227,7 @@
         outer,
         passwordAuth
       );
-      if(!await shouldFailOver(response))return response;
+      if(!await shouldFailOver(response,allowTransientHttp))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
     }
@@ -240,7 +259,7 @@
     authBackupGatewayDeadlineMs:AUTH_BACKUP_GATEWAY_DEADLINE_MS,
     authAlternateGatewayDeadlineMs:AUTH_FALLBACK_DEADLINE_MS,
     authEdgeDeadlineMs:AUTH_EDGE_DEADLINE_MS,
-    transientHttpFailover:true,
+    transientHttpFailover:'safe-actions-only',
     passwordDirectSimpleCors:true,
     passwordBufferedResponse:true,
     passwordSessionHeaderFastPath:true
