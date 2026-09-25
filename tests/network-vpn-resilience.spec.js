@@ -16,7 +16,7 @@ test('VK Bridge starts without requiring Netlify',async({page})=>{
   await expect(page.locator('#authGate')).toBeVisible();
 });
 
-test('legacy URLs use alternate gateway first while both gateway routes retain direct Edge fallback',async({page})=>{
+test('legacy URLs keep Netlify primary while both gateway routes retain direct Edge fallback',async({page})=>{
   await page.route('https://unpkg.com/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
   await page.route('**/api/proxy/**',route=>route.fulfill({status:401,contentType:'application/json',body:'{"ok":false,"error":"Доступ не подтверждён"}'}));
   await page.goto('/');
@@ -27,8 +27,8 @@ test('legacy URLs use alternate gateway first while both gateway routes retain d
     window.BOS_NETWORK_DIRECT_V86.directUrl('https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai/api/proxy/report-api'),
     window.BOS_NETWORK_DIRECT_V86.directUrl('https://business-os-api-gateway.netlify.app/api/proxy/report-api')
   ]);
-  expect(urls[0]).toBe('https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai/api/proxy/report-api');
-  expect(urls[1]).toBe('https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai/api/proxy/drive-archive-api');
+  expect(urls[0]).toBe('https://business-os-api-gateway.netlify.app/api/proxy/report-api');
+  expect(urls[1]).toBe('https://business-os-api-gateway.netlify.app/api/proxy/drive-archive-api');
   expect(urls[2]).toBe('https://business-os-api-gateway.netlify.app/api/gas-report');
   expect(urls[3]).toBe('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-api');
   expect(urls[4]).toBe('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-api');
