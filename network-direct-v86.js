@@ -36,6 +36,18 @@
     return init?.signal||(input instanceof Request?input.signal:null)||null;
   }
 
+  function directPasswordInit(input,init){
+    const headers=new Headers(input instanceof Request?input.headers:undefined);
+    if(init?.headers)new Headers(init.headers).forEach((value,key)=>headers.set(key,value));
+    // Login has no auth headers. Using a CORS-safelisted content type lets the
+    // final direct Edge fallback POST without a preflight, which some mobile
+    // networks deliver inconsistently even though the Edge Function is healthy.
+    const hasAuthHeader=['x-bos-session','authorization','apikey','x-vk-launch-params'].some(name=>headers.has(name));
+    if(hasAuthHeader)return init;
+    headers.set('Content-Type','text/plain;charset=UTF-8');
+    return {...(init||{}),headers};
+  }
+
   async function fetchRequestAt(url,input,init,signal){
     const req=new Request(input,init);
     const method=String(req.method||'GET').toUpperCase();
@@ -142,7 +154,8 @@
       if(outer?.aborted||!retryable(error))throw error;
     }
 
-    return fetchAt(`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`,edgeInput,init,passwordAuth?AUTH_FALLBACK_DEADLINE_MS:EDGE_DEADLINE_MS,outer,passwordAuth);
+    const edgeInit=passwordAuth?directPasswordInit(edgeInput,init):init;
+    return fetchAt(`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`,edgeInput,edgeInit,passwordAuth?AUTH_FALLBACK_DEADLINE_MS:EDGE_DEADLINE_MS,outer,passwordAuth);
   };
 
   window.BOS_NETWORK_DIRECT_V86={
@@ -154,6 +167,7 @@
     proxyInfo,
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,
     alternateGatewayDeadlineMs:ALT_GATEWAY_DEADLINE_MS,
-    edgeDeadlineMs:EDGE_DEADLINE_MS
+    edgeDeadlineMs:EDGE_DEADLINE_MS,
+    passwordDirectSimpleCors:true
   };
 })();
