@@ -1,5 +1,5 @@
 (()=>{
-  const BASE='https://business-os-api-gateway.netlify.app/api/proxy/';
+  const BASE='https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai/api/proxy/';
   const MINI=BASE+'mini-app-api';
   const VK=BASE+'vk-session-api';
   const PASS=BASE+'password-session-api';
