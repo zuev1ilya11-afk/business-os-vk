@@ -9,7 +9,7 @@ test('startup uses independent gateway with Netlify and direct Edge fallbacks',(
   const config=fs.readFileSync(path.join(root,'config.js'),'utf8');
 
   expect(html).not.toContain('<script src="https://business-os-api-gateway.netlify.app/vendor/vk-bridge.js"></script>');
-  expect(html).toContain('<script src="network-direct-v86.js?v=20260923-avito2"></script>');
+  expect(html).toContain('<script src="network-direct-v86.js?v=20260925-v161"></script>');
   expect(html).toContain('<script src="config.js?v=20260911-v39"></script>');
   expect(html.indexOf('network-direct-v86.js')).toBeLessThan(html.indexOf('config.js'));
 

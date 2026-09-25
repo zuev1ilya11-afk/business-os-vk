@@ -1,5 +1,5 @@
-const CACHE='business-os-shell-v7';
-const REV='20260924-v136-received-date';
+const CACHE='business-os-shell-v8';
+const REV='20260925-v161';
 const SHELL=['./','./index.html','./manifest.webmanifest','./brand-logo.svg'];
 
 self.addEventListener('install',event=>{
