@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
-test('master order client address is clickable and opens Yandex Maps route',async({page})=>{
+test('master order client address is clickable and opens exact address in Yandex Maps',async({page})=>{
   const {db}=await fullStack(page,'master');
   const order=db.tables.orders[0];
   Object.assign(order,{
@@ -26,8 +26,7 @@ test('master order client address is clickable and opens Yandex Maps route',asyn
   await expect(address).toBeVisible();
   await expect(address).toHaveText('Невский проспект, 28');
   const href=await address.getAttribute('href');
-  expect(href).toContain('https://yandex.ru/maps/?mode=routes');
-  expect(href).toContain('rtt=auto');
+  expect(href).toContain('https://yandex.ru/maps/?text=');
   expect(decodeURIComponent(href)).toContain('Санкт-Петербург, Невский проспект, 28');
   await expect(page.locator('.masterV149Route')).toBeHidden();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
