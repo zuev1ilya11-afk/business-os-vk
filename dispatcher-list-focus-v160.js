@@ -55,8 +55,10 @@ function ensureControls(list,attentionCount,total){
   const head=list.querySelector(':scope>.dbV94ListHead');if(!head)return;
   let tools=head.querySelector(':scope>.dlf160Tools');
   if(!tools){tools=document.createElement('div');tools.className='dlf160Tools';head.appendChild(tools)}
+  const sig=`${attentionOnly?'1':'0'}|${compact?'1':'0'}|${attentionCount}|${total}`;
+  if(tools.dataset.signature===sig)return;
+  tools.dataset.signature=sig;
   tools.innerHTML=`<button type="button" class="${attentionOnly?'primary':'secondary'}" data-dlf160-filter="attention" aria-pressed="${attentionOnly?'true':'false'}">Внимание <b>${attentionCount}</b></button><button type="button" class="secondary" data-dlf160-compact aria-pressed="${compact?'true':'false'}">${compact?'Обычный вид':'Компактно'}</button>`;
-  tools.dataset.total=String(total);
 }
 function cleanup(root){
   root.querySelectorAll('.dlf160Tools,.dlf160Badges,.dlf160Empty').forEach(n=>n.remove());
@@ -84,7 +86,7 @@ function sync(){
   if(attentionOnly&&!visible){if(!empty){empty=document.createElement('div');empty.className='dlf160Empty';items.appendChild(empty)}empty.textContent='Заявок, требующих внимания, нет.'}else empty?.remove();
 }
 function schedule(){if(queued)return;queued=true;requestAnimationFrame(sync)}
-function setAttention(on){attentionOnly=!!on;if(attentionOnly)window.BOS_DISPATCHER_ATTENTION_V123?.setFilter?.('all');requestAnimationFrame(schedule)}
+function setAttention(on){attentionOnly=!!on;if(attentionOnly)window.BOS_DISPATCHER_ATTENTION_V123?.setFilter?.('all');schedule()}
 function setCompact(on){compact=!!on;localStorage.setItem(STORAGE_KEY,compact?'compact':'comfortable');schedule()}
 
 document.addEventListener('click',event=>{
@@ -92,7 +94,7 @@ document.addEventListener('click',event=>{
   if(att){event.preventDefault();event.stopPropagation();setAttention(!attentionOnly);return}
   const density=event.target.closest?.('[data-dlf160-compact]');
   if(density){event.preventDefault();event.stopPropagation();setCompact(!compact);return}
-  if(event.target.closest?.('[data-da123-filter]')&&attentionOnly){attentionOnly=false;requestAnimationFrame(schedule)}
+  if(event.target.closest?.('[data-da123-filter]')&&attentionOnly){attentionOnly=false;schedule()}
 });
 const root=document.getElementById('content');if(root)new MutationObserver(schedule).observe(root,{childList:true,subtree:true});
 window.addEventListener('resize',schedule);queueMicrotask(schedule);
