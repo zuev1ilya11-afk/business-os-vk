@@ -28,18 +28,18 @@ self.addEventListener('activate',event=>{
   );
 });
 
-async function networkFirst(request){
+async function networkFirst(networkRequest,cacheKey=networkRequest){
   try{
-    const response=await fetch(request,{cache:'no-store'});
+    const response=await fetch(networkRequest,{cache:'no-store'});
     if(response&&response.ok){
       const copy=response.clone();
-      caches.open(CACHE).then(cache=>cache.put(request,copy)).catch(()=>{});
+      caches.open(CACHE).then(cache=>cache.put(cacheKey,copy)).catch(()=>{});
     }
     return response;
   }catch(error){
-    const cached=await caches.match(request);
+    const cached=await caches.match(cacheKey);
     if(cached)return cached;
-    if(request.mode==='navigate'){
+    if(cacheKey.mode==='navigate'){
       const shell=await caches.match('./index.html');
       if(shell)return shell;
     }
@@ -69,12 +69,12 @@ self.addEventListener('fetch',event=>{
   const networkFirstRequired=request.mode==='navigate'||NETWORK_FIRST_PATHS.some(path=>url.pathname.endsWith(path));
   if(networkFirstRequired){
     let networkRequest=request;
-    if(!request.mode.includes?.('navigate')&&url.pathname!=='/'&&url.pathname!=='/index.html'){
+    if(request.mode!=='navigate'&&url.pathname!=='/'&&url.pathname!=='/index.html'){
       const freshUrl=new URL(request.url);
       freshUrl.searchParams.set('_sw',REV);
       networkRequest=new Request(freshUrl.toString(),request);
     }
-    event.respondWith(networkFirst(networkRequest).catch(()=>caches.match(request).then(cached=>cached||Promise.reject(new Error('Network unavailable')))));
+    event.respondWith(networkFirst(networkRequest,request));
     return;
   }
 
