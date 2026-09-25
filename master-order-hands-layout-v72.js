@@ -11,7 +11,7 @@ const unit=u=>({PIECE:'шт.',PCS:'шт.',FIX:'шт.',METER:'м',METERS:'м',KM:
 const works=o=>String(o?.work||'Работа не указана').split(/\n+/).map(x=>x.trim()).filter(Boolean);
 const pay=o=>{const raw=o?.amount;if(raw!==null&&raw!==undefined&&raw!==''){const amount=Number(raw);if(Number.isFinite(amount))return amount*0.85*0.65}const stored=Number(o?.master_payout||0);return Number.isFinite(stored)?stored:0};
 const routeAddress=o=>{const address=String(o?.address||'').trim();if(!address)return'';const city=String(o?.city||'').trim();return city&&!address.toLowerCase().includes(city.toLowerCase())?`${city}, ${address}`:address};
-const yandexRouteHref=o=>{const destination=routeAddress(o);return destination?`https://yandex.ru/maps/?mode=routes&rtext=~${encodeURIComponent(destination)}&rtt=auto`:''};
+const yandexRouteHref=o=>{const destination=routeAddress(o);return destination?`https://yandex.ru/maps/?text=${encodeURIComponent(destination)}`:''};
 const addressHtml=o=>{const address=String(o?.address||'').trim();if(!address)return '<b>Адрес не указан</b>';const href=yandexRouteHref(o);return `<b><a class="bosHandsAddressLink" href="${esc(href)}" target="_blank" rel="noopener noreferrer" aria-label="Открыть адрес в Яндекс Картах: ${esc(routeAddress(o))}">${esc(address)}</a></b>`};
 function parseWork(x){const clean=String(x||'').split(' — ')[0].trim();const m=clean.match(/^(.*?)\s*[×x]\s*([\d.,]+)\s*([^\s]+)?\s*$/i);if(!m)return{title:clean,qty:''};return{title:m[1].trim(),qty:`${m[2]}${m[3]?' '+unit(m[3]):''}`}}
 const rows=o=>works(o).map(x=>{const w=parseWork(x);return `<div class="bosHandsWorkRow"><span>${esc(w.title)}</span>${w.qty?`<b>${esc(w.qty)}</b>`:''}</div>`}).join('');
