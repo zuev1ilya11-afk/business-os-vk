@@ -19,5 +19,5 @@ test('report review shows what extra work the master entered',async({page})=>{
   await expect(page.getByText('Что указал мастер:')).toBeVisible();
   await expect(page.getByText(/Демонтаж старого карниза/)).toBeVisible();
   await expect(page.getByText(/Установка дополнительных креплений/)).toBeVisible();
-  await expect(page.locator('.reportExtraWorkDetails')).toContainText('2 000');
+  await expect(page.locator('.reportExtraWorkDetails')).toContainText(/2\s?000/);
 });
