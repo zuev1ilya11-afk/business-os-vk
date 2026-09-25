@@ -22,14 +22,17 @@ function loadDispatcherModule(src){
     document.head.appendChild(script);
   });
 }
+async function loadDispatcherUsabilityNow(){
+  for(const src of dispatcherUsabilityModules){
+    try{await loadDispatcherModule(src)}catch(error){console.error('Dispatcher usability:',error)}
+  }
+}
 function ensureDispatcherUsability(){
   if(!dispatcherModeNow())return Promise.resolve();
   if(dispatcherUsabilityLoading)return dispatcherUsabilityLoading;
-  dispatcherUsabilityLoading=(async()=>{
-    for(const src of dispatcherUsabilityModules){
-      try{await loadDispatcherModule(src)}catch(error){console.error('Dispatcher usability:',error)}
-    }
-  })();
+  dispatcherUsabilityLoading=document.readyState==='complete'
+    ?loadDispatcherUsabilityNow()
+    :new Promise(resolve=>window.addEventListener('load',()=>loadDispatcherUsabilityNow().then(resolve),{once:true}));
   return dispatcherUsabilityLoading;
 }
 
