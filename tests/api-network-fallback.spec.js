@@ -10,7 +10,15 @@ for(const status of [401,403,500])test(`VK HTTP ${status} displays server error 
  await authPage(page);await expect(page.locator('#authGate')).toContainText(`Проверка ${status}`);expect(attempts).toBe(1);expect(direct).toBe(0);
  await page.getByRole('button',{name:'Повторить вход через VK'}).click();await expect.poll(()=>attempts).toBe(2);
 });
-test('offline gateway falls back to direct Supabase Edge API',async({page})=>{
+test('alternate primary gateway network failure falls back to Netlify before direct Edge',async({page})=>{
+ let secondary=0,direct=0;
+ await page.route('https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai/api/proxy/vk-session-api',r=>r.abort('failed'));
+ await page.route('https://business-os-api-gateway.netlify.app/api/proxy/vk-session-api',r=>{secondary++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Резервный шлюз отвечает"}'})});
+ await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.abort()});
+ await authPage(page);
+ await expect(page.locator('#authGate')).toContainText('Резервный шлюз отвечает',{timeout:8000});expect(secondary).toBe(1);expect(direct).toBe(0);
+});
+test('offline gateways fall back to direct Supabase Edge API',async({page})=>{
  let direct=0;
  await page.route('**/api/proxy/**',r=>r.abort('failed'));
  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Прямой резерв отвечает"}'})});
@@ -24,7 +32,7 @@ test('stale gateway SERVICE_NOT_ALLOWED falls back to direct Supabase Edge API',
  await authPage(page);
  await expect(page.locator('#authGate')).toContainText('Прямой резерв после SERVICE_NOT_ALLOWED',{timeout:8000});expect(direct).toBe(1);
 });
-test('hanging gateway switches to direct API before outer auth deadline',async({page})=>{
+test('hanging gateways switch to direct API before outer auth deadline',async({page})=>{
  test.setTimeout(15000);let direct=0;
  await page.route('**/api/proxy/**',()=>{});
  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Резерв после таймаута"}'})});
