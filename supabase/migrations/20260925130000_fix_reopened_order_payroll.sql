@@ -79,6 +79,13 @@ begin
 end;
 $function$;
 
+-- The guard must also run when management rejects a report while status is already "В работе".
+drop trigger if exists trg_guard_order_completion on public.orders;
+create trigger trg_guard_order_completion
+before update of status, report_review_status on public.orders
+for each row
+execute function public.guard_order_completion();
+
 -- Repair any stale rows that may exist before this guard is installed.
 update public.orders
 set completed_at = null,
