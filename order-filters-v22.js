@@ -6,6 +6,13 @@ function odRescheduleRole(){const role=String(state.user?.role||'');return ['man
 function odToday(){return new Date().toISOString().slice(0,10)}
 function odStatus(o){return String(o?.status||'')}
 function odSource(o){return String(o?.source||o?.lead_source||'').trim()}
+function odHands(o){return String(o?.external_source||'').toLowerCase()==='hands'||String(o?.external_id||'').startsWith('hands:')}
+function odRealId(v){const s=String(v??'').trim().toLowerCase();return !!s&&!['0','null','undefined'].includes(s)}
+function odHasMaster(o){
+  if([o?.master_staff_id,o?.master_vk_id,o?.master_id].some(odRealId))return true;
+  if(odHands(o))return false;
+  return !!String(o?.master_name||'').trim();
+}
 function odDone(o){return odStatus(o)==='Выполнена'}
 function odCancelled(o){return odStatus(o)==='Отменена'}
 function odOperational(o){return ['Новая','Назначена','В работе'].includes(odStatus(o))}
@@ -16,7 +23,7 @@ function odMatchFilter(o){
   if(bosOrderFilter==='done')return odDone(o);
   if(bosOrderFilter==='reclamation')return odStatus(o)==='Рекламация'||(!!o.is_claim&&!o.claim_closed_at);
   if(bosOrderFilter==='cancelled')return odCancelled(o);
-  if(bosOrderFilter==='unassigned')return odOperational(o)&&!o.master_name&&!o.master_vk_id&&!o.master_id&&!o.master_staff_id;
+  if(bosOrderFilter==='unassigned')return odOperational(o)&&!odHasMaster(o);
   if(bosOrderFilter==='today')return odOperational(o)&&String(o.scheduled_date||'').slice(0,10)===odToday();
   if(bosOrderFilter==='avito')return /^(авито|avito)$/i.test(odSource(o));
   if(bosOrderFilter==='reschedule')return odRescheduleRole()&&!!o.reschedule_requested;
@@ -27,7 +34,7 @@ function displayNo(o){const ext=String(o?.external_id||'');return ext.startsWith
 function dt(o){const d=String(o?.scheduled_date||'').slice(0,10)||'Без даты';const t=String(o?.scheduled_time||o?.time_slot||'').slice(0,5)||'Без времени';return `${d} · ${t}`}
 function workLines(o){return String(o?.work||'Работа не указана').split(/\n+/).map(x=>x.trim()).filter(Boolean)}
 function shortWorks(o){const lines=workLines(o),shown=lines.slice(0,3);return shown.map(x=>`<div>${esc(x)}</div>`).join('')+(lines.length>3?`<small>+ ещё ${lines.length-3}</small>`:'')}
-function odCard(o){const src=odSource(o),reschedule=o?.reschedule_requested&&odRescheduleRole()?`<span class="bosRescheduleChip">Нужно перенести</span>`:'';return `<section class="card bosFilteredOrder opsCompactOrder" onclick="openOrder('${esc(o.id)}')"><div class="opsCompactTop"><b>№ ${esc(displayNo(o))}</b><span>${esc(dt(o))}</span></div><div class="opsCompactMain"><b>${esc(o.client||'Клиент не указан')}</b><strong>${money(o.amount||0)}</strong></div><div class="opsCompactAddress">${esc(o.address||'Адрес не указан')}</div><div class="opsCompactWorks">${shortWorks(o)}</div><div class="opsCompactBottom"><span class="status info" data-status="${esc(o.status||'В работе')}">${esc(o.status||'В работе')}</span><span>${esc(o.master_name||'Мастер не назначен')}</span>${reschedule}${src?`<span class="bosSourceChip ${/^(авито|avito)$/i.test(src)?'avito':''}">${esc(src)}</span>`:''}</div></section>`}
+function odCard(o){const src=odSource(o),reschedule=o?.reschedule_requested&&odRescheduleRole()?`<span class="bosRescheduleChip">Нужно перенести</span>`:'';const master=odHasMaster(o)?String(o.master_name||'Мастер назначен'):'Мастер не назначен';return `<section class="card bosFilteredOrder opsCompactOrder" onclick="openOrder('${esc(o.id)}')"><div class="opsCompactTop"><b>№ ${esc(displayNo(o))}</b><span>${esc(dt(o))}</span></div><div class="opsCompactMain"><b>${esc(o.client||'Клиент не указан')}</b><strong>${money(o.amount||0)}</strong></div><div class="opsCompactAddress">${esc(o.address||'Адрес не указан')}</div><div class="opsCompactWorks">${shortWorks(o)}</div><div class="opsCompactBottom"><span class="status info" data-status="${esc(o.status||'В работе')}">${esc(o.status||'В работе')}</span><span>${esc(master)}</span>${reschedule}${src?`<span class="bosSourceChip ${/^(авито|avito)$/i.test(src)?'avito':''}">${esc(src)}</span>`:''}</div></section>`}
 function odCount(type){const old=bosOrderFilter;bosOrderFilter=type;const n=(state.orders||[]).filter(odMatchFilter).length;bosOrderFilter=old;return n}
 function odSources(){const set=new Set(['Авито']);(state.sources||[]).forEach(s=>{const v=String(s?.source||s||'').trim();if(v)set.add(v)});(state.orders||[]).forEach(o=>{const v=odSource(o);if(v)set.add(v)});return [...set].sort((a,b)=>a.localeCompare(b,'ru'))}
 function odFilterDefs(){const defs=[['all','Все',(state.orders||[]).length],['avito','Авито',odCount('avito')],['active','Активные',odCount('active')],['overdue','Просроченные',odCount('overdue')]];if(odRescheduleRole())defs.push(['reschedule','Нужно перенести',odCount('reschedule')]);defs.push(['done','Выполненные',odCount('done')],['reclamation','Рекламации',odCount('reclamation')],['cancelled','Отменённые',odCount('cancelled')],['unassigned','Без мастера',odCount('unassigned')],['today','На сегодня',odCount('today')]);return defs}
