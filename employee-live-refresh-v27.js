@@ -78,7 +78,6 @@ async function touchPresence(force=false){
     const d=await r.json().catch(()=>({}));
     if(!r.ok||!d?.ok)return false;
     lastPresence=Date.now();
-    if(state?.user&&d.last_seen_at)state.user.last_seen_at=d.last_seen_at;
     return true;
   }catch(_){return false}finally{presenceInFlight=false}
 }
