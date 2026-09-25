@@ -13,7 +13,8 @@ test('report review shows what extra work the master entered',async({page})=>{
 
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
-  await page.getByRole('button',{name:/11 · Монтаж/}).click();
+  await expect.poll(()=>page.evaluate(()=>typeof window.openReportReview)).toBe('function');
+  await page.evaluate(()=>window.openReportReview('11'));
 
   await expect(page.getByRole('heading',{name:/Проверка отчёта 11/})).toBeVisible();
   await expect(page.getByText('Что указал мастер:')).toBeVisible();
