@@ -5,6 +5,9 @@
   const GATEWAY_DEADLINE_MS=2200;
   const ALT_GATEWAY_DEADLINE_MS=2200;
   const EDGE_DEADLINE_MS=3500;
+  const PASSWORD_GATEWAY_DEADLINE_MS=6000;
+  const PASSWORD_ALT_GATEWAY_DEADLINE_MS=6000;
+  const PASSWORD_EDGE_DEADLINE_MS=7000;
   if(typeof window.fetch!=='function'||window.BOS_NETWORK_DIRECT_V86)return;
 
   const lowerFetch=window.fetch.bind(window);
@@ -30,6 +33,15 @@
 
   function outerSignal(input,init){
     return init?.signal||(input instanceof Request?input.signal:null)||null;
+  }
+
+  function routeDeadlines(info){
+    if(info?.slug==='password-session-api')return {
+      gateway:PASSWORD_GATEWAY_DEADLINE_MS,
+      alternate:PASSWORD_ALT_GATEWAY_DEADLINE_MS,
+      edge:PASSWORD_EDGE_DEADLINE_MS
+    };
+    return {gateway:GATEWAY_DEADLINE_MS,alternate:ALT_GATEWAY_DEADLINE_MS,edge:EDGE_DEADLINE_MS};
   }
 
   async function fetchRequestAt(url,input,init,signal){
@@ -104,6 +116,7 @@
     if(info.slug==='avito-api')return lowerFetch(input,init);
 
     const outer=outerSignal(input,init);
+    const deadlines=routeDeadlines(info);
     let primaryInput=input;
     let alternateInput=input;
     let edgeInput=input;
@@ -113,23 +126,25 @@
       edgeInput=input.clone();
     }
 
-    // Even legacy modules that still point at Netlify are sent through the
-    // independent gateway first. This keeps old cached/auth code VPN-independent.
+    // Password login keeps the same authoritative sequential fallback semantics,
+    // but gets a larger connection window for slow mobile-carrier TLS/routing.
+    // A real HTTP response (including 401/403/500) is returned immediately and
+    // never replayed through another provider.
     try{
-      const response=await fetchAt(proxyUrl(GATEWAY,info),primaryInput,init,GATEWAY_DEADLINE_MS,outer);
+      const response=await fetchAt(proxyUrl(GATEWAY,info),primaryInput,init,deadlines.gateway,outer);
       if(!await serviceNotAllowed(response))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
     }
 
     try{
-      const response=await fetchAt(proxyUrl(ALT_GATEWAY,info),alternateInput,init,ALT_GATEWAY_DEADLINE_MS,outer);
+      const response=await fetchAt(proxyUrl(ALT_GATEWAY,info),alternateInput,init,deadlines.alternate,outer);
       if(!await serviceNotAllowed(response))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
     }
 
-    return fetchAt(`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`,edgeInput,init,EDGE_DEADLINE_MS,outer);
+    return fetchAt(`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`,edgeInput,init,deadlines.edge,outer);
   };
 
   window.BOS_NETWORK_DIRECT_V86={
@@ -141,6 +156,9 @@
     proxyInfo,
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,
     alternateGatewayDeadlineMs:ALT_GATEWAY_DEADLINE_MS,
-    edgeDeadlineMs:EDGE_DEADLINE_MS
+    edgeDeadlineMs:EDGE_DEADLINE_MS,
+    passwordGatewayDeadlineMs:PASSWORD_GATEWAY_DEADLINE_MS,
+    passwordAlternateGatewayDeadlineMs:PASSWORD_ALT_GATEWAY_DEADLINE_MS,
+    passwordEdgeDeadlineMs:PASSWORD_EDGE_DEADLINE_MS
   };
 })();
