@@ -25,7 +25,7 @@ test('master report uploads through gateway and finalizes through lifecycle API'
     directCalls++;
     return route.fulfill({status:500,contentType:'application/json',body:'{"ok":false,"error":"direct endpoint should not be needed"}'});
   });
-  await page.route('https://business-os-api-gateway.netlify.app/api/proxy/report-api',async route=>{
+  await page.route('https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e/api/proxy/report-api',async route=>{
     const body=route.request().postDataJSON()||{};
     uploadActions.push(body.action);
     if(body.action==='uploadReportFile'){

@@ -24,12 +24,12 @@ test('legacy URLs use independent gateway while both gateway routes retain direc
     window.BOS_NETWORK_GATEWAY_V85.rewrite('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-api'),
     window.BOS_NETWORK_GATEWAY_V85.rewrite('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/drive-archive-api'),
     window.BOS_NETWORK_GATEWAY_V85.rewrite('https://script.google.com/macros/s/example/exec'),
-    window.BOS_NETWORK_DIRECT_V86.directUrl('https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai/api/proxy/report-api'),
+    window.BOS_NETWORK_DIRECT_V86.directUrl('https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e/api/proxy/report-api'),
     window.BOS_NETWORK_DIRECT_V86.directUrl('https://business-os-api-gateway.netlify.app/api/proxy/report-api')
   ]);
-  expect(urls[0]).toBe('https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai/api/proxy/report-api');
-  expect(urls[1]).toBe('https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai/api/proxy/drive-archive-api');
-  expect(urls[2]).toBe('https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai/api/gas-report');
+  expect(urls[0]).toBe('https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e/api/proxy/report-api');
+  expect(urls[1]).toBe('https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e/api/proxy/drive-archive-api');
+  expect(urls[2]).toBe('https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e/api/gas-report');
   expect(urls[3]).toBe('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-api');
   expect(urls[4]).toBe('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-api');
 });

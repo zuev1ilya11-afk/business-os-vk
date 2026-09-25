@@ -1,5 +1,5 @@
 (()=>{
-  const PRIMARY_GATEWAY='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai';
+  const PRIMARY_GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
   const SECONDARY_GATEWAY='https://business-os-api-gateway.netlify.app';
   const SUPABASE='https://obsropbslfwtanyspjbi.supabase.co';
   const GAS='https://script.google.com';
