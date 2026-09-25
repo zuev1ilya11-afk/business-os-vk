@@ -5,6 +5,7 @@
   const GATEWAY_DEADLINE_MS=2200;
   const ALT_GATEWAY_DEADLINE_MS=2200;
   const EDGE_DEADLINE_MS=3500;
+  const AUTH_FALLBACK_DEADLINE_MS=6000;
   if(typeof window.fetch!=='function'||window.BOS_NETWORK_DIRECT_V86)return;
 
   const lowerFetch=window.fetch.bind(window);
@@ -52,7 +53,7 @@
     return lowerFetch(url,options);
   }
 
-  async function fetchAt(url,input,init,deadlineMs,outer){
+  async function fetchAt(url,input,init,deadlineMs,outer,bufferBody=false){
     const controller=new AbortController();
     const abort=()=>controller.abort();
     let timer=null;
@@ -61,15 +62,21 @@
       else outer.addEventListener('abort',abort,{once:true});
     }
     try{
-      const fetchPromise=input instanceof Request
+      const requestPromise=input instanceof Request
         ? fetchRequestAt(url,input,init,controller.signal)
         : lowerFetch(url,init?{...init,signal:controller.signal}:{signal:controller.signal});
+      // fetch resolves at headers. Keep password-login failover active until
+      // the small JSON response has arrived, including on a stalled mobile link.
+      const fetchPromise=Promise.resolve(requestPromise).then(async response=>{
+        if(bufferBody)await response.clone().arrayBuffer();
+        return response;
+      });
       const timeoutPromise=new Promise((_,reject)=>{
         timer=setTimeout(()=>{
-          controller.abort();
           const error=new Error('Сервер не ответил. Повторите попытку.');
           error.name='BOSRouteTimeout';
           reject(error);
+          controller.abort();
         },deadlineMs);
       });
       return await Promise.race([fetchPromise,timeoutPromise]);
@@ -104,6 +111,9 @@
     if(info.slug==='avito-api')return lowerFetch(input,init);
 
     const outer=outerSignal(input,init);
+    const passwordAuth=info.slug==='password-session-api';
+    const fallbackResponse=async response=>
+      (passwordAuth&&[502,503,504].includes(response.status))||await serviceNotAllowed(response);
     let primaryInput=input;
     let alternateInput=input;
     let edgeInput=input;
@@ -116,20 +126,20 @@
     // Even legacy modules that still point at Netlify are sent through the
     // independent gateway first. This keeps old cached/auth code VPN-independent.
     try{
-      const response=await fetchAt(proxyUrl(GATEWAY,info),primaryInput,init,GATEWAY_DEADLINE_MS,outer);
-      if(!await serviceNotAllowed(response))return response;
+      const response=await fetchAt(proxyUrl(GATEWAY,info),primaryInput,init,GATEWAY_DEADLINE_MS,outer,passwordAuth);
+      if(!await fallbackResponse(response))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
     }
 
     try{
-      const response=await fetchAt(proxyUrl(ALT_GATEWAY,info),alternateInput,init,ALT_GATEWAY_DEADLINE_MS,outer);
-      if(!await serviceNotAllowed(response))return response;
+      const response=await fetchAt(proxyUrl(ALT_GATEWAY,info),alternateInput,init,passwordAuth?AUTH_FALLBACK_DEADLINE_MS:ALT_GATEWAY_DEADLINE_MS,outer,passwordAuth);
+      if(!await fallbackResponse(response))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
     }
 
-    return fetchAt(`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`,edgeInput,init,EDGE_DEADLINE_MS,outer);
+    return fetchAt(`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`,edgeInput,init,passwordAuth?AUTH_FALLBACK_DEADLINE_MS:EDGE_DEADLINE_MS,outer,passwordAuth);
   };
 
   window.BOS_NETWORK_DIRECT_V86={
