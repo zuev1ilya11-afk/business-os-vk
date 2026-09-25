@@ -8,7 +8,7 @@ function active(o){return !!o&&!['Выполнена','Отменена'].includ
 function safe(v){return typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
 function orderById(id){return (state?.orders||[]).find(o=>String(o?.id)===String(id))||null}
 function unassigned(o){return active(o)&&!o?.master_name&&!o?.master_vk_id&&!o?.master_id&&!o?.master_staff_id}
-function masterValue(m){return String(m?.vk_user_id||'')}
+function masterValue(m){return String(m?.vk_user_id||m?.external_id||'')}
 function currentMasterValue(order){
   const direct=String(order?.master_vk_id||'');
   if(direct)return direct;
@@ -37,16 +37,16 @@ function desktopAssistHtml(order){
 }
 function decorateDesktop(){
   if(!dispatcherMode()||window.innerWidth<1050||String(state?.page||'')!=='orders')return;
-  const detail=document.querySelector('.ddDetail');if(!detail)return;
-  const selected=document.querySelector('.ddQueueCard.isSelected[data-order-id]');
+  const detail=document.querySelector('#dispatchBoardDetail .dbDetail')||document.querySelector('.ddDetail');if(!detail)return;
+  const selected=document.querySelector('.dbOrderCard.selected[data-order-id]')||document.querySelector('.ddQueueCard.isSelected[data-order-id]');
   const order=orderById(selected?.dataset?.orderId||'');if(!order)return;
   const existing=detail.querySelector(':scope > .drv157DesktopAssist');
   if(existing&&String(existing.dataset.orderId)===String(order.id))return;
   existing?.remove();
-  const quick=detail.querySelector(':scope > .ddQuickEdit');
+  const anchor=detail.querySelector(':scope > .dbDetailActions')||detail.querySelector(':scope > .ddQuickEdit');
   const wrap=document.createElement('div');wrap.innerHTML=desktopAssistHtml(order);
   const node=wrap.firstElementChild;if(!node)return;
-  if(quick)detail.insertBefore(node,quick);else detail.appendChild(node);
+  if(anchor)detail.insertBefore(node,anchor);else detail.appendChild(node);
 }
 
 window.openDispatcherResponsiveSmart157=function(id){
