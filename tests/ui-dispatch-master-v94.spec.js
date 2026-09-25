@@ -26,9 +26,12 @@ test('dispatcher keeps list inside board and moves controls to requested areas',
 
   const firstCard=page.locator('.dbV94ListCard').first();
   await expect(firstCard).toBeVisible();
-  const cardBox=await firstCard.evaluate(el=>({height:el.getBoundingClientRect().height,scrollHeight:el.scrollHeight}));
-  expect(cardBox.height).toBeGreaterThanOrEqual(68);
-  expect(cardBox.height+1).toBeGreaterThanOrEqual(cardBox.scrollHeight);
+  // The observer can replace a visible card between locator assertions.
+  // Measure the current card in one retried assertion, keeping both geometry requirements.
+  await expect.poll(()=>firstCard.evaluate(el=>{
+    const height=el.getBoundingClientRect().height;
+    return height>=68 && height+1>=el.scrollHeight;
+  })).toBe(true);
 
   await page.locator('#bosOrderSearch').fill('Анна');
   await expect(page.locator('.dbV94ListCard')).toHaveCount(1);
