@@ -58,10 +58,25 @@ test('stale gateway SERVICE_NOT_ALLOWED falls back to direct Supabase Edge API',
 });
 test('hanging gateways switch to direct API before outer auth deadline',async({page})=>{
  test.setTimeout(22000);let direct=0;
- await page.route('**/api/proxy/**',()=>{});
+ await page.addInitScript(()=>{
+   const native=window.fetch.bind(window);
+   window.simulatedGatewayTimeoutCalls=0;
+   window.fetch=(input,init)=>{
+     const raw=typeof input==='string'?input:input?.url||String(input);
+     if(raw.includes('/api/proxy/')){
+       window.simulatedGatewayTimeoutCalls++;
+       return new Promise((_,reject)=>{
+         const abort=()=>reject(new DOMException('Aborted','AbortError'));
+         if(init?.signal?.aborted)abort();
+         else init?.signal?.addEventListener('abort',abort,{once:true});
+       });
+     }
+     return native(input,init);
+   };
+ });
  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Резерв после таймаута"}'})});
  await authPage(page);
- await expect(page.locator('#authGate')).toContainText('Резерв после таймаута',{timeout:15000});expect(direct).toBe(1);await expect(page.getByRole('button',{name:'Повторить вход через VK'})).toBeVisible();
+ await expect(page.locator('#authGate')).toContainText('Резерв после таймаута',{timeout:15000});expect(direct).toBe(1);expect(await page.evaluate(()=>window.simulatedGatewayTimeoutCalls)).toBe(3);await expect(page.getByRole('button',{name:'Повторить вход через VK'})).toBeVisible();
 });
 test('failed password login keeps entered values for retry',async({page})=>{
  await page.route('**/api/proxy/password-session-api',r=>r.fulfill({status:500,contentType:'application/json',body:'{"ok":false,"error":"Временная ошибка"}'}));
