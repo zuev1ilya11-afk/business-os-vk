@@ -9,10 +9,11 @@
   const body=document.body;
   const forceVk=new URLSearchParams(location.search).has('force_vk_auth');
   let vkSessionPromise=null;
+  let validatedBootstrap=null;
 
   function getSession(){try{return sessionStorage.getItem(KEY)||localStorage.getItem(KEY)||''}catch(_){return ''}}
   function setSession(v){if(!v)return;try{sessionStorage.setItem(KEY,v);localStorage.setItem(KEY,v)}catch(_){}}
-  function clearSession(){try{sessionStorage.removeItem(KEY);localStorage.removeItem(KEY)}catch(_){}}
+  function clearSession(){validatedBootstrap=null;try{sessionStorage.removeItem(KEY);localStorage.removeItem(KEY)}catch(_){}}
   function escs(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
   function showGate(html){if(!gate)return;gate.innerHTML=`<div class="authGateCard">${html}</div>`;gate.style.display='flex';body.classList.remove('bos-auth-ok')}
   function unlock(){if(gate)gate.style.display='none';body.classList.add('bos-auth-ok')}
@@ -75,7 +76,12 @@
 
   async function validate(){
     const session=getSession();if(!session)return false;
-    try{const d=await post(MINI,{action:'bootstrap'},{'X-BOS-Session':session});return !!d?.user?.role}catch(e){if(e?.status===401)clearSession();return false}
+    try{
+      const d=await post(MINI,{action:'bootstrap'},{'X-BOS-Session':session});
+      if(!d?.user?.role)return false;
+      validatedBootstrap={session,data:d};
+      return true;
+    }catch(e){if(e?.status===401)clearSession();return false}
   }
   async function vkSession(){
     const existing=getSession();if(existing)return {ok:true,session_token:existing};
@@ -96,6 +102,11 @@
   async function sessionApi(action,payload={}){
     const session=getSession();
     if(!session)throw new Error('Требуется вход');
+    if(action==='bootstrap'&&validatedBootstrap?.session===session&&!Object.keys(payload||{}).length){
+      const d=validatedBootstrap.data;
+      validatedBootstrap=null;
+      return d;
+    }
     return post(MINI,{action,...payload},{'X-BOS-Session':session});
   }
   async function inviteApi(action,payload={}){
