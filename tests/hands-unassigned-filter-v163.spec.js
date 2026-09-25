@@ -17,6 +17,7 @@ test('Hands specialist without Business OS master link stays in Без маст�
 
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
+  await page.getByRole('button',{name:'Заявки',exact:true}).click();
 
   const filter=page.locator('.bosOrderFilters button').filter({hasText:'Без мастера'});
   await filter.click();
