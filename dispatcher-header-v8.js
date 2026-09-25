@@ -10,14 +10,15 @@ const dispatcherUsabilityModules=[
   'dispatcher-unassigned-queue-v122.js',
   'dispatcher-attention-v123.js',
   'dispatcher-responsive-workbench-v157.js',
-  'dispatcher-desktop-mobile-v158.js'
+  'dispatcher-desktop-mobile-v158.js',
+  'dispatcher-quick-actions-v159.js'
 ];
 let dispatcherUsabilityLoading=null;
 function loadDispatcherModule(src){
   if(document.querySelector(`script[data-bos-dispatcher-usability="${src}"]`))return Promise.resolve();
   return new Promise((resolve,reject)=>{
     const script=document.createElement('script');
-    script.src=`${src}?v=20260925-dispatcher-v158`;
+    script.src=`${src}?v=20260925-dispatcher-v159`;
     script.dataset.bosDispatcherUsability=src;
     script.onload=resolve;
     script.onerror=()=>reject(new Error(`Не удалось загрузить ${src}`));
