@@ -95,14 +95,14 @@ function renderChanged(){
   if(profile&&typeof window.openEmployeeProfile==='function'){
     const id=profile.dataset.bosEmployeeProfileId;
     const exists=(state.users||[]).some(u=>matchesId(u,id));
-    if(exists){if(typeof show==='function'&&state.page)show(state.page);window.openEmployeeProfile(id);setTimeout(decoratePresence,0);return;}
+    if(exists){if(typeof show==='function'&&state.page)show(state.page);window.openEmployeeProfile(id);decoratePresence();return;}
     if(typeof closeModal==='function')closeModal();
     if(typeof show==='function')show('team');
-    setTimeout(decoratePresence,0);
+    decoratePresence();
     return;
   }
   if(!document.querySelector('#modalRoot .modal')&&typeof show==='function'&&state?.page)show(state.page);
-  setTimeout(decoratePresence,0);
+  decoratePresence();
 }
 
 async function syncEmployeeData(reason='manual'){
@@ -213,7 +213,7 @@ window.addEventListener('focus',()=>{touchPresence(true);syncEmployeeData('focus
 window.addEventListener('pageshow',()=>{touchPresence(true);syncEmployeeData('pageshow')});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){touchPresence(true);syncEmployeeData('visible')}});
 window.addEventListener('bos:data-mutated',()=>setTimeout(()=>syncEmployeeData('mutation'),250));
-setTimeout(()=>touchPresence(true),900);
+if(typeof setTimeout==='function')setTimeout(()=>touchPresence(true),900);
 setInterval(()=>touchPresence(false),PRESENCE_MS);
 setInterval(()=>syncEmployeeData('poll'),POLL_MS);
 })();
