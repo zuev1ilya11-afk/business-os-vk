@@ -80,11 +80,17 @@
       const requestPromise=input instanceof Request
         ? fetchRequestAt(url,input,init,controller.signal)
         : lowerFetch(url,init?{...init,signal:controller.signal}:{signal:controller.signal});
-      // fetch resolves at headers. Keep password-login failover active until
-      // the small JSON response has arrived, including on a stalled mobile link.
+      // Password auth must finish reading the small JSON payload before this
+      // route is considered healthy. Read it once and rebuild the response;
+      // response.clone() creates a tee that can stall on Android mobile links.
       const fetchPromise=Promise.resolve(requestPromise).then(async response=>{
-        if(bufferBody)await response.clone().arrayBuffer();
-        return response;
+        if(!bufferBody)return response;
+        const body=await response.arrayBuffer();
+        return new Response(body,{
+          status:response.status,
+          statusText:response.statusText,
+          headers:new Headers(response.headers)
+        });
       });
       const timeoutPromise=new Promise((_,reject)=>{
         timer=setTimeout(()=>{
@@ -168,6 +174,7 @@
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,
     alternateGatewayDeadlineMs:ALT_GATEWAY_DEADLINE_MS,
     edgeDeadlineMs:EDGE_DEADLINE_MS,
-    passwordDirectSimpleCors:true
+    passwordDirectSimpleCors:true,
+    passwordBufferedResponse:true
   };
 })();
