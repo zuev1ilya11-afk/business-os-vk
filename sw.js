@@ -1,5 +1,5 @@
-const CACHE='business-os-shell-v12';
-const REV='20260925-v171';
+const CACHE='business-os-shell-v13';
+const REV='20260925-v172';
 const SHELL=['./','./index.html','./manifest.webmanifest','./brand-logo.svg'];
 const VERSIONED_STATIC=/\.(?:js|css|svg|png|webp|ico|woff2?|webmanifest)$/i;
 const NETWORK_FIRST_PATHS=[
