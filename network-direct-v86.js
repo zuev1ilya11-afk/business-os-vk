@@ -1,9 +1,9 @@
 (()=>{
-  // AppDeploy serves static pages and backend APIs on different hosts.
-  const GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
+  // Current foreign routes remain as temporary fallback during the RU migration.
+  const DEFAULT_GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
   const LEGACY_GATEWAY='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai';
-  const ALT_GATEWAY='https://business-os-api-gateway.netlify.app';
-  const EDGE='https://obsropbslfwtanyspjbi.supabase.co/functions/v1';
+  const DEFAULT_ALT_GATEWAY='https://business-os-api-gateway.netlify.app';
+  const DEFAULT_EDGE='https://obsropbslfwtanyspjbi.supabase.co/functions/v1';
   const GATEWAY_DEADLINE_MS=2200;
   const ALT_GATEWAY_DEADLINE_MS=2200;
   const EDGE_DEADLINE_MS=3500;
@@ -12,24 +12,46 @@
 
   const lowerFetch=window.fetch.bind(window);
 
+  function cleanBase(value,fallback){
+    const raw=String(value||'').trim().replace(/\/+$/,'');
+    if(!raw)return fallback;
+    try{
+      const url=new URL(raw);
+      if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash)return fallback;
+      return raw;
+    }catch(_){return fallback}
+  }
+
+  function routing(){
+    const cfg=window.BOS_INFRA_ENDPOINTS||{};
+    return{
+      gateway:cleanBase(cfg.primaryGateway,DEFAULT_GATEWAY),
+      alternate:cleanBase(cfg.secondaryGateway,DEFAULT_ALT_GATEWAY),
+      edge:cleanBase(cfg.edge,DEFAULT_EDGE)
+    };
+  }
+
   function proxyInfo(raw){
     let url;
     try{url=new URL(raw,location.href)}catch(_){return null}
-    const base=[GATEWAY,LEGACY_GATEWAY,ALT_GATEWAY].find(base=>url.href.startsWith(base+'/api/proxy/'));
+    const route=routing();
+    const bases=[route.gateway,LEGACY_GATEWAY,route.alternate,DEFAULT_GATEWAY,DEFAULT_ALT_GATEWAY]
+      .filter((value,index,list)=>value&&list.indexOf(value)===index);
+    const base=bases.find(value=>url.href.startsWith(value+'/api/proxy/'));
     if(!base)return null;
     const prefix=new URL(base).pathname.replace(/\/$/,'')+'/api/proxy/';
     const slug=decodeURIComponent(url.pathname.slice(prefix.length)).replace(/^\/+|\/+$/g,'');
     if(!slug||slug.includes('/'))return null;
-    return {origin:url.origin,slug,search:url.search};
+    return {base,origin:url.origin,slug,search:url.search};
   }
 
-  function proxyUrl(origin,info){
-    return `${origin}/api/proxy/${encodeURIComponent(info.slug)}${info.search}`;
+  function proxyUrl(base,info){
+    return `${base}/api/proxy/${encodeURIComponent(info.slug)}${info.search}`;
   }
 
   function directUrl(raw){
-    const info=proxyInfo(raw);
-    return info?`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`:'';
+    const info=proxyInfo(raw),route=routing();
+    return info?`${route.edge}/${encodeURIComponent(info.slug)}${info.search}`:'';
   }
 
   function outerSignal(input,init){
@@ -157,31 +179,34 @@
       edgeInput=input.clone();
     }
 
-    // Even legacy modules that still point at Netlify are sent through the
-    // independent gateway first. This keeps old cached/auth code VPN-independent.
+    const route=routing();
+    // During cutover the RU route is primary. Existing gateways remain temporary
+    // fallback until data migration and production verification are complete.
     try{
-      const response=await fetchAt(proxyUrl(GATEWAY,info),primaryInput,init,GATEWAY_DEADLINE_MS,outer,passwordAuth);
+      const response=await fetchAt(proxyUrl(route.gateway,info),primaryInput,init,GATEWAY_DEADLINE_MS,outer,passwordAuth);
       if(!await fallbackResponse(response))return response;
     }catch(error){
       if(outer?.aborted||!retryable(error))throw error;
     }
 
-    try{
-      const response=await fetchAt(proxyUrl(ALT_GATEWAY,info),alternateInput,init,passwordAuth?AUTH_FALLBACK_DEADLINE_MS:ALT_GATEWAY_DEADLINE_MS,outer,passwordAuth);
-      if(!await fallbackResponse(response))return response;
-    }catch(error){
-      if(outer?.aborted||!retryable(error))throw error;
+    if(route.alternate&&route.alternate!==route.gateway){
+      try{
+        const response=await fetchAt(proxyUrl(route.alternate,info),alternateInput,init,passwordAuth?AUTH_FALLBACK_DEADLINE_MS:ALT_GATEWAY_DEADLINE_MS,outer,passwordAuth);
+        if(!await fallbackResponse(response))return response;
+      }catch(error){
+        if(outer?.aborted||!retryable(error))throw error;
+      }
     }
 
     const edgeInit=passwordAuth?directPasswordInit(edgeInput,init):init;
-    return fetchAt(`${EDGE}/${encodeURIComponent(info.slug)}${info.search}`,edgeInput,edgeInit,passwordAuth?AUTH_FALLBACK_DEADLINE_MS:EDGE_DEADLINE_MS,outer,passwordAuth);
+    return fetchAt(`${route.edge}/${encodeURIComponent(info.slug)}${info.search}`,edgeInput,edgeInit,passwordAuth?AUTH_FALLBACK_DEADLINE_MS:EDGE_DEADLINE_MS,outer,passwordAuth);
   };
 
   window.BOS_NETWORK_DIRECT_V86={
-    gateway:GATEWAY,
-    primaryGateway:GATEWAY,
-    secondaryGateway:ALT_GATEWAY,
-    edge:EDGE,
+    get gateway(){return routing().gateway},
+    get primaryGateway(){return routing().gateway},
+    get secondaryGateway(){return routing().alternate},
+    get edge(){return routing().edge},
     directUrl,
     proxyInfo,
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,
@@ -189,6 +214,7 @@
     edgeDeadlineMs:EDGE_DEADLINE_MS,
     passwordDirectSimpleCors:true,
     passwordBufferedResponse:true,
-    passwordSessionHeaderFastPath:true
+    passwordSessionHeaderFastPath:true,
+    ruMigrationAware:true
   };
 })();
