@@ -12,7 +12,7 @@ for(const status of [401,403,500])test(`VK HTTP ${status} displays server error 
 });
 test('independent gateway network failure falls back to Netlify before direct Edge',async({page})=>{
  let alternate=0,direct=0;
- await page.route('https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e/api/proxy/vk-session-api',r=>r.abort('failed'));
+ await page.route('https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai/api/proxy/vk-session-api',r=>r.abort('failed'));
  await page.route('https://business-os-api-gateway.netlify.app/api/proxy/vk-session-api',r=>{alternate++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Резервный шлюз отвечает"}'})});
  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/vk-session-api',r=>{direct++;return r.abort()});
  await authPage(page);

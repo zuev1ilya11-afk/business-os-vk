@@ -4,7 +4,7 @@ test.use({...devices['Pixel 7'],defaultBrowserType:'chromium'});
 
 for(const failure of ['network','timeout','body-timeout','502','504']){
   test(`Android password login uses fallback after primary ${failure}`,async({page})=>{
-    const primary='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
+    const primary='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai';
     const secondary='https://business-os-api-gateway.netlify.app';
     const session='mobile.9999999999.testsignature';
     let primaryCalls=0,alternateCalls=0,authenticatedBootstrap=0,directCalls=0;
@@ -34,7 +34,7 @@ for(const failure of ['network','timeout','body-timeout','502','504']){
     await page.route(secondary+'/api/proxy/password-session-api',async r=>{
       alternateCalls++;
       expect(r.request().postDataJSON()).toEqual({action:'login',login:'mobile-test',password:'test-password'});
-      // A reachable mobile fallback can take longer than the old 2.2s deadline.
+      // A reachable mobile fallback can take longer than the general 2.2s deadline.
       await new Promise(resolve=>setTimeout(resolve,2600));
       await r.fulfill({json:{ok:true,session_token:session}});
     });
@@ -44,11 +44,13 @@ for(const failure of ['network','timeout','body-timeout','502','504']){
       return r.fulfill({json:{ok:true,user:{full_name:'Мастер',role:'master',city:'Москва'},orders:[],users:[],masters:[],masterSchedule:[],claims:[],sources:[],settings:{}}});
     });
     await page.goto('/',{waitUntil:'domcontentloaded'});
+    expect(await page.evaluate(()=>window.BOS_NETWORK_DIRECT_V86.authPrimaryDeadlineMs)).toBe(12000);
+    expect(await page.evaluate(()=>window.BOS_NETWORK_DIRECT_V86.authFallbackDeadlineMs)).toBe(3500);
     const form=page.locator('#simplePassForm');
     await form.locator('[name=login]').fill('mobile-test');
     await form.locator('[name=password]').fill('test-password');
     await form.getByRole('button',{name:'Войти',exact:true}).click();
-    await expect(page.locator('#authGate')).toBeHidden({timeout:10000});
+    await expect(page.locator('#authGate')).toBeHidden({timeout:20000});
     await expect(page.locator('#app')).toBeVisible();
     expect(failure==='body-timeout'?await page.evaluate(()=>window.stalledAuthCalls):primaryCalls).toBe(1);
     expect(alternateCalls).toBe(1);
