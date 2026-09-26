@@ -12,7 +12,7 @@
   const AUTH_BACKUP_GATEWAY_DEADLINE_MS=3500;
   const AUTH_FALLBACK_DEADLINE_MS=1800;
   const AUTH_EDGE_DEADLINE_MS=6500;
-  const ROUTE_FAILURE_STATUSES=new Set([502,503,504]);
+  const ROUTE_FAILURE_STATUSES=new Set([402,502,503,504]);
   const SAFE_ACTIONS=new Set(['health','bootstrap','get','list','load','read','status','updateOrder','uploadReportFile','finalizeMasterReport','reviewReport','syncHandsOrders']);
   if(typeof window.fetch!=='function'||window.BOS_NETWORK_DIRECT_V86)return;
 
@@ -231,6 +231,6 @@
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,backupGatewayDeadlineMs:BACKUP_GATEWAY_DEADLINE_MS,alternateGatewayDeadlineMs:ALT_GATEWAY_DEADLINE_MS,edgeDeadlineMs:EDGE_DEADLINE_MS,
     authGatewayDeadlineMs:AUTH_GATEWAY_DEADLINE_MS,authBackupGatewayDeadlineMs:AUTH_BACKUP_GATEWAY_DEADLINE_MS,authAlternateGatewayDeadlineMs:AUTH_FALLBACK_DEADLINE_MS,authEdgeDeadlineMs:AUTH_EDGE_DEADLINE_MS,
     preferredTarget:(slug='mini-app-api')=>({...preferredTargetFor(slug,TARGETS[0])}),clearPreferredTarget,
-    transientHttpFailover:'safe-actions-only',writeReplay:'idempotent-actions-only',passwordDirectSimpleCors:true,passwordBufferedResponse:true,passwordSessionHeaderFastPath:true,directEdgeFailover:true,sourceRoutePreserved:true
+    transientHttpFailover:'safe-actions-only',writeReplay:'idempotent-actions-only',passwordDirectSimpleCors:true,passwordBufferedResponse:true,passwordSessionHeaderFastPath:true,directEdgeFailover:true,sourceRoutePreserved:true,restricted402Failover:true
   };
 })();
