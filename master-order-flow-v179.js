@@ -19,7 +19,7 @@ const reportRejected=o=>reportUploaded(o)&&String(o?.report_review_status||'pend
 const reportApproved=o=>String(o?.status||'')==='Выполнена'||String(o?.report_review_status||'')==='approved';
 const localToday=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const whenText=o=>`${dateOf(o)||'Дата не назначена'}${timeOf(o)?` · ${timeOf(o)}`:''}`;
-const button=(label,handler,enabled,done=false,extra='')=>`<button type="button" class="v179StageButton${done?' isDone':''}${extra?' '+extra:''}" ${enabled?`onclick="${handler}"`:'disabled'}><span>${escv(label)}</span><b>${done?'✓':'›'}</b></button>`;
+const button=(label,handler,enabled,done=false,extra='')=>`<button type="button" class="v179StageButton${done?' isDone':''}${extra?' '+extra:''}" ${enabled?`onclick="${handler}"`:'disabled'}><span>${escv(label)}</span><b aria-hidden="true">${done?'✓':'›'}</b></button>`;
 
 async function authHeaders(){const h=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};return {...h,'Content-Type':'application/json'}}
 async function api(action,id,payload={}){const r=await fetch(API_URL,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action,id,...payload})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось сохранить действие');return d}
