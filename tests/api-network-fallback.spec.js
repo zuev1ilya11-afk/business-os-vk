@@ -27,6 +27,7 @@ test('transient 503 on primary core API fails over to backup gateway',async({pag
  await page.route('https://business-os-api-gateway.netlify.app/api/proxy/mini-app-api',r=>{netlify++;return r.abort('failed')});
  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',r=>{direct++;return r.abort('failed')});
  await page.goto('/');
+ await page.evaluate(()=>BOS_NETWORK_DIRECT_V86.clearPreferredTarget('mini-app-api'));primary=backup=netlify=direct=0;
  const result=await page.evaluate(()=>fetch(BUSINESS_OS_CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:'{"action":"bootstrap"}'}).then(r=>r.json()));
  expect(result).toEqual({ok:true,route:'backup'});
  expect(primary).toBe(1);expect(backup).toBe(1);expect(netlify).toBe(0);expect(direct).toBe(0);
@@ -38,6 +39,7 @@ test('transient gateway 5xx responses fall through every proxy to direct Edge',a
  await page.route('https://business-os-api-gateway.netlify.app/api/proxy/mini-app-api',r=>{netlify++;return r.fulfill({status:504,contentType:'application/json',body:'{"ok":false,"error":"UPSTREAM_TIMEOUT"}'})});
  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',r=>{direct++;return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"route":"edge"}'})});
  await page.goto('/');
+ await page.evaluate(()=>BOS_NETWORK_DIRECT_V86.clearPreferredTarget('mini-app-api'));primary=backup=netlify=direct=0;
  const result=await page.evaluate(()=>fetch(BUSINESS_OS_CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:'{"action":"bootstrap"}'}).then(r=>r.json()));
  expect(result).toEqual({ok:true,route:'edge'});
  expect(primary).toBe(1);expect(backup).toBe(1);expect(netlify).toBe(1);expect(direct).toBe(1);
@@ -63,7 +65,7 @@ test('hanging gateways switch to direct API before outer auth deadline',async({p
    window.simulatedGatewayTimeoutCalls=0;
    window.fetch=(input,init)=>{
      const raw=typeof input==='string'?input:input?.url||String(input);
-     if(raw.includes('/api/proxy/')){
+     if(raw.includes('/api/proxy/vk-session-api')){
        window.simulatedGatewayTimeoutCalls++;
        return new Promise((_,reject)=>{
          const abort=()=>reject(new DOMException('Aborted','AbortError'));
