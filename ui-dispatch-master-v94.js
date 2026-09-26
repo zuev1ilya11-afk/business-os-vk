@@ -10,6 +10,11 @@ const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=
 const noOf=o=>{const x=String(o?.external_id||'');return x.startsWith('hands:')?x.slice(6):String(o?.id||'')};
 const dateOf=o=>String(o?.scheduled_date||'').slice(0,10);
 const timeOf=o=>String(o?.scheduled_time||o?.time_slot||'').slice(0,5);
+const sequenceOf=o=>{const shown=Number(String(noOf(o)).replace(/\D/g,''));if(Number.isFinite(shown)&&shown>0)return shown;const id=Number(String(o?.id||'').replace(/\D/g,''));return Number.isFinite(id)?id:0};
+const createdOf=o=>{const parsed=Date.parse(o?.created_at||o?.createdAt||o?.created_date||o?.created||'');return Number.isFinite(parsed)?parsed:sequenceOf(o)};
+const tripOf=o=>`${dateOf(o)||'9999-99-99'} ${timeOf(o)||'99:99'}`;
+const listSortMode=()=>document.getElementById('bosOrderSort')?.value||sessionStorage.getItem('bosDispatchListSort')||'newest';
+function listCompare(a,b){const mode=listSortMode();if(mode==='trip')return tripOf(a).localeCompare(tripOf(b))||sequenceOf(b)-sequenceOf(a);const age=createdOf(a)-createdOf(b);return mode==='oldest'?(age||sequenceOf(a)-sequenceOf(b)):(-age||sequenceOf(b)-sequenceOf(a))}
 
 function relocateDispatcherControls(){
   if(!dispatcherDesktop())return;
@@ -45,10 +50,7 @@ function listStatus(o){
 function inlineListHtml(){
   const q=String(document.getElementById('bosOrderSearch')?.value||'').trim().toLowerCase();
   const master=String(document.getElementById('bosOrderMaster')?.value||'');
-  const orders=(state.orders||[]).filter(o=>listMatches(o,q,master)).slice().sort((a,b)=>{
-    const ad=`${dateOf(a)||'9999-99-99'} ${timeOf(a)||'99:99'}`,bd=`${dateOf(b)||'9999-99-99'} ${timeOf(b)||'99:99'}`;
-    return ad.localeCompare(bd);
-  });
+  const orders=(state.orders||[]).filter(o=>listMatches(o,q,master)).slice().sort(listCompare);
   return `<div class="dbV94InlineList"><div class="dbV94ListHead"><div><b>Список заявок</b><span>Внутри диспетчерской доски</span></div><strong>${orders.length}</strong></div><div class="dbV94ListItems">${orders.map(o=>{const [cls,label]=listStatus(o);return `<button type="button" class="dbV94ListCard ${cls}" data-order-id="${escv(o.id)}" onclick="selectDispatchBoardOrder('${escv(o.id)}')"><div class="dbV94ListTop"><b>№ ${escv(noOf(o))} · ${escv(o.client||'Клиент')}</b><span class="dbV94Status ${cls}">${label}</span></div><div class="dbV94ListWork">${escv(o.work||'Заявка')}</div><div class="dbV94ListMeta"><span>${escv(dateOf(o)||'Без даты')} ${escv(timeOf(o)||'')}</span><span>${escv(o.master_name||'Без мастера')}</span><span>${escv(o.address||'Адрес не указан')}</span></div></button>`}).join('')||'<div class="dbV94Empty">По выбранным условиям заявок нет.</div>'}</div></div>`;
 }
 function syncListTab(){

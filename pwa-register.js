@@ -102,6 +102,11 @@
   new MutationObserver(loadAfterLegacyUnlock).observe(document.body,{attributes:true,attributeFilter:['class']});
   loadAfterLegacyUnlock();
 
+  const dispatchBoardDesktopV108=document.createElement('script');
+  dispatchBoardDesktopV108.src='./dispatcher-board-desktop-v108.js?v=20260923-v108b';
+  dispatchBoardDesktopV108.async=false;
+  document.head.appendChild(dispatchBoardDesktopV108);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js?v=20260925-v171',{scope:'./',updateViaCache:'none'})
