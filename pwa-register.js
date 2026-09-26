@@ -62,7 +62,8 @@
       './master-day-summary-v128.js?v=20260926-order1',
       './master-profile-summary-v129.js?v=20260924-v129',
       './master-money-v130.js?v=20260924-v130',
-      './master-cabinet-v141.js?v=20260925-v141b'
+      './master-cabinet-v141.js?v=20260925-v141b',
+      './master-order-flow-v177.js?v=20260926-v177'
     ]
   };
   const roleLoads=new Map();
