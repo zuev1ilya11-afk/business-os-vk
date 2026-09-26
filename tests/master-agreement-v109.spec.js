@@ -38,11 +38,12 @@ test('master agrees unscheduled order and then enters scheduled workflow',async(
 test('scheduled order uses confirmed reschedule instead of direct date editing',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const {db}=await fullStack(page,'master');
-  db.tables.orders[0].scheduled_date='2099-09-10';
-  db.tables.orders[0].scheduled_time='12:00';
-  db.tables.orders[0].time_slot='12:00–13:00';
-  db.tables.orders[0].phone='+79990000002';
-  db.tables.orders[0].master_workflow_stage='assigned';
+  const order=db.tables.orders.find(o=>String(o.id)==='11');
+  order.scheduled_date='2099-09-10';
+  order.scheduled_time='12:00';
+  order.time_slot='12:00–13:00';
+  order.phone='+79990000002';
+  order.master_workflow_stage='assigned';
 
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
