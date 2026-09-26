@@ -54,6 +54,10 @@
     return [preferred,...TARGETS.filter(target=>targetKey(target)!==targetKey(preferred))];
   }
   function rememberTarget(slug,target){preferredTargets.set(slug,target)}
+  function clearPreferredTarget(slug){
+    if(slug)preferredTargets.delete(String(slug));
+    else preferredTargets.clear();
+  }
   function outerSignal(input,init){return init?.signal||(input instanceof Request?input.signal:null)||null}
 
   async function requestAction(input,init){
@@ -213,7 +217,7 @@
     directUrl,proxyInfo,
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,backupGatewayDeadlineMs:BACKUP_GATEWAY_DEADLINE_MS,alternateGatewayDeadlineMs:ALT_GATEWAY_DEADLINE_MS,edgeDeadlineMs:EDGE_DEADLINE_MS,
     authGatewayDeadlineMs:AUTH_GATEWAY_DEADLINE_MS,authBackupGatewayDeadlineMs:AUTH_BACKUP_GATEWAY_DEADLINE_MS,authAlternateGatewayDeadlineMs:AUTH_FALLBACK_DEADLINE_MS,authEdgeDeadlineMs:AUTH_EDGE_DEADLINE_MS,
-    preferredTarget:(slug='mini-app-api')=>({...preferredTargetFor(slug)}),
+    preferredTarget:(slug='mini-app-api')=>({...preferredTargetFor(slug)}),clearPreferredTarget,
     transientHttpFailover:'safe-actions-only',writeReplay:'disabled-after-ambiguous-failure',passwordDirectSimpleCors:true,passwordBufferedResponse:true,passwordSessionHeaderFastPath:true
   };
 })();
