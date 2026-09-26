@@ -41,9 +41,10 @@ test('master order v126 highlights next step and keeps mobile actions usable',as
   await expect(phone).toHaveAttribute('href','tel:+79990000002');
   await expect(page.getByRole('button',{name:'Заполнить отчёт',exact:true})).toBeVisible();
 
-  const actions=page.locator('.bosMasterWorkflow .mwv2Actions');
+  const actions=page.locator('.bosMasterWorkflow[data-bos-v179="1"] .v179Stages');
   await expect(actions).toBeVisible();
   expect(await actions.evaluate(el=>getComputedStyle(el).position)).toBe('static');
+  await expect(page.getByRole('button',{name:'Отправить отчет',exact:true})).toBeEnabled();
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
 });

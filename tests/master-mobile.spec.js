@@ -51,9 +51,15 @@ for(const s of sizes){
     await page.evaluate(()=>openOrder('M-1'));
     const modal=page.locator('.modal.show, .modal.open, .modal').filter({hasText:'№ M-1'}).last();
     await expect(modal.getByText('Выплата: 2 463,05 ₽',{exact:true})).toBeVisible();
-    await expect(page.locator('.bosMasterWorkflow[data-bos-v26="1"]')).toBeVisible();
-    await expect(page.getByRole('link',{name:'Позвонить клиенту',exact:true})).toBeVisible();
-    await expect(page.getByRole('button',{name:'Нужно перенести',exact:true})).toBeVisible();
+    await expect(page.locator('.bosMasterWorkflow[data-bos-v179="1"]')).toBeVisible();
+    await expect(page.getByRole('button',{name:'Выехал',exact:true})).toBeVisible();
+    await expect(page.getByRole('button',{name:'Начал работу',exact:true})).toBeVisible();
+    await expect(page.getByRole('button',{name:'Отправить отчет',exact:true})).toBeVisible();
+    await expect(page.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
+    await expect(page.getByText('Требует подтверждения диспетчера или руководителя',{exact:true})).toBeVisible();
+    await expect(page.getByRole('button',{name:'Выехал',exact:true})).toBeEnabled();
+    await expect(page.getByRole('button',{name:'Начал работу',exact:true})).toBeDisabled();
+    await expect(page.getByRole('button',{name:'Отправить отчет',exact:true})).toBeDisabled();
     await expect(page.getByRole('button',{name:'Я на месте',exact:true})).toHaveCount(0);
     await expect(page.getByRole('button',{name:'Отчитаться по заявке'})).toBeHidden();
     await expect(page.getByText('Исходная сумма',{exact:true})).toHaveCount(0);
