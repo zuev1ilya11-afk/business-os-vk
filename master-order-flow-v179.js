@@ -23,7 +23,7 @@ const button=(label,handler,enabled,done=false,extra='')=>`<button type="button"
 
 async function authHeaders(){const h=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};return {...h,'Content-Type':'application/json'}}
 async function api(action,id,payload={}){const r=await fetch(API_URL,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action,id,...payload})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось сохранить действие');return d}
-function mergeOrder(id,data){const i=(state.orders||[]).findIndex(o=>String(o.id)===String(id));if(i>=0)state.orders[i]={...state.orders[i],...(data||{})]}
+function mergeOrder(id,data){const i=(state.orders||[]).findIndex(o=>String(o.id)===String(id));if(i>=0)state.orders[i]={...state.orders[i],...(data||{})}}
 function msg(id,text){const panel=document.querySelector('#modalRoot .bosMasterWorkflow');if(String(panel?.dataset?.orderId||'')!==String(id))return;const el=panel.querySelector('.v179Msg');if(el)el.textContent=text||''}
 function legacyV115Sig(o){return JSON.stringify([o.id,o.status,o.master_called_at,o.master_agreed_at,o.master_workflow_stage,o.master_departed_at,o.master_started_at,o.report_uploaded_at,o.report_review_status,o.report_review_comment,o.completed_at,o.scheduled_date,o.scheduled_time,o.time_slot])}
 function legacyV116Sig(o){return JSON.stringify([o.id,o.status,o.master_called_at,o.master_agreed_at,o.master_workflow_stage,o.master_started_at,o.report_uploaded_at,o.report_review_status,o.report_review_comment,o.completed_at,o.scheduled_date,o.scheduled_time,o.time_slot])}
@@ -40,8 +40,8 @@ window.openMasterAgreement=function(id){
     if(!date||!time){message.textContent='Укажите дату и время';return}
     busy=true;state.busy=true;if(typeof setBusy==='function')setBusy(form,true);message.textContent='Сохраняем…';
     try{
-      let current=orderById(o.id);
-      if(!current?.master_called_at){const called=await api('markCalled',o.id);mergeOrder(o.id,called.order);current=orderById(o.id)}
+      const current=orderById(o.id);
+      if(!current?.master_called_at){const called=await api('markCalled',o.id);mergeOrder(o.id,called.order)}
       const agreed=await api('setAgreementSchedule',o.id,{scheduled_date:date,scheduled_time:time});mergeOrder(o.id,agreed.order);
       closeModal();window.openOrder?.(o.id);
     }catch(err){message.textContent=err?.message||String(err);if(typeof setBusy==='function')setBusy(form,false)}finally{busy=false;state.busy=false}
