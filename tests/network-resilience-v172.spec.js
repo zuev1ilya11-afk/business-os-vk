@@ -10,6 +10,10 @@ async function openLogin(page){
   await page.goto('/',{waitUntil:'domcontentloaded'});
 }
 
+async function resetMiniAppRoute(page){
+  await page.evaluate(()=>BOS_NETWORK_DIRECT_V86.clearPreferredTarget('mini-app-api'));
+}
+
 test('safe bootstrap fails over to backup and pins later writes to that healthy route',async({page})=>{
   let primary=0,backup=0,netlify=0,direct=0;
   await page.route(PRIMARY+'/api/proxy/mini-app-api',r=>{primary++;return r.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"UPSTREAM_UNAVAILABLE"}'})});
@@ -17,6 +21,8 @@ test('safe bootstrap fails over to backup and pins later writes to that healthy 
   await page.route(NETLIFY+'/api/proxy/mini-app-api',r=>{netlify++;return r.abort('failed')});
   await page.route(EDGE+'/mini-app-api',r=>{direct++;return r.abort('failed')});
   await openLogin(page);
+  await resetMiniAppRoute(page);
+  primary=backup=netlify=direct=0;
 
   const bootstrap=await page.evaluate(()=>fetch(BUSINESS_OS_CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'bootstrap'})}).then(r=>r.json()));
   expect(bootstrap).toEqual({ok:true,route:'backup'});
@@ -42,6 +48,8 @@ test('mutation network failure on the preferred route is not replayed elsewhere'
   await page.route(NETLIFY+'/api/proxy/mini-app-api',r=>{netlify++;return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'})});
   await page.route(EDGE+'/mini-app-api',r=>{direct++;return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'})});
   await openLogin(page);
+  await resetMiniAppRoute(page);
+  primary=backup=netlify=direct=0;
 
   await page.evaluate(()=>fetch(BUSINESS_OS_CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'bootstrap'})}));
   const result=await page.evaluate(()=>fetch(BUSINESS_OS_CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'addEmployee',full_name:'Тест',role:'master'})}).then(()=> 'resolved',e=>e.name+':'+e.message));
