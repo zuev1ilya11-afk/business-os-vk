@@ -40,7 +40,7 @@ function decorateHome(force=false){
   const daily=document.getElementById('masterDailyV127'),card=daily?.querySelector('.masterV127Next');
   if(!daily||!card||!liveMaster()){document.getElementById('masterOrderFlowHome177')?.remove();return}
   const id=String(card.dataset.orderId||''),o=orderById(id);if(!o)return;
-  const chip=card.querySelector('.masterV127Main strong');if(chip)chip.textContent=flowStatus(o);
+  const chip=card.querySelector('.masterV127Main strong'),chipText=flowStatus(o);if(chip&&chip.textContent!==chipText)chip.textContent=chipText;
   let box=document.getElementById('masterOrderFlowHome177');if(!box){box=document.createElement('div');box.id='masterOrderFlowHome177';box.className='mof177Home';card.insertAdjacentElement('afterend',box)}else if(box.previousElementSibling!==card)card.insertAdjacentElement('afterend',box);
   const sig=JSON.stringify([o.id,dateOf(o),timeOf(o),o.master_workflow_stage,o.report_uploaded_at,o.report_act_url,o.report_review_status,o.status,o.reschedule_requested,expandedHomeId]);
   if(!force&&box.dataset.sig===sig)return;box.dataset.sig=sig;box.dataset.orderId=id;box.innerHTML=homeHtml(o);
