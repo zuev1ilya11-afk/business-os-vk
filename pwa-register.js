@@ -102,6 +102,11 @@
   new MutationObserver(loadAfterLegacyUnlock).observe(document.body,{attributes:true,attributeFilter:['class']});
   loadAfterLegacyUnlock();
 
+  const masterDayProgressV129=document.createElement('script');
+  masterDayProgressV129.src='./master-day-progress-v129.js?v=20260924-v129';
+  masterDayProgressV129.async=false;
+  document.head.appendChild(masterDayProgressV129);
+
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js?v=20260925-v171',{scope:'./',updateViaCache:'none'})
