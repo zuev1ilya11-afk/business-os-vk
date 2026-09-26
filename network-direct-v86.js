@@ -9,7 +9,7 @@
   const ALT_GATEWAY_DEADLINE_MS=2200;
   const EDGE_DEADLINE_MS=5000;
   const AUTH_GATEWAY_DEADLINE_MS=1800;
-  const AUTH_BACKUP_GATEWAY_DEADLINE_MS=2800;
+  const AUTH_BACKUP_GATEWAY_DEADLINE_MS=3500;
   const AUTH_FALLBACK_DEADLINE_MS=1800;
   const AUTH_EDGE_DEADLINE_MS=6500;
   const ROUTE_FAILURE_STATUSES=new Set([502,503,504]);
@@ -23,7 +23,7 @@
     {kind:'gateway',base:ALT_GATEWAY},
     {kind:'edge',base:EDGE}
   ];
-  let preferredTarget=TARGETS[0];
+  const preferredTargets=new Map();
 
   function proxyInfo(raw){
     let url;
@@ -48,11 +48,12 @@
   }
 
   function targetKey(target){return `${target.kind}:${target.base}`}
-  function orderedTargets(){
-    const preferred=preferredTarget;
+  function preferredTargetFor(slug){return preferredTargets.get(slug)||TARGETS[0]}
+  function orderedTargets(slug){
+    const preferred=preferredTargetFor(slug);
     return [preferred,...TARGETS.filter(target=>targetKey(target)!==targetKey(preferred))];
   }
-  function rememberTarget(target){preferredTarget=target}
+  function rememberTarget(slug,target){preferredTargets.set(slug,target)}
   function outerSignal(input,init){return init?.signal||(input instanceof Request?input.signal:null)||null}
 
   async function requestAction(input,init){
@@ -148,7 +149,7 @@
   function attemptInit(target,passwordAuth,input,init){return target.kind==='edge'&&passwordAuth?directPasswordInit(input,init):init}
 
   async function safeFetch(info,input,init,outer,passwordAuth){
-    const targets=orderedTargets();
+    const targets=orderedTargets(info.slug);
     let lastError=null;
     let lastResponse=null;
     for(let i=0;i<targets.length;i++){
@@ -159,7 +160,7 @@
         lastResponse=response;
         const deterministicMiss=await serviceNotAllowed(response);
         const transient=ROUTE_FAILURE_STATUSES.has(response.status);
-        if(!deterministicMiss&&!transient){rememberTarget(target);return response}
+        if(!deterministicMiss&&!transient){rememberTarget(info.slug,target);return response}
         if(i===targets.length-1)return response;
       }catch(error){
         lastError=error;
@@ -172,7 +173,7 @@
   }
 
   async function singleWriteFetch(info,input,init,outer,passwordAuth){
-    const targets=orderedTargets();
+    const targets=orderedTargets(info.slug);
     let target=targets[0];
     let currentInput=attemptInput(input);
     let response=await fetchAt(targetUrl(target,info),currentInput,attemptInit(target,passwordAuth,currentInput,init),deadlineFor(target,passwordAuth),outer,passwordAuth);
@@ -188,7 +189,7 @@
         if(outer?.aborted||!retryable(error))throw error;
         throw error;
       }
-      if(!await serviceNotAllowed(response)){if(!ROUTE_FAILURE_STATUSES.has(response.status))rememberTarget(target);return response}
+      if(!await serviceNotAllowed(response)){if(!ROUTE_FAILURE_STATUSES.has(response.status))rememberTarget(info.slug,target);return response}
     }
     return response;
   }
@@ -212,7 +213,7 @@
     directUrl,proxyInfo,
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,backupGatewayDeadlineMs:BACKUP_GATEWAY_DEADLINE_MS,alternateGatewayDeadlineMs:ALT_GATEWAY_DEADLINE_MS,edgeDeadlineMs:EDGE_DEADLINE_MS,
     authGatewayDeadlineMs:AUTH_GATEWAY_DEADLINE_MS,authBackupGatewayDeadlineMs:AUTH_BACKUP_GATEWAY_DEADLINE_MS,authAlternateGatewayDeadlineMs:AUTH_FALLBACK_DEADLINE_MS,authEdgeDeadlineMs:AUTH_EDGE_DEADLINE_MS,
-    preferredTarget:()=>({...preferredTarget}),
+    preferredTarget:(slug='mini-app-api')=>({...preferredTargetFor(slug)}),
     transientHttpFailover:'safe-actions-only',writeReplay:'disabled-after-ambiguous-failure',passwordDirectSimpleCors:true,passwordBufferedResponse:true,passwordSessionHeaderFastPath:true
   };
 })();
