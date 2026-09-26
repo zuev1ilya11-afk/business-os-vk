@@ -26,10 +26,13 @@ test('master final cabinet keeps upcoming compact, workflow, schedule summary an
   await expect(card).not.toContainText('Монтаж');
 
   await card.click();
-  await expect(page.locator('.bosMasterWorkflow')).toBeVisible();
-  await expect(page.locator('.bosMasterWorkflow')).toContainText('Нужно позвонить');
-  await expect(page.locator('.bosMasterWorkflow')).toContainText('В режиме просмотра действия недоступны.');
-  await expect(page.getByRole('button',{name:'Отчитаться по заявке'})).toBeHidden();
+  const workflow=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
+  await expect(workflow).toBeVisible();
+  await expect(workflow).toContainText('Этапы выполнения заявки');
+  await expect(workflow.getByRole('button',{name:/Выехал/})).toBeDisabled();
+  await expect(workflow.getByRole('button',{name:/Начал работу/})).toBeDisabled();
+  await expect(workflow.getByRole('button',{name:/Отправить отчет/})).toBeDisabled();
+  await expect(workflow).toContainText('В режиме просмотра действия недоступны.');
   await page.evaluate(()=>closeModal());
 
   await page.evaluate(({masterVkId})=>{
