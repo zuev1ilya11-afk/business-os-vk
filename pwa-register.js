@@ -58,7 +58,7 @@
       './master-orders-v125.js?v=20260924-v125',
       './master-orders-v125-compat.js?v=20260924-v125b',
       './master-order-focus-v126.js?v=20260924-v126',
-      './master-daily-home-v127.js?v=20260924-v127',
+      './master-daily-home-v127.js?v=20260926-daycards1',
       './master-day-summary-v128.js?v=20260926-order1',
       './master-profile-summary-v129.js?v=20260924-v129',
       './master-money-v130.js?v=20260924-v130',
