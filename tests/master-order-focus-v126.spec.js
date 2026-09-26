@@ -3,7 +3,7 @@ const {fullStack}=require('./helpers/full-stack.cjs');
 
 test('master order v126 highlights next step and keeps mobile actions usable',async({page})=>{
   const {db,master}=await fullStack(page,'master');
-  const order=db.tables.orders[0];
+  const order=db.tables.orders.find(o=>String(o.id)==='11');
   master.phone='+79990000001';
   Object.assign(order,{
     phone:'+79990000002',
@@ -39,9 +39,10 @@ test('master order v126 highlights next step and keeps mobile actions usable',as
 
   const phone=page.locator('.masterV126Phone');
   await expect(phone).toHaveAttribute('href','tel:+79990000002');
-  await expect(page.getByRole('button',{name:'Заполнить отчёт',exact:true})).toBeVisible();
+  const workflow=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
+  await expect(workflow.getByRole('button',{name:/Отправить отчет/})).toBeEnabled();
 
-  const actions=page.locator('.bosMasterWorkflow .mwv2Actions');
+  const actions=workflow.locator('.moa179StageActions');
   await expect(actions).toBeVisible();
   expect(await actions.evaluate(el=>getComputedStyle(el).position)).toBe('static');
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
