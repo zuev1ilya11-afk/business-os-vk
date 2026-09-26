@@ -3,7 +3,7 @@ const {fullStack}=require('./helpers/full-stack.cjs');
 
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 
-test('master follows call agreement work report and completion sequence',async({page})=>{
+test('scheduled master order follows depart start report sequence',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const {db}=await fullStack(page,'master');
   const order=db.tables.orders[0];
@@ -14,38 +14,33 @@ test('master follows call agreement work report and completion sequence',async({
   order.master_workflow_stage='assigned';
   order.master_called_at=null;
   order.master_agreed_at=null;
+  order.report_uploaded_at=null;
+  order.report_act_url=null;
 
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await page.evaluate(()=>window.openOrder('11'));
-  const panel=page.locator('.bosMasterWorkflow[data-bos-v116="1"]');
+  const panel=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(panel).toBeVisible();
-  await expect(panel).toContainText('Нужно позвонить');
-  await expect(panel.locator('.mwv2Step')).toHaveCount(5);
-  await expect(panel).not.toContainText('Выехал');
-  await expect(page.getByRole('link',{name:'Позвонить клиенту',exact:true})).toBeVisible();
+  await expect(panel).toContainText('ЭТАПЫ ВЫПОЛНЕНИЯ ЗАЯВКИ');
+  await expect(page.getByRole('button',{name:'Выехал',exact:true})).toBeEnabled();
+  await expect(page.getByRole('button',{name:'Начал работу',exact:true})).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Отправить отчет',exact:true})).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
+  await expect(panel).toContainText('Требует подтверждения диспетчера или руководителя');
 
-  await page.getByRole('button',{name:'Звонок выполнен',exact:true}).click();
-  await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();
-  await expect(panel).toContainText('Созвонился');
-  await expect(page.getByRole('button',{name:'Договорённость',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Выехал',exact:true}).click();
+  await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('departed');
+  await expect(page.getByRole('button',{name:'Выехал',exact:true})).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Начал работу',exact:true})).toBeEnabled();
+  await expect(page.getByRole('button',{name:'Отправить отчет',exact:true})).toBeDisabled();
 
-  await page.getByRole('button',{name:'Договорённость',exact:true}).click();
-  await expect(page.locator('#masterAgreementForm')).toBeVisible();
-  await expect(page.locator('#masterAgreementForm input[name="scheduled_date"]')).toHaveValue(localDate());
-  await expect(page.locator('#masterAgreementForm input[name="scheduled_time"]')).toHaveValue('10:00');
-  await page.getByRole('button',{name:'Сохранить договорённость',exact:true}).click();
-  await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();
-  await expect(page.getByRole('button',{name:'Начать работу',exact:true})).toBeVisible();
-  await expect(page.getByRole('button',{name:'Изменить дату и время',exact:true})).toBeVisible();
-  await expect(page.getByRole('button',{name:'Выехал',exact:true})).toHaveCount(0);
-
-  await page.getByRole('button',{name:'Начать работу',exact:true}).click();
+  await page.getByRole('button',{name:'Начал работу',exact:true}).click();
   await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('started');
-  await expect(panel).toContainText('В работе');
-  await expect(page.getByRole('button',{name:'Заполнить отчёт',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Начал работу',exact:true})).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Отправить отчет',exact:true})).toBeEnabled();
 
-  await page.getByRole('button',{name:'Заполнить отчёт',exact:true}).click();
+  await page.getByRole('button',{name:'Отправить отчет',exact:true}).click();
   await expect(page.locator('#masterReportForm')).toBeVisible();
 });
 
@@ -78,7 +73,7 @@ test('dispatcher sees simplified master workflow on current dispatch board',asyn
   await expect(flow).not.toContainText('Выехал');
 });
 
-test('legacy departed stage remains compatible but is not shown as a separate step',async({page})=>{
+test('legacy departed stage maps to departed state in approved master flow',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const {db}=await fullStack(page,'master');
   db.tables.orders[0].scheduled_date=localDate();
@@ -91,10 +86,10 @@ test('legacy departed stage remains compatible but is not shown as a separate st
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await page.evaluate(()=>window.openOrder('11'));
-  const panel=page.locator('.bosMasterWorkflow[data-bos-v116="1"]');
+  const panel=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(panel).toBeVisible();
-  await expect(panel).toContainText('Договорено');
-  await expect(panel).not.toContainText('В дороге');
-  await expect(panel).not.toContainText('Выехал');
-  await expect(page.getByRole('button',{name:'Начать работу',exact:true})).toBeVisible();
+  await expect(panel).toContainText('Выехал');
+  await expect(page.getByRole('button',{name:'Выехал',exact:true})).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Начал работу',exact:true})).toBeEnabled();
+  await expect(page.getByRole('button',{name:'Отправить отчет',exact:true})).toBeDisabled();
 });
