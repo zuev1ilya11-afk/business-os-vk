@@ -57,6 +57,7 @@
   function targetKey(target){return `${target.kind}:${target.base}`}
   function sourceTargetFor(info){
     if(info?.direct)return TARGETS.find(target=>target.kind==='edge')||TARGETS[TARGETS.length-1];
+    if(info?.sourceBase===ALT_GATEWAY||info?.sourceBase===LEGACY_GATEWAY)return TARGETS[0];
     return TARGETS.find(target=>target.base===info?.sourceBase)||TARGETS[0];
   }
   function preferredTargetFor(slug,fallback=TARGETS[0]){return preferredTargets.get(slug)||fallback}
