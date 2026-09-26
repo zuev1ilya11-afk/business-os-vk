@@ -13,7 +13,7 @@
   const AUTH_FALLBACK_DEADLINE_MS=1800;
   const AUTH_EDGE_DEADLINE_MS=6500;
   const ROUTE_FAILURE_STATUSES=new Set([502,503,504]);
-  const SAFE_ACTIONS=new Set(['health','bootstrap','get','list','load','read','status']);
+  const SAFE_ACTIONS=new Set(['health','bootstrap','get','list','load','read','status','updateOrder','uploadReportFile','finalizeMasterReport','reviewReport','syncHandsOrders']);
   if(typeof window.fetch!=='function'||window.BOS_NETWORK_DIRECT_V86)return;
 
   const lowerFetch=window.fetch.bind(window);
@@ -24,16 +24,23 @@
     {kind:'edge',base:EDGE}
   ];
   const preferredTargets=new Map();
+  const edgeUrl=new URL(EDGE);
+  const edgePrefix=edgeUrl.pathname.replace(/\/$/,'')+'/';
 
   function proxyInfo(raw){
     let url;
     try{url=new URL(raw,location.href)}catch(_){return null}
+    if(url.origin===edgeUrl.origin&&url.pathname.startsWith(edgePrefix)){
+      const slug=decodeURIComponent(url.pathname.slice(edgePrefix.length)).replace(/^\/+|\/+$/g,'');
+      if(!slug||slug.includes('/'))return null;
+      return {origin:url.origin,slug,search:url.search,direct:true,sourceBase:EDGE};
+    }
     const base=[GATEWAY,BACKUP_GATEWAY,LEGACY_GATEWAY,ALT_GATEWAY].find(base=>url.href.startsWith(base+'/api/proxy/'));
     if(!base)return null;
     const prefix=new URL(base).pathname.replace(/\/$/,'')+'/api/proxy/';
     const slug=decodeURIComponent(url.pathname.slice(prefix.length)).replace(/^\/+|\/+$/g,'');
     if(!slug||slug.includes('/'))return null;
-    return {origin:url.origin,slug,search:url.search};
+    return {origin:url.origin,slug,search:url.search,direct:false,sourceBase:base};
   }
 
   function targetUrl(target,info){
@@ -48,9 +55,14 @@
   }
 
   function targetKey(target){return `${target.kind}:${target.base}`}
-  function preferredTargetFor(slug){return preferredTargets.get(slug)||TARGETS[0]}
-  function orderedTargets(slug){
-    const preferred=preferredTargetFor(slug);
+  function sourceTargetFor(info){
+    if(info?.direct)return TARGETS.find(target=>target.kind==='edge')||TARGETS[TARGETS.length-1];
+    return TARGETS.find(target=>target.base===info?.sourceBase)||TARGETS[0];
+  }
+  function preferredTargetFor(slug,fallback=TARGETS[0]){return preferredTargets.get(slug)||fallback}
+  function orderedTargets(info){
+    const source=sourceTargetFor(info);
+    const preferred=preferredTargetFor(info.slug,source);
     return [preferred,...TARGETS.filter(target=>targetKey(target)!==targetKey(preferred))];
   }
   function rememberTarget(slug,target){preferredTargets.set(slug,target)}
@@ -153,7 +165,7 @@
   function attemptInit(target,passwordAuth,input,init){return target.kind==='edge'&&passwordAuth?directPasswordInit(input,init):init}
 
   async function safeFetch(info,input,init,outer,passwordAuth){
-    const targets=orderedTargets(info.slug);
+    const targets=orderedTargets(info);
     let lastError=null;
     let lastResponse=null;
     for(let i=0;i<targets.length;i++){
@@ -177,7 +189,7 @@
   }
 
   async function singleWriteFetch(info,input,init,outer,passwordAuth){
-    const targets=orderedTargets(info.slug);
+    const targets=orderedTargets(info);
     let target=targets[0];
     let currentInput=attemptInput(input);
     let response=await fetchAt(targetUrl(target,info),currentInput,attemptInit(target,passwordAuth,currentInput,init),deadlineFor(target,passwordAuth),outer,passwordAuth);
@@ -217,7 +229,7 @@
     directUrl,proxyInfo,
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,backupGatewayDeadlineMs:BACKUP_GATEWAY_DEADLINE_MS,alternateGatewayDeadlineMs:ALT_GATEWAY_DEADLINE_MS,edgeDeadlineMs:EDGE_DEADLINE_MS,
     authGatewayDeadlineMs:AUTH_GATEWAY_DEADLINE_MS,authBackupGatewayDeadlineMs:AUTH_BACKUP_GATEWAY_DEADLINE_MS,authAlternateGatewayDeadlineMs:AUTH_FALLBACK_DEADLINE_MS,authEdgeDeadlineMs:AUTH_EDGE_DEADLINE_MS,
-    preferredTarget:(slug='mini-app-api')=>({...preferredTargetFor(slug)}),clearPreferredTarget,
-    transientHttpFailover:'safe-actions-only',writeReplay:'disabled-after-ambiguous-failure',passwordDirectSimpleCors:true,passwordBufferedResponse:true,passwordSessionHeaderFastPath:true
+    preferredTarget:(slug='mini-app-api')=>({...preferredTargetFor(slug,TARGETS[0])}),clearPreferredTarget,
+    transientHttpFailover:'safe-actions-only',writeReplay:'idempotent-actions-only',passwordDirectSimpleCors:true,passwordBufferedResponse:true,passwordSessionHeaderFastPath:true,directEdgeFailover:true,sourceRoutePreserved:true
   };
 })();
