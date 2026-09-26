@@ -2,75 +2,74 @@ const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const order11=db=>db.tables.orders.find(o=>String(o.id)==='11');
 
-test('master starts work after call and editable agreement then finishes through report form',async({page})=>{
+test('master follows departed started report flow for a scheduled order',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const {db}=await fullStack(page,'master');
-  db.tables.orders[0].scheduled_date=localDate();
-  db.tables.orders[0].scheduled_time='10:00';
-  db.tables.orders[0].time_slot='10:00–11:00';
-  db.tables.orders[0].master_workflow_stage='assigned';
-  db.tables.orders[0].master_called_at=null;
-  db.tables.orders[0].master_agreed_at=null;
-  db.tables.orders[0].phone='+79990000002';
+  const order=order11(db);
+  order.scheduled_date=localDate();
+  order.scheduled_time='10:00';
+  order.time_slot='10:00–11:00';
+  order.master_workflow_stage='assigned';
+  order.master_called_at=null;
+  order.master_agreed_at=null;
+  order.phone='+79990000002';
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await expect(page.locator('#masterDailyV127')).toBeVisible();
   await expect(page.locator('.bosMasterTodayWorkflow:visible')).toHaveCount(0);
   await page.evaluate(()=>window.openOrder('11'));
-  await expect(page.locator('.bosMasterWorkflow[data-bos-v26="1"]')).toBeVisible();
-  await expect(page.locator('.bosMasterWorkflow[data-bos-v116="1"]')).toBeVisible();
-  await expect(page.getByRole('button',{name:'Нужно перенести'})).toBeVisible();
-  await expect(page.getByRole('button',{name:'Я на месте'})).toHaveCount(0);
-  await expect(page.getByRole('button',{name:'Выехал',exact:true})).toHaveCount(0);
-  await expect(page.getByRole('link',{name:'Позвонить клиенту',exact:true})).toBeVisible();
+  const workflow=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
+  await expect(workflow).toBeVisible();
+  await expect(workflow.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
+  await expect(workflow.getByRole('button',{name:/Выехал/})).toBeEnabled();
+  await expect(workflow.getByRole('button',{name:/Начал работу/})).toBeDisabled();
+  await expect(workflow.getByRole('button',{name:/Отправить отчет/})).toBeDisabled();
 
-  await page.getByRole('button',{name:'Звонок выполнен',exact:true}).click();
-  await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();
-  await page.getByRole('button',{name:'Договорённость',exact:true}).click();
-  await page.getByRole('button',{name:'Сохранить договорённость',exact:true}).click();
-  await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();
-  await expect(page.getByRole('button',{name:'Начать работу',exact:true})).toBeVisible();
+  await workflow.getByRole('button',{name:/Выехал/}).click();
+  await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('departed');
+  await expect(workflow.getByRole('button',{name:/Начал работу/})).toBeEnabled();
 
-  await page.getByRole('button',{name:'Начать работу',exact:true}).click();
-  await expect(page.locator('.bosMasterWorkflow')).toContainText('В работе');
-  await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('started');
-  expect(db.tables.orders[0].master_started_at).toBeTruthy();
-  expect(db.tables.orders[0].master_departed_at).toBeFalsy();
-  await expect(page.getByRole('link',{name:'Позвонить клиенту',exact:true})).toBeVisible();
-  await expect(page.getByRole('button',{name:'Заполнить отчёт',exact:true})).toBeVisible();
+  await workflow.getByRole('button',{name:/Начал работу/}).click();
+  await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('started');
+  expect(order11(db)?.master_started_at).toBeTruthy();
+  await expect(workflow.getByRole('button',{name:/Отправить отчет/})).toBeEnabled();
 
-  const amount=db.tables.orders[0].amount,payout=db.tables.orders[0].master_payout;
-  await page.getByRole('button',{name:'Заполнить отчёт',exact:true}).click();
+  const amount=order11(db).amount,payout=order11(db).master_payout;
+  await workflow.getByRole('button',{name:/Отправить отчет/}).click();
   await expect(page.locator('#masterReportForm')).toBeVisible();
-  expect(db.tables.orders[0].amount).toBe(amount);
-  expect(db.tables.orders[0].master_payout).toBe(payout);
+  expect(order11(db).amount).toBe(amount);
+  expect(order11(db).master_payout).toBe(payout);
 });
 
-test('legacy arrived stage is hidden and can continue directly to work',async({page})=>{
+test('legacy arrived stage maps to departed and can continue directly to work',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const {db}=await fullStack(page,'master');
-  db.tables.orders[0].scheduled_date=localDate();
-  db.tables.orders[0].scheduled_time='10:00';
-  db.tables.orders[0].phone='+79990000002';
-  db.tables.orders[0].master_workflow_stage='arrived';
+  const order=order11(db);
+  order.scheduled_date=localDate();
+  order.scheduled_time='10:00';
+  order.phone='+79990000002';
+  order.master_workflow_stage='arrived';
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await page.evaluate(()=>window.openOrder('11'));
-  await expect(page.locator('.bosMasterWorkflow[data-bos-v26="1"]')).toBeVisible();
-  await expect(page.locator('.bosMasterWorkflow')).not.toContainText('На месте');
-  await expect(page.locator('.bosMasterWorkflow')).not.toContainText('Выехал');
-  await expect(page.getByRole('button',{name:'Начать работу',exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'Начать работу',exact:true}).click();
-  await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('started');
+  const workflow=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
+  await expect(workflow).toBeVisible();
+  await expect(workflow).not.toContainText('На месте');
+  await expect(workflow.getByRole('button',{name:/Выехал/})).toBeDisabled();
+  await expect(workflow.getByRole('button',{name:/Начал работу/})).toBeEnabled();
+  await workflow.getByRole('button',{name:/Начал работу/}).click();
+  await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('started');
 });
 
 test('dispatcher sees simplified field workflow without changing order values',async({page})=>{
   await page.setViewportSize({width:1600,height:950});
   const {db}=await fullStack(page,'dispatcher');
-  db.tables.orders[0].scheduled_date=localDate();
-  db.tables.orders[0].scheduled_time='19:00';
-  db.tables.orders[0].master_workflow_stage='started';
+  const order=order11(db);
+  order.scheduled_date=localDate();
+  order.scheduled_time='19:00';
+  order.master_workflow_stage='started';
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await page.locator('nav [data-page=orders]').click();
@@ -79,6 +78,6 @@ test('dispatcher sees simplified field workflow without changing order values',a
   await expect(page.locator('.bosFieldOpsBar')).not.toContainText('В дороге:');
   await expect(page.locator('.bosFieldOpsBar')).not.toContainText('На месте:');
   await expect.poll(()=>page.evaluate(()=>state.orders.find(o=>String(o.id)==='11')?.master_workflow_stage)).toBe('started');
-  expect(db.tables.orders[0].status).toBe('В работе');
-  expect(db.tables.orders[0].amount).toBe(1000);
+  expect(order11(db).status).toBe('В работе');
+  expect(order11(db).amount).toBe(1000);
 });
