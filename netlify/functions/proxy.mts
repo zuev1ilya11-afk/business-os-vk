@@ -16,6 +16,7 @@ const ALLOWED = new Set([
   "staff-admin-api",
   "staff-invite-api",
   "order-meta-api",
+  "order-lifecycle-api",
   "hands-api",
   "report-upload-gateway",
   "drive-archive-api",

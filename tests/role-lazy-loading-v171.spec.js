@@ -40,7 +40,7 @@ test('authorization waits for role modules before revealing the app',async()=>{
 });
 
 test('role-loading release bumps the service worker cache generation',async()=>{
-  expect(sw).toContain("const CACHE='business-os-shell-v12';");
-  expect(sw).toContain("const REV='20260925-v171';");
-  expect(pwa).toContain("register('./sw.js?v=20260925-v171'");
+  expect(sw).toContain("const CACHE='business-os-shell-v13';");
+  expect(sw).toContain("const REV='20260925-v172';");
+  expect(pwa).toContain("register('./sw.js?v=20260925-v172'");
 });

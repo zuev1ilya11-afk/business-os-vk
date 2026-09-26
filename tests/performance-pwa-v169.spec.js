@@ -14,8 +14,8 @@ test('background bootstrap polling is reduced without removing event refreshes',
 
 test('PWA keeps auth/network critical files network-first and caches versioned static assets',async()=>{
   const source=fs.readFileSync(path.join(root,'sw.js'),'utf8');
-  expect(source).toContain("const CACHE='business-os-shell-v12';");
-  expect(source).toContain("const REV='20260925-v171';");
+  expect(source).toContain("const CACHE='business-os-shell-v13';");
+  expect(source).toContain("const REV='20260925-v172';");
   expect(source).toContain("'/network-direct-v86.js'");
   expect(source).toContain("'/mandatory-auth-v29.js'");
   expect(source).toContain("'/employee-live-refresh-v27.js'");

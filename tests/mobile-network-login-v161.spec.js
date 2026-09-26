@@ -5,17 +5,40 @@ test.use({...devices['Pixel 7'],defaultBrowserType:'chromium'});
 for(const failure of ['network','timeout','body-timeout','502','504']){
   test(`Android password login uses fallback after primary ${failure}`,async({page})=>{
     const primary='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
-    const secondary='https://business-os-api-gateway.netlify.app';
+    const backup='https://api-v2.appdeploy.ai/app/business-os-api-gateway-ukp6ew';
+    const netlify='https://business-os-api-gateway.netlify.app';
     const session='mobile.9999999999.testsignature';
-    let primaryCalls=0,alternateCalls=0,authenticatedBootstrap=0,directCalls=0;
+    let primaryCalls=0,backupCalls=0,netlifyCalls=0,authenticatedBootstrap=0,directCalls=0;
     await page.route('https://unpkg.com/**',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
+    if(failure==='timeout'){
+      // Simulate a connection that never answers but correctly reacts to the
+      // AbortSignal used by the app's route deadline. This avoids wedging
+      // Playwright itself with an unresolved page.route handler.
+      await page.addInitScript(({primary})=>{
+        const native=window.fetch.bind(window);
+        window.simulatedTimeoutCalls=0;
+        window.fetch=(input,init)=>{
+          const raw=typeof input==='string'?input:input?.url||String(input);
+          if(raw===primary+'/api/proxy/password-session-api'){
+            window.simulatedTimeoutCalls++;
+            return new Promise((_,reject)=>{
+              const abort=()=>reject(new DOMException('Aborted','AbortError'));
+              if(init?.signal?.aborted)abort();
+              else init?.signal?.addEventListener('abort',abort,{once:true});
+            });
+          }
+          return native(input,init);
+        };
+      },{primary});
+    }
     if(failure==='body-timeout'){
       // Headers arrive, but the cellular connection stalls before the JSON body.
       await page.addInitScript(({primary})=>{
         const native=window.fetch.bind(window);
         window.stalledAuthCalls=0;
         window.fetch=(input,init)=>{
-          if(String(input)===primary+'/api/proxy/password-session-api'){
+          const raw=typeof input==='string'?input:input?.url||String(input);
+          if(raw===primary+'/api/proxy/password-session-api'){
             window.stalledAuthCalls++;
             return Promise.resolve(new Response(new ReadableStream({start(controller){
               init.signal.addEventListener('abort',()=>controller.error(new DOMException('Aborted','AbortError')),{once:true});
@@ -27,17 +50,17 @@ for(const failure of ['network','timeout','body-timeout','502','504']){
     }
     await page.route(primary+'/api/proxy/password-session-api',r=>{
       primaryCalls++;
-      if(failure==='network')return r.abort('failed');
-      if(failure==='timeout')return;
+      if(failure==='network'||failure==='timeout')return r.abort('failed');
       return r.fulfill({status:Number(failure),contentType:'application/json',body:JSON.stringify({ok:false,error:'UPSTREAM_UNAVAILABLE'})});
     });
-    await page.route(secondary+'/api/proxy/password-session-api',async r=>{
-      alternateCalls++;
+    await page.route(backup+'/api/proxy/password-session-api',async r=>{
+      backupCalls++;
       expect(r.request().postDataJSON()).toEqual({action:'login',login:'mobile-test',password:'test-password'});
-      // A reachable mobile fallback can take longer than the old 2.2s deadline.
-      await new Promise(resolve=>setTimeout(resolve,2600));
+      // This is deliberately slower than the old 2.2s route budget.
+      await new Promise(resolve=>setTimeout(resolve,2300));
       await r.fulfill({json:{ok:true,session_token:session}});
     });
+    await page.route(netlify+'/api/proxy/password-session-api',r=>{netlifyCalls++;return r.abort('failed');});
     await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/password-session-api',r=>{directCalls++;return r.abort('failed');});
     await page.route('**/api/proxy/mini-app-api',r=>{
       if(r.request().headers()['x-bos-session']===session)authenticatedBootstrap++;
@@ -50,16 +73,48 @@ for(const failure of ['network','timeout','body-timeout','502','504']){
     await form.getByRole('button',{name:'Войти',exact:true}).click();
     await expect(page.locator('#authGate')).toBeHidden({timeout:10000});
     await expect(page.locator('#app')).toBeVisible();
-    expect(failure==='body-timeout'?await page.evaluate(()=>window.stalledAuthCalls):primaryCalls).toBe(1);
-    expect(alternateCalls).toBe(1);
+    const observedPrimaryCalls=failure==='timeout'
+      ?await page.evaluate(()=>window.simulatedTimeoutCalls)
+      :failure==='body-timeout'
+        ?await page.evaluate(()=>window.stalledAuthCalls)
+        :primaryCalls;
+    expect(observedPrimaryCalls).toBe(1);
+    expect(backupCalls).toBe(1);
+    expect(netlifyCalls).toBe(0);
     expect(directCalls).toBe(0);
     expect(authenticatedBootstrap).toBeGreaterThan(0);
     expect(await page.evaluate(()=>sessionStorage.getItem('bos_vk_session_v2'))).toBe(session);
   });
 }
 
+test('Android login reaches Netlify when both AppDeploy gateways are unavailable',async({page})=>{
+  const primary='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
+  const backup='https://api-v2.appdeploy.ai/app/business-os-api-gateway-ukp6ew';
+  const netlify='https://business-os-api-gateway.netlify.app';
+  const session='mobile.9999999999.testsignature';
+  let netlifyCalls=0,directCalls=0;
+  await page.route('https://unpkg.com/**',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
+  await page.route(primary+'/api/proxy/password-session-api',r=>r.abort('failed'));
+  await page.route(backup+'/api/proxy/password-session-api',r=>r.abort('failed'));
+  await page.route(netlify+'/api/proxy/password-session-api',r=>{
+    netlifyCalls++;
+    return r.fulfill({json:{ok:true,session_token:session}});
+  });
+  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/password-session-api',r=>{directCalls++;return r.abort('failed');});
+  await page.route('**/api/proxy/mini-app-api',r=>r.fulfill({json:{ok:true,user:{full_name:'Мастер',role:'master',city:'Москва'},orders:[],users:[],masters:[],masterSchedule:[],claims:[],sources:[],settings:{}}}));
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  const form=page.locator('#simplePassForm');
+  await form.locator('[name=login]').fill('mobile-test');
+  await form.locator('[name=password]').fill('test-password');
+  await form.getByRole('button',{name:'Войти',exact:true}).click();
+  await expect(page.locator('#authGate')).toBeHidden({timeout:10000});
+  expect(netlifyCalls).toBe(1);
+  expect(directCalls).toBe(0);
+});
+
 test('Android direct fallback completes login from session header when response body stalls',async({page})=>{
   const primary='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
+  const backup='https://api-v2.appdeploy.ai/app/business-os-api-gateway-ukp6ew';
   const secondary='https://business-os-api-gateway.netlify.app';
   const direct='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/password-session-api';
   const session='mobile.9999999999.testsignature';
@@ -69,7 +124,8 @@ test('Android direct fallback completes login from session header when response 
     const native=window.fetch.bind(window);
     window.headerFastPathCalls=0;
     window.fetch=(input,init)=>{
-      if(String(input)===direct){
+      const raw=typeof input==='string'?input:input?.url||String(input);
+      if(raw===direct){
         window.headerFastPathCalls++;
         return Promise.resolve(new Response(new ReadableStream({start(controller){
           init.signal.addEventListener('abort',()=>controller.error(new DOMException('Aborted','AbortError')),{once:true});
@@ -79,6 +135,7 @@ test('Android direct fallback completes login from session header when response 
     };
   },{direct,session});
   await page.route(primary+'/api/proxy/password-session-api',r=>r.abort('failed'));
+  await page.route(backup+'/api/proxy/password-session-api',r=>r.abort('failed'));
   await page.route(secondary+'/api/proxy/password-session-api',r=>r.abort('failed'));
   await page.route('**/api/proxy/mini-app-api',r=>{
     if(r.request().headers()['x-bos-session']===session)authenticatedBootstrap++;
