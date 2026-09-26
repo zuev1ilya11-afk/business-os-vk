@@ -2,11 +2,12 @@ const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const order11=db=>db.tables.orders.find(o=>String(o.id)==='11');
 
 test('scheduled master order shows approved three-step actions and confirmed reschedule',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const {db}=await fullStack(page,'master');
-  const order=db.tables.orders[0];
+  const order=order11(db);
   order.scheduled_date=localDate();
   order.scheduled_time='10:00';
   order.time_slot='10:00–11:00';
@@ -26,11 +27,11 @@ test('scheduled master order shows approved three-step actions and confirmed res
   await expect(panel.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
 
   await panel.getByRole('button',{name:/Выехал/}).click();
-  await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('departed');
+  await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('departed');
   await expect(panel.getByRole('button',{name:/Начал работу/})).toBeEnabled();
 
   await panel.getByRole('button',{name:/Начал работу/}).click();
-  await expect.poll(()=>db.tables.orders[0].master_workflow_stage).toBe('started');
+  await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('started');
   await expect(panel.getByRole('button',{name:/Отправить отчет/})).toBeEnabled();
 
   await panel.getByRole('button',{name:/Отправить отчет/}).click();
@@ -40,7 +41,7 @@ test('scheduled master order shows approved three-step actions and confirmed res
 test('order without date uses agreement form then switches to scheduled workflow',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const {db}=await fullStack(page,'master');
-  const order=db.tables.orders[0];
+  const order=order11(db);
   order.scheduled_date='';
   order.scheduled_time='';
   order.time_slot='';
@@ -63,9 +64,9 @@ test('order without date uses agreement form then switches to scheduled workflow
   await form.locator('input[name="scheduled_time"]').fill('18:30');
   await form.getByRole('button',{name:'Сохранить',exact:true}).click();
 
-  await expect.poll(()=>db.tables.orders[0].scheduled_time).toBe('18:30');
-  await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();
-  await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();
+  await expect.poll(()=>order11(db)?.scheduled_time).toBe('18:30');
+  await expect.poll(()=>order11(db)?.master_called_at).toBeTruthy();
+  await expect.poll(()=>order11(db)?.master_agreed_at).toBeTruthy();
   await expect(panel.getByRole('button',{name:/Выехал/})).toBeEnabled();
   await expect(panel.getByRole('button',{name:/Начал работу/})).toBeDisabled();
 });
@@ -73,7 +74,7 @@ test('order without date uses agreement form then switches to scheduled workflow
 test('reschedule action keeps existing approval request form',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const {db}=await fullStack(page,'master');
-  const order=db.tables.orders[0];
+  const order=order11(db);
   order.scheduled_date=localDate();
   order.scheduled_time='12:00';
   order.time_slot='12:00–13:00';
