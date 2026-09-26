@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
-test('master v127 home shows next job and attention queue on mobile',async({page})=>{
+test('master v127 home shows request number, day cards and attention queue on mobile',async({page})=>{
   const {db,master}=await fullStack(page,'master');
   const next=db.tables.orders.find(o=>String(o.id)==='11')||db.tables.orders[0];
   const attention=db.tables.orders.find(o=>String(o.id)==='12')||db.tables.orders[1];
@@ -27,8 +27,8 @@ test('master v127 home shows next job and attention queue on mobile',async({page
     master_staff_id:master.id,
     client:'Иван Петров',
     address:'Литейный проспект, 20',
-    scheduled_date:'',
-    scheduled_time:'',
+    scheduled_date:'2099-09-10',
+    scheduled_time:'13:30',
     status:'В работе',
     master_called_at:'2099-09-09T10:00:00.000Z',
     master_agreed_at:'2099-09-09T10:05:00.000Z',
@@ -52,9 +52,18 @@ test('master v127 home shows next job and attention queue on mobile',async({page
   const nextCard=dashboard.locator('.masterV127Next');
   await expect(nextCard).toHaveAttribute('data-order-id',String(next.id));
   await expect(nextCard).toContainText('10:30');
-  await expect(nextCard).toContainText('Анна Пичуева');
+  await expect(nextCard).toContainText(`№ ${next.id}`);
+  await expect(nextCard).not.toContainText('Анна Пичуева');
   await expect(nextCard).toContainText('Невский проспект, 10');
   await expect(nextCard).toContainText('Позвонить клиенту');
+  await expect(nextCard.locator('text=/№/')).toHaveCount(1);
+
+  const daySection=dashboard.locator('.masterV127Day');
+  await expect(daySection).toContainText('Остальные заявки на день');
+  const dayItem=daySection.locator('.masterV127DayItem').filter({hasText:'13:30'});
+  await expect(dayItem).toHaveCount(1);
+  await expect(dayItem).toContainText(`№ ${attention.id}`);
+  await expect(dayItem).toContainText('Литейный проспект, 20');
 
   const attentionItem=dashboard.locator('.masterV127AttentionItem').filter({hasText:'Отчёт вернули на доработку'});
   await expect(attentionItem).toHaveCount(1);
