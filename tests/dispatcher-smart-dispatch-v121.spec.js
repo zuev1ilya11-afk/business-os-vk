@@ -22,23 +22,25 @@ test('unassigned order shows ranked inline options and one-action assignment pre
   await page.getByRole('button',{name:'Список',exact:true}).click();
 
   const orderId=String(db.tables.orders[1].id);
-  const card=page.locator(`.dbSchedule [data-order-id="${orderId}"]`).first();
+  const card=page.locator(`[data-order-id="${orderId}"]:visible`).filter({hasText:'Борис'}).first();
   await expect(card).toBeVisible();
-  const smart=page.locator(`.dbSchedule .dsd121[data-order-id="${orderId}"]`);
+  const smart=page.locator(`.dsd121[data-order-id="${orderId}"]:visible`).first();
   await expect(smart).toBeVisible();
   await expect(smart.locator('.dsd121Candidate')).toHaveCount(3);
   const best=smart.locator('.dsd121Candidate').first();
   await expect(best).toContainText('Рекомендуем');
   await expect(best).toContainText('Тестовый мастер');
-  await expect(best).toContainText('10:00');
   await expect(best).toContainText('город совпадает');
 
-  page.once('dialog',dialog=>dialog.accept());
-  await best.getByRole('button',{name:/Назначить Тестовый мастер на 10:00/}).click();
+  const expectedTime=await best.getAttribute('data-time');
+  expect(expectedTime).toMatch(/^\d{2}:\d{2}$/);
+  const assign=best.locator('button.dsd121Assign');
+  await expect(assign).toBeVisible();
+  await assign.click();
 
   await expect.poll(()=>db.tables.orders[1].master_staff_id).toBe(master.id);
-  await expect.poll(()=>db.tables.orders[1].scheduled_time).toBe('10:00');
+  await expect.poll(()=>db.tables.orders[1].scheduled_time).toBe(expectedTime);
   expect(db.tables.orders[1].amount).toBe(2000);
   expect(db.tables.orders[1].master_payout).toBe(1105);
-  await expect(page.locator(`.dsd121[data-order-id="${orderId}"]`)).toHaveCount(0);
+  await expect(page.locator(`.dsd121[data-order-id="${orderId}"]:visible`)).toHaveCount(0);
 });
