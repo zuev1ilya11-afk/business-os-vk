@@ -1,12 +1,12 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
-const localDate=(offset=0)=>{const d=new Date();d.setDate(d.getDate()+offset);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const moscowDate=(offset=0)=>{const d=new Date(Date.now()+offset*24*60*60*1000);const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d).filter(({type})=>type!=='literal').map(({type,value})=>[type,value]));return `${parts.year}-${parts.month}-${parts.day}`};
 
 test('dispatcher v2.1 moves an order to another day and preserves payout',async({page})=>{
   await page.setViewportSize({width:1600,height:950});
   const {db}=await fullStack(page,'dispatcher');
-  db.tables.orders[0].scheduled_date=localDate();
+  db.tables.orders[0].scheduled_date=moscowDate();
   db.tables.orders[0].scheduled_time='10:00';
   const payout=db.tables.orders[0].master_payout;
   await page.goto('/');
@@ -15,7 +15,7 @@ test('dispatcher v2.1 moves an order to another day and preserves payout',async(
   await expect(page.locator('.dbV21Tools')).toBeVisible();
   await page.locator('.dbOrderCard[data-order-id="11"]').first().click();
   await expect(page.getByText('Быстрый перенос',{exact:true})).toBeVisible();
-  const next=localDate(1);
+  const next=moscowDate(1);
   await page.locator('#dbV21MoveDate').fill(next);
   await page.locator('#dbV21MoveTime').fill('14:00');
   await page.getByRole('button',{name:'Перенести на дату и время'}).click();
@@ -28,7 +28,7 @@ test('dispatcher v2.1 moves an order to another day and preserves payout',async(
 test('dispatcher v2.1 can auto-assign an unassigned order to a free slot',async({page})=>{
   await page.setViewportSize({width:1600,height:950});
   const {db}=await fullStack(page,'dispatcher');
-  db.tables.orders[1].scheduled_date=localDate();
+  db.tables.orders[1].scheduled_date=moscowDate();
   db.tables.orders[1].master_staff_id=null;
   db.tables.orders[1].master_vk_id=null;
   db.tables.orders[1].master_name='';
@@ -40,7 +40,7 @@ test('dispatcher v2.1 can auto-assign an unassigned order to a free slot',async(
   await page.getByRole('button',{name:'Назначить свободному мастеру'}).click();
   await expect(page.locator('.dbTray .dbOrderCard[data-order-id="12"]')).toHaveCount(0);
   expect(db.tables.orders[1].master_staff_id).toBeTruthy();
-  expect(db.tables.orders[1].scheduled_date).toBe(localDate());
+  expect(db.tables.orders[1].scheduled_date).toBe(moscowDate());
 });
 
 test('dispatcher v2.1 free-master filter and metrics stay desktop-only',async({page})=>{
