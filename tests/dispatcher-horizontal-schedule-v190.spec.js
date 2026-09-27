@@ -61,6 +61,6 @@ test('dispatcher v190 scopes viewport fitting to dispatcher orders page',async({
   await expect(page.locator('#content .dbBoard')).toHaveClass(/dh190Board/);
   await expect(page.locator('html')).not.toHaveClass(/dh190Active/);
   await expect(page.locator('body')).not.toHaveClass(/dh190Active/);
-  await page.locator('nav [data-page=dashboard]').click();
+  await page.locator('nav [data-page=home]').click();
   await expect(page.locator('#content .dh190Board')).toHaveCount(0);
 });
