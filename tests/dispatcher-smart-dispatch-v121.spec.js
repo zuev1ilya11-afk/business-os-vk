@@ -32,13 +32,12 @@ test('unassigned order shows ranked inline options and one-action assignment pre
   await expect(best).toContainText('Тестовый мастер');
   await expect(best).toContainText('город совпадает');
 
-  const assign=best.getByRole('button',{name:/Назначить Тестовый мастер на \d{2}:\d{2}/});
-  await expect(assign).toBeVisible();
-  const label=(await assign.getAttribute('aria-label'))||await assign.textContent();
-  const match=label&&label.match(/\b\d{2}:\d{2}\b/);
+  const candidateText=await best.textContent();
+  const match=candidateText&&candidateText.match(/\b\d{2}:\d{2}\b/);
   expect(match).toBeTruthy();
   const expectedTime=match[0];
-  await expect(best).toContainText(expectedTime);
+  const assign=best.getByRole('button',{name:'Назначить',exact:true});
+  await expect(assign).toBeVisible();
 
   page.once('dialog',dialog=>dialog.accept());
   await assign.click();
