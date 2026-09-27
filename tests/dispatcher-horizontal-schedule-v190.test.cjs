@@ -6,5 +6,5 @@ if(!src.includes('Горизонтальное расписание дня'))thr
 if(!src.includes('grid-template-columns:128px repeat(var(--dh190-times)'))throw new Error('horizontal master/time grid missing');
 if(!src.includes('--dh190-vh'))throw new Error('board-local viewport fit missing');
 if(src.includes('html.dh190Active,body.dh190Active'))throw new Error('global page scroll lock must not be used');
-if(!src.includes("String(st()?.user?.role||'')==='dispatcher'"))throw new Error('dispatcher-only activation missing');
+if(!src.includes("['dispatcher','owner','manager'].includes(String(st()?.user?.role||''))"))throw new Error('dispatcher/owner/manager activation missing');
 console.log('dispatcher horizontal schedule v190 source checks passed');
