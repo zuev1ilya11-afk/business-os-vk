@@ -52,13 +52,15 @@ test('dispatcher v190 shows masters as horizontal timeline rows and keeps page i
   await expect(page.locator('#dispatchBoardDetail')).toContainText('Анна');
 });
 
-test('dispatcher v190 releases page scroll lock outside dispatcher orders page',async({page})=>{
+test('dispatcher v190 scopes viewport fitting to dispatcher orders page',async({page})=>{
   await fullStack(page,'dispatcher');
   await page.setViewportSize({width:1360,height:900});
   await page.goto('/');
   await page.waitForFunction(()=>window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190?.version==='190');
   await page.locator('nav [data-page=orders]').click();
-  await expect(page.locator('html')).toHaveClass(/dh190Active/);
-  await page.locator('nav [data-page=dashboard]').click();
+  await expect(page.locator('#content .dbBoard')).toHaveClass(/dh190Board/);
   await expect(page.locator('html')).not.toHaveClass(/dh190Active/);
+  await expect(page.locator('body')).not.toHaveClass(/dh190Active/);
+  await page.locator('nav [data-page=dashboard]').click();
+  await expect(page.locator('#content .dh190Board')).toHaveCount(0);
 });
