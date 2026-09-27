@@ -56,7 +56,9 @@
       './dispatcher-ui-redesign-v183.js?v=20260927-v183',
       './dispatcher-ui-redesign-v183-compat.js?v=20260927-v183a',
       './dispatcher-ui-polish-v184.js?v=20260927-v184',
-      './dispatcher-ui-stability-v185.js?v=20260927-v185'
+      './dispatcher-ui-stability-v185.js?v=20260927-v185',
+      './dispatcher-unified-schedule-v187.js?v=20260927-v187',
+      './dispatcher-unified-schedule-v187-bootstrap.js?v=20260927-v187a'
     ],
     master:[
       './master-home-orders-v124.js?v=20260924-v124',
@@ -100,6 +102,7 @@
   window.BOS_ROLE_MODULES_V183=window.BOS_ROLE_MODULES_V171;
   window.BOS_ROLE_MODULES_V185=window.BOS_ROLE_MODULES_V171;
   window.BOS_ROLE_MODULES_V186=window.BOS_ROLE_MODULES_V171;
+  window.BOS_ROLE_MODULES_V187=window.BOS_ROLE_MODULES_V171;
 
   const loadAfterLegacyUnlock=()=>{
     if(!document.body.classList.contains('bos-auth-ok'))return;
