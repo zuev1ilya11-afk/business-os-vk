@@ -13,7 +13,7 @@
   const AUTH_FALLBACK_DEADLINE_MS=1800;
   const AUTH_EDGE_DEADLINE_MS=6500;
   const ROUTE_FAILURE_STATUSES=new Set([402,502,503,504]);
-  const SAFE_ACTIONS=new Set(['health','bootstrap','get','list','load','read','status','updateOrder','uploadReportFile','finalizeMasterReport','reviewReport','syncHandsOrders']);
+  const SAFE_ACTIONS=new Set(['health','bootstrap','get','list','load','read','status','updateOrder','uploadReportFile','finalizeMasterReport','reviewReport','syncHandsOrders','markCalled','confirmAgreement','setAgreementSchedule','setStage']);
   if(typeof window.fetch!=='function'||window.BOS_NETWORK_DIRECT_V86)return;
 
   const lowerFetch=window.fetch.bind(window);

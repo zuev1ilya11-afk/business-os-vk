@@ -25,7 +25,7 @@ Deno.serve(async r=>{
     const db=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
     const b=await r.json().catch(()=>({}));
     const action=String(b.action||'health');
-    if(action==='health')return j({ok:true,version:'2026-09-23-master-workflow-v3'});
+    if(action==='health')return j({ok:true,version:'2026-09-27-master-workflow-v4'});
     const me=await actor(db,r);
     if(!me)return j({ok:false,error:'Доступ не подтверждён'},401);
     if(String(me.role||'')!=='master')return j({ok:false,error:'Действие доступно только мастеру'},403);
@@ -62,6 +62,8 @@ Deno.serve(async r=>{
       if(!validDate(date)||!validTime(time))return j({ok:false,error:'Укажите корректные дату и время'},400);
       const today=new Date().toISOString().slice(0,10);
       if(date<today)return j({ok:false,error:'Нельзя договориться на прошедшую дату'},400);
+      const currentDate=String(cur.scheduled_date||'').slice(0,10),currentTime=String(cur.scheduled_time||cur.time_slot||'').slice(0,5);
+      if(cur.master_agreed_at&&currentDate===date&&currentTime===time)return j({ok:true,order:safeOrder(cur),idempotent:true});
       const now=new Date().toISOString();
       const patch:any={scheduled_date:date,scheduled_time:time,time_slot:timeSlot(time),master_agreed_at:now,updated_at:now,sync_status:'pending_sheet'};
       const u=await db.from('orders').update(patch).eq('id',cur.id).select('*').single();
