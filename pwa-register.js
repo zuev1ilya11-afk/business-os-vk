@@ -94,7 +94,8 @@
     }
     return true;
   };
-  window.BOS_ROLE_MODULES_V183={dispatcher:roleScripts.dispatcher.length,master:roleScripts.master.length};
+  window.BOS_ROLE_MODULES_V171={dispatcher:roleScripts.dispatcher.length,master:roleScripts.master.length};
+  window.BOS_ROLE_MODULES_V183=window.BOS_ROLE_MODULES_V171;
 
   const loadAfterLegacyUnlock=()=>{
     if(!document.body.classList.contains('bos-auth-ok'))return;
