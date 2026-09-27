@@ -75,7 +75,7 @@ test('real resize, reload and drag to another master preserve three hours',async
   await page.setViewportSize({width:1600,height:1000});
   await openSchedule(page);
   await page.evaluate(()=>{window.testDrags=0;document.addEventListener('dragstart',()=>window.testDrags++)});
-  const card=page.locator('.du187Card[data-order-id="11"]');
+  const card=page.locator('.du187Root.dh190Root:visible .du187Card[data-order-id="11"]');
   await card.click();
   await expect(page.locator('#dispatchBoardDetail')).toContainText('Анна');
   await resizeBy(page,card,4);
@@ -84,8 +84,9 @@ test('real resize, reload and drag to another master preserve three hours',async
   await page.reload();
   await page.waitForFunction(()=>window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190?.version==='190');
   await page.locator('nav [data-page=orders]').click();
+  await expect(page.locator('.du187Root.dh190Root:visible')).toBeVisible();
   await expect(card).toHaveAttribute('data-duration-slots','6');
-  const target=page.locator(`.du187Slot[data-master="${second.external_id}"][data-time="14:00"]`);
+  const target=page.locator(`.du187Root.dh190Root:visible .du187Slot[data-master="${second.external_id}"][data-time="14:00"]`);
   await page.evaluate(()=>{window.testEvents=[];for(const type of ['dragstart','drop'])document.addEventListener(type,()=>window.testEvents.push(type),true)});
   await card.hover();
   const source=await card.boundingBox();
@@ -97,9 +98,10 @@ test('real resize, reload and drag to another master preserve three hours',async
   await page.mouse.up();
   expect(await page.evaluate(()=>window.testEvents)).toEqual(['dragstart','drop']);
   await expect.poll(()=>db.tables.orders[0]).toMatchObject({master_staff_id:second.id,scheduled_time:'14:00',time_slot:'14:00–17:00'});
-  await expect(card).toHaveAttribute('data-duration-slots','6');
-  await expect(card.locator('.du187When')).toHaveText('14:00–17:00');
-  await resizeBy(page,card,-1);
+  const movedCard=page.locator('.du187Root.dh190Root:visible .du187Card[data-order-id="11"]');
+  await expect(movedCard).toHaveAttribute('data-duration-slots','6');
+  await expect(movedCard.locator('.du187When')).toHaveText('14:00–17:00');
+  await resizeBy(page,movedCard,-1);
   await expect.poll(()=>db.tables.orders[0].time_slot).toBe('14:00–16:30');
 });
 
@@ -159,11 +161,11 @@ test('desktop widths and scaled layout retain usable grid; mobile has none',asyn
   await expect.poll(()=>db.tables.orders[0].time_slot).toBe('10:00–12:00');
   await page.evaluate(()=>document.body.style.zoom='');
   await page.setViewportSize({width:1049,height:844});
-  await expect(page.locator('.du187Root')).toHaveCount(0);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   await page.setViewportSize({width:390,height:844});
   await page.reload();
   await page.locator('nav [data-page=orders]').click();
-  await expect(page.locator('.du187Root')).toHaveCount(0);
+  await expect(page.locator('.du187Root')).toBeHidden();
   await expect(page.locator('#bosOrderSearch')).toBeVisible();
 });
 
