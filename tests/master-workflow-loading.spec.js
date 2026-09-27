@@ -13,8 +13,9 @@ test('master can open an order during slow workflow script delivery', async ({pa
   await expect(page.locator('#authGate')).toBeHidden();
   await page.locator('nav [data-page="orders"]').click();
   await page.locator('.bosHandsMiniCard').first().click();
-  await expect(page.locator('.bosMasterWorkflow[data-bos-v26="1"]')).toHaveCount(1);
-  await expect(page.getByRole('link', {name: 'Позвонить клиенту', exact: true})).toBeVisible();
-  await expect(page.getByRole('button', {name: 'Нужно перенести', exact: true})).toBeVisible();
+  const workflow=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
+  await expect(workflow).toHaveCount(1);
+  await expect(workflow.getByRole('button',{name:/Договориться|Выехал/})).toBeVisible();
+  await expect(workflow.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
   await expect(page.getByRole('button', {name: 'Я на месте', exact: true})).toHaveCount(0);
 });

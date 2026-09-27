@@ -35,6 +35,7 @@
     './session-refresh-v113.js?v=20260923-v113',
     './master-workflow-v115.js?v=20260923-v115',
     './master-workflow-v116.js?v=20260923-v116',
+    './master-order-actions-v179.js?v=20260926-v179b',
     './claims-role-v117.js?v=20260923-v117'
   ];
 

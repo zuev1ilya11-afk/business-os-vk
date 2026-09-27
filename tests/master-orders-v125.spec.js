@@ -3,7 +3,7 @@ const {fullStack}=require('./helpers/full-stack.cjs');
 
 test('master orders v125 stays readable on mobile and shows concise real work',async({page})=>{
   const {db,master}=await fullStack(page,'master');
-  const order=db.tables.orders[0];
+  const order=db.tables.orders.find(o=>String(o.id)==='11');
   master.phone='+79990000001';
   Object.assign(order,{
     phone:'+79990000002',
@@ -45,11 +45,12 @@ test('master orders v125 stays readable on mobile and shows concise real work',a
   expect(overflow).toBeLessThanOrEqual(1);
 
   await card.getByRole('button',{name:'Открыть заявку',exact:true}).click();
-  await expect(page.locator('.bosMasterWorkflow')).toBeVisible();
+  const workflow=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
+  await expect(workflow).toBeVisible();
   const received=page.locator('.masterV126ReceivedModal');
   await expect(received).toBeVisible();
   await expect(received).toContainText('Дата поступления заявки');
   await expect(received).toContainText('20.09.2026');
-  await expect(page.getByRole('button',{name:'Нужно перенести',exact:true})).toBeVisible();
-  await expect(page.getByRole('button',{name:'Заполнить отчёт',exact:true})).toBeVisible();
+  await expect(workflow.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
+  await expect(workflow.getByRole('button',{name:/Отправить отчет/})).toBeEnabled();
 });
