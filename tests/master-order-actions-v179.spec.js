@@ -8,7 +8,7 @@ test('scheduled master order shows approved three-step actions and confirmed res
   await page.setViewportSize({width:390,height:844});
   const {db}=await fullStack(page,'master');
   const order=order11(db);
-  order.scheduled_date=moscowDate();
+  order.scheduled_date=moscowDate(1);
   order.scheduled_time='10:00';
   order.time_slot='10:00–11:00';
   order.master_workflow_stage='assigned';
@@ -75,7 +75,7 @@ test('reschedule action keeps existing approval request form',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const {db}=await fullStack(page,'master');
   const order=order11(db);
-  order.scheduled_date=moscowDate();
+  order.scheduled_date=moscowDate(1);
   order.scheduled_time='12:00';
   order.time_slot='12:00–13:00';
 
