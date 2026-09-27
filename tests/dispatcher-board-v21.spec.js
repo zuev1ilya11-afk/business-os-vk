@@ -1,6 +1,9 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
+// Keep the failing CI interaction, DOM snapshots and mocked API exchange reviewable.
+test.use({trace:'retain-on-failure'});
+
 const moscowDate=(offset=0)=>{const d=new Date(Date.now()+offset*24*60*60*1000);const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d).filter(({type})=>type!=='literal').map(({type,value})=>[type,value]));return `${parts.year}-${parts.month}-${parts.day}`};
 
 test('dispatcher v2.1 moves an order to another day and preserves payout',async({page})=>{
@@ -18,7 +21,15 @@ test('dispatcher v2.1 moves an order to another day and preserves payout',async(
   const next=moscowDate(1);
   await page.locator('#dbV21MoveDate').fill(next);
   await page.locator('#dbV21MoveTime').fill('14:00');
+  const saved=page.waitForResponse(response=>{
+    if(!response.url().includes('/mini-app-api'))return false;
+    const body=response.request().postDataJSON();
+    return body?.action==='updateOrder'&&String(body.id)==='11';
+  });
   await page.getByRole('button',{name:'Перенести на дату и время'}).click();
+  const response=await saved;
+  expect(response.request().postDataJSON()).toMatchObject({scheduled_date:next,scheduled_time:'14:00'});
+  expect(await response.json()).toMatchObject({ok:true,order:{scheduled_date:next,scheduled_time:'14:00'}});
   await expect(page.locator('#dispatchBoardDate')).toHaveValue(next);
   expect(db.tables.orders[0].scheduled_date).toBe(next);
   expect(db.tables.orders[0].scheduled_time).toBe('14:00');
