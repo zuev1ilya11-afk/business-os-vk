@@ -58,7 +58,7 @@
       './dispatcher-ui-polish-v184.js?v=20260927-v184',
       './dispatcher-ui-stability-v185.js?v=20260927-v185',
       './dispatcher-unified-schedule-v187.js?v=20260927-v188-fix',
-      './dispatcher-horizontal-schedule-v190.js?v=20260927-v190',
+      './dispatcher-horizontal-schedule-v190.js?v=20260928-v190-owner1',
       './dispatcher-horizontal-schedule-v190-fix.js?v=20260927-v190c'
     ],
     master:[
