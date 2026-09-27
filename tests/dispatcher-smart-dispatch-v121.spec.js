@@ -36,7 +36,7 @@ test('unassigned order shows ranked inline options and one-action assignment pre
   const match=candidateText&&candidateText.match(/\b\d{2}:\d{2}\b/);
   expect(match).toBeTruthy();
   const expectedTime=match[0];
-  const assign=best.getByRole('button',{name:'Назначить',exact:true});
+  const assign=best.getByRole('button',{name:/^Назначить Тестовый мастер на \d{2}:\d{2}$/});
   await expect(assign).toBeVisible();
 
   page.once('dialog',dialog=>dialog.accept());
