@@ -63,8 +63,9 @@ style.textContent=`
   #content .du184Board .du183StatusStrip span,
   #content .du184Board .du183StatusStrip small{font-size:9px!important}
 
-  #content .du184Board .dbLayout{grid-template-columns:minmax(245px,275px) minmax(590px,1fr) minmax(350px,390px)!important;gap:11px!important;min-height:560px!important}
-  #content .du184Board .dbAttention{padding:11px!important}
+  #content .du184Board .dbLayout{grid-template-columns:minmax(225px,255px) minmax(0,1fr) minmax(300px,335px)!important;gap:10px!important;min-height:560px!important}
+  #content .du184Board .dbAttention{padding:11px!important;min-width:0!important}
+  #content .du184Board .dbSchedule{min-width:0!important}
   #content .du184Board .dbAttention>.dbFilters{margin:7px 0 9px!important;gap:6px!important}
   #content .du184Board .dbAttentionMetrics{gap:5px!important;margin:7px 0 9px!important}
   #content .du184Board .dbAttentionMetrics button{min-height:50px!important}
@@ -79,23 +80,27 @@ style.textContent=`
   #content .du184Board .du183Date small{font-size:9px!important}
   #content .du184Board .dbV94ListWork{line-height:1.25!important}
   #content .du184Board .dbV94ListMeta{margin-top:3px!important}
-  #content .du184Board .du183CardSide{min-width:132px!important}
+  #content .du184Board .du183CardSide{min-width:126px!important}
   #content .du184Board .du183Amount{white-space:nowrap!important}
 
   #content .du184Board #dispatchBoardDetail{min-width:0!important}
   #content .du184Board .du184Detail{padding:12px!important}
-  #content .du184Board .du184Detail>.dbPanelHead{gap:12px!important;align-items:flex-start!important}
+  #content .du184Board .du184Detail>.dbPanelHead{gap:10px!important;align-items:flex-start!important}
   #content .du184Board .du184Detail>.dbPanelHead>div{min-width:0!important;flex:1 1 auto!important}
   #content .du184Board .du184Detail>.dbPanelHead>div h3{line-height:1.2!important;margin-top:6px!important}
   #content .du184Board .du184Detail>.dbPanelHead>b{white-space:nowrap!important;flex:0 0 auto!important;font-size:16px!important}
   #content .du184Board .dbDetailGrid{gap:7px!important}
-  #content .du184Board .dbDetailGrid>div{padding:9px!important}
+  #content .du184Board .dbDetailGrid>div{padding:9px!important;min-width:0!important}
   #content .du184Board .dbDetailGrid span{font-size:9px!important}
-  #content .du184Board .dbDetailGrid b{line-height:1.28!important}
+  #content .du184Board .dbDetailGrid b{line-height:1.28!important;overflow-wrap:anywhere!important}
 }
 @media(min-width:1050px) and (max-width:1320px){
-  #content .du184Board .dbLayout{grid-template-columns:minmax(235px,255px) minmax(500px,1fr) minmax(320px,350px)!important}
+  #content .du184Board .dbLayout{grid-template-columns:minmax(215px,235px) minmax(0,1fr) minmax(285px,310px)!important;gap:8px!important}
   #content .du184Board .du183Kpi div span{font-size:9px!important}
+}
+@media(min-width:1500px){
+  #content .du184Board .dbLayout{grid-template-columns:minmax(245px,275px) minmax(0,1fr) minmax(350px,390px)!important;gap:11px!important}
+  #content .du184Board .du183CardSide{min-width:132px!important}
 }
 `;
 document.head.appendChild(style);
