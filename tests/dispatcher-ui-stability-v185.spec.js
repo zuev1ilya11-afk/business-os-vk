@@ -20,10 +20,10 @@ async function pairState(page){
   });
 }
 
-test('dispatcher v185 keeps filters, quick actions and compact desktop stable across viewport changes',async({page})=>{
+test('dispatcher v186 keeps filters, including undated, quick actions and compact desktop stable across viewport changes',async({page})=>{
   const {db}=await fullStack(page,'dispatcher');
-  if(db.tables.orders[0])Object.assign(db.tables.orders[0],{scheduled_date:localDate(0),status:'В работе'});
-  if(db.tables.orders[1])Object.assign(db.tables.orders[1],{scheduled_date:localDate(3),status:'В работе'});
+  db.tables.orders.forEach((order,index)=>Object.assign(order,{scheduled_date:localDate(index===0?0:3),status:'В работе'}));
+  if(db.tables.orders[1])db.tables.orders[1].scheduled_date='';
 
   await page.setViewportSize({width:1280,height:850});
   await page.goto('/');
@@ -35,6 +35,7 @@ test('dispatcher v185 keeps filters, quick actions and compact desktop stable ac
 
   await expect(page.locator('.dbV94ListCard[data-order-id]').first()).toBeVisible();
   await expect(page.locator('#bosOrderSort')).toBeVisible();
+  await expect(page.locator('[data-da123-filter="undated"]')).toContainText('Без даты');
   await expect.poll(async()=>{const s=await pairState(page);return !!s&&s.cards>1&&s.bars===s.cards&&s.badPair===0&&s.badHidden===0}).toBe(true);
 
   await page.locator('#bosOrderSort').selectOption('oldest');
@@ -42,6 +43,12 @@ test('dispatcher v185 keeps filters, quick actions and compact desktop stable ac
 
   await page.locator('[data-da123-filter="today"]').click();
   await expect.poll(async()=>{const s=await pairState(page);return !!s&&s.hiddenCards>0&&s.badPair===0&&s.badHidden===0}).toBe(true);
+
+  await page.locator('[data-da123-filter="all"]').click();
+  await expect.poll(async()=>{const s=await pairState(page);return !!s&&s.hiddenCards===0&&s.badPair===0&&s.badHidden===0}).toBe(true);
+
+  await page.locator('[data-da123-filter="undated"]').click();
+  await expect.poll(async()=>{const s=await pairState(page);return !!s&&s.cards>1&&s.hiddenCards===s.cards-1&&s.badPair===0&&s.badHidden===0}).toBe(true);
 
   await page.locator('[data-da123-filter="all"]').click();
   await expect.poll(async()=>{const s=await pairState(page);return !!s&&s.hiddenCards===0&&s.badPair===0&&s.badHidden===0}).toBe(true);
