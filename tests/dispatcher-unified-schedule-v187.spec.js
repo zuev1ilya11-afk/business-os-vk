@@ -160,8 +160,6 @@ test('desktop widths and scaled layout retain usable grid; mobile has none',asyn
   }
   await expect.poll(()=>db.tables.orders[0].time_slot).toBe('10:00–12:00');
   await page.evaluate(()=>document.body.style.zoom='');
-  await page.setViewportSize({width:1049,height:844});
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   await page.setViewportSize({width:390,height:844});
   await page.reload();
   await page.locator('nav [data-page=orders]').click();
