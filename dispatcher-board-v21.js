@@ -16,14 +16,14 @@ function orderMasterIds(o){return [o?.master_staff_id,o?.master_id,o?.master_vk_
 function sameMaster(m,o){const ids=masterIds(m),oid=orderMasterIds(o);return ids.some(x=>oid.includes(x))||String(m?.full_name||'')===String(o?.master_name||'')}
 function selectedOrder(){const id=document.querySelector('.dbOrderCard.selected')?.dataset?.orderId;return (state.orders||[]).find(o=>String(o.id)===String(id||''))||null}
 function selectedMaster(o){return (state.masters||[]).find(m=>sameMaster(m,o))||null}
-function slotOf(t){const s=String(t||'').slice(0,5);if(!/^\d{2}:\d{2}$/.test(s))return '';const [h,m]=s.split(':').map(Number);return `${s}–${String((h+1)%24).padStart(2,'0')}:${String(m).padStart(2,'0')}`}
+function slotOf(t,o){const unified=window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187,r=unified?.slotRange(o);if(r){const [h,m]=t.split(':').map(Number);return unified.rangeText(h*60+m,r.slots)}const s=String(t||'').slice(0,5);if(!/^\d{2}:\d{2}$/.test(s))return '';const [h,m]=s.split(':').map(Number);return `${s}–${String((h+1)%24).padStart(2,'0')}:${String(m).padStart(2,'0')}`}
 function tomorrow(){const d=new Date();d.setDate(d.getDate()+1);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function localToday(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function setMsg(text){const x=document.getElementById('dispatchBoardMsg');if(x)x.textContent=text||''}
 function updateState(id,data,extra={}){const i=(state.orders||[]).findIndex(o=>String(o.id)===String(id));if(i>=0)state.orders[i]={...state.orders[i],...(data||{}),...extra}}
 async function metaCall(action,payload={}){const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};headers['Content-Type']='application/json';const r=await fetch(META_URL,{method:'POST',headers,body:JSON.stringify({action,...payload})}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Ошибка переноса');return d}
 
-function conflictsFor(m,date,time,ignoreId){const h=Number(String(time||'').slice(0,2));return (state.orders||[]).filter(active).filter(o=>String(o.id)!==String(ignoreId)).filter(o=>dateOf(o)===date&&sameMaster(m,o)&&hourOf(o)===h)}
+function conflictsFor(m,date,time,ignoreId){const unified=window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187;if(unified){const o=(state.orders||[]).find(o=>String(o.id)===String(ignoreId)),r=unified.slotRange(o),[h,min]=time.split(':').map(Number),start=h*60+min;return unified.conflictFor(ignoreId,m,date,start,start+(r?.slots||2)*30)?[true]:[]}const h=Number(String(time||'').slice(0,2));return (state.orders||[]).filter(active).filter(o=>String(o.id)!==String(ignoreId)).filter(o=>dateOf(o)===date&&sameMaster(m,o)&&hourOf(o)===h)}
 function ordersForMaster(m,date){return (state.orders||[]).filter(active).filter(o=>dateOf(o)===date&&sameMaster(m,o))}
 
 function enhanceTop(){
@@ -35,6 +35,13 @@ function enhanceTop(){
 
 function enhanceRows(){
   const date=boardDate();let freeCount=0,conflicts=0;
+  const unified=window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187;
+  if(unified){
+    for(const m of (state.masters||[])){const stats=unified.masterStats(m,date);if(stats.free)freeCount++;conflicts+=stats.conflicts}
+    for(const [id,text] of [['dbV21FreeCount',`Свободных: ${freeCount}`],['dbV21ConflictCount',`Конфликтов: ${conflicts}`],['dbV21UnassignedCount',`Без мастера: ${(state.orders||[]).filter(o=>active(o)&&!o.master_staff_id&&!o.master_id&&!o.master_vk_id&&!String(o.master_name||'').trim()).length}`]]){const el=document.getElementById(id);if(el&&el.textContent!==text)el.textContent=text}
+    const toggle=document.getElementById('dbV21FreeToggle'),cls=freeOnly?'primary':'secondary';if(toggle&&toggle.className!==cls)toggle.className=cls;
+    return;
+  }
   document.querySelectorAll('.dbTimelineRow').forEach(row=>{
     const name=row.querySelector('.dbMasterCell b')?.textContent?.trim()||'';
     const m=(state.masters||[]).find(x=>String(x.full_name||'')===name);
@@ -74,14 +81,20 @@ window.dispatchBoardV21MoveSelected=async function(){
   const m=selectedMaster(o),conflicts=m?conflictsFor(m,date,time,o.id):[];if(conflicts.length&&!confirm(`У ${m.full_name||'мастера'} уже есть заявка на это время. Всё равно перенести?`))return;
   setMsg('Переносим…');
   try{
-    const d=await api('updateOrder',{id:o.id,scheduled_date:date,scheduled_time:time,time_slot:slotOf(time)});if(!d.ok)throw new Error(d.error||'Не удалось перенести заявку');
-    updateState(o.id,d.order,{scheduled_date:date,scheduled_time:time,time_slot:slotOf(time)});
+    const d=await api('updateOrder',{id:o.id,scheduled_date:date,scheduled_time:time,time_slot:slotOf(time,o)});if(!d.ok)throw new Error(d.error||'Не удалось перенести заявку');
+    updateState(o.id,d.order,{scheduled_date:date,scheduled_time:time,time_slot:slotOf(time,o)});
     if(o.reschedule_requested){const r=await metaCall('resolveReschedule',{id:o.id,scheduled_date:date,scheduled_time:time});updateState(o.id,r.order,{reschedule_requested:false,reschedule_reason:null,reschedule_requested_at:null,reschedule_requested_by:null})}
     if(typeof setDispatchBoardDate==='function')setDispatchBoardDate(date);else show('orders');
   }catch(e){setMsg(e.message||String(e))}
 };
 window.dispatchBoardV21AutoAssign=function(){
   const o=selectedOrder();if(!o)return;
+  const unified=window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187;
+  if(unified){
+    const candidates=[];
+    for(const slot of document.querySelectorAll('.du187Slot:not(.off)')){const m=(state.masters||[]).find(m=>masterVk(m)===slot.dataset.master),time=slot.dataset.time;if(!m||conflictsFor(m,boardDate(),time,o.id).length)continue;candidates.push({m,time,count:ordersForMaster(m,boardDate()).length})}
+    candidates.sort((a,b)=>a.count-b.count);const c=candidates[0];if(!c){alert('На выбранный день свободных окон нет');return}unified.move(o.id,masterVk(c.m),c.time);return;
+  }
   const candidates=[];document.querySelectorAll('.dbTimelineRow').forEach(row=>{const name=row.querySelector('.dbMasterCell b')?.textContent?.trim()||'',m=(state.masters||[]).find(x=>String(x.full_name||'')===name);if(!m)return;const slot=[...row.querySelectorAll('.dbSlot:not(.off)')].find(s=>!s.querySelector('.dbOrderCard'));if(!slot)return;candidates.push({m,slot,count:ordersForMaster(m,boardDate()).length})});
   candidates.sort((a,b)=>a.count-b.count);const c=candidates[0];if(!c){alert('На выбранный день свободных окон нет');return}const h=String(c.slot.dataset.hour||'9').padStart(2,'0')+':00';window.__dispatchBoardMove?.(o.id,masterVk(c.m),h)
 };

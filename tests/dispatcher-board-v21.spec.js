@@ -16,7 +16,7 @@ test('dispatcher v2.1 moves an order to another day and preserves payout',async(
   await expect(page.locator('#authGate')).toBeHidden();
   await page.locator('nav [data-page=orders]').click();
   await expect(page.locator('.dbV21Tools')).toBeVisible();
-  await page.locator('.dbOrderCard[data-order-id="11"]').first().click();
+  await page.locator('.du187Card[data-order-id="11"]').click();
   await expect(page.getByText('Быстрый перенос',{exact:true})).toBeVisible();
   const next=moscowDate(1);
   const saved=page.waitForResponse(response=>{

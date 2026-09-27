@@ -31,7 +31,7 @@ test('dispatcher v2.4 collects attention items with unique order cards',async({p
   await expect(page.locator('.dbV24Card[data-order-id="11"]')).toHaveCount(0);
 });
 
-test('dispatcher v2.4 detects schedule conflicts and can jump to day plan',async({page})=>{
+test('dispatcher v2.4 detects schedule conflicts and can jump to unified schedule',async({page})=>{
   await page.setViewportSize({width:1600,height:950});
   const {db}=await fullStack(page,'dispatcher');
   const master=db.tables.orders[0].master_staff_id;
@@ -40,18 +40,22 @@ test('dispatcher v2.4 detects schedule conflicts and can jump to day plan',async
     o.status='В работе';
     o.scheduled_date=localDate();
     o.scheduled_time='15:00';
+    o.time_slot='15:00–16:00';
     o.master_staff_id=master;
     o.master_name=masterName;
   }
   await page.goto('/');
+  await page.waitForFunction(()=>window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187?.version==='187');
   await page.locator('nav [data-page=orders]').click();
   await page.getByRole('button',{name:/Контроль/}).click();
   await page.getByRole('button',{name:/Конфликт времени ·/}).click();
   await expect(page.locator('.dbV24Card')).toHaveCount(2);
   await expect(page.locator('.dbV24Card').first()).toContainText('Конфликт времени');
   await page.locator('.dbV24Card').first().getByRole('button',{name:'План дня'}).click();
-  await expect(page.locator('.dbV23Plan')).toBeVisible();
-  await expect(page.locator('.dbV23Slot.conflict')).toBeVisible();
+  await expect(page.locator('.du187Root')).toBeVisible();
+  const conflictSlots=page.locator('.du187Slot.conflict');
+  await expect(conflictSlots.first()).toBeVisible();
+  expect(await conflictSlots.count()).toBeGreaterThan(0);
 });
 
 test('dispatch control v2.4 stays desktop-only',async({page})=>{

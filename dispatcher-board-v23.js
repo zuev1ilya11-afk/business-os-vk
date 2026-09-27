@@ -38,8 +38,8 @@ function gridHtml(date,masters){
 }
 function injectTab(){const tabs=document.querySelector('.dbViewTabs');if(!tabs||tabs.querySelector('.dbV23Tab'))return;const b=document.createElement('button');b.type='button';b.className='secondary dbV23Tab';b.textContent='План дня';b.onclick=()=>setPlan(true);tabs.appendChild(b)}
 function syncTab(){const b=document.querySelector('.dbV23Tab');if(b)b.className=`dbV23Tab ${planMode?'primary':'secondary'}`}
-function setPlan(on){planMode=!!on;sessionStorage.setItem('bosDispatchV23Plan',planMode?'1':'0');lastSignature='';if(!planMode){if(typeof show==='function')show('orders');return}render(true)}
-function render(force=false){if(rendering||!planMode||!dispatcherDesktop())return;const schedule=document.querySelector('.dbSchedule');if(!schedule)return;const date=boardDate();if(!date)return;const masters=filteredMasters(),sig=signature(date,masters);if(!force&&sig===lastSignature&&schedule.querySelector('.dbV23Plan')){syncTab();return}rendering=true;try{schedule.innerHTML=gridHtml(date,masters);lastSignature=sig;syncTab()}finally{rendering=false}}
+function setPlan(on){if(on&&window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187){planMode=false;sessionStorage.setItem('bosDispatchV23Plan','0');window.setDispatchBoardView?.('board');return}planMode=!!on;sessionStorage.setItem('bosDispatchV23Plan',planMode?'1':'0');lastSignature='';if(!planMode){if(typeof show==='function')show('orders');return}render(true)}
+function render(force=false){if(window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187||rendering||!planMode||!dispatcherDesktop())return;const schedule=document.querySelector('.dbSchedule');if(!schedule)return;const date=boardDate();if(!date)return;const masters=filteredMasters(),sig=signature(date,masters);if(!force&&sig===lastSignature&&schedule.querySelector('.dbV23Plan')){syncTab();return}rendering=true;try{schedule.innerHTML=gridHtml(date,masters);lastSignature=sig;syncTab()}finally{rendering=false}}
 function enhance(){if(!dispatcherDesktop()||!document.querySelector('.dbBoard'))return;injectTab();syncTab();if(planMode)render()}
 
 window.dispatchBoardV23Plan=function(on=true){setPlan(on)};
