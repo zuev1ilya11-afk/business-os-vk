@@ -54,7 +54,8 @@
       './dispatcher-unassigned-queue-v122.js?v=20260924-v122',
       './dispatcher-attention-v123.js?v=20260924-v123',
       './dispatcher-ui-redesign-v183.js?v=20260927-v183',
-      './dispatcher-ui-redesign-v183-compat.js?v=20260927-v183a'
+      './dispatcher-ui-redesign-v183-compat.js?v=20260927-v183a',
+      './dispatcher-ui-polish-v184.js?v=20260927-v184'
     ],
     master:[
       './master-home-orders-v124.js?v=20260924-v124',
