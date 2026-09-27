@@ -2,6 +2,7 @@ const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const futureDate=()=>new Date(Date.now()+24*60*60*1000).toISOString().slice(0,10);
 const order11=db=>db.tables.orders.find(o=>String(o.id)==='11');
 
 test('scheduled master order shows approved three-step actions and confirmed reschedule',async({page})=>{
@@ -60,7 +61,7 @@ test('order without date uses agreement form then switches to scheduled workflow
   await panel.getByRole('button',{name:'Договориться',exact:true}).click();
   const form=page.locator('#masterOrderAgree179Form');
   await expect(form).toBeVisible();
-  await form.locator('input[name="scheduled_date"]').fill(localDate());
+  await form.locator('input[name="scheduled_date"]').fill(futureDate());
   await form.locator('input[name="scheduled_time"]').fill('18:30');
   await form.getByRole('button',{name:'Сохранить',exact:true}).click();
 
