@@ -31,7 +31,12 @@ style.textContent=`
 html:has(#content .dh190Board),body:has(#content .dh190Board){height:100dvh!important;min-height:0!important;max-height:100dvh!important;overflow:hidden!important}
 body #app:has(#content .dh190Board){height:auto!important;min-height:0!important;max-height:100dvh!important;padding-bottom:0!important;overflow:hidden!important}
 #app>#content:has(.dh190Board){min-height:0!important;padding-bottom:0!important;overflow:hidden!important}
-#content .dh190Board .dbLayout{min-width:0!important}
+#content .dh190Board .dbLayout{min-width:0!important;grid-template-rows:minmax(0,1fr)!important}
+#content .dh190Board #dispatchBoardDetail{grid-column:3!important;grid-row:1!important}
+#content .dh190Head{flex-wrap:wrap!important;align-content:start!important}
+#content .dh190Head>div:first-child{min-width:0!important;flex:1 1 220px!important}
+#content .dh190Title{flex-wrap:wrap!important}
+#content .dh190HeadRight{flex-wrap:wrap!important}
 #content .dh190Board .dbAttention,#content .dh190Board .dbSchedule,#content .dh190Board #dispatchBoardDetail{min-width:0!important;margin:0!important}
 #content .dh190Board .dbAttention{z-index:2!important}
 #content .dh190Board .dbSchedule{position:relative!important;z-index:1!important;isolation:isolate!important;min-width:0!important;max-width:100%!important}
