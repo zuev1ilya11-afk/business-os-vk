@@ -13,6 +13,9 @@
     './dispatcher-desktop-compat-v90.js?v=20260920-v90',
     './dispatcher-reschedule-v91.js?v=20260920-v91',
     './dispatcher-board-v92.js?v=20260920-v92',
+    './dispatcher-board-compat-v90.js?v=20260920-v90',
+    './dispatcher-reschedule-v91.js?v=20260920-v91',
+    './dispatcher-board-v92.js?v=20260920-v92',
     './dispatcher-board-compat-v93.js?v=20260920-v93',
     './dispatcher-board-v21.js?v=20260920-v21',
     './dispatcher-smart-assign-v22.js?v=20260920-v22',
@@ -56,7 +59,8 @@
       './dispatcher-ui-redesign-v183.js?v=20260927-v183',
       './dispatcher-ui-redesign-v183-compat.js?v=20260927-v183a',
       './dispatcher-ui-polish-v184.js?v=20260927-v184',
-      './dispatcher-ui-stability-v185.js?v=20260927-v185'
+      './dispatcher-ui-stability-v185.js?v=20260927-v185',
+      './dispatcher-unified-schedule-v187.js?v=20260927-v187'
     ],
     master:[
       './master-home-orders-v124.js?v=20260924-v124',
@@ -100,6 +104,7 @@
   window.BOS_ROLE_MODULES_V183=window.BOS_ROLE_MODULES_V171;
   window.BOS_ROLE_MODULES_V185=window.BOS_ROLE_MODULES_V171;
   window.BOS_ROLE_MODULES_V186=window.BOS_ROLE_MODULES_V171;
+  window.BOS_ROLE_MODULES_V187=window.BOS_ROLE_MODULES_V171;
 
   const loadAfterLegacyUnlock=()=>{
     if(!document.body.classList.contains('bos-auth-ok'))return;
