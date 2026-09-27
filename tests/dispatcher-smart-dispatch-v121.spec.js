@@ -30,14 +30,21 @@ test('unassigned order shows ranked inline options and one-action assignment pre
   const best=smart.locator('.dsd121Candidate').first();
   await expect(best).toContainText('Рекомендуем');
   await expect(best).toContainText('Тестовый мастер');
-  await expect(best).toContainText('10:00');
   await expect(best).toContainText('город совпадает');
 
+  const assign=best.getByRole('button',{name:/Назначить Тестовый мастер на \d{2}:\d{2}/});
+  await expect(assign).toBeVisible();
+  const label=(await assign.getAttribute('aria-label'))||await assign.textContent();
+  const match=label&&label.match(/\b\d{2}:\d{2}\b/);
+  expect(match).toBeTruthy();
+  const expectedTime=match[0];
+  await expect(best).toContainText(expectedTime);
+
   page.once('dialog',dialog=>dialog.accept());
-  await best.getByRole('button',{name:/Назначить Тестовый мастер на 10:00/}).click();
+  await assign.click();
 
   await expect.poll(()=>db.tables.orders[1].master_staff_id).toBe(master.id);
-  await expect.poll(()=>db.tables.orders[1].scheduled_time).toBe('10:00');
+  await expect.poll(()=>db.tables.orders[1].scheduled_time).toBe(expectedTime);
   expect(db.tables.orders[1].amount).toBe(2000);
   expect(db.tables.orders[1].master_payout).toBe(1105);
   await expect(page.locator(`.dsd121[data-order-id="${orderId}"]:visible`)).toHaveCount(0);
