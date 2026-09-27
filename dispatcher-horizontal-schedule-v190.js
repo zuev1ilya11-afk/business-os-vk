@@ -5,11 +5,11 @@ const MIN=1050,STEP=30,ROW=64;
 let queued=false,rendering=false,lastSignature='';
 
 const st=()=>{try{return typeof state!=='undefined'?state:null}catch(_){return null}};
-const mode=()=>window.innerWidth>=MIN&&((typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(st()?.user?.role||'')==='dispatcher')&&String(st()?.page||'')==='orders';
+const mode=()=>window.innerWidth>=MIN&&String(st()?.user?.role||'')==='dispatcher'&&String(st()?.page||'')==='orders';
 const active=o=>!!o&&!['Выполнена','Отменена'].includes(String(o?.status||''));
 const dateOf=o=>String(o?.scheduled_date||'').slice(0,10);
 const timeOf=o=>String(o?.scheduled_time||o?.time_slot||'').slice(0,5);
-const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
 const boardDate=()=>String(document.getElementById('dispatchBoardDate')?.value||'').slice(0,10);
 const masterVk=m=>String(m?.vk_user_id||m?.external_id||'');
 const masterIds=m=>[m?.id,m?.staff_id,m?.master_staff_id,m?.vk_user_id,m?.external_id].filter(Boolean).map(String);
@@ -34,7 +34,6 @@ function timelineBounds(date,masters){let lo=9*60,hi=21*60;for(const m of master
 function timesBetween(lo,hi){const out=[];for(let x=lo;x<hi;x+=STEP)out.push(hhmm(x));return out}
 function statusLabel(o){if(o?.reschedule_requested)return'Перенос';if(o?.master_workflow_stage==='started')return'В работе';if(o?.master_workflow_stage==='departed')return'Выехал';return String(o?.status||'В работе')}
 function layoutOrders(orders){const result=new Map();let group=[],ends=[],groupEnd=-1;const flush=()=>{const lanes=Math.max(1,ends.length);for(const item of group)result.set(String(item.o.id),{lane:item.lane,lanes});group=[];ends=[]};for(const o of [...orders].sort((a,b)=>orderInterval(a).start-orderInterval(b).start||String(a.id).localeCompare(String(b.id)))){const r=orderInterval(o);if(r.start>=groupEnd){flush();groupEnd=-1}let lane=ends.findIndex(end=>end<=r.start);if(lane<0)lane=ends.length;ends[lane]=r.end;group.push({o,lane});groupEnd=Math.max(groupEnd,r.end)}flush();return result}
-function conflictFor(id,m,date,start,end){return !!window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187?.conflictFor(id,m,date,start,end)}
 function signature(date,masters){return JSON.stringify({date,masters:masters.map(m=>[m.id,m.external_id,m.full_name]),orders:dayAssigned(date).map(o=>[o.id,o.master_staff_id,o.master_vk_id,o.master_name,o.scheduled_time,o.time_slot,o.status,o.reschedule_requested,o.master_workflow_stage]),schedule:(st()?.masterSchedule||[]).filter(r=>String(r.work_date||r.date||'').slice(0,10)===date).map(r=>[r.staff_id,r.master_staff_id,r.master_vk_id,r.is_working,r.work_start,r.work_end])})}
 function shortDate(date){if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return date;const [y,m,d]=date.split('-');return `${d}.${m}.${y}`}
 function shiftDate(delta){const input=document.getElementById('dispatchBoardDate'),raw=boardDate();if(!raw)return;const d=new Date(`${raw}T12:00:00`);d.setDate(d.getDate()+delta);const next=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;if(typeof setDispatchBoardDate==='function')setDispatchBoardDate(next);else if(input){input.value=next;input.dispatchEvent(new Event('change',{bubbles:true}))}}
@@ -44,22 +43,27 @@ function slotHtml(m,date,t,orders,layout){const start=orders.filter(o=>startsAt(
 function gridHtml(date,masters){if(!masters.length)return '<div class="dh190Empty">Нет мастеров по выбранным условиям.</div>';const assigned=dayAssigned(date),{lo,hi}=timelineBounds(date,masters),times=timesBetween(lo,hi),layouts=new Map(masters.map(m=>[m,layoutOrders(assigned.filter(o=>sameMaster(m,o)))]));let conflicts=0;for(const m of masters)for(const t of times){if(assigned.filter(o=>sameMaster(m,o)&&covers(o,t)).length>1)conflicts++}return `<div class="du187Head dh190Head"><div><div class="dh190Title"><b>Горизонтальное расписание дня</b><span class="dh190Mode">Горизонтальный режим</span></div><span>Мастера идут сверху вниз, время — слева направо. Перетаскивайте заявки и меняйте длительность за правый край.</span></div><div class="dh190HeadRight"><div class="du187Legend"><span><i class="free"></i>свободно</span><span><i class="busy"></i>занято</span>${conflicts?`<span class="danger">${conflicts} пересеч.</span>`:''}</div><div class="dh190Date"><button type="button" onclick="bosHorizontalShiftDate(-1)" aria-label="Предыдущий день">‹</button><b>${escv(shortDate(date))}</b><button type="button" onclick="bosHorizontalShiftDate(1)" aria-label="Следующий день">›</button></div></div></div><div class="du187GridWrap dh190GridWrap"><div class="du187Grid dh190Grid" style="--dh190-times:${times.length}"><div class="du187Corner">Мастера</div>${times.map(t=>`<div class="du187Time${t.endsWith(':30')?' half':''}" data-time="${t}">${t}</div>`).join('')}${masters.map(m=>{const own=assigned.filter(o=>sameMaster(m,o)),layout=layouts.get(m);return `<div class="du187Master" data-master="${escv(masterVk(m))}"><b>${escv(m.full_name||'Мастер')}</b><span>${escv(masterLabel(m,date))}</span></div>${times.map(t=>slotHtml(m,date,t,own,layout)).join('')}`}).join('')}</div></div>`}
 
 function installResize(root){root.querySelectorAll('.du187Resize').forEach(handle=>{if(handle.dataset.dh190Bound)return;handle.dataset.dh190Bound='1';handle.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();const card=handle.closest('.du187Card'),slot=card?.closest('.du187Slot');if(!card||!slot)return;const startX=e.clientX,startY=e.clientY,original=Math.max(1,Number(card.dataset.durationSlots||2)),cellW=slot.getBoundingClientRect().width||48,rowH=slot.getBoundingClientRect().height||ROW;let current=original;card.draggable=false;card.classList.add('resizing');handle.setPointerCapture?.(e.pointerId);const move=ev=>{const dx=(ev.clientX-startX)/cellW,dy=(ev.clientY-startY)/rowH,delta=Math.round(Math.abs(dx)>=Math.abs(dy)?dx:dy);current=Math.max(1,Math.min(30,original+delta));card.style.setProperty('--dh190-width',`${current*100}%`);const label=card.querySelector('.du187When');if(label)label.textContent=rangeText(Number(card.dataset.start||0),current)};const up=async ev=>{window.removeEventListener('pointermove',move,true);window.removeEventListener('pointerup',up,true);window.removeEventListener('pointercancel',up,true);handle.releasePointerCapture?.(ev.pointerId);card.draggable=true;card.classList.remove('resizing');if(ev.type==='pointercancel'||(current!==original&&!await window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187?.setDuration(card.dataset.orderId,current))){card.style.setProperty('--dh190-width',`${original*100}%`);const label=card.querySelector('.du187When');if(label)label.textContent=rangeText(Number(card.dataset.start||0),original)}};window.addEventListener('pointermove',move,true);window.addEventListener('pointerup',up,true);window.addEventListener('pointercancel',up,true)});handle.addEventListener('click',e=>e.stopPropagation());handle.addEventListener('dragstart',e=>{e.preventDefault();e.stopPropagation()})})}
-function applyShell(board,on){document.documentElement.classList.toggle('dh190Active',on);document.body?.classList.toggle('dh190Active',on);board?.classList.toggle('dh190Board',on)}
+function applyShell(board,on){
+  document.documentElement.classList.remove('dh190Active');
+  document.body?.classList.remove('dh190Active');
+  if(!board)return;
+  board.classList.toggle('dh190Board',on);
+  if(on){const top=Math.max(0,board.getBoundingClientRect().top);board.style.setProperty('--dh190-vh',`${Math.max(480,window.innerHeight-top-8)}px`)}
+  else board.style.removeProperty('--dh190-vh');
+}
 function cleanup(){const board=document.querySelector('#content .dbBoard');applyShell(board,false);lastSignature=''}
 function render(force=false){queued=false;if(rendering)return;if(!mode()){cleanup();return}const board=document.querySelector('#content .dbBoard'),schedule=board?.querySelector('.dbSchedule'),root=schedule?.querySelector(':scope>.du187Root');if(!board||!schedule||!root)return;applyShell(board,true);const date=boardDate();if(!date)return;const masters=visibleMasters(),sig=signature(date,masters);if(!force&&sig===lastSignature&&root.classList.contains('dh190Root'))return;rendering=true;try{root.classList.add('dh190Root');root.innerHTML=gridHtml(date,masters);installResize(root);lastSignature=sig}finally{rendering=false}}
 function scheduleRender(){if(queued)return;queued=true;requestAnimationFrame(()=>render(false))}
-function start(){const c=document.getElementById('content');if(c)new MutationObserver(scheduleRender).observe(c,{childList:true,subtree:true,attributes:true,attributeFilter:['class','value']});scheduleRender()}
+function start(){const c=document.getElementById('content');if(c)new MutationObserver(scheduleRender).observe(c,{childList:true,subtree:true,attributes:true,attributeFilter:['class','value']});document.addEventListener('click',e=>{const nav=e.target.closest?.('nav [data-page]');if(!nav)return;if(String(nav.dataset.page||'')!=='orders')cleanup();requestAnimationFrame(scheduleRender)},true);scheduleRender()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-window.addEventListener('resize',scheduleRender);
+window.addEventListener('resize',()=>{if(window.innerWidth<MIN)cleanup();scheduleRender()});
 window.bosHorizontalShiftDate=shiftDate;
 window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190={version:'190',refresh:()=>render(true),shiftDate};
 
 const style=document.createElement('style');style.textContent=`
 @media(min-width:${MIN}px){
-html.dh190Active,body.dh190Active{height:100%!important;overflow:hidden!important}
-body.dh190Active #content{height:100vh!important;max-height:100vh!important;overflow:hidden!important}
-#content .dh190Board{height:calc(100vh - 10px)!important;max-height:calc(100vh - 10px)!important;overflow:hidden!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important}
-#content .dh190Board>.dbTop,#content .dh190Board>.dbToolbar{display:none!important}
+#content .dh190Board{height:var(--dh190-vh)!important;max-height:var(--dh190-vh)!important;overflow:hidden!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important}
+#content .dh190Board>.dbTop,#content .dh190Board>.dbToolbar{display:flex!important;flex:0 0 auto!important;min-height:32px!important;margin:0 0 5px!important;padding:4px 7px!important;gap:5px!important;align-items:center!important}
 #content .dh190Board .dbV21Tools{flex:0 0 auto!important;min-height:54px!important;margin:0 0 6px!important}
 #content .dh190Board .du183Kpis{gap:7px!important}.dh190Board .du183Kpi{min-height:54px!important;padding:7px 10px!important;gap:8px!important}.dh190Board .du183KpiIcon{width:31px!important;height:31px!important;font-size:15px!important}.dh190Board .du183Kpi strong{font-size:18px!important}.dh190Board .du183Kpi div span{font-size:9px!important}
 #content .dh190Board .du183StatusStrip{flex:0 0 auto!important;min-height:30px!important;padding:4px 8px!important;margin:0 0 5px!important;border-radius:10px!important}
