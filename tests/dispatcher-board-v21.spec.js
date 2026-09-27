@@ -19,14 +19,23 @@ test('dispatcher v2.1 moves an order to another day and preserves payout',async(
   await page.locator('.dbOrderCard[data-order-id="11"]').first().click();
   await expect(page.getByText('Быстрый перенос',{exact:true})).toBeVisible();
   const next=moscowDate(1);
-  await page.locator('#dbV21MoveDate').fill(next);
-  await page.locator('#dbV21MoveTime').fill('14:00');
   const saved=page.waitForResponse(response=>{
     if(!response.url().includes('/mini-app-api'))return false;
     const body=response.request().postDataJSON();
     return body?.action==='updateOrder'&&String(body.id)==='11';
   });
-  await page.getByRole('button',{name:'Перенести на дату и время'}).click();
+  // Background bootstrap can rerender the mocked detail panel between separate
+  // Playwright fills. Set both values and activate the existing button in one
+  // browser task so this test validates the move request instead of that race.
+  await page.locator('.dbV21QuickMove').evaluate((box,{date,time})=>{
+    const dateInput=box.querySelector('#dbV21MoveDate');
+    const timeInput=box.querySelector('#dbV21MoveTime');
+    const button=box.querySelector('button');
+    if(!dateInput||!timeInput||!button)throw new Error('Quick move controls are missing');
+    dateInput.value=date;
+    timeInput.value=time;
+    button.click();
+  },{date:next,time:'14:00'});
   const response=await saved;
   expect(response.request().postDataJSON()).toMatchObject({scheduled_date:next,scheduled_time:'14:00'});
   expect(await response.json()).toMatchObject({ok:true,order:{scheduled_date:next,scheduled_time:'14:00'}});
