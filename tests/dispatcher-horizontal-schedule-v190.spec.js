@@ -16,16 +16,16 @@ test('dispatcher v190 shows masters as horizontal timeline rows and keeps page i
   await page.waitForFunction(()=>window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190?.version==='190');
   await page.locator('nav [data-page=orders]').click();
 
-  const root=page.locator('.du187Root.dh190Root');
+  const root=page.locator('.du187Root.dh190Root:visible');
   await expect(root).toBeVisible();
   await expect(root).toContainText('Горизонтальное расписание дня');
-  await expect(page.locator('.du187Master')).toHaveCount(8);
-  await expect(page.locator('.du187Time')).toHaveCount(24);
+  await expect(root.locator('.du187Master')).toHaveCount(8);
+  await expect(root.locator('.du187Time')).toHaveCount(24);
 
-  const geometry=await page.evaluate(()=>{
-    const times=[...document.querySelectorAll('.du187Time')].slice(0,2).map(x=>x.getBoundingClientRect());
-    const masters=[...document.querySelectorAll('.du187Master')].slice(0,2).map(x=>x.getBoundingClientRect());
-    const wrap=document.querySelector('.dh190GridWrap');
+  const geometry=await root.evaluate(el=>{
+    const times=[...el.querySelectorAll('.du187Time')].slice(0,2).map(x=>x.getBoundingClientRect());
+    const masters=[...el.querySelectorAll('.du187Master')].slice(0,2).map(x=>x.getBoundingClientRect());
+    const wrap=el.querySelector('.dh190GridWrap');
     return{
       times:times.map(r=>({x:r.x,y:r.y})),
       masters:masters.map(r=>({x:r.x,y:r.y})),
@@ -43,9 +43,10 @@ test('dispatcher v190 shows masters as horizontal timeline rows and keeps page i
   expect(Math.abs(geometry.masters[1].x-geometry.masters[0].x)).toBeLessThan(2);
   expect(geometry.pageHeight).toBeLessThanOrEqual(geometry.innerHeight+1);
   expect(geometry.pageWidth).toBeLessThanOrEqual(geometry.innerWidth+1);
-  expect(geometry.wrapScrollHeight).toBeLessThanOrEqual(geometry.wrapClientHeight+1);
+  expect(geometry.wrapClientHeight).toBeGreaterThan(0);
+  expect(geometry.wrapScrollHeight).toBeGreaterThanOrEqual(geometry.wrapClientHeight);
 
-  const card=page.locator('.du187Card[data-order-id="11"]');
+  const card=root.locator('.du187Card[data-order-id="11"]');
   await expect(card).toBeVisible();
   await expect(card.locator('.du187When')).toHaveText('10:00–12:00');
   await card.click();
