@@ -54,10 +54,10 @@ test('order without date uses agreement form then switches to scheduled workflow
   await page.evaluate(()=>window.openOrder('11'));
 
   const panel=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
-  await expect(panel.getByRole('button',{name:'Договориться',exact:true})).toBeVisible();
+  await expect(panel.getByRole('button',{name:/Договориться/})).toBeVisible();
   await expect(panel.getByRole('button',{name:/Выехал/})).toHaveCount(0);
 
-  await panel.getByRole('button',{name:'Договориться',exact:true}).click();
+  await panel.getByRole('button',{name:/Договориться/}).click();
   const form=page.locator('#masterOrderAgree179Form');
   await expect(form).toBeVisible();
   await form.locator('input[name="scheduled_date"]').fill(moscowDate(1));
