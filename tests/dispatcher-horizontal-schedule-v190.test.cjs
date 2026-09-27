@@ -4,5 +4,7 @@ const src=fs.readFileSync(path.join(__dirname,'..','dispatcher-horizontal-schedu
 if(!src.includes("version:'190'"))throw new Error('v190 marker missing');
 if(!src.includes('Горизонтальное расписание дня'))throw new Error('horizontal title missing');
 if(!src.includes('grid-template-columns:128px repeat(var(--dh190-times)'))throw new Error('horizontal master/time grid missing');
-if(!src.includes('html.dh190Active,body.dh190Active'))throw new Error('viewport scroll lock missing');
+if(!src.includes('--dh190-vh'))throw new Error('board-local viewport fit missing');
+if(src.includes('html.dh190Active,body.dh190Active'))throw new Error('global page scroll lock must not be used');
+if(!src.includes("String(st()?.user?.role||'')==='dispatcher'"))throw new Error('dispatcher-only activation missing');
 console.log('dispatcher horizontal schedule v190 source checks passed');
