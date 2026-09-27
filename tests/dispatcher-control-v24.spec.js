@@ -53,7 +53,8 @@ test('dispatcher v2.4 detects schedule conflicts and can jump to unified schedul
   await expect(page.locator('.dbV24Card').first()).toContainText('Конфликт времени');
   await page.locator('.dbV24Card').first().getByRole('button',{name:'План дня'}).click();
   await expect(page.locator('.du187Root')).toBeVisible();
-  await expect(page.locator('.du187Slot.conflict')).toBeVisible();
+  await expect(page.locator('.du187Slot.conflict').first()).toBeVisible();
+  await expect(page.locator('.du187Slot.conflict').count()).resolves.toBeGreaterThan(0);
 });
 
 test('dispatch control v2.4 stays desktop-only',async({page})=>{
