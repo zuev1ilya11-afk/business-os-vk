@@ -6,7 +6,7 @@ test('dispatch control v2.4 is syntactically valid and loaded after day plan',()
   const src=fs.readFileSync('dispatcher-control-v24.js','utf8');
   assert.doesNotThrow(()=>new Function(src));
   const loader=fs.readFileSync('pwa-register.js','utf8');
-  assert.match(loader,/dispatcher-control-v24\.js\?v=20260920-v24/);
+  assert.match(loader,/dispatcher-control-v24\.js\?v=20260927-v188-fix/);
   assert.ok(loader.indexOf('dispatcher-control-v24.js')>loader.indexOf('dispatcher-board-v23.js'));
 });
 
