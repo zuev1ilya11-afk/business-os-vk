@@ -45,7 +45,7 @@ function dayAssigned(date){return (st()?.orders||[]).filter(active).filter(o=>da
 function noOf(o){const x=String(o?.external_id||'');return x.startsWith('hands:')?x.slice(6):String(o?.id||'')}
 function statusLabel(o){if(o?.reschedule_requested)return 'Перенос';if(o?.master_workflow_stage==='started')return 'В работе';if(o?.master_workflow_stage==='departed')return 'Выехал';return String(o?.status||'В работе')}
 function orderInterval(o){const r=slotRange(o);return r||{start:mins(timeOf(o))||0,end:(mins(timeOf(o))||0)+60,slots:2}}
-function startsAt(o,t){const r=orderInterval(o);return r.start===mins(t)}
+function startsAt(o,t){return orderInterval(o).start===mins(t)}
 function covers(o,t){const r=orderInterval(o),x=mins(t);return x>=r.start&&x<r.end}
 function conflictFor(id,m,date,start,end){return (st()?.orders||[]).filter(active).some(o=>String(o.id)!==String(id)&&dateOf(o)===date&&sameMaster(m,o)&&(()=>{const r=orderInterval(o);return overlap(start,end,r.start,r.end)})())}
 function timelineBounds(date,masters){
@@ -58,12 +58,13 @@ function timelineBounds(date,masters){
 }
 function timesBetween(lo,hi){const out=[];for(let x=lo;x<hi;x+=STEP)out.push(hhmm(x));return out}
 function signature(date,masters){return JSON.stringify({date,masters:masters.map(m=>[m.id,m.external_id,m.full_name]),orders:dayAssigned(date).map(o=>[o.id,o.master_staff_id,o.master_vk_id,o.master_name,o.scheduled_time,o.time_slot,o.status,o.reschedule_requested,o.master_workflow_stage]),schedule:(st()?.masterSchedule||[]).filter(r=>String(r.work_date||r.date||'').slice(0,10)===date).map(r=>[r.staff_id,r.master_staff_id,r.master_vk_id,r.is_working,r.work_start,r.work_end])})}
+function scheduleView(board){const tabs=[...(board?.querySelectorAll('.dbViewTabs button')||[])],list=tabs.find(b=>String(b.textContent||'').trim()==='Список'),schedule=tabs.find(b=>String(b.textContent||'').trim()==='Расписание');if(list?.classList.contains('primary'))return false;return !schedule||schedule.classList.contains('primary')}
 function cardHtml(o){
   const r=orderInterval(o),warn=o.reschedule_requested?' warn':'',slots=Math.max(1,r.slots);
   return `<div class="du187Card${warn}" draggable="true" data-order-id="${escv(o.id)}" data-start="${r.start}" data-duration-slots="${slots}" style="--du187-slots:${slots}" ondragstart="bosUnifiedScheduleDrag(event,'${escv(o.id)}')" onclick="selectDispatchBoardOrder('${escv(o.id)}')"><div class="du187CardTop"><b>№ ${escv(noOf(o))}</b><span class="du187When">${escv(rangeText(r.start,slots))}</span></div><strong>${escv(o.client||'Клиент')}</strong><small>${escv(o.work||'Заявка')}</small><em>${escv(statusLabel(o))}</em><button type="button" class="du187Resize" aria-label="Изменить длительность заявки" title="Потяните, чтобы изменить длительность"></button></div>`
 }
 function slotHtml(m,date,t,orders){
-  const start=orders.filter(o=>startsAt(o,t));const covering=orders.filter(o=>covers(o,t));const off=!available(m,date,t),conflict=covering.length>1;
+  const start=orders.filter(o=>startsAt(o,t)),covering=orders.filter(o=>covers(o,t)),off=!available(m,date,t),conflict=covering.length>1;
   return `<div class="du187Slot${off?' off':''}${covering.length?' busy':''}${conflict?' conflict':''}" data-master="${escv(masterVk(m))}" data-time="${t}" ondragover="bosUnifiedScheduleAllowDrop(event)" ondrop="bosUnifiedScheduleDrop(event,'${escv(masterVk(m))}','${t}')">${start.map(cardHtml).join('')}${!covering.length&&!off?'<span class="du187Free">Свободно</span>':''}</div>`
 }
 function gridHtml(date,masters){
@@ -72,20 +73,29 @@ function gridHtml(date,masters){
   return `<section class="du187Root"><div class="du187Head"><div><b>Расписание дня</b><span>Перетащите заявку на другое время или мастера. Потяните за нижний край, чтобы изменить длительность.</span></div><div class="du187Legend"><span><i class="free"></i>свободно</span><span><i class="busy"></i>занято</span>${conflicts?`<span class="danger">${conflicts} пересеч.</span>`:''}</div></div><div class="du187GridWrap"><div class="du187Grid" style="--du187-masters:${Math.max(1,masters.length)}"><div class="du187Corner">Время</div>${masters.map(m=>`<div class="du187Master"><b>${escv(m.full_name||'Мастер')}</b><span>${escv(masterLabel(m,date))}</span></div>`).join('')}${times.map(t=>`<div class="du187Time">${t}</div>${masters.map(m=>slotHtml(m,date,t,assigned.filter(o=>sameMaster(m,o)))).join('')}`).join('')}</div></div></section>`
 }
 function disableLegacyPlan(){
-  sessionStorage.setItem('bosDispatchV23Plan','0');
-  if(!legacyDisabled&&typeof window.dispatchBoardV23Plan==='function'){legacyDisabled=true;try{window.dispatchBoardV23Plan(false)}catch(_){}}
+  if(legacyDisabled)return;legacyDisabled=true;
+  const wasPlan=sessionStorage.getItem('bosDispatchV23Plan')==='1';sessionStorage.setItem('bosDispatchV23Plan','0');
+  if(wasPlan&&typeof window.dispatchBoardV23Plan==='function'){try{window.dispatchBoardV23Plan(false)}catch(_){}}
 }
+function removeUnified(schedule){schedule?.classList.remove('du187ScheduleHost');schedule?.querySelector(':scope>.du187Root')?.remove();lastSignature=''}
 function render(force=false){
   queued=false;if(rendering||!dispatcherDesktop()||String(st()?.page||'')!=='orders')return;
   const board=document.querySelector('#content .dbBoard'),schedule=board?.querySelector('.dbSchedule');if(!board||!schedule)return;
   disableLegacyPlan();
+  if(!scheduleView(board)){removeUnified(schedule);return}
   const date=boardDate();if(!date)return;const masters=visibleMasters(),sig=signature(date,masters);
-  if(!force&&sig===lastSignature&&schedule.querySelector('.du187Root'))return;
-  rendering=true;try{schedule.innerHTML=gridHtml(date,masters);lastSignature=sig;installResize(schedule)}finally{rendering=false}
+  if(!force&&sig===lastSignature&&schedule.querySelector(':scope>.du187Root'))return;
+  rendering=true;try{
+    schedule.classList.add('du187ScheduleHost');
+    schedule.querySelector(':scope>.du187Root')?.remove();
+    schedule.insertAdjacentHTML('afterbegin',gridHtml(date,masters));
+    const root=schedule.querySelector(':scope>.du187Root');lastSignature=sig;if(root)installResize(root)
+  }finally{rendering=false}
 }
 function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>render(false))}
 function updateLocal(id,data){const s=st(),i=(s?.orders||[]).findIndex(o=>String(o.id)===String(id));if(i>=0)s.orders[i]={...s.orders[i],...(data||{})}}
 async function resolveRescheduleIfNeeded(o,date,time){if(!o?.reschedule_requested)return;const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};headers['Content-Type']='application/json';const r=await fetch(META_URL,{method:'POST',headers,body:JSON.stringify({action:'resolveReschedule',id:o.id,scheduled_date:date,scheduled_time:time})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось подтвердить перенос');if(d.order)updateLocal(o.id,d.order)}
+function refreshBoard(){lastSignature='';if(typeof show==='function')show('orders');else render(true)}
 async function saveMove(id,masterValue,time){
   if(busy)return false;const o=orderById(id),m=findMaster(masterValue),date=boardDate();if(!o||!m||!date)return false;
   const old=orderInterval(o),start=mins(time),end=Math.min(24*60,start+(old.slots||2)*STEP);if(!Number.isFinite(start))return false;
@@ -95,17 +105,16 @@ async function saveMove(id,masterValue,time){
     const payload={id:o.id,master_vk_id:masterValue,scheduled_date:date,scheduled_time:hhmm(start),time_slot:rangeText(start,old.slots||2)};
     const d=await api('updateOrder',payload);if(!d?.ok)throw new Error(d?.error||'Не удалось изменить расписание');
     updateLocal(id,{...(d.order||{}),master_vk_id:masterValue,master_name:m.full_name||'',scheduled_date:date,scheduled_time:hhmm(start),time_slot:payload.time_slot});
-    await resolveRescheduleIfNeeded(o,date,hhmm(start));
-    lastSignature='';render(true);if(typeof setMessage==='function')setMessage('Расписание сохранено');return true;
+    await resolveRescheduleIfNeeded(o,date,hhmm(start));refreshBoard();if(typeof setMessage==='function')setMessage('Расписание сохранено');return true;
   }catch(e){if(typeof setMessage==='function')setMessage(e?.message||String(e));else console.error(e);return false}finally{busy=false}
 }
 async function saveDuration(id,slots){
-  if(busy)return false;const o=orderById(id),date=dateOf(o)||boardDate();if(!o||!date)return false;const m=(st()?.masters||[]).find(x=>sameMaster(x,o));const r=orderInterval(o),start=r.start,next=Math.max(1,Number(slots)||1),end=Math.min(24*60,start+next*STEP),finalSlots=Math.max(1,Math.round((end-start)/STEP));
+  if(busy)return false;const o=orderById(id),date=dateOf(o)||boardDate();if(!o||!date)return false;const m=(st()?.masters||[]).find(x=>sameMaster(x,o)),r=orderInterval(o),start=r.start,next=Math.max(1,Number(slots)||1),end=Math.min(24*60,start+next*STEP),finalSlots=Math.max(1,Math.round((end-start)/STEP));
   if(m&&conflictFor(id,m,date,start,end)&&!confirm('Новая длительность пересекается с другой заявкой этого мастера. Всё равно сохранить?'))return false;
   busy=true;try{
     if(typeof api!=='function')throw new Error('API недоступен');const timeSlot=rangeText(start,finalSlots);
     const d=await api('updateOrder',{id:o.id,scheduled_time:hhmm(start),time_slot:timeSlot});if(!d?.ok)throw new Error(d?.error||'Не удалось изменить длительность');
-    updateLocal(id,{...(d.order||{}),scheduled_time:hhmm(start),time_slot:timeSlot});lastSignature='';render(true);if(typeof setMessage==='function')setMessage('Длительность заявки сохранена');return true;
+    updateLocal(id,{...(d.order||{}),scheduled_time:hhmm(start),time_slot:timeSlot});refreshBoard();if(typeof setMessage==='function')setMessage('Длительность заявки сохранена');return true;
   }catch(e){if(typeof setMessage==='function')setMessage(e?.message||String(e));else console.error(e);return false}finally{busy=false}
 }
 function installResize(root){
@@ -123,13 +132,15 @@ window.bosUnifiedScheduleDrag=(event,id)=>{if(!event?.dataTransfer)return;event.
 window.bosUnifiedScheduleAllowDrop=event=>{event?.preventDefault?.();if(event?.dataTransfer)event.dataTransfer.dropEffect='move'};
 window.bosUnifiedScheduleDrop=(event,master,time)=>{event?.preventDefault?.();event?.stopPropagation?.();const id=String(event?.dataTransfer?.getData('application/x-business-order-id')||event?.dataTransfer?.getData('text/plain')||'');if(id)saveMove(id,master,time)};
 
-const start=()=>{const content=document.getElementById('content');if(content)new MutationObserver(schedule).observe(content,{subtree:true,childList:true,attributes:true,attributeFilter:['value']});schedule()};
+const start=()=>{const content=document.getElementById('content');if(content)new MutationObserver(schedule).observe(content,{subtree:true,childList:true,attributes:true,attributeFilter:['class','value']});schedule()};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 window.addEventListener('resize',schedule);
 window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187={version:'187',refresh:()=>render(true),setDuration:saveDuration,move:saveMove};
 const style=document.createElement('style');style.textContent=`
 @media(min-width:${MIN_DESKTOP}px){
 #content .dbV23Tab{display:none!important}
+#content .du187ScheduleHost{position:relative}
+#content .du187ScheduleHost>.dbTimelineWrap,#content .du187ScheduleHost>.dbV23Plan{position:absolute!important;left:-10000px!important;top:0!important;width:1px!important;height:1px!important;min-height:0!important;max-height:1px!important;overflow:hidden!important;opacity:0!important;pointer-events:none!important}
 #content .du187Root{display:grid;gap:8px;min-width:0}
 #content .du187Head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 2px 8px}
 #content .du187Head>div:first-child{display:grid;gap:3px}.du187Head b{font-size:15px}.du187Head span{font-size:10px;color:#8fa8bf}
