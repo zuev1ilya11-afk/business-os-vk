@@ -1,0 +1,8 @@
+const fs=require('node:fs');
+const path=require('node:path');
+const src=fs.readFileSync(path.join(__dirname,'..','dispatcher-horizontal-schedule-v190.js'),'utf8');
+if(!src.includes("version:'190'"))throw new Error('v190 marker missing');
+if(!src.includes('Горизонтальное расписание дня'))throw new Error('horizontal title missing');
+if(!src.includes('grid-template-columns:128px repeat(var(--dh190-times)'))throw new Error('horizontal master/time grid missing');
+if(!src.includes('html.dh190Active,body.dh190Active'))throw new Error('viewport scroll lock missing');
+console.log('dispatcher horizontal schedule v190 source checks passed');
