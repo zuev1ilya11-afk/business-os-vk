@@ -61,7 +61,7 @@ test('dispatcher sees simplified master workflow on current dispatch board',asyn
   await expect(page.locator('.mwv2OpsBar')).toContainText('Договорено: 1');
   await expect(page.locator('.mwv2OpsBar')).not.toContainText('В дороге');
 
-  await page.locator('[data-order-id="11"].dbOrderCard').first().click();
+  await page.locator('.du187Card[data-order-id="11"]').click();
   const flow=page.locator('#dispatchBoardDetail .mwv2DispatcherFlow');
   await expect(flow).toBeVisible();
   await expect(flow).toContainText('Звонок');
