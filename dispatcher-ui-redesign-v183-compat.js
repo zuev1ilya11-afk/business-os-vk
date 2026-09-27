@@ -22,6 +22,6 @@ const start=()=>{
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 window.addEventListener('resize',schedule);
 const style=document.createElement('style');
-style.textContent=`@media(min-width:1050px){#content .du183Board .dbToolbar>#dbV21FreeToggle{display:inline-flex!important;align-items:center;justify-content:center;min-height:40px;padding:8px 12px;margin-left:2px;white-space:nowrap}}`;
+style.textContent=`@media(min-width:1050px){#content .du183Board .dbToolbar>#dbV21FreeToggle{display:inline-flex!important;align-items:center;justify-content:center;min-height:44px;padding:8px 12px;margin-left:2px;white-space:nowrap}#content .du183Board .dbToolbar>.dbV21QuickDates>.secondary,#content .du183Board .dbToolbar>.dbV21QuickDates .dbDateNav>button{min-height:44px!important}#content .du183Board .dbToolbar>.dbV21QuickDates .dbDateNav>input{height:44px!important}}`;
 document.head.appendChild(style);
 })();
