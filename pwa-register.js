@@ -52,7 +52,7 @@
       './dispatcher-free-slots-v120.js?v=20260923-v120',
       './dispatcher-smart-dispatch-v121.js?v=20260923-v121',
       './dispatcher-unassigned-queue-v122.js?v=20260924-v122',
-      './dispatcher-attention-v123.js?v=20260924-v123',
+      './dispatcher-attention-v123.js?v=20260927-v186',
       './dispatcher-ui-redesign-v183.js?v=20260927-v183',
       './dispatcher-ui-redesign-v183-compat.js?v=20260927-v183a',
       './dispatcher-ui-polish-v184.js?v=20260927-v184',
@@ -99,6 +99,7 @@
   window.BOS_ROLE_MODULES_V171={dispatcher:roleScripts.dispatcher.length,master:roleScripts.master.length};
   window.BOS_ROLE_MODULES_V183=window.BOS_ROLE_MODULES_V171;
   window.BOS_ROLE_MODULES_V185=window.BOS_ROLE_MODULES_V171;
+  window.BOS_ROLE_MODULES_V186=window.BOS_ROLE_MODULES_V171;
 
   const loadAfterLegacyUnlock=()=>{
     if(!document.body.classList.contains('bos-auth-ok'))return;
