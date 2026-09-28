@@ -19,9 +19,7 @@ test('dispatcher mobile controls keep usable touch targets and compact filters',
     page.locator('.dmDateTimeAction').first()
   ];
   for(const target of touchTargets){
-    const box=await target.boundingBox();
-    expect(box).not.toBeNull();
-    expect(box.height).toBeGreaterThanOrEqual(44);
+    await expect.poll(async()=>(await target.boundingBox())?.height||0).toBeGreaterThanOrEqual(44);
   }
 
   const master=await page.locator('#bosOrderMaster').boundingBox();

@@ -64,7 +64,7 @@ function start(){const c=document.getElementById('content');if(c)new MutationObs
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 window.addEventListener('resize',()=>{if(window.innerWidth<MIN)cleanup();scheduleRender()});
 window.bosHorizontalShiftDate=shiftDate;
-window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190={version:'190',refresh:()=>render(true),shiftDate};
+window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190={version:'190',refresh:()=>render(true),shiftDate,activeBounds:()=>mode()?timelineBounds():null};
 
 const style=document.createElement('style');style.textContent=`
 @media(min-width:${MIN}px){

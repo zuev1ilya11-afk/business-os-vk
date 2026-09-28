@@ -19,6 +19,7 @@ test('dispatcher v184 hides an empty unassigned queue and keeps the desktop work
   const queue=page.locator('#content>.duq122');
   await expect(queue).toHaveClass(/du184QueueEmpty/);
   await expect(queue).toBeHidden();
+  await expect(board).toHaveClass(/dh190Board/);
 
   const geometry=await page.evaluate(()=>{
     const rect=selector=>document.querySelector(selector)?.getBoundingClientRect();

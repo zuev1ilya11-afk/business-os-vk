@@ -57,7 +57,7 @@ function timelineBounds(date,masters){
   return {lo,hi};
 }
 function timesBetween(lo,hi){const out=[];for(let x=lo;x<hi;x+=STEP)out.push(hhmm(x));return out}
-function masterStats(m,date){const own=dayAssigned(date).filter(o=>sameMaster(m,o)),{lo,hi}=timelineBounds(date,[m]);let free=0,conflicts=0;for(const t of timesBetween(lo,hi)){const n=own.filter(o=>covers(o,t)).length;if(!n&&available(m,date,t))free++;if(n>1)conflicts++}return {free,conflicts}}
+function masterStats(m,date){const own=dayAssigned(date).filter(o=>sameMaster(m,o)),{lo,hi}=window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190?.activeBounds?.()||timelineBounds(date,[m]);let free=0,conflicts=0;for(const t of timesBetween(lo,hi)){const n=own.filter(o=>covers(o,t)).length;if(!n&&available(m,date,t))free++;if(n>1)conflicts++}return {free,conflicts}}
 // Give intersecting intervals separate lanes for the whole connected group.
 function layoutOrders(orders){
   const result=new Map();let group=[],ends=[],groupEnd=-1;
