@@ -58,7 +58,7 @@ test('compact schedule reuses master saved hours for all days and keeps single-d
 
 test('production page loads compact schedule runtime after bulk runtime', async () => {
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-  expect(html).toContain('schedule-identity-v46.js?v=20260913-v64');
-  expect(html).toContain('master-schedule-compact-v65.js?v=20260913-v65');
+  expect(html).toContain('schedule-identity-v46.js');
+  expect(html).toContain('master-schedule-compact-v65.js');
   expect(html.indexOf('master-schedule-compact-v65.js')).toBeGreaterThan(html.indexOf('schedule-identity-v46.js'));
 });

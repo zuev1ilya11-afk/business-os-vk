@@ -59,5 +59,5 @@ test('claim already present as upcoming order is decorated instead of duplicated
 
 test('master upcoming claims runtime is loaded by production bootstrap with cache bump',()=>{
   const pwa=fs.readFileSync(path.join(__dirname,'..','pwa-register.js'),'utf8');
-  expect(pwa).toContain('master-upcoming-claims-v110.js?v=20260923-v111');
+  expect(pwa).toContain('master-upcoming-claims-v110.js');
 });

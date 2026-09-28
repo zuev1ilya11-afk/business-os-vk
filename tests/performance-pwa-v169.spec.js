@@ -12,13 +12,10 @@ test('background bootstrap polling is reduced without removing event refreshes',
   expect(source).toContain("window.addEventListener('bos:data-mutated'");
 });
 
-test('PWA keeps auth/network critical files network-first and caches versioned static assets',async()=>{
+test('PWA caches verified build assets and keeps navigation fresh',async()=>{
   const source=fs.readFileSync(path.join(root,'sw.js'),'utf8');
-  expect(source).toContain("const CACHE='business-os-shell-v13';");
-  expect(source).toContain("const REV='20260925-v172';");
-  expect(source).toContain("'/network-direct-v86.js'");
-  expect(source).toContain("'/mandatory-auth-v29.js'");
-  expect(source).toContain("'/employee-live-refresh-v27.js'");
-  expect(source).toContain("url.searchParams.has('v')");
-  expect(source).toContain('event.respondWith(cacheFirst(request));');
+  expect(source).toContain('const CACHE=PREFIX+BUILD_ID;');
+  expect(source).toContain('verifiedAsset(name)');
+  expect(source).toContain("fetch(request,{cache:'no-store'})");
+  expect(source).toContain('request.method');
 });

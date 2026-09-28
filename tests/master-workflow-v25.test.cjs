@@ -22,7 +22,7 @@ test('master workflow keeps phone calls separate from manual stage changes',()=>
   assert.doesNotMatch(src,/Я на месте/);
 
   const loader=fs.readFileSync('pwa-register.js','utf8');
-  assert.match(loader,/master-call-workflow-v26\.js\?v=20260922-v27/);
+  assert.match(loader,/master-call-workflow-v26\.js/);
 
   const proxy=fs.readFileSync('netlify/functions/proxy.mts','utf8');
   assert.match(proxy,/\"profile-self-api\"/);

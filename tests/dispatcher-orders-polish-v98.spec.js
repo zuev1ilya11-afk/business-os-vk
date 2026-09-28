@@ -31,6 +31,6 @@ test('dispatcher order list puts new requests first and newest first inside grou
 
 test('dispatcher polish runtime is loaded after mobile dispatcher runtime', async () => {
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-  expect(html).toContain('dispatcher-orders-polish-v98.js?v=20260922-v98');
+  expect(html).toContain('dispatcher-orders-polish-v98.js');
   expect(html.indexOf('dispatcher-orders-polish-v98.js')).toBeGreaterThan(html.indexOf('dispatcher-mobile-v97.js'));
 });
