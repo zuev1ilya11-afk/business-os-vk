@@ -20,6 +20,7 @@ test('new build waits for consent, reloads once, and stays usable offline',async
   await page.goto(`http://127.0.0.1:${server.address().port}/`);
   await page.evaluate(()=>navigator.serviceWorker.ready);
   await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
+  await expect(page.locator('#bosBuildUpdate')).toHaveCount(0);
   await page.locator('#draft').fill('Несохранённые изменения');
   const other=await context.newPage();await other.goto(page.url());await other.locator('#draft').fill('Другая вкладка');
   version='B';await page.evaluate(async()=>{const r=await navigator.serviceWorker.getRegistration();await r.update()});
