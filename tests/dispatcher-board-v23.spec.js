@@ -3,7 +3,7 @@ const {fullStack}=require('./helpers/full-stack.cjs');
 
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 
-test('dispatcher unified schedule shows masters and half-hour slots without a separate day-plan tab',async({page})=>{
+test('dispatcher unified schedule shows masters and hourly slots without a separate day-plan tab',async({page})=>{
   await page.setViewportSize({width:1600,height:950});
   const {db}=await fullStack(page,'dispatcher');
   db.tables.orders[0].scheduled_date=localDate();
@@ -21,7 +21,8 @@ test('dispatcher unified schedule shows masters and half-hour slots without a se
   await expect(page.locator('.du187Root')).toBeVisible();
   await expect(page.locator('.du187Master').first()).toBeVisible();
   await expect(page.locator('.du187Time',{hasText:'10:00'})).toBeVisible();
-  await expect(page.locator('.du187Time',{hasText:'10:30'})).toBeVisible();
+  await expect(page.locator('.du187Time',{hasText:'11:00'})).toBeVisible();
+  await expect(page.locator('.du187Time',{hasText:'10:30'})).toHaveCount(0);
   await expect(page.locator('.du187Card[data-order-id="11"]')).toBeVisible();
   await expect(page.locator('.du187Card[data-order-id="11"]')).toHaveAttribute('data-duration-slots','4');
 });

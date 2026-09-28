@@ -23,7 +23,8 @@ test('dispatcher v187 unifies schedule and day plan and keeps multi-slot duratio
   await expect(page.locator('.du187Root')).toHaveClass(/dh190Root/);
   await expect(page.locator('.dbV23Tab')).toBeHidden();
   await expect(page.locator('.du187Time',{hasText:'10:00'})).toBeVisible();
-  await expect(page.locator('.du187Time',{hasText:'10:30'})).toBeVisible();
+  await expect(page.locator('.du187Time',{hasText:'11:00'})).toBeVisible();
+  await expect(page.locator('.du187Time',{hasText:'10:30'})).toHaveCount(0);
 
   const card=page.locator('.du187Card[data-order-id="11"]');
   await expect(card).toBeVisible();
@@ -61,7 +62,7 @@ async function resizeBy(page,card,slots){
   }));
   await page.mouse.move(box.x+box.width/2,box.y+box.height/2);
   await page.mouse.down();
-  if(horizontal)await page.mouse.move(box.x+box.width/2+slots*slotWidth,box.y+box.height/2,{steps:8});
+  if(horizontal)await page.mouse.move(box.x+box.width/2+slots*slotWidth/2,box.y+box.height/2,{steps:8});
   else await page.mouse.move(box.x+box.width/2,box.y+box.height/2+slots*rowHeight,{steps:8});
   await page.mouse.up();
 }
@@ -123,7 +124,7 @@ test('range conflicts warn, cancel cleanly and remain separately clickable',asyn
   await resizeBy(page,card,2);
   await expect.poll(()=>db.tables.orders[0].time_slot).toBe('10:00–13:00');
   await expect(page.locator('.du187Card.conflict')).toHaveCount(2);
-  await expect(page.locator('.du187Slot[data-time="12:30"]')).toHaveClass(/conflict/);
+  await expect(page.locator('.du187Slot[data-time="12:00"]')).toHaveClass(/conflict/);
   const other=page.locator('.du187Card[data-order-id="12"]');
   const a=await card.boundingBox(),b=await other.boundingBox();
   expect(a.y+a.height<=b.y||b.y+b.height<=a.y).toBe(true);
@@ -171,21 +172,43 @@ test('free-window filter accounts for whole intervals and quick move keeps durat
   const {employee}=require('./helpers/edge.cjs');
   const second=employee('second','master',{full_name:'Дмитрий',city:'Санкт-Петербург'});
   db.tables.business_staff.push(second);
-  Object.assign(db.tables.orders[0],{scheduled_date:localDate(),scheduled_time:'09:00',time_slot:'09:00–21:00'});
+  Object.assign(db.tables.orders[0],{scheduled_date:localDate(),scheduled_time:'10:00',time_slot:'10:00–20:00'});
   await page.setViewportSize({width:1600,height:1000});
   await openSchedule(page);
   await page.getByRole('button',{name:'Есть свободное окно'}).click();
   await expect(page.locator('.du187Master')).toHaveCount(1);
   await expect(page.locator('.du187Master')).toContainText('Дмитрий');
   await expect(page.locator('#dbV21FreeCount')).toHaveText('Свободных: 1');
+  await expect(page.locator('.dbV23Plan')).toHaveCount(0);
   await page.getByRole('button',{name:'Есть свободное окно'}).click();
   await expect(page.locator('.du187Master')).toHaveCount(2);
   expect(await page.evaluate(()=>window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187.setDuration('11',6))).toBe(true);
   await page.locator('.du187Card[data-order-id="11"]').click();
+  const moveRequest=page.waitForRequest(request=>{
+    if(request.method()!=='POST')return false;
+    const payload=request.postDataJSON();
+    return payload?.action==='updateOrder'&&String(payload.id)==='11'&&payload.scheduled_time==='14:30';
+  });
   await page.locator('.dbV21QuickMove').evaluate(box=>{
-    box.querySelector('#dbV21MoveTime').value='14:00';
+    box.querySelector('#dbV21MoveTime').value='14:30';
     box.querySelector('button').click();
   });
-  await expect.poll(()=>db.tables.orders[0].time_slot).toBe('14:00–17:00');
+  expect((await moveRequest).postDataJSON()).toMatchObject({scheduled_date:localDate(),scheduled_time:'14:30',time_slot:'14:30–17:30'});
+  await expect.poll(()=>db.tables.orders[0].time_slot).toBe('14:30–17:30');
   expect(db.tables.orders[0].master_staff_id).toBe(master.id);
+  const checkSchedule=async()=>{
+    await expect(page.locator('.du187Root.dh190Root')).toHaveCount(1);
+    await expect(page.locator('.dbV23Plan')).toHaveCount(0);
+  };
+  await checkSchedule();
+  await page.evaluate(()=>show('orders'));
+  await checkSchedule();
+  await page.evaluate(()=>BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190.shiftDate(1));
+  await checkSchedule();
+  await page.evaluate(()=>BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190.shiftDate(-1));
+  await checkSchedule();
+  await page.reload();
+  await page.locator('nav [data-page=orders]').click();
+  await checkSchedule();
+  await expect(page.locator('.du187Card[data-order-id="11"] .du187When')).toHaveText('14:30–17:30');
 });

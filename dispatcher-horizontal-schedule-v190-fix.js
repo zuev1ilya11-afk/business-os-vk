@@ -7,6 +7,8 @@ function fitBoard(){
   if(window.innerWidth<MIN)return;
   const board=document.querySelector('#content .dbBoard.dh190Board');
   if(!board)return;
+  sessionStorage.setItem('bosDispatchV23Plan','0');
+  board.querySelectorAll('.dbV23Plan').forEach(node=>node.remove());
   const top=Math.max(0,board.getBoundingClientRect().top);
   let bottom=8;
   document.querySelectorAll('nav').forEach(nav=>{
@@ -40,13 +42,13 @@ body #app:has(#content .dh190Board){height:auto!important;min-height:0!important
 #content .dh190Board .dbAttention,#content .dh190Board .dbSchedule,#content .dh190Board #dispatchBoardDetail{min-width:0!important;margin:0!important}
 #content .dh190Board .dbAttention{z-index:2!important}
 #content .dh190Board .dbSchedule{position:relative!important;z-index:1!important;isolation:isolate!important;min-width:0!important;max-width:100%!important}
-#content .dh190Board #dispatchBoardDetail{position:sticky!important;top:0!important;z-index:2!important;width:100%!important;max-width:100%!important}
+#content .dh190Board #dispatchBoardDetail{position:sticky!important;top:0!important;z-index:2!important;width:100%!important;max-width:300px!important;justify-self:end!important}
 #content .dh190GridWrap{max-width:100%!important;contain:layout paint!important}
 #content .dh190Grid .du187Master,#content .dh190Grid .du187Slot{height:60px!important;min-height:60px!important}
 #content .dh190Board .dbAttention .dbFilters button.primary,#content .dh190Board .dbAttention .dbFilters button.secondary{min-height:44px!important;height:44px!important}
 }
-@media(min-width:1500px){#content .dh190Board #dispatchBoardDetail{min-width:350px!important}}
+@media(min-width:1500px){#content .dh190Board #dispatchBoardDetail{min-width:0!important;max-width:300px!important}}
 `;
 document.head.appendChild(style);
-window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190_FIX={version:'190b',fit:fitBoard};
+window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190_FIX={version:'190d',fit:fitBoard};
 })();
