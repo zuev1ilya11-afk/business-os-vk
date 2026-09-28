@@ -26,8 +26,9 @@ test('dispatcher v184 hides an empty unassigned queue and keeps the desktop work
     const kpi=rect('.du183Kpi');
     return {left:left?.width||0,center:center?.width||0,right:right?.width||0,kpi:kpi?.height||0};
   });
-  expect(geometry.center).toBeGreaterThan(590);
-  expect(geometry.right).toBeGreaterThanOrEqual(350);
+  expect(geometry.center).toBeGreaterThan(640);
+  expect(geometry.right).toBeGreaterThan(230);
+  expect(geometry.right).toBeLessThanOrEqual(305);
   expect(geometry.left).toBeLessThanOrEqual(276);
   expect(geometry.kpi).toBeLessThanOrEqual(66);
 });
