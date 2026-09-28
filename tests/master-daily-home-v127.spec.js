@@ -82,3 +82,30 @@ test('master v127 dashboard stays out of dispatcher home',async({page})=>{
   await page.evaluate(()=>show('home'));
   await expect(page.locator('#masterDailyV127')).toHaveCount(0);
 });
+
+
+test('master v127 keeps started request until report and marks overdue red',async({page})=>{
+  await page.clock.setFixedTime(new Date('2099-09-10T15:31:00'));
+  const {db,master}=await fullStack(page,'master');
+  const current=db.tables.orders.find(o=>String(o.id)==='11')||db.tables.orders[0];
+  const future=db.tables.orders.find(o=>String(o.id)==='12')||db.tables.orders[1];
+  Object.assign(current,{master_staff_id:master.id,scheduled_date:'2099-09-10',scheduled_time:'10:00',time_slot:'10:00–14:00',status:'В работе',master_called_at:'2099-09-10T09:00:00.000Z',master_agreed_at:'2099-09-10T09:05:00.000Z',master_workflow_stage:'started',report_uploaded_at:null,report_act_url:null,report_review_status:null});
+  Object.assign(future,{master_staff_id:master.id,scheduled_date:'2099-09-10',scheduled_time:'18:00',time_slot:'18:00–19:00',status:'В работе',master_called_at:null,master_agreed_at:null,master_workflow_stage:'assigned',report_uploaded_at:null,report_act_url:null,report_review_status:null});
+
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#authGate')).toBeHidden();
+  await page.waitForFunction(()=>window.BOS_MASTER_DAILY_HOME_V127===true);
+  await page.evaluate(()=>{show('home');window.BOS_MASTER_DAILY_HOME_V127_API.refresh()});
+
+  const card=page.locator('#masterDailyV127 .masterV127Next');
+  await expect(card).toHaveAttribute('data-order-id',String(current.id));
+  await expect(card).toHaveClass(/reportOverdue/);
+  await expect(card).toContainText('ТЕКУЩАЯ ЗАЯВКА');
+  await expect(card).toContainText('Отправьте отчёт по заявке');
+  await expect(page.locator('#masterDailyV127 .masterV127AttentionItem').filter({hasText:'Отчёт не отправлен вовремя'})).toHaveCount(1);
+
+  await page.evaluate(({id})=>{const o=state.orders.find(x=>String(x.id)===String(id));o.report_uploaded_at='2099-09-10T15:32:00.000Z';o.report_act_url='https://example.test/report-current.pdf';window.BOS_MASTER_DAILY_HOME_V127_API.refresh()},{id:current.id});
+  await expect(card).toHaveAttribute('data-order-id',String(future.id));
+  await expect(card).not.toHaveClass(/reportOverdue/);
+  await expect(card).not.toContainText('Отправьте отчёт по заявке');
+});
