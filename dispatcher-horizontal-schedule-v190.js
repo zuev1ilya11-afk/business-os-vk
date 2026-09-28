@@ -6,7 +6,7 @@ let queued=false,rendering=false,lastSignature='';
 
 const st=()=>{try{return typeof state!=='undefined'?state:null}catch(_){return null}};
 const mode=()=>window.innerWidth>=MIN&&window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(st()?.user)&&String(st()?.page||'')==='orders';
-const active=o=>!!o&&!['Выполнена','Отменена'].includes(String(o?.status||''));
+const active=o=>!!o&&String(o?.status||'')!=='Отменена';
 const dateOf=o=>String(o?.scheduled_date||'').slice(0,10);
 const timeOf=o=>String(o?.scheduled_time||o?.time_slot||'').slice(0,5);
 const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));

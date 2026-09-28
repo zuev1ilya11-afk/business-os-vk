@@ -9,9 +9,11 @@ window.BOS_ASSET_URL=src=>{
  return url.href;
 };
 window.BOS_APP_VERSION=build;
-let reloading=false,requested=false;
+let reloading=false,requested=false,deferred=false,activeMismatch=false;
 window.BOS_WATCH_UPDATE=registration=>{
  function offer(activeChanged=false){
+  activeMismatch=activeMismatch||activeChanged;
+  activeChanged=activeMismatch;
   if(!navigator.serviceWorker.controller&&!activeChanged)return;
   if((!registration.waiting&&!activeChanged)||document.getElementById('bosBuildUpdate'))return;
   const box=document.createElement('aside');box.id='bosBuildUpdate';box.setAttribute('role','status');
@@ -19,7 +21,7 @@ window.BOS_WATCH_UPDATE=registration=>{
   const text=document.createElement('span');text.textContent='Доступна новая версия. Сохраните изменения перед обновлением.';
   const button=document.createElement('button');button.type='button';button.textContent='Обновить';
   button.onclick=()=>{requested=true;button.disabled=true;if(registration.waiting)registration.waiting.postMessage({type:'BOS_ACTIVATE_BUILD'});else if(!reloading){reloading=true;location.reload()}};
-  const later=document.createElement('button');later.type='button';later.textContent='Позже';later.onclick=()=>box.remove();
+  const later=document.createElement('button');later.type='button';later.textContent='Позже';later.onclick=()=>{deferred=true;box.remove()};
   box.append(text,button,later);document.body.appendChild(box);
  }
  offer();registration.addEventListener('updatefound',()=>{
@@ -34,8 +36,12 @@ window.BOS_WATCH_UPDATE=registration=>{
   navigator.serviceWorker.controller?.postMessage({type:'BOS_GET_BUILD'},[channel.port2]);
  });
  let lastCheck=Date.now();
- document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'&&Date.now()-lastCheck>60000){lastCheck=Date.now();registration.update().catch(()=>{})}
- });
+ const resume=()=>{
+  if(document.visibilityState!=='visible')return;
+  if(deferred){deferred=false;offer()}
+  if(Date.now()-lastCheck>60000){lastCheck=Date.now();registration.update().catch(()=>{})}
+ };
+ window.addEventListener('focus',resume);
+ document.addEventListener('visibilitychange',resume);
 };
 })();

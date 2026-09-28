@@ -5,8 +5,8 @@ Run `npm run build` after changing browser assets and commit its output with the
 publish the repository root; no hosting setting or separate deployment is required.
 
 The content-derived BUILD_ID ties index.html, build-version.js, Service Worker,
-and dynamically loaded scripts together. Historical per-file query versions in
-other code do not define a release. Use BOS_ASSET_URL for new dynamic loaders.
+and dynamically loaded scripts together. Historical numeric suffixes in filenames do not define a release.
+Use BOS_ASSET_URL for new dynamic loaders. See SAFE-CHANGE-WORKFLOW.md for PR steps.
 
 The worker verifies the asset manifest before installing. An update waits until
 the user saves work and selects “Обновить”. Navigation stays on the installed
