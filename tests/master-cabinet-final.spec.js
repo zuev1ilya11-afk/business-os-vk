@@ -11,6 +11,10 @@ test('master final cabinet keeps upcoming compact, workflow, schedule summary an
   order.scheduled_date='2099-09-10';
   order.scheduled_time='10:00';
   order.master_payout=552.5;
+  db.tables.staff_schedule.push(
+    {id:'schedule-1',staff_id:master.id,work_date:'2099-09-10',is_working:true,work_start:'09:00',work_end:'18:00'},
+    {id:'schedule-2',staff_id:master.id,work_date:'2099-09-11',is_working:true,work_start:'09:00',work_end:'18:00'}
+  );
 
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
@@ -35,13 +39,7 @@ test('master final cabinet keeps upcoming compact, workflow, schedule summary an
   await expect(workflow).toContainText('В режиме просмотра действия недоступны.');
   await page.evaluate(()=>closeModal());
 
-  await page.evaluate(({masterVkId})=>{
-    state.masterSchedule=[
-      {master_vk_id:masterVkId,work_date:'2099-09-10',is_working:true,work_start:'09:00',work_end:'18:00'},
-      {master_vk_id:masterVkId,work_date:'2099-09-11',is_working:true,work_start:'09:00',work_end:'18:00'}
-    ];
-    show('dispatch');
-  },{masterVkId:master.external_id});
+  await page.evaluate(()=>show('dispatch'));
   await expect(page.getByText('Сохранённый график')).toBeVisible();
   await expect(page.locator('.bosMasterSavedSchedule')).toContainText('09:00–18:00');
   await expect(page.locator('.bosMasterSavedSchedule')).toContainText('10.09');
