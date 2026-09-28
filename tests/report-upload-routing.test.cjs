@@ -13,6 +13,13 @@ test('master report submit keeps the working chunked report-api uploader',()=>{
   assert.match(api,/uploadReportFile/);
   assert.match(api,/finalizeMasterReport/);
 
+  // A transient first HTTP 500 must not force the master to submit the whole
+  // report for a second time. Drop the remembered report route and continue
+  // through the direct fallback in the same submit attempt.
+  assert.match(chunk,/status===500/);
+  assert.ok(chunk.includes("clearPreferredTarget?.('report-api')"));
+  assert.ok(chunk.includes('if(url===REPORT_PROXY)break'));
+
   // The later mobile/layout patch must not replace the chunk uploader with
   // the removed report-file-upload route.
   assert.doesNotMatch(mobileFix,/form\.onsubmit\s*=\s*e=>submit\(e,id\)/);
