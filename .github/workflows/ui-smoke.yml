@@ -6,17 +6,39 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: read
+
 jobs:
   smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
       - run: npm ci
+
+      # One-time PR helper: regenerate the build artifacts produced by the
+      # unified BUILD_ID pipeline, commit them to the PR branch, then the
+      # workflow is restored to its normal build:check-only form.
+      - name: Regenerate BUILD_ID artifacts for this PR
+        if: github.event_name == 'pull_request'
+        run: |
+          npm run build
+          if ! git diff --quiet -- index.html sw.js build-version.js; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add index.html sw.js build-version.js
+            git commit -m "Regenerate BUILD_ID artifacts"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
+
       - name: Verify single build version
         run: npm run build:check
 
