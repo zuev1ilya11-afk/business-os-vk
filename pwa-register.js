@@ -58,8 +58,8 @@
       './dispatcher-ui-polish-v184.js?v=20260928-permissions1',
       './dispatcher-ui-stability-v185.js?v=20260928-permissions1',
       './dispatcher-unified-schedule-v187.js?v=20260928-permissions1',
-      './dispatcher-horizontal-schedule-v190.js?v=20260928-v194',
-      './dispatcher-horizontal-schedule-v190-fix.js?v=20260927-v190c'
+      './dispatcher-horizontal-schedule-v190.js?v=20260928-hourly1',
+      './dispatcher-horizontal-schedule-v190-fix.js?v=20260928-hourly1'
     ],
     master:[
       './master-home-orders-v124.js?v=20260924-v124',
