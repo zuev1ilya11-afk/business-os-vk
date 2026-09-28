@@ -7,6 +7,8 @@ function fitBoard(){
   if(window.innerWidth<MIN)return;
   const board=document.querySelector('#content .dbBoard.dh190Board');
   if(!board)return;
+  sessionStorage.setItem('bosDispatchV23Plan','0');
+  board.querySelectorAll('.dbV23Plan').forEach(node=>node.remove());
   const top=Math.max(0,board.getBoundingClientRect().top);
   let bottom=8;
   document.querySelectorAll('nav').forEach(nav=>{
@@ -48,5 +50,5 @@ body #app:has(#content .dh190Board){height:auto!important;min-height:0!important
 @media(min-width:1500px){#content .dh190Board #dispatchBoardDetail{min-width:0!important;max-width:300px!important}}
 `;
 document.head.appendChild(style);
-window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190_FIX={version:'190c',fit:fitBoard};
+window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190_FIX={version:'190d',fit:fitBoard};
 })();
