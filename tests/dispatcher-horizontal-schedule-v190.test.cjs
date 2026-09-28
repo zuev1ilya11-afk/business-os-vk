@@ -13,5 +13,7 @@ if(!src.includes('minmax(260px,300px)'))throw new Error('narrow detail panel lay
 if(!src.includes('--dh190-vh'))throw new Error('board-local viewport fit missing');
 if(src.includes('html.dh190Active,body.dh190Active'))throw new Error('global page scroll lock must not be used');
 if(!src.includes("window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(st()?.user)"))throw new Error('dispatcher/owner/manager activation missing');
-if(!pwa.includes('dispatcher-horizontal-schedule-v190.js?v=20260928-hourly1'))throw new Error('dispatcher hourly cache bust missing');
+if(!pwa.includes("'./dispatcher-horizontal-schedule-v190.js'"))throw new Error('dispatcher module registration missing');
+if(!pwa.includes('script.src=window.BOS_ASSET_URL(src)'))throw new Error('dispatcher module must use unified BUILD_ID asset URL');
+if(pwa.includes('dispatcher-horizontal-schedule-v190.js?v='))throw new Error('manual dispatcher cache bust must not be used');
 console.log('dispatcher horizontal schedule v190 source checks passed');
