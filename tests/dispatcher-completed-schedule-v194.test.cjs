@@ -13,5 +13,5 @@ test('completed dispatcher orders remain visible in horizontal schedule', () => 
 
 test('PWA loads refreshed horizontal schedule module', () => {
   const source = fs.readFileSync(path.join(root, 'pwa-register.js'), 'utf8');
-  assert.match(source, /dispatcher-horizontal-schedule-v190\.js\?v=20260928-v194/);
+  assert.match(source, /dispatcher-horizontal-schedule-v190\.js\?v=20260928-hourly1/);
 });
