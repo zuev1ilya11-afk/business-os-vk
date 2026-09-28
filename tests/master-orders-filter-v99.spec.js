@@ -46,5 +46,5 @@ test('master orders keep new first, separate claims, and move completed orders t
 
 test('master order filter runtime is loaded by production bootstrap', async () => {
   const pwa=fs.readFileSync(path.join(__dirname,'..','pwa-register.js'),'utf8');
-  expect(pwa).toContain('master-orders-filter-v99.js?v=20260922-v99');
+  expect(pwa).toContain('master-orders-filter-v99.js');
 });

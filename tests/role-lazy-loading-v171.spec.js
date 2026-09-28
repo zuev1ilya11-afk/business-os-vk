@@ -36,8 +36,8 @@ test('authorization waits for role modules before revealing the app',async()=>{
   expect(pwa).toContain("new MutationObserver(loadAfterLegacyUnlock).observe(document.body");
 });
 
-test('role-loading release bumps the service worker cache generation',async()=>{
-  expect(sw).toContain("const CACHE='business-os-shell-v13';");
-  expect(sw).toContain("const REV='20260925-v172';");
-  expect(pwa).toContain("register('./sw.js?v=20260925-v172'");
+test('role-loading uses the common build URL and checks worker updates',async()=>{
+  expect(pwa).toContain('window.BOS_ASSET_URL(src)');
+  expect(sw).toContain('const CACHE=PREFIX+BUILD_ID;');
+  expect(pwa).toContain("register('./sw.js'");
 });

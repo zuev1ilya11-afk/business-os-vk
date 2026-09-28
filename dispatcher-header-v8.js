@@ -18,7 +18,7 @@ function loadDispatcherModule(src){
   if(document.querySelector(`script[data-bos-dispatcher-usability="${src}"]`))return Promise.resolve();
   return new Promise((resolve,reject)=>{
     const script=document.createElement('script');
-    script.src=`${src}?v=20260928-permissions1`;
+    script.src=window.BOS_ASSET_URL(src);
     script.dataset.bosDispatcherUsability=src;
     script.onload=resolve;
     script.onerror=()=>reject(new Error(`Не удалось загрузить ${src}`));

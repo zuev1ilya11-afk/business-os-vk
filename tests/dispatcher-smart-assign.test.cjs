@@ -8,7 +8,7 @@ const reg=fs.readFileSync('pwa-register.js','utf8');
 
 test('smart dispatcher script is loaded and syntactically valid',()=>{
   new vm.Script(src);
-  assert.match(reg,/dispatcher-smart-assign-v22\.js\?v=20260928-permissions1/);
+  assert.match(reg,/dispatcher-smart-assign-v22\.js/);
 });
 
 test('smart dispatcher ranks by availability, load and optional context',()=>{
