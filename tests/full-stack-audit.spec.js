@@ -2,6 +2,7 @@ const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 test('order search and combined master/source filters affect rendered rows and reset',async({page})=>{
  await fullStack(page);await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.locator('nav [data-page=orders]').click();
+ await page.getByRole('button',{name:'Все заявки',exact:true}).click();
  await page.locator('#bosOrderSearch').fill('Анна');await expect(page.locator('.bosFilteredOrder')).toHaveCount(1);await expect(page.locator('.bosFilteredOrder')).toContainText('Анна');
  await page.locator('#bosOrderSource').selectOption('Авито');await expect(page.locator('.bosFilteredOrder')).toHaveCount(0);
  await page.getByRole('button',{name:/^Все \d/}).click();await expect(page.locator('.bosFilteredOrder')).toHaveCount(2);

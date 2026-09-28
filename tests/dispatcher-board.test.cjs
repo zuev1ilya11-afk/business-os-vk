@@ -19,7 +19,7 @@ test('Dispatch Board keeps audited order selectors and desktop fallback',()=>{
   assert.match(ui,/id=\"bosOrderMaster\"/);
   assert.match(ui,/bosFilteredOrder/);
   assert.match(ui,/return previousOrders\(\)/);
-  assert.match(ui,/boardView==='list'\?listHtml\(\):boardHtml\(\)/);
+  assert.match(ui,/boardView!=='board'\?listHtml\(\):boardHtml\(\)/);
 });
 
 test('Dispatch Board reuses existing APIs and protects requested reschedules',()=>{

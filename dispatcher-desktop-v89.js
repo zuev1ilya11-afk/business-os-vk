@@ -98,6 +98,7 @@ function ddRefreshQueue(){
 }
 
 const previousOrders=pages.orders;
+window.BOS_DISPATCHER_LEGACY_ORDERS=previousOrders;
 pages.orders=function(){if(!ddMode()||!ddDesktop())return previousOrders();return ddRender()};
 
 window.selectDispatcherDesktopOrder=function(id){ddSelected=String(id||'');const list=ddFiltered();ddEnsureSelected(list);const root=document.getElementById('ddDetailRoot');if(root)root.innerHTML=ddDetail(ddGetSelected());document.querySelectorAll('.ddQueueCard').forEach(el=>el.classList.toggle('isSelected',String(el.dataset.orderId||'')===ddSelected))};
