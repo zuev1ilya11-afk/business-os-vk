@@ -6,7 +6,7 @@ window.BOS_DISPATCHER_SMART_ASSIGN_V119=true;
 const HOURS=Array.from({length:11},(_,i)=>10+i);
 let queued=false;
 
-function dispatcherMode(){return String(state?.user?.role||'')==='dispatcher'||(typeof isDispatcherPreview==='function'&&isDispatcherPreview())}
+function dispatcherMode(){return window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user)}
 function active(o){return !!o&&!['Выполнена','Отменена'].includes(String(o.status||''))}
 function norm(v){return String(v??'').trim().toLowerCase().replace(/ё/g,'е')}
 function values(v){if(Array.isArray(v))return v.flatMap(values);return String(v??'').split(/[,;|/]/).map(norm).filter(Boolean)}

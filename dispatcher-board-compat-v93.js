@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const isDispatcher=()=>String(state?.user?.role||'')==='dispatcher'||(typeof isDispatcherPreview==='function'&&isDispatcherPreview());
+const isDispatcher=()=>window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user);
 const shouldRefresh=()=>isDispatcher()&&window.innerWidth>=1050&&String(state?.page||'')==='orders'&&typeof show==='function';
 const renderIfNeeded=()=>{
   if(!shouldRefresh())return;

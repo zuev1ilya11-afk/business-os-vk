@@ -3,7 +3,7 @@
 const URL='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/order-meta-api';
 const MIN_DESKTOP=1050;
 
-function dispatcherMode(){return (typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(state.user?.role||'')==='dispatcher'}
+function dispatcherMode(){return window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user)}
 function orderById(id){return (state.orders||[]).find(x=>String(x.id)===String(id))||null}
 function localToday(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function currentOrderId(){return String(document.querySelector('.ddQueueCard.isSelected')?.dataset?.orderId||'')}

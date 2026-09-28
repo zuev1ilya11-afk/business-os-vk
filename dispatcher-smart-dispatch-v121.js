@@ -6,7 +6,7 @@ window.BOS_DISPATCHER_SMART_DISPATCH_V121=true;
 let queued=false;
 const pad=n=>String(n).padStart(2,'0');
 const localToday=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
-const dispatcherMode=()=>String(state?.user?.role||'')==='dispatcher'||(typeof isDispatcherPreview==='function'&&isDispatcherPreview());
+const dispatcherMode=()=>window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user);
 const ordersPage=()=>String(state?.page||'')==='orders';
 const active=o=>!!o&&!['Выполнена','Отменена'].includes(String(o?.status||''));
 const unassigned=o=>active(o)&&!o?.master_staff_id&&!o?.master_id&&!o?.master_vk_id&&!String(o?.master_name||'').trim();

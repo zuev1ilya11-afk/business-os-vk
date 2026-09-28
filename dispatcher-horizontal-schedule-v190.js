@@ -5,7 +5,7 @@ const MIN=1050,STEP=30,ROW=64;
 let queued=false,rendering=false,lastSignature='';
 
 const st=()=>{try{return typeof state!=='undefined'?state:null}catch(_){return null}};
-const mode=()=>window.innerWidth>=MIN&&String(st()?.user?.role||'')==='dispatcher'&&String(st()?.page||'')==='orders';
+const mode=()=>window.innerWidth>=MIN&&window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(st()?.user)&&String(st()?.page||'')==='orders';
 const active=o=>!!o&&!['Выполнена','Отменена'].includes(String(o?.status||''));
 const dateOf=o=>String(o?.scheduled_date||'').slice(0,10);
 const timeOf=o=>String(o?.scheduled_time||o?.time_slot||'').slice(0,5);

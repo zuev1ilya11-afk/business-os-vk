@@ -8,7 +8,7 @@ let busyDrop=false;
 let enhanceScheduled=false;
 let contentObserver=null;
 
-const dispatcherDesktop=()=>window.innerWidth>=MIN_DESKTOP&&((typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(state?.user?.role||'')==='dispatcher');
+const dispatcherDesktop=()=>window.innerWidth>=MIN_DESKTOP&&window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user);
 const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const dateOf=o=>String(o?.scheduled_date||'').slice(0,10);
 const timeOf=o=>String(o?.scheduled_time||o?.time_slot||'').slice(0,5);

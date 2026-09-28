@@ -13,7 +13,7 @@ const addDays=(date,n)=>{const d=new Date(`${date}T12:00:00`);d.setDate(d.getDat
 const dateOnly=v=>String(v||'').slice(0,10);
 const hm=v=>String(v||'').slice(0,5);
 const safe=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-const dispatcherMode=()=>String(state?.user?.role||'')==='dispatcher'||(typeof isDispatcherPreview==='function'&&isDispatcherPreview());
+const dispatcherMode=()=>window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user);
 const active=o=>!!o&&!['Выполнена','Отменена'].includes(String(o.status||''));
 const ids=x=>[x?.id,x?.staff_id,x?.master_staff_id,x?.master_id,x?.vk_user_id,x?.user_id,x?.external_id].filter(Boolean).map(String);
 const masterKey=m=>String(m?.vk_user_id||m?.external_id||m?.id||m?.staff_id||'');

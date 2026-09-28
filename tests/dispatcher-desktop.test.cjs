@@ -12,7 +12,7 @@ test('desktop dispatcher runtime is loaded and syntactically valid',()=>{
   assert.doesNotThrow(()=>new Function(ui));
   assert.doesNotThrow(()=>new Function(compat));
   assert.match(ui,/const DESKTOP_MIN=1050/);
-  assert.match(ui,/String\(state\.user\?\.role\|\|''\)==='dispatcher'/);
+  assert.match(ui,/BOS_PERMISSIONS\.isDispatcherWorkspaceActive\(state\?\.user\)/);
   assert.match(compat,/Сохранить изменения/);
 });
 

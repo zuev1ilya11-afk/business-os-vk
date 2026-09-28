@@ -11,7 +11,7 @@ let boardView='board';
 let boardBusy=false;
 const previousOrders=pages.orders;
 
-function dispatcherMode(){return (typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(state.user?.role||'')==='dispatcher'}
+function dispatcherMode(){return window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user)}
 function desktopMode(){return window.innerWidth>=MIN_DESKTOP}
 function localToday(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function active(o){return !['Выполнена','Отменена'].includes(String(o?.status||''))}
@@ -82,10 +82,10 @@ function detail(){
 }
 function toolbar(){
   const today=boardDate===localToday();
-  return `<div class="dbToolbar"><div class="dbDateNav"><button class="secondary" onclick="shiftDispatchBoardDate(-1)">←</button><input id="dispatchBoardDate" type="date" value="${escv(boardDate)}" onchange="setDispatchBoardDate(this.value)"><button class="secondary" onclick="shiftDispatchBoardDate(1)">→</button>${today?'':`<button class="secondary" onclick="setDispatchBoardDate('${localToday()}')">Сегодня</button>`}</div><div class="dbViewTabs"><button class="${boardView==='board'?'primary':'secondary'}" onclick="setDispatchBoardView('board')">Расписание</button><button class="${boardView==='list'?'primary':'secondary'}" onclick="setDispatchBoardView('list')">Список</button></div><button class="primary" onclick="openOrderForm()">+ Новая</button></div><div class="dbFilters"><div class="dbSearch"><span>⌕</span><input id="bosOrderSearch" value="${escv(boardSearch)}" placeholder="Поиск по заявкам" oninput="setDispatchBoardSearch(this.value)"></div><select id="bosOrderMaster" onchange="setDispatchBoardMaster(this.value)"><option value="">Все мастера</option>${(state.masters||[]).map(m=>`<option value="${escv(m.full_name||'')}" ${boardMaster===String(m.full_name||'')?'selected':''}>${escv(m.full_name||'Мастер')}</option>`).join('')}</select><button class="secondary" onclick="reloadDispatchBoard()">Обновить</button></div>`;
+  return `<div class="dbToolbar"><div class="dbDateNav"><button class="secondary" onclick="shiftDispatchBoardDate(-1)">←</button><input id="dispatchBoardDate" type="date" value="${escv(boardDate)}" onchange="setDispatchBoardDate(this.value)"><button class="secondary" onclick="shiftDispatchBoardDate(1)">→</button>${today?'':`<button class="secondary" onclick="setDispatchBoardDate('${localToday()}')">Сегодня</button>`}</div><div class="dbViewTabs"><button class="${boardView==='board'?'primary':'secondary'}" onclick="setDispatchBoardView('board')">Расписание</button><button class="${boardView==='list'?'primary':'secondary'}" onclick="setDispatchBoardView('list')">Список</button><button class="secondary" onclick="setDispatchBoardView('all')">Все заявки</button></div><button class="primary" onclick="openOrderForm()">+ Новая</button></div><div class="dbFilters"><div class="dbSearch"><span>⌕</span><input id="bosOrderSearch" value="${escv(boardSearch)}" placeholder="Поиск по заявкам" oninput="setDispatchBoardSearch(this.value)"></div><select id="bosOrderMaster" onchange="setDispatchBoardMaster(this.value)"><option value="">Все мастера</option>${(state.masters||[]).map(m=>`<option value="${escv(m.full_name||'')}" ${boardMaster===String(m.full_name||'')?'selected':''}>${escv(m.full_name||'Мастер')}</option>`).join('')}</select><button class="secondary" onclick="reloadDispatchBoard()">Обновить</button></div>`;
 }
 function boardHtml(){ensureSelected();return `<div class="dbBoard"><header class="dbTop"><div><span>ДИСПЕТЧЕРСКАЯ · DISPATCH BOARD</span><h2>Расписание мастеров</h2><p>Перетаскивайте заявки между мастерами и временем.</p></div><div class="dbDayStats"><b>${dayOrders().length}</b><span>заявок на день</span></div></header>${toolbar()}<div class="dbLayout">${attention()}<main class="dbSchedule">${timeline()}</main><div id="dispatchBoardDetail">${detail()}</div></div></div>`}
-function listHtml(){return `<div class="dbListMode"><div class="dbListSwitch"><button class="primary" onclick="setDispatchBoardView('board')">← Расписание</button></div>${previousOrders()}</div>`}
+function listHtml(){return `<div class="dbListMode"><div class="dbListSwitch"><button class="primary" onclick="setDispatchBoardView('board')">← Расписание</button></div>${boardView==='all'?window.BOS_DISPATCHER_LEGACY_ORDERS():previousOrders()}</div>`}
 
 async function metaCall(action,payload={}){const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};headers['Content-Type']='application/json';const r=await fetch(META_URL,{method:'POST',headers,body:JSON.stringify({action,...payload})}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Ошибка переноса');return d}
 function updateState(id,data,extra={}){const i=(state.orders||[]).findIndex(o=>String(o.id)===String(id));if(i>=0)state.orders[i]={...state.orders[i],...(data||{}),...extra}}
@@ -109,8 +109,8 @@ async function moveOrder(id,masterVkValue,time){
 }
 function setMessage(text){const el=document.getElementById('dispatchBoardMsg');if(el)el.textContent=text||''}
 
-pages.orders=function(){if(!dispatcherMode()||!desktopMode())return previousOrders();return boardView==='list'?listHtml():boardHtml()};
-window.setDispatchBoardView=function(v){boardView=v==='list'?'list':'board';show('orders')};
+pages.orders=function(){if(!dispatcherMode()||!desktopMode())return previousOrders();return boardView!=='board'?listHtml():boardHtml()};
+window.setDispatchBoardView=function(v){boardView=['list','all'].includes(v)?v:'board';show('orders')};
 window.setDispatchBoardDate=function(v){if(/^\d{4}-\d{2}-\d{2}$/.test(String(v||'')))boardDate=String(v);boardSelected='';show('orders')};
 window.shiftDispatchBoardDate=function(n){const d=new Date(boardDate+'T12:00:00');d.setDate(d.getDate()+Number(n||0));window.setDispatchBoardDate(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)};
 window.setDispatchBoardSearch=function(v){boardSearch=String(v||'');boardSelected='';show('orders');requestAnimationFrame(()=>document.getElementById('bosOrderSearch')?.focus())};
