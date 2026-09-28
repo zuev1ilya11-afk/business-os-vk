@@ -11,7 +11,9 @@ test('completed dispatcher orders remain visible in horizontal schedule', () => 
   assert.doesNotMatch(source, /\['Выполнена','Отменена'\]\.includes/);
 });
 
-test('PWA loads refreshed horizontal schedule module', () => {
+test('PWA loads horizontal schedule through unified BUILD_ID assets', () => {
   const source = fs.readFileSync(path.join(root, 'pwa-register.js'), 'utf8');
-  assert.match(source, /dispatcher-horizontal-schedule-v190\.js\?v=20260928-hourly1/);
+  assert.match(source, /['"]\.\/dispatcher-horizontal-schedule-v190\.js['"]/);
+  assert.match(source, /script\.src=window\.BOS_ASSET_URL\(src\)/);
+  assert.doesNotMatch(source, /dispatcher-horizontal-schedule-v190\.js\?v=/);
 });
