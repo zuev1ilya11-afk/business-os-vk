@@ -1,10 +1,17 @@
 const fs=require('node:fs');
 const path=require('node:path');
 const src=fs.readFileSync(path.join(__dirname,'..','dispatcher-horizontal-schedule-v190.js'),'utf8');
+const pwa=fs.readFileSync(path.join(__dirname,'..','pwa-register.js'),'utf8');
 if(!src.includes("version:'190'"))throw new Error('v190 marker missing');
 if(!src.includes('Горизонтальное расписание дня'))throw new Error('horizontal title missing');
-if(!src.includes('grid-template-columns:128px repeat(var(--dh190-times)'))throw new Error('horizontal master/time grid missing');
+if(!src.includes('GRID_STEP=60,GRID_START=10*60,GRID_END=20*60'))throw new Error('fixed hourly 10-20 timeline missing');
+if(!src.includes('grid-template-columns:128px repeat(var(--dh190-times),minmax(0,1fr))'))throw new Error('fit-to-width hourly grid missing');
+if(!src.includes('startsInHour'))throw new Error('half-hour order placement support missing');
+if(!src.includes('--dh190-offset'))throw new Error('within-hour card offset missing');
+if(!src.includes('dh190Status-pending')||!src.includes('dh190Status-reschedule')||!src.includes('dh190Status-overdue')||!src.includes('dh190Status-done'))throw new Error('dispatcher status colors missing');
+if(!src.includes('minmax(260px,300px)'))throw new Error('narrow detail panel layout missing');
 if(!src.includes('--dh190-vh'))throw new Error('board-local viewport fit missing');
 if(src.includes('html.dh190Active,body.dh190Active'))throw new Error('global page scroll lock must not be used');
 if(!src.includes("window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(st()?.user)"))throw new Error('dispatcher/owner/manager activation missing');
+if(!pwa.includes('dispatcher-horizontal-schedule-v190.js?v=20260928-hourly1'))throw new Error('dispatcher hourly cache bust missing');
 console.log('dispatcher horizontal schedule v190 source checks passed');
