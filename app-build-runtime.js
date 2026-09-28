@@ -11,20 +11,25 @@ window.BOS_ASSET_URL=src=>{
 window.BOS_APP_VERSION=build;
 let reloading=false,requested=false;
 window.BOS_WATCH_UPDATE=registration=>{
- function offer(){
-  if(!registration.waiting||document.getElementById('bosBuildUpdate'))return;
+ function offer(activeChanged=false){
+  if((!registration.waiting&&!activeChanged)||document.getElementById('bosBuildUpdate'))return;
   const box=document.createElement('aside');box.id='bosBuildUpdate';box.setAttribute('role','status');
   box.style.cssText='position:fixed;bottom:80px;left:12px;right:12px;z-index:9999999;padding:12px;background:#14273a;color:#fff;border:1px solid #49779b;border-radius:12px;display:flex;gap:12px;align-items:center;justify-content:space-between';
   const text=document.createElement('span');text.textContent='Доступна новая версия. Сохраните изменения перед обновлением.';
   const button=document.createElement('button');button.type='button';button.textContent='Обновить';
-  button.onclick=()=>{if(!registration.waiting)return;requested=true;button.disabled=true;registration.waiting.postMessage({type:'BOS_ACTIVATE_BUILD'})};
+  button.onclick=()=>{requested=true;button.disabled=true;if(registration.waiting)registration.waiting.postMessage({type:'BOS_ACTIVATE_BUILD'});else if(!reloading){reloading=true;location.reload()}};
   box.append(text,button);document.body.appendChild(box);
  }
  offer();registration.addEventListener('updatefound',()=>{
   const worker=registration.installing;worker?.addEventListener('statechange',()=>{if(worker.state==='installed')offer()});
  });
  navigator.serviceWorker.addEventListener('controllerchange',()=>{
-  if(!requested||reloading)return;reloading=true;location.reload();
+  if(reloading)return;
+  if(requested){reloading=true;location.reload();return}
+  // Another tab may activate the waiting worker; preserve this tab's draft.
+  const channel=new MessageChannel();
+  channel.port1.onmessage=event=>{if(event.data?.build&&event.data.build!==build)offer(true);channel.port1.close()};
+  navigator.serviceWorker.controller?.postMessage({type:'BOS_GET_BUILD'},[channel.port2]);
  });
  let lastCheck=Date.now();
  document.addEventListener('visibilitychange',()=>{

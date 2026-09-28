@@ -21,6 +21,7 @@ test('new build waits for consent, reloads once, and stays usable offline',async
   await page.evaluate(()=>navigator.serviceWorker.ready);
   await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
   await page.locator('#draft').fill('Несохранённые изменения');
+  const other=await context.newPage();await other.goto(page.url());await other.locator('#draft').fill('Другая вкладка');
   version='B';await page.evaluate(async()=>{const r=await navigator.serviceWorker.getRegistration();await r.update()});
   await expect(page.locator('#bosBuildUpdate')).toBeVisible();
   await expect(page.locator('#draft')).toHaveValue('Несохранённые изменения');
@@ -28,6 +29,10 @@ test('new build waits for consent, reloads once, and stays usable offline',async
   await page.getByRole('button',{name:'Обновить',exact:true}).click();
   await page.waitForFunction(()=>window.fixtureBuild==='B');
   expect(navigations).toBe(2);await expect(page.locator('#bosBuildUpdate')).toHaveCount(0);
+  await expect(other.locator('#draft')).toHaveValue('Другая вкладка');
+  expect(await other.evaluate(()=>fixtureBuild)).toBe('A');
+  await other.getByRole('button',{name:'Обновить',exact:true}).click();
+  await other.waitForFunction(()=>window.fixtureBuild==='B');await other.close();
   await context.setOffline(true);await page.reload();
   expect(await page.evaluate(()=>fixtureBuild)).toBe('B');
   await context.setOffline(false);
