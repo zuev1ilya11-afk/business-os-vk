@@ -31,6 +31,17 @@ function scheduleTs(o){
   const ts=new Date(`${d}T${t}:00`).getTime();
   return Number.isFinite(ts)?ts:Number.POSITIVE_INFINITY;
 }
+const minutesOf=v=>{const m=String(v||'').match(/(\d{1,2}):(\d{2})/);if(!m)return NaN;const h=Number(m[1]),n=Number(m[2]);return h>=0&&h<24&&n>=0&&n<60?h*60+n:NaN};
+function scheduleEndTs(o){
+  const start=scheduleTs(o);if(!Number.isFinite(start))return Number.POSITIVE_INFINITY;
+  const startMin=minutesOf(timeOf(o));if(!Number.isFinite(startMin))return start+60*60000;
+  const pair=String(o?.time_slot||'').match(/(\d{1,2}:\d{2})\s*[–—-]\s*(\d{1,2}:\d{2})/);
+  let endMin=pair?minutesOf(pair[2]):NaN;
+  if(!Number.isFinite(endMin)||endMin<=startMin)endMin=startMin+60;
+  return start+(endMin-startMin)*60000;
+}
+const reportOverdue=(o,now=Date.now())=>active(o)&&!reportUploaded(o)&&Number.isFinite(scheduleEndTs(o))&&now>=scheduleEndTs(o)+90*60000;
+const currentPending=(o,now)=>active(o)&&!reportUploaded(o)&&Number.isFinite(scheduleTs(o))&&scheduleTs(o)<=now;
 function dateLabel(o){
   const d=dateOf(o);if(!d)return'Дата не назначена';
   const target=new Date(`${d}T00:00:00`),now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate()),diff=Math.round((target-today)/86400000);
@@ -50,6 +61,7 @@ function step(o){
 function attentionReason(o,now){
   if(!active(o))return'';
   if(reportRejected(o))return'Отчёт вернули на доработку';
+  if(reportOverdue(o,now))return'Отчёт не отправлен вовремя';
   if(calledDone(o)&&!agreementDone(o))return'Нужно согласовать дату и время';
   if(!calledDone(o)&&!dateOf(o))return'Нужно связаться с клиентом';
   const ts=scheduleTs(o);
@@ -57,18 +69,21 @@ function attentionReason(o,now){
   return'';
 }
 function nextOrder(orders,now){
-  const scheduled=orders.filter(active).filter(o=>Number.isFinite(scheduleTs(o))).sort((a,b)=>scheduleTs(a)-scheduleTs(b));
-  return scheduled.find(o=>scheduleTs(o)>=now-90*60000)||scheduled[0]||orders.filter(active)[0]||null;
+  const pending=orders.filter(active).filter(o=>!reportUploaded(o));
+  const current=pending.filter(o=>currentPending(o,now)).sort((a,b)=>scheduleTs(a)-scheduleTs(b))[0];
+  if(current)return current;
+  const scheduled=pending.filter(o=>Number.isFinite(scheduleTs(o))).sort((a,b)=>scheduleTs(a)-scheduleTs(b));
+  return scheduled.find(o=>scheduleTs(o)>=now)||pending.find(o=>!Number.isFinite(scheduleTs(o)))||null;
 }
 function dayOrders(orders,next){
   const day=dateOf(next);
   if(!next||!day)return[];
-  return orders.filter(o=>o!==next&&active(o)&&dateOf(o)===day).sort((a,b)=>scheduleTs(a)-scheduleTs(b));
+  return orders.filter(o=>o!==next&&active(o)&&dateOf(o)===day&&(!reportUploaded(o)||reportRejected(o))).sort((a,b)=>scheduleTs(a)-scheduleTs(b));
 }
-function nextHtml(o){
+function nextHtml(o,now){
   if(!o)return `<div class="masterV127Empty"><b>Ближайших активных заявок нет</b><span>Новые назначения появятся здесь автоматически.</span></div>`;
-  const time=timeOf(o)||'—',address=String(o.address||o.client_address||'Адрес не указан');
-  return `<button type="button" class="masterV127Next" data-order-id="${escv(o.id)}" onclick="openOrder('${escv(o.id)}')"><div class="masterV127When"><b>${escv(time)}</b><span>${escv(dateLabel(o))}</span></div><div class="masterV127Main"><small>БЛИЖАЙШАЯ ЗАЯВКА</small><h3>№ ${escv(orderNo(o))}</h3><p>${escv(address)}</p><strong>${escv(step(o))}</strong></div><span class="masterV127Arrow">›</span></button>`;
+  const time=timeOf(o)||'—',address=String(o.address||o.client_address||'Адрес не указан'),current=currentPending(o,now),overdue=reportOverdue(o,now);
+  return `<button type="button" class="masterV127Next${overdue?' reportOverdue':''}" data-order-id="${escv(o.id)}" onclick="openOrder('${escv(o.id)}')"><div class="masterV127When"><b>${escv(time)}</b><span>${escv(dateLabel(o))}</span></div><div class="masterV127Main"><small>${current?'ТЕКУЩАЯ ЗАЯВКА':'БЛИЖАЙШАЯ ЗАЯВКА'}</small><h3>№ ${escv(orderNo(o))}</h3><p>${escv(address)}</p>${overdue?'<span class="masterV127ReportReminder">Отправьте отчёт по заявке</span>':''}<strong>${escv(step(o))}</strong></div><span class="masterV127Arrow">›</span></button>`;
 }
 function dayOrderHtml(o){
   const time=timeOf(o)||'—',address=String(o.address||o.client_address||'Адрес не указан');
@@ -87,23 +102,25 @@ function render(){
   const root=document.getElementById('content');
   if(!root||!masterMode()||String(state?.page||'')!=='home'){document.getElementById('masterDailyV127')?.remove();return}
   const orders=mine(),now=Date.now(),next=nextOrder(orders,now),otherDay=dayOrders(orders,next),attention=orders.map(o=>({o,reason:attentionReason(o,now)})).filter(x=>x.reason).sort((a,b)=>scheduleTs(a.o)-scheduleTs(b.o));
-  const sig=JSON.stringify([orders.map(o=>[o.id,o.status,o.scheduled_date,o.scheduled_time,o.time_slot,o.address,o.client,o.master_called_at,o.master_agreed_at,o.master_workflow_stage,o.report_uploaded_at,o.report_act_url,o.report_review_status,o.report_review_comment]),otherDay.map(o=>o.id),attention.map(x=>[x.o.id,x.reason])]);
+  const sig=JSON.stringify([orders.map(o=>[o.id,o.status,o.scheduled_date,o.scheduled_time,o.time_slot,o.address,o.client,o.master_called_at,o.master_agreed_at,o.master_workflow_stage,o.report_uploaded_at,o.report_act_url,o.report_review_status,o.report_review_comment]),next?.id||'',!!next&&currentPending(next,now),!!next&&reportOverdue(next,now),otherDay.map(o=>o.id),attention.map(x=>[x.o.id,x.reason])]);
   let box=document.getElementById('masterDailyV127');
   if(box?.dataset.sig===sig)return;
   if(!box){box=document.createElement('section');box.id='masterDailyV127';box.className='masterV127';root.prepend(box)}
   box.dataset.sig=sig;
-  box.innerHTML=`<div class="masterV127Head"><div><small>МАСТЕР</small><h2>Рабочий день</h2></div><button type="button" class="secondary" onclick="show('orders')">Все заявки</button></div>${nextHtml(next)}${dayHtml(otherDay)}<div class="masterV127Attention"><div class="masterV127AttentionHead"><b>Требуют внимания</b><span>${attention.length}</span></div>${attentionHtml(attention)}</div>`;
+  box.innerHTML=`<div class="masterV127Head"><div><small>МАСТЕР</small><h2>Рабочий день</h2></div><button type="button" class="secondary" onclick="show('orders')">Все заявки</button></div>${nextHtml(next,now)}${dayHtml(otherDay)}<div class="masterV127Attention"><div class="masterV127AttentionHead"><b>Требуют внимания</b><span>${attention.length}</span></div>${attentionHtml(attention)}</div>`;
 }
 function schedule(){if(queued)return;queued=true;requestAnimationFrame(render)}
 const baseShow=window.show;
 if(typeof baseShow==='function')window.show=function(){const out=baseShow.apply(this,arguments);setTimeout(schedule,0);setTimeout(schedule,100);return out};
 new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
 window.addEventListener('resize',schedule);
+setInterval(schedule,60000);
 setTimeout(schedule,0);
-window.BOS_MASTER_DAILY_HOME_V127_API={refresh:schedule,step,attentionReason};
+window.BOS_MASTER_DAILY_HOME_V127_API={refresh:schedule,step,attentionReason,reportOverdue,scheduleEndTs,nextOrder};
 
 const style=document.createElement('style');style.textContent=`
 .masterV127{margin:0 0 16px;padding:14px;border:1px solid rgba(96,165,250,.2);border-radius:18px;background:linear-gradient(180deg,rgba(37,99,235,.08),rgba(15,23,42,.16))}.masterV127Head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.masterV127Head small{display:block;color:var(--muted,#91a3b7);font-size:10px;font-weight:900;letter-spacing:.1em}.masterV127Head h2{margin:2px 0 0;font-size:21px}.masterV127Head button{min-height:38px}.masterV127Next{width:100%;display:grid;grid-template-columns:72px minmax(0,1fr) 18px;gap:12px;align-items:center;text-align:left;padding:14px;border:1px solid rgba(96,165,250,.28);border-radius:15px;background:rgba(37,99,235,.1);color:inherit;cursor:pointer}.masterV127When{display:flex;flex-direction:column;align-items:center;padding:8px 4px;border-radius:12px;background:rgba(255,255,255,.05)}.masterV127When b{font-size:22px;line-height:1}.masterV127When span{margin-top:5px;color:var(--muted,#91a3b7);font-size:11px}.masterV127Main{min-width:0}.masterV127Main small{color:var(--muted,#91a3b7);font-size:10px;font-weight:800}.masterV127Main h3{margin:4px 0 2px;font-size:17px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.masterV127Main p{margin:0;color:var(--muted,#91a3b7);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.masterV127Main strong{display:inline-flex;margin-top:8px;padding:4px 8px;border-radius:999px;background:rgba(96,165,250,.14);font-size:11px}.masterV127Arrow{font-size:28px;color:var(--muted,#91a3b7)}.masterV127Empty{display:flex;flex-direction:column;gap:4px;padding:15px;border:1px dashed rgba(148,163,184,.22);border-radius:14px}.masterV127Empty span,.masterV127AttentionEmpty{color:var(--muted,#91a3b7);font-size:12px}.masterV127Day{margin-top:11px}.masterV127DayHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}.masterV127DayHead b{font-size:12px}.masterV127DayHead span{color:var(--muted,#91a3b7);font-size:11px}.masterV127DayList{display:flex;gap:7px;overflow-x:auto;overscroll-behavior-inline:contain;padding:1px 0 3px;scrollbar-width:thin}.masterV127DayItem{flex:1 0 160px;max-width:230px;display:grid;grid-template-columns:45px minmax(0,1fr);gap:8px;align-items:center;padding:8px 9px;border:1px solid rgba(96,165,250,.18);border-radius:11px;background:rgba(37,99,235,.055);color:inherit;text-align:left;cursor:pointer}.masterV127DayTime{font-size:13px;font-weight:900;text-align:center}.masterV127DayMain{min-width:0;display:flex;flex-direction:column;gap:2px}.masterV127DayMain b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.masterV127DayMain small{color:var(--muted,#91a3b7);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.masterV127Attention{margin-top:12px}.masterV127AttentionHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}.masterV127AttentionHead b{font-size:13px}.masterV127AttentionHead span{min-width:24px;padding:2px 7px;border-radius:999px;text-align:center;background:rgba(239,68,68,.13);color:#ff9696;font-size:11px;font-weight:900}.masterV127AttentionItem{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 11px;margin-top:6px;border:1px solid rgba(239,68,68,.18);border-radius:12px;background:rgba(239,68,68,.045);color:inherit;text-align:left;cursor:pointer}.masterV127AttentionItem>span{display:flex;min-width:0;flex-direction:column;gap:2px}.masterV127AttentionItem small{color:var(--muted,#91a3b7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.masterV127AttentionItem strong{flex:0 0 auto;font-size:11px}.masterV127AttentionEmpty{padding:10px 0 2px}
+.masterV127Next.reportOverdue{border-color:rgba(239,68,68,.78);background:linear-gradient(135deg,rgba(127,29,29,.34),rgba(239,68,68,.12));box-shadow:0 0 0 1px rgba(239,68,68,.12) inset}.masterV127Next.reportOverdue .masterV127When{background:rgba(239,68,68,.16)}.masterV127Next.reportOverdue .masterV127Main>small,.masterV127Next.reportOverdue .masterV127Arrow{color:#ff9a9a}.masterV127Next.reportOverdue .masterV127Main strong{background:rgba(239,68,68,.17);color:#ffc1c1}.masterV127ReportReminder{display:block;margin-top:8px;color:#ff9a9a;font-size:12px;font-weight:900;line-height:1.25}
 @media(max-width:520px){.masterV127{padding:12px;margin-bottom:12px;border-radius:16px}.masterV127Head h2{font-size:19px}.masterV127Head button{padding:8px 10px}.masterV127Next{grid-template-columns:64px minmax(0,1fr) 12px;padding:12px 10px;gap:9px}.masterV127When b{font-size:20px}.masterV127Main h3{font-size:16px}.masterV127Main p{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.masterV127DayItem{flex-basis:145px;grid-template-columns:40px minmax(0,1fr);padding:8px}.masterV127AttentionItem{align-items:flex-start;flex-direction:column;gap:5px}.masterV127AttentionItem strong{align-self:flex-start}}
 `;document.head.appendChild(style);
 })();
