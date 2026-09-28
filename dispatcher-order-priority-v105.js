@@ -5,7 +5,7 @@ window.BOS_DISPATCHER_ORDER_PRIORITY_V105=true;
 
 const MOBILE_MAX=760;
 let queued=false;
-const dispatcherMode=()=>String(state?.user?.role||'')==='dispatcher'||(typeof isDispatcherPreview==='function'&&isDispatcherPreview());
+const dispatcherMode=()=>window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user);
 const ordersPage=()=>String(state?.page||'')==='orders';
 const mobileMode=()=>window.innerWidth<=MOBILE_MAX;
 const localToday=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};

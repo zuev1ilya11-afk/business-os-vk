@@ -8,7 +8,7 @@ const ROW_PX=46;
 let queued=false,rendering=false,lastSignature='',busy=false,legacyDisabled=false;
 
 const st=()=>{try{return typeof state!=='undefined'?state:null}catch(_){return null}};
-const dispatcherDesktop=()=>window.innerWidth>=MIN_DESKTOP&&((typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(st()?.user?.role||'')==='dispatcher');
+const dispatcherDesktop=()=>window.innerWidth>=MIN_DESKTOP&&window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(st()?.user);
 const active=o=>!!o&&!['Выполнена','Отменена'].includes(String(o?.status||''));
 const dateOf=o=>String(o?.scheduled_date||'').slice(0,10);
 const timeOf=o=>String(o?.scheduled_time||o?.time_slot||'').slice(0,5);

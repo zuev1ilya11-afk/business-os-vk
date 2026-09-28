@@ -5,7 +5,7 @@ const MIN_DESKTOP=1050;
 let activeFilter='all',queued=false;
 const pad=n=>String(n).padStart(2,'0');
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
-const desktop=()=>window.innerWidth>=MIN_DESKTOP&&(String(state?.user?.role||'')==='dispatcher'||(typeof isDispatcherPreview==='function'&&isDispatcherPreview()));
+const desktop=()=>window.innerWidth>=MIN_DESKTOP&&(window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user));
 const ordersPage=()=>String(state?.page||'')==='orders';
 const active=o=>!!o&&!['Выполнена','Отменена'].includes(String(o?.status||''));
 const dateOf=o=>String(o?.scheduled_date||'').slice(0,10);

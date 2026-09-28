@@ -7,7 +7,7 @@ let ddMaster='';
 let ddSelected='';
 let ddLastDesktop=window.innerWidth>=DESKTOP_MIN;
 
-function ddMode(){return (typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(state.user?.role||'')==='dispatcher'}
+function ddMode(){return window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user)}
 function ddDesktop(){return window.innerWidth>=DESKTOP_MIN}
 function ddOrders(){return Array.isArray(state.orders)?state.orders:[]}
 function ddStatus(o){return String(o?.status||'')}

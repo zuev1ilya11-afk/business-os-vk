@@ -21,11 +21,8 @@ test('late master and dispatcher UI modules are not in the eager startup list',a
 });
 
 test('role loader keeps employee roles isolated and management previews complete',async()=>{
-  expect(pwa).toContain("if(value==='dispatcher')await loadList(roleScripts.dispatcher)");
-  expect(pwa).toContain("else if(value==='master')await loadList(roleScripts.master)");
-  expect(pwa).toContain("else if(value==='owner'||value==='manager')");
-  expect(pwa).toContain('await loadList(roleScripts.dispatcher);');
-  expect(pwa).toContain('await loadList(roleScripts.master);');
+  expect(pwa).toContain('window.BOS_PERMISSIONS.canUseDispatcherWorkspace({role:value})');
+  expect(pwa).toContain("if(['master','owner','manager'].includes(value))await loadList(roleScripts.master)");
   expect(pwa).toContain('window.BOS_ROLE_MODULES_V171={dispatcher:roleScripts.dispatcher.length,master:roleScripts.master.length};');
 });
 

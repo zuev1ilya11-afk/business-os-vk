@@ -4,7 +4,7 @@ const META_URL='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/order-meta
 let freeOnly=false;
 let enhancing=false;
 
-function isDispatcherDesktop(){return window.innerWidth>=1050&&((typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(state?.user?.role||'')==='dispatcher')}
+function isDispatcherDesktop(){return window.innerWidth>=1050&&window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user)}
 function active(o){return !['Выполнена','Отменена'].includes(String(o?.status||''))}
 function dateOf(o){return String(o?.scheduled_date||'').slice(0,10)}
 function timeOf(o){return String(o?.scheduled_time||o?.time_slot||'').slice(0,5)}

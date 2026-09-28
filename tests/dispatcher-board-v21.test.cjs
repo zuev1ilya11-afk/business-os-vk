@@ -7,7 +7,7 @@ test('Dispatch Board v2.1 loads and is syntactically valid',()=>{
   const src=fs.readFileSync('dispatcher-board-v21.js','utf8');
   new vm.Script(src);
   const pwa=fs.readFileSync('pwa-register.js','utf8');
-  assert.match(pwa,/dispatcher-board-v21\.js\?v=20260927-v188-fix/);
+  assert.match(pwa,/dispatcher-board-v21\.js\?v=20260928-permissions1/);
 });
 
 test('Dispatch Board v2.1 contains daily operations without payroll changes',()=>{

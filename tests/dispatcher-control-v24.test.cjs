@@ -6,7 +6,7 @@ test('dispatch control v2.4 is syntactically valid and loaded after day plan',()
   const src=fs.readFileSync('dispatcher-control-v24.js','utf8');
   assert.doesNotThrow(()=>new Function(src));
   const loader=fs.readFileSync('pwa-register.js','utf8');
-  assert.match(loader,/dispatcher-control-v24\.js\?v=20260927-v188-fix/);
+  assert.match(loader,/dispatcher-control-v24\.js\?v=20260928-permissions1/);
   assert.ok(loader.indexOf('dispatcher-control-v24.js')>loader.indexOf('dispatcher-board-v23.js'));
 });
 
@@ -22,7 +22,7 @@ test('v2.4 classifies operational problems without changing orders',()=>{
 test('v2.4 stays dispatcher desktop-only and keeps legacy views',()=>{
   const src=fs.readFileSync('dispatcher-control-v24.js','utf8');
   assert.match(src,/MIN_DESKTOP=1050/);
-  assert.match(src,/state\?\.user\?\.role/);
+  assert.match(src,/BOS_PERMISSIONS\.isDispatcherWorkspaceActive\(state\?\.user\)/);
   assert.match(src,/dbViewTabs button/);
   assert.match(src,/sessionStorage/);
 });

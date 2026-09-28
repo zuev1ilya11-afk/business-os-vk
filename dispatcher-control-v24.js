@@ -6,7 +6,7 @@ let filter='all';
 let rendering=false;
 let lastSignature='';
 
-function dispatcherDesktop(){return window.innerWidth>=MIN_DESKTOP&&((typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(state?.user?.role||'')==='dispatcher')}
+function dispatcherDesktop(){return window.innerWidth>=MIN_DESKTOP&&window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user)}
 function active(o){return !['Выполнена','Отменена'].includes(String(o?.status||''))}
 function localToday(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function dateOf(o){return String(o?.scheduled_date||'').slice(0,10)}

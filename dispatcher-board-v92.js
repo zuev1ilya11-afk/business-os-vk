@@ -11,7 +11,7 @@ let boardView='board';
 let boardBusy=false;
 const previousOrders=pages.orders;
 
-function dispatcherMode(){return (typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(state.user?.role||'')==='dispatcher'}
+function dispatcherMode(){return window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user)}
 function desktopMode(){return window.innerWidth>=MIN_DESKTOP}
 function localToday(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function active(o){return !['Выполнена','Отменена'].includes(String(o?.status||''))}

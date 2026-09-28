@@ -9,27 +9,27 @@
     './install-app-v84.js?v=20260918-v84',
     './master-reschedule-call-v87.js?v=20260922-v87c',
     './master-call-workflow-v26.js?v=20260922-v27',
-    './dispatcher-desktop-v89.js?v=20260920-v89',
+    './dispatcher-desktop-v89.js?v=20260928-permissions1',
     './dispatcher-desktop-compat-v90.js?v=20260920-v90',
-    './dispatcher-reschedule-v91.js?v=20260920-v91',
-    './dispatcher-board-v92.js?v=20260920-v92',
-    './dispatcher-board-compat-v93.js?v=20260920-v93',
-    './dispatcher-board-v21.js?v=20260927-v188-fix',
-    './dispatcher-smart-assign-v22.js?v=20260920-v22',
-    './dispatcher-board-v23.js?v=20260927-v188-fix',
-    './dispatcher-control-v24.js?v=20260927-v188-fix',
+    './dispatcher-reschedule-v91.js?v=20260928-permissions1',
+    './dispatcher-board-v92.js?v=20260928-permissions1',
+    './dispatcher-board-compat-v93.js?v=20260928-permissions1',
+    './dispatcher-board-v21.js?v=20260928-permissions1',
+    './dispatcher-smart-assign-v22.js?v=20260928-permissions1',
+    './dispatcher-board-v23.js?v=20260928-permissions1',
+    './dispatcher-control-v24.js?v=20260928-permissions1',
     './notification-center-v26.js?v=20260921-v26',
     './employee-live-refresh-v27.js?v=20260922-v31',
-    './ui-dispatch-master-v94.js?v=20260921-v94',
+    './ui-dispatch-master-v94.js?v=20260928-permissions1',
     './master-status-colors-v95.js?v=20260921-v95',
     './master-orders-filter-v99.js?v=20260922-v99',
     './management-order-delete-v100.js?v=20260922-v100',
     './unified-schedule-v102.js?v=20260923-v102',
     './new-order-card-v104.js?v=20260923-v104',
-    './dispatcher-order-priority-v105.js?v=20260923-v105',
+    './dispatcher-order-priority-v105.js?v=20260928-permissions1',
     './order-lifecycle-v106.js?v=20260923-v106',
     './dispatcher-order-workflow-v114.js?v=20260923-v114',
-    './dispatcher-orders-v3.js?v=20260925-reassign',
+    './dispatcher-orders-v3.js?v=20260928-permissions1',
     './master-upcoming-claims-v110.js?v=20260923-v111',
     './android-navigation-v112.js?v=20260923-v112',
     './session-refresh-v113.js?v=20260923-v113',
@@ -48,17 +48,17 @@
 
   const roleScripts={
     dispatcher:[
-      './dispatcher-smart-assign-v119.js?v=20260923-v119',
-      './dispatcher-free-slots-v120.js?v=20260923-v120',
-      './dispatcher-smart-dispatch-v121.js?v=20260923-v121',
-      './dispatcher-unassigned-queue-v122.js?v=20260924-v122',
-      './dispatcher-attention-v123.js?v=20260927-v186',
-      './dispatcher-ui-redesign-v183.js?v=20260927-v183',
+      './dispatcher-smart-assign-v119.js?v=20260928-permissions1',
+      './dispatcher-free-slots-v120.js?v=20260928-permissions1',
+      './dispatcher-smart-dispatch-v121.js?v=20260928-permissions1',
+      './dispatcher-unassigned-queue-v122.js?v=20260928-permissions1',
+      './dispatcher-attention-v123.js?v=20260928-permissions1',
+      './dispatcher-ui-redesign-v183.js?v=20260928-permissions1',
       './dispatcher-ui-redesign-v183-compat.js?v=20260927-v183a',
-      './dispatcher-ui-polish-v184.js?v=20260927-v184',
-      './dispatcher-ui-stability-v185.js?v=20260927-v185',
-      './dispatcher-unified-schedule-v187.js?v=20260927-v188-fix',
-      './dispatcher-horizontal-schedule-v190.js?v=20260928-v190-owner1',
+      './dispatcher-ui-polish-v184.js?v=20260928-permissions1',
+      './dispatcher-ui-stability-v185.js?v=20260928-permissions1',
+      './dispatcher-unified-schedule-v187.js?v=20260928-permissions1',
+      './dispatcher-horizontal-schedule-v190.js?v=20260928-permissions1',
       './dispatcher-horizontal-schedule-v190-fix.js?v=20260927-v190c'
     ],
     master:[
@@ -91,12 +91,8 @@
   async function loadList(list){for(const src of list)await loadRoleScript(src)}
   window.BOS_LOAD_ROLE_MODULES=async role=>{
     const value=String(role||'');
-    if(value==='dispatcher')await loadList(roleScripts.dispatcher);
-    else if(value==='master')await loadList(roleScripts.master);
-    else if(value==='owner'||value==='manager'){
-      await loadList(roleScripts.dispatcher);
-      await loadList(roleScripts.master);
-    }
+    if(window.BOS_PERMISSIONS.canUseDispatcherWorkspace({role:value}))await loadList(roleScripts.dispatcher);
+    if(['master','owner','manager'].includes(value))await loadList(roleScripts.master);
     return true;
   };
   window.BOS_ROLE_MODULES_V171={dispatcher:roleScripts.dispatcher.length,master:roleScripts.master.length};

@@ -4,7 +4,7 @@ if(window.BOS_DISPATCHER_UI_REDESIGN_V183)return;
 const MIN=1050;
 let queued=false,selectedId='';
 const st=()=>{try{return typeof state!=='undefined'?state:null}catch(_){return null}};
-const mode=()=>String(st()?.user?.role||'')==='dispatcher'||(typeof isDispatcherPreview==='function'&&!!isDispatcherPreview());
+const mode=()=>window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(st()?.user);
 const active=o=>!!o&&!['Выполнена','Отменена'].includes(String(o?.status||''));
 const dateOf=o=>String(o?.scheduled_date||'').slice(0,10);
 const timeOf=o=>String(o?.scheduled_time||o?.time_slot||'').slice(0,5);

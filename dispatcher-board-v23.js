@@ -6,7 +6,7 @@ let planMode=sessionStorage.getItem('bosDispatchV23Plan')==='1';
 let rendering=false;
 let lastSignature='';
 
-function dispatcherDesktop(){return window.innerWidth>=MIN_DESKTOP&&((typeof isDispatcherPreview==='function'&&isDispatcherPreview())||String(state?.user?.role||'')==='dispatcher')}
+function dispatcherDesktop(){return window.innerWidth>=MIN_DESKTOP&&window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user)}
 function active(o){return !['Выполнена','Отменена'].includes(String(o?.status||''))}
 function dateOf(o){return String(o?.scheduled_date||'').slice(0,10)}
 function timeOf(o){return String(o?.scheduled_time||o?.time_slot||'').slice(0,5)}

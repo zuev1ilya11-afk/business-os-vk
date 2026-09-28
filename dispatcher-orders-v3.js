@@ -9,7 +9,7 @@ let statusFilter='';
 let queued=false;
 let internalBaseFilter=false;
 
-const dispatcherMode=()=>String(state?.user?.role||'')==='dispatcher'||(typeof isDispatcherPreview==='function'&&isDispatcherPreview());
+const dispatcherMode=()=>window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(state?.user);
 const ordersPage=()=>String(state?.page||'')==='orders';
 const active=o=>!['Выполнена','Отменена'].includes(String(o?.status||''));
 const localDate=(offset=0)=>{const d=new Date();d.setDate(d.getDate()+offset);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};

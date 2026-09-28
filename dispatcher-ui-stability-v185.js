@@ -4,7 +4,7 @@ if(window.BOS_DISPATCHER_UI_STABILITY_V185)return;
 const MIN=1050;
 let queued=false;
 const stateRef=()=>{try{return typeof state!=='undefined'?state:null}catch(_){return null}};
-const dispatcherMode=()=>String(stateRef()?.user?.role||'')==='dispatcher'||(typeof isDispatcherPreview==='function'&&!!isDispatcherPreview());
+const dispatcherMode=()=>window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(stateRef()?.user);
 const ordersPage=()=>String(stateRef()?.page||'')==='orders';
 
 function syncHost(host,cardSelector){

@@ -7,7 +7,7 @@ test('dispatcher board v2.3 is syntactically valid and loaded after v2.2',()=>{
   assert.doesNotThrow(()=>new Function(src));
   const loader=fs.readFileSync('pwa-register.js','utf8');
   assert.match(loader,/dispatcher-smart-assign-v22\.js/);
-  assert.match(loader,/dispatcher-board-v23\.js\?v=20260927-v188-fix/);
+  assert.match(loader,/dispatcher-board-v23\.js\?v=20260928-permissions1/);
   assert.ok(loader.indexOf('dispatcher-board-v23.js')>loader.indexOf('dispatcher-smart-assign-v22.js'));
 });
 
