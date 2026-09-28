@@ -30,6 +30,6 @@ test('production shell exposes an installable PWA without unsafe asset fallback'
   expect(workerResponse.ok()).toBeTruthy();
   const worker=await workerResponse.text();
   expect(worker).toContain("request.mode==='navigate'");
-  expect(worker).toContain("caches.match(request)");
+  expect(worker).toContain("cache.match(key)");
   expect(worker).not.toContain("hit||caches.match('./index.html')");
 });

@@ -4,7 +4,9 @@
   "scripts": {
     "test:ui": "playwright test",
     "test:server": "node --test tests/*.test.cjs",
-    "test": "npm run test:server && npm run test:ui"
+    "test": "npm run test:server && npm run test:ui",
+    "build": "node scripts/build-version.cjs",
+    "build:check": "node scripts/build-version.cjs --check"
   },
   "devDependencies": {
     "@playwright/test": "1.55.0"

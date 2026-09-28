@@ -58,5 +58,5 @@ test('server deleteOrder is restricted to owner and manager and runtime is loade
   expect(apiSource).toContain("if(!leadership(role))return j({ok:false,error:'Недостаточно прав'},403)");
   expect(apiSource).toContain("db.from('orders').delete().eq('id',id)");
   const loader=fs.readFileSync(path.join(__dirname,'..','pwa-register.js'),'utf8');
-  expect(loader).toContain('management-order-delete-v100.js?v=20260922-v100');
+  expect(loader).toContain('management-order-delete-v100.js');
 });

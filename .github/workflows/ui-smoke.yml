@@ -17,6 +17,8 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Verify single build version
+        run: npm run build:check
 
       # ubuntu-latest already provides the browser runtime dependencies we need.
       # Installing them again through apt made PR checks spend most of their time

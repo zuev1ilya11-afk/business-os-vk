@@ -29,5 +29,5 @@ test('VK onboarding uses owner invitation UI',()=>{
   assert.match(ui,/simpleInviteForm/);
   assert.match(ui,/invitePost\('redeem'/);
   assert.match(ui,/invitePost\('issue'/);
-  assert.match(html,/staff-invite-ui-v66\.js\?v=20260913-v66/);
+  assert.match(html,/staff-invite-ui-v66\.js\?build=[a-f0-9]{20}/);
 });

@@ -5,72 +5,72 @@
   document.head.appendChild(touch);
 
   const eagerScripts=[
-    './role-chrome-v83.js?v=20260918-v83',
-    './install-app-v84.js?v=20260918-v84',
-    './master-reschedule-call-v87.js?v=20260922-v87c',
-    './master-call-workflow-v26.js?v=20260922-v27',
-    './dispatcher-desktop-v89.js?v=20260928-permissions1',
-    './dispatcher-desktop-compat-v90.js?v=20260920-v90',
-    './dispatcher-reschedule-v91.js?v=20260928-permissions1',
-    './dispatcher-board-v92.js?v=20260928-permissions1',
-    './dispatcher-board-compat-v93.js?v=20260928-permissions1',
-    './dispatcher-board-v21.js?v=20260928-permissions1',
-    './dispatcher-smart-assign-v22.js?v=20260928-permissions1',
-    './dispatcher-board-v23.js?v=20260928-permissions1',
-    './dispatcher-control-v24.js?v=20260928-permissions1',
-    './notification-center-v26.js?v=20260921-v26',
-    './employee-live-refresh-v27.js?v=20260922-v31',
-    './ui-dispatch-master-v94.js?v=20260928-permissions1',
-    './master-status-colors-v95.js?v=20260921-v95',
-    './master-orders-filter-v99.js?v=20260922-v99',
-    './management-order-delete-v100.js?v=20260922-v100',
-    './unified-schedule-v102.js?v=20260923-v102',
-    './new-order-card-v104.js?v=20260923-v104',
-    './dispatcher-order-priority-v105.js?v=20260928-permissions1',
-    './order-lifecycle-v106.js?v=20260923-v106',
-    './dispatcher-order-workflow-v114.js?v=20260923-v114',
-    './dispatcher-orders-v3.js?v=20260928-permissions1',
-    './master-upcoming-claims-v110.js?v=20260923-v111',
-    './android-navigation-v112.js?v=20260923-v112',
-    './session-refresh-v113.js?v=20260923-v113',
-    './master-workflow-v115.js?v=20260923-v115',
-    './master-workflow-v116.js?v=20260923-v116',
-    './master-order-actions-v179.js?v=20260926-v179b',
-    './claims-role-v117.js?v=20260923-v117'
+    './role-chrome-v83.js',
+    './install-app-v84.js',
+    './master-reschedule-call-v87.js',
+    './master-call-workflow-v26.js',
+    './dispatcher-desktop-v89.js',
+    './dispatcher-desktop-compat-v90.js',
+    './dispatcher-reschedule-v91.js',
+    './dispatcher-board-v92.js',
+    './dispatcher-board-compat-v93.js',
+    './dispatcher-board-v21.js',
+    './dispatcher-smart-assign-v22.js',
+    './dispatcher-board-v23.js',
+    './dispatcher-control-v24.js',
+    './notification-center-v26.js',
+    './employee-live-refresh-v27.js',
+    './ui-dispatch-master-v94.js',
+    './master-status-colors-v95.js',
+    './master-orders-filter-v99.js',
+    './management-order-delete-v100.js',
+    './unified-schedule-v102.js',
+    './new-order-card-v104.js',
+    './dispatcher-order-priority-v105.js',
+    './order-lifecycle-v106.js',
+    './dispatcher-order-workflow-v114.js',
+    './dispatcher-orders-v3.js',
+    './master-upcoming-claims-v110.js',
+    './android-navigation-v112.js',
+    './session-refresh-v113.js',
+    './master-workflow-v115.js',
+    './master-workflow-v116.js',
+    './master-order-actions-v179.js',
+    './claims-role-v117.js'
   ];
 
   eagerScripts.forEach(src=>{
     const script=document.createElement('script');
-    script.src=src;
+    script.src=window.BOS_ASSET_URL(src);
     script.async=false;
     document.head.appendChild(script);
   });
 
   const roleScripts={
     dispatcher:[
-      './dispatcher-smart-assign-v119.js?v=20260928-permissions1',
-      './dispatcher-free-slots-v120.js?v=20260928-permissions1',
-      './dispatcher-smart-dispatch-v121.js?v=20260928-permissions1',
-      './dispatcher-unassigned-queue-v122.js?v=20260928-permissions1',
-      './dispatcher-attention-v123.js?v=20260928-permissions1',
-      './dispatcher-ui-redesign-v183.js?v=20260928-permissions1',
-      './dispatcher-ui-redesign-v183-compat.js?v=20260927-v183a',
-      './dispatcher-ui-polish-v184.js?v=20260928-permissions1',
-      './dispatcher-ui-stability-v185.js?v=20260928-permissions1',
-      './dispatcher-unified-schedule-v187.js?v=20260928-permissions1',
-      './dispatcher-horizontal-schedule-v190.js?v=20260928-v194',
-      './dispatcher-horizontal-schedule-v190-fix.js?v=20260927-v190c'
+      './dispatcher-smart-assign-v119.js',
+      './dispatcher-free-slots-v120.js',
+      './dispatcher-smart-dispatch-v121.js',
+      './dispatcher-unassigned-queue-v122.js',
+      './dispatcher-attention-v123.js',
+      './dispatcher-ui-redesign-v183.js',
+      './dispatcher-ui-redesign-v183-compat.js',
+      './dispatcher-ui-polish-v184.js',
+      './dispatcher-ui-stability-v185.js',
+      './dispatcher-unified-schedule-v187.js',
+      './dispatcher-horizontal-schedule-v190.js',
+      './dispatcher-horizontal-schedule-v190-fix.js'
     ],
     master:[
-      './master-home-orders-v124.js?v=20260924-v124',
-      './master-orders-v125.js?v=20260924-v125',
-      './master-orders-v125-compat.js?v=20260924-v125b',
-      './master-order-focus-v126.js?v=20260924-v126',
-      './master-daily-home-v127.js?v=20260926-daycards1',
-      './master-day-summary-v128.js?v=20260926-order1',
-      './master-profile-summary-v129.js?v=20260924-v129',
-      './master-money-v130.js?v=20260924-v130',
-      './master-cabinet-v141.js?v=20260925-v141b'
+      './master-home-orders-v124.js',
+      './master-orders-v125.js',
+      './master-orders-v125-compat.js',
+      './master-order-focus-v126.js',
+      './master-daily-home-v127.js',
+      './master-day-summary-v128.js',
+      './master-profile-summary-v129.js',
+      './master-money-v130.js',
+      './master-cabinet-v141.js'
     ]
   };
   const roleLoads=new Map();
@@ -79,7 +79,7 @@
     if(roleLoads.has(src))return roleLoads.get(src);
     const promise=new Promise((resolve,reject)=>{
       const script=document.createElement('script');
-      script.src=src;
+      script.src=window.BOS_ASSET_URL(src);
       script.async=false;
       script.onload=()=>resolve(src);
       script.onerror=()=>{roleLoads.delete(src);reject(new Error(`Не удалось загрузить модуль ${src}`))};
@@ -113,8 +113,8 @@
 
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=20260925-v172',{scope:'./',updateViaCache:'none'})
-      .then(registration=>registration.update().catch(()=>{}))
+    navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
+      .then(registration=>{window.BOS_WATCH_UPDATE(registration);return registration.update().catch(()=>{})})
       .catch(error=>console.warn('PWA service worker registration failed',error));
   });
 })();
