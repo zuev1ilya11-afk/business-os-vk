@@ -11,7 +11,7 @@ window.BOS_ORDER_NO=displayNo;
 const dispatcherMode=()=>String(state?.user?.role||'')==='dispatcher'||(typeof isDispatcherPreview==='function'&&isDispatcherPreview());
 
 async function authHeaders(){const h=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};h['Content-Type']='application/json';return h}
-async function lifecycle(action,payload={}){const r=await nativeFetch(LIFECYCLE,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action,...payload})}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Ошибка жизненного цикла заявки');return d}
+async function lifecycle(action,payload={}){const r=await nativeFetch(LIFECYCLE,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action,...payload})}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.message||d.error||'Ошибка жизненного цикла заявки');return d}
 async function claims(action,payload={}){let last;for(const url of [CLAIMS_GATEWAY,CLAIMS_DIRECT]){try{const r=await nativeFetch(url,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action,...payload})}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok){const e=new Error(d.error||`HTTP ${r.status}`);e.status=r.status;throw e}return d}catch(e){last=e;if(url===CLAIMS_GATEWAY&&(e?.status===404||/failed to fetch|load failed|network|SERVICE_NOT_ALLOWED/i.test(String(e?.message||''))))continue;throw e}}throw last}
 
 function parseBody(init){try{return typeof init?.body==='string'?JSON.parse(init.body):null}catch(_){return null}}
@@ -34,7 +34,7 @@ window.submitReportReview=async function(id,decision){
   try{
     const role=(typeof isDispatcherPreview==='function'&&isDispatcherPreview())?'dispatcher':String(state.user?.role||'owner');
     const reviewerName=(role==='dispatcher'&&typeof dispatcherPreviewUser!=='undefined'&&dispatcherPreviewUser?.full_name)?dispatcherPreviewUser.full_name:(state.user?.full_name||'Сотрудник');
-    const d=await lifecycle('reviewReport',{id,decision,comment,reviewer_role:role,reviewer_name:reviewerName});
+    const d=await lifecycle('reviewReport',{id,decision,comment,...(window.BOS_REVIEW_SNAPSHOT?window.BOS_REVIEW_SNAPSHOT(id):{}),reviewer_role:role,reviewer_name:reviewerName});
     const i=state.orders.findIndex(x=>String(x.id)===String(id));if(i>=0)state.orders[i]={...state.orders[i],...d.order};
     closeModal();show('home');
   }catch(e){if(msg)msg.textContent=decision==='approved'?`Приём не выполнен: ${e.message}`:e.message}finally{state.busy=false}

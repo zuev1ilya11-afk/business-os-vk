@@ -32,20 +32,20 @@ test('editing an already completed order preserves its completion date',async()=
 });
 for(const uid of ['100','staff_d','staff_mgr'])test(`${uid}: legacy review archives through the real lifecycle and duplicate keeps receipt`,async()=>{
  const db=fixture(),{mini,calls}=linked(db);
- const b={action:'reviewReport',id:'o',decision:'approved',reviewer_name:'spoofed'};
+ const b={action:'reviewReport',id:'o',expected_report_token:'r1',expected_report_uploaded_at:'2026-01-01',decision:'approved',reviewer_name:'spoofed'};
  assert.equal((await mini(b,uid)).status,200);assert.deepEqual(calls,['lifecycle','archive']);
  assert.equal(db.tables.orders[0].status,'Выполнена');assert.equal(db.tables.orders[0].report_review_status,'approved');assert.notEqual(db.tables.orders[0].report_reviewed_by,'spoofed');
  const before=structuredClone(db.tables.orders);assert.equal((await mini(b,uid)).status,200);assert.deepEqual(db.tables.orders,before);assert.deepEqual(calls,['lifecycle','archive','lifecycle']);
 });
 for(const result of [{ok:false,error:'Drive unavailable'},{ok:true},{ok:true,order:{drive_archive_status:'archived',drive_archive_url:null}}])test(`archive failure or incomplete receipt cannot complete: ${JSON.stringify(result)}`,async()=>{
  const db=fixture(),{mini}=linked(db,()=>result);
- const r=await mini({action:'reviewReport',id:'o',decision:'approved'});
+ const r=await mini({action:'reviewReport',id:'o',expected_report_token:'r1',expected_report_uploaded_at:'2026-01-01',decision:'approved'});
  assert.equal(r.status,500);assert.equal(db.tables.orders[0].status,'В работе');assert.equal(db.tables.orders[0].report_review_status,'pending');assert.equal(db.tables.orders[0].completed_at,undefined);
 });
 test('legacy review keeps master authorization and pending-only conflict response',async()=>{
  const db=fixture({status:'Отменена'}),{mini,calls}=linked(db);
- assert.equal((await mini({action:'reviewReport',id:'o',decision:'approved'},'staff_m')).status,403);assert.deepEqual(calls,[]);
- assert.equal((await mini({action:'reviewReport',id:'o',decision:'approved'})).status,409);assert.deepEqual(calls,['lifecycle']);
+ assert.equal((await mini({action:'reviewReport',id:'o',expected_report_token:'r1',expected_report_uploaded_at:'2026-01-01',decision:'approved'},'staff_m')).status,403);assert.deepEqual(calls,[]);
+ assert.equal((await mini({action:'reviewReport',id:'o',expected_report_token:'r1',expected_report_uploaded_at:'2026-01-01',decision:'approved'})).status,409);assert.deepEqual(calls,['lifecycle']);
 });
 test('lifecycle submission and receipt hide internal financial fields from master and owner preview',async()=>{
  for(const uid of ['staff_m','100']){

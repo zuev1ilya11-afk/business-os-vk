@@ -34,7 +34,7 @@ test('Drive archive uses the same visible Hands order number as the app',async()
     }
     throw new Error(`Unexpected fetch ${url}`);
   };
-  const r=await edge('drive-archive-api',db,{fetch})({order_id:'uuid-1'},'staff_d');
+  const r=await edge('drive-archive-api',db,{fetch})({order_id:'uuid-1',expected_report_token:'audit',expected_report_uploaded_at:'2026-09-21T10:00:00Z'},'staff_d');
   assert.equal(r.status,200);
   assert.equal(r.body.drive_order_no,'1644');
   assert.ok(archived);

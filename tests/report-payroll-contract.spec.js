@@ -22,7 +22,7 @@ test('real report handlers feed one approved salary into day, week, month and ow
  await page.evaluate(()=>window.BOS_REFRESH_NOW());
  await expect(summary.locator('.masterV128Empty')).toBeVisible();
 
- const approved=await lifecycle({action:'reviewReport',id:'11',decision:'approved'},'staff_d');
+ const approved=await lifecycle({action:'reviewReport',id:'11',expected_report_token:order.report_upload_token,expected_report_uploaded_at:order.report_uploaded_at,decision:'approved'},'staff_d');
  expect(approved.status).toBe(200);
  const owner=await edge('mini-app-api',db)({action:'bootstrap'});
  const ownerOrder=owner.body.orders.find(o=>o.id==='11');
