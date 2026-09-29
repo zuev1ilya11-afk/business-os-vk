@@ -8,6 +8,8 @@ test('mobile orders settle without self-triggered DOM writes and tomorrow count 
   await new Promise(resolve=>setTimeout(resolve,400));observer.disconnect();return records;
  }),{timeout:5000}).toBe(0);
  await settled();
+ // Keep the API fixture consistent with the visible update so a background refresh cannot undo it.
+ db.tables.orders.find(o=>o.id==='12').scheduled_date='2026-10-02';
  await page.evaluate(()=>{state.orders.find(o=>o.id==='12').scheduled_date='2026-10-02';show('orders')});await expect(page.locator('.dmv3TomorrowFilter')).toContainText('Завтра 2');await settled();
  for(let i=0;i<3;i++){await page.locator('nav [data-page=home]').click();await page.locator('nav [data-page=orders]').click()}
  await expect(page.locator('.dmv3TomorrowFilter')).toHaveCount(1);await settled();
