@@ -1,0 +1,19 @@
+# Production backend inventory and lifecycle test boundary
+
+Read-only inventory: 2026-09-29, project obsropbslfwtanyspjbi, PostgreSQL 17.6. `backend-production-inventory.json` records source hashes, deployed versions and JWT settings for all 32 live functions. It contains no source, credentials or customer data. Eleven functions match the repository byte for byte, including all seven critical order/report/archive handlers. Eight other tracked functions differ; thirteen live functions have no repository implementation. Byte inequality is not evidence of a behavioral defect. Do not deploy those differing functions or recreate all production from this repository without a separate diff review.
+
+The migration `20260929160000_capture_live_order_guards.sql` captures all three existing order triggers and their functions verbatim from read-only catalog queries. It preserves the rejection/reopen restart, completion attachment guards, timestamps and cancelled-order zero payouts. It does not recalculate existing rows. This PR records already-live rules; it does not apply a migration to production. Older PR #154 remains open and was not merged.
+
+CI now runs the exact captured SQL twice in a disposable PostgreSQL 17.6 service, exercising idempotent installation, required work/measurement attachments, post-rejection shape and comment retention, resubmission, approval replay, reopen, cancellation insert/update, and timestamp updates. The minimal test schema covers this trigger contract only; a full empty-database restoration of all Supabase objects is not claimed. Local PostgreSQL is unavailable, so actual SQL validation is required from CI before merge.
+
+The shared browser router includes the real lifecycle handler and forwards the mini-app legacy review route to it. `productionOrderGuards:true` opts critical integration scenarios into the post-trigger fixture. Other historical UI fixtures retain their existing simplified DB model. The new scenario sends authenticated API requests through real create, assign, workflow, submit, reject, resubmit and approve handlers; it verifies role/stale snapshot rejection, private financial fields, exact payouts and duplicate receipts. Google Drive remains a controlled provider boundary in that test; archive source and URL controls have separate server tests.
+
+Before every backend release, obtain a fresh read-only `get_edge_function` export for every function and run:
+
+```sh
+node scripts/check-backend-drift.cjs /private/path/fresh-function-export.json
+```
+
+The input is an array of complete API objects with source `files[].content`. Keep it private. The checker prints only names and mismatch categories. It fails on changed/missing/new functions, changed versions/JWT configuration and mismatch between the seven critical repository sources and recorded live hashes. A planned deployment must be reviewed separately and its new live export recaptured after deployment. The committed inventory is a dated baseline, not a continuous monitor; no production management token has been installed in CI.
+
+SQL runner: `BOS_TEST_DATABASE_URL` must explicitly point to an empty disposable database, or `BOS_TEST_POSTGRES_CONTAINER` to the CI service. It creates public.orders and rolls back. Never point it at production. The workflow follows GitHub's PostgreSQL service-container pattern: https://docs.github.com/en/actions/tutorials/use-containerized-services/create-postgresql-service-containers.

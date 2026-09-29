@@ -1,0 +1,535 @@
+[
+  {
+    "name": "vk-auth",
+    "version": 13,
+    "verify_jwt": true,
+    "status": "ACTIVE",
+    "bundle_sha256": "960553e6a6f25981e5119da8b78d39a222523dddea195547028ccc605f1859d1",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "3c677b234e834392bece5e2b8f2ae603b9724ffb2cc3f70ce219c0dd0fae2af0",
+        "repository_path": "supabase/functions/vk-auth/index.ts",
+        "repository_sha256": "3c677b234e834392bece5e2b8f2ae603b9724ffb2cc3f70ce219c0dd0fae2af0",
+        "exact": true
+      }
+    ]
+  },
+  {
+    "name": "business-os-api",
+    "version": 10,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "6bc6ba300f28044e250325cc2c5c62b16ce5f913ff8e62c5b45462421a488094",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "09e203410b4afeda2cd6c842cb24cd35a37660cee2b3b0fbe75ef2fc38126796",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "claims-api",
+    "version": 9,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "09f2766e3328784a781562e3d01ae184d1c08edcd3f3fb8fed144500a5827793",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "303473ae55e9f4fece5201f99447e094503fde9e334bce77b5fa782a07db1380",
+        "repository_path": "supabase/functions/claims-api/index.ts",
+        "repository_sha256": "78e522ea8b81df982ba97b78e9993a237b1ada2a77def1ea9d6937e20c86bedf",
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "mini-app-api",
+    "version": 19,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "807599f93f5c674b17ef3be5cb84a393d71b18d0f82556283494b703613f4501",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "c9fa75b0311eb430c05b2644d85498276e09276ebf6b11f3de2b0ad8971ddd2d",
+        "repository_path": "supabase/functions/mini-app-api/index.ts",
+        "repository_sha256": "c9fa75b0311eb430c05b2644d85498276e09276ebf6b11f3de2b0ad8971ddd2d",
+        "exact": true
+      }
+    ]
+  },
+  {
+    "name": "report-api",
+    "version": 18,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "03866f3436e833069197024bfb5559a00d9793852eb3a7a98de786f25d4aeff5",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "24e775303bf20eb7fabbe66fce7e201650caa1918edfad8100f2a319f18822e4",
+        "repository_path": "supabase/functions/report-api/index.ts",
+        "repository_sha256": "24e775303bf20eb7fabbe66fce7e201650caa1918edfad8100f2a319f18822e4",
+        "exact": true
+      }
+    ]
+  },
+  {
+    "name": "sheets-sync-api",
+    "version": 8,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "4321bfe183b56ca0502f5bbd3078af57bddd4bdddb65108adbd3c0341f0b1b58",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "39e40ecaf7a2eae17031499b6dc3e984a31c3c704a6bedfd29dff9d41bb13507",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "vk-session-api",
+    "version": 7,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "7d7f1403ad42bb632cd0cd232d25df549d81d2d3c083b874cdce8ab12a21363c",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "662bdd941a5662849a206c247800e00e9e80e62c8a1566c8f8013a5b1e85e783",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "drive-archive-api",
+    "version": 13,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "26c571da49c53ea817b7185cf81b43d1a69a088bb8f0ac8fecbd325eecfe8b3a",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "9b1e59d52356e61eb502f0f2d218d16c77bb3379efa83cd57efc4f0f8a24172f",
+        "repository_path": "supabase/functions/drive-archive-api/index.ts",
+        "repository_sha256": "9b1e59d52356e61eb502f0f2d218d16c77bb3379efa83cd57efc4f0f8a24172f",
+        "exact": true
+      }
+    ]
+  },
+  {
+    "name": "gas-bridge-health",
+    "version": 6,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "abb9de92e515d4ed21642dccf4b4e063f425a08ee2aa9bf82df34c63c7fb4f05",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "9202b7321f816f428821ba532bb9865653bc9388b0835cb34b2ebb50ebaf229c",
+        "repository_path": "supabase/functions/gas-bridge-health/index.ts",
+        "repository_sha256": "9202b7321f816f428821ba532bb9865653bc9388b0835cb34b2ebb50ebaf229c",
+        "exact": true
+      }
+    ]
+  },
+  {
+    "name": "archive-order-2-once",
+    "version": 7,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "62b6a2aaf1e67443c8a6e8918bf1c27870cd0b43bb9b2ecebe409159e481f20a",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "4e338f4ba095c1cd0255d1e2ca9a07fc4821292a4e7b5983cd52ab744ffadcfb",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "e2e-create-staff-order-once",
+    "version": 4,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "1af845548428526b273298748ff5648362676b97853a36a778392f076d7751a5",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "9f902ce81b7d831f10d4be2e3a6872007e7a7167de8d8e6a0309a2cc15640372",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "password-session-api",
+    "version": 7,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "2ad20b6e31c1d0ddac4f07979fcb98d505c9ece8e3802409536ee3a3d950ac72",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "0aa2f482a8df5ba12c5cd7c779363e2068c750273372e070e963de2b1f4d98d1",
+        "repository_path": "supabase/functions/password-session-api/index.ts",
+        "repository_sha256": "0aa2f482a8df5ba12c5cd7c779363e2068c750273372e070e963de2b1f4d98d1",
+        "exact": true
+      }
+    ]
+  },
+  {
+    "name": "test-pin-session",
+    "version": 5,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "65f2bc70441f904a6ffcd41364ed09044380365fd36721e192e1ec28f89dcc29",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "55d5d6dd1265d5a95405d45069df3f4e732263b5dea4966b228baaf873d21120",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "bos-api",
+    "version": 5,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "1cbde08b2cfb45b393b7dcfd62193c77f5d93f7eb502e0c0a15554e604bbcffc",
+    "files": [
+      {
+        "name": "supabase/functions/bos-api/index.ts",
+        "source_sha256": "7500d9aa9dfbbf110927262c6ae8fdb62bd27987208c7f7371a4137e68b2ec5f",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      },
+      {
+        "name": "lib/validation.ts",
+        "source_sha256": "a837d5b6f867a4587c59aff19ccf51e8dfdc565e9db42528c3707cc73685db94",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      },
+      {
+        "name": "lib/security.ts",
+        "source_sha256": "3b65c3030bc47019c4b7d7efdfc7d798393eb3ad55d292ae4d7b4bf47d6674c4",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      },
+      {
+        "name": "supabase/functions/bos-api/deno.json",
+        "source_sha256": "a03278169495625b745a70f27ee50478a15244cb5ba8cc21f82e8c03da021a47",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "agent-business-api",
+    "version": 4,
+    "verify_jwt": true,
+    "status": "ACTIVE",
+    "bundle_sha256": "57ae472b447105daf2691789cd47c5d4c9312b667d7be3bb105266ba71a78294",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "572d954b06f00f9d7169306d4b138d5548e4bd3fb2e6926e57ed089894f73652",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "agent-link-self",
+    "version": 3,
+    "verify_jwt": true,
+    "status": "ACTIVE",
+    "bundle_sha256": "bf78a75a679309c1e1a7bb128cffb990691f1e9f8502aacbab99ea953d254cd5",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "a99deb8e8148903280e0244760e27d43e1f09133171cffb92ec201d10bb0d430",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "agent-runtime",
+    "version": 4,
+    "verify_jwt": true,
+    "status": "ACTIVE",
+    "bundle_sha256": "82351b41d3f3320518938c0cebd7a99c0073ef8eb34b8ae5412316d012367b11",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "753f870189b3e9bda8a336a00979c28db2689e8cd1279b96400ef6c086cac553",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "agent-dispatch-api",
+    "version": 3,
+    "verify_jwt": true,
+    "status": "ACTIVE",
+    "bundle_sha256": "d1e7601bf728f7655870f45340bb9e763894561ea2298cddceffc33057a17f07",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "4dae9de257a2234e9264f3a72a87d2e9a22f13f28c463f11ec6ac4374e1bc1d0",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "agent-core",
+    "version": 3,
+    "verify_jwt": true,
+    "status": "ACTIVE",
+    "bundle_sha256": "34958b21cce2aeffbe9b8c231fbe4a623fc383c4b2852cc66d6832f1d4fdb518",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "f65108f9466252e3ff13090edbe9f32f463e1157e0baea7389942add8ee70bb7",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "report-upload-gateway",
+    "version": 3,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "380597d109596defa4ca3c6191df17b46a2e550dcd46d64b5b677864c1445c7b",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "0e3d44523bb14902035c1d6d4ea3897997acc47d953a9e7b2f8a802b46bbfc8e",
+        "repository_path": null,
+        "repository_sha256": null,
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "order-meta-api",
+    "version": 6,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "dc2378514e33ee7ebed04d542073af617b9451142a235052fb522999a585b6d0",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "c276fc3770fc813047d6457ab4b1a6539e8a35c528d058879a77d79afb8c2c8f",
+        "repository_path": "supabase/functions/order-meta-api/index.ts",
+        "repository_sha256": "c276fc3770fc813047d6457ab4b1a6539e8a35c528d058879a77d79afb8c2c8f",
+        "exact": true
+      }
+    ]
+  },
+  {
+    "name": "profile-self-api",
+    "version": 4,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "2fabce5b0b9e9c6c7c3a6b7a363a323388db176fc4e2f0d1b4e5c239ee209d75",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "de30e07964e0200c8309bfbf909c13f91cabe80d5c4f079a6d05db5aa17e638b",
+        "repository_path": "supabase/functions/profile-self-api/index.ts",
+        "repository_sha256": "de30e07964e0200c8309bfbf909c13f91cabe80d5c4f079a6d05db5aa17e638b",
+        "exact": true
+      }
+    ]
+  },
+  {
+    "name": "employee-meta-api",
+    "version": 4,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "a7b4bae27fdc23f0413898220dc978fc9281cf576c98a5c0e3123c79cbcaa0e7",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "98e290f6fc76210d34043f86d118e72a321c9e7693c1f2e7b1a56ba86ce476e6",
+        "repository_path": "supabase/functions/employee-meta-api/index.ts",
+        "repository_sha256": "8b6a6080f27fd954fd95b1f76df14d6fe9b1f3318b3f263d46953dbb963117d6",
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "master-memo-api",
+    "version": 3,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "7d8a71dffc9b1b7ce28423a416945451de5552e7de4fb3acebaeedcbda86e1f0",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "5825b23c65e501bced7e7fe3bfe4bbc173e1bea3908365c39f43920acff0ec75",
+        "repository_path": "supabase/functions/master-memo-api/index.ts",
+        "repository_sha256": "0871ad305c9e245d4af7c0de70d67ef6c26140c9ad1a928a5a3165d17f36c4f4",
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "avito-api",
+    "version": 6,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "7f44d3ce6d52c0b4698fa0f8f816b8d3941dee5fdbe42778eb98d802396e4912",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "a89634fb168610d6c3f19c5e4279fb3f716588e0be09643fc2ef1644ac7a7c1a",
+        "repository_path": "supabase/functions/avito-api/index.ts",
+        "repository_sha256": "62efee39d6781feeca4bc41618a5cbfffa0dc94ea330a61a777d8887537989e3",
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "integration-api",
+    "version": 6,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "6bdebf6a2dfdc178545084a816b20b30831d958d084687298274d164330e2de8",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "1fc64fc6e6fa5d50e685a8717ea5763dd1c1a627974781533e6a62bcd4320661",
+        "repository_path": "supabase/functions/integration-api/index.ts",
+        "repository_sha256": "06249e106e1aa2cc4ce3526cbd7078ce9d7c5c56ca1dde8955fbc6ca169263ae",
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "report-file-upload",
+    "version": 3,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "72f42160c5278233fad30fc80fcde61b8f3edb8ccf4876288471a4bb6ac24b79",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "486e0cf582c16b2cb96dccaff7315a3997386cf8fb5842ba3996a7d60a16cf67",
+        "repository_path": "supabase/functions/report-file-upload/index.ts",
+        "repository_sha256": "486e0cf582c16b2cb96dccaff7315a3997386cf8fb5842ba3996a7d60a16cf67",
+        "exact": true
+      }
+    ]
+  },
+  {
+    "name": "staff-admin-api",
+    "version": 5,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "184e9320135d0c7c564c7749905cf6b437e69cef88284791bb874d3d8f918a2f",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "ceeb8ad5eaa1c3a727c71872dd9b691d285614e694e95d5b198eedcf40cf3480",
+        "repository_path": "supabase/functions/staff-admin-api/index.ts",
+        "repository_sha256": "74216e938d52e02de411a79429ce9b77ddbfe97ff8a33651b936c755fc5bb0ca",
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "staff-invite-api",
+    "version": 12,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "ea6b2b06a7f06977543947e9c34d05eea06142677d8809c7d2e95ac49879ca15",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "81e69c2aed0884543e0cdb85daa5dd7d86886db3db817945228c10136efeecc6",
+        "repository_path": "supabase/functions/staff-invite-api/index.ts",
+        "repository_sha256": "1a1f3460c4a1e69ba77c2ad1b9611643b3591940b9c38a962cbe003f76c4e6a9",
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "hands-api",
+    "version": 6,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "f1cd60521ddd99d710e2cb90a29a45411d9812254f1d6fc438b3cb895a254059",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "b7116ee3ca87e2d98a7bff3ffb1eb34672afc4e59ddadeb35624aab086a64db9",
+        "repository_path": "supabase/functions/hands-api/index.ts",
+        "repository_sha256": "f2855ea78e97fea7f49f37765bc3a074bbfd027c3721289cf48bd5fc6c7518ef",
+        "exact": false
+      }
+    ]
+  },
+  {
+    "name": "master-workflow-api",
+    "version": 6,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "2c21cc5a0ae9d55d2ef5d1ae08c7fdc3a66907af06cd52bcf1dae4fd80e8bfb2",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "49d82ea98d221edb375a0c288c262b4d4b0bddde10913544ba71a2f9fd4bac10",
+        "repository_path": "supabase/functions/master-workflow-api/index.ts",
+        "repository_sha256": "49d82ea98d221edb375a0c288c262b4d4b0bddde10913544ba71a2f9fd4bac10",
+        "exact": true
+      }
+    ]
+  },
+  {
+    "name": "order-lifecycle-api",
+    "version": 6,
+    "verify_jwt": false,
+    "status": "ACTIVE",
+    "bundle_sha256": "3520409c85b3d29d4da4c349ecd1174d897de60445a7bb6b10ad7eb636adc8d8",
+    "files": [
+      {
+        "name": "index.ts",
+        "source_sha256": "15cb84cc14f52614c0ec4e11eb4a77fd4148e1bc1790d5845516e21cfcdf6935",
+        "repository_path": "supabase/functions/order-lifecycle-api/index.ts",
+        "repository_sha256": "15cb84cc14f52614c0ec4e11eb4a77fd4148e1bc1790d5845516e21cfcdf6935",
+        "exact": true
+      }
+    ]
+  }
+]
