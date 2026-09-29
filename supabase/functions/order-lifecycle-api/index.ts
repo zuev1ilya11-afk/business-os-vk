@@ -102,13 +102,19 @@ function externalComment(o:any){const parts=[] as string[];if(clean(o?.comment))
 async function hands(path:string){const key=Deno.env.get('HANDS_API_KEY')||'';if(!key)throw new Error('HANDS_API_KEY_NOT_CONFIGURED');const r=await fetch(`https://api.hands.ru/api/v1/specialist${path}`,{headers:{'X-Api-Key':key}});const text=await r.text();let data:any={};try{data=text?JSON.parse(text):{}}catch{data={raw:text}}if(!r.ok)throw new Error(`HANDS_${r.status}: ${clean(data?.error||data?.detail||text||r.statusText)}`);return data}
 async function importHandsOrder(db:any,o:any,staffByName:Map<string,any>){
   const id=externalId(o?.id);if(!id)return {ok:false,reason:'missing_id'};
-  const prev=await db.from('orders').select('id,status,report_review_status').eq('external_source','hands').eq('external_id',localExternalId(id)).maybeSingle();if(prev.error)throw prev.error;
+  const prev=await db.from('orders').select('id,status,report_review_status,updated_at').eq('external_source','hands').eq('external_id',localExternalId(id)).maybeSingle();if(prev.error)throw prev.error;
+  if(prev.data?.status==='Выполнена'||prev.data?.report_review_status==='approved')return {ok:true,id:prev.data.id,created:false,preserved:true};
   const sched=schedule(o),specialist=clean(o?.specialist),staff=specialist?staffByName.get(specialist.toLocaleLowerCase('ru-RU')):null,amount=money(o?.price),remote=clean(o?.status).toUpperCase();
   const approved=String(prev.data?.report_review_status||'')==='approved';
   const status=['CANCELLED','CANCELED'].includes(remote)?'Отменена':approved?'Выполнена':'В работе';
   const base:any={external_source:'hands',external_id:localExternalId(id),source:'Hands',client:clean(o?.client_name||o?.client),phone:phones(o),address:clean(o?.address),work:workText(o),status,amount,original_amount:amount,master_payout:staff?.id?masterPayout(amount):0,scheduled_date:sched.scheduled_date,scheduled_time:sched.scheduled_time,master_name:specialist||staff?.full_name||'',source_updated_at:clean(o?.updated_at||o?.creation_time)||new Date().toISOString(),updated_at:new Date().toISOString(),sync_status:'synced'};
   if(staff?.id)base.master_staff_id=staff.id;
-  if(prev.data){const q=await db.from('orders').update(base).eq('id',prev.data.id).select('id').single();if(q.error)throw q.error;return {ok:true,id:q.data.id,created:false}}
+  if(prev.data){
+    let update=db.from('orders').update(base).eq('id',prev.data.id);
+    for(const key of ['status','report_review_status','updated_at'])update=prev.data[key]==null?update.is(key,null):update.eq(key,prev.data[key]);
+    const q=await update.select('id').maybeSingle();if(q.error)throw q.error;if(!q.data)throw new Error('ORDER_CHANGED');
+    return {ok:true,id:q.data.id,created:false};
+  }
   const q=await db.from('orders').insert({...base,comment:externalComment(o),created_by_vk_id:'hands-api'}).select('id').single();if(q.error)throw q.error;return {ok:true,id:q.data.id,created:true};
 }
 async function syncHandsOrders(db:any,req:Request,body:any){
