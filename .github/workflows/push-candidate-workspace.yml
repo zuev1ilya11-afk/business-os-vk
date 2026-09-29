@@ -17,6 +17,17 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.9.7
+      - name: Narrow optional device without changing authorization
+        run: |
+          node - <<'JS'
+          const fs=require('node:fs'),p='supabase/functions/push-api/index.ts';
+          let s=fs.readFileSync(p,'utf8');
+          s=s.replace('device:connected?{id:device.id','device:connected&&device?{id:device.id');
+          if(!s.includes('device:connected&&device?{id:device.id'))throw Error('Unexpected device serialization');
+          fs.writeFileSync(p,s);
+          JS
+          npm ci
+          npm run test:server
       - name: Resolve and verify sender dependencies
         working-directory: supabase/functions/push-api
         run: |
@@ -32,13 +43,13 @@ jobs:
           JS
           deno check index.ts
           deno test --allow-env --allow-read webpush-runtime.test.ts
-      - name: Persist verified lockfile only
+      - name: Persist verified sender and lockfile only
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add supabase/functions/push-api/deno.json supabase/functions/push-api/deno.lock
+          git add supabase/functions/push-api/index.ts supabase/functions/push-api/deno.json supabase/functions/push-api/deno.lock
           if ! git diff --cached --quiet; then
-            git commit -m 'build(push): freeze verified sender dependency graph'
+            git commit -m 'fix(push): verify optional device and freeze sender dependencies'
             git push origin HEAD:refs/heads/feat/web-push-v211
           fi
       - name: Export exact candidate
