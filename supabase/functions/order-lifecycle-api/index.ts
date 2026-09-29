@@ -24,19 +24,32 @@ const ops=(r:string)=>['owner','manager','dispatcher'].includes(r);
 
 async function reportActor(db:any,req:Request,body:any){let actor=await currentActor(db,req);if(!actor)return null;if(actor.role==='owner'&&body.acting_master_vk_id){const q=await db.from('business_staff').select('*').eq('external_id',String(body.acting_master_vk_id)).eq('role','master').eq('is_active',true).maybeSingle();if(q.error)throw q.error;return q.data||null}return actor.role==='master'?actor:null}
 
+
+// Compare the row read by this request at write time; stale retries must never reopen a report.
+function reportWrite(db:any, order:any, patch:any){
+  let q=db.from('orders').update(patch).eq('id',order.id);
+  for(const k of ['updated_at','status','master_staff_id','report_review_status','report_upload_token'])q=order[k]==null?q.is(k,null):q.eq(k,order[k]);
+  return q.select().maybeSingle();
+}
+const reportConflict=()=>json({ok:false,error:'REPORT_CHANGED',message:'Отчёт или заявка уже изменены. Обновите заявку.'},409);
+const reportReceipt=(o:any,token:string)=>o.status!=='Отменена'&&o.report_uploaded_at&&['pending','approved'].includes(o.report_review_status)&&String(o.report_upload_token||'')===token;
+const reportLocked=(o:any)=>['Выполнена','Отменена'].includes(o.status)||['pending','approved'].includes(o.report_review_status);
+
 async function finalizeReport(db:any,req:Request,body:any){
   const actor=await reportActor(db,req,body);if(!actor)return json({ok:false,error:'Отчёт может загрузить только мастер'},403);
   const orderId=String(body.order_id||'');if(!orderId)return json({ok:false,error:'ORDER_ID_REQUIRED'},400);
   const q=await db.from('orders').select('*').eq('id',orderId).single();if(q.error)throw q.error;
   if(String(q.data.master_staff_id||'')!==String(actor.id))return json({ok:false,error:'Эта заявка назначена другому мастеру'},403);
   const token=String(body.upload_token||'');if(!token)return json({ok:false,error:'UPLOAD_TOKEN_REQUIRED'},400);
+  if(reportReceipt(q.data,token))return json({ok:true,order:q.data,drive_archive_status:q.data.drive_archive_status});
+  if(reportLocked(q.data))return reportConflict();
   const act=String(body.act_url||''),photos=Array.isArray(body.photo_urls)?body.photo_urls.filter(Boolean).slice(0,5):[];
   if(!act)return json({ok:false,error:'ACT_REQUIRED'},400);if(!photos.length)return json({ok:false,error:'PHOTO_REQUIRED'},400);
   for(const k of ['uncompleted_work_amount','extra_work_amount'])if(k in body&&(!Number.isFinite(Number(body[k]))||Number(body[k])<0))return json({ok:false,error:'Сумма должна быть конечным неотрицательным числом'},400);
   const original=Number(q.data.original_amount??q.data.amount??0),unfinished=Number(body.uncompleted_work_amount||0);if(unfinished>original)return json({ok:false,error:'Невыполненные работы не могут превышать сумму заказа'},400);
   const amount=round(original-unfinished),now=new Date().toISOString();
   const patch:any={status:'В работе',amount,extra_work_done:!!body.extra_work_done,extra_work_description:String(body.extra_work_description||''),extra_work_amount:round(body.extra_work_amount||0),uncompleted_work_done:!!body.uncompleted_work_done,uncompleted_work_description:String(body.uncompleted_work_description||''),uncompleted_work_amount:round(unfinished),report_type:'work',report_act_url:act,report_measurement_url:null,report_photo_urls:JSON.stringify(photos),report_uploaded_at:now,report_upload_token:token,report_review_status:'pending',report_reviewed_by:null,report_reviewed_at:null,report_review_comment:'',drive_archive_status:'pending',drive_archive_error:null,completed_at:null,sync_status:'pending_sheet',updated_at:now,...payouts(amount)};
-  const r=await db.from('orders').update(patch).eq('id',orderId).select().single();if(r.error)throw r.error;
+  const r=await reportWrite(db,q.data,patch);if(r.error)throw r.error;if(!r.data)return reportConflict();
   return json({ok:true,order:r.data,drive_archive_status:'pending'});
 }
 
@@ -51,10 +64,14 @@ async function archiveBeforeApproval(req:Request,order:any){
 async function reviewReport(db:any,req:Request,body:any){
   const actor=await currentActor(db,req);if(!actor)return json({ok:false,error:'Доступ не подтверждён'},401);if(!ops(String(actor.role||'')))return json({ok:false,error:'Недостаточно прав'},403);
   const decision=String(body.decision||'');if(!['approved','rejected'].includes(decision))return json({ok:false,error:'Неверное решение'},400);
-  const q=await db.from('orders').select('*').eq('id',body.id).single();if(q.error)throw q.error;if(!q.data.report_uploaded_at)return json({ok:false,error:'Отчёт ещё не загружен'},400);
+  const q=await db.from('orders').select('*').eq('id',body.id).single();if(q.error)throw q.error;
+  if(q.data.report_review_status===decision&&q.data.status!=='Отменена')return json({ok:true,order:q.data,archived:decision==='approved'});
+  if(q.data.status==='Отменена'||q.data.report_review_status!=='pending')return reportConflict();
+  if(!q.data.report_uploaded_at)return json({ok:false,error:'Отчёт ещё не загружен'},400);
   let order=q.data;if(decision==='approved')order=await archiveBeforeApproval(req,order);
+  if(order.report_upload_token!==q.data.report_upload_token||order.report_review_status!=='pending'||order.status==='Отменена')return reportConflict();
   const now=new Date().toISOString(),patch:any={report_review_status:decision,report_reviewed_by:String(actor.full_name||actor.external_id),report_reviewed_at:now,report_review_comment:String(body.comment||''),status:decision==='approved'?'Выполнена':'В работе',completed_at:decision==='approved'?now:null,sync_status:'pending_sheet',updated_at:now};
-  const u=await db.from('orders').update(patch).eq('id',body.id).select().single();if(u.error)throw u.error;
+  const u=await reportWrite(db,order,patch);if(u.error)throw u.error;if(!u.data)return reportConflict();
   return json({ok:true,order:u.data,archived:decision==='approved'});
 }
 
