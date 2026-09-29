@@ -110,6 +110,7 @@ Deno.serve(async r=>{
       if(!cur||amount!==Number(cur.amount)||original!==Number(cur.original_amount??cur.amount))Object.assign(p,payouts(amount,ms===undefined?!!cur?.master_staff_id:!!ms));
       else if(ms!==undefined&&ms?.id!==cur.master_staff_id)p.master_payout=payouts(amount,!!ms).master_payout;
       if(a==='createOrder'){
+        if(b.status==='Выполнена')return j({ok:false,error:'Заявка становится выполненной только после приёма отчёта.'},409);
         Object.assign(p,{status:b.status||'В работе',client:String(b.client).trim(),address:String(b.address).trim(),work:String(b.work).trim(),source:b.source||'VK',city:b.city||'Санкт-Петербург',external_source:'mini_app',external_id:createExternalId||('app_'+crypto.randomUUID()),created_by_vk_id:me.external_id,source_updated_at:now});
         if(avitoChat){
           p.external_source='avito';p.source='Авито';p.avito_chat_id=avitoChat;
@@ -125,12 +126,12 @@ Deno.serve(async r=>{
         if(q.error)throw q.error;
         return j({ok:true,order:q.data});
       }
-      if(p.status==='Выполнена'){
-        p.completed_at=now;
-        if(!cur.report_uploaded_at)p.report_review_status='not_submitted';
-      }
-      const q=await db.from('orders').update(p).eq('id',b.id).select().single();
+      if(p.status==='Выполнена'&&cur.status!=='Выполнена')return j({ok:false,error:'Заявка становится выполненной только после приёма отчёта.'},409);
+      let update=db.from('orders').update(p).eq('id',b.id);
+      for(const key of ['status','updated_at'])update=cur[key]==null?update.is(key,null):update.eq(key,cur[key]);
+      const q=await update.select().maybeSingle();
       if(q.error)throw q.error;
+      if(!q.data)return j({ok:false,error:'Заявка уже изменена. Обновите данные.'},409);
       return j({ok:true,order:q.data});
     }
 
@@ -146,14 +147,12 @@ Deno.serve(async r=>{
 
     if(a==='reviewReport'){
       if(!ops(role))return j({ok:false,error:'Недостаточно прав'},403);
-      const decision=String(b.decision||'');
-      if(!['approved','rejected'].includes(decision))return j({ok:false,error:'Неверное решение'},400);
-      const q=await db.from('orders').select('*').eq('id',b.id).single();
-      if(q.error)throw q.error;
-      if(!q.data.report_uploaded_at)return j({ok:false,error:'Отчёт ещё не загружен'},400);
-      const now=new Date().toISOString(),u=await db.from('orders').update({report_review_status:decision,report_reviewed_by:String(me.full_name||me.external_id),report_reviewed_at:now,report_review_comment:String(b.comment||''),status:decision==='rejected'?'В работе':'Выполнена',completed_at:decision==='rejected'?null:now,sync_status:'pending_sheet',updated_at:now}).eq('id',b.id).select().single();
-      if(u.error)throw u.error;
-      return j({ok:true,order:u.data});
+      // Keep legacy clients on the same authenticated archive/approval boundary.
+      const headers:any={'Content-Type':'application/json'};
+      for(const name of ['x-bos-session','x-vk-launch-params']){const value=r.headers.get(name);if(value)headers[name]=value}
+      const response=await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/order-lifecycle-api`,{method:'POST',headers,body:JSON.stringify(b)});
+      const result=await response.json();
+      return j(result,response.status);
     }
 
     if(a==='addEmployee'){

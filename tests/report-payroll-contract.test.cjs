@@ -34,7 +34,7 @@ for(const [slug,action] of routes)for(const c of cases)test(`${slug}/${action}: 
   assert.equal(o.master_payout,c.payout);assert.equal(money(o.master_payout+o.extra_work_amount),c.total);
  }
  assert.deepEqual(db.tables.orders[1],historical,'unrelated historical/manual payouts must not be written');
- if(slug==='order-lifecycle-api'){assert.equal(saved.status,'В работе');assert.equal(saved.report_review_status,'pending');assert.equal(saved.completed_at,null)}
+ assert.equal(saved.status,'В работе');assert.equal(saved.report_review_status,'pending');assert.equal(saved.completed_at,null)
 });
 
 test('reject, resubmit and approve retain one deduction and one extra payment',async()=>{
