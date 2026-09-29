@@ -189,6 +189,8 @@ body #app { display: block; width: 100%; max-width: 900px; min-height: 100dvh; }
   #content .bosOrderFilters { flex-wrap: wrap; margin-inline: 0; padding-inline: 0 !important; }
 }
 /* Existing order rows, controls and workflow; presentation only. */
+/* Push controls must stay hidden until consent and device registration complete. */
+#bosPushEnable[hidden], #bosPushTest[hidden], #bosPushDisable[hidden] { display: none !important; }
 body :is(.primary, .secondary, .linkBtn, .ghost, button.wide) {
   min-height: 44px;
   min-width: 44px;

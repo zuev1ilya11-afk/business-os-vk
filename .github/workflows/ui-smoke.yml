@@ -1,7 +1,7 @@
 name: UI smoke
 on:
   push:
-    branches: [main]
+    branches: [main, feat/web-push-v211]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -36,10 +36,26 @@ jobs:
       - name: Install Chromium for Playwright
         run: npx playwright install chromium
 
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.9.7
+      - name: Frozen push sender dependencies and TypeScript
+        working-directory: supabase/functions/push-api
+        run: |
+          node - <<'JS'
+          const fs=require('node:fs');
+          const c=JSON.parse(fs.readFileSync('deno.json'));
+          if(c.lock?.frozen!==true||!fs.statSync('deno.lock').size)throw Error('A frozen sender lockfile is required');
+          JS
+          deno check index.ts
+          deno test --allow-env --allow-read webpush-runtime.test.ts
+
       - name: Production order-trigger contract in disposable PostgreSQL
         env:
           BOS_TEST_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
-        run: bash scripts/test-order-guards.sh
+        run: |
+          bash scripts/test-order-guards.sh
+          bash scripts/test-push.sh
 
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server

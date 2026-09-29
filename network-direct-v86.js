@@ -88,6 +88,7 @@
     const method=String(init?.method||(input instanceof Request?input.method:'GET')||'GET').toUpperCase();
     if(method==='GET'||method==='HEAD')return true;
     if(info.slug==='password-session-api'||info.slug==='vk-session-api')return true;
+    if(info.slug==='push-api')return ['status','subscribe','revoke'].includes(await requestAction(input,init));
     return SAFE_ACTIONS.has(await requestAction(input,init));
   }
 
