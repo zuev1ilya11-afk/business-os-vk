@@ -9,23 +9,16 @@ function mobileMode(){return window.innerWidth<=MOBILE_MAX}
 function ordersPage(){return String(state.page||'')==='orders'}
 function active(o){return !['Выполнена','Отменена'].includes(String(o?.status||''))}
 function dateOf(o){return String(o?.scheduled_date||'').slice(0,10)}
-function masterKey(o){return String(o?.master_staff_id||o?.master_vk_id||o?.master_id||o?.master_name||'').trim()}
-function mins(v){const m=String(v||'').match(/(\d{1,2}):(\d{2})/);return m?Number(m[1])*60+Number(m[2]):null}
-function rangeOf(o){
-  const slot=String(o?.time_slot||'').trim();
-  const parts=slot.split(/[–—-]/).map(mins).filter(v=>v!==null);
-  if(parts.length>=2&&parts[1]>parts[0])return [parts[0],parts[1]];
-  const start=mins(o?.scheduled_time);
-  return start===null?null:[start,start+60];
-}
+function masterKey(o){return window.BOS_SCHEDULE_CONTRACT.masterKey(o,state.masters||[])}
+function rangeOf(o){const r=window.BOS_SCHEDULE_CONTRACT.range(o);return r?[r.start,r.end]:null}
 function overlap(a,b){return a&&b&&a[0]<b[1]&&b[0]<a[1]}
 function conflictIds(){
-  const list=(state.orders||[]).filter(o=>active(o)&&masterKey(o)&&dateOf(o)&&rangeOf(o));
+  const list=(state.orders||[]).filter(active).map(o=>({id:o.id,master:masterKey(o),date:dateOf(o),range:rangeOf(o)})).filter(o=>o.master&&o.date&&o.range);
   const ids=new Set();
   for(let i=0;i<list.length;i++)for(let j=i+1;j<list.length;j++){
-    if(masterKey(list[i])!==masterKey(list[j]))continue;
-    if(dateOf(list[i])!==dateOf(list[j]))continue;
-    if(!overlap(rangeOf(list[i]),rangeOf(list[j])))continue;
+    if(list[i].master!==list[j].master)continue;
+    if(list[i].date!==list[j].date)continue;
+    if(!overlap(list[i].range,list[j].range))continue;
     ids.add(String(list[i].id));ids.add(String(list[j].id));
   }
   return ids;

@@ -8,7 +8,7 @@ const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=
 const masterMode=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
 const active=o=>o&&!['Выполнена','Отменена'].includes(String(o.status||''));
 const dateOf=o=>String(o?.scheduled_date||'').slice(0,10);
-const timeOf=o=>String(o?.scheduled_time||o?.time_slot||'').slice(0,5);
+const timeOf=o=>window.BOS_SCHEDULE_CONTRACT.timeOf(o);
 const stageOf=o=>{const s=String(o?.master_workflow_stage||'assigned');return s==='arrived'?'departed':['assigned','departed','started','completed'].includes(s)?s:'assigned'};
 const reportUploaded=o=>!!o?.report_uploaded_at||!!o?.report_act_url;
 const reportRejected=o=>reportUploaded(o)&&String(o?.report_review_status||'pending')==='rejected';
@@ -31,15 +31,7 @@ function scheduleTs(o){
   const ts=new Date(`${d}T${t}:00`).getTime();
   return Number.isFinite(ts)?ts:Number.POSITIVE_INFINITY;
 }
-const minutesOf=v=>{const m=String(v||'').match(/(\d{1,2}):(\d{2})/);if(!m)return NaN;const h=Number(m[1]),n=Number(m[2]);return h>=0&&h<24&&n>=0&&n<60?h*60+n:NaN};
-function scheduleEndTs(o){
-  const start=scheduleTs(o);if(!Number.isFinite(start))return Number.POSITIVE_INFINITY;
-  const startMin=minutesOf(timeOf(o));if(!Number.isFinite(startMin))return start+60*60000;
-  const pair=String(o?.time_slot||'').match(/(\d{1,2}:\d{2})\s*[–—-]\s*(\d{1,2}:\d{2})/);
-  let endMin=pair?minutesOf(pair[2]):NaN;
-  if(!Number.isFinite(endMin)||endMin<=startMin)endMin=startMin+60;
-  return start+(endMin-startMin)*60000;
-}
+function scheduleEndTs(o){const start=scheduleTs(o),r=window.BOS_SCHEDULE_CONTRACT.range(o);return Number.isFinite(start)&&r?start+r.duration*60000:Number.POSITIVE_INFINITY}
 const reportOverdue=(o,now=Date.now())=>active(o)&&!reportUploaded(o)&&Number.isFinite(scheduleEndTs(o))&&now>=scheduleEndTs(o)+90*60000;
 const currentPending=(o,now)=>active(o)&&!reportUploaded(o)&&Number.isFinite(scheduleTs(o))&&scheduleTs(o)<=now;
 function dateLabel(o){

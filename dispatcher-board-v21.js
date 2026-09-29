@@ -16,14 +16,14 @@ function orderMasterIds(o){return [o?.master_staff_id,o?.master_id,o?.master_vk_
 function sameMaster(m,o){const ids=masterIds(m),oid=orderMasterIds(o);return ids.some(x=>oid.includes(x))||String(m?.full_name||'')===String(o?.master_name||'')}
 function selectedOrder(){const id=document.querySelector('.dbOrderCard.selected')?.dataset?.orderId;return (state.orders||[]).find(o=>String(o.id)===String(id||''))||null}
 function selectedMaster(o){return (state.masters||[]).find(m=>sameMaster(m,o))||null}
-function slotOf(t,o){const unified=window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187,r=unified?.slotRange(o);if(r){const [h,m]=t.split(':').map(Number);return unified.rangeText(h*60+m,r.slots)}const s=String(t||'').slice(0,5);if(!/^\d{2}:\d{2}$/.test(s))return '';const [h,m]=s.split(':').map(Number);return `${s}–${String((h+1)%24).padStart(2,'0')}:${String(m).padStart(2,'0')}`}
+function slotOf(t,o){return window.BOS_SCHEDULE_CONTRACT.move(o,t)||''}
 function tomorrow(){const d=new Date();d.setDate(d.getDate()+1);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function localToday(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function setMsg(text){const x=document.getElementById('dispatchBoardMsg');if(x)x.textContent=text||''}
 function updateState(id,data,extra={}){const i=(state.orders||[]).findIndex(o=>String(o.id)===String(id));if(i>=0)state.orders[i]={...state.orders[i],...(data||{}),...extra}}
 async function metaCall(action,payload={}){const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};headers['Content-Type']='application/json';const r=await fetch(META_URL,{method:'POST',headers,body:JSON.stringify({action,...payload})}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Ошибка переноса');return d}
 
-function conflictsFor(m,date,time,ignoreId){const unified=window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187;if(unified){const o=(state.orders||[]).find(o=>String(o.id)===String(ignoreId)),r=unified.slotRange(o),[h,min]=time.split(':').map(Number),start=h*60+min;return unified.conflictFor(ignoreId,m,date,start,start+(r?.slots||2)*30)?[true]:[]}const h=Number(String(time||'').slice(0,2));return (state.orders||[]).filter(active).filter(o=>String(o.id)!==String(ignoreId)).filter(o=>dateOf(o)===date&&sameMaster(m,o)&&hourOf(o)===h)}
+function conflictsFor(m,date,time,ignoreId){const unified=window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187;if(unified){const o=(state.orders||[]).find(o=>String(o.id)===String(ignoreId)),r=unified.slotRange(o),[h,min]=time.split(':').map(Number),start=h*60+min;return unified.conflictFor(ignoreId,m,date,start,start+(r?.duration||60))?[true]:[]}const h=Number(String(time||'').slice(0,2));return (state.orders||[]).filter(active).filter(o=>String(o.id)!==String(ignoreId)).filter(o=>dateOf(o)===date&&sameMaster(m,o)&&hourOf(o)===h)}
 function ordersForMaster(m,date){return (state.orders||[]).filter(active).filter(o=>dateOf(o)===date&&sameMaster(m,o))}
 
 function enhanceTop(){
@@ -79,6 +79,7 @@ window.dispatchBoardV21ToggleFree=function(){freeOnly=!freeOnly;enhanceRows()};
 window.dispatchBoardV21MoveSelected=async function(){
   const o=selectedOrder(),date=document.getElementById('dbV21MoveDate')?.value||'',time=document.getElementById('dbV21MoveTime')?.value||'';if(!o||!date||!/^\d{2}:\d{2}$/.test(time))return;
   const m=selectedMaster(o),conflicts=m?conflictsFor(m,date,time,o.id):[];if(conflicts.length&&!confirm(`У ${m.full_name||'мастера'} уже есть заявка на это время. Всё равно перенести?`))return;
+  if(!slotOf(time,o)){setMsg('Длительность не помещается в выбранные сутки.');return;}
   setMsg('Переносим…');let saved=false;
   try{
     const d=await api('updateOrder',{id:o.id,scheduled_date:date,scheduled_time:time,time_slot:slotOf(time,o)});if(!d.ok)throw new Error(d.error||'Не удалось перенести заявку');

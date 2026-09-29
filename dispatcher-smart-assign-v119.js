@@ -17,26 +17,18 @@ function dateOf(o){return String(o?.scheduled_date||'').slice(0,10)}
 function masterKey(m){return String(m?.vk_user_id||m?.external_id||m?.id||m?.staff_id||'')}
 function masterIds(m){return [m?.id,m?.staff_id,m?.master_staff_id,m?.vk_user_id,m?.external_id,m?.user_id].filter(Boolean).map(String)}
 function orderMasterIds(o){return [o?.master_staff_id,o?.master_id,o?.master_vk_id].filter(Boolean).map(String)}
-function sameMaster(m,o){const ids=masterIds(m),orderIds=orderMasterIds(o);return ids.some(id=>orderIds.includes(id))||String(m?.full_name||m?.name||'')===String(o?.master_name||'')}
+function sameMaster(m,o){return window.BOS_SCHEDULE_CONTRACT.sameMaster(m,o)}
 function orderIdFromCard(card){return String(card?.dataset?.orderId||'')||String(card?.getAttribute?.('onclick')||'').match(/openOrder\('([^']+)'\)/)?.[1]||''}
 function orderById(id){return (state?.orders||[]).find(o=>String(o?.id)===String(id))||null}
 function unassigned(o){return active(o)&&!o?.master_staff_id&&!o?.master_id&&!o?.master_vk_id&&!String(o?.master_name||'').trim()}
 function toMinutes(value){const m=String(value||'').match(/^(\d{1,2}):(\d{2})/);return m?Number(m[1])*60+Number(m[2]):null}
-function timeOf(o){return String(o?.scheduled_time||o?.time_slot||'').slice(0,5)}
-function intervalOf(o){
-  const slot=String(o?.time_slot||'').replace(/[—-]/g,'–');
-  if(slot.includes('–')){
-    const [a,b]=slot.split('–').map(x=>toMinutes(x.trim()));
-    if(a!==null&&b!==null&&b>a)return [a,b];
-  }
-  const start=toMinutes(o?.scheduled_time);
-  return start===null?null:[start,start+60];
-}
+function timeOf(o){return window.BOS_SCHEDULE_CONTRACT.timeOf(o)}
+function intervalOf(o){const r=window.BOS_SCHEDULE_CONTRACT.range(o);return r?[r.start,r.end]:null}
 function scheduleFor(m,date){
   const ids=new Set(masterIds(m));
   return (state?.masterSchedule||[]).find(r=>String(r?.work_date||r?.date||'').slice(0,10)===date&&[r?.staff_id,r?.master_staff_id,r?.master_id,r?.master_vk_id,r?.external_id,r?.user_id].filter(Boolean).map(String).some(id=>ids.has(id)))||null;
 }
-function workHours(m,date){
+function workHours(m,date,duration=60){
   const row=scheduleFor(m,date);
   if(row&&(row.is_working===false||String(row.is_working)==='false'))return [];
   const personalStart=toMinutes(m?.work_start),personalEnd=toMinutes(m?.work_end);
@@ -44,15 +36,15 @@ function workHours(m,date){
   const start=toMinutes(row?.work_start)??personalStart;
   const end=toMinutes(row?.work_end)??personalEnd;
   if(start===null||end===null||end<=start)return [];
-  return HOURS.filter(h=>h*60>=start&&(h+1)*60<=end);
+  return HOURS.filter(h=>h*60>=start&&h*60+duration<=end);
 }
 function busyIntervals(m,date,ignoreId){
   return (state?.orders||[]).filter(active).filter(o=>String(o.id)!==String(ignoreId||'')&&dateOf(o)===date&&sameMaster(m,o)).map(intervalOf).filter(Boolean);
 }
-function freeTimes(m,date,ignoreId){
+function freeTimes(m,date,ignoreId,duration=60){
   const busy=busyIntervals(m,date,ignoreId);
-  return workHours(m,date).filter(h=>{
-    const a=h*60,b=(h+1)*60;
+  return workHours(m,date,duration).filter(h=>{
+    const a=h*60,b=a+duration;
     return !busy.some(([x,y])=>a<y&&x<b);
   }).map(h=>`${pad(h)}:00`);
 }
@@ -66,7 +58,7 @@ function skillMatch(m,o){
 function cityOf(v){return norm(v?.city||v?.work_city||v?.location_city)}
 function preferredMinutes(o){return toMinutes(timeOf(o))??600}
 function rankCandidate(m,o,date){
-  const times=freeTimes(m,date,o?.id);if(!times.length)return null;
+  const times=freeTimes(m,date,o?.id,window.BOS_SCHEDULE_CONTRACT.range(o)?.duration||60);if(!times.length)return null;
   const pref=preferredMinutes(o);
   times.sort((a,b)=>Math.abs(toMinutes(a)-pref)-Math.abs(toMinutes(b)-pref)||toMinutes(a)-toMinutes(b));
   const best=times[0],load=dayLoad(m,date,o?.id),distance=Math.abs((toMinutes(best)-pref)/60);
@@ -97,7 +89,7 @@ function formDraft(form){
     city:state?.user?.city||'',
     work:serviceText(form),
     scheduled_date:String(form?.elements?.scheduled_date?.value||''),
-    scheduled_time:slot.split('–')[0]||''
+    scheduled_time:slot.split('–')[0]||'',time_slot:slot
   };
 }
 function slotFor(time){const h=Number(String(time).slice(0,2));return `${pad(h)}:00–${pad(h+1)}:00`}
@@ -166,7 +158,8 @@ async function assignMobile(orderId,masterValue,time,date){
   if(!confirm(`Назначить ${master.full_name||master.name||'мастера'} на ${date} ${time}?`))return;
   const msg=document.getElementById('dsa119Msg');state.busy=true;if(msg)msg.textContent='Назначаем…';
   try{
-    const payload={id:order.id,master_vk_id:masterValue,scheduled_date:date,scheduled_time:time,time_slot:slotFor(time)};
+    const payload={id:order.id,master_vk_id:masterValue,scheduled_date:date,scheduled_time:time,time_slot:window.BOS_SCHEDULE_CONTRACT.move(order,time)};
+    if(!payload.time_slot)throw new Error('Длительность не помещается в выбранные сутки.');
     const d=await api('updateOrder',payload);if(!d?.ok)throw new Error(d?.error||'Не удалось назначить мастера');
     const i=(state.orders||[]).findIndex(o=>String(o.id)===String(order.id));
     if(i>=0)state.orders[i]={...state.orders[i],...(d.order||{}),...payload,master_name:master.full_name||master.name||''};
