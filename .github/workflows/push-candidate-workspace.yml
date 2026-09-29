@@ -7,15 +7,37 @@ permissions:
 jobs:
   workspace:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Export exact candidate source for local verification
-        run: git archive --format=tar HEAD > /tmp/business-os-source.tar
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Generate migration name with the official CLI
+        run: |
+          supabase --version
+          supabase migration new --help
+          supabase migration new web_push_v211
+          mkdir -p /tmp/push-tools
+          cp "$(command -v deno)" /tmp/push-tools/deno
+          cp "$(command -v supabase)" /tmp/push-tools/supabase
+          tar -cf /tmp/push-tools.tar -C /tmp/push-tools .
+          tar -cf /tmp/push-npm.tar node_modules
+          tar -cf /tmp/push-migration-name.tar supabase/migrations/*web_push_v211.sql
       - uses: actions/upload-artifact@v4
         with:
-          name: push-candidate-source
-          path: /tmp/business-os-source.tar
+          name: push-verification-workspace
+          path: |
+            /tmp/push-tools.tar
+            /tmp/push-npm.tar
+            /tmp/push-migration-name.tar
           retention-days: 1
