@@ -1,8 +1,8 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
-const {edge,database,employee}=require('./helpers/edge.cjs');
+const {edge,database,employee,attachmentUrl}=require('./helpers/edge.cjs');
 const routes=[['order-lifecycle-api','finalizeMasterReport'],['report-api','finalizeMasterReport'],['report-api','uploadMasterReport']];
-const request=action=>({action,order_id:'o',upload_token:'r1',act_url:'https://files.test/act',photo_urls:['https://files.test/photo'],act_data:'YQ==',act_name:'act.pdf',photos_json:JSON.stringify([{name:'photo.jpg',data:'YQ=='}])});
+const request=(action,uploadToken='r1')=>({action,order_id:'o',upload_token:uploadToken,act_url:attachmentUrl('o',uploadToken),photo_urls:[attachmentUrl('o',uploadToken,'photo.jpg')],act_data:'YQ==',act_name:'act.pdf',photos_json:JSON.stringify([{name:'photo.jpg',data:'YQ=='}])});
 function fixture(overrides={}){
  const db=database({business_staff:[employee('m'),employee('owner','owner')],orders:[{id:'o',master_staff_id:'m',status:'В работе',amount:1000,original_amount:1000,updated_at:'2026-01-01T00:00:00Z',...overrides}]});
  const uploads=[];
@@ -35,7 +35,7 @@ for(const [slug,action] of routes){
  });
  test(`${slug}/${action}: only one concurrent token wins`,async()=>{
   const {db}=fixture();const api=edge(slug,db);
-  const result=await Promise.all([api(request(action),'staff_m'),api({...request(action),upload_token:'r2'},'staff_m')]);
+  const result=await Promise.all([api(request(action),'staff_m'),api(request(action,'r2'),'staff_m')]);
   assert.deepEqual(result.map(r=>r.status).sort(),[200,409]);assert.ok(['r1','r2'].includes(db.tables.orders[0].report_upload_token));
  });
 }

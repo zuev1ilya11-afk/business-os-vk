@@ -1,6 +1,6 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
-const {edge,employee}=require('./helpers/edge.cjs');
+const {edge,employee,attachmentUrl}=require('./helpers/edge.cjs');
 
 test('real report handlers feed one approved salary into day, week, month and owner views',async({page})=>{
  const fixed=new Date('2026-01-15T10:00:00Z');
@@ -17,7 +17,7 @@ test('real report handlers feed one approved salary into day, week, month and ow
  const summary=page.locator('#masterDaySummaryV128');
  await expect(summary.locator('.masterV128Empty')).toBeVisible();
 
- const submitted=await lifecycle({action:'finalizeMasterReport',order_id:'11',upload_token:'payroll-contract',act_url:'https://files.test/act',photo_urls:['https://files.test/photo'],uncompleted_work_done:true,uncompleted_work_amount:200,extra_work_done:true,extra_work_amount:300},me.external_id);
+ const submitted=await lifecycle({action:'finalizeMasterReport',order_id:'11',upload_token:'payroll-contract',act_url:attachmentUrl('11','payroll-contract'),photo_urls:[attachmentUrl('11','payroll-contract','photo.jpg')],uncompleted_work_done:true,uncompleted_work_amount:200,extra_work_done:true,extra_work_amount:300},me.external_id);
  expect(submitted.status).toBe(200);expect(order.master_payout).toBe(442);
  await page.evaluate(()=>window.BOS_REFRESH_NOW());
  await expect(summary.locator('.masterV128Empty')).toBeVisible();

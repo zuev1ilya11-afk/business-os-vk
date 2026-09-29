@@ -1,6 +1,6 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
-const {edge,database,employee}=require('./helpers/edge.cjs');
+const {edge,database,employee,attachmentUrl}=require('./helpers/edge.cjs');
 function fixture(extra={}){
  return database({business_staff:[employee('owner','owner'),employee('d','dispatcher'),employee('mgr','manager'),employee('m')],orders:[{id:'o',status:'В работе',master_staff_id:'m',original_amount:1000,amount:1000,master_payout:552.5,manager_payout:159.8,dispatcher_payout:119.85,report_upload_token:'r1',report_uploaded_at:'2026-01-01',report_act_url:'https://files.test/act',report_photo_urls:'["https://files.test/photo"]',report_review_status:'pending',...extra}]});
 }
@@ -50,7 +50,7 @@ test('legacy review keeps master authorization and pending-only conflict respons
 test('lifecycle submission and receipt hide internal financial fields from master and owner preview',async()=>{
  for(const uid of ['staff_m','100']){
   const db=fixture({report_review_status:'not_submitted',report_uploaded_at:null,report_upload_token:null}),api=edge('order-lifecycle-api',db);
-  const b={action:'finalizeMasterReport',order_id:'o',upload_token:'r2',act_url:'https://files.test/act',photo_urls:['https://files.test/photo'],...(uid==='100'?{acting_master_vk_id:'staff_m'}:{})};
+  const b={action:'finalizeMasterReport',order_id:'o',upload_token:'r2',act_url:attachmentUrl('o','r2'),photo_urls:[attachmentUrl('o','r2','photo.jpg')],...(uid==='100'?{acting_master_vk_id:'staff_m'}:{})};
   for(let i=0;i<2;i++){
    const r=await api(b,uid);assert.equal(r.status,200);
    for(const key of ['amount','original_amount','manager_payout','dispatcher_payout'])assert.equal(key in r.body.order,false,key);

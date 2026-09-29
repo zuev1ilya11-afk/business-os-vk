@@ -1,6 +1,6 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
-const {edge,database,employee}=require('./helpers/edge.cjs');
+const {edge,database,employee,attachmentUrl}=require('./helpers/edge.cjs');
 
 const routes=[['order-lifecycle-api','finalizeMasterReport'],['report-api','finalizeMasterReport'],['report-api','uploadMasterReport']];
 const cases=[
@@ -16,7 +16,7 @@ function fixture(original=1000){
  return {db,historical:structuredClone(historical)};
 }
 function body(action,c,token='report-1'){
- return {action,order_id:'new',upload_token:token,act_url:'https://files.test/act',photo_urls:['https://files.test/photo'],act_data:'YQ==',act_name:'act.pdf',act_mime:'application/pdf',photos_json:JSON.stringify([{name:'photo.jpg',mime:'image/jpeg',data:'YQ=='}]),uncompleted_work_done:c.unfinished>0,uncompleted_work_amount:c.unfinished,extra_work_done:c.extra>0,extra_work_amount:c.extra};
+ return {action,order_id:'new',upload_token:token,act_url:attachmentUrl('new',token),photo_urls:[attachmentUrl('new',token,'photo.jpg')],act_data:'YQ==',act_name:'act.pdf',act_mime:'application/pdf',photos_json:JSON.stringify([{name:'photo.jpg',mime:'image/jpeg',data:'YQ=='}]),uncompleted_work_done:c.unfinished>0,uncompleted_work_amount:c.unfinished,extra_work_done:c.extra>0,extra_work_amount:c.extra};
 }
 const money=n=>Math.round(n*100)/100;
 for(const [slug,action] of routes)for(const c of cases)test(`${slug}/${action}: ${c.name}, persisted and both role views agree`,async()=>{
