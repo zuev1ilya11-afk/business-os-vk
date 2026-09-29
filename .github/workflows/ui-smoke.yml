@@ -1,7 +1,7 @@
 name: UI smoke
 on:
   push:
-    branches: [main]
+    branches: [main, feat/web-push-v211]
   pull_request:
     branches: [main]
   workflow_dispatch:
