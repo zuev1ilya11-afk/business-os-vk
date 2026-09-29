@@ -36,10 +36,20 @@ jobs:
       - name: Install Chromium for Playwright
         run: npx playwright install chromium
 
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.9.7
+      - name: Frozen push sender dependencies and TypeScript
+        run: |
+          deno check --config supabase/functions/push-api/deno.json --lock supabase/functions/push-api/deno.lock --frozen supabase/functions/push-api/index.ts
+          deno test --allow-env --allow-read --config supabase/functions/push-api/deno.json --lock supabase/functions/push-api/deno.lock --frozen supabase/functions/push-api/webpush-runtime.test.ts
+
       - name: Production order-trigger contract in disposable PostgreSQL
         env:
           BOS_TEST_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
-        run: bash scripts/test-order-guards.sh
+        run: |
+          bash scripts/test-order-guards.sh
+          bash scripts/test-push.sh
 
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server
