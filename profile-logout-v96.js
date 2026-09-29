@@ -59,6 +59,7 @@
   }
 
   function logout(){
+    window.BOS_CANCEL_SESSION_REFRESH?.();
     clearSession();
     try{document.querySelector('#modalRoot').innerHTML=''}catch(_){}
     loggedOutScreen();
