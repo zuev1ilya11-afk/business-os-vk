@@ -61,5 +61,5 @@ test('429 blocks manual requests and polling until the provider cooldown expires
  await page.evaluate(()=>openAvitoInbox());expect(count).toBe(1);
  await page.locator('#avitoRefresh').click();expect(count).toBe(1);
  await page.clock.runFor(60000);expect(count).toBe(1);
- await page.clock.runFor(31000);await page.locator('#avitoRefresh').click();expect(count).toBe(2);
+ await page.clock.runFor(31000);await page.locator('#avitoRefresh').click();await expect.poll(()=>count).toBe(2);
 });

@@ -43,7 +43,7 @@ test('employee creation succeeds once even when district metadata fails',async({
   await page.locator('#empForm input[name="phone"]').fill('+7 999 123-45-67');
   await page.locator('#empForm input[name="district"]').fill('Центральный');
   await page.locator('#empForm input[name="login"]').fill('critical.master');
-  await page.locator('#empForm input[name="password"]').fill('secret123');
+  await page.locator('#empForm input[name="password"]').fill('secret1234');
   await page.locator('#empForm button[type="submit"]').click();
   await expect.poll(()=>page.evaluate(()=>window.addEmployeeCalls)).toBe(1);
   await expect.poll(()=>page.evaluate(()=>window.state.users.length)).toBe(1);
