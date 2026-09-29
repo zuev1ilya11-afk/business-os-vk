@@ -11,7 +11,7 @@ const dateOf=o=>String(o?.scheduled_date||'').slice(0,10);
 const timeOf=o=>window.BOS_SCHEDULE_CONTRACT.timeOf(o);
 const stageOf=o=>{const s=String(o?.master_workflow_stage||'assigned');return s==='arrived'?'departed':['assigned','departed','started','completed'].includes(s)?s:'assigned'};
 const reportUploaded=o=>!!o?.report_uploaded_at||!!o?.report_act_url;
-const reportRejected=o=>reportUploaded(o)&&String(o?.report_review_status||'pending')==='rejected';
+const reportRejected=o=>String(o?.report_review_status||'')==='rejected';
 const reportApproved=o=>String(o?.status||'')==='Выполнена'||String(o?.report_review_status||'')==='approved';
 const progressed=o=>['departed','started','completed'].includes(stageOf(o))||reportUploaded(o);
 const calledDone=o=>!!o?.master_called_at||progressed(o);
@@ -43,7 +43,7 @@ function dateLabel(o){
 function orderNo(o){const ext=String(o?.external_id||'');return ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')}
 function step(o){
   if(reportApproved(o))return'Заявка завершена';
-  if(reportRejected(o))return'Исправить отчёт';
+  if(reportRejected(o))return reportUploaded(o)?'Исправить отчёт':'Повторить этапы заявки';
   if(reportUploaded(o))return'Отчёт на проверке';
   if(workDone(o))return'Заполнить отчёт';
   if(agreementDone(o))return'Начать работу';
