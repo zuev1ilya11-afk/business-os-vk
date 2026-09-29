@@ -1,0 +1,71 @@
+name: Push candidate workspace
+on:
+  push:
+    branches: [feat/web-push-v211]
+permissions:
+  contents: write
+jobs:
+  workspace:
+    if: github.ref == 'refs/heads/feat/web-push-v211'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:17.6
+        env:
+          POSTGRES_PASSWORD: disposable-test-password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.9.7
+      - name: Correct startup and sender body, verify server tests
+        run: |
+          node scripts/prepare-push-candidate.cjs
+          npm ci
+          npm run build
+          npm run test:server
+      - name: Resolve and check sender dependencies
+        run: |
+          deno check --config supabase/functions/push-api/deno.json --lock supabase/functions/push-api/deno.lock supabase/functions/push-api/index.ts
+          deno test --allow-env --allow-read --config supabase/functions/push-api/deno.json --lock supabase/functions/push-api/deno.lock supabase/functions/push-api/webpush-runtime.test.ts
+      - name: Persist generated application files on the feature branch only
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html sw.js build-version.js supabase/functions/push-api/index.ts tests/push-api-v211.test.cjs docs/web-push-v211.md
+          if test -f supabase/functions/push-api/deno.lock; then git add supabase/functions/push-api/deno.lock; fi
+          if ! git diff --cached --quiet; then
+            git commit -m 'fix(push): load phone settings and validate sender transport'
+            git push origin HEAD:refs/heads/feat/web-push-v211
+          fi
+      - name: Push PostgreSQL contract
+        if: always()
+        env:
+          BOS_TEST_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: bash scripts/test-push.sh
+      - name: Targeted browser contract
+        if: always()
+        run: |
+          npx playwright install chromium
+          npx playwright test tests/web-push-v211.spec.js --workers=2
+      - name: Export exact candidate
+        if: always()
+        run: git archive --format=tar HEAD > /tmp/push-checked-source.tar
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: push-checked-source
+          path: |
+            /tmp/push-checked-source.tar
+            test-results/
+          retention-days: 1
