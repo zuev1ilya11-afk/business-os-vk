@@ -7,8 +7,8 @@ const cors={
 };
 const json=(x:any,s=200)=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'Content-Type':'application/json'}});
 const round=(n:any)=>Math.round(Number(n||0)*100)/100;
-// Keep the currently deployed report payout calculation unchanged in this lifecycle patch.
-const payouts=(a:any)=>{const x=round(a);return{master_payout:round(x*.85*.35),manager_payout:round(x*.85*.94*.20),dispatcher_payout:round(x*.85*.94*.15)}};
+// Approved master contract: 65% of the base after 15%, no 6% withholding; extras stay separate.
+const payouts=(a:any)=>{const x=round(a);return{master_payout:round(x*.85*.65),manager_payout:round(x*.85*.94*.20),dispatcher_payout:round(x*.85*.94*.15)}};
 const clean=(v:any)=>String(v??'').trim();
 const money=(v:any)=>{const n=Number(String(v??'0').replace(/\s/g,'').replace(',','.'));return Number.isFinite(n)?Math.round(n*100)/100:0};
 const masterPayout=(v:any)=>Math.round(money(v)*.85*.65*100)/100;
