@@ -66,9 +66,17 @@ async function importOrder(db:any,o:any,staffByName:Map<string,any>){
     external_source:'hands',external_id:localExternalId(id),source:'Hands',client:clean(o?.client_name||o?.client),phone:phones(o),address:clean(o?.address),work:workText(o),status:localStatus(o),amount,original_amount:amount,master_payout:staff?.id?masterPayout(amount):0,scheduled_date:sched.scheduled_date,scheduled_time:sched.scheduled_time,master_name:specialist||staff?.full_name||'',source_updated_at:clean(o?.updated_at||o?.creation_time)||new Date().toISOString(),updated_at:new Date().toISOString(),sync_status:'synced'
   };
   if(staff?.id)base.master_staff_id=staff.id;
-  const prev=await db.from('orders').select('id').eq('external_source','hands').eq('external_id',localExternalId(id)).maybeSingle();
+  const prev=await db.from('orders').select('id,status,report_review_status,updated_at').eq('external_source','hands').eq('external_id',localExternalId(id)).maybeSingle();
   if(prev.error)throw prev.error;
-  if(prev.data){const q=await db.from('orders').update(base).eq('id',prev.data.id).select('id').single();if(q.error)throw q.error;return {ok:true,id:q.data.id,created:false}}
+  // External imports cannot reopen or rewrite an accepted report/receipt.
+  if(prev.data?.status==='Выполнена'||prev.data?.report_review_status==='approved')return {ok:true,id:prev.data.id,created:false,preserved:true};
+  if(base.status==='Выполнена')base.status=prev.data?.status||'В работе';
+  if(prev.data){
+    let update=db.from('orders').update(base).eq('id',prev.data.id);
+    for(const key of ['status','report_review_status','updated_at'])update=prev.data[key]==null?update.is(key,null):update.eq(key,prev.data[key]);
+    const q=await update.select('id').maybeSingle();if(q.error)throw q.error;if(!q.data)throw new Error('ORDER_CHANGED');
+    return {ok:true,id:q.data.id,created:false};
+  }
   const ins={...base,comment:externalComment(o),external_source:'hands',created_by_vk_id:'hands-api'};
   const q=await db.from('orders').insert(ins).select('id').single();if(q.error)throw q.error;return {ok:true,id:q.data.id,created:true};
 }
