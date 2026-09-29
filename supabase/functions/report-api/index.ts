@@ -2,6 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const cors={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'content-type,apikey,authorization,x-vk-launch-params,x-bos-session','Access-Control-Allow-Methods':'POST,OPTIONS'};
 const json=(x:any,s=200)=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'Content-Type':'application/json'}});
 const round=(n:any)=>Math.round(Number(n||0)*100)/100;
+// Same approved contract as order-lifecycle-api; extra_work_amount is added once by salary readers.
 const payouts=(a:any)=>{const x=round(a);return{master_payout:round(x*.85*.65),manager_payout:round(x*.85*.94*.20),dispatcher_payout:round(x*.85*.94*.15)}};
 const masterOrder=(o:any)=>{const x={...o};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
 function bytes(b64:string){const raw=atob(String(b64||'').replace(/^data:[^;]+;base64,/,'')),out=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)out[i]=raw.charCodeAt(i);return out}
