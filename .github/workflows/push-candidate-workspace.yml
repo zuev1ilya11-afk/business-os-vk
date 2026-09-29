@@ -3,41 +3,60 @@ on:
   push:
     branches: [feat/web-push-v211]
 permissions:
-  contents: read
+  contents: write
 jobs:
   workspace:
+    if: github.ref == 'refs/heads/feat/web-push-v211'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - run: npm ci
       - uses: denoland/setup-deno@v2
         with:
-          deno-version: v2.x
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
-      - name: Generate migration name with the official CLI
+          deno-version: v2.9.7
+      - name: Verify exact reviewed sources and apply integration patch
         run: |
-          supabase --version
-          supabase migration new --help
-          supabase migration new web_push_v211
-          mkdir -p /tmp/push-tools
-          cp "$(command -v deno)" /tmp/push-tools/deno
-          cp "$(command -v supabase)" /tmp/push-tools/supabase
-          tar -cf /tmp/push-tools.tar -C /tmp/push-tools .
-          tar -cf /tmp/push-npm.tar node_modules
-          tar -cf /tmp/push-migration-name.tar supabase/migrations/*web_push_v211.sql
+          python3 - <<'PY'
+          import hashlib,pathlib,subprocess
+          expected={'web-push-v211.js':'e82b387c8817570e0b52a69bf3eb56df3cff5a01c0988eae0de558fe2cfeb067','supabase/functions/push-api/index.ts':'aee74206a3641b1281b9e3f53b2f8cb7dd1329612c30919fda2f42010bfccd5a','supabase/migrations/20260929163737_web_push_v211.sql':'6da0aae2fa47f85c834abe85c091fbeb70cc3fb41c978675ddefea2263b02d77'}
+          for name,digest in expected.items():
+            assert hashlib.sha256(pathlib.Path(name).read_bytes()).hexdigest()==digest,name
+          subprocess.run(['git','apply','--index','--whitespace=error','scripts/push-candidate.patch'],check=True)
+          PY
+          npm ci
+          npm run build
+          npm run test:server
+      - name: Persist candidate on feature branch only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm scripts/push-candidate.patch .github/workflows/push-candidate-workspace.yml
+          git add index.html sw.js build-version.js
+          git commit -m 'feat(push): integrate phone notifications and verified PWA build'
+          git push origin HEAD:refs/heads/feat/web-push-v211
+      - name: Resolve and check pinned sender dependencies
+        run: |
+          deno check --config supabase/functions/push-api/deno.json --lock supabase/functions/push-api/deno.lock supabase/functions/push-api/index.ts
+          deno test --allow-env --allow-read --config supabase/functions/push-api/deno.json --lock supabase/functions/push-api/deno.lock supabase/functions/push-api/webpush-runtime.test.ts
+      - name: Persist generated dependency lock
+        if: always()
+        run: |
+          if test -f supabase/functions/push-api/deno.lock; then
+            git add supabase/functions/push-api/deno.lock
+            if ! git diff --cached --quiet; then
+              git commit -m 'build(push): lock sender runtime dependencies'
+              git push origin HEAD:refs/heads/feat/web-push-v211
+            fi
+          fi
+      - name: Export exact candidate
+        if: always()
+        run: git archive --format=tar HEAD > /tmp/push-checked-source.tar
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: push-verification-workspace
-          path: |
-            /tmp/push-tools.tar
-            /tmp/push-npm.tar
-            /tmp/push-migration-name.tar
+          name: push-checked-source
+          path: /tmp/push-checked-source.tar
           retention-days: 1
