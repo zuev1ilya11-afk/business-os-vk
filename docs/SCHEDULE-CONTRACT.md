@@ -11,3 +11,5 @@ Mobile conflict groups, desktop schedules, quick move, smart assignment and mast
 Validation: 199 server checks, targeted schedule/move/assignment UI tests and the full mandatory PR CI. Parser regressions include mismatched fields, SQL time, one-digit hours, malformed ranges, midnight, alias identity, precise duration and UTC/Moscow +89/+90/+91 boundaries. The legacy alias UI fixture is applied at the client boundary because bootstrap normally expands staff foreign keys.
 
 The older open schedule PR #187 overlaps this area and must be rebased/reviewed separately; it was not merged or closed by this change. No financial, authentication or database behavior changes.
+
+PR CI initially exposed a pre-existing quick-editor test race: role-loader refresh detached the card during `scrollIntoViewIfNeeded` (both attempts). The test now reacquires the locator within its existing five-second assertion window, retaining the 44px touch target and hit-test requirements. Ten targeted repetitions pass; no product assertion, workflow retry count or test timeout was relaxed. A separate resize scenario was flaky on that run; exact-head CI must pass before merge.

@@ -52,8 +52,12 @@ test('mobile dispatcher reassigns an active order through existing quick editor'
   const card=page.locator('#bosOrderList .opsCompactOrder').filter({hasText:'Анна'});
   const reassign=card.getByRole('button',{name:'Переназначить мастера',exact:true});
   await expect(reassign).toBeVisible();
-  await reassign.scrollIntoViewIfNeeded();
-  expect(await reassign.evaluate(el=>{const r=el.getBoundingClientRect();return r.height>=44&&el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))})).toBe(true);
+  // Role-loader refresh may replace the card while scrolling. Reacquire the
+  // locator until the same touch-size and hit-target requirements hold.
+  await expect(async()=>{
+    await reassign.scrollIntoViewIfNeeded();
+    expect(await reassign.evaluate(el=>{const r=el.getBoundingClientRect();return r.height>=44&&el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))})).toBe(true);
+  }).toPass({timeout:5000});
   await reassign.click();
   await expect(page.locator('#quickMaster')).toBeFocused();
   await page.locator('#quickMaster').selectOption({label:'Второй мастер'});
