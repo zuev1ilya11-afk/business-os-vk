@@ -1,4 +1,4 @@
-const BUILD_ID='d4be084cdceb01087580';
+const BUILD_ID='a0eca22a0c38a420b9e5';
 importScripts('./build-version.js?build='+BUILD_ID);
 if(self.BOS_BUILD.id!==BUILD_ID)throw new Error('Mixed deployment: build manifest mismatch');
 const PREFIX='business-os-build-';
@@ -68,3 +68,63 @@ self.addEventListener('fetch',event=>{
  if(request.mode==='navigate'){event.respondWith(navigation(request));return}
  if(Object.hasOwn(assets,name)||name==='build-version.js')event.respondWith(staticAsset(request,url,name));
 });
+
+// Web Push uses a separate small state cache; app-build cache rotation must not remove the device binding.
+const PUSH_STATE='bos-push-state-v1';
+let pushStateChanges=Promise.resolve();
+const pushStateURL=new URL('__push_binding__',scope).href;
+async function pushBinding(){try{await pushStateChanges.catch(()=>{});return await (await (await caches.open(PUSH_STATE)).match(pushStateURL))?.json()||null}catch{return null}}
+function pushOrderURL(id){
+ const url=new URL('./',scope);
+ if(/^\d{1,20}$/.test(String(id||'')))url.searchParams.set('bos_push_order',String(id));
+ return url.href;
+}
+self.addEventListener('message',event=>{
+ if(!['BOS_PUSH_BIND','BOS_PUSH_CLEAR'].includes(event.data?.type))return;
+ const task=pushStateChanges.catch(()=>{}).then(async()=>{
+  const source=event.source;
+  if(!source?.url||new URL(source.url).origin!==scope.origin||!new URL(source.url).pathname.startsWith(scope.pathname))throw new Error('Invalid push client');
+  const cache=await caches.open(PUSH_STATE);
+  if(event.data.type==='BOS_PUSH_CLEAR'){
+   await cache.delete(pushStateURL);
+   const shown=await self.registration.getNotifications();
+   shown.filter(n=>String(n.tag||'').startsWith('bos-push-')).forEach(n=>n.close());
+  }else{
+   const id=String(event.data.binding_id||'');
+   if(!/^[a-f0-9-]{36}$/i.test(id))throw new Error('Invalid binding');
+   await cache.put(pushStateURL,new Response(JSON.stringify({binding_id:id}),{headers:{'Content-Type':'application/json'}}));
+  }
+ });
+ pushStateChanges=task;
+ event.waitUntil(task.then(()=>event.ports?.[0]?.postMessage({ok:true}),()=>event.ports?.[0]?.postMessage({ok:false})));
+});
+self.addEventListener('push',event=>event.waitUntil((async()=>{
+ let data;try{data=event.data?.json()}catch{return}
+ const binding=await pushBinding();
+ if(!binding||data?.v!==1||data.binding_id!==binding.binding_id||!(/^[a-f0-9-]{36}$/i.test(String(data.event_id||''))))return;
+ const expires=Date.parse(data.expires_at);
+ if(!Number.isFinite(expires)||expires<=Date.now())return;
+ const id=/^\d{1,20}$/.test(String(data.order_id||''))?String(data.order_id):null;
+ await self.registration.showNotification(String(data.title||'Business OS').slice(0,100),{
+  body:String(data.body||'Откройте приложение.').slice(0,180),
+  icon:new URL('app-icon.svg',scope).href,
+  tag:'bos-push-'+data.event_id,renotify:false,
+  data:{order_id:id,binding_id:binding.binding_id,url:pushOrderURL(id)}
+ });
+})()));
+self.addEventListener('notificationclick',event=>{
+ event.notification.close();
+ event.waitUntil((async()=>{
+  const data=event.notification.data||{},binding=await pushBinding();
+  if(!binding||binding.binding_id!==data.binding_id)return;
+  const url=pushOrderURL(data.order_id),windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+  const client=windows.find(c=>{const u=new URL(c.url);return u.origin===scope.origin&&u.pathname.startsWith(scope.pathname)});
+  if(client){client.postMessage({type:'BOS_PUSH_OPEN',order_id:data.order_id,binding_id:binding.binding_id});await client.focus()}
+  else await self.clients.openWindow(url);
+ })());
+});
+self.addEventListener('pushsubscriptionchange',event=>event.waitUntil((async()=>{
+ await (await caches.open(PUSH_STATE)).delete(pushStateURL);
+ const windows=await self.clients.matchAll({type:'window'});
+ windows.forEach(client=>client.postMessage({type:'BOS_PUSH_RECONNECT'}));
+})()));

@@ -2,6 +2,7 @@ const SUPABASE_BASE = "https://obsropbslfwtanyspjbi.supabase.co/functions/v1";
 
 const ALLOWED = new Set([
   "mini-app-api",
+  "push-api",
   "password-session-api",
   "vk-session-api",
   "report-file-upload",
