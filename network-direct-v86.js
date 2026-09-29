@@ -244,11 +244,28 @@
     return response;
   }
 
+  async function avitoFetch(info,input,init){
+    // Preserve Avito's configured route, provider responses and caller's 18s budget.
+    // Only a proven pre-forward denial permits moving a send to another route.
+    const source=TARGETS.find(target=>target.base===info.sourceBase)||sourceTargetFor(info);
+    const targets=[source,...TARGETS.filter(target=>targetKey(target)!==targetKey(source))];
+    const signal=outerSignal(input,init);
+    let response;
+    for(const target of targets){
+      if(signal?.aborted)throw Object.assign(new Error('Aborted'),{name:'AbortError'});
+      response=input instanceof Request
+        ?await fetchRequestAt(targetUrl(target,info),attemptInput(input),init,signal)
+        :await lowerFetch(targetUrl(target,info),init);
+      if(!await rejectedBeforeForward(response,target))return response;
+    }
+    return response;
+  }
+
   window.fetch=async function(input,init){
     const raw=typeof input==='string'?input:input instanceof URL?input.href:input?.url||'';
     const info=proxyInfo(raw);
     if(!info)return lowerFetch(input,init);
-    if(info.slug==='avito-api')return lowerFetch(input,init);
+    if(info.slug==='avito-api')return avitoFetch(info,input,init);
 
     const outer=outerSignal(input,init);
     const passwordAuth=info.slug==='password-session-api';
