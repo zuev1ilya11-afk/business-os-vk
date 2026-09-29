@@ -16,12 +16,5 @@ window.reloadData=async function(keepPage=true){
   return d;
 };
 
-setTimeout(async()=>{
-  try{
-    const d=await api('bootstrap');
-    if(!d?.ok)return;
-    state.orders=(d.orders||[]).map(o=>({...o,status:normalizeStatus(o.status)}));
-    if(state.page&&typeof show==='function')show(state.page);
-  }catch(_){}
-},700);
+// Status normalization already runs in reloadData; no extra startup bootstrap.
 })();

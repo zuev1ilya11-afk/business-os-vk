@@ -10,6 +10,7 @@ const ONLINE_MS=120000;
 const PRESENCE_URL='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/profile-self-api';
 let inFlight=false;
 let lastSync=0;
+window.addEventListener('bos:auth-ready',()=>{lastSync=Date.now()});
 let lastError='';
 let presenceInFlight=false;
 let lastPresence=0;
@@ -208,6 +209,7 @@ if(typeof MutationObserver==='function'){
   const content=document.getElementById('content');
   if(content)new MutationObserver(()=>{if(String(state?.page||'')==='team')queueMicrotask(decoratePresence)}).observe(content,{childList:true,subtree:true});
 }
+window.addEventListener('online',()=>{touchPresence(true);syncEmployeeData('online')});
 window.addEventListener('focus',()=>{touchPresence(true);syncEmployeeData('focus')});
 window.addEventListener('pageshow',()=>{touchPresence(true);syncEmployeeData('pageshow')});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){touchPresence(true);syncEmployeeData('visible')}});
