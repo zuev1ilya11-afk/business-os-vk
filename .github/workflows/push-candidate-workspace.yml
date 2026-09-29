@@ -1,0 +1,21 @@
+name: Push candidate workspace
+on:
+  push:
+    branches: [feat/web-push-v211]
+permissions:
+  contents: read
+jobs:
+  workspace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Export exact candidate source for local verification
+        run: git archive --format=tar HEAD > /tmp/business-os-source.tar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: push-candidate-source
+          path: /tmp/business-os-source.tar
+          retention-days: 1
