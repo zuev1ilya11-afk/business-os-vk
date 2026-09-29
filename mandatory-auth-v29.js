@@ -10,13 +10,15 @@
   const forceVk=new URLSearchParams(location.search).has('force_vk_auth');
   let vkSessionPromise=null;
   let validatedBootstrap=null;
+  let bootPromise=null;
+  let waitingForNetwork=false;
 
   function getSession(){try{return sessionStorage.getItem(KEY)||localStorage.getItem(KEY)||''}catch(_){return ''}}
   function setSession(v){if(!v)return;try{sessionStorage.setItem(KEY,v);localStorage.setItem(KEY,v)}catch(_){}}
   function clearSession(){validatedBootstrap=null;try{sessionStorage.removeItem(KEY);localStorage.removeItem(KEY)}catch(_){}}
   function escs(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
   function showGate(html){if(!gate)return;gate.innerHTML=`<div class="authGateCard">${html}</div>`;gate.style.display='flex';body.classList.remove('bos-auth-ok')}
-  function unlock(){if(gate)gate.style.display='none';body.classList.add('bos-auth-ok')}
+  function unlock(){if(gate)gate.style.display='none';body.classList.add('bos-auth-ok');window.dispatchEvent(new Event('bos:auth-ready'))}
 
   async function post(url,payload,headers={}){
     const controller=new AbortController();
@@ -81,7 +83,7 @@
       if(!d?.user?.role)return false;
       validatedBootstrap={session,data:d};
       return true;
-    }catch(e){if(e?.status===401)clearSession();return false}
+    }catch(e){if(e?.status===401){clearSession();return false}throw e}
   }
   async function vkSession(){
     const existing=getSession();if(existing)return {ok:true,session_token:existing};
@@ -125,6 +127,8 @@
     if(typeof reloadData!=='function')throw new Error('Приложение не готово к запуску');
     await reloadData(false);
     if(!state?.user?.role)throw new Error('Не удалось определить роль сотрудника');
+    // A cached/fast bootstrap can finish before the final deferred loader script.
+    if(typeof window.BOS_LOAD_ROLE_MODULES!=='function'&&document.readyState!=='complete')await new Promise(resolve=>document.addEventListener('DOMContentLoaded',resolve,{once:true}));
     if(typeof window.BOS_LOAD_ROLE_MODULES==='function')await window.BOS_LOAD_ROLE_MODULES(state.user.role);
     try{if(typeof updateNavForRole==='function')updateNavForRole()}catch(_){}
     try{if(typeof window.show==='function')window.show(state.page||'home')}catch(_){}
@@ -150,12 +154,23 @@
     };
   }
 
-  async function boot(){
+  function recoveryScreen(error){
+    waitingForNetwork=true;
+    showGate(`<div class="authLogo">Домашний мастер</div><h1>Не удалось загрузить приложение</h1><p class="authError">${escs(error?.message||'Проверьте подключение к интернету.')}</p><button id="simpleBootRetry" class="primary wide">Повторить</button>`);
+    document.getElementById('simpleBootRetry').onclick=boot;
+  }
+  async function runBoot(){
+    waitingForNetwork=false;
     showGate(`<div class="authLogo">Домашний мастер</div><h1>Проверяем вход…</h1><p class="muted">Пожалуйста, подождите.</p>`);
-    if(await validate()){try{return await loadApp()}catch(e){return isVkLaunch()?retryVkScreen(e.message):passwordScreen(e.message)}}
+    if(await validate())return await loadApp();
     if(!isVkLaunch())return passwordScreen();
     try{const r=await ensureVkSession();if(r?.registration_required)return;await loadApp()}catch(e){retryVkScreen(e.message)}
   }
+  function boot(){
+    if(!bootPromise)bootPromise=runBoot().catch(recoveryScreen).finally(()=>{bootPromise=null});
+    return bootPromise;
+  }
+  window.addEventListener('online',()=>{if(waitingForNetwork)boot()});
   window.BOS_FORCE_AUTH_SCREEN=()=>{clearSession();isVkLaunch()?boot():passwordScreen()};
   boot();
 })();

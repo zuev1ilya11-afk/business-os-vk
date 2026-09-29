@@ -1,4 +1,4 @@
-const BUILD_ID='f1b5daef78678fad3efc';
+const BUILD_ID='fe6c97245eb2bf52449c';
 importScripts('./build-version.js?build='+BUILD_ID);
 if(self.BOS_BUILD.id!==BUILD_ID)throw new Error('Mixed deployment: build manifest mismatch');
 const PREFIX='business-os-build-';
@@ -44,6 +44,11 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
  await self.clients.claim();
 })()));
 async function navigation(request){
+ // The installed shell is digest-verified and matches this worker's assets.
+ // Worker update checks still discover new builds without delaying navigation.
+ const cache=await caches.open(CACHE);
+ const shell=await cache.match(new URL('index.html',scope));
+ if(shell)return shell;
  try{
   const response=await fetch(request,{cache:'no-store'});
   if(await matchesDigest(response,self.BOS_BUILD.shell))return response;

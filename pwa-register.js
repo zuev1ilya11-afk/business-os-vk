@@ -41,6 +41,7 @@
   ];
 
   eagerScripts.forEach(src=>{
+    if([...document.scripts].some(script=>script.src===window.BOS_ASSET_URL(src)))return;
     const script=document.createElement('script');
     script.src=window.BOS_ASSET_URL(src);
     script.async=false;
@@ -89,11 +90,14 @@
     roleLoads.set(src,promise);
     return promise;
   }
-  async function loadList(list){for(const src of list)await loadRoleScript(src)}
+  // async=false preserves execution order while every download starts together.
+  async function loadList(list){await Promise.all(list.map(loadRoleScript))}
   window.BOS_LOAD_ROLE_MODULES=async role=>{
     const value=String(role||'');
-    if(window.BOS_PERMISSIONS.canUseDispatcherWorkspace({role:value}))await loadList(roleScripts.dispatcher);
-    if(['master','owner','manager'].includes(value))await loadList(roleScripts.master);
+    const list=[];
+    if(window.BOS_PERMISSIONS.canUseDispatcherWorkspace({role:value}))list.push(...roleScripts.dispatcher);
+    if(['master','owner','manager'].includes(value))list.push(...roleScripts.master);
+    await loadList(list);
     return true;
   };
   window.BOS_ROLE_MODULES_V171={dispatcher:roleScripts.dispatcher.length,master:roleScripts.master.length};
