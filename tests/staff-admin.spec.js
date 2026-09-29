@@ -58,11 +58,12 @@ test('owner can set employee credentials and restore disabled employee',async({p
   await expect.poll(()=>restored).toBeTruthy();
 });
 
-test('manager sees staff access controls',async({page})=>{
+test('manager sees staff restore controls without credential editing',async({page})=>{
   await bootAs(page,'manager');
   await page.route('**/api/proxy/staff-admin-api',async route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,staff:[{id:'master1',full_name:'Мастер',role:'master',is_active:true,login:'',has_password:false}]})}));
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await page.locator('nav button[data-page="team"]').click();
-  await expect(page.getByRole('button',{name:'Логины и пароли'})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Логины и пароли'})).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'Сотрудники',exact:true})).toBeVisible();
   await expect(page.getByRole('button',{name:'Отключённые'})).toBeVisible();
 });

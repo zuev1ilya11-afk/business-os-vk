@@ -47,8 +47,8 @@ normalizeSchedule();
   pages.team=function(){
     const html=String(previousTeam.apply(this,arguments)||'');
     const role=String(state?.user?.role||'');
-    if(!['owner','manager'].includes(role)||html.includes('Логины и пароли'))return html;
-    return html+`<section class="card"><h3>Управление сотрудниками</h3><p class="muted">Логины, пароли и восстановление отключённых сотрудников.</p><div class="two"><button class="secondary" onclick="openStaffAccess('all')">Логины и пароли</button><button class="secondary" onclick="openStaffAccess('inactive')">Отключённые</button></div></section>`;
+    if(!['owner','manager'].includes(role)||html.includes("openStaffAccess("))return html;
+    return html+`<section class="card"><h3>Управление сотрудниками</h3><p class="muted">${role==='owner'?'Логины, пароли и восстановление отключённых сотрудников.':'Просмотр и восстановление отключённых сотрудников.'}</p><div class="two"><button class="secondary" onclick="openStaffAccess('all')">${role==='owner'?'Логины и пароли':'Сотрудники'}</button><button class="secondary" onclick="openStaffAccess('inactive')">Отключённые</button></div></section>`;
   };
 })();
 (()=>{

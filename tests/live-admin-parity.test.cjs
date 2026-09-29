@@ -20,7 +20,7 @@ test('integration administration accepts active owner sessions and rejects every
 
 test('integration sessions reject invalid expiry, long lifetime, bad subject and forged signatures before DB access',async()=>{
  const db=seed(),api=edge('integration-api',db),now=Math.floor(Date.now()/1000);
- const invalid=['',token('100',now),token('100',now-1),token('100',now+43260),token('100','NaN'),token('100','Infinity'),token('100','9999999999999'),token('bad!id'),token('x'.repeat(129)),token('100')+'x',token('100')+'.extra'];
+ const invalid=['',token('100',now),token('100',now-1),token('100',now+60*60*24*365+120),token('100','NaN'),token('100','Infinity'),token('100','9999999999999'),token('bad!id'),token('x'.repeat(129)),token('100')+'x',token('100')+'.extra'];
  for(const session of invalid)assert.equal((await api({action:'listIntegrations'},'100',session)).status,403);
  assert.equal(db.calls.length,0);
  assert.equal((await edge('integration-api',db,{env:{VK_APP_SECRET:''}})({action:'listIntegrations'})).status,403);

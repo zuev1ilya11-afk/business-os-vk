@@ -92,6 +92,8 @@
     if(method==='GET'||method==='HEAD')return true;
     if(info.slug==='password-session-api'||info.slug==='vk-session-api')return true;
     if(info.slug==='push-api')return ['status','subscribe','revoke'].includes(await requestAction(input,init));
+    if(info.slug==='staff-admin-api'&&await requestAction(input,init)==='listStaff')return true;
+    if(info.slug==='integration-api'&&['listIntegrations','testMapping','listOrders','getOrder'].includes(await requestAction(input,init)))return true;
     return SAFE_ACTIONS.has(await requestAction(input,init));
   }
 
