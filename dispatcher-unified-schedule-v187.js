@@ -11,13 +11,13 @@ const st=()=>{try{return typeof state!=='undefined'?state:null}catch(_){return n
 const dispatcherDesktop=()=>window.innerWidth>=MIN_DESKTOP&&window.BOS_PERMISSIONS.isDispatcherWorkspaceActive(st()?.user);
 const active=o=>!!o&&!['Выполнена','Отменена'].includes(String(o?.status||''));
 const dateOf=o=>String(o?.scheduled_date||'').slice(0,10);
-const timeOf=o=>String(o?.scheduled_time||o?.time_slot||'').slice(0,5);
+const timeOf=o=>window.BOS_SCHEDULE_CONTRACT.timeOf(o);
 const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const boardDate=()=>String(document.getElementById('dispatchBoardDate')?.value||'').slice(0,10);
 const masterVk=m=>String(m?.vk_user_id||m?.external_id||'');
 const masterIds=m=>[m?.id,m?.staff_id,m?.master_staff_id,m?.vk_user_id,m?.external_id].filter(Boolean).map(String);
 const orderMasterIds=o=>[o?.master_staff_id,o?.master_id,o?.master_vk_id].filter(Boolean).map(String);
-const sameMaster=(m,o)=>masterIds(m).some(x=>orderMasterIds(o).includes(x))||String(m?.full_name||'')===String(o?.master_name||'');
+const sameMaster=(m,o)=>window.BOS_SCHEDULE_CONTRACT.sameMaster(m,o);
 const findMaster=v=>(st()?.masters||[]).find(m=>masterVk(m)===String(v||''))||null;
 const orderById=id=>(st()?.orders||[]).find(o=>String(o?.id)===String(id))||null;
 const mins=t=>{const m=String(t||'').match(/^(\d{1,2}):(\d{2})$/);return m?Number(m[1])*60+Number(m[2]):NaN};
@@ -25,16 +25,7 @@ const hhmm=n=>{n=Math.max(0,Math.min(24*60,n));const h=Math.floor(n/60),m=n%60;r
 const roundStep=n=>Math.round(n/STEP)*STEP;
 const unassigned=o=>active(o)&&!o?.master_staff_id&&!o?.master_id&&!o?.master_vk_id&&!String(o?.master_name||'').trim();
 
-function slotRange(o){
-  const start=mins(timeOf(o));
-  if(!Number.isFinite(start))return null;
-  const raw=String(o?.time_slot||'');
-  const pair=raw.match(/(\d{1,2}:\d{2})\s*[–—-]\s*(\d{1,2}:\d{2})/);
-  let end=pair?mins(pair[2]):NaN;
-  if(!Number.isFinite(end)||end<=start)end=start+60;
-  end=Math.min(24*60,Math.max(start+STEP,roundStep(end)));
-  return {start,end,slots:Math.max(1,Math.round((end-start)/STEP))};
-}
+function slotRange(o){const r=window.BOS_SCHEDULE_CONTRACT.range(o);return r?{...r,slots:Math.max(1,Math.ceil(r.duration/STEP))}:null}
 function rangeText(start,slots){return `${hhmm(start)}–${hhmm(Math.min(24*60,start+Math.max(1,slots)*STEP))}`}
 function overlap(a0,a1,b0,b1){return a0<b1&&b0<a1}
 function scheduleFor(m,date){const ids=new Set(masterIds(m));return (st()?.masterSchedule||[]).find(r=>String(r.work_date||r.date||'').slice(0,10)===date&&[r?.staff_id,r?.master_staff_id,r?.master_id,r?.master_vk_id,r?.external_id].filter(Boolean).map(String).some(x=>ids.has(x)))||null}
@@ -45,7 +36,7 @@ function dayAssigned(date){return (st()?.orders||[]).filter(active).filter(o=>da
 function noOf(o){const x=String(o?.external_id||'');return x.startsWith('hands:')?x.slice(6):String(o?.id||'')}
 function statusLabel(o){if(o?.reschedule_requested)return 'Перенос';if(o?.master_workflow_stage==='started')return 'В работе';if(o?.master_workflow_stage==='departed')return 'Выехал';return String(o?.status||'В работе')}
 function orderInterval(o){const r=slotRange(o);return r||{start:mins(timeOf(o))||0,end:(mins(timeOf(o))||0)+60,slots:2}}
-function startsAt(o,t){return orderInterval(o).start===mins(t)}
+function startsAt(o,t){const start=orderInterval(o).start,x=mins(t);return start>=x&&start<x+STEP}
 function covers(o,t){const r=orderInterval(o),x=mins(t);return x>=r.start&&x<r.end}
 function conflictFor(id,m,date,start,end){return (st()?.orders||[]).filter(active).some(o=>String(o.id)!==String(id)&&dateOf(o)===date&&sameMaster(m,o)&&(()=>{const r=orderInterval(o);return overlap(start,end,r.start,r.end)})())}
 function timelineBounds(date,masters){
@@ -71,7 +62,7 @@ function signature(date,masters){return JSON.stringify({date,masters:masters.map
 function scheduleView(board){if(sessionStorage.getItem('bosDispatchV24Control')==='1')return false;const tabs=[...(board?.querySelectorAll('.dbViewTabs button')||[])],list=tabs.find(b=>String(b.textContent||'').trim()==='Список'),schedule=tabs.find(b=>String(b.textContent||'').trim()==='Расписание');if(list?.classList.contains('primary'))return false;return !schedule||schedule.classList.contains('primary')}
 function cardHtml(o,layout={lane:0,lanes:1}){
   const r=orderInterval(o),warn=o.reschedule_requested?' warn':'',slots=Math.max(1,r.slots);
-  return `<div class="du187Card${warn}${layout.lanes>1?' conflict':''}" draggable="true" data-order-id="${escv(o.id)}" data-start="${r.start}" data-duration-slots="${slots}" style="--du187-slots:${slots};--du187-lane:${layout.lane};--du187-lanes:${layout.lanes}" ondragstart="bosUnifiedScheduleDrag(event,'${escv(o.id)}')" onclick="selectDispatchBoardOrder('${escv(o.id)}')"><div class="du187CardTop"><b>№ ${escv(noOf(o))}</b><span class="du187When">${escv(rangeText(r.start,slots))}</span></div><strong>${escv(o.client||'Клиент')}</strong><small>${escv(o.work||'Заявка')}</small><em>${escv(statusLabel(o))}</em><button type="button" class="du187Resize" aria-label="Изменить длительность заявки" title="Потяните, чтобы изменить длительность"></button></div>`
+  return `<div class="du187Card${warn}${layout.lanes>1?' conflict':''}" draggable="true" data-order-id="${escv(o.id)}" data-start="${r.start}" data-duration-slots="${slots}" style="--du187-slots:${slots};--du187-lane:${layout.lane};--du187-lanes:${layout.lanes}" ondragstart="bosUnifiedScheduleDrag(event,'${escv(o.id)}')" onclick="selectDispatchBoardOrder('${escv(o.id)}')"><div class="du187CardTop"><b>№ ${escv(noOf(o))}</b><span class="du187When">${escv(`${hhmm(r.start)}–${hhmm(r.end)}`)}</span></div><strong>${escv(o.client||'Клиент')}</strong><small>${escv(o.work||'Заявка')}</small><em>${escv(statusLabel(o))}</em><button type="button" class="du187Resize" aria-label="Изменить длительность заявки" title="Потяните, чтобы изменить длительность"></button></div>`
 }
 function slotHtml(m,date,t,orders,layout){
   const start=orders.filter(o=>startsAt(o,t)),covering=orders.filter(o=>covers(o,t)),off=!available(m,date,t),conflict=covering.length>1;
@@ -110,12 +101,12 @@ async function resolveRescheduleIfNeeded(o,date,time,timeSlot,expectedUpdatedAt)
 function refreshBoard(){lastSignature='';if(typeof show==='function')show('orders');else render(true)}
 async function saveMove(id,masterValue,time){
   if(busy)return false;const o=orderById(id),m=findMaster(masterValue),date=boardDate();if(!o||!m||!date)return false;
-  const old=orderInterval(o),start=mins(time),end=start+(old.slots||2)*STEP;if(!Number.isFinite(start))return false;
+  const old=orderInterval(o),start=mins(time),end=start+(old.duration||60);if(!Number.isFinite(start))return false;
   if(end>1440){if(typeof setMessage==='function')setMessage('Длительность не помещается в выбранные сутки. Выберите более раннее время.');return false;}
   if(conflictFor(id,m,date,start,end)&&!confirm(`У ${m.full_name||'мастера'} уже есть заявка, которая пересекается с этим временем. Всё равно назначить?`))return false;
   let saved=false;busy=true;try{
     if(typeof api!=='function')throw new Error('API недоступен');
-    const payload={id:o.id,master_vk_id:masterValue,scheduled_date:date,scheduled_time:hhmm(start),time_slot:rangeText(start,old.slots||2)};
+    const payload={id:o.id,master_vk_id:masterValue,scheduled_date:date,scheduled_time:hhmm(start),time_slot:`${hhmm(start)}–${hhmm(end)}`};
     if(o.reschedule_requested&&masterIds(m).some(x=>orderMasterIds(o).includes(x))){await resolveRescheduleIfNeeded(o,date,hhmm(start),payload.time_slot,o.updated_at);refreshBoard();if(typeof setMessage==='function')setMessage('Расписание сохранено');return true;}
     const d=await api('updateOrder',payload);if(!d?.ok)throw new Error(d?.error||'Не удалось изменить расписание');
     saved=true;updateLocal(id,{...(d.order||{}),master_vk_id:masterValue,master_name:m.full_name||'',scheduled_date:date,scheduled_time:hhmm(start),time_slot:payload.time_slot});
