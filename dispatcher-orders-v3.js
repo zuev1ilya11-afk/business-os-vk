@@ -93,7 +93,8 @@ function updateTomorrowButton(button,withCount){
   const count=tomorrowCount();
   button.classList.toggle('primary',extraDay==='tomorrow');
   button.classList.toggle('secondary',extraDay!=='tomorrow');
-  button.innerHTML=withCount?`Завтра <small>${count}</small>`:'Завтра';
+  const html=withCount?`Завтра <small>${count}</small>`:'Завтра';
+  if(button.innerHTML!==html)button.innerHTML=html;
   button.setAttribute('aria-pressed',extraDay==='tomorrow'?'true':'false');
 }
 function decorateToolbar(root){
