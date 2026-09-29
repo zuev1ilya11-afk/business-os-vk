@@ -1,13 +1,15 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 const cors={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'content-type,authorization,x-api-key,x-bos-session','Access-Control-Allow-Methods':'GET,POST,OPTIONS'};
 const json=(x:any,s=200)=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'Content-Type':'application/json'}});
+// Match the existing password-session issuer; allow one minute of inter-instance clock skew.
+const MAX_SESSION_TTL_SECONDS=60*60*24*365+60;
 const round=(n:any)=>Math.round(Number(n||0)*100)/100;
 const payouts=(a:any,has=false)=>{const n=round(a);return{master_payout:has?round(n*.85*.65):0,manager_payout:round(n*.85*.94*.20),dispatcher_payout:round(n*.85*.94*.15)}};
 function b64u(b:Uint8Array){let s='';for(const x of b)s+=String.fromCharCode(x);return btoa(s).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_')}
 async function hmac(m:string,s:string){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(s),{name:'HMAC',hash:'SHA-256'},false,['sign']);return b64u(new Uint8Array(await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(m))))}
 async function sha(s:string){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 function equal(a:string,b:string){if(a.length!==b.length)return false;let d=0;for(let i=0;i<a.length;i++)d|=a.charCodeAt(i)^b.charCodeAt(i);return d===0}
-async function session(t:string,s:string){const p=String(t||'').split('.');if(!s||p.length!==3||!/^[A-Za-z0-9_-]{1,128}$/.test(p[0])||!/^\d{1,12}$/.test(p[1]))return null;const exp=Number(p[1]),now=Math.floor(Date.now()/1000);if(!Number.isFinite(exp)||exp<=now||exp>now+43200)return null;const e=await hmac(`${p[0]}.${p[1]}`,s);return equal(e,p[2])?p[0]:null}
+async function session(t:string,s:string){const p=String(t||'').split('.');if(!s||p.length!==3||!/^[A-Za-z0-9_-]{1,128}$/.test(p[0])||!/^\d{1,12}$/.test(p[1]))return null;const exp=Number(p[1]),now=Math.floor(Date.now()/1000);if(!Number.isFinite(exp)||exp<=now||exp>now+MAX_SESSION_TTL_SECONDS)return null;const e=await hmac(`${p[0]}.${p[1]}`,s);return equal(e,p[2])?p[0]:null}
 async function owner(db:any,r:Request){const s=Deno.env.get('VK_APP_SECRET')||'',uid=await session(r.headers.get('x-bos-session')||'',s);if(!uid)return null;const q=await db.from('business_staff').select('*').eq('external_id',uid).eq('is_active',true).maybeSingle();if(q.error)throw q.error;return q.data?.role==='owner'?q.data:null}
 async function integration(db:any,r:Request){const raw=String(r.headers.get('x-api-key')||r.headers.get('authorization')?.replace(/^Bearer\s+/i,'')||'');if(!raw)return null;const q=await db.from('api_integrations').select('*').eq('api_key_hash',await sha(raw)).eq('is_active',true).maybeSingle();if(q.error)throw q.error;if(q.data)await db.from('api_integrations').update({last_used_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',q.data.id);return q.data||null}
 const slug=(v:string)=>v.toLowerCase().trim().replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,48);const allowed=['external_id','client','phone','address','work','status','amount','original_amount','scheduled_date','scheduled_time','time_slot','source','city','comment','source_updated_at'];
