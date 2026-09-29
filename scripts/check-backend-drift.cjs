@@ -2,7 +2,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const {createHash}=require('node:crypto');
 const hash=s=>createHash('sha256').update(s).digest('hex');
-const critical=['mini-app-api','report-api','order-lifecycle-api','drive-archive-api','order-meta-api','master-workflow-api','report-file-upload'];
+const critical=['mini-app-api','report-api','order-lifecycle-api','drive-archive-api','order-meta-api','master-workflow-api','report-file-upload','integration-api','staff-admin-api'];
 function check(observed,baseline,root){
  if(!Array.isArray(observed)||!observed.length)throw new Error('Expected fresh get_edge_function results with files[].content');
  const failures=[];const seen=new Set();
