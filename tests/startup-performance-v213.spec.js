@@ -125,3 +125,19 @@ test('iPhone viewport in Chromium restores the master UI without script errors',
  const context=await browser.newContext({...devices['iPhone 13'],serviceWorkers:'block'});const page=await context.newPage();
  try{const f=await fixture(page,'master');await page.goto('http://bos.test/');await expect(page.locator('#authGate')).toBeHidden();await expect(page.locator('#app')).toBeVisible();expect(f.errors).toEqual([])}finally{await context.close()}
 });
+
+test('continuous body progress cannot extend the shared request budget indefinitely',async({page})=>{
+ await page.route('**/transport-budget',r=>r.fulfill({contentType:'text/html',body:'<html><body>Budget fixture</body></html>'}));await page.goto('/transport-budget');
+ await page.clock.install();
+ await page.evaluate(()=>{
+  window.budgetCalls=0;
+  window.fetch=(url,init)=>{budgetCalls++;return Promise.resolve(new Response(new ReadableStream({start(controller){
+   const timer=setInterval(()=>controller.enqueue(new TextEncoder().encode(' ')),1000);
+   init.signal.addEventListener('abort',()=>{clearInterval(timer);controller.error(new DOMException('Aborted','AbortError'))},{once:true});
+  }}),{headers:{'Content-Type':'application/json'}}))};
+ });
+ await page.addScriptTag({path:path.join(root,'network-direct-v86.js')});
+ await page.evaluate(url=>{window.budgetResult=fetch(url+'/api/proxy/mini-app-api',{method:'POST',body:'{"action":"bootstrap"}'}).then(()=> 'unexpected success',error=>error.name)},PRIMARY);
+ await page.clock.runFor(15100);
+ expect(await page.evaluate(()=>budgetResult)).toBe('BOSRouteTimeout');expect(await page.evaluate(()=>budgetCalls)).toBe(1);
+});

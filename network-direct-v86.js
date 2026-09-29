@@ -123,7 +123,7 @@
     return lowerFetch(url,options);
   }
 
-  async function fetchAt(url,input,init,deadlineMs,outer,bufferBody=false,passwordAuth=false){
+  async function fetchAt(url,input,init,deadlineMs,outer,bufferBody=false,passwordAuth=false,requestEnd=Infinity){
     const controller=new AbortController();
     const abort=()=>controller.abort();
     let timer=null;
@@ -132,7 +132,7 @@
       const started=Date.now();
       // The route deadline bounds inactivity, not a response making steady progress.
       // Password auth retains its existing total deadline; other bodies have a 15s cap.
-      const totalLimit=passwordAuth?deadlineMs:Math.max(deadlineMs,15000);
+      const totalLimit=Math.min(requestEnd-started,passwordAuth?deadlineMs:Math.max(deadlineMs,15000));
       let rejectTimeout;
       const arm=()=>{
         clearTimeout(timer);
@@ -188,13 +188,15 @@
 
   async function safeFetch(info,input,init,outer,passwordAuth){
     const targets=orderedTargets(info);
+    const requestEnd=Date.now()+15000;
     let lastError=null;
     let lastResponse=null;
     for(let i=0;i<targets.length;i++){
+      if(Date.now()>=requestEnd){const error=new Error('Сервер не ответил. Повторите попытку.');error.name='BOSRouteTimeout';throw error}
       const target=targets[i];
       const currentInput=attemptInput(input);
       try{
-        const response=await fetchAt(targetUrl(target,info),currentInput,attemptInit(target,passwordAuth,currentInput,init),deadlineFor(target,passwordAuth),outer,true,passwordAuth);
+        const response=await fetchAt(targetUrl(target,info),currentInput,attemptInit(target,passwordAuth,currentInput,init),deadlineFor(target,passwordAuth),outer,true,passwordAuth,requestEnd);
         lastResponse=response;
         const deterministicMiss=await serviceNotAllowed(response);
         const transient=ROUTE_FAILURE_STATUSES.has(response.status);
@@ -202,7 +204,7 @@
         if(i===targets.length-1)return response;
       }catch(error){
         lastError=error;
-        if(outer?.aborted||!retryable(error))throw error;
+        if(outer?.aborted||Date.now()>=requestEnd||!retryable(error))throw error;
         if(i===targets.length-1)throw error;
       }
     }
