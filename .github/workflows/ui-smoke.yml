@@ -40,9 +40,15 @@ jobs:
         with:
           deno-version: v2.9.7
       - name: Frozen push sender dependencies and TypeScript
+        working-directory: supabase/functions/push-api
         run: |
-          deno check --config supabase/functions/push-api/deno.json --lock supabase/functions/push-api/deno.lock --frozen supabase/functions/push-api/index.ts
-          deno test --allow-env --allow-read --config supabase/functions/push-api/deno.json --lock supabase/functions/push-api/deno.lock --frozen supabase/functions/push-api/webpush-runtime.test.ts
+          node - <<'JS'
+          const fs=require('node:fs');
+          const c=JSON.parse(fs.readFileSync('deno.json'));
+          if(c.lock?.frozen!==true||!fs.statSync('deno.lock').size)throw Error('A frozen sender lockfile is required');
+          JS
+          deno check index.ts
+          deno test --allow-env --allow-read webpush-runtime.test.ts
 
       - name: Production order-trigger contract in disposable PostgreSQL
         env:
