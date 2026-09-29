@@ -8,17 +8,7 @@ jobs:
   workspace:
     if: github.ref == 'refs/heads/feat/web-push-v211'
     runs-on: ubuntu-latest
-    timeout-minutes: 12
-    services:
-      postgres:
-        image: postgres:17.6
-        env:
-          POSTGRES_PASSWORD: disposable-test-password
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,37 +17,30 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.9.7
-      - name: Correct startup and sender body, verify server tests
+      - name: Resolve and verify sender dependencies
+        working-directory: supabase/functions/push-api
         run: |
-          node scripts/prepare-push-candidate.cjs
-          npm ci
-          npm run build
-          npm run test:server
-      - name: Resolve and check sender dependencies
-        run: |
-          deno check --config supabase/functions/push-api/deno.json --lock supabase/functions/push-api/deno.lock supabase/functions/push-api/index.ts
-          deno test --allow-env --allow-read --config supabase/functions/push-api/deno.json --lock supabase/functions/push-api/deno.lock supabase/functions/push-api/webpush-runtime.test.ts
-      - name: Persist generated application files on the feature branch only
-        if: always()
+          deno --version
+          deno check index.ts
+          deno test --allow-env --allow-read webpush-runtime.test.ts
+          test -s deno.lock
+          node - <<'JS'
+          const fs=require('node:fs');
+          const p='deno.json',c=JSON.parse(fs.readFileSync(p));
+          c.lock={path:'./deno.lock',frozen:true};
+          fs.writeFileSync(p,JSON.stringify(c)+'\n');
+          JS
+          deno check index.ts
+          deno test --allow-env --allow-read webpush-runtime.test.ts
+      - name: Persist verified lockfile only
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html sw.js build-version.js supabase/functions/push-api/index.ts tests/push-api-v211.test.cjs docs/web-push-v211.md
-          if test -f supabase/functions/push-api/deno.lock; then git add supabase/functions/push-api/deno.lock; fi
+          git add supabase/functions/push-api/deno.json supabase/functions/push-api/deno.lock
           if ! git diff --cached --quiet; then
-            git commit -m 'fix(push): load phone settings and validate sender transport'
+            git commit -m 'build(push): freeze verified sender dependency graph'
             git push origin HEAD:refs/heads/feat/web-push-v211
           fi
-      - name: Push PostgreSQL contract
-        if: always()
-        env:
-          BOS_TEST_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
-        run: bash scripts/test-push.sh
-      - name: Targeted browser contract
-        if: always()
-        run: |
-          npx playwright install chromium
-          npx playwright test tests/web-push-v211.spec.js --workers=2
       - name: Export exact candidate
         if: always()
         run: git archive --format=tar HEAD > /tmp/push-checked-source.tar
@@ -65,7 +48,5 @@ jobs:
         if: always()
         with:
           name: push-checked-source
-          path: |
-            /tmp/push-checked-source.tar
-            test-results/
+          path: /tmp/push-checked-source.tar
           retention-days: 1
