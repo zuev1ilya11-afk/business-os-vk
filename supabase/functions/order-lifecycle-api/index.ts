@@ -6,6 +6,7 @@ const cors={
   'Access-Control-Allow-Methods':'POST,OPTIONS'
 };
 const json=(x:any,s=200)=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'Content-Type':'application/json'}});
+const masterOrder=(o:any)=>{const x={...o};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
 const round=(n:any)=>Math.round(Number(n||0)*100)/100;
 // Approved master contract: 65% of the base after 15%, no 6% withholding; extras stay separate.
 const payouts=(a:any)=>{const x=round(a);return{master_payout:round(x*.85*.65),manager_payout:round(x*.85*.94*.20),dispatcher_payout:round(x*.85*.94*.15)}};
@@ -41,7 +42,7 @@ async function finalizeReport(db:any,req:Request,body:any){
   const q=await db.from('orders').select('*').eq('id',orderId).single();if(q.error)throw q.error;
   if(String(q.data.master_staff_id||'')!==String(actor.id))return json({ok:false,error:'Эта заявка назначена другому мастеру'},403);
   const token=String(body.upload_token||'');if(!token)return json({ok:false,error:'UPLOAD_TOKEN_REQUIRED'},400);
-  if(reportReceipt(q.data,token))return json({ok:true,order:q.data,drive_archive_status:q.data.drive_archive_status});
+  if(reportReceipt(q.data,token))return json({ok:true,order:masterOrder(q.data),drive_archive_status:q.data.drive_archive_status});
   if(reportLocked(q.data))return reportConflict();
   const act=String(body.act_url||''),photos=Array.isArray(body.photo_urls)?body.photo_urls.filter(Boolean).slice(0,5):[];
   if(!act)return json({ok:false,error:'ACT_REQUIRED'},400);if(!photos.length)return json({ok:false,error:'PHOTO_REQUIRED'},400);
@@ -50,7 +51,7 @@ async function finalizeReport(db:any,req:Request,body:any){
   const amount=round(original-unfinished),now=new Date().toISOString();
   const patch:any={status:'В работе',amount,extra_work_done:!!body.extra_work_done,extra_work_description:String(body.extra_work_description||''),extra_work_amount:round(body.extra_work_amount||0),uncompleted_work_done:!!body.uncompleted_work_done,uncompleted_work_description:String(body.uncompleted_work_description||''),uncompleted_work_amount:round(unfinished),report_type:'work',report_act_url:act,report_measurement_url:null,report_photo_urls:JSON.stringify(photos),report_uploaded_at:now,report_upload_token:token,report_review_status:'pending',report_reviewed_by:null,report_reviewed_at:null,report_review_comment:'',drive_archive_status:'pending',drive_archive_error:null,completed_at:null,sync_status:'pending_sheet',updated_at:now,...payouts(amount)};
   const r=await reportWrite(db,q.data,patch);if(r.error)throw r.error;if(!r.data)return reportConflict();
-  return json({ok:true,order:r.data,drive_archive_status:'pending'});
+  return json({ok:true,order:masterOrder(r.data),drive_archive_status:'pending'});
 }
 
 async function archiveBeforeApproval(req:Request,order:any){
@@ -59,7 +60,8 @@ async function archiveBeforeApproval(req:Request,order:any){
   const headers:any={'Content-Type':'application/json'};for(const h of ['x-bos-session','x-vk-launch-params']){const v=req.headers.get(h);if(v)headers[h]=v}
   const r=await fetch(`${base}/functions/v1/drive-archive-api`,{method:'POST',headers,body:JSON.stringify({order_id:String(order.id)})});
   const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось сохранить отчёт на Google Диске');
-  return d.order||order;
+  if(d.order?.drive_archive_status!=='archived'||!d.order?.drive_archive_url)throw new Error('Архив отчёта не подтверждён');
+  return d.order;
 }
 async function reviewReport(db:any,req:Request,body:any){
   const actor=await currentActor(db,req);if(!actor)return json({ok:false,error:'Доступ не подтверждён'},401);if(!ops(String(actor.role||'')))return json({ok:false,error:'Недостаточно прав'},403);
