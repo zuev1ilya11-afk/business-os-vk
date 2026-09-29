@@ -2,8 +2,10 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const vm=require('node:vm');
 const fs=require('node:fs');
+// These tests replace timers; use the same fixed clock for deadline arithmetic.
 function network(fetch,timeout){
- const window={fetch};vm.runInNewContext(fs.readFileSync('network-direct-v86.js','utf8'),{window,location:{href:'https://app.test/'},URL,Request,Response,Headers,AbortController,setTimeout:timeout||setTimeout,clearTimeout});return window.fetch;
+ const Clock=class extends Date{static now(){return 0}};
+ const window={fetch};vm.runInNewContext(fs.readFileSync('network-direct-v86.js','utf8'),{window,Date:Clock,location:{href:'https://app.test/'},URL,Request,Response,Headers,AbortController,setTimeout:timeout||setTimeout,clearTimeout});return window.fetch;
 }
 for(const action of ['reviewReport','updateOrder'])for(const failure of ['network','503','timeout'])test(`${action}: ${failure} never replays a possibly committed write`,async()=>{
  let calls=0;const timers=[];
