@@ -1,10 +1,10 @@
 // One-time feature-branch preparation. Removed before merge.
 const fs=require('node:fs');
 const edit=(path,fn)=>fs.writeFileSync(path,fn(fs.readFileSync(path,'utf8')));
-edit('index.html',s=>s.includes('<script src="./web-push-v211.js')?s:s.replace(/(<script src="\.\/profile-logout-v96\.js[^\n]*\n)/,'$1<script src="./web-push-v211.js"></script>\n'));
-if(!fs.readFileSync('index.html','utf8').includes('<script src="./web-push-v211.js'))throw Error('Push entrypoint missing');
+edit('index.html',s=>s.includes('web-push-v211.js')?s:s.replace(/<script\b[^>]*\bsrc=["'](?:\.\/)?profile-logout-v96\.js[^"']*["'][^>]*><\/script>/,tag=>tag+'<script src="web-push-v211.js"></script>'));
+if(!fs.readFileSync('index.html','utf8').includes('web-push-v211.js'))throw Error('Push entrypoint missing');
 edit('supabase/functions/push-api/index.ts',s=>{
- s=s.replace("'https://business-os-public-xo8i66.v2.appdeploy.ai'","'https://business-os-public-xo8i66.v2.appdeploy.ai','https://business-os-api-gateway.netlify.app'");
+ if(!s.includes("'https://business-os-api-gateway.netlify.app'"))s=s.replace("'https://business-os-public-xo8i66.v2.appdeploy.ai'","'https://business-os-public-xo8i66.v2.appdeploy.ai','https://business-os-api-gateway.netlify.app'");
  const old="if(request.endpoint!==row.endpoint)throw new Error('INVALID_PUSH_ENDPOINT');";
  const replacement="const endpoint=request.endpoint;\n        if(typeof endpoint!=='string'||endpoint!==row.endpoint||!request.body)throw new Error('INVALID_PUSH_ENDPOINT');\n        const encrypted=new Uint8Array(request.body.byteLength);\n        encrypted.set(request.body);";
  if(s.includes(old))s=s.replace(old,replacement).replace("fetch(request.endpoint,{method:'POST',headers:request.headers,body:request.body,","fetch(endpoint,{method:'POST',headers:request.headers,body:encrypted.buffer,");
