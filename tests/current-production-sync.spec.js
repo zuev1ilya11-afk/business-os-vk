@@ -26,10 +26,13 @@ for(const role of ['owner','manager'])test(`${role}: employee refresh updates op
   expect(stateData.orders[0].status).toBe('Выполнена');
 });
 test('master preview refresh uses current employee rather than captured profile object',async({page})=>{
+  await page.clock.install();
   const {db,master}=await boot(page,'owner');
   await page.evaluate(id=>enterMasterPreview(id),master.external_id);
   await page.locator('nav [data-page=team]').click();
   db.tables.business_staff.find(x=>x.id===master.id).phone='+79990000099';
+  // Focus refresh respects the existing 2500 ms automatic-refresh throttle.
+  await page.clock.fastForward(2600);
   await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
   await expect(page.locator('#content')).toContainText('+79990000099');
 });
