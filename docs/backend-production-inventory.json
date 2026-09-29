@@ -431,8 +431,8 @@
         "name": "index.ts",
         "source_sha256": "1fc64fc6e6fa5d50e685a8717ea5763dd1c1a627974781533e6a62bcd4320661",
         "repository_path": "supabase/functions/integration-api/index.ts",
-        "repository_sha256": "06249e106e1aa2cc4ce3526cbd7078ce9d7c5c56ca1dde8955fbc6ca169263ae",
-        "exact": false
+        "repository_sha256": "1fc64fc6e6fa5d50e685a8717ea5763dd1c1a627974781533e6a62bcd4320661",
+        "exact": true
       }
     ]
   },
@@ -463,8 +463,8 @@
         "name": "index.ts",
         "source_sha256": "ceeb8ad5eaa1c3a727c71872dd9b691d285614e694e95d5b198eedcf40cf3480",
         "repository_path": "supabase/functions/staff-admin-api/index.ts",
-        "repository_sha256": "74216e938d52e02de411a79429ce9b77ddbfe97ff8a33651b936c755fc5bb0ca",
-        "exact": false
+        "repository_sha256": "ceeb8ad5eaa1c3a727c71872dd9b691d285614e694e95d5b198eedcf40cf3480",
+        "exact": true
       }
     ]
   },
