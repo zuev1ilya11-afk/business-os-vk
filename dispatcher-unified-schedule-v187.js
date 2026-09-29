@@ -106,19 +106,21 @@ function render(force=false){
 }
 function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>render(false))}
 function updateLocal(id,data){const s=st(),i=(s?.orders||[]).findIndex(o=>String(o.id)===String(id));if(i>=0)s.orders[i]={...s.orders[i],...(data||{})}}
-async function resolveRescheduleIfNeeded(o,date,time){if(!o?.reschedule_requested)return;const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};headers['Content-Type']='application/json';const r=await fetch(META_URL,{method:'POST',headers,body:JSON.stringify({action:'resolveReschedule',id:o.id,scheduled_date:date,scheduled_time:time})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось подтвердить перенос');if(d.order)updateLocal(o.id,d.order)}
+async function resolveRescheduleIfNeeded(o,date,time,timeSlot,expectedUpdatedAt){if(!o?.reschedule_requested)return;const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};headers['Content-Type']='application/json';const r=await fetch(META_URL,{method:'POST',headers,body:JSON.stringify({action:'resolveReschedule',id:o.id,scheduled_date:date,scheduled_time:time,time_slot:timeSlot,expected_updated_at:expectedUpdatedAt})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось подтвердить перенос');if(d.order)updateLocal(o.id,d.order)}
 function refreshBoard(){lastSignature='';if(typeof show==='function')show('orders');else render(true)}
 async function saveMove(id,masterValue,time){
   if(busy)return false;const o=orderById(id),m=findMaster(masterValue),date=boardDate();if(!o||!m||!date)return false;
-  const old=orderInterval(o),start=mins(time),end=Math.min(24*60,start+(old.slots||2)*STEP);if(!Number.isFinite(start))return false;
+  const old=orderInterval(o),start=mins(time),end=start+(old.slots||2)*STEP;if(!Number.isFinite(start))return false;
+  if(end>1440){if(typeof setMessage==='function')setMessage('Длительность не помещается в выбранные сутки. Выберите более раннее время.');return false;}
   if(conflictFor(id,m,date,start,end)&&!confirm(`У ${m.full_name||'мастера'} уже есть заявка, которая пересекается с этим временем. Всё равно назначить?`))return false;
-  busy=true;try{
+  let saved=false;busy=true;try{
     if(typeof api!=='function')throw new Error('API недоступен');
     const payload={id:o.id,master_vk_id:masterValue,scheduled_date:date,scheduled_time:hhmm(start),time_slot:rangeText(start,old.slots||2)};
+    if(o.reschedule_requested&&masterIds(m).some(x=>orderMasterIds(o).includes(x))){await resolveRescheduleIfNeeded(o,date,hhmm(start),payload.time_slot,o.updated_at);refreshBoard();if(typeof setMessage==='function')setMessage('Расписание сохранено');return true;}
     const d=await api('updateOrder',payload);if(!d?.ok)throw new Error(d?.error||'Не удалось изменить расписание');
-    updateLocal(id,{...(d.order||{}),master_vk_id:masterValue,master_name:m.full_name||'',scheduled_date:date,scheduled_time:hhmm(start),time_slot:payload.time_slot});
-    await resolveRescheduleIfNeeded(o,date,hhmm(start));refreshBoard();if(typeof setMessage==='function')setMessage('Расписание сохранено');return true;
-  }catch(e){if(typeof setMessage==='function')setMessage(e?.message||String(e));else console.error(e);return false}finally{busy=false}
+    saved=true;updateLocal(id,{...(d.order||{}),master_vk_id:masterValue,master_name:m.full_name||'',scheduled_date:date,scheduled_time:hhmm(start),time_slot:payload.time_slot});
+    await resolveRescheduleIfNeeded(o,date,hhmm(start),payload.time_slot,d.order?.updated_at);refreshBoard();if(typeof setMessage==='function')setMessage('Расписание сохранено');return true;
+  }catch(e){if(saved)refreshBoard();const message=saved?`Дата, время и мастер сохранены, но запрос переноса не подтверждён: ${e?.message||String(e)}. Обновите заявку перед повтором.`:(e?.message||String(e));if(typeof setMessage==='function')setMessage(message);else console.error(e);return false}finally{busy=false}
 }
 async function saveDuration(id,slots){
   if(busy)return false;const o=orderById(id),date=dateOf(o)||boardDate();if(!o||!date)return false;const m=(st()?.masters||[]).find(x=>sameMaster(x,o)),r=orderInterval(o),start=r.start,next=Math.max(1,Number(slots)||1),end=Math.min(24*60,start+next*STEP),finalSlots=Math.max(1,Math.round((end-start)/STEP));

@@ -7,7 +7,6 @@ function dispatcherMode(){return window.BOS_PERMISSIONS.isDispatcherWorkspaceAct
 function orderById(id){return (state.orders||[]).find(x=>String(x.id)===String(id))||null}
 function localToday(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function currentOrderId(){return String(document.querySelector('.ddQueueCard.isSelected')?.dataset?.orderId||'')}
-function slotFromTime(v){const s=String(v||'').slice(0,5);if(!/^\d{2}:\d{2}$/.test(s))return '';const [h,m]=s.split(':').map(Number);return `${s}–${String((h+1)%24).padStart(2,'0')}:${String(m).padStart(2,'0')}`}
 
 async function call(action,payload={}){
   const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};
@@ -46,9 +45,9 @@ window.openDispatcherReschedule=function(id){
     if(!newDate||!newTime){msg.textContent='Укажите новую дату и время';return}
     state.busy=true;setBusy(form,true);msg.textContent='Переносим…';
     try{
-      const data=await call('resolveReschedule',{id:o.id,scheduled_date:newDate,scheduled_time:newTime,time_slot:slotFromTime(newTime)});
+      const data=await call('resolveReschedule',{id:o.id,scheduled_date:newDate,scheduled_time:newTime,expected_updated_at:o.updated_at});
       const i=(state.orders||[]).findIndex(x=>String(x.id)===String(o.id));
-      if(i>=0)state.orders[i]={...state.orders[i],...data.order,scheduled_date:newDate,scheduled_time:newTime,time_slot:slotFromTime(newTime),reschedule_requested:false,reschedule_reason:null,reschedule_requested_at:null,reschedule_requested_by:null};
+      if(i>=0)state.orders[i]={...state.orders[i],...data.order,scheduled_date:newDate,scheduled_time:newTime,reschedule_requested:false,reschedule_reason:null,reschedule_requested_at:null,reschedule_requested_by:null};
       state.busy=false;closeModal();show('orders');
     }catch(err){msg.textContent=err.message||String(err);setBusy(form,false)}finally{state.busy=false}
   };

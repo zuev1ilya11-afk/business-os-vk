@@ -79,13 +79,13 @@ window.dispatchBoardV21ToggleFree=function(){freeOnly=!freeOnly;enhanceRows()};
 window.dispatchBoardV21MoveSelected=async function(){
   const o=selectedOrder(),date=document.getElementById('dbV21MoveDate')?.value||'',time=document.getElementById('dbV21MoveTime')?.value||'';if(!o||!date||!/^\d{2}:\d{2}$/.test(time))return;
   const m=selectedMaster(o),conflicts=m?conflictsFor(m,date,time,o.id):[];if(conflicts.length&&!confirm(`У ${m.full_name||'мастера'} уже есть заявка на это время. Всё равно перенести?`))return;
-  setMsg('Переносим…');
+  setMsg('Переносим…');let saved=false;
   try{
     const d=await api('updateOrder',{id:o.id,scheduled_date:date,scheduled_time:time,time_slot:slotOf(time,o)});if(!d.ok)throw new Error(d.error||'Не удалось перенести заявку');
-    updateState(o.id,d.order,{scheduled_date:date,scheduled_time:time,time_slot:slotOf(time,o)});
-    if(o.reschedule_requested){const r=await metaCall('resolveReschedule',{id:o.id,scheduled_date:date,scheduled_time:time});updateState(o.id,r.order,{reschedule_requested:false,reschedule_reason:null,reschedule_requested_at:null,reschedule_requested_by:null})}
+    saved=true;updateState(o.id,d.order,{scheduled_date:date,scheduled_time:time,time_slot:slotOf(time,o)});
+    if(o.reschedule_requested){const r=await metaCall('resolveReschedule',{id:o.id,scheduled_date:date,scheduled_time:time,time_slot:d.order?.time_slot||slotOf(time,o),expected_updated_at:d.order?.updated_at});updateState(o.id,r.order,{reschedule_requested:false,reschedule_reason:null,reschedule_requested_at:null,reschedule_requested_by:null})}
     if(typeof setDispatchBoardDate==='function')setDispatchBoardDate(date);else show('orders');
-  }catch(e){setMsg(e.message||String(e))}
+  }catch(e){if(saved&&typeof show==='function')show('orders');setMsg(saved?`Дата и время сохранены, но запрос переноса не подтверждён: ${e.message||String(e)}. Обновите заявку перед повтором.`:(e.message||String(e)))}
 };
 window.dispatchBoardV21AutoAssign=function(){
   const o=selectedOrder();if(!o)return;
