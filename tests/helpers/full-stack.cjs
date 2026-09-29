@@ -1,11 +1,12 @@
 const {edge,database,employee,token}=require('./edge.cjs');
-async function fullStack(page,role='owner'){
+async function fullStack(page,role='owner',options={}){
  const me=employee(role,role,{external_id:role==='owner'?'100':`staff_${role}`,city:'Санкт-Петербург'});
  const master=role==='master'?me:employee('m','master',{full_name:'Тестовый мастер',city:'Санкт-Петербург'});
  const db=database({business_staff:[me,...(role==='master'?[]:[master])],orders:[{id:'11',client:'Анна',address:'Невский 1',work:'Монтаж',status:'В работе',amount:1000,original_amount:1000,master_staff_id:master.id,master_name:master.full_name,master_payout:552.5,source:'VK',scheduled_date:'2099-09-10',master_workflow_stage:'assigned'},{id:'12',client:'Борис',address:'Другой адрес',work:'Шторы',status:'В работе',amount:2000,original_amount:2000,master_staff_id:null,source:'Авито',master_workflow_stage:'assigned'}]});
  // Model the existing SQL BEFORE UPDATE trigger, which the in-memory DB does not execute.
  // See 20260922104500_master_workflow_profile_bridge.sql.
  db.beforeUpdate=(table,staff,patch)=>{
+  if(table==='orders'&&options.productionOrderGuards)return require('./order-guards.cjs').orderGuards(staff,patch);
   // The reschedule bridge likewise persists requests before bootstrap refreshes.
   if(table==='business_staff'&&String(patch.district||'').startsWith('@@BOS_R1@@|')){
    const [,id,reason]=patch.district.match(/^@@BOS_R1@@\|(\d+)\|([\s\S]*)$/)||[];
@@ -31,11 +32,19 @@ async function fullStack(page,role='owner'){
   patch.district=staff.district;
   return patch;
  };
- const handlers={};for(const s of ['mini-app-api','staff-admin-api','claims-api','profile-self-api','employee-meta-api','master-memo-api','order-meta-api','report-api','master-workflow-api'])handlers[s]=edge(s,db);
+ const handlers={};
+ const internalFetch=async(url,init)=>{
+  const slug=new URL(url).pathname.split('/').pop(),body=JSON.parse(init.body||'{}');
+  if(slug==='drive-archive-api'&&options.archive)return options.archive(body,db);
+  if(slug!=='order-lifecycle-api')throw new Error(`Unexpected external fetch: ${slug}`);
+  const result=await handlers[slug](body,'ignored',new Headers(init.headers).get('x-bos-session')||'');
+  return new Response(JSON.stringify(result.body),{status:result.status});
+ };
+ for(const s of ['mini-app-api','staff-admin-api','claims-api','profile-self-api','employee-meta-api','master-memo-api','order-meta-api','report-api','master-workflow-api','order-lifecycle-api'])handlers[s]=edge(s,db,{fetch:internalFetch});
  await page.addInitScript(t=>localStorage.setItem('bos_vk_session_v2',t),token(me.external_id));
  await page.route('https://unpkg.com/**',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
  await page.route(/https:\/\/.*(?:api\/proxy|functions\/v1)\/[^/?]+/,async r=>{
-  const slug=r.request().url().split('/').pop();const h=handlers[slug];
+  const slug=new URL(r.request().url()).pathname.split('/').pop();const h=handlers[slug];
   if(!h)return r.fulfill({status:404,contentType:'application/json',body:'{"ok":false,"error":"unsupported test service"}'});
   const result=await h(r.request().postDataJSON()||{},me.external_id,r.request().headers()['x-bos-session']||'');
   await r.fulfill({status:result.status,contentType:'application/json',body:JSON.stringify(result.body)});
