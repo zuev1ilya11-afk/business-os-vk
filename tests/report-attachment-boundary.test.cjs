@@ -17,29 +17,29 @@ for(const slug of ['order-lifecycle-api','report-api'])test(`${slug}: attachment
 });
 test('archiver refuses unsafe URLs without attempting any network request',async()=>{
  for(const url of invalid){let calls=0;const db=fixture({report_act_url:url}),before=structuredClone(db.tables.orders);
-  const r=await edge('drive-archive-api',db,{fetch:async()=>{calls++;throw Error('Forbidden network call')}})({order_id:'o'},'staff_d');
+  const r=await edge('drive-archive-api',db,{fetch:async()=>{calls++;throw Error('Forbidden network call')}})({order_id:'o',expected_report_token:db.tables.orders[0].report_upload_token,expected_report_uploaded_at:db.tables.orders[0].report_uploaded_at},'staff_d');
   assert.equal(r.status,400,url);assert.equal(calls,0);assert.deepEqual(db.tables.orders,before);
  }
 });
 test('attachment redirects are refused, not followed',async()=>{
- let calls=0;const db=fixture();const r=await edge('drive-archive-api',db,{fetch:async(url,init)=>{calls++;assert.equal(init.redirect,'error');return new Response(null,{status:302,headers:{location:'http://127.0.0.1/private'}})}})({order_id:'o'},'staff_d');
+ let calls=0;const db=fixture();const r=await edge('drive-archive-api',db,{fetch:async(url,init)=>{calls++;assert.equal(init.redirect,'error');return new Response(null,{status:302,headers:{location:'http://127.0.0.1/private'}})}})({order_id:'o',expected_report_token:db.tables.orders[0].report_upload_token,expected_report_uploaded_at:db.tables.orders[0].report_uploaded_at},'staff_d');
  assert.equal(r.status,502);assert.equal(calls,1);assert.equal(db.tables.orders[0].drive_archive_status,undefined);
 });
 test('declared oversized body is rejected and the request is aborted',async()=>{
- let signal;const db=fixture();const r=await edge('drive-archive-api',db,{fetch:async(url,init)=>{signal=init.signal;return new Response('small',{headers:{'content-length':String(11*1024*1024)}})}})({order_id:'o'},'staff_d');
+ let signal;const db=fixture();const r=await edge('drive-archive-api',db,{fetch:async(url,init)=>{signal=init.signal;return new Response('small',{headers:{'content-length':String(11*1024*1024)}})}})({order_id:'o',expected_report_token:db.tables.orders[0].report_upload_token,expected_report_uploaded_at:db.tables.orders[0].report_uploaded_at},'staff_d');
  assert.equal(r.status,413);assert.equal(signal.aborted,true);assert.equal(db.calls.filter(x=>x.mode==='update').length,0);
 });
 test('streaming byte limit works without content-length and cancels the stream',async()=>{
- let cancelled=false;const db=fixture();const r=await edge('drive-archive-api',db,{fetch:async()=>new Response(new ReadableStream({pull(c){c.enqueue(new Uint8Array(6*1024*1024))},cancel(){cancelled=true}}))})({order_id:'o'},'staff_d');
+ let cancelled=false;const db=fixture();const r=await edge('drive-archive-api',db,{fetch:async()=>new Response(new ReadableStream({pull(c){c.enqueue(new Uint8Array(6*1024*1024))},cancel(){cancelled=true}}))})({order_id:'o',expected_report_token:db.tables.orders[0].report_upload_token,expected_report_uploaded_at:db.tables.orders[0].report_uploaded_at},'staff_d');
  assert.equal(r.status,413);assert.equal(cancelled,true);assert.equal(db.calls.filter(x=>x.mode==='update').length,0);
 });
 test('aggregate report limit bounds a series of individually valid files',async()=>{
  const db=fixture({report_photo_urls:JSON.stringify([attachmentUrl('o','r1','1.jpg'),attachmentUrl('o','r1','2.jpg')])});let calls=0;
- const r=await edge('drive-archive-api',db,{fetch:async()=>{calls++;return new Response(new Uint8Array(9*1024*1024))}})({order_id:'o'},'staff_d');
+ const r=await edge('drive-archive-api',db,{fetch:async()=>{calls++;return new Response(new Uint8Array(9*1024*1024))}})({order_id:'o',expected_report_token:db.tables.orders[0].report_upload_token,expected_report_uploaded_at:db.tables.orders[0].report_uploaded_at},'staff_d');
  assert.equal(r.status,413);assert.equal(calls,3);assert.equal(db.calls.filter(x=>x.mode==='update').length,0);
 });
 test('attachment read deadline aborts the fetch and preserves pending report',async()=>{
- const db=fixture();const r=await edge('drive-archive-api',db,{setTimeout:fn=>setTimeout(fn,2),fetch:async(url,init)=>new Promise((resolve,reject)=>init.signal.addEventListener('abort',()=>reject(new Error('aborted'))))})({order_id:'o'},'staff_d');
+ const db=fixture();const r=await edge('drive-archive-api',db,{setTimeout:fn=>setTimeout(fn,2),fetch:async(url,init)=>new Promise((resolve,reject)=>init.signal.addEventListener('abort',()=>reject(new Error('aborted'))))})({order_id:'o',expected_report_token:db.tables.orders[0].report_upload_token,expected_report_uploaded_at:db.tables.orders[0].report_uploaded_at},'staff_d');
  assert.equal(r.status,504);assert.equal(db.tables.orders[0].report_review_status,'pending');
 });
 for(const timing of ['during-read','during-bridge'])test(`archive cannot attach stale metadata after report changes ${timing}`,async()=>{
@@ -48,12 +48,12 @@ for(const timing of ['during-read','during-bridge'])test(`archive cannot attach 
   if(String(url).startsWith('https://script.google.com/')){bridge++;Object.assign(db.tables.orders[0],{report_upload_token:'r2',updated_at:'2026-01-02'});return Response.json({ok:true,drive_folder_url:'https://drive.test/folder',drive_folder_id:'folder'})}
   if(timing==='during-read')Object.assign(db.tables.orders[0],{report_upload_token:'r2',updated_at:'2026-01-02'});
   return new Response('file');
- }})({order_id:'o'},'staff_d');
+ }})({order_id:'o',expected_report_token:db.tables.orders[0].report_upload_token,expected_report_uploaded_at:db.tables.orders[0].report_uploaded_at},'staff_d');
  assert.equal(r.status,409);assert.equal(bridge,timing==='during-read'?0:1);assert.equal(db.tables.orders[0].report_upload_token,'r2');assert.equal(db.tables.orders[0].drive_archive_url,undefined);
 });
 test('archived receipt causes no repeated external write',async()=>{
  const db=fixture({drive_archive_status:'archived',drive_archive_url:'https://drive.test/folder'}),before=structuredClone(db.tables.orders);
- assert.equal((await edge('drive-archive-api',db)({order_id:'o'},'staff_d')).status,200);assert.deepEqual(db.tables.orders,before);
+ assert.equal((await edge('drive-archive-api',db)({order_id:'o',expected_report_token:db.tables.orders[0].report_upload_token,expected_report_uploaded_at:db.tables.orders[0].report_uploaded_at},'staff_d')).status,200);assert.deepEqual(db.tables.orders,before);
 });
 function upload(){const f=new FormData();f.set('order_id','o');f.set('upload_token','r1');f.set('file_kind','act');f.set('file',new File(['bytes'],'act.pdf',{type:'application/pdf'}));return f}
 test('multipart uploads are immutable and closed reports reject uploads',async()=>{

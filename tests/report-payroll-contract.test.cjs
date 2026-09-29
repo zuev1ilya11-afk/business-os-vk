@@ -41,12 +41,12 @@ test('reject, resubmit and approve retain one deduction and one extra payment',a
  const {db,historical}=fixture();let archived=0;
  const api=edge('order-lifecycle-api',db,{fetch:async()=>{archived++;return new Response(JSON.stringify({ok:true,order:{...db.tables.orders[0],drive_archive_status:'archived',drive_archive_url:'https://drive.test/archive'}}))}});
  const c=cases[1];assert.equal((await api(body('finalizeMasterReport',c),'staff_m')).status,200);
- assert.equal((await api({action:'reviewReport',id:'new',decision:'rejected',comment:'Добавьте фото'},'staff_d')).status,200);
+ assert.equal((await api({action:'reviewReport',id:'new',expected_report_token:db.tables.orders[0].report_upload_token,expected_report_uploaded_at:db.tables.orders[0].report_uploaded_at,decision:'rejected',comment:'Добавьте фото'},'staff_d')).status,200);
  // Production rejection trigger clears report pointers. Model its post-trigger row here.
  Object.assign(db.tables.orders[0],{master_workflow_stage:'assigned',report_uploaded_at:null,report_act_url:null,report_photo_urls:'[]',report_upload_token:null,completed_at:null});
  assert.equal((await api(body('finalizeMasterReport',c,'report-2'),'staff_m')).status,200);
  assert.equal(db.tables.orders[0].amount,800);assert.equal(db.tables.orders[0].master_payout,442);assert.equal(db.tables.orders[0].extra_work_amount,300);
- assert.equal((await api({action:'reviewReport',id:'new',decision:'approved'},'staff_d')).status,200);
+ assert.equal((await api({action:'reviewReport',id:'new',expected_report_token:db.tables.orders[0].report_upload_token,expected_report_uploaded_at:db.tables.orders[0].report_uploaded_at,decision:'approved'},'staff_d')).status,200);
  assert.equal(archived,1);assert.equal(db.tables.orders[0].status,'Выполнена');
  assert.equal(money(db.tables.orders[0].master_payout+db.tables.orders[0].extra_work_amount),742);
  assert.deepEqual(db.tables.orders[1],historical);
