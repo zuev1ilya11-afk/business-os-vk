@@ -145,7 +145,7 @@ Deno.serve(async(req:Request)=>{
       }
       const connected=!!device?.active&&Date.parse(device.expires_at)>Date.now();
       return json(req,{ok:true,public_key:cfg.publicKey,account:uid,connected,
-        device:connected?{id:device.id,binding_id:device.binding_id,expires_at:device.expires_at}:null});
+        device:connected&&device?{id:device.id,binding_id:device.binding_id,expires_at:device.expires_at}:null});
     }
     if(!validRevoke(body.revoke_token))return json(req,{ok:false,error:'INVALID_DEVICE_TOKEN'},400);
     const revokeHash=await sha(body.revoke_token);
