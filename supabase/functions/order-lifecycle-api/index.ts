@@ -7,6 +7,19 @@ const cors={
 };
 const json=(x:any,s=200)=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'Content-Type':'application/json'}});
 const masterOrder=(o:any)=>{const x={...o};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
+
+// Only signed objects for this exact order/report may cross the attachment boundary.
+function validAttachmentUrl(raw:any,orderId:any,token:any){
+  try{
+    if(typeof raw!=='string'||raw.length>8192)return false;
+    const u=new URL(raw),base=new URL(Deno.env.get('SUPABASE_URL')||'');
+    const reportToken=String(token||'').replace(/[^a-zA-Z0-9._-]+/g,'_').slice(-120);
+    const prefix=`/storage/v1/object/sign/business-os-vk-files/orders/${orderId}/${reportToken}/`;
+    const path=decodeURIComponent(u.pathname),file=path.slice(prefix.length);
+    return !!reportToken&&u.protocol==='https:'&&u.origin===base.origin&&!u.username&&!u.password&&!u.hash&&!!u.searchParams.get('token')&&path.startsWith(prefix)&&!!file&&!file.includes('/')&&!['.','..'].includes(file);
+  }catch{return false}
+}
+
 const round=(n:any)=>Math.round(Number(n||0)*100)/100;
 // Approved master contract: 65% of the base after 15%, no 6% withholding; extras stay separate.
 const payouts=(a:any)=>{const x=round(a);return{master_payout:round(x*.85*.65),manager_payout:round(x*.85*.94*.20),dispatcher_payout:round(x*.85*.94*.15)}};
@@ -45,7 +58,7 @@ async function finalizeReport(db:any,req:Request,body:any){
   if(reportReceipt(q.data,token))return json({ok:true,order:masterOrder(q.data),drive_archive_status:q.data.drive_archive_status});
   if(reportLocked(q.data))return reportConflict();
   const act=String(body.act_url||''),photos=Array.isArray(body.photo_urls)?body.photo_urls.filter(Boolean).slice(0,5):[];
-  if(!act)return json({ok:false,error:'ACT_REQUIRED'},400);if(!photos.length)return json({ok:false,error:'PHOTO_REQUIRED'},400);
+  if(!act)return json({ok:false,error:'ACT_REQUIRED'},400);if(!photos.length)return json({ok:false,error:'PHOTO_REQUIRED'},400);if(![act,...photos].every(u=>validAttachmentUrl(u,orderId,token)))return json({ok:false,error:'INVALID_ATTACHMENT_URL'},400);
   for(const k of ['uncompleted_work_amount','extra_work_amount'])if(k in body&&(!Number.isFinite(Number(body[k]))||Number(body[k])<0))return json({ok:false,error:'Сумма должна быть конечным неотрицательным числом'},400);
   const original=Number(q.data.original_amount??q.data.amount??0),unfinished=Number(body.uncompleted_work_amount||0);if(unfinished>original)return json({ok:false,error:'Невыполненные работы не могут превышать сумму заказа'},400);
   const amount=round(original-unfinished),now=new Date().toISOString();

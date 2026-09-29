@@ -1,6 +1,6 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
-const {edge,database,employee,token}=require('./helpers/edge.cjs');
+const {edge,database,employee,token,attachmentUrl}=require('./helpers/edge.cjs');
 
 test('bootstrap and employee writes never serialize password hashes',async()=>{
  const db=database({business_staff:[employee('owner','owner'),employee('m')]});const api=edge('mini-app-api',db);
@@ -37,7 +37,7 @@ test('master bootstrap and direct API cannot access others orders or escalate ro
 });
 test('report finalization subtracts 15 percent and then 35 percent for master payout',async()=>{
  const db=database({business_staff:[employee('m')],orders:[{id:'1',master_staff_id:'m',original_amount:1000}]});
- const r=await edge('report-api',db)({action:'finalizeMasterReport',order_id:'1',upload_token:'audit',act_url:'https://example.test/act',photo_urls:['https://example.test/photo']},'staff_m');
+ const r=await edge('report-api',db)({action:'finalizeMasterReport',order_id:'1',upload_token:'audit',act_url:attachmentUrl('1','audit'),photo_urls:[attachmentUrl('1','audit','photo.jpg')]},'staff_m');
  assert.equal(r.status,200);
  assert.equal(r.body.order.master_payout,552.5);
  assert.equal(r.body.order.amount,undefined);
@@ -61,7 +61,7 @@ test('concurrent retry returns same order and creates only one row',async()=>{
 test('report rejects excessive deduction and negative extras',async()=>{
  for(const values of [{uncompleted_work_amount:1001},{extra_work_amount:-1}]){
  const db=database({business_staff:[employee('m')],orders:[{id:'1',master_staff_id:'m',original_amount:1000}]});
- const r=await edge('report-api',db)({action:'finalizeMasterReport',order_id:'1',upload_token:'audit',act_url:'https://example.test/act',photo_urls:['https://example.test/photo'],...values},'staff_m');assert.equal(r.status,400);assert.equal(db.tables.orders[0].status,undefined);
+ const r=await edge('report-api',db)({action:'finalizeMasterReport',order_id:'1',upload_token:'audit',act_url:attachmentUrl('1','audit'),photo_urls:[attachmentUrl('1','audit','photo.jpg')],...values},'staff_m');assert.equal(r.status,400);assert.equal(db.tables.orders[0].status,undefined);
  }
 });
 test('empty optional order values are typed for Postgres',async()=>{

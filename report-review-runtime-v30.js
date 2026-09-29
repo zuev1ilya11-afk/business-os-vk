@@ -1,5 +1,6 @@
 (()=>{
   'use strict';
+  function safeHref(value){try{const u=new URL(String(value||''));return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
   function canReview(){
     if(typeof isMasterPreview==='function'&&isMasterPreview())return false;
     if(typeof isDispatcherPreview==='function'&&isDispatcherPreview())return true;
@@ -13,7 +14,7 @@
   function queue(){
     if(!canReview())return '';
     const list=pending();
-    return `<section class="card reportQueue"><div class="row"><div><div class="eyebrow">КОНТРОЛЬ ОТЧЁТОВ</div><h3>Отчёты на проверку</h3></div><span class="softChip">${list.length}</span></div>${list.length?list.slice(0,5).map(o=>`<button class="reportReviewCard" onclick="openReportReview('${esc(o.id)}')"><div><b>${esc(o.id)} · ${esc(o.work||'Заявка')}</b><span>${esc(o.master_name||'Мастер')} · ${esc(o.address||'')}</span></div><div>${badge(o)}</div><span class="dashArrow">›</span></button>`).join(''):'<p class="muted">Новых отчётов на проверку нет.</p>'}${state?.settings?.reports_drive_folder_url?`<a class="secondary wide" target="_blank" rel="noopener" href="${esc(state.settings.reports_drive_folder_url)}">Открыть архив отчётов на Google Диске</a>`:''}</section>`;
+    return `<section class="card reportQueue"><div class="row"><div><div class="eyebrow">КОНТРОЛЬ ОТЧЁТОВ</div><h3>Отчёты на проверку</h3></div><span class="softChip">${list.length}</span></div>${list.length?list.slice(0,5).map(o=>`<button class="reportReviewCard" onclick="openReportReview('${esc(o.id)}')"><div><b>${esc(o.id)} · ${esc(o.work||'Заявка')}</b><span>${esc(o.master_name||'Мастер')} · ${esc(o.address||'')}</span></div><div>${badge(o)}</div><span class="dashArrow">›</span></button>`).join(''):'<p class="muted">Новых отчётов на проверку нет.</p>'}${safeHref(state?.settings?.reports_drive_folder_url)?`<a class="secondary wide" target="_blank" rel="noopener" href="${esc(safeHref(state.settings.reports_drive_folder_url))}">Открыть архив отчётов на Google Диске</a>`:''}</section>`;
   }
   function enrichExtraWork(id){
     const o=(state?.orders||[]).find(x=>String(x.id)===String(id));

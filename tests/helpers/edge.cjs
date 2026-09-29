@@ -40,9 +40,10 @@ function edge(slug,db,extra={}){
   let handler;
   const filename=path.join(__dirname,'../../supabase/functions',slug,'index.ts');
   const source=stripTypeScriptTypes(fs.readFileSync(filename,'utf8').replace(/^import .*?;\s*/,'') ,{mode:'transform'});
-  const context={createClient:()=>db,Deno:{env:{get:k=>({VK_APP_SECRET:secret,BOS_SYNC_KEY:secret,SUPABASE_URL:'https://test.invalid',SUPABASE_SERVICE_ROLE_KEY:'test-key'}[k])},serve:fn=>handler=fn},crypto:webcrypto,Request,Response,Headers,URL,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,btoa,atob,console,fetch:()=>{throw new Error('Unexpected external fetch')},...extra};
+  const context={createClient:()=>db,Deno:{env:{get:k=>({VK_APP_SECRET:secret,BOS_SYNC_KEY:secret,SUPABASE_URL:'https://test.invalid',SUPABASE_SERVICE_ROLE_KEY:'test-key',...(extra.env||{})}[k])},serve:fn=>handler=fn},crypto:webcrypto,Request,Response,Headers,File,FormData,AbortController,setTimeout,clearTimeout,URL,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,btoa,atob,console,fetch:()=>{throw new Error('Unexpected external fetch')},...extra};
   vm.runInNewContext(source,context,{filename});
-  return async(body,uid='100',session=token(uid))=>{const r=await handler(new Request('https://test.invalid',{method:'POST',headers:{'Content-Type':'application/json','X-BOS-Session':session},body:JSON.stringify(body)}));return {status:r.status,body:await r.json()}};
+  return async(body,uid='100',session=token(uid))=>{const r=await handler(new Request('https://test.invalid',{method:'POST',headers:{...(body instanceof FormData?{}:{'Content-Type':'application/json'}),'X-BOS-Session':session},body:body instanceof FormData?body:JSON.stringify(body)}));return {status:r.status,body:await r.json()}};
 }
 const employee=(id,role='master',extra={})=>({id,external_id:id==='owner'?'100':`staff_${id}`,full_name:id,role,is_active:true,phone:'+79990000001',login:id,password_hash:'audit-password',...extra});
-module.exports={edge,database,token,employee,secret};
+const attachmentUrl=(id,token,name='act.pdf')=>`https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/${id}/${token}/${name}?token=test-signature`;
+module.exports={edge,database,token,employee,secret,attachmentUrl};

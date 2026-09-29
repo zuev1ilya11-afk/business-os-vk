@@ -1,9 +1,12 @@
 const baseReportOpenOrder=openOrder;
 
+function safeReportHref(value){try{const u=new URL(String(value||''));return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
 function reportLinksHtml(o){
+  if(o)o={...o,report_act_url:safeReportHref(o.report_act_url),report_measurement_url:safeReportHref(o.report_measurement_url)};
   if(!o||!o.report_act_url)return '';
   let photos=[];try{photos=JSON.parse(o.report_photo_urls||'[]')}catch(_){photos=[]}
   const measurement=o.report_type==='measurement'&&o.report_measurement_url?`<a class="secondary wide" target="_blank" rel="noopener" href="${esc(o.report_measurement_url)}">Открыть лист замера</a>`:'';
+  photos=Array.isArray(photos)?photos.map(safeReportHref).filter(Boolean):[];
   const photoLinks=photos.map((u,i)=>`<a class="secondary wide" target="_blank" rel="noopener" href="${esc(u)}">Фото ${i+1}</a>`).join('');
   return `<section class="card"><h3>Отчёт мастера</h3><p class="muted">${o.report_type==='measurement'?'Замер':'Выполненные работы'}</p><a class="secondary wide" target="_blank" rel="noopener" href="${esc(o.report_act_url)}">Открыть акт</a>${measurement}${photoLinks}</section>`;
 }

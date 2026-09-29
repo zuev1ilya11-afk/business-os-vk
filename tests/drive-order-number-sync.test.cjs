@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 const {createHash,createHmac}=require('node:crypto');
-const {edge,database,employee,secret}=require('./helpers/edge.cjs');
+const {edge,database,employee,secret,attachmentUrl}=require('./helpers/edge.cjs');
 
 test('Drive archive uses the same visible Hands order number as the app',async()=>{
   const db=database({
@@ -14,13 +14,13 @@ test('Drive archive uses the same visible Hands order number as the app',async()
       report_uploaded_at:'2026-09-21T10:00:00Z',
       report_type:'work',
       report_upload_token:'audit',
-      report_act_url:'https://files.test/act.pdf',
-      report_photo_urls:JSON.stringify(['https://files.test/photo.jpg'])
+      report_act_url:attachmentUrl('uuid-1','audit'),
+      report_photo_urls:JSON.stringify([attachmentUrl('uuid-1','audit','photo.jpg')])
     }]
   });
   let archived=false;
   const fetch=async(url,init={})=>{
-    if(String(url).startsWith('https://files.test/'))return new Response('file',{status:200,headers:{'content-type':String(url).endsWith('.pdf')?'application/pdf':'image/jpeg'}});
+    if(String(url).startsWith('https://test.invalid/storage/'))return new Response('file',{status:200,headers:{'content-type':String(url).endsWith('.pdf')?'application/pdf':'image/jpeg'}});
     if(String(url).startsWith('https://script.google.com/')){
       archived=true;
       const p=new URLSearchParams(init.body);
@@ -29,6 +29,7 @@ test('Drive archive uses the same visible Hands order number as the app',async()
       const signingKey=createHash('sha256').update(secret).digest('hex');
       const expected=createHmac('sha256',signingKey).update(`${p.get('archive_ts')}|uuid-1|audit|1644`).digest('base64url');
       assert.equal(p.get('order_no_sign'),expected);
+      assert.equal(p.get('archive_sign'),createHmac('sha256',signingKey).update(`${p.get('archive_ts')}|uuid-1|audit`).digest('base64url'),'legacy bridge signature remains compatible');
       return new Response(JSON.stringify({ok:true,order_id:'uuid-1',order_no:'1644',drive_folder_id:'folder-1644',drive_folder_url:'https://drive.test/1644'}),{status:200,headers:{'content-type':'application/json'}});
     }
     throw new Error(`Unexpected fetch ${url}`);
