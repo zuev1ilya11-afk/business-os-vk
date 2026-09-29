@@ -9,7 +9,7 @@ The existing PWA receives Web Push through its existing service worker; no APK, 
 - `push-api`: signed BOS session + active staff for subscribe/status/test, separate random Vault-backed worker bearer, revocation-only device capability for logout/offline cleanup. Provider endpoint allowlist, encrypted `aes128gcm`, no redirects.
 - `20260929163737_web_push_v211.sql`: service-only RLS device/queue tables, disabled runtime, additive AFTER order trigger, per-subscription binding, five-attempt lease queue, stale-access recheck and maintenance. Existing payroll/order guards are unchanged. No historical backfill.
 - Public RPCs are not browser APIs: EXECUTE revoked from PUBLIC/anon/authenticated. `bos_push_runtime` and VAPID initialization are server-only and must never be exposed by a generic RPC proxy.
-- `netlify/functions/proxy.mts` and both existing AppDeploy gateways need `push-api` added to their service allowlists. No other routing or authentication behavior changes.
+- The existing network layer retries explicit gateway service-miss responses against the next candidate, including direct Supabase. Push-specific regressions cover signed-header preservation and no replay of an uncertain test request. Updating live gateway allowlists is optional; no existing gateway is replaced.
 
 The supported event set is assignment, removal, time change, cancellation, rejected report, new order and report awaiting review. Operations recipients follow the current owner/manager/dispatcher access. Removed-master notifications omit the order ID. All messages omit customer names, addresses, phones, report text and money. An order is reloaded under the current session before opening.
 
@@ -17,7 +17,7 @@ The supported event set is assignment, removal, time change, cancellation, rejec
 
 1. Pass Node, browser, frozen Deno dependency and disposable PostgreSQL checks on the exact PR head. Keep mandatory PR and smoke protections.
 2. Apply the additive migration (runtime is disabled). Deploy only the new `push-api` with its exact files, `deno.json` and lockfile. `verify_jwt=false` is intentional because the body verifies custom BOS sessions, a worker secret or a revocation-only capability; no launch-only auth is accepted.
-3. Add the single service name to each live gateway after reading its current source. Do not replace live handlers with older repository exports.
+3. Verify the existing gateway service-miss fallback to the new direct Edge endpoint. Do not replace live gateways or handlers with older repository exports. Allowlist updates may be deployed separately.
 4. Apply `supabase/push-activation.sql` only after the new handler is deployed. It installs pg_net, schedules minute-based queue recovery, enables the runtime, and makes an authenticated wake-up without exporting the secret. VAPID keys are generated in the handler and the private key stays in Vault. Check worker HTTP response, advisors and unauthenticated rejection. Never print worker/VAPID private keys, device endpoints or auth keys.
 5. Merge/deploy the tested frontend through the normal pipeline. Confirm the generated BUILD_ID and assets on the actual production origin.
 6. On a physical phone, update the PWA, open profile → notifications → enable → allow → test. Check closed app/locked screen over Wi-Fi and mobile data without VPN. Also verify real assignment/cancel/rejection and tap-to-order. Phone permission cannot be granted remotely.

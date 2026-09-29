@@ -3,7 +3,7 @@ import webpush from 'npm:web-push@3.6.7';
 
 const VERSION='web-push-v211';
 const encoder=new TextEncoder();
-const origins=new Set(['https://zuev1ilya11-afk.github.io','https://business-os-public-xo8i66.v2.appdeploy.ai']);
+const origins=new Set(['https://zuev1ilya11-afk.github.io','https://business-os-public-xo8i66.v2.appdeploy.ai','https://business-os-api-gateway.netlify.app']);
 const roles=new Set(['owner','manager','dispatcher','master']);
 function headers(req:Request){
   const origin=req.headers.get('origin')||'';
@@ -73,10 +73,13 @@ async function sendOne(db:any,cfg:any,claim:any){
           TTL:ttl,urgency:'high',contentEncoding:'aes128gcm',topic:String(row.event_id).replace(/-/g,'').slice(0,32)
         });
         // Provider allowlist plus redirect:error prevents turning stored endpoints into an SSRF proxy.
-        if(request.endpoint!==row.endpoint)throw new Error('INVALID_PUSH_ENDPOINT');
+        const endpoint=request.endpoint;
+        if(typeof endpoint!=='string'||endpoint!==row.endpoint||!request.body)throw new Error('INVALID_PUSH_ENDPOINT');
+        const encrypted=new Uint8Array(request.body.byteLength);
+        encrypted.set(request.body);
         const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),7000);
         try{
-          const response=await fetch(request.endpoint,{method:'POST',headers:request.headers,body:request.body,
+          const response=await fetch(endpoint,{method:'POST',headers:request.headers,body:encrypted.buffer,
             redirect:'error',signal:controller.signal});
           status=response.status;retry=status===408||status===429||status>=500;
           await response.body?.cancel();

@@ -70,7 +70,7 @@ function workerFixture(row=delivery(),extra={}){return fixture({...extra,rpc:n=>
 const runWorker=f=>f.invoke({action:'worker'},'',{headers:{Authorization:'Bearer '+workerKey}});
 test('push: worker rechecks authorization and binding before sending; stale rows discarded',async()=>{const f=workerFixture(null);await runWorker(f);assert.equal(f.sent.length,0);assert.equal(f.calls.at(-1).p.p_retry,false);assert.equal(f.calls.at(-1).p.p_status,0)});
 test('push: encryption boundary gets only minimal payload, bounded TTL, stable topic and no redirect following',async()=>{
- const f=workerFixture();const r=await runWorker(f);assert.equal(r.status,200);assert.equal(r.body.accepted,1);assert.equal(f.sent.length,1);assert.equal(f.sent[0].init.redirect,'error');assert.equal(f.sent[0].init.body.toString(),'encrypted-only');
+ const f=workerFixture();const r=await runWorker(f);assert.equal(r.status,200);assert.equal(r.body.accepted,1);assert.equal(f.sent.length,1);assert.equal(f.sent[0].init.redirect,'error');assert.equal(Buffer.from(f.sent[0].init.body).toString(),'encrypted-only');
  const p=f.prepared[0];assert.equal(p.p.order_id,'123');assert(!JSON.stringify(p.p).includes('sensitive'));assert.equal(p.o.contentEncoding,'aes128gcm');assert(p.o.TTL>0&&p.o.TTL<=600);assert.equal(p.o.topic.length,32);assert.equal(f.calls.at(-1).p.p_lease,'lease');
 });
 test('push: invalid stored provider or expired payload is not sent',async()=>{for(const changes of [{endpoint:'https://127.0.0.1/private'},{expires_at:'2000-01-01T00:00:00Z'}]){const f=workerFixture({...delivery(),...changes});await runWorker(f);assert.equal(f.sent.length,0)}});
