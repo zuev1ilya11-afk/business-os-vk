@@ -12,11 +12,13 @@ test('dispatcher schedule day shows every master and distinguishes full partial 
   const fullDate=currentMonthDate(10);
   db.tables.business_staff.push(
     {id:'m2',external_id:'staff_m2',full_name:'Частичный мастер',role:'master',is_active:true,city:'Санкт-Петербург',phone:'+79990000002'},
-    {id:'m3',external_id:'staff_m3',full_name:'Выходной мастер',role:'master',is_active:true,city:'Санкт-Петербург',phone:'+79990000003'}
+    {id:'m3',external_id:'staff_m3',full_name:'Выходной мастер',role:'master',is_active:true,city:'Санкт-Петербург',phone:'+79990000003'},
+    {id:'m4',external_id:'staff_m4',full_name:'Без графика',role:'master',is_active:true,city:'Санкт-Петербург',phone:'+79990000004'}
   );
   db.tables.staff_schedule.push(
     {id:'s1',staff_id:master.id,work_date:fullDate,is_working:true,work_start:'10:00',work_end:'20:00'},
-    {id:'s2',staff_id:'m2',work_date:fullDate,is_working:true,work_start:'13:00',work_end:'20:00'}
+    {id:'s2',staff_id:'m2',work_date:fullDate,is_working:true,work_start:'13:00',work_end:'20:00'},
+    {id:'s3',staff_id:'m3',work_date:fullDate,is_working:false,work_start:null,work_end:null}
   );
 
   await page.goto('/');
@@ -24,7 +26,7 @@ test('dispatcher schedule day shows every master and distinguishes full partial 
   await page.waitForFunction(()=>window.BOS_UNIFIED_SCHEDULE_V102===true);
   await page.locator('nav [data-page="dispatch"]').click();
   await expect(page.locator('.usScheduleCard')).toBeVisible();
-  await page.locator(`.usDay[data-date="${fullDate}"]`).click();
+  await page.locator(`.usDay[data-date="${fullDate}"] .usDayHead`).click();
 
   const modal=page.locator('.modal');
   await expect(modal).toContainText('Тестовый мастер');
@@ -33,6 +35,7 @@ test('dispatcher schedule day shows every master and distinguishes full partial 
   await expect(modal.locator('.usTime.full')).toContainText('10:00–20:00');
   await expect(modal.locator('.usTime.partial')).toContainText('13:00–20:00');
   await expect(modal.locator('.usTime.off')).toContainText('Выходной');
+  await expect(modal.locator('.usTime.unknown')).toContainText('Не задан');
 });
 
 test('master schedule uses the same calendar and keeps all controls inside one card',async({page})=>{
