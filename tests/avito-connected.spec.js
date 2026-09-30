@@ -70,7 +70,7 @@ test('429 blocks manual requests and polling until the provider cooldown expires
 test('owner explicitly connects using server secrets with production activation enabled',async({page})=>{
  const x=await connected(page);
  await page.locator('#ownerToolsBtn').click();
- const entry=page.getByRole('button',{name:/Авито/});
+ const entry=page.locator('.modal').getByRole('button',{name:/Авито/});
  await expect(entry).toContainText('Подключить');await entry.click();
  await expect(page.locator('#avitoConnectBtn')).toBeEnabled();
  expect(x.calls.filter(c=>c.action==='connect')).toHaveLength(0);
