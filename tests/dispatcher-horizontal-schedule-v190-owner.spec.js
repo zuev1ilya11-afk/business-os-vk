@@ -10,7 +10,7 @@ for(const role of ['owner','manager','dispatcher'])test(`${role} gets dispatcher
   await page.locator('nav [data-page=orders]').click();
   await expect(page.locator('.du187Root.dh190Root:visible')).toBeVisible();
   await expect(page.locator('#content .dbBoard')).toHaveClass(/dh190Board/);
-  await expect(page.locator('.dh190Title')).toContainText('Горизонтальное расписание дня');
+  await expect(page.locator('.dh190Title')).toContainText('Расписание дня');
 });
 
 test('master cannot activate dispatcher workspace',async({page})=>{

@@ -18,7 +18,7 @@ test('dispatcher v190 shows fixed hourly 10-21 timeline and keeps half-hour orde
 
   const root=page.locator('.du187Root.dh190Root:visible');
   await expect(root).toBeVisible();
-  await expect(root).toContainText('Горизонтальное расписание дня');
+  await expect(root).toContainText('Расписание дня');
   await expect(root).toContainText('10:00–21:00 · по 1 часу');
   await expect(root.locator('.du187Master')).toHaveCount(8);
   await expect(root.locator('.du187Time')).toHaveCount(11);
@@ -51,7 +51,8 @@ test('dispatcher v190 shows fixed hourly 10-21 timeline and keeps half-hour orde
   expect(geometry.pageWidth).toBeLessThanOrEqual(geometry.innerWidth+1);
   expect(geometry.wrapClientHeight).toBeGreaterThan(0);
   expect(geometry.wrapScrollHeight).toBeGreaterThanOrEqual(geometry.wrapClientHeight);
-  expect(geometry.gridScrollWidth).toBeLessThanOrEqual(geometry.wrapClientWidth+1);
+  expect(geometry.gridScrollWidth).toBeGreaterThan(geometry.wrapClientWidth);
+  expect(geometry.gridScrollWidth-geometry.wrapClientWidth).toBeLessThanOrEqual(170);
 
   const card=root.locator('.du187Card[data-order-id="11"]');
   await expect(card).toBeVisible();
@@ -95,6 +96,13 @@ for(const role of ['owner','dispatcher'])for(const width of [1280,1600]){
     const slot=root.locator('.dh190Slot[data-time="20:00"]');
     await expect(slot).toHaveCount(1);
     await expect(slot).toHaveClass(/off/);
+    const wrap=root.locator('.dh190GridWrap'),masterCell=root.locator('.du187Master');
+    const pinnedLeft=await masterCell.evaluate(el=>el.getBoundingClientRect().left);
+    const scrollLeft=await wrap.evaluate(el=>{el.scrollLeft=el.scrollWidth;return el.scrollLeft});
+    expect(scrollLeft).toBeGreaterThan(0);
+    await expect.poll(()=>masterCell.evaluate(el=>el.getBoundingClientRect().left)).toBeCloseTo(pinnedLeft,0);
+    // Scrolled cards must stay underneath the pinned master names.
+    expect(await masterCell.evaluate(el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.left+r.width/2,r.top+r.height/2))})).toBe(true);
     for(const [id,time] of [['11','20:00–20:30'],['12','20:30–21:00']]){
       const card=slot.locator(`.du187Card[data-order-id="${id}"]`);
       await expect(card).toBeVisible();
@@ -103,8 +111,35 @@ for(const role of ['owner','dispatcher'])for(const width of [1280,1600]){
       expect(fits).toBe(true);
       await card.click();
       await expect(page.locator('#dispatchBoardDetail')).toContainText(id==='11'?'Анна':'Борис');
+      await expect.poll(()=>wrap.evaluate(el=>el.scrollLeft)).toBeCloseTo(scrollLeft,0);
     }
-    expect(await root.evaluate(el=>{const w=el.querySelector('.dh190GridWrap');return w.scrollWidth-w.clientWidth})).toBeLessThanOrEqual(1);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
     expect(db.calls.filter(c=>c.table==='orders'&&c.mode==='update')).toHaveLength(0);
   });
 }
+
+
+test('readable schedule keeps text separated and preserves both scroll axes on refresh',async({page})=>{
+  const {db,master}=await fullStack(page,'owner');
+  db.tables.business_staff.find(m=>m.id===master.id).full_name='Руслан';
+  for(let i=0;i<9;i++)db.tables.business_staff.push(employee(`scroll-${i}`,'master',{full_name:`Мастер ${i}`,city:'Санкт-Петербург'}));
+  Object.assign(db.tables.orders[0],{scheduled_date:localDate(),scheduled_time:'20:00',time_slot:'20:00–21:00',external_id:'hands:7344032'});
+  await page.setViewportSize({width:1600,height:960});
+  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
+  await page.waitForFunction(()=>window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190?.version==='190');
+  await page.locator('nav [data-page=orders]').click();
+  const wrap=page.locator('.dh190GridWrap'),card=page.locator('.dh190Card[data-order-id="11"]');
+  await expect(card).toHaveAttribute('title',/7344032.*20:00–21:00.*Анна/);
+  const metrics=await card.evaluate(el=>{
+    const master=el.closest('.dh190Grid').querySelector('.du187Master'),strong=el.querySelector('strong'),when=el.querySelector('.du187When'),work=el.querySelector('small');
+    return {masterWidth:master.getBoundingClientRect().width,masterFont:parseFloat(getComputedStyle(master.querySelector('b')).fontSize),clientFont:parseFloat(getComputedStyle(strong).fontSize),rowHeight:master.getBoundingClientRect().height,endHidden:getComputedStyle(el.querySelector('.dh190End')).display==='none',separate:when.getBoundingClientRect().bottom<=strong.getBoundingClientRect().top&&strong.getBoundingClientRect().bottom<=work.getBoundingClientRect().top};
+  });
+  expect(metrics).toMatchObject({masterWidth:88,masterFont:14,clientFont:14,rowHeight:80,endHidden:true,separate:true});
+  await wrap.evaluate(el=>{el.scrollLeft=el.scrollWidth;el.scrollTop=120;el.dispatchEvent(new Event('scroll'))});
+  const before=await wrap.evaluate(el=>({left:el.scrollLeft,top:el.scrollTop}));
+  expect(before.left).toBeGreaterThan(0);expect(before.top).toBe(120);
+  await page.evaluate(()=>show('orders'));
+  await expect.poll(()=>wrap.evaluate(el=>({left:el.scrollLeft,top:el.scrollTop}))).toEqual(before);
+  await page.evaluate(()=>BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190.shiftDate(1));
+  await expect.poll(()=>wrap.evaluate(el=>({left:el.scrollLeft,top:el.scrollTop}))).toEqual({left:0,top:0});
+});
