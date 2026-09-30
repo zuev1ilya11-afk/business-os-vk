@@ -39,6 +39,11 @@ async function sendArchive(p:URLSearchParams,deadline:number){
   }catch(e){if(controller.signal.aborted)throw archiveTimeout();throw e}
   finally{controller.abort();clearTimeout(timer)}
 }
+function archiveFileName(name:string,mime:string){
+  const extensions:Record<string,string>={'application/pdf':'pdf','image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif','image/avif':'avif','image/heic':'heic','image/heif':'heif','image/tiff':'tiff','image/bmp':'bmp'};
+  const extension=extensions[mime.split(';',1)[0].trim().toLowerCase()];
+  return typeof extension==='string'?name.replace(/\.[a-z0-9]+$/i,'')+'.'+extension:name;
+}
 async function fetchFile(url:string,name:string,order:any,budget:{bytes:number},deadline:number){
   if(!validAttachmentUrl(url,order.id,order.report_upload_token))throw new AttachmentError('INVALID_ATTACHMENT_URL',400);
   const remaining=Math.min(15000,archiveRemaining(deadline)),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),remaining);
@@ -57,7 +62,8 @@ async function fetchFile(url:string,name:string,order:any,budget:{bytes:number},
     if(!size)throw new AttachmentError('EMPTY_REPORT_FILE',400);
     const bytes=new Uint8Array(size);let offset=0;for(const part of chunks){bytes.set(part,offset);offset+=part.byteLength}
     budget.bytes+=size;
-    return{name,mime:r.headers.get('content-type')||'application/octet-stream',data:toB64(bytes.buffer)};
+    const mime=r.headers.get('content-type')||'application/octet-stream';
+    return{name:archiveFileName(name,mime),mime,data:toB64(bytes.buffer)};
   }catch(e){if(controller.signal.aborted)throw new AttachmentError('REPORT_FILE_TIMEOUT',504);throw e}
   finally{controller.abort();clearTimeout(timer)}
 }
