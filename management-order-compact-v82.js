@@ -36,6 +36,7 @@ window.openOrder=function(id){
   <div class="two bosOrderActions"><button class="primary" onclick="saveQuickOrder('${esc(o.id)}')">Сохранить</button><button class="secondary" onclick="openOrderForm('${esc(o.id)}')">Редактировать</button></div><p id="quickMsg" class="muted"></p>`);
   const master=document.querySelector('#quickMaster');
   if(master)master.addEventListener('change',()=>{const out=document.querySelector('#payoutPreview');if(out)out.textContent=money(master.value?(o.master_payout||payout(o.amount)):0)});
+  window.BOS_HANDS_RENDER_ORDER?.(id);
 };
 window.saveQuickOrder=async function(id){
   const dateInput=document.querySelector('#quickScheduledDate');

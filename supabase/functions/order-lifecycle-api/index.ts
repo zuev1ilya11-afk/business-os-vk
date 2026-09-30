@@ -100,6 +100,22 @@ async function reviewReport(db:any,req:Request,body:any){
   return json({ok:true,order:u.data,archived:decision==='approved'});
 }
 
+// Queue details contain no provider credentials or attachment URLs. Only active operations staff may read/retry.
+async function handsReportDelivery(db:any,req:Request,body:any){
+  const actor=await currentActor(db,req);if(!actor)return json({ok:false,error:'Доступ не подтверждён'},401);
+  if(!ops(String(actor.role||'')))return json({ok:false,error:'Недостаточно прав'},403);
+  const id=String(body.order_id||'');if(!/^[1-9]\d*$/.test(id))return json({ok:false,error:'Неверный номер заявки'},400);
+  const q=await db.from('orders').select('id,external_source').eq('id',id).maybeSingle();if(q.error)throw q.error;
+  if(!q.data||String(q.data.external_source||'').toLowerCase()!=='hands')return json({ok:false,error:'Заявка Hands не найдена'},404);
+  if(body.action==='retryHandsReportDelivery'){
+    if(!/^[a-f0-9-]{36}$/i.test(String(body.version||'')))return json({ok:false,error:'Обновите статус отправки'},400);
+    const r=await db.rpc('bos_hands_report_retry',{p_order:id,p_version:body.version,p_confirm:body.checked_in_hands===true,p_received:body.received===true});
+    if(r.error)throw r.error;if(!r.data)return json({ok:false,error:'Статус изменился или отправка не проверена в Hands. Обновите заявку.'},409);
+  }
+  const r=await db.rpc('bos_hands_report_status',{p_order:id});if(r.error)throw r.error;
+  return json({ok:true,delivery:r.data});
+}
+
 function listFromResponse(d:any){if(Array.isArray(d))return d;for(const k of ['results','orders','items','data'])if(Array.isArray(d?.[k]))return d[k];return []}
 function workText(o:any){const title=clean(o?.title),works=Array.isArray(o?.works)?o.works:[],names=works.map((w:any)=>clean(w?.name)).filter(Boolean);return title||names.join(', ')||'Заказ Hands'}
 function phones(o:any){const x=Array.isArray(o?.client_phones)?o.client_phones:[];return clean(x[0]||o?.client_phone||o?.phone)}
@@ -144,6 +160,7 @@ Deno.serve(async(req:Request)=>{
     const url=Deno.env.get('SUPABASE_URL')!,key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;if(!url||!key)throw new Error('Server configuration missing');const db=createClient(url,key,{auth:{persistSession:false}});
     if(action==='finalizeMasterReport')return await finalizeReport(db,req,body);
     if(action==='reviewReport')return await reviewReport(db,req,body);
+    if(action==='getHandsReportDelivery'||action==='retryHandsReportDelivery')return await handsReportDelivery(db,req,body);
     if(action==='syncHandsOrders')return await syncHandsOrders(db,req,body);
     return json({ok:false,error:'UNKNOWN_ACTION'},404);
   }catch(e){if(e instanceof ReviewConflict)return reportConflict();return json({ok:false,error:e instanceof Error?e.message:String(e)},e instanceof ArchiveTimeout?504:500)}

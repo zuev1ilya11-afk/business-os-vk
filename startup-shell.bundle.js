@@ -2562,7 +2562,35 @@ const GATEWAY='https://business-os-api-gateway.netlify.app/api/proxy/hands-api';
 const DIRECT='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/hands-api';
 const handsOrder=o=>String(o?.external_source||'').toLowerCase()==='hands'||String(o?.external_id||'').startsWith('hands:');
 const extId=o=>String(o?.external_id||'').replace(/^hands:/,'');
+async function deliveryRequest(action,orderId,extra={}){
+  const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};headers['Content-Type']='application/json';
+  const r=await fetch('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/order-lifecycle-api',{method:'POST',headers,body:JSON.stringify({action,order_id:String(orderId),...extra})});
+  const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось получить статус Hands');return d.delivery;
+}
+function deliveryHtml(d){
+  if(!d)return '<p class="muted">Новые принятые отчёты отправляются в Hands автоматически.</p>';
+  const labels={queued:'В очереди на отправку',processing:'Отправляем в Hands…',retry:'Повторим отправку автоматически',sent:'Отчёт и файлы отправлены в Hands',attention:'Нужно проверить отправку',cancelled:'Отправка остановлена: отчёт изменён'};
+  return `<p style="margin:10px 0 4px"><b>${esc(labels[d.state]||'Проверяем отправку')}</b></p>${d.sent_at?`<p class="muted">${esc(new Date(d.sent_at).toLocaleString('ru-RU'))}</p>`:''}${d.error?`<p class="muted">${esc(d.error)}</p>`:''}${d.state==='attention'?`${d.step_label?`<p class="muted" style="overflow-wrap:anywhere">Не подтверждено: ${esc(d.step_label)}</p>`:''}<p class="muted">Подтверждено шагов: ${Number(d.step)||0}. Уже переданные файлы повторно не отправятся.</p>${d.uncertain?'<label style="display:flex;gap:8px;align-items:flex-start;margin:10px 0"><input type="checkbox" data-hands-not-received style="width:18px;min-width:18px;margin-top:3px">Проверил указанный шаг в Hands</label>':''}<button class="secondary" data-hands-retry ${d.uncertain?'disabled':''}>${d.uncertain?'В Hands нет — повторить':'Повторить оставшуюся отправку'}</button>${d.uncertain?'<button class="secondary" data-hands-received disabled style="margin-top:8px">В Hands получено — продолжить</button>':''}`:''}`;
+}
+async function refreshDelivery(id,container){
+  try{
+    const d=await deliveryRequest('getHandsReportDelivery',id);if(!container.isConnected)return;
+    container.innerHTML=deliveryHtml(d);
+    const manual=container.closest('#handsOrderActions')?.querySelector('[data-hands-manual-report]');if(manual){manual.hidden=!!d;manual.style.display=d?'none':''}
+    const retry=container.querySelector('[data-hands-retry]'),received=container.querySelector('[data-hands-received]'),check=container.querySelector('[data-hands-not-received]');
+    if(check&&retry)check.onchange=()=>{retry.disabled=!check.checked;if(received)received.disabled=!check.checked};
+    const resolve=async(found)=>{retry.disabled=true;if(received)received.disabled=true;try{
+      await deliveryRequest('retryHandsReportDelivery',id,{version:d.version,checked_in_hands:!!check?.checked,received:found});await refreshDelivery(id,container);
+    }catch(e){const p=document.createElement('p');p.className='muted';p.textContent=e.message;container.appendChild(p);setTimeout(()=>{if(container.isConnected)refreshDelivery(id,container)},3000)}};
+    if(retry)retry.onclick=()=>resolve(false);if(received)received.onclick=()=>resolve(true);
+    if(d&&['queued','processing','retry'].includes(d.state))setTimeout(()=>{if(container.isConnected)refreshDelivery(id,container)},5000);
+  }catch(e){if(container.isConnected){container.textContent=e.message;const b=document.createElement('button');b.className='secondary';b.textContent='Обновить статус';b.onclick=()=>refreshDelivery(id,container);container.appendChild(b)}}
+}
 async function request(action,payload={}){
+  if(action==='sendReport'&&payload.kind==='COMPLETED'){
+    const o=state.orders.find(x=>handsOrder(x)&&extId(x)===String(payload.order_id));
+    if(o&&await deliveryRequest('getHandsReportDelivery',o.id))throw new Error('Этот отчёт отправляется автоматически. Проверьте статус в карточке заявки.');
+  }
   const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};headers['Content-Type']='application/json';
   const body=JSON.stringify({action,...payload});
   async function one(url){const r=await fetch(url,{method:'POST',headers,body});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok){const e=new Error(d.error||`HTTP ${r.status}`);e.status=r.status;e.data=d;throw e}return d}
@@ -2580,9 +2608,10 @@ window.syncHandsOrders=async function(status='ACTIVE'){
   try{const d=await request('syncOrders',{status,per_page:500,max_pages:4});if(msg)msg.textContent=`Готово: ${d.seen||0} заказов, новых ${d.created||0}, обновлено ${d.updated||0}.`;await reloadData(true)}catch(e){if(msg)msg.textContent=e.message}
 };
 function handsCard(o){
-  return `<section class="card" id="handsOrderActions"><div class="row"><div><h3 style="margin:0">Hands.ru</h3><div class="muted">Заказ ${esc(extId(o))}</div></div><span class="apiState on">Связан</span></div><div class="two" style="margin-top:10px"><button class="secondary" onclick="openHandsAssign('${esc(o.id)}')">Назначить мастера</button><button class="secondary" onclick="openHandsReport('${esc(o.id)}')">Отправить отчёт</button></div><button class="secondary wide" style="margin-top:8px" onclick="openHandsFile('${esc(o.id)}')">Загрузить файл / фото</button></section>`;
+  return `<section class="card" id="handsOrderActions"><div class="row"><div><h3 style="margin:0">Hands.ru</h3><div class="muted">Заказ ${esc(extId(o))}</div></div><span class="apiState on">Связан</span></div><div data-hands-delivery aria-live="polite"><p class="muted">Проверяем отправку отчёта…</p></div><div class="two" style="margin-top:10px"><button class="secondary" onclick="openHandsAssign('${esc(o.id)}')">Назначить мастера</button><button class="secondary" data-hands-manual-report onclick="openHandsReport('${esc(o.id)}')">Отчёт вручную</button></div><button class="secondary wide" style="margin-top:8px" onclick="openHandsFile('${esc(o.id)}')">Загрузить файл / фото</button></section>`;
 }
-function injectOrderActions(id){const o=state.orders.find(x=>String(x.id)===String(id));if(!o||!handsOrder(o))return;const m=document.querySelector('.modal');if(!m||m.querySelector('#handsOrderActions'))return;m.insertAdjacentHTML('beforeend',handsCard(o))}
+function injectOrderActions(id){const o=state.orders.find(x=>String(x.id)===String(id));if(!o||!handsOrder(o)||!['owner','manager','dispatcher'].includes(state.user?.role||''))return;const m=document.querySelector('.modal');if(!m||m.querySelector('#handsOrderActions'))return;m.insertAdjacentHTML('beforeend',handsCard(o));refreshDelivery(id,m.querySelector('[data-hands-delivery]'))}
+window.BOS_HANDS_RENDER_ORDER=injectOrderActions;
 const baseOpen=window.openOrder;if(typeof baseOpen==='function')window.openOrder=function(id){const out=baseOpen.apply(this,arguments);setTimeout(()=>injectOrderActions(id),0);return out};
 window.openHandsAssign=function(localId){const o=state.orders.find(x=>String(x.id)===String(localId));if(!o)return;openModal(`<h2>Назначить мастера в Hands</h2><form id="handsAssignForm" class="form"><select name="specialist" required><option value="">Выберите мастера</option>${(state.masters||[]).map(m=>`<option value="${esc(m.full_name||'')}">${esc(m.full_name||'Мастер')}</option>`).join('')}</select><input name="specialist_login" placeholder="Логин мастера в Hands — если требуется"><button class="primary wide">Отправить в Hands</button><p id="handsAssignMsg" class="muted"></p></form>`);const f=document.getElementById('handsAssignForm');f.onsubmit=async e=>{e.preventDefault();const msg=document.getElementById('handsAssignMsg');msg.textContent='Отправляем…';try{await request('assignSpecialist',{order_id:extId(o),specialist:f.elements.specialist.value,specialist_login:f.elements.specialist_login.value});msg.textContent='Мастер назначен в Hands';setTimeout(()=>{closeModal();openOrder(localId)},600)}catch(x){msg.textContent=x.message}}};
 const agreedOutcomes=[['SUCCESS','Договорились'],['NOT_YET','Ещё не договорились'],['CLIENT_REFUSED','Клиент отказался'],['CLIENT_REFUSED_FROM_SPECIALIST','Клиент отказался от мастера'],['CLIENT_ASKED_TO_CALL','Клиент просит перезвонить'],['CLIENT_NOT_AVAILABLE','Клиент не отвечает'],['SPECIALIST_REFUSED','Мастер отказался'],['OTHER','Другое']];
@@ -2593,6 +2622,7 @@ window.openHandsReport=function(localId){const o=state.orders.find(x=>String(x.i
 window.openHandsFile=function(localId){const o=state.orders.find(x=>String(x.id)===String(localId));if(!o)return;openModal(`<h2>Файл в Hands</h2><form id="handsFileForm" class="form"><input id="handsFileInput" type="file" required><select name="relation"><option value="SPECIALIST_PHOTO">Фото от мастера</option><option value="SPECIALIST_REPORT">Договор от мастера</option><option value="SPECIALIST_ACKNOWLEDGMENT">Расписка от мастера</option><option value="SPECIALIST_CONTRACT">Электронный договор</option><option value="INSTRUCTION_REPORT_PHOTO">Фото в отчёте</option><option value="DEFECT_PHOTO">Фото брака</option><option value="DEFECT_ACT">Акт о браке</option></select><button class="primary wide">Загрузить</button><p id="handsFileMsg" class="muted"></p></form>`);const f=document.getElementById('handsFileForm');f.onsubmit=async e=>{e.preventDefault();const file=document.getElementById('handsFileInput').files?.[0],msg=document.getElementById('handsFileMsg');if(!file)return;if(file.size>10*1024*1024){msg.textContent='Файл больше 10 МБ';return}msg.textContent='Загружаем…';const buf=new Uint8Array(await file.arrayBuffer());let s='';for(let i=0;i<buf.length;i+=0x8000)s+=String.fromCharCode(...buf.subarray(i,i+0x8000));try{await request('uploadFile',{order_id:extId(o),file_name:file.name,mime_type:file.type||'application/octet-stream',relation:f.elements.relation.value,base64:btoa(s)});msg.textContent='Файл загружен в Hands'}catch(x){msg.textContent=x.message}}};
 const baseTools=window.openOwnerTools;if(typeof baseTools==='function')window.openOwnerTools=function(){const out=baseTools.apply(this,arguments);setTimeout(()=>{const modal=document.querySelector('.modal');if(!modal||modal.querySelector('.handsIntegrationBtn'))return;const sections=[...modal.querySelectorAll('section.card')],target=sections.find(s=>s.querySelector('h3')?.textContent.trim()==='Интеграции')||sections.at(-1);if(!target)return;const b=document.createElement('button');b.className='secondary wide ownerToolAction handsIntegrationBtn';b.innerHTML='<span>Hands.ru</span><b>Подключение ›</b>';b.onclick=openHandsIntegration;target.appendChild(b)},0);return out};
 })();
+
 
 ;
 // Source: hands-profile-entry-v70.js
@@ -3974,6 +4004,7 @@ window.openOrder=function(id){
   <div class="two bosOrderActions"><button class="primary" onclick="saveQuickOrder('${esc(o.id)}')">Сохранить</button><button class="secondary" onclick="openOrderForm('${esc(o.id)}')">Редактировать</button></div><p id="quickMsg" class="muted"></p>`);
   const master=document.querySelector('#quickMaster');
   if(master)master.addEventListener('change',()=>{const out=document.querySelector('#payoutPreview');if(out)out.textContent=money(master.value?(o.master_payout||payout(o.amount)):0)});
+  window.BOS_HANDS_RENDER_ORDER?.(id);
 };
 window.saveQuickOrder=async function(id){
   const dateInput=document.querySelector('#quickScheduledDate');
