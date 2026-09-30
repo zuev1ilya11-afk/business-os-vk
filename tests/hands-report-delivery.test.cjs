@@ -94,3 +94,17 @@ test('only active operations staff can inspect/retry a queue receipt and confirm
   assert.equal((await api({action:'getHandsReportDelivery',order_id:'12'},'100','bad')).status,401);
  }
 });
+test('authenticated connectivity probe is read-only and never returns order contents',async()=>{
+ const db=database({orders:[{id:'12',external_source:'hands',external_id:'hands:1234'}]});
+ db.rpc=async()=>({data:{enabled:false,workerKey}});const calls=[];
+ const api=edge('hands-report-api',db,{env:{HANDS_API_KEY:'private-key'},fetch:async(url,init)=>{
+  calls.push({url,method:init.method||'GET'});
+  if(init.method==='OPTIONS')return new Response(null,{status:405,headers:{Allow:'POST'}});
+  return Response.json({orders:[{client:'Private customer',phone:'private phone'}]});
+ }});
+ const r=await api({action:'probe'},'100','',{'x-bos-hands-worker':workerKey});
+ assert.equal(r.status,200);assert.equal(r.body.contract.connection.status,200);
+ assert.deepEqual(calls.map(x=>x.method),['GET','OPTIONS','OPTIONS']);
+ assert.ok(!JSON.stringify(r).includes('Private customer'));assert.ok(!JSON.stringify(r).includes('private phone'));
+ assert.equal((await api({action:'probe'},'100','')).status,401);assert.equal(calls.length,3);
+});

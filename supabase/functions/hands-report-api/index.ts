@@ -113,6 +113,11 @@ async function probe(db:any){
   if(q.error||!q.data)throw new Error('NO_LINKED_ORDER');
   const id=clean(q.data.external_id).replace(/^hands:/,'');if(!/^[A-Za-z0-9_-]{1,100}$/.test(id))throw new Error('INVALID_LINK');
   const result:Record<string,unknown>={};
+  const connection=new AbortController(),connectionTimer=setTimeout(()=>connection.abort(),8000);
+  try{
+    const r=await fetch(`${BASE}/orders/?status=ACTIVE&per_page=1&page=1`,{headers:{'X-Api-Key':Deno.env.get('HANDS_API_KEY')!},redirect:'error',signal:connection.signal});
+    result.connection={status:r.status};await r.body?.cancel();
+  }finally{connection.abort();clearTimeout(connectionTimer)}
   for(const endpoint of ['report','files']){
     const c=new AbortController(),t=setTimeout(()=>c.abort(),12000);
     try{

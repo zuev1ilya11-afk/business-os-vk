@@ -34,7 +34,7 @@ The existing Hands webhook/handler is deliberately not redeployed.
 
 Release sequence: pass server, browser, frozen Deno and disposable PostgreSQL gates;
 apply `20260930195125_hands_report_delivery.sql` (disabled); deploy worker; run its
-authenticated read-only `probe` to verify Hands metadata; deploy reviewed lifecycle
+authenticated read-only `probe` to verify Hands connectivity/routes; deploy reviewed lifecycle
 changes; publish frontend; execute `hands-report-activation.sql`. Disable delivery
 by setting `bos_hands_private.runtime.enabled=false`; no queue history is deleted.
 
@@ -42,3 +42,11 @@ SQL contracts cover duplicate migration, no backfill, capture/snapshot, leases,
 stale steps, crash ambiguity, explicit reconciliation, cancelled receipts, ACLs and
 failed pg_net wake-ups. Worker tests cover provider ordering, file boundaries,
 partial resume, ambiguous POSTs, lost acknowledgements and operation roles.
+
+Provider check on 2026-09-30: authenticated GET of the order list returned 200.
+Both file/report endpoints returned 405 with `Allow: POST` to OPTIONS and exposed
+no field metadata. The payloads and file relations therefore follow the existing
+Hands integration handler; this check does not claim a live completed-report POST.
+Schema documentation URLs denied access (403) and were not used. No customer report
+or dummy report was sent during rollout; the first new approval supplies the first
+end-to-end provider receipt. A temporary documentation diagnostic was removed.
