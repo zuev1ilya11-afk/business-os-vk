@@ -31,7 +31,7 @@ for(const role of ['owner','manager','dispatcher'])for(const width of [320,1440]
   await entry.click();await expect(page.locator('.avitoChatRow')).toContainText('Установка карниза');
   expect(x.calls.map(c=>c.action)).toEqual(['chats']);
   expect(await page.evaluate(()=>state.page)).toBe('home');
-  await page.locator('.modalClose').first().click();await expect(page.locator('.modal')).toHaveCount(0);
+  await page.locator('#modalRoot .modalClose').last().click();await expect(page.locator('.modal')).toHaveCount(0);
   for(const pageName of ['orders','dispatch','home']){
    await nav.locator('[data-page='+pageName+']').click();
    await expect.poll(()=>page.evaluate(()=>state.page)).toBe(pageName);await expect(entry).toHaveCount(1);
@@ -55,7 +55,7 @@ test('owner preview, keyboard activation and Android back preserve the working p
  await page.goBack();await expect(page.locator('#modalRoot .modal')).toHaveCount(0);
  await expect.poll(()=>page.evaluate(()=>state.page)).toBe('orders');await expect(entry).toHaveCount(1);
  await entry.focus();await page.keyboard.press('Enter');await expect(page.locator('.avitoChatRow')).toBeVisible();
- await page.locator('.modalClose').first().click();
+ await page.locator('#modalRoot .modalClose').last().click();
  await page.evaluate(()=>{window.BUSINESS_OS_CONFIG.AVITO_API_ENABLED=false;show('home')});
  await expect(entry).toHaveCount(0);expect(x.errors).toEqual([]);
 });
