@@ -47,6 +47,11 @@ for(const [role,width]of [['owner',1600],['dispatcher',390]])test(`${role}: mont
  await page.locator('.usMonthHead button').last().click();await expect(page.locator('.usMonthHead h3')).toContainText('ноябрь');
  await expect(page.locator('.usTeamDay')).toHaveCount(30);await page.locator('.usMonthHead button').first().click();await expect(first.locator('.usDayCount')).toHaveText('5 заявок');
  for(const width of [320,390,1280]){await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);await expect(first.locator('.usPerson').last()).toBeVisible()}
+ const scroller=page.locator('.usMonthScroll');await scroller.evaluate(el=>el.scrollLeft=el.scrollWidth);
+ const sunday=cell(page,4).locator('.usDayHead');await sunday.scrollIntoViewIfNeeded();
+ const geometry=await sunday.evaluate(el=>{const parent=el.closest('.usMonthScroll'),box=el.getBoundingClientRect(),frame=parent.getBoundingClientRect();return {scroll:parent.scrollLeft,left:box.left-frame.left,right:frame.right-box.right,frameRight:frame.right,viewport:innerWidth}});
+ expect(geometry.scroll).toBeGreaterThan(0);expect(geometry.left).toBeGreaterThanOrEqual(0);expect(geometry.right).toBeGreaterThanOrEqual(0);expect(geometry.frameRight).toBeLessThanOrEqual(geometry.viewport);
+ await sunday.click();await expect(page.locator('#modalRoot .usMasterRow')).toHaveCount(5);await page.evaluate(()=>closeModal());
  expect(db.calls.filter(c=>['orders','staff_schedule'].includes(c.table)&&['update','insert','upsert','delete'].includes(c.mode))).toHaveLength(0);
 });
 
