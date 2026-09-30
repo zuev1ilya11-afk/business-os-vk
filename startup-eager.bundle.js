@@ -1709,10 +1709,10 @@ function enhanceNewOrderForm(){
   const plan=makeSection('Дата и назначение','');
   const dateInput=form.elements.scheduled_date;
   const dateGroup=dateInput?.closest('.two');
+  const slot=form.elements.time_slot;
   if(dateGroup){
     const dateField=groupedField(dateGroup,'Дата и время',true);
     dateInput.setAttribute('aria-label','Дата');
-    const slot=form.elements.time_slot;
     if(slot)slot.setAttribute('aria-label','Время');
     plan.body.appendChild(dateField);
   }
@@ -1739,8 +1739,9 @@ function enhanceNewOrderForm(){
   }
 
   const note=makeSection('Комментарий','');
-  const commentField=field(form.elements.comment,'Комментарий',true);
-  if(commentField){commentField.querySelector('.newOrderFieldLabel').hidden=true;form.elements.comment.setAttribute('aria-label','Комментарий');note.body.appendChild(commentField)}
+  const commentInput=form.elements.comment;
+  const commentField=field(commentInput,'Комментарий',true);
+  if(commentField){commentField.querySelector('.newOrderFieldLabel').hidden=true;commentInput.setAttribute('aria-label','Комментарий');note.body.appendChild(commentField)}
 
   const submit=form.querySelector(':scope > button.primary.wide[type="submit"]');
   const msg=form.querySelector(':scope > #formMsg');

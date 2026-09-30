@@ -22,9 +22,9 @@ test('mobile VK signed launch opens app and can create an order',async({page})=>
   await form.locator('#bosPhone').fill('9991234567');
   await form.locator('[name=master_vk_id]').selectOption('1001');
   await form.locator('[name=address]').fill('Адрес');
-  await form.locator('#bosService').selectOption('4');
+  await form.locator('#bosService').fill('Установка карниза и полок');
   await form.locator('[name=original_amount]').fill('3788');
   await expect(form.locator('#bosMasterPay')).toContainText('2 092,87');
-  await form.getByRole('button',{name:'Сохранить'}).click();
+  await form.getByRole('button',{name:'Создать заявку'}).click();
   await expect.poll(()=>created).toBeTruthy();
 });
