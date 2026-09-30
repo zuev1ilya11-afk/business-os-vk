@@ -6,6 +6,26 @@ async function headers(){const base=window.BOS_AUTH_HEADERS?await window.BOS_AUT
 async function list(){const r=await fetch(API,{method:'POST',headers:await headers(),body:JSON.stringify({action:'list'})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось загрузить прайс');return d.items||[]}
 function priceRows(note=''){return String(note||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(line=>{const i=line.lastIndexOf(' — ');if(i<0)return `<div class="bosPriceNote">${esc(line)}</div>`;return `<div class="bosPriceRow"><span>${esc(line.slice(0,i))}</span><b>${esc(line.slice(i+3))}</b></div>`}).join('')}
 function fileActions(x){if(!x.file_url)return '';const name=esc(x.file_name||'document');return `<div class="bosPriceFiles"><a class="secondary wide" href="${esc(x.file_url)}" target="_blank" rel="noopener">Открыть файл</a><a class="primary wide" href="${esc(x.file_url)}" download="${name}" target="_blank" rel="noopener">Скачать файл</a></div>`}
+
+function avitoCatalogHtml(){
+ const catalog=window.BOS_AVITO_PRICE_CATALOG;
+ if(!catalog)return '';
+ return `<section class="card bosAvitoCatalog"><h3>Прайс Авито</h3><p class="muted">Санкт-Петербург и Ленинградская область. Цены «от»: окончательную стоимость согласуйте с клиентом с учётом объёма и условий работ.</p><label for="bosAvitoPriceSearch">Найти услугу Авито</label><input id="bosAvitoPriceSearch" type="search" placeholder="Например, смеситель или карниз" autocomplete="off">${catalog.categories.map(category=>`<details class="bosAvitoPriceGroup"><summary>${esc(category.name)} <span class="muted">· ${catalog.services.filter(s=>s.category===category.id).length}</span></summary>${catalog.services.filter(s=>s.category===category.id).map(s=>`<div class="bosPriceRow bosAvitoPriceRow" data-service-id="${esc(s.id)}"><span>${esc(s.name)}${s.note?`<small>${esc(s.note)}</small>`:''}</span><b>от ${esc(money(s.fromPrice))}</b></div>`).join('')}</details>`).join('')}<p id="bosAvitoPriceEmpty" class="muted" hidden>Услуги не найдены.</p></section>`;
+}
+function bindAvitoCatalog(){
+ const search=document.getElementById('bosAvitoPriceSearch');
+ if(!search)return;
+ search.addEventListener('input',()=>{
+  const q=search.value.trim().toLocaleLowerCase('ru');let count=0;
+  document.querySelectorAll('.bosAvitoPriceGroup').forEach(group=>{
+   let matches=0;
+   group.querySelectorAll('.bosAvitoPriceRow').forEach(row=>{row.hidden=!row.textContent.toLocaleLowerCase('ru').includes(q);if(!row.hidden)matches++});
+   group.hidden=!matches;group.open=!!q&&!!matches;count+=matches;
+  });
+  document.getElementById('bosAvitoPriceEmpty').hidden=count>0;
+ });
+}
+
 function catalogHtml(){
  const items=window.BOS_SERVICE_CATALOG||[];
  return `<section class="card bosSharedCatalog"><h3>Каталог работ и цен</h3><p class="muted">Базовые цены из каталога заявок. Допработы согласуйте и укажите в отчёте отдельно.</p><label for="bosCatalogSearch">Найти работу</label><input id="bosCatalogSearch" type="search" placeholder="Название работы" autocomplete="off"><div id="bosCatalogRows">${items.map(s=>`<div class="bosPriceRow bosCatalogRow"><span>${esc(s.n)}${/доплата|дополнительн/i.test(s.n)?'<small class="bosCatalogExtra">Дополнительная работа / доплата</small>':''}</span><b>${s.p!=null?esc(money(s.p)):'По согласованию'}${s.u?`<small>за ${esc(s.u)}</small>`:''}</b></div>`).join('')}</div><p id="bosCatalogEmpty" class="muted" ${items.length?'hidden':''}>Работы не найдены.</p></section>`;
@@ -21,8 +41,8 @@ function bindCatalog(){
 }
 window.openMasterMemoItem=async function(kind){
  if(kind!=='price')return typeof previous==='function'?previous(kind):undefined;
- openModal(`<h2>Прайс услуг</h2><p class="muted bosPriceLead">Выберите вид работы — цена указана справа.</p>${catalogHtml()}<details class="bosPriceMaterials"><summary>Материалы руководителя</summary><div id="bosMasterPrice" aria-live="polite" aria-busy="true"><p class="muted" role="status">Загружаем…</p></div></details><button class="secondary wide" onclick="closeModal()">Закрыть</button>`);
- bindCatalog();const root=document.getElementById('bosMasterPrice');
+ openModal(`<h2>Прайс услуг</h2><p class="muted bosPriceLead">Выберите вид работы — цена указана справа.</p>${avitoCatalogHtml()}${catalogHtml()}<details class="bosPriceMaterials"><summary>Материалы руководителя</summary><div id="bosMasterPrice" aria-live="polite" aria-busy="true"><p class="muted" role="status">Загружаем…</p></div></details><button class="secondary wide" onclick="closeModal()">Закрыть</button>`);
+ bindCatalog();bindAvitoCatalog();const root=document.getElementById('bosMasterPrice');
  try{
    const items=(await list()).filter(x=>x.category==='price').sort((a,b)=>String(a.title||'').localeCompare(String(b.title||''),'ru',{numeric:true}));
    if(!root?.isConnected)return;
@@ -35,5 +55,5 @@ window.openMasterMemoItem=async function(kind){
    }
  }finally{if(root?.isConnected)root.setAttribute('aria-busy','false')}
 };
-const style=document.createElement('style');style.textContent=`.bosSharedCatalog{min-width:0}.bosSharedCatalog input{width:100%;box-sizing:border-box;font-size:16px}.bosCatalogRow[hidden]{display:none}.bosCatalogRow span{overflow-wrap:anywhere}.bosCatalogRow small{display:block;font-size:11px;font-weight:400;margin-top:4px}.bosCatalogExtra{color:var(--muted,#91a3b7)}.bosPriceMaterials summary{cursor:pointer;min-height:44px;padding:12px 0;box-sizing:border-box}.bosPriceLead{margin:-4px 0 12px}.bosPriceCard{padding:14px;margin:10px 0}.bosPriceCard h3{margin:0 0 8px;font-size:17px}.bosPriceRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start;padding:10px 0;border-top:1px solid rgba(255,255,255,.08)}.bosPriceRow:first-of-type{border-top:0}.bosPriceRow span{min-width:0;line-height:1.35}.bosPriceRow b{text-align:right;white-space:nowrap;color:#6fb1ff}.bosPriceNote{padding:8px 0;line-height:1.45}.bosPriceImportant{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.08)}.bosPriceImportantText{white-space:pre-line;line-height:1.5}.bosPriceFiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.bosPriceFiles a{text-align:center;text-decoration:none}@media(max-width:520px){.bosPriceRow{grid-template-columns:minmax(0,1fr) minmax(110px,42%);gap:10px}.bosPriceRow b{white-space:normal}.bosPriceFiles{grid-template-columns:1fr}}`;document.head.appendChild(style);
+const style=document.createElement('style');style.textContent=`.bosSharedCatalog,.bosAvitoCatalog{min-width:0}.bosAvitoCatalog input{width:100%;box-sizing:border-box;font-size:16px}.bosAvitoPriceGroup summary{cursor:pointer;min-height:44px;padding:12px 0;box-sizing:border-box;font-weight:650}.bosAvitoPriceRow[hidden],.bosAvitoPriceGroup[hidden]{display:none}.bosAvitoPriceRow small{display:block;font-size:12px;font-weight:400;margin-top:4px;color:var(--muted,#91a3b7)}.bosSharedCatalog input{width:100%;box-sizing:border-box;font-size:16px}.bosCatalogRow[hidden]{display:none}.bosCatalogRow span{overflow-wrap:anywhere}.bosCatalogRow small{display:block;font-size:11px;font-weight:400;margin-top:4px}.bosCatalogExtra{color:var(--muted,#91a3b7)}.bosPriceMaterials summary{cursor:pointer;min-height:44px;padding:12px 0;box-sizing:border-box}.bosPriceLead{margin:-4px 0 12px}.bosPriceCard{padding:14px;margin:10px 0}.bosPriceCard h3{margin:0 0 8px;font-size:17px}.bosPriceRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start;padding:10px 0;border-top:1px solid rgba(255,255,255,.08)}.bosPriceRow:first-of-type{border-top:0}.bosPriceRow span{min-width:0;line-height:1.35}.bosPriceRow b{text-align:right;white-space:nowrap;color:#6fb1ff}.bosPriceNote{padding:8px 0;line-height:1.45}.bosPriceImportant{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.08)}.bosPriceImportantText{white-space:pre-line;line-height:1.5}.bosPriceFiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.bosPriceFiles a{text-align:center;text-decoration:none}@media(max-width:520px){.bosPriceRow{grid-template-columns:minmax(0,1fr) minmax(110px,42%);gap:10px}.bosPriceRow b{white-space:normal}.bosPriceFiles{grid-template-columns:1fr}}`;document.head.appendChild(style);
 })();
