@@ -4,7 +4,7 @@ const src=fs.readFileSync(path.join(__dirname,'..','dispatcher-horizontal-schedu
 const pwa=fs.readFileSync(path.join(__dirname,'..','pwa-register.js'),'utf8');
 if(!src.includes("version:'190'"))throw new Error('v190 marker missing');
 if(!src.includes('Горизонтальное расписание дня'))throw new Error('horizontal title missing');
-if(!src.includes('GRID_STEP=60,GRID_START=10*60,GRID_END=20*60'))throw new Error('fixed hourly 10-20 timeline missing');
+if(!src.includes('GRID_STEP=60,GRID_START=10*60,GRID_END=21*60'))throw new Error('fixed hourly timeline including 20:00 missing');
 if(!src.includes('grid-template-columns:128px repeat(var(--dh190-times),minmax(0,1fr))'))throw new Error('fit-to-width hourly grid missing');
 if(!src.includes('startsInHour'))throw new Error('half-hour order placement support missing');
 if(!src.includes('--dh190-offset'))throw new Error('within-hour card offset missing');

@@ -172,7 +172,7 @@ test('free-window filter accounts for whole intervals and quick move keeps durat
   const {employee}=require('./helpers/edge.cjs');
   const second=employee('second','master',{full_name:'Дмитрий',city:'Санкт-Петербург'});
   db.tables.business_staff.push(second);
-  Object.assign(db.tables.orders[0],{scheduled_date:localDate(),scheduled_time:'10:00',time_slot:'10:00–20:00'});
+  Object.assign(db.tables.orders[0],{scheduled_date:localDate(),scheduled_time:'10:00',time_slot:'10:00–21:00'});
   await page.setViewportSize({width:1600,height:1000});
   await openSchedule(page);
   await page.getByRole('button',{name:'Есть свободное окно'}).click();

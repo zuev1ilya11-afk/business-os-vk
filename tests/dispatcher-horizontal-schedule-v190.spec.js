@@ -4,7 +4,7 @@ const {employee}=require('./helpers/edge.cjs');
 
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 
-test('dispatcher v190 shows fixed hourly 10-20 timeline and keeps half-hour orders visible',async({page})=>{
+test('dispatcher v190 shows fixed hourly 10-21 timeline and keeps half-hour orders visible',async({page})=>{
   const {db}=await fullStack(page,'dispatcher');
   const names=['Дмитрий','Иван','Руслан','Тимур','Сергей','Артём','Михаил'];
   names.forEach((full_name,i)=>db.tables.business_staff.push(employee(`horizontal-${i}`,'master',{full_name,city:'Санкт-Петербург'})));
@@ -19,10 +19,10 @@ test('dispatcher v190 shows fixed hourly 10-20 timeline and keeps half-hour orde
   const root=page.locator('.du187Root.dh190Root:visible');
   await expect(root).toBeVisible();
   await expect(root).toContainText('Горизонтальное расписание дня');
-  await expect(root).toContainText('10:00–20:00 · по 1 часу');
+  await expect(root).toContainText('10:00–21:00 · по 1 часу');
   await expect(root.locator('.du187Master')).toHaveCount(8);
-  await expect(root.locator('.du187Time')).toHaveCount(10);
-  await expect(root.locator('.du187Time')).toHaveText(['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00']);
+  await expect(root.locator('.du187Time')).toHaveCount(11);
+  await expect(root.locator('.du187Time')).toHaveText(['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00']);
   await expect(root.locator('.du187Time:text-matches(":30")')).toHaveCount(0);
 
   const geometry=await root.evaluate(el=>{
@@ -78,3 +78,33 @@ test('dispatcher v190 scopes viewport fitting to dispatcher orders page',async({
   await page.locator('nav [data-page=home]').click();
   await expect(page.locator('#content .dh190Board')).toHaveCount(0);
 });
+
+for(const role of ['owner','dispatcher'])for(const width of [1280,1600]){
+  test(`${role} ${width}: 20:00 and 20:30 orders are visible and clickable in the last hour`,async({page})=>{
+    const {db,master}=await fullStack(page,role);
+    const date=localDate();
+    Object.assign(db.tables.orders[0],{scheduled_date:date,scheduled_time:'20:00',time_slot:'20:00–20:30',status:'В работе'});
+    Object.assign(db.tables.orders[1],{scheduled_date:date,scheduled_time:'20:30',time_slot:'20:30–21:00',master_staff_id:master.id,master_name:master.full_name,status:'В работе'});
+    // Already assigned orders remain visible even outside the master's availability.
+    db.tables.staff_schedule.push({staff_id:master.id,work_date:date,is_working:true,work_start:'10:00',work_end:'20:00'});
+    await page.setViewportSize({width,height:900});
+    await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
+    await page.waitForFunction(()=>window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190?.version==='190');
+    await page.locator('nav [data-page=orders]').click();
+    const root=page.locator('.du187Root.dh190Root:visible');
+    const slot=root.locator('.dh190Slot[data-time="20:00"]');
+    await expect(slot).toHaveCount(1);
+    await expect(slot).toHaveClass(/off/);
+    for(const [id,time] of [['11','20:00–20:30'],['12','20:30–21:00']]){
+      const card=slot.locator(`.du187Card[data-order-id="${id}"]`);
+      await expect(card).toBeVisible();
+      await expect(card.locator('.du187When')).toHaveText(time);
+      const fits=await card.evaluate(el=>{const r=el.getBoundingClientRect(),wrap=el.closest('.dh190GridWrap').getBoundingClientRect();return r.left>=wrap.left&&r.right<=wrap.right+1});
+      expect(fits).toBe(true);
+      await card.click();
+      await expect(page.locator('#dispatchBoardDetail')).toContainText(id==='11'?'Анна':'Борис');
+    }
+    expect(await root.evaluate(el=>{const w=el.querySelector('.dh190GridWrap');return w.scrollWidth-w.clientWidth})).toBeLessThanOrEqual(1);
+    expect(db.calls.filter(c=>c.table==='orders'&&c.mode==='update')).toHaveLength(0);
+  });
+}
