@@ -13,10 +13,11 @@ test('Avito setup stays local and prefills an order', async ({page}) => {
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   // Keep the feature-off rollback path covered after production activation.
-  await page.evaluate(()=>window.BUSINESS_OS_CONFIG.AVITO_API_ENABLED=false);
+  await page.evaluate(()=>{window.BUSINESS_OS_CONFIG.AVITO_API_ENABLED=false;show('home')});
+  await expect(page.locator('#bosAvitoNav')).toHaveCount(0);
 
   await page.locator('#ownerToolsBtn').click();
-  const avito = page.getByRole('button', {name: /Авито/});
+  const avito = page.locator('.modal').getByRole('button', {name: /Авито/});
   await expect(avito).toContainText('Подготовка');
   await avito.click();
   await expect(page.locator('.avitoSetupCard')).toContainText('Подготовительный режим');

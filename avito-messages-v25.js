@@ -155,6 +155,64 @@ window.addEventListener('load',()=>{
     return result;
   };
 });
+
+function canUseAvitoNavigation(){
+  if(typeof state==='undefined'||!state?.user)return false;
+  if(typeof isMasterPreview==='function'&&isMasterPreview())return false;
+  return ['owner','manager','dispatcher'].includes(String(state.user.role||''));
+}
+function syncAvitoNavigation(){
+  const nav=document.querySelector('#app > nav');
+  if(!nav)return;
+  const existing=nav.querySelector('#bosAvitoNav');
+  if(!apiEnabled()||!canUseAvitoNavigation()){existing?.remove();return}
+  if(existing)return;
+  const orders=nav.querySelector('button[data-page="orders"]');
+  if(!orders)return;
+  // Existing role renderers index nav buttons. Keep this modal action separate
+  // from page buttons so their labels and Android page history stay intact.
+  const entry=document.createElement('a');
+  entry.id='bosAvitoNav';entry.href='#avito';entry.role='button';
+  entry.textContent='Авито';entry.setAttribute('aria-haspopup','dialog');
+  entry.setAttribute('aria-controls','modalRoot');
+  entry.addEventListener('click',event=>{
+    event.preventDefault();
+    if(apiEnabled()&&canUseAvitoNavigation())window.openAvitoInbox();
+  });
+  entry.addEventListener('keydown',event=>{
+    if(event.key===' '){event.preventDefault();if(!event.repeat)entry.click()}
+  });
+  orders.insertAdjacentElement('afterend',entry);
+}
+let navigationQueued=false;
+function queueAvitoNavigation(){
+  if(navigationQueued)return;navigationQueued=true;
+  queueMicrotask(()=>{navigationQueued=false;syncAvitoNavigation()});
+}
+const previousNavigationShow=window.show;
+if(typeof previousNavigationShow==='function')window.show=function(){
+  const result=previousNavigationShow.apply(this,arguments);queueAvitoNavigation();return result;
+};
+const navigationContent=document.getElementById('content');
+if(navigationContent)new MutationObserver(queueAvitoNavigation).observe(navigationContent,{childList:true});
+const navigationRoot=document.querySelector('#app > nav');
+if(navigationRoot)new MutationObserver(queueAvitoNavigation).observe(navigationRoot,{childList:true});
+queueAvitoNavigation();
+
 const oldTools=window.openOwnerTools;window.openOwnerTools=function(){oldTools();setTimeout(()=>{const b=[...document.querySelectorAll('.ownerToolAction')].find(x=>x.textContent.includes('Авито'));if(!b)return;const right=b.querySelector('b');if(right&&!apiEnabled())right.textContent='Подготовка ›'},0)};
-const st=document.createElement('style');st.textContent=`.avitoOrderBlock,.avitoSetupCard{border-color:rgba(36,145,255,.35)}.avitoOrderActions{display:flex;gap:8px;flex-wrap:wrap}.avitoUnread{background:#ff3b30;color:white;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800;font-style:normal}.avitoLast{white-space:pre-wrap}.avitoBubble{max-width:86%;padding:10px 12px;border-radius:14px;margin:8px 0;background:rgba(255,255,255,.07)}.avitoBubble.out{margin-left:auto;background:rgba(36,145,255,.22)}.avitoBubble>div{white-space:pre-wrap;overflow-wrap:anywhere}.avitoBubble small{display:block;opacity:.6;margin-top:5px;font-size:11px}.avitoChatRow,.avitoOrderRow{display:flex!important;align-items:center;justify-content:space-between;text-align:left;margin:8px 0}.avitoChatRow span,.avitoOrderRow span{display:flex;flex-direction:column;min-width:0;gap:3px}.avitoChatRow small,.avitoOrderRow small{color:var(--muted,#9badc0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(65vw,520px)}.avitoDraftNotice{border-color:rgba(36,145,255,.35);margin-bottom:12px}.avitoRoadmap{margin-top:12px}`;document.head.appendChild(st);
+const st=document.createElement('style');st.textContent=`.avitoOrderBlock,.avitoSetupCard{border-color:rgba(36,145,255,.35)}.avitoOrderActions{display:flex;gap:8px;flex-wrap:wrap}.avitoUnread{background:#ff3b30;color:white;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800;font-style:normal}.avitoLast{white-space:pre-wrap}.avitoBubble{max-width:86%;padding:10px 12px;border-radius:14px;margin:8px 0;background:rgba(255,255,255,.07)}.avitoBubble.out{margin-left:auto;background:rgba(36,145,255,.22)}.avitoBubble>div{white-space:pre-wrap;overflow-wrap:anywhere}.avitoBubble small{display:block;opacity:.6;margin-top:5px;font-size:11px}.avitoChatRow,.avitoOrderRow{display:flex!important;align-items:center;justify-content:space-between;text-align:left;margin:8px 0}.avitoChatRow span,.avitoOrderRow span{display:flex;flex-direction:column;min-width:0;gap:3px}.avitoChatRow small,.avitoOrderRow small{color:var(--muted,#9badc0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(65vw,520px)}.avitoDraftNotice{border-color:rgba(36,145,255,.35);margin-bottom:12px}.avitoRoadmap{margin-top:12px}
+/* Avito opens the existing inbox while keeping the current working page. */
+#app > nav #bosAvitoNav{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:44px;min-height:48px;padding:7px 2px;border:1px solid rgba(22,131,255,.7);border-radius:10px;background:rgba(22,131,255,.06);color:var(--bos-text,#f5f8fc);font:inherit;font-size:11px;font-weight:650;line-height:1.25;text-decoration:none;white-space:nowrap;cursor:pointer;touch-action:manipulation}
+#app > nav #bosAvitoNav::before{content:"";display:block;flex:none;width:22px;height:22px;background:radial-gradient(circle at 5px 5px,#a88958 0 4px,transparent 4.5px),radial-gradient(circle at 17px 5px,#00aaff 0 4px,transparent 4.5px),radial-gradient(circle at 5px 17px,#00d5b5 0 4px,transparent 4.5px),radial-gradient(circle at 17px 17px,#ff4053 0 4px,transparent 4.5px)}
+#app > nav #bosAvitoNav:hover{background:rgba(22,131,255,.16)}
+#app > nav #bosAvitoNav:focus-visible{outline:2px solid #8fc6ff;outline-offset:2px}
+@media(max-width:1023px){
+ #app > nav:has(> #bosAvitoNav){grid-template-columns:repeat(5,minmax(0,1fr))!important}
+ #app > nav:has(> #bosAvitoNav) > button[data-action="profile"]{display:none!important}
+ #app > nav #bosAvitoNav{min-height:58px}
+}
+@media(min-width:1024px){
+ #app > nav #bosAvitoNav{flex:0 0 auto;flex-direction:row;justify-content:flex-start;gap:12px;width:100%;padding:12px;font-size:14px;font-weight:550;text-align:left}
+}
+`;document.head.appendChild(st);
 })();
