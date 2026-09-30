@@ -2513,7 +2513,7 @@ document.head.appendChild(style);
   const rawCloseModal=typeof window.closeModal==='function'?window.closeModal:null;
 
   function activePage(){
-    return document.querySelector('nav button.active[data-page]')?.dataset.page||'home';
+    return document.querySelector('nav .active[data-page]')?.dataset.page||'home';
   }
   function pageState(page){
     return {[MARK]:true,kind:'page',page:String(page||'home')};
@@ -2580,7 +2580,7 @@ document.head.appendChild(style);
   // Some role-specific patches attach their own nav handlers after app-public.
   // Record the resulting page as a fallback without duplicating show() entries.
   document.addEventListener('click',event=>{
-    const button=event.target?.closest?.('nav button[data-page]');
+    const button=event.target?.closest?.('nav [data-page]');
     if(!button)return;
     const page=button.dataset.page;
     setTimeout(()=>pushPage(page),0);

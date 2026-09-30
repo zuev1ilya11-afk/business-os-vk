@@ -32,17 +32,18 @@ test('connected inbox sends twice, refreshes without closing draft, and stops po
  await expect(page.locator('.avitoBubble.out')).toContainText('Первый ответ');expect(x.sendCount).toBe(1);await expect(send).toBeEnabled();
  await input.fill('Второй ответ');await send.click();await expect(page.locator('.avitoBubble.out')).toHaveCount(2);expect(x.sendCount).toBe(2);
  await input.fill('Черновик');x.messages.push({id:'4',text:'Новое входящее',direction:'in',created_at:'2026-09-23T10:02:00Z'});
- await page.clock.runFor(31000);await expect(page.locator('#avitoMessages')).toContainText('Новое входящее');await expect(input).toHaveValue('Черновик');
- await page.evaluate(()=>closeModal());const count=x.calls.length;await page.clock.runFor(65000);expect(x.calls.length).toBe(count);
+ await page.clock.fastForward(31000);await expect(page.locator('#avitoMessages')).toContainText('Новое входящее');await expect(input).toHaveValue('Черновик');
+ await page.evaluate(()=>show('orders'));const count=x.calls.length;await page.clock.fastForward(65000);expect(x.calls.length).toBe(count);
 });
-test('Avito draft saves via existing createOrder and returns to linked chat without a duplicate',async({page})=>{
+test('Avito inline draft saves through createOrder and returns to the linked chat without a duplicate',async({page})=>{
  const x=await connected(page);await page.evaluate(()=>openAvitoInbox());await page.locator('.avitoChatRow').click();await expect(page.locator('.avitoBubble')).toBeVisible();
- await page.locator('#avitoToOrder').click();const form=page.locator('#orderForm');await expect(form.locator('[name=avito_chat_id]')).toHaveValue(x.chat.id);await expect(form.locator('[name=comment]')).toHaveValue(/ID клиента Авито: 99/);
- await form.locator('[name=address]').fill('Невский 10');
- const service=form.locator('#bosService');await expect(service).toHaveValue('Монтаж карниза');
- await form.locator('button[type=submit]').click();await expect(form).toHaveCount(0);
- const order=x.db.tables.orders.find(o=>o.avito_chat_id===x.chat.id);expect(order).toBeTruthy();expect(order.external_source).toBe('avito');expect(order.avito_item_id).toBe('10');
- await page.evaluate(id=>openOrder(id),order.id);await page.getByRole('button',{name:'Открыть чат',exact:true}).click();await expect(page.locator('#avitoToOrder')).toHaveText('Открыть заявку');await page.locator('#avitoToOrder').click();expect(x.db.tables.orders).toHaveLength(3);
+ const form=page.locator('#avitoLeadForm');await expect(form).toBeVisible();await expect(page.locator('.modal')).toHaveCount(0);
+ await form.locator('[name=address]').fill('Невский 10');await form.locator('[name=desired_time]').fill('Завтра после 15:00');
+ await expect(form.locator('[name=work]')).toHaveValue('Монтаж карниза');
+ await page.locator('#avitoToOrder').click();await expect(form).toHaveCount(0);
+ const order=x.db.tables.orders.find(o=>o.avito_chat_id===x.chat.id);expect(order).toBeTruthy();expect(order.external_source).toBe('avito');expect(order.avito_item_id).toBe('10');expect(order.comment).toContain('Пожелание по времени: Завтра после 15:00');expect(order.comment).toContain('ID клиента Авито: 99');
+ await expect(page.locator('#avitoToOrder')).toHaveText('Открыть заявку');await page.locator('#avitoToOrder').click();
+ await page.getByRole('button',{name:'Открыть чат',exact:true}).click();await expect(page.locator('#avitoToOrder')).toHaveText('Открыть заявку');await expect(page.locator('.modal')).toHaveCount(0);expect(x.db.tables.orders).toHaveLength(3);
 });
 test('timeout keeps draft, prevents blind resend, and stale inbox cannot overwrite another modal',async({page})=>{
  const x=await connected(page);await page.evaluate(()=>openAvitoInbox());await page.locator('.avitoChatRow').click();await expect(page.locator('.avitoBubble')).toBeVisible();x.failSend();
@@ -63,8 +64,8 @@ test('429 blocks manual requests and polling until the provider cooldown expires
  await page.route('**/api/proxy/avito-api',async route=>{count++;await route.fulfill({status:429,contentType:'application/json',body:JSON.stringify({ok:false,error:'Подождите',retry_after:90})})});
  await page.evaluate(()=>openAvitoInbox());expect(count).toBe(1);
  await page.locator('#avitoRefresh').click();expect(count).toBe(1);
- await page.clock.runFor(60000);expect(count).toBe(1);
- await page.clock.runFor(31000);await page.locator('#avitoRefresh').click();await expect.poll(()=>count).toBe(2);
+ await page.clock.fastForward(60000);expect(count).toBe(1);
+ await page.clock.fastForward(31000);await page.locator('#avitoRefresh').click();await expect.poll(()=>count).toBe(2);
 });
 
 test('owner explicitly connects using server secrets with production activation enabled',async({page})=>{
