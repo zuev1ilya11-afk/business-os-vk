@@ -40,6 +40,39 @@ function pollView(root,refresh){
 const avitoOrder=o=>String(o?.external_source||'').toLowerCase()==='avito'||['авито','avito'].includes(String(o?.source||'').toLowerCase());
 const avitoOrders=()=>Array.from(state.orders||[]).filter(avitoOrder);
 function time(v){if(!v)return'';try{return new Date(v).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}catch(_){return''}}
+function imageUrl(value){
+  if(typeof value!=='string'||value.length>4096||/[\s\x00-\x1f]/.test(value))return '';
+  try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&!u.port&&/(^|\.)avito\.(ru|st)$/.test(u.hostname)?u.href:''}catch{return ''}
+}
+function messageImage(message){
+  const url=message.type==='image'&&imageUrl(message.image?.url);
+  return url?{url,preview:imageUrl(message.image.preview_url)||url}:null;
+}
+function messageHTML(message){
+  const photo=messageImage(message),content=message.text||(!photo?(message.type==='image'?'Фото недоступно':'['+(message.type||'Вложение')+']'):'');
+  return `<div class="avitoBubble ${message.direction==='out'?'out':'in'}">${photo?`<button class="avitoImageButton" type="button" aria-label="Открыть фото из Авито" data-image-url="${esc(photo.url)}"><img src="${esc(photo.preview)}" alt="Фото из переписки Авито" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="avitoPhotoLabel">Открыть фото ↗</span></button>`:''}${content?`<div>${esc(content)}</div>`:''}<small>${esc(time(message.created_at))}</small></div>`;
+}
+function openMessageImage(url,trigger){
+  url=imageUrl(url);if(!url)return;
+  openModal(`<h2 id="avitoImageTitle">Фото из Авито</h2><div class="avitoFullImage"><img src="${esc(url)}" alt="Фото из переписки Авито в полном размере" referrerpolicy="no-referrer"></div><p class="avitoImageStatus muted" role="status"></p><a class="avitoImageOriginal" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Открыть оригинал ↗</a>`);
+  const modal=document.querySelector('#modalRoot .modal');if(!modal)return;
+  modal.classList.add('avitoImageModal');modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','avitoImageTitle');
+  const img=modal.querySelector('img'),status=modal.querySelector('.avitoImageStatus');
+  img.onerror=()=>{img.hidden=true;status.textContent='Фото не удалось загрузить. Попробуйте открыть оригинал.'};
+  const close=modal.querySelector('.modalClose');close.setAttribute('aria-label','Закрыть фото');close.focus();
+  modal.onkeydown=event=>{
+    if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeModal()}
+    if(event.key==='Tab'){const last=modal.querySelector('.avitoImageOriginal');if(event.shiftKey&&document.activeElement===close){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();close.focus()}}
+  };
+  const cleanup=new MutationObserver(()=>{if(!modal.isConnected){cleanup.disconnect();if(trigger.isConnected&&!document.querySelector('#modalRoot .modal'))trigger.focus()}});cleanup.observe(document.getElementById('modalRoot'),{childList:true,subtree:true});
+}
+function bindMessageImages(messages){
+  messages.querySelectorAll('.avitoImageButton').forEach(button=>{
+    button.onclick=()=>openMessageImage(button.dataset.imageUrl,button);
+    const img=button.querySelector('img');img.onerror=()=>{img.hidden=true;button.classList.add('avitoImageFailed');button.querySelector('.avitoPhotoLabel').textContent='Фото не загрузилось — открыть'};
+    if(img.complete&&img.naturalWidth===0)img.onerror();
+  });
+}
 function apiOffCard(){return `<section class="card avitoSetupCard"><div class="row"><div><div class="eyebrow">АВИТО</div><h3 style="margin:4px 0 0">Подготовительный режим</h3></div><span class="apiState off">API позже</span></div><p class="muted">Интерфейс уже готов для работы с обращениями. Сейчас можно вручную перенести обращение Авито в обычную заявку Business OS. После подключения API здесь появятся входящие чаты, ответы и синхронизация.</p></section>`}
 function renderExistingOrders(){const rows=avitoOrders();return `<section class="card avitoExisting"><div class="row"><div><h3 style="margin:0">Заявки из Авито</h3><div class="muted">${rows.length} шт.</div></div></div>${rows.map(o=>`<button class="secondary wide avitoOrderRow" onclick="closeModal();openOrder('${esc(o.id)}')"><span><b>${esc(o.client||'Клиент')}</b><small>${esc(o.work||'Заявка')} · №${esc(o.id)}</small></span><b>Открыть ›</b></button>`).join('')||'<p class="muted">Пока нет заявок с источником «Авито».</p>'}</section>`}
 function setupScreen(){return `<button class="modalClose" onclick="closeModal()">×</button><h2>Авито</h2>${apiOffCard()}<button class="primary wide" onclick="openAvitoInbox()">Входящие Авито</button><button class="secondary wide" style="margin-top:8px" onclick="openAvitoManualLead()">+ Добавить обращение вручную</button><section class="card avitoRoadmap"><h3 style="margin-top:0">Готово к подключению API</h3><div class="ownerProfileLine"><span>Входящие чаты</span><b>Интерфейс готов</b></div><div class="ownerProfileLine"><span>Ответ клиенту</span><b>Интерфейс готов</b></div><div class="ownerProfileLine"><span>Чат → заявка</span><b>Готово</b></div><div class="ownerProfileLine"><span>Client ID / Secret</span><b class="muted">Подключим позже</b></div></section>`}
@@ -141,7 +174,7 @@ function selectWorkspaceChat(root,ws,id,renderList){
   const view=conversation.firstElementChild,messages=view.querySelector('#avitoMessages'),status=view.querySelector('#avitoHistoryStatus'),older=view.querySelector('#avitoOlder'),scroller=view.querySelector('.avitoHistory');
   const alive=()=>view.isConnected&&root.isConnected&&state.page==='avito'&&canUseAvitoNavigation()&&workingState()===ws;
   const visibleChat=()=>window.innerWidth>=1260||root.dataset.pane==='chat';
-  let loading=false,next=null,history=[],olderLoaded=false;
+  let loading=false,next=null,history=[],olderLoaded=false,renderedHistory='';
   view.querySelector('.avitoBackList').onclick=()=>{ws.pane='list';root.dataset.pane='list';root.querySelector('#avitoSearch').focus()};
   view.querySelector('.avitoShowLead').onclick=()=>{ws.pane='details';root.dataset.pane='details';lead.querySelector('input')?.focus()};
   function renderLead(){
@@ -177,8 +210,8 @@ function selectWorkspaceChat(root,ws,id,renderList){
       const d=await avitoCall(contract.messages,{chat_id:id,offset:append?next||0:0});if(!alive())return false;
       const height=scroller.scrollHeight,top=scroller.scrollTop,follow=history.length===0||height-top-scroller.clientHeight<90;
       history=[...new Map([...history,...(d.messages||[])].map(m=>[m.id,m])).values()].sort((a,b)=>String(a.created_at||'').localeCompare(String(b.created_at||'')));
-      const html=history.map(m=>`<div class="avitoBubble ${m.direction==='out'?'out':'in'}"><div>${esc(m.text||'['+(m.type||'Вложение')+']')}</div><small>${esc(time(m.created_at))}</small></div>`).join('')||'<p class="muted">Сообщений пока нет.</p>';
-      if(messages.innerHTML!==html)messages.innerHTML=html;
+      const html=history.map(messageHTML).join('')||'<p class="muted">Сообщений пока нет.</p>';
+      if(renderedHistory!==html){messages.innerHTML=html;renderedHistory=html;bindMessageImages(messages)}
       if(append||!olderLoaded)next=d.next_offset;if(append)olderLoaded=true;older.hidden=next==null;status.textContent='';
       if(append)scroller.scrollTop=top+scroller.scrollHeight-height;else if(follow)scroller.scrollTop=scroller.scrollHeight;
       if(visibleChat())try{await avitoCall(contract.read,{chat_id:id});if(alive()){chat.unread_count=0;const current=ws.rows.find(c=>String(c.id)===id);if(current)current.unread_count=0;renderList()}}catch(error){if(alive())status.textContent='История загружена. '+error.message;if([401,403,429].includes(error.status))throw error}
@@ -328,5 +361,7 @@ const st=document.createElement('style');st.textContent=`.avitoOrderBlock,.avito
 .avitoLeadPane{display:flex;flex-direction:column;overflow:hidden}.avitoLeadPane form{display:flex;flex-direction:column;flex:1;min-height:0;gap:10px}.avitoLeadFields{display:grid;gap:12px;flex:1;min-height:0;overflow:auto;align-content:start;padding:3px 3px 10px}.avitoLeadHead{flex-shrink:0}.avitoLeadPane #avitoToOrder{flex-shrink:0}.avitoLeadPane form>small,.avitoLeadPane [role=status]{flex-shrink:0}
 #app:has(#content > .avitoWorkspace){padding-bottom:12px!important}
 @media(max-width:1259px){.avitoLeadPane{display:none}.avitoWorkspace[data-pane=details] .avitoLeadPane{display:flex}}
+.avitoWorkspace .avitoImageButton{display:block;width:min(320px,100%);max-width:100%;padding:0;margin:0 0 6px;border:1px solid #45627d;border-radius:10px;overflow:hidden;background:#0b1927;color:#d5e9ff;text-align:left;cursor:zoom-in}.avitoImageButton img{display:block;width:100%;height:200px;object-fit:contain;background:#08131f}.avitoImageButton img[hidden]{display:none}.avitoPhotoLabel{display:block;padding:8px 10px;font-size:12px}.avitoImageButton:focus-visible{outline:2px solid #8fc6ff;outline-offset:2px}.avitoImageFailed{min-height:100px}
+#modalRoot .modal.avitoImageModal{width:min(1100px,96vw);max-width:96vw;max-height:calc(100dvh - 24px);overflow:auto;padding:20px;border-radius:14px}.avitoImageModal h2{padding-right:36px;margin:0 0 14px;font-size:20px}.avitoFullImage{display:flex;justify-content:center;align-items:center;min-height:100px;background:#08131f;border-radius:8px;overflow:hidden}.avitoFullImage img{display:block;max-width:100%;max-height:calc(100dvh - 190px);object-fit:contain}.avitoFullImage img[hidden]{display:none}.avitoImageOriginal{display:inline-flex;align-items:center;min-height:44px;color:#8fc6ff}.avitoImageStatus{margin:8px 0;font-size:14px}.avitoImageStatus:empty{display:none}
 `;document.head.appendChild(st);
 })();

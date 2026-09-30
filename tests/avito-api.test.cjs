@@ -115,3 +115,24 @@ test('invalid opaque IDs still fail before provider traffic and order writes',as
  }
  assert.equal(x.calls.length,0);assert.equal(db.tables.orders.length,0);
 });
+
+test('Messenger image variants retain captions and select a safe preview and original',async()=>{
+ const image={sizes:{'1280x960':'https://img.k.avito.ru/chat/1280x960/photo.jpg?sig=a%2Bb','32x32':'https://img.k.avito.ru/chat/32x32/photo.jpg','640x480':'https://img.k.avito.ru/chat/640x480/photo.jpg','140x105':'https://img.k.avito.ru/chat/140x105/photo.jpg'}};
+ const x=setup(url=>url.endsWith('/token')?normal(url):response({messages:[{id:'photo',type:'image',content:{image,text:'Нужно закрепить'},created:1700000000,author_id:99},{id:'small',type:'image',content:{image:{sizes:{'140x105':'https://cdn.avito.st/small.jpg'}}},author_id:42},{id:'text',type:'text',content:{text:'Ответ'}}]}));
+ const r=await x.call({action:'messages',chat_id:'photo-chat'});assert.equal(r.status,200);
+ assert.deepEqual(r.body.messages[0].image,{url:image.sizes['1280x960'],preview_url:image.sizes['640x480'],width:1280,height:960});
+ assert.equal(r.body.messages[0].text,'Нужно закрепить');assert.equal(r.body.messages[0].direction,'in');
+ assert.equal(r.body.messages[1].image.preview_url,'https://cdn.avito.st/small.jpg');assert.equal(r.body.messages[1].direction,'out');
+ assert.equal(r.body.messages[2].text,'Ответ');assert.equal(r.body.messages[2].image,undefined);
+ assert.equal(x.calls.length,2);assert.ok(x.calls.every(c=>new URL(c.url).hostname==='api.avito.ru'));
+});
+test('invalid, empty and non-provider image URLs never reach the browser',async()=>{
+ const urls=['javascript:alert(1)','data:image/svg+xml,unsafe','http://img.k.avito.ru/a.jpg','https://avito.ru.evil.test/a.jpg','https://evil.test/avito.ru/a.jpg','https://user:pass@img.k.avito.ru/a.jpg','https://img.k.avito.ru:444/a.jpg','https://127.0.0.1/a.jpg','https://img.k.avito.ru/\na.jpg',{},null];
+ const images=[...urls.map(url=>({sizes:{'640x480':url}})),{sizes:[]},{sizes:{}},{sizes:{'0x0':'https://img.k.avito.ru/a.jpg'}},null];
+ const x=setup(url=>url.endsWith('/token')?normal(url):response({messages:images.map((image,i)=>({id:String(i),type:'image',content:{image}}))}));
+ const r=await x.call({action:'messages',chat_id:'photo-chat'});assert.equal(r.status,200);assert.ok(r.body.messages.every(m=>m.image===null));
+});
+test('photo-only last messages get a readable dialog preview',async()=>{
+ const x=setup(url=>url.endsWith('/token')?normal(url):response({chats:[{id:'photo-chat',last_message:{type:'image',content:{image:{sizes:{}}}}}]}));
+ assert.equal((await x.call({action:'chats'})).body.chats[0].last_message,'Фото');
+});
