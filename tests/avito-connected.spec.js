@@ -37,7 +37,7 @@ test('Avito draft saves via existing createOrder and returns to linked chat with
  const x=await connected(page);await page.evaluate(()=>openAvitoInbox());await page.locator('.avitoChatRow').click();await expect(page.locator('.avitoBubble')).toBeVisible();
  await page.locator('#avitoToOrder').click();const form=page.locator('#orderForm');await expect(form.locator('[name=avito_chat_id]')).toHaveValue('chat-1');await expect(form.locator('[name=comment]')).toHaveValue(/ID клиента Авито: 99/);
  await form.locator('[name=address]').fill('Невский 10');
- const service=form.locator('#bosService');await service.selectOption({index:1});
+ const service=form.locator('#bosService');await expect(service).toHaveValue('Монтаж карниза');
  await form.locator('button[type=submit]').click();await expect(form).toHaveCount(0);
  const order=x.db.tables.orders.find(o=>o.avito_chat_id==='chat-1');expect(order).toBeTruthy();expect(order.external_source).toBe('avito');expect(order.avito_item_id).toBe('10');
  await page.evaluate(id=>openOrder(id),order.id);await page.getByRole('button',{name:'Открыть чат',exact:true}).click();await expect(page.locator('#avitoToOrder')).toHaveText('Открыть заявку');await page.locator('#avitoToOrder').click();expect(x.db.tables.orders).toHaveLength(3);

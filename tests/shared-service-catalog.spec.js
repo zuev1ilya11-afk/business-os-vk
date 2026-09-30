@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
-test('dispatcher selects catalog work and saves its existing name and base price',async({page})=>{
+test('dispatcher enters custom work and saves its text and manual price',async({page})=>{
   const {db}=await fullStack(page,'dispatcher');
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
@@ -12,14 +12,15 @@ test('dispatcher selects catalog work and saves its existing name and base price
   await form.locator('[name=client]').fill('Клиент каталога');
   await form.locator('#bosPhone').fill('9991234567');
   await form.locator('[name=address]').fill('Адрес каталога');
-  await form.locator('#bosService').selectOption('4');
-  await expect(form.locator('#bosServiceInfo')).toContainText('комплект');
+  await form.locator('#bosService').fill('Установка карниза — 2 шт.');
+  await form.locator('[name=original_amount]').fill('1699');
+  await expect(form.locator('#bosServiceInfo')).toContainText('своими словами');
   await expect(form.locator('[name=original_amount]')).toHaveValue('1699');
   await form.locator('[name=comment]').fill('Нестандартное крепление согласовать');
-  await form.getByRole('button',{name:'Сохранить',exact:true}).click();
+  await form.getByRole('button',{name:'Создать заявку',exact:true}).click();
   await expect(form).toHaveCount(0);
   const saved=db.tables.orders.find(o=>o.client==='Клиент каталога');
-  expect(saved.work).toBe('Установка декоративного карниза длиной до 2,5 метров');
+  expect(saved.work).toBe('Установка карниза — 2 шт.');
   expect(saved.amount).toBe(1699);
   expect(saved.comment).toBe('Нестандартное крепление согласовать');
   await page.evaluate(id=>openOrder(id),saved.id);
