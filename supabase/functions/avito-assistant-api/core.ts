@@ -40,6 +40,9 @@ export function validateFacts(raw:any,messages:any[],policy:any){
    if(!policy.services.some((s:any)=>s.id===fact.value))throw new Error('AI_INVALID_RESULT');
   }else if(field==='region'){
    if(!policy.regions.includes(fact.value))throw new Error('AI_INVALID_RESULT');
+   const place=normalized(fact.quote);
+   const explicit=fact.value==='Санкт-Петербург'?/петербург|(^|[^а-я])спб([^а-я]|$)|питер/.test(place):/ленинградск|лен[.]?\s*обл|(^|[^а-я])ло([^а-я]|$)/.test(place);
+   if(!explicit)throw new Error('AI_UNGROUNDED_RESULT');
   }else if(field==='quantity'){
    if(!Number.isInteger(fact.value)||fact.value<1||fact.value>50)throw new Error('AI_INVALID_RESULT');
   }else{

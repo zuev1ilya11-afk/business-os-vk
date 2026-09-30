@@ -174,3 +174,11 @@ test('complete request, explicit client confirmation and repeated polls create o
  assert.equal(x.calls.filter(c=>c.action==='create_order').length,1);
  assert.equal(x.states.get('chat-1').status,'confirmed');assert.equal(sends,2);
 });
+
+test('geography cannot be silently mapped from Moscow or an unspecified town into the service area',()=>{
+ const raw=greetingFacts();
+ raw.region={value:'Санкт-Петербург',quote:'Москва',message_id:'m'};
+ assert.throws(()=>core.validateFacts(raw,[{id:'m',text:'Москва'}],policy),/UNGROUNDED/);
+ raw.region={value:'Ленинградская область',quote:'Лен обл',message_id:'m'};
+ assert.equal(core.validateFacts(raw,[{id:'m',text:'Лен обл'}],policy).region,'Ленинградская область');
+});
