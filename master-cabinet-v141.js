@@ -49,6 +49,8 @@ function openToday(){
 }
 function render(){
   queued=false;
+  // The period panel owns salary cards and the filtered completed-order list.
+  if(window.BOS_MASTER_MONEY_V130_API?.periodSnapshot)return;
   if(!masterMode()||String(state?.page||'')!=='team')return;
   const panel=document.getElementById('masterProfileSummaryV129');if(!panel)return;
   const metrics=panel.querySelector('.masterV129Metrics');if(!metrics)return;

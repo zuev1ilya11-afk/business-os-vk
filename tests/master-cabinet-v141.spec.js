@@ -4,7 +4,7 @@ const {fullStack}=require('./helpers/full-stack.cjs');
 const pad=n=>String(n).padStart(2,'0');
 const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 
-test('master cabinet v141 shows today salary and recent completed orders in profile',async({page})=>{
+test('master cabinet shows day salary and selected completed orders in profile',async({page})=>{
   const {db,master}=await fullStack(page,'master');
   const today=iso(new Date());
   const yesterdayDate=new Date();yesterdayDate.setDate(yesterdayDate.getDate()-1);const yesterday=iso(yesterdayDate);
@@ -30,34 +30,31 @@ test('master cabinet v141 shows today salary and recent completed orders in prof
 
   const panel=page.locator('#masterProfileSummaryV129');
   await expect(panel).toBeVisible();
-  const todayCard=panel.locator('.masterCabinetV141Today');
-  await expect(todayCard).toContainText('ЗП сегодня');
+  await panel.getByRole('button',{name:'День',exact:true}).click();
+  const todayCard=panel.locator('.salaryHero');
   await expect(todayCard).toContainText(/652[,.]5/);
-
-  const completed=page.locator('#masterCabinetV141Completed');
-  await expect(completed).toBeVisible();
-  await expect(completed.getByText('Выполненные заявки',{exact:true})).toBeVisible();
-  await expect(completed.locator('.masterCabinetV141Order')).toHaveCount(2);
-  await expect(completed).toContainText('Установка карниза');
-  await expect(completed).toContainText(/652[,.]5/);
-  await expect(completed).toContainText('Вычет');
-
-  await expect(completed).toContainText('Клиент кабинета');
-  await expect(completed).toContainText('Очень длинный адрес');
-  await expect(completed).toContainText('Начисление');
-  await expect(completed).toContainText('Итого');
-  for(const label of ['ЗП за неделю','ЗП за месяц','Допработы','Вычеты','Общая зарплата']){
-    await expect(panel.locator('.masterV129Metric').filter({has:page.getByText(label,{exact:true})})).toBeVisible();
-  }
-  await expect(panel.locator('#masterMoneyV130')).toHaveCount(1);
   await todayCard.click();
-  await expect(page.locator('#modalRoot')).toContainText('ЗП сегодня');
   await expect(page.locator('#modalRoot')).toContainText(/652[,.]5/);
   await expect(page.locator('#modalRoot')).toContainText('Допработы');
   await page.evaluate(()=>closeModal());
-
+  await panel.getByRole('button',{name:'Свои даты',exact:true}).click();
+  await panel.locator('[name="start"]').fill(yesterday);
+  await panel.locator('[name="end"]').fill(today);
+  await panel.getByRole('button',{name:'Показать',exact:true}).click();
+  const completed=page.locator('.salaryOrders');
+  await expect(completed).toBeVisible();
+  await expect(completed.locator('.salaryOrder')).toHaveCount(2);
+  await expect(completed).toContainText('Установка карниза');
+  await expect(completed).toContainText(/652[,.]5/);
+  await expect(completed).toContainText('Клиент кабинета');
+  await expect(completed).toContainText('Очень длинный адрес');
+  await expect(panel.locator('#masterMoneyV130')).toHaveCount(1);
+  await panel.locator('.salaryHero').click();
+  await expect(page.locator('#modalRoot')).toContainText('Вычет');
+  await expect(page.locator('#modalRoot')).toContainText('Итого начислено');
+  await page.evaluate(()=>closeModal());
   await page.setViewportSize({width:320,height:640});
-  const last=completed.locator('.masterCabinetV141Order').last();
+  const last=completed.locator('.salaryOrder').last();
   await last.scrollIntoViewIfNeeded();
   const reachable=await last.evaluate(el=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return el===hit||el.contains(hit)});
   expect(reachable).toBe(true);
@@ -65,9 +62,10 @@ test('master cabinet v141 shows today salary and recent completed orders in prof
   await expect(page.locator('#modalRoot .modal')).toBeVisible();
   await expect(page.locator('#modalRoot')).toContainText('Заявка завершена');
   await page.evaluate(()=>closeModal());
+
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
   await page.locator('nav button[data-page="home"]').click();
   await expect(page.locator('#masterMoneyV130')).toHaveCount(0);
-  await expect(page.locator('#masterCabinetV141Completed')).toHaveCount(0);
+  await expect(page.locator('.salaryOrders')).toHaveCount(0);
 });

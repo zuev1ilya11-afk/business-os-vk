@@ -36,18 +36,21 @@ test('master v129 shows compact profile money metrics without duplicate schedule
   const panel=page.locator('#masterProfileSummaryV129');
   await expect(panel).toBeVisible();
   await expect(panel.locator('.masterV129Schedule')).toHaveCount(0);
-  await expect(panel.locator('.masterV129Metric')).toHaveCount(9);
-  await expect(panel.getByText('В работе',{exact:true}).locator('..')).toContainText('1');
-  await expect(panel.getByText('Выполнено',{exact:true}).locator('..')).toContainText('3');
+  await expect(panel.locator('.masterV129Metric')).toHaveCount(2);
+  await expect(panel.getByText('В работе сейчас',{exact:true}).locator('..')).toContainText('1');
+  await expect(panel.getByText('Выполнено за всё время',{exact:true}).locator('..')).toContainText('3');
+  const hero=panel.locator('.salaryHero');
+  const weekExpected=priorInMonth>=weekStart?1757.5:652.5;
+  await expect(hero).toContainText(new RegExp(String(weekExpected).replace('.', '[,.]')));
+  await panel.getByRole('button',{name:'Месяц',exact:true}).click();
+  await expect(hero).toContainText(/1[\s ]?757[,.]5/);
+  await panel.getByRole('button',{name:'Свои даты',exact:true}).click();
+  await panel.locator('[name="start"]').fill(previousMonth);
+  await panel.locator('[name="end"]').fill(today);
+  await panel.getByRole('button',{name:'Показать',exact:true}).click();
+  await expect(hero).toContainText(/2[\s ]?360/);
   await expect(panel.getByText('Допработы',{exact:true}).locator('..')).toContainText(/150/);
   await expect(panel.getByText('Вычеты',{exact:true}).locator('..')).toContainText(/200/);
-  await expect(panel.getByText('ЗП за неделю',{exact:true})).toBeVisible();
-  await expect(panel.getByText('ЗП за месяц',{exact:true})).toBeVisible();
-  await expect(panel.getByText('Общая зарплата',{exact:true}).locator('..')).toContainText(/2[\s ]?360/);
-
-  const weekExpected=priorInMonth>=weekStart?1757.5:652.5;
-  await expect(panel.getByText('ЗП за неделю',{exact:true}).locator('..')).toContainText(new RegExp(String(weekExpected).replace('.', '[,.]')));
-  await expect(panel.getByText('ЗП за месяц',{exact:true}).locator('..')).toContainText(/1[\s ]?757[,.]5/);
 
   await page.evaluate(()=>show('home'));
   await expect(page.locator('#masterProfileSummaryV129')).toHaveCount(0);

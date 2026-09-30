@@ -17,6 +17,6 @@ test('master payment panel is rendered in owner master preview',async({page})=>{
   await expect(panel).toBeVisible();
   await expect(panel.getByText('Допработы',{exact:true})).toBeVisible();
   await expect(panel.getByText('Вычеты',{exact:true})).toBeVisible();
-  await expect(panel.getByText('ЗП за неделю',{exact:true})).toBeVisible();
-  await expect(panel.getByText('ЗП за месяц',{exact:true})).toBeVisible();
+  await expect(panel.getByRole('button',{name:'Неделя',exact:true})).toBeVisible();
+  await expect(panel.getByRole('button',{name:'Месяц',exact:true})).toBeVisible();
 });
