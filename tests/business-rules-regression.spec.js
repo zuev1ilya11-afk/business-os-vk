@@ -59,14 +59,14 @@ test('retrying a failed create-order submission reuses the same request_id',asyn
   else await page.locator('input[name="phone"]').fill('9991234567');
   await page.locator('input[name="address"]').fill('Тестовый адрес');
   const service=page.locator('#bosService');
-  if(await service.count())await service.selectOption('4');
+  if(await service.count())await service.fill('Монтаж');
   else await page.locator('input[name="work"]').fill('Монтаж');
   const original=page.locator('input[name="original_amount"]');
   if(await original.count())await original.fill('1000');
   else await page.locator('input[name="amount"]').fill('1000');
 
   await expect(form.locator('input[name="client"]')).toHaveValue('Идемпотентный тест');
-  const save=form.getByRole('button',{name:'Сохранить',exact:true});
+  const save=form.getByRole('button',{name:'Создать заявку',exact:true});
   await save.click();
   await expect.poll(()=>seen.length).toBe(1);
   await expect(form.locator('#formMsg')).toHaveText('Временная ошибка сохранения');

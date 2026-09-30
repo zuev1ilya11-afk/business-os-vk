@@ -1,6 +1,7 @@
 const { defineConfig } = require('@playwright/test');
 module.exports = defineConfig({
   testDir: './tests',
+  reporter: process.env.CI ? 'list' : undefined,
   testMatch: '**/*.spec.js',
   timeout: 30000,
   retries: process.env.CI ? 1 : 0,

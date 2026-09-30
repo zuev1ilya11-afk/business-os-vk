@@ -19,7 +19,7 @@ test('new dispatcher order shows ranked masters, load and free windows before sa
 
   await page.locator('input[name="scheduled_date"]').fill(today());
   await page.locator('select[name="time_slot"]').selectOption({label:'11:00–12:00'});
-  await page.locator('#bosService').selectOption('4');
+  await page.locator('#bosService').fill('Установка карниза');
 
   const box=page.locator('.dsa119Form');
   await expect(box).toBeVisible();

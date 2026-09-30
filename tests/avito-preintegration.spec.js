@@ -39,8 +39,8 @@ test('Avito setup stays local and prefills an order', async ({page}) => {
   await expect(order.locator('[name="client"]')).toHaveValue('Клиент Авито');
   await expect(order.locator('#bosPhone')).toHaveValue('9995554433');
   await expect(order.locator('[name="address"]')).toHaveValue('Лиговский 10');
-  await expect(order.locator('#bosService')).toHaveValue('');
-  await expect(order.locator('[name="source"]')).toHaveValue('Авито');
+  await expect(order.locator('#bosService')).toHaveValue('Установка карниза');
+  await expect(order.getByRole('radio',{name:'Авито',exact:true})).toBeChecked();
   await expect(order.locator('[name="comment"]')).toHaveValue(/Работа из Авито: Установка карниза/);
   await expect(order.locator('[name="comment"]')).toHaveValue(/Нужно установить завтра/);
 
