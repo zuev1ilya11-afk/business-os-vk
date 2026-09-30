@@ -534,16 +534,16 @@
   },
   {
     "name": "push-api",
-    "version": 1,
+    "version": 2,
     "verify_jwt": false,
     "status": "ACTIVE",
-    "bundle_sha256": "5fb622e7c5293827d548e6779a6f6b75e0750ce365272d6b9c97583cbd11ede9",
+    "bundle_sha256": "50e7dca1e7c66cb1ad838afa143d9373968a08ed7914d0343650e8bebb95beb7",
     "files": [
       {
         "name": "index.ts",
-        "source_sha256": "3a379cc6fe0ecc800e1b0427b727ea112242529ef87ecd5a5301b0a54a14fb80",
+        "source_sha256": "dc193b3c4b4f7ae781853a98ae1383c0e16b2689c9e22352796ee9b6cadcf3f6",
         "repository_path": "supabase/functions/push-api/index.ts",
-        "repository_sha256": "3a379cc6fe0ecc800e1b0427b727ea112242529ef87ecd5a5301b0a54a14fb80",
+        "repository_sha256": "dc193b3c4b4f7ae781853a98ae1383c0e16b2689c9e22352796ee9b6cadcf3f6",
         "exact": true
       },
       {
