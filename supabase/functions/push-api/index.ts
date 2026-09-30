@@ -2,6 +2,8 @@ import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import webpush from 'npm:web-push@3.6.7';
 
 const VERSION='web-push-v211';
+// Match password-session-api login/refresh issuance, with one minute of clock skew.
+const MAX_SESSION_TTL_SECONDS=60*60*24*365+60;
 const encoder=new TextEncoder();
 const origins=new Set(['https://zuev1ilya11-afk.github.io','https://business-os-public-xo8i66.v2.appdeploy.ai','https://business-os-api-gateway.netlify.app']);
 const roles=new Set(['owner','manager','dispatcher','master']);
@@ -18,7 +20,7 @@ async function sha(value:string){return Array.from(new Uint8Array(await crypto.s
 async function subject(token:string,secret:string){
   const p=String(token||'').split('.'),now=Math.floor(Date.now()/1000);
   if(!secret||p.length!==3||!/^[A-Za-z0-9_-]{1,128}$/.test(p[0])||!/^\d{1,12}$/.test(p[1])||
-    Number(p[1])<=now||Number(p[1])>now+43260||!/^[A-Za-z0-9_-]{43}$/.test(p[2]))return null;
+    Number(p[1])<=now||Number(p[1])>now+MAX_SESSION_TTL_SECONDS||!/^[A-Za-z0-9_-]{43}$/.test(p[2]))return null;
   const key=await crypto.subtle.importKey('raw',encoder.encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
   const signature=b64u(new Uint8Array(await crypto.subtle.sign('HMAC',key,encoder.encode(p[0]+'.'+p[1]))));
   return equal(signature,p[2])?p[0]:null;

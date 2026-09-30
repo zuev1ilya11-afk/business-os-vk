@@ -24,6 +24,22 @@ The supported event set is assignment, removal, time change, cancellation, rejec
 
 Delivery is best effort: network/OS restrictions and offline state can delay it. Queue retries expire after 15 minutes (test after five). A provider 2xx means accepted, not displayed. Device subscriptions expire after 30 days and are renewed only while a previously consented signed-in account is active. iPhone requires a supported Home Screen web app (Web Push introduced in iOS 16.4); embedded VK browsers are not assumed to support the PWA channel. No silent permissions, open-tab polling or Telegram substitution.
 
+## Session compatibility correction
+
+The phone report on 2026-09-30 reproduced a permanent sign-in request in push
+settings. The existing login/refresh issuer creates 365-day signed sessions,
+while push-api rejected any expiry more than 12 hours ahead. Signing in again
+therefore returned another session rejected by the push settings.
+
+The push validator now accepts the issuer's existing lifetime plus one minute
+of clock skew, matching the integration validator. This does not extend session
+issuance. Signature/subject/expiry validation, active staff and role checks,
+worker authorization, device ownership and revocation checks remain required.
+Real-handler regressions use login and refresh tokens for owner, manager,
+dispatcher and master across status, subscribe and test; forged tokens,
+excessive expiry and disabled staff remain rejected. Physical delivery is a
+separate check that must be repeated on the user's phone after deployment.
+
 ## Rollback
 
 First set `bos_push_private.runtime.enabled=false`; optionally unschedule only the named `bos-web-push-recovery` cron job. The additive order trigger then returns immediately. Do not drop business tables, rotate existing account passwords, remove historical orders or change payroll/auth. Restore the preceding frontend through the normal reviewed build path. Subscription records and Vault keys need not be deleted.
