@@ -7,6 +7,7 @@ test('build is deterministic, discovers new assets and rejects stale generated f
  try{
   fs.mkdirSync(path.join(root,'scripts'));
   fs.copyFileSync('scripts/build-version.cjs',path.join(root,'scripts/build-version.cjs'));
+  fs.copyFileSync('scripts/bundle-assets.cjs',path.join(root,'scripts/bundle-assets.cjs'));
   const write=(name,text)=>fs.writeFileSync(path.join(root,name),text);
   const read=name=>fs.readFileSync(path.join(root,name),'utf8');
   const run=(...args)=>spawnSync(process.execPath,[path.join(root,'scripts/build-version.cjs'),...args],{cwd:root,encoding:'utf8'});

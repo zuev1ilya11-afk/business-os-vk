@@ -36,7 +36,12 @@ for(const role of ['owner','dispatcher','master'])test(`production ${role}: one 
  const list=f.downloads.filter(d=>/^(dispatcher-smart-assign-v119|dispatcher-free-slots-v120|master-home-orders-v124|master-orders-v125)\.js$/.test(d.name));
  expect(list.length).toBeGreaterThanOrEqual(2);
  expect(list.some((a,i)=>list.some((b,j)=>i!==j&&b.at>=a.at&&b.at<a.completed))).toBe(true);
- for(const name of ['master-call-workflow-v26.js','master-reschedule-call-v87.js','web-push-v211.js','master-order-actions-v179.js'])expect(f.downloads.filter(x=>x.name===name)).toHaveLength(1);
+ for(const name of ['master-call-workflow-v26.js','master-reschedule-call-v87.js','web-push-v211.js','master-order-actions-v179.js']){
+  const asset=await page.evaluate(name=>new URL(BOS_ASSET_URL(name)).pathname.split('/').pop(),name);
+  expect(f.downloads.filter(x=>x.name===asset)).toHaveLength(1);
+  expect(f.downloads.filter(x=>x.name===name)).toHaveLength(0);
+ }
+ expect(f.downloads.filter(x=>x.name==='startup-eager.bundle.js')).toHaveLength(1);
  await page.reload();await expect(page.locator('#authGate')).toBeHidden();
  expect(f.errors).toEqual([]);
 });

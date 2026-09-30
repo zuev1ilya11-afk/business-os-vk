@@ -1,4 +1,4 @@
-const BUILD_ID='1fa5275d6186d220f122';
+const BUILD_ID='625a0121a5b9c7d3e38f';
 importScripts('./build-version.js?build='+BUILD_ID);
 if(self.BOS_BUILD.id!==BUILD_ID)throw new Error('Mixed deployment: build manifest mismatch');
 const PREFIX='business-os-build-';
@@ -71,7 +71,8 @@ self.addEventListener('fetch',event=>{
  const url=new URL(request.url);if(url.origin!==scope.origin||!url.pathname.startsWith(scope.pathname))return;
  const name=url.pathname.slice(scope.pathname.length);
  if(request.mode==='navigate'){event.respondWith(navigation(request));return}
- if(Object.hasOwn(assets,name)||name==='build-version.js')event.respondWith(staticAsset(request,url,name));
+ // Bundled source URLs still belong to older tabs; serve their exact previous cache.
+ if(Object.hasOwn(assets,name)||Object.hasOwn(self.BOS_BUILD.assetBundles||{},name)||name==='build-version.js')event.respondWith(staticAsset(request,url,name));
 });
 
 // Web Push uses a separate small state cache; app-build cache rotation must not remove the device binding.

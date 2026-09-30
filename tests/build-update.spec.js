@@ -8,10 +8,11 @@ test('new build waits for consent, reloads once, and stays usable offline',async
  const server=http.createServer((req,res)=>{
   const url=new URL(req.url,'http://localhost');
   const fixture=`window.fixtureBuild='${version}';`;
-  const html=`<html><head><meta name="bos-build-id" content="${version}"></head><body><input id="draft"><script src="build-version.js?build=${version}"></script><script src="app-build-runtime.js?build=${version}"></script><script src="fixture.js?build=${version}"></script><script>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(BOS_WATCH_UPDATE)</script></body></html>`;
-  const manifest='self.BOS_BUILD='+JSON.stringify({id:version,shell:hash(html),assets:{'fixture.js':hash(fixture),'app-build-runtime.js':hash(runtime)}})+';';
+  const fixtureName=version==='A'?'fixture.js':'fixture.bundle.js';
+  const html=`<html><head><meta name="bos-build-id" content="${version}"></head><body><input id="draft"><script src="build-version.js?build=${version}"></script><script src="app-build-runtime.js?build=${version}"></script><script src="${fixtureName}?build=${version}"></script><script>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(BOS_WATCH_UPDATE)</script></body></html>`;
+  const manifest='self.BOS_BUILD='+JSON.stringify({id:version,shell:hash(html),assets:{[fixtureName]:hash(fixture),'app-build-runtime.js':hash(runtime)},assetBundles:version==='A'?{}:{'fixture.js':'fixture.bundle.js'}})+';';
   const servedHTML=brokenShell?html.replace('<input id="draft">','<p>Incomplete shell</p>'):html;
-  const files={'/':servedHTML,'/index.html':servedHTML,'/api/data':String(++apiRequests),'/sw.js':worker.replace(/const BUILD_ID='[^']*';/,`const BUILD_ID='${version}';`),'/build-version.js':manifest,'/fixture.js':broken?'invalid deployment':fixture,'/app-build-runtime.js':runtime};
+  const files={'/':servedHTML,'/index.html':servedHTML,'/api/data':String(++apiRequests),'/sw.js':worker.replace(/const BUILD_ID='[^']*';/,`const BUILD_ID='${version}';`),'/build-version.js':manifest,['/'+fixtureName]:broken?'invalid deployment':fixture,'/app-build-runtime.js':runtime};
   res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type',url.pathname.endsWith('.js')?'application/javascript; charset=utf-8':'text/html; charset=utf-8');
   res.writeHead(files[url.pathname]===undefined?404:200);res.end(files[url.pathname]??'Missing');
  });
@@ -39,7 +40,11 @@ test('new build waits for consent, reloads once, and stays usable offline',async
   expect(navigations).toBe(2);await expect(page.locator('#bosBuildUpdate')).toHaveCount(0);
   await expect(other.locator('#draft')).toHaveValue('Другая вкладка');
   expect(await other.evaluate(()=>fixtureBuild)).toBe('A');
+  await context.setOffline(true);
   expect(await other.evaluate(()=>fetch(BOS_ASSET_URL('fixture.js')).then(r=>r.text()))).toBe("window.fixtureBuild='A';");
+  expect(await page.evaluate(()=>fetch(BOS_ASSET_URL('fixture.js')).then(r=>r.text()))).toBe("window.fixtureBuild='B';");
+  expect(await page.evaluate(()=>caches.open('business-os-build-B').then(cache=>cache.match(new URL('fixture.js?build=B',location.href))).then(Boolean))).toBe(false);
+  await context.setOffline(false);
   await other.getByRole('button',{name:'Обновить',exact:true}).click();
   await other.waitForFunction(()=>window.fixtureBuild==='B');await other.close();
   const api=await page.evaluate(async()=>{const first=await fetch('./api/data').then(r=>r.text());const second=await fetch('./api/data').then(r=>r.text());return {first,second,cached:!!(await caches.match(new URL('./api/data',location.href)))}});

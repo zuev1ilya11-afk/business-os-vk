@@ -5,6 +5,10 @@ if(!build)throw new Error('Missing application build');
 window.BOS_ASSET_URL=src=>{
  const url=new URL(src,document.baseURI);
  if(url.origin!==location.origin)return src;
+ const root=new URL('./',document.baseURI);
+ const name=url.pathname.startsWith(root.pathname)?url.pathname.slice(root.pathname.length):'';
+ const bundle=window.BOS_BUILD.assetBundles?.[name];
+ if(bundle)url.pathname=new URL(bundle,root).pathname;
  url.searchParams.delete('v');url.searchParams.delete('_sw');url.searchParams.set('build',build);
  return url.href;
 };
