@@ -36,8 +36,8 @@ test('real report handlers feed one approved salary into day, week, month and ow
  }
  await page.locator('nav button[data-page="team"]').click();
  const panel=page.locator('#masterProfileSummaryV129');
- for(const label of ['ЗП сегодня','ЗП за неделю','ЗП за месяц','Общая зарплата'])await expect(panel.getByText(label,{exact:true}).locator('..')).toContainText('742');
+ for(const label of ['День','Неделя','Месяц']){await panel.getByRole('button',{name:label,exact:true}).click();await expect(panel.locator('.salaryHero')).toContainText('742')}
  await page.evaluate(()=>window.BOS_REFRESH_NOW());
- await expect(page.locator('.masterCabinetV141Order')).toHaveCount(1);
- await expect(page.locator('.masterCabinetV141Order')).toContainText('Итого 742');
+ await expect(page.locator('.salaryOrder')).toHaveCount(1);
+ await expect(page.locator('.salaryOrder')).toContainText('742');
 });

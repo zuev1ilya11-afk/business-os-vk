@@ -27,12 +27,12 @@ test('master v130 shows money summary and drilldown by order',async({page})=>{
   const money=page.locator('#masterMoneyV130');
   await expect(panel).toBeVisible();
   await expect(money).toBeVisible();
-  await expect(money.getByText('Начислено',{exact:true}).locator('..')).toContainText(/1[\s ]?757[,.]5/);
+  await expect(money.getByText('Начислено за период',{exact:true}).locator('..')).toContainText(/1[\s ]?757[,.]5/);
   await expect(money.getByText('Выплачено',{exact:true}).locator('..')).toContainText('Нет данных');
-  await expect(money).toContainText('Фактические выплаты пока не фиксируются');
+  await expect(money).toContainText('Выплаты пока не отмечаются');
 
   const extraCard=panel.getByText('Допработы',{exact:true}).locator('..');
-  await expect(extraCard).toHaveAttribute('role','button');
+  await expect(extraCard).toBeEnabled();
   await extraCard.click();
   await expect(page.locator('#modalRoot')).toContainText('Установка дополнительного крепления');
   await expect(page.locator('#modalRoot')).toContainText(/100/);
@@ -46,17 +46,11 @@ test('master v130 shows money summary and drilldown by order',async({page})=>{
   await expect(page.locator('#modalRoot')).not.toContainText('Сумма для расчёта');
   await page.evaluate(()=>closeModal());
 
-  await panel.getByText('ЗП за неделю',{exact:true}).locator('..').click();
+  await panel.locator('.salaryHero').click();
   await expect(page.locator('#modalRoot')).toContainText('№ 11');
   await expect(page.locator('#modalRoot')).toContainText(/552[,.]5/);
   await expect(page.locator('#modalRoot')).toContainText('Итого начислено');
-  await expect(page.locator('#modalRoot')).not.toContainText('Сумма для расчёта');
-  await page.evaluate(()=>closeModal());
-
-  const totalCard=panel.getByText('Общая зарплата',{exact:true}).locator('..');
-  await expect(totalCard).toHaveAttribute('role','button');
-  await totalCard.click();
-  await expect(page.locator('#modalRoot')).toContainText('Все начисления');
+  await expect(page.locator('#modalRoot')).toContainText('Начисления за период');
   await expect(page.locator('#modalRoot')).not.toContainText('Сумма для расчёта');
   await page.evaluate(()=>closeModal());
 

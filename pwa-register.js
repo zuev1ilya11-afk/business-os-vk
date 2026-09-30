@@ -71,6 +71,7 @@
       './master-daily-home-v127.js',
       './master-day-summary-v128.js',
       './master-profile-summary-v129.js',
+      './salary-periods.js',
       './master-money-v130.js',
       './master-cabinet-v141.js'
     ]
