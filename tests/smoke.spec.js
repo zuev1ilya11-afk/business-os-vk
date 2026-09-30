@@ -82,13 +82,13 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   await page.locator('input[name="client"]').fill('Тест');
   await page.locator('#bosPhone').fill('9991234567');
   await page.locator('input[name="address"]').fill('Тестовый адрес');
-  await page.locator('#bosService').selectOption('4');
+  await page.locator('#bosService').fill('Установка карниза');
   await page.locator('input[name="original_amount"]').fill('1000');
   await page.locator('select[name="time_slot"]').selectOption({label:'10:00–11:00'});
   await page.locator('select[name="wall_material"]').selectOption('Кирпич');
   await page.locator('input[name="wall_over_3m"]').check();
   await page.locator('textarea[name="comment"]').fill('Комментарий тест');
-  await page.getByRole('button',{name:'Сохранить'}).click();
+  await page.getByRole('button',{name:'Создать заявку'}).click();
   await expect(page.getByText('TEST-1')).toBeVisible();
   await page.getByText('TEST-1').click();await expect(page.getByText('Комментарий тест',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Редактировать'}).click();
