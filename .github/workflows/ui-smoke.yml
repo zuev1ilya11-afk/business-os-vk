@@ -54,6 +54,10 @@ jobs:
         working-directory: supabase/functions/avito-assistant-api
         run: deno check index.ts
 
+      - name: Frozen Hands report worker dependencies and TypeScript
+        working-directory: supabase/functions/hands-report-api
+        run: deno check index.ts
+
       - name: Production order-trigger contract in disposable PostgreSQL
         env:
           BOS_TEST_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
@@ -61,6 +65,7 @@ jobs:
           bash scripts/test-order-guards.sh
           bash scripts/test-push.sh
           bash scripts/test-avito-assistant.sh
+          bash scripts/test-hands-reports.sh
 
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server
