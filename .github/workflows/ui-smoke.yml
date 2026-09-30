@@ -50,12 +50,17 @@ jobs:
           deno check index.ts
           deno test --allow-env --allow-read webpush-runtime.test.ts
 
+      - name: Frozen Avito assistant dependencies and TypeScript
+        working-directory: supabase/functions/avito-assistant-api
+        run: deno check index.ts
+
       - name: Production order-trigger contract in disposable PostgreSQL
         env:
           BOS_TEST_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
         run: |
           bash scripts/test-order-guards.sh
           bash scripts/test-push.sh
+          bash scripts/test-avito-assistant.sh
 
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server
