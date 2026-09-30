@@ -113,16 +113,16 @@
   },
   {
     "name": "drive-archive-api",
-    "version": 13,
+    "version": 14,
     "verify_jwt": false,
     "status": "ACTIVE",
-    "bundle_sha256": "26c571da49c53ea817b7185cf81b43d1a69a088bb8f0ac8fecbd325eecfe8b3a",
+    "bundle_sha256": "c339cfd6eb4b8f869410f7564b64f3e4e3eb6dd95ae16f97a5e5baaddfdc3a30",
     "files": [
       {
         "name": "index.ts",
-        "source_sha256": "9b1e59d52356e61eb502f0f2d218d16c77bb3379efa83cd57efc4f0f8a24172f",
+        "source_sha256": "719cc27277c19e2c6a3d5ac4fd0a71362ae11dc40f1d33ff5839417b486ad175",
         "repository_path": "supabase/functions/drive-archive-api/index.ts",
-        "repository_sha256": "9b1e59d52356e61eb502f0f2d218d16c77bb3379efa83cd57efc4f0f8a24172f",
+        "repository_sha256": "719cc27277c19e2c6a3d5ac4fd0a71362ae11dc40f1d33ff5839417b486ad175",
         "exact": true
       }
     ]
@@ -518,16 +518,16 @@
   },
   {
     "name": "order-lifecycle-api",
-    "version": 7,
+    "version": 8,
     "verify_jwt": false,
     "status": "ACTIVE",
-    "bundle_sha256": "7e6f4f6649c5ca368b4c1e0b1fd421eaeb9a2b11e21ea0e3b995d745055c6924",
+    "bundle_sha256": "c217873236c381d6ca4595a931e59acd09877d404d6c8f46a0ff36fceaac957f",
     "files": [
       {
         "name": "index.ts",
-        "source_sha256": "d0eed04af01553c23f205c245eab5cf0cf59589a73ec11ec62755731f8249203",
+        "source_sha256": "990c4f51f42de870a191dd33bda648ede160781d2a66eb1616203da8286e3030",
         "repository_path": "supabase/functions/order-lifecycle-api/index.ts",
-        "repository_sha256": "d0eed04af01553c23f205c245eab5cf0cf59589a73ec11ec62755731f8249203",
+        "repository_sha256": "990c4f51f42de870a191dd33bda648ede160781d2a66eb1616203da8286e3030",
         "exact": true
       }
     ]
