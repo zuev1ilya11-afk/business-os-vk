@@ -10,11 +10,11 @@ test('Netlify gateway allows staff administration endpoint',()=>{
 
 test('production HTML loads and cache-busts live field fixes',()=>{
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-  expect(html).toContain('schedule-identity-v46.js');
-  expect(html).toContain('live-field-hotfix-v60.js');
-  expect(html).toContain('employee-form-v16.js');
-  expect(html).toContain('master-memo-runtime-v21.js');
-  expect(html).toContain('manager-memo-editor-v45.js');
+  expect(html).toMatch(/startup-shell\.bundle\.js\?build=[a-f0-9]{20}/);
+  const source=fs.readFileSync(path.join(__dirname,'..','startup-shell.bundle.js'),'utf8');
+  for(const name of ['schedule-identity-v46.js','live-field-hotfix-v60.js','employee-form-v16.js','master-memo-runtime-v21.js','manager-memo-editor-v45.js']){
+    expect(source).toContain(fs.readFileSync(path.join(__dirname,'..',name),'utf8'));
+  }
 });
 
 test('master memo loads through gateway and offers Word download',async({page})=>{

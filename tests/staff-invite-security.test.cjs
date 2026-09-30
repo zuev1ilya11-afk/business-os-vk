@@ -29,5 +29,7 @@ test('VK onboarding uses owner invitation UI',()=>{
   assert.match(ui,/simpleInviteForm/);
   assert.match(ui,/invitePost\('redeem'/);
   assert.match(ui,/invitePost\('issue'/);
-  assert.match(html,/staff-invite-ui-v66\.js\?build=[a-f0-9]{20}/);
+  assert.match(html,/startup-shell\.bundle\.js\?build=[a-f0-9]{20}/);
+  assert.ok(JSON.parse(fs.readFileSync('scripts/startup-assets.json','utf8')).shell.includes('staff-invite-ui-v66.js'));
+  assert.ok(fs.readFileSync('startup-shell.bundle.js','utf8').includes(ui));
 });
