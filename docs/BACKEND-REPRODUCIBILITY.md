@@ -46,3 +46,15 @@ This release makes subsequent archive filenames follow their declared MIME
 types; it does not rewrite historical archives or financial records. PR #223
 previously published the report acceptance UI as BUILD_ID `8c3303ecb684988eed26`;
 this backend-only release does not change that frontend build.
+
+Release verification (2026-09-30, PR #226): `push-api` v2 matches merge
+`f5f36a941421d1b688247a0e1b1eb7724217c9f5` byte for byte. Its existing
+`deno.json`, dependency lockfile, custom signed-session auth and
+`verify_jwt=false` setting are unchanged. The import-map path is explicitly
+`deno.json` during deployment so the previous bundle's temporary absolute path
+is not inherited. The first attempt was rejected before publication for that
+stale path; v1 remained active until the corrected deployment succeeded.
+A fresh export of all 33 functions passes the updated drift gate; all other
+functions are unchanged. Only push session expiry compatibility changes.
+Frontend BUILD_ID remains `8c3303ecb684988eed26`; real phone delivery still
+requires the user's enable/test flow.
