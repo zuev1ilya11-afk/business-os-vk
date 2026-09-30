@@ -12,6 +12,8 @@ test('Avito setup stays local and prefills an order', async ({page}) => {
   const {db} = await fullStack(page, 'owner');
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
+  // Keep the feature-off rollback path covered after production activation.
+  await page.evaluate(()=>window.BUSINESS_OS_CONFIG.AVITO_API_ENABLED=false);
 
   await page.locator('#ownerToolsBtn').click();
   const avito = page.getByRole('button', {name: /Авито/});

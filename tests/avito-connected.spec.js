@@ -2,12 +2,14 @@ const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 async function connected(page){
  const stack=await fullStack(page,'owner');const calls=[];
- let sendCount=0,failSend=false,failChats=false;
+ let sendCount=0,failSend=false,failChats=false,isConnected=false;
  const chat={id:'chat-1',client:'Клиент Авито',client_id:'99',phone:'+79995554433',item_title:'Монтаж карниза',item_id:'10',item_url:'https://www.avito.ru/ad',last_message:'Нужен монтаж',last_message_at:'2026-09-23T10:00:00Z',unread_count:2};
  const messages=[{id:'1',text:'Нужен монтаж',direction:'in',created_at:'2026-09-23T10:00:00Z'}];
  await page.route('**/api/proxy/avito-api',async route=>{
   const body=route.request().postDataJSON();calls.push(body);let data={ok:true},status=200;
-  if(body.action==='status')data={ok:true,connected:false,configured:true};
+  if(body.action==='status')data={ok:true,connected:isConnected,configured:true,connection:isConnected?{account_name:'Домашний мастер',avito_user_id:'42'}:null};
+  if(body.action==='connect'){isConnected=true;data={ok:true,connected:true}}
+  if(body.action==='disconnect'){isConnected=false;data={ok:true,connected:false}}
   if(body.action==='chats'){data={ok:true,chats:[chat],next_offset:null};if(failChats){data={ok:false,error:'Авито временно недоступен'};status=502}}
   if(body.action==='messages')data={ok:true,messages:[...messages].reverse(),next_offset:null};
   if(body.action==='sendMessage'){
@@ -18,7 +20,7 @@ async function connected(page){
   await route.fulfill({status,contentType:'application/json',body:JSON.stringify(data)});
  });
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
- await page.evaluate(()=>window.BUSINESS_OS_CONFIG.AVITO_API_ENABLED=true);
+ expect(await page.evaluate(()=>window.BUSINESS_OS_CONFIG.AVITO_API_ENABLED)).toBe(true);
  return {...stack,calls,chat,messages,get sendCount(){return sendCount},failSend:()=>failSend=true,failChats:()=>failChats=true};
 }
 test('connected inbox sends twice, refreshes without closing draft, and stops polling when closed',async({page})=>{
@@ -63,4 +65,28 @@ test('429 blocks manual requests and polling until the provider cooldown expires
  await page.locator('#avitoRefresh').click();expect(count).toBe(1);
  await page.clock.runFor(60000);expect(count).toBe(1);
  await page.clock.runFor(31000);await page.locator('#avitoRefresh').click();await expect.poll(()=>count).toBe(2);
+});
+
+test('owner explicitly connects using server secrets with production activation enabled',async({page})=>{
+ const x=await connected(page);
+ await page.locator('#ownerToolsBtn').click();
+ const entry=page.getByRole('button',{name:/Авито/});
+ await expect(entry).toContainText('Подключить');await entry.click();
+ await expect(page.locator('#avitoConnectBtn')).toBeEnabled();
+ expect(x.calls.filter(c=>c.action==='connect')).toHaveLength(0);
+ await expect(page.locator('[name=client_id],[name=client_secret]')).toHaveCount(0);
+ await page.locator('#avitoConnectBtn').click();
+ await expect(page.locator('.modal')).toContainText('Домашний мастер');
+ await expect(page.getByRole('button',{name:'Открыть входящие',exact:true})).toBeVisible();
+ expect(x.calls.filter(c=>c.action==='connect')).toHaveLength(1);
+ expect(x.calls.some(c=>c.action==='sendMessage'||c.action==='read')).toBe(false);
+ expect(x.db.tables.orders).toHaveLength(2);
+});
+test('missing server credentials leave connect disabled',async({page})=>{
+ const x=await connected(page);
+ await page.route('**/api/proxy/avito-api',route=>route.fulfill({contentType:'application/json',body:JSON.stringify({ok:true,configured:false,connected:false})}));
+ await page.evaluate(()=>openAvitoSettings());
+ await expect(page.locator('#avitoConnectBtn')).toBeDisabled();
+ await expect(page.locator('.modal')).toContainText('AVITO_CLIENT_ID');
+ expect(x.sendCount).toBe(0);
 });
