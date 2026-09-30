@@ -27,3 +27,12 @@ The import correction protects accepted/completed receipts across all three impo
 Production Hands v6 has a webhook and private configuration absent from the repository handler. Never deploy the repository's entire Hands handler over it. `scripts/patch-live-hands-import.cjs` accepts the reviewed private v6 export only and changes just `importOrder`; all surrounding code and configuration remain byte-identical. Keep input/output exports private. The committed fixture contains only that import routine; tests exercise the production transformation, accepted receipts, new/pending completion and concurrent approval. Re-export and verify the deployed source before recording its new inventory. Full Hands reproducibility and migration of its existing private configuration remain separate work.
 
 Release verification (2026-09-29): `integration-api` v8 and `order-lifecycle-api` v7 match the reviewed repository sources exactly. `hands-api` v7 matches the tested private import-only patch exactly. The refreshed 33-function inventory includes `push-api` v1. The nine critical source checks pass. No migration or historical row update was applied.
+
+Release verification (2026-09-30, PR #221): `drive-archive-api` v14 and
+`order-lifecycle-api` v8 match merge `4ea6b3a04af0dbf38babca40920ca20492152456`
+byte for byte. Fresh exports of all 33 functions confirm that the other 31
+functions are unchanged, including their source and JWT settings. Both updated
+handlers retain custom session authorization and `verify_jwt=false`. The shared
+archive deadline and receipt validation do not update historical orders or
+change payroll. The nine critical source checks pass with this observed
+inventory. Frontend BUILD_ID remains `625a0121a5b9c7d3e38f`.
