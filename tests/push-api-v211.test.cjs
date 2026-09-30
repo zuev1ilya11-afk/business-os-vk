@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs'),vm=require('node:vm');
 const {stripTypeScriptTypes}=require('node:module');
 const {webcrypto,createHash}=require('node:crypto');
-const {database,employee,token,secret}=require('./helpers/edge.cjs');
+const {edge,database,employee,token,secret}=require('./helpers/edge.cjs');
 const SOURCE=stripTypeScriptTypes(fs.readFileSync('supabase/functions/push-api/index.ts','utf8').replace(/^import .*;\s*$/gm,''),{mode:'transform'});
 const endpoint='https://fcm.googleapis.com/fcm/send/device-v211';
 const p256dh=Buffer.concat([Buffer.from([4]),Buffer.alloc(64,1)]).toString('base64url');
@@ -25,10 +25,38 @@ function fixture(options={}){
  return {db,cfg,calls,prepared,sent,invoke};
 }
 test('push: rejects missing, forged, expired, excessive-lifetime and launch-only authentication',async()=>{
- for(const session of ['',token('100').slice(0,-1)+'!',token('100',0),token('100',Math.floor(Date.now()/1000)+86400)]){
+ for(const session of ['',token('100').slice(0,-1)+'!',token('100',0),token('100',Math.floor(Date.now()/1000)+86400*366)]){
   const f=fixture();assert.equal((await f.invoke({action:'subscribe',subscription:sub,revoke_token:cap},session, {headers:{'X-VK-Launch-Params':'vk_user_id=100&sign=untrusted'}})).status,401);assert.equal(f.calls.length,0);
  }
 });
+for(const role of ['owner','manager','dispatcher','master']){
+ test(`push: ${role} login and refresh tokens work for status, subscribe and test`,async()=>{
+  const actor=employee('login-'+role,role),f=fixture();
+  f.db.tables.business_staff=[actor];
+  const issuer=edge('password-session-api',database({business_staff:[actor]}));
+  const login=await issuer({action:'login',login:actor.login,password:actor.password_hash});
+  assert.equal(login.status,200);
+  assert(Number(login.body.session_token.split('.')[1])-Math.floor(Date.now()/1000)>86400*364);
+  const refreshed=await issuer({action:'refresh'},actor.external_id,login.body.session_token);
+  assert.equal(refreshed.status,200);
+  for(const session of [login.body.session_token,refreshed.body.session_token]){
+   for(const body of [{action:'status'},{action:'subscribe',subscription:sub,revoke_token:cap},{action:'test',endpoint,revoke_token:cap}]){
+    const result=await f.invoke(body,session);
+    assert.equal(result.status,200,`${role}: ${body.action}`);
+    if(body.action!=='test')assert.equal(result.body.account,actor.external_id);
+   }
+   const before=f.calls.length;
+   assert.equal((await f.invoke({action:'status'},session.slice(0,-1)+'!')).status,401);
+   assert.equal(f.calls.length,before,'invalid signatures never read push configuration');
+  }
+  for(const call of f.calls.filter(c=>['bos_push_subscribe','bos_push_test'].includes(c.name))){
+   assert.equal(call.p.p_staff,actor.id);
+   if(call.name==='bos_push_subscribe')assert.equal(call.p.p_external,actor.external_id);
+  }
+  actor.is_active=false;
+  assert.equal((await f.invoke({action:'status'},login.body.session_token)).status,403);
+ });
+}
 test('push: inactive or unknown staff rejected before accessing configuration',async()=>{
  for(const uid of ['staff_disabled','unknown']){const f=fixture();assert.equal((await f.invoke({action:'status'},token(uid))).status,403);assert.equal(f.calls.length,0)}
 });
