@@ -386,6 +386,7 @@ window.BOS_WATCH_UPDATE=registration=>{
 
   window.BUSINESS_OS_CONFIG={
     VK_APP_ID:54758847,
+    AVITO_API_ENABLED:true,
     API_URL:PRIMARY_GATEWAY+'/api/proxy/mini-app-api',
     GAS_WEB_APP_URL:PRIMARY_GATEWAY+'/api/proxy/mini-app-api',
     REPORT_GAS_WEB_APP_URL:PRIMARY_GATEWAY+'/api/gas-report'
