@@ -36,7 +36,7 @@ body #app:has(#content .dh190Board){height:auto!important;min-height:0!important
 #content .dh190Board .dbLayout{min-width:0!important;grid-template-rows:minmax(0,1fr)!important}
 #content .dh190Board #dispatchBoardDetail{grid-column:3!important;grid-row:1!important}
 #content .dh190Head{flex-wrap:wrap!important;align-content:start!important}
-#content .dh190Head>div:first-child{min-width:0!important;flex:1 1 220px!important}
+#content .dh190Head>div:first-child{min-width:0!important;flex:1 1 300px!important}
 #content .dh190Title{flex-wrap:wrap!important}
 #content .dh190HeadRight{flex-wrap:wrap!important}
 #content .dh190Board .dbAttention,#content .dh190Board .dbSchedule,#content .dh190Board #dispatchBoardDetail{min-width:0!important;margin:0!important}
@@ -44,7 +44,7 @@ body #app:has(#content .dh190Board){height:auto!important;min-height:0!important
 #content .dh190Board .dbSchedule{position:relative!important;z-index:1!important;isolation:isolate!important;min-width:0!important;max-width:100%!important}
 #content .dh190Board #dispatchBoardDetail{position:sticky!important;top:0!important;z-index:2!important;width:100%!important;max-width:300px!important;justify-self:end!important}
 #content .dh190GridWrap{max-width:100%!important;contain:layout paint!important}
-#content .dh190Grid .du187Master,#content .dh190Grid .du187Slot{height:60px!important;min-height:60px!important}
+#content .dh190Grid .du187Master,#content .dh190Grid .du187Slot{height:80px!important;min-height:80px!important}
 #content .dh190Board .dbAttention .dbFilters button.primary,#content .dh190Board .dbAttention .dbFilters button.secondary{min-height:44px!important;height:44px!important}
 }
 @media(min-width:1500px){#content .dh190Board #dispatchBoardDetail{min-width:0!important;max-width:300px!important}}
