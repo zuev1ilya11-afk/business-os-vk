@@ -1,18 +1,10 @@
 const {test,expect}=require('@playwright/test');
-const path=require('node:path');
+const openNetworkFixture=require('./helpers/network-fixture.cjs');
 
 const PRIMARY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
 const BACKUP='https://api-v2.appdeploy.ai/app/business-os-api-gateway-ukp6ew';
 const NETLIFY='https://business-os-api-gateway.netlify.app';
 const EDGE='https://obsropbslfwtanyspjbi.supabase.co/functions/v1';
-
-async function openNetworkFixture(page){
-  // Exercise the real transport without the localhost demo's independent bootstrap.
-  await page.route('**/transport-route-fixture',r=>r.fulfill({contentType:'text/html',body:'<!doctype html><html><body>Transport fixture</body></html>'}));
-  await page.goto('/transport-route-fixture');
-  await page.addScriptTag({path:path.join(__dirname,'..','network-direct-v86.js')});
-  await page.addScriptTag({path:path.join(__dirname,'..','config.js')});
-}
 
 async function resetMiniAppRoute(page){
   await page.evaluate(()=>BOS_NETWORK_DIRECT_V86.clearPreferredTarget('mini-app-api'));

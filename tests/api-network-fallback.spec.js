@@ -1,4 +1,5 @@
 const {test,expect}=require('@playwright/test');
+const openNetworkFixture=require('./helpers/network-fixture.cjs');
 async function authPage(page){
  await page.route('https://unpkg.com/**',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
  await page.goto('/?vk_app_id=54758847&vk_user_id=123456789&sign=test');
@@ -26,7 +27,7 @@ test('transient 503 on primary core API fails over to backup gateway',async({pag
  await page.route('https://api-v2.appdeploy.ai/app/business-os-api-gateway-ukp6ew/api/proxy/mini-app-api',r=>{backup++;return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"route":"backup"}'})});
  await page.route('https://business-os-api-gateway.netlify.app/api/proxy/mini-app-api',r=>{netlify++;return r.abort('failed')});
  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',r=>{direct++;return r.abort('failed')});
- await page.goto('/');
+ await openNetworkFixture(page);
  await page.evaluate(()=>BOS_NETWORK_DIRECT_V86.clearPreferredTarget('mini-app-api'));primary=backup=netlify=direct=0;
  const result=await page.evaluate(()=>fetch(BUSINESS_OS_CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:'{"action":"bootstrap"}'}).then(r=>r.json()));
  expect(result).toEqual({ok:true,route:'backup'});
@@ -38,7 +39,7 @@ test('transient gateway 5xx responses fall through every proxy to direct Edge',a
  await page.route('https://api-v2.appdeploy.ai/app/business-os-api-gateway-ukp6ew/api/proxy/mini-app-api',r=>{backup++;return r.fulfill({status:502,contentType:'application/json',body:'{"ok":false,"error":"UPSTREAM_UNAVAILABLE"}'})});
  await page.route('https://business-os-api-gateway.netlify.app/api/proxy/mini-app-api',r=>{netlify++;return r.fulfill({status:504,contentType:'application/json',body:'{"ok":false,"error":"UPSTREAM_TIMEOUT"}'})});
  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',r=>{direct++;return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"route":"edge"}'})});
- await page.goto('/');
+ await openNetworkFixture(page);
  await page.evaluate(()=>BOS_NETWORK_DIRECT_V86.clearPreferredTarget('mini-app-api'));primary=backup=netlify=direct=0;
  const result=await page.evaluate(()=>fetch(BUSINESS_OS_CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:'{"action":"bootstrap"}'}).then(r=>r.json()));
  expect(result).toEqual({ok:true,route:'edge'});
