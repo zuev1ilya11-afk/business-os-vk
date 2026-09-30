@@ -1,0 +1,255 @@
+{
+  "version": "2026-09-30",
+  "title": "Авито — Санкт-Петербург и Ленинградская область",
+  "currency": "RUB",
+  "regions": [
+    "Санкт-Петербург",
+    "Ленинградская область"
+  ],
+  "priceMode": "from",
+  "minimumVisitPrice": null,
+  "travelFee": null,
+  "materialsIncluded": null,
+  "categories": [
+    {
+      "id": "plumbing",
+      "name": "Сантехника"
+    },
+    {
+      "id": "electrical",
+      "name": "Электрика"
+    },
+    {
+      "id": "handyman",
+      "name": "Мастер на час"
+    }
+  ],
+  "services": [
+    {
+      "id": "dishwasher_washer",
+      "category": "plumbing",
+      "name": "Установка и подключение посудомойки, стиральной машины",
+      "fromPrice": 1500
+    },
+    {
+      "id": "water_heater",
+      "category": "plumbing",
+      "name": "Установка водонагревателя",
+      "fromPrice": 2000
+    },
+    {
+      "id": "mixer",
+      "category": "plumbing",
+      "name": "Установка и замена смесителя",
+      "fromPrice": 1000
+    },
+    {
+      "id": "toilet",
+      "category": "plumbing",
+      "name": "Установка и подключение унитаза",
+      "fromPrice": 2000
+    },
+    {
+      "id": "bath",
+      "category": "plumbing",
+      "name": "Установка и подключение ванны",
+      "fromPrice": 3500
+    },
+    {
+      "id": "shower_cabin",
+      "category": "plumbing",
+      "name": "Сборка и установка душевой кабины",
+      "fromPrice": 5000
+    },
+    {
+      "id": "installation_frame",
+      "category": "plumbing",
+      "name": "Сборка и установка каркаса инсталляции",
+      "fromPrice": 2500,
+      "note": "Цена указана за 2,5 м, далее каждый 1 м + 500 ₽. Размер и применимость расчёта уточнить.",
+      "requiresReview": true
+    },
+    {
+      "id": "tap",
+      "category": "plumbing",
+      "name": "Замена крана",
+      "fromPrice": 700
+    },
+    {
+      "id": "flexible_hose",
+      "category": "plumbing",
+      "name": "Монтаж и демонтаж гибкой подводки",
+      "fromPrice": 700
+    },
+    {
+      "id": "shower_switch",
+      "category": "plumbing",
+      "name": "Ремонт переключателя душа",
+      "fromPrice": 500
+    },
+    {
+      "id": "shower_rail",
+      "category": "plumbing",
+      "name": "Установка штанги для душа",
+      "fromPrice": 700
+    },
+    {
+      "id": "sealant",
+      "category": "plumbing",
+      "name": "Герметизация ванны, мойки-раковины, душевой кабины или поддона",
+      "fromPrice": 2000
+    },
+    {
+      "id": "shower_tray",
+      "category": "plumbing",
+      "name": "Демонтаж и монтаж душевого поддона",
+      "fromPrice": 2100
+    },
+    {
+      "id": "filter",
+      "category": "plumbing",
+      "name": "Замена фильтра грубой и тонкой очистки",
+      "fromPrice": 1500
+    },
+    {
+      "id": "tee",
+      "category": "plumbing",
+      "name": "Установка тройника",
+      "fromPrice": 1000
+    },
+    {
+      "id": "manifold",
+      "category": "plumbing",
+      "name": "Установка коллектора",
+      "fromPrice": 3000
+    },
+    {
+      "id": "socket_install",
+      "category": "electrical",
+      "name": "Установка розеток и выключателей",
+      "fromPrice": 300
+    },
+    {
+      "id": "data_socket",
+      "category": "electrical",
+      "name": "Установка компьютерной, антенной, телефонной розетки",
+      "fromPrice": 500
+    },
+    {
+      "id": "cable_channel",
+      "category": "electrical",
+      "name": "Установка кабель-каналов",
+      "fromPrice": 400
+    },
+    {
+      "id": "chandelier",
+      "category": "electrical",
+      "name": "Сборка и установка люстры",
+      "fromPrice": 1200
+    },
+    {
+      "id": "light_fixture",
+      "category": "electrical",
+      "name": "Сборка и установка настенных и потолочных светильников, бра",
+      "fromPrice": 1200
+    },
+    {
+      "id": "breaker",
+      "category": "electrical",
+      "name": "Установка и подключение автомата",
+      "fromPrice": 500
+    },
+    {
+      "id": "electrical_panel",
+      "category": "electrical",
+      "name": "Установка и монтаж распределительного щита",
+      "fromPrice": 2000
+    },
+    {
+      "id": "panel_niche",
+      "category": "electrical",
+      "name": "Устройство ниши под электрощит",
+      "fromPrice": 2000
+    },
+    {
+      "id": "socket_replace",
+      "category": "electrical",
+      "name": "Замена розетки/выключателя",
+      "fromPrice": 300
+    },
+    {
+      "id": "switch_block",
+      "category": "electrical",
+      "name": "Замена блока выключателей туалет/ванна/кухня",
+      "fromPrice": 850
+    },
+    {
+      "id": "curtain_rod",
+      "category": "handyman",
+      "name": "Установка карнизов",
+      "fromPrice": 1500
+    },
+    {
+      "id": "tv_bracket",
+      "category": "handyman",
+      "name": "Монтаж кронштейнов для ТВ",
+      "fromPrice": 800
+    },
+    {
+      "id": "pull_up_bar",
+      "category": "handyman",
+      "name": "Установка турников",
+      "fromPrice": 1000
+    },
+    {
+      "id": "shelf",
+      "category": "handyman",
+      "name": "Навеска полок на стену",
+      "fromPrice": 500
+    },
+    {
+      "id": "wall_cabinet",
+      "category": "handyman",
+      "name": "Установка навесных шкафов",
+      "fromPrice": 800
+    },
+    {
+      "id": "mirror",
+      "category": "handyman",
+      "name": "Установка зеркала на стену",
+      "fromPrice": 500
+    },
+    {
+      "id": "dryer",
+      "category": "handyman",
+      "name": "Установка сушилки для белья",
+      "fromPrice": 500
+    },
+    {
+      "id": "vent_grille",
+      "category": "handyman",
+      "name": "Установка вентиляционных решёток",
+      "fromPrice": 500
+    },
+    {
+      "id": "drilling",
+      "category": "handyman",
+      "name": "Сверление отверстий",
+      "fromPrice": 200
+    },
+    {
+      "id": "plumbing_general",
+      "category": "handyman",
+      "name": "Установка унитаза, раковин, смесителей, ванн",
+      "fromPrice": 1000,
+      "note": "Общая позиция. Для конкретной услуги используйте соответствующую цену раздела «Сантехника».",
+      "requiresReview": true
+    },
+    {
+      "id": "furniture",
+      "category": "handyman",
+      "name": "Ремонт, сборка мебели",
+      "fromPrice": 1000
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+const {test,expect}=require('@playwright/test');
+const {fullStack}=require('./helpers/full-stack.cjs');
+const catalog=require('../supabase/functions/_shared/avito-price-catalog.json');
+for(const role of ['master','owner'])test(role+' can find Avito tariffs without mixing them with the existing catalog',async({page})=>{
+ await fullStack(page,role);await page.setViewportSize({width:320,height:800});
+ await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
+ await page.evaluate(()=>openMasterMemoItem('price'));
+ const section=page.locator('.bosAvitoCatalog');
+ await expect(section).toContainText('Санкт-Петербург и Ленинградская область');
+ expect(await page.evaluate(()=>window.BOS_AVITO_PRICE_CATALOG)).toEqual(catalog);
+ await expect(section.locator('.bosAvitoPriceRow')).toHaveCount(37);
+ await expect(section.locator('.bosAvitoPriceGroup')).toHaveCount(3);
+ await section.getByText('Сантехника',{exact:false}).first().click();
+ await expect(section.locator('[data-service-id="toilet"]')).toContainText('от 2 000');
+ await expect(section.locator('[data-service-id="installation_frame"]')).toContainText('каждый 1 м + 500');
+ await section.locator('input').fill('карниз');
+ await expect(section.locator('.bosAvitoPriceRow:visible')).toHaveCount(1);
+ await expect(section.locator('.bosAvitoPriceRow:visible')).toContainText('от 1 500');
+ await section.locator('input').fill('xyznonexistent');
+ await expect(section.locator('#bosAvitoPriceEmpty')).toBeVisible();
+ await section.locator('input').fill('');
+ await expect(section.locator('.bosAvitoPriceGroup:visible')).toHaveCount(3);
+ await expect(page.locator('.bosCatalogRow').filter({hasText:'Минимальная стоимость выезда'})).toContainText('2 800');
+ await expect(section).not.toContainText('2 800');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
