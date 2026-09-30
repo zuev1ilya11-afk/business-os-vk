@@ -1,4 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
+// Provider IDs are opaque: preserve punctuation and encode only at the URL boundary.
+function validAvitoChatId(value:unknown):value is string{return typeof value==='string'&&/^[\x21-\x7e]{1,512}$/.test(value)&&!value.split('/').some(part=>part==='.'||part==='..')}
 const cors={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'content-type,apikey,authorization,x-vk-launch-params,x-bos-session','Access-Control-Allow-Methods':'GET,POST,OPTIONS'};
 const json=(x:any,s=200)=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'Content-Type':'application/json'}});
 function b64u(bytes:Uint8Array){let s='';for(const b of bytes)s+=String.fromCharCode(b);return btoa(s).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_')}
@@ -136,8 +138,8 @@ Deno.serve(async(req:Request)=>{
     const c=await connection(db),account=encodeURIComponent(c.avito_user_id);
     if(action==='chats'){const rows=await chats(c,offset(b.offset));return json({ok:true,chats:rows,next_offset:rows.length===100?offset(b.offset)+100:null})}
     if(action==='sync')return json({ok:true,...await sync(db,c,offset(b.offset))});
-    const chat=String(b.chat_id||'');
-    if(!/^[\w:-]{1,200}$/.test(chat))return json({ok:false,error:'Некорректный ID диалога'},400);
+    const chat=b.chat_id;
+    if(!validAvitoChatId(chat))return json({ok:false,error:'Некорректный ID диалога'},400);
     const path=`/messenger/v1/accounts/${account}/chats/${encodeURIComponent(chat)}`;
     if(action==='messages'){
       const d=await avito(`/messenger/v3/accounts/${account}/chats/${encodeURIComponent(chat)}/messages/?limit=50&offset=${offset(b.offset)}`);

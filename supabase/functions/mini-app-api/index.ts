@@ -1,4 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+// Provider IDs are opaque: preserve punctuation and encode only at the URL boundary.
+function validAvitoChatId(value:unknown):value is string{return typeof value==='string'&&/^[\x21-\x7e]{1,512}$/.test(value)&&!value.split('/').some(part=>part==='.'||part==='..')}
 
 const cors={
   'Access-Control-Allow-Origin':'*',
@@ -82,8 +84,8 @@ Deno.serve(async r=>{
       for(const k of a==='createOrder'?['client','address','work']:[])if(!String(b[k]||'').trim())return j({ok:false,error:'Заполните обязательные поля'},400);
 
       const requestId=a==='createOrder'?safeRequestId(b.request_id):'';
-      const avitoChat=a==='createOrder'?String(b.avito_chat_id||''):'';
-      if(avitoChat&&!/^[\w:-]{1,200}$/.test(avitoChat))return j({ok:false,error:'Некорректный ID диалога Авито'},400);
+      const avitoChat=a==='createOrder'?(b.avito_chat_id??''):'';
+      if(avitoChat!==''&&!validAvitoChatId(avitoChat))return j({ok:false,error:'Некорректный ID диалога Авито'},400);
       const createExternalId=avitoChat?`avito_chat_${avitoChat}`:requestId?`app_${me.id}_${requestId}`:'';
       const createSource=avitoChat?'avito':'mini_app';
       if(createExternalId){

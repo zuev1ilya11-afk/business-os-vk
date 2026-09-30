@@ -3,7 +3,7 @@ const {fullStack}=require('./helpers/full-stack.cjs');
 async function connected(page){
  const stack=await fullStack(page,'owner');const calls=[];
  let sendCount=0,failSend=false,failChats=false,isConnected=false;
- const chat={id:'chat-1',client:'Клиент Авито',client_id:'99',phone:'+79995554433',item_title:'Монтаж карниза',item_id:'10',item_url:'https://www.avito.ru/ad',last_message:'Нужен монтаж',last_message_at:'2026-09-23T10:00:00Z',unread_count:2};
+ const chat={id:'u2i:ABC+def/ghi==',client:'Клиент Авито',client_id:'99',phone:'+79995554433',item_title:'Монтаж карниза',item_id:'10',item_url:'https://www.avito.ru/ad',last_message:'Нужен монтаж',last_message_at:'2026-09-23T10:00:00Z',unread_count:2};
  const messages=[{id:'1',text:'Нужен монтаж',direction:'in',created_at:'2026-09-23T10:00:00Z'}];
  await page.route('**/api/proxy/avito-api',async route=>{
   const body=route.request().postDataJSON();calls.push(body);let data={ok:true},status=200;
@@ -37,11 +37,11 @@ test('connected inbox sends twice, refreshes without closing draft, and stops po
 });
 test('Avito draft saves via existing createOrder and returns to linked chat without a duplicate',async({page})=>{
  const x=await connected(page);await page.evaluate(()=>openAvitoInbox());await page.locator('.avitoChatRow').click();await expect(page.locator('.avitoBubble')).toBeVisible();
- await page.locator('#avitoToOrder').click();const form=page.locator('#orderForm');await expect(form.locator('[name=avito_chat_id]')).toHaveValue('chat-1');await expect(form.locator('[name=comment]')).toHaveValue(/ID клиента Авито: 99/);
+ await page.locator('#avitoToOrder').click();const form=page.locator('#orderForm');await expect(form.locator('[name=avito_chat_id]')).toHaveValue(x.chat.id);await expect(form.locator('[name=comment]')).toHaveValue(/ID клиента Авито: 99/);
  await form.locator('[name=address]').fill('Невский 10');
  const service=form.locator('#bosService');await expect(service).toHaveValue('Монтаж карниза');
  await form.locator('button[type=submit]').click();await expect(form).toHaveCount(0);
- const order=x.db.tables.orders.find(o=>o.avito_chat_id==='chat-1');expect(order).toBeTruthy();expect(order.external_source).toBe('avito');expect(order.avito_item_id).toBe('10');
+ const order=x.db.tables.orders.find(o=>o.avito_chat_id===x.chat.id);expect(order).toBeTruthy();expect(order.external_source).toBe('avito');expect(order.avito_item_id).toBe('10');
  await page.evaluate(id=>openOrder(id),order.id);await page.getByRole('button',{name:'Открыть чат',exact:true}).click();await expect(page.locator('#avitoToOrder')).toHaveText('Открыть заявку');await page.locator('#avitoToOrder').click();expect(x.db.tables.orders).toHaveLength(3);
 });
 test('timeout keeps draft, prevents blind resend, and stale inbox cannot overwrite another modal',async({page})=>{

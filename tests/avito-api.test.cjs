@@ -88,3 +88,30 @@ test('Avito gateway failures never replay a send through direct fallback',async(
  vm.runInNewContext(fs.readFileSync('network-direct-v86.js','utf8'),{window,URL,Request,Headers,AbortController,setTimeout,clearTimeout,location:{href:'https://app.invalid'}});
  await assert.rejects(window.fetch('https://business-os-api-gateway.netlify.app/api/proxy/avito-api',{method:'POST',body:JSON.stringify({action:'sendMessage'})}));assert.equal(calls.length,1);
 });
+
+
+test('opaque Avito IDs survive history/read/send URLs and linked order deduplication',async()=>{
+ for(const id of ['u2i:ABC+def/ghi==','u2i-123.456','opaque?part=1&x=%2F#tail','u2i-'+ 'x'.repeat(240)]){
+  const x=setup((url,init)=>url.endsWith('/token')?normal(url):url.includes('/messages/?')?response({messages:[]}):response({id:'sent'}));
+  assert.equal((await x.call({action:'messages',chat_id:id})).status,200);
+  assert.equal((await x.call({action:'read',chat_id:id})).status,200);
+  assert.equal((await x.call({action:'sendMessage',chat_id:id,text:'Ответ'})).status,200);
+  for(const c of x.calls.filter(c=>!c.url.endsWith('/token'))){
+   assert.ok(c.url.includes('/chats/'+encodeURIComponent(id)+'/'));
+   assert.equal(new URL(c.url).hash,'');
+  }
+  const db=database({business_staff:[employee('owner','owner'),employee('d','dispatcher')],orders:[]}),call=edge('mini-app-api',db);
+  const order={action:'createOrder',client:'Клиент',address:'Адрес',work:'Работа',amount:1500,avito_chat_id:id};
+  const results=await Promise.all([call(order),call(order,'staff_d')]);
+  assert.ok(results.every(r=>r.status===200));assert.equal(db.tables.orders.length,1);
+  assert.equal(db.tables.orders[0].avito_chat_id,id);assert.equal(db.tables.orders[0].external_id,'avito_chat_'+id);
+ }
+});
+test('invalid opaque IDs still fail before provider traffic and order writes',async()=>{
+ const x=setup(normal),db=database({business_staff:[employee('owner','owner')],orders:[]}),call=edge('mini-app-api',db);
+ for(const id of ['.', '..', '../bad','a/../b','a/./b','bad id','bad\n', 'x'.repeat(513),123,{},['chat']]){
+  assert.equal((await x.call({action:'messages',chat_id:id})).status,400,JSON.stringify(id));
+  assert.equal((await call({action:'createOrder',client:'Клиент',address:'Адрес',work:'Работа',avito_chat_id:id})).status,400,JSON.stringify(id));
+ }
+ assert.equal(x.calls.length,0);assert.equal(db.tables.orders.length,0);
+});
