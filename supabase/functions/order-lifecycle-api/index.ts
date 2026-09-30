@@ -46,6 +46,7 @@ function reportWrite(db:any, order:any, patch:any){
   return q.select().maybeSingle();
 }
 class ReviewConflict extends Error{}
+class ArchiveTimeout extends Error{constructor(){super('Архивирование не подтверждено вовремя. Обновите заявку перед повтором.')}}
 const matchesDisplayedReport=(o:any,b:any)=>!!b.expected_report_token&&!!b.expected_report_uploaded_at&&String(o.report_upload_token||'')===String(b.expected_report_token)&&String(o.report_uploaded_at||'')===String(b.expected_report_uploaded_at);
 const reportConflict=()=>json({ok:false,error:'REPORT_CHANGED',message:'Отчёт или заявка уже изменены. Обновите заявку.'},409);
 const reportReceipt=(o:any,token:string)=>o.status!=='Отменена'&&o.report_uploaded_at&&['pending','approved'].includes(o.report_review_status)&&String(o.report_upload_token||'')===token;
@@ -73,10 +74,15 @@ async function archiveBeforeApproval(req:Request,order:any){
   if(String(order.drive_archive_status||'')==='archived'&&order.drive_archive_url)return order;
   const base=Deno.env.get('SUPABASE_URL')||'';if(!base)throw new Error('Server configuration missing');
   const headers:any={'Content-Type':'application/json'};for(const h of ['x-bos-session','x-vk-launch-params']){const v=req.headers.get(h);if(v)headers[h]=v}
-  const r=await fetch(`${base}/functions/v1/drive-archive-api`,{method:'POST',headers,body:JSON.stringify({order_id:String(order.id),expected_report_token:order.report_upload_token,expected_report_uploaded_at:order.report_uploaded_at})});
-  const d=await r.json().catch(()=>({}));if(r.status===409)throw new ReviewConflict();if(!r.ok||!d.ok)throw new Error(d.message||d.error||'Не удалось сохранить отчёт на Google Диске');
-  if(d.order?.drive_archive_status!=='archived'||!d.order?.drive_archive_url)throw new Error('Архив отчёта не подтверждён');
-  return d.order;
+  // The archiver has a 60s network budget; leave room for database work and return before the client's 90s deadline.
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),75000);
+  try{
+    const r=await fetch(`${base}/functions/v1/drive-archive-api`,{method:'POST',headers,body:JSON.stringify({order_id:String(order.id),expected_report_token:order.report_upload_token,expected_report_uploaded_at:order.report_uploaded_at}),signal:controller.signal});
+    const d=await r.json().catch(()=>({}));if(r.status===409)throw new ReviewConflict();if(r.status===504)throw new ArchiveTimeout();if(!r.ok||!d.ok)throw new Error(d.message||d.error||'Не удалось сохранить отчёт на Google Диске');
+    if(d.order?.drive_archive_status!=='archived'||!d.order?.drive_archive_url)throw new Error('Архив отчёта не подтверждён');
+    return d.order;
+  }catch(e){if(controller.signal.aborted)throw new ArchiveTimeout();throw e}
+  finally{controller.abort();clearTimeout(timer)}
 }
 async function reviewReport(db:any,req:Request,body:any){
   const actor=await currentActor(db,req);if(!actor)return json({ok:false,error:'Доступ не подтверждён'},401);if(!ops(String(actor.role||'')))return json({ok:false,error:'Недостаточно прав'},403);
@@ -140,5 +146,5 @@ Deno.serve(async(req:Request)=>{
     if(action==='reviewReport')return await reviewReport(db,req,body);
     if(action==='syncHandsOrders')return await syncHandsOrders(db,req,body);
     return json({ok:false,error:'UNKNOWN_ACTION'},404);
-  }catch(e){if(e instanceof ReviewConflict)return reportConflict();return json({ok:false,error:e instanceof Error?e.message:String(e)},500)}
+  }catch(e){if(e instanceof ReviewConflict)return reportConflict();return json({ok:false,error:e instanceof Error?e.message:String(e)},e instanceof ArchiveTimeout?504:500)}
 });
