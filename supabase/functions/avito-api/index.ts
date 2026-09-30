@@ -69,6 +69,18 @@ async function avito(path:string,body?:unknown){
   }
 }
 const text=(v:any):string=>typeof v==='string'?v:typeof v?.text==='string'?v.text:'';
+// Messenger image variants are public CDN URLs, never API credentials or proxy targets.
+function imageUrl(value:unknown){
+  if(typeof value!=='string'||value.length>4096||/[\s\x00-\x1f]/.test(value))return '';
+  try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&!u.port&&/(^|\.)avito\.(ru|st)$/.test(u.hostname)?u.href:''}catch{return ''}
+}
+function normalizeImage(image:any){
+  if(!image?.sizes||typeof image.sizes!=='object'||Array.isArray(image.sizes))return null;
+  const variants=Object.entries(image.sizes).flatMap(([size,value])=>{const dimensions=/^([1-9]\d{0,4})x([1-9]\d{0,4})$/.exec(size),url=imageUrl(value);return dimensions&&url?[{url,width:Number(dimensions[1]),height:Number(dimensions[2])}]:[]}).sort((a,b)=>a.width*a.height-b.width*b.height);
+  if(!variants.length)return null;
+  const full=variants[variants.length-1],preview=variants.find(v=>Math.max(v.width,v.height)>=640)||full;
+  return {url:full.url,preview_url:preview.url,width:full.width,height:full.height};
+}
 function timestamp(v:any){const n=Number(v);return Number.isFinite(n)&&n>0&&n<8.64e12?new Date(n>1e12?n:n*1000).toISOString():null}
 function normalizeChat(c:any,uid:string){
   const other=(Array.isArray(c.users)?c.users:[]).find((u:any)=>String(u.id)!==uid)||{};
@@ -76,7 +88,7 @@ function normalizeChat(c:any,uid:string){
   return {id:String(c.id||''),client:String(other.name||'Клиент Авито'),client_id:String(other.id||''),
     phone:String(other.phone||''),item_id:String(item.id||''),item_title:String(item.title||''),
     item_url:String(item.url||''),city:typeof item.city==='string'?item.city:'',
-    last_message:text(last.content),last_message_at:timestamp(last.created||c.updated),
+    last_message:text(last.content)||(last.type==='image'?'Фото':''),last_message_at:timestamp(last.created||c.updated),
     unread_count:Math.max(0,Number(c.unread_count??(last.is_read===false&&String(last.author_id)!==uid?1:0))||0)};
 }
 async function connection(db:any){
@@ -145,7 +157,7 @@ Deno.serve(async(req:Request)=>{
       const d=await avito(`/messenger/v3/accounts/${account}/chats/${encodeURIComponent(chat)}/messages/?limit=50&offset=${offset(b.offset)}`);
       const rows=Array.isArray(d.messages)?d.messages:Array.isArray(d)?d:null;
       if(!rows)throw new AvitoError('AVITO_UNAVAILABLE');
-      return json({ok:true,messages:rows.map((m:any)=>({id:String(m.id||''),text:text(m.content),type:String(m.type||'text'),created_at:timestamp(m.created),direction:String(m.author_id)===String(c.avito_user_id)?'out':'in'})),next_offset:rows.length===50?offset(b.offset)+50:null});
+      return json({ok:true,messages:rows.map((m:any)=>({id:String(m.id||''),text:text(m.content),type:String(m.type||'text'),...(m.type==='image'?{image:normalizeImage(m.content?.image)}:{}),created_at:timestamp(m.created),direction:String(m.author_id)===String(c.avito_user_id)?'out':'in'})),next_offset:rows.length===50?offset(b.offset)+50:null});
     }
     if(action==='sendMessage'){
       const value=String(b.text||'').trim();
