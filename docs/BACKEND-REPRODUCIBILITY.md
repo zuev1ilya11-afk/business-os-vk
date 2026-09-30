@@ -36,3 +36,13 @@ handlers retain custom session authorization and `verify_jwt=false`. The shared
 archive deadline and receipt validation do not update historical orders or
 change payroll. The nine critical source checks pass with this observed
 inventory. Frontend BUILD_ID remains `625a0121a5b9c7d3e38f`.
+
+Release verification (2026-09-30, PR #224): `drive-archive-api` v15 matches
+merge `565735b89f6deaefe095b8911744ce3b150516ef` byte for byte and retains
+custom signed-session authorization with `verify_jwt=false`. A fresh export of
+all 33 functions matches the refreshed inventory; the other 32 sources and
+deployment settings are unchanged. All nine critical repository sources match.
+This release makes subsequent archive filenames follow their declared MIME
+types; it does not rewrite historical archives or financial records. PR #223
+previously published the report acceptance UI as BUILD_ID `8c3303ecb684988eed26`;
+this backend-only release does not change that frontend build.
