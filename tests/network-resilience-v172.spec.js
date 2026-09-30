@@ -1,13 +1,17 @@
 const {test,expect}=require('@playwright/test');
+const path=require('node:path');
 
 const PRIMARY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
 const BACKUP='https://api-v2.appdeploy.ai/app/business-os-api-gateway-ukp6ew';
 const NETLIFY='https://business-os-api-gateway.netlify.app';
 const EDGE='https://obsropbslfwtanyspjbi.supabase.co/functions/v1';
 
-async function openLogin(page){
-  await page.route('https://unpkg.com/**',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
-  await page.goto('/',{waitUntil:'domcontentloaded'});
+async function openNetworkFixture(page){
+  // Exercise the real transport without the localhost demo's independent bootstrap.
+  await page.route('**/transport-route-fixture',r=>r.fulfill({contentType:'text/html',body:'<!doctype html><html><body>Transport fixture</body></html>'}));
+  await page.goto('/transport-route-fixture');
+  await page.addScriptTag({path:path.join(__dirname,'..','network-direct-v86.js')});
+  await page.addScriptTag({path:path.join(__dirname,'..','config.js')});
 }
 
 async function resetMiniAppRoute(page){
@@ -20,7 +24,7 @@ test('safe bootstrap fails over to backup and pins later writes to that healthy 
   await page.route(BACKUP+'/api/proxy/mini-app-api',r=>{backup++;const action=r.request().postDataJSON()?.action;return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(action==='bootstrap'?{ok:true,route:'backup'}:{ok:true,route:'backup-write'})})});
   await page.route(NETLIFY+'/api/proxy/mini-app-api',r=>{netlify++;return r.abort('failed')});
   await page.route(EDGE+'/mini-app-api',r=>{direct++;return r.abort('failed')});
-  await openLogin(page);
+  await openNetworkFixture(page);
   await resetMiniAppRoute(page);
   primary=backup=netlify=direct=0;
 
@@ -47,7 +51,7 @@ test('mutation network failure on the preferred route is not replayed elsewhere'
   });
   await page.route(NETLIFY+'/api/proxy/mini-app-api',r=>{netlify++;return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'})});
   await page.route(EDGE+'/mini-app-api',r=>{direct++;return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'})});
-  await openLogin(page);
+  await openNetworkFixture(page);
   await resetMiniAppRoute(page);
   primary=backup=netlify=direct=0;
 
