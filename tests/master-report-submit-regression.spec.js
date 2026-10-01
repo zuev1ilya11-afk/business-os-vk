@@ -10,7 +10,7 @@ test('master report uploads through gateway and finalizes through lifecycle API'
   });
 
   const master={id:'m1',external_id:'staff_master',vk_user_id:'staff_master',full_name:'Мастер Тест',role:'master',city:'Москва',is_active:true};
-  const order={id:'M-1',client:'Клиент',address:'Адрес',work:'Монтаж',status:'В работе',master_staff_id:'m1',master_vk_id:'staff_master',master_name:'Мастер Тест',master_payout:552.5,scheduled_date:'2099-09-10'};
+  const order={id:'M-1',client:'Клиент',address:'Адрес',work:'Монтаж',status:'В работе',master_workflow_stage:'started',master_staff_id:'m1',master_vk_id:'staff_master',master_name:'Мастер Тест',master_payout:552.5,scheduled_date:'2099-09-10'};
   const bootstrap=route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,user:master,orders:[order],users:[master],masters:[master],masterSchedule:[],claims:[],sources:[{source:'VK'}],settings:{permissions:{can_manage_staff:false}}})});
   await page.route('**/api/proxy/mini-app-api',bootstrap);
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/mini-app-api',bootstrap);
@@ -21,6 +21,7 @@ test('master report uploads through gateway and finalizes through lifecycle API'
   const uploadActions=[];
   let directCalls=0;
   let finalizePayload=null;
+  let finalizeCalls=0;
   await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-api',route=>{
     directCalls++;
     return route.fulfill({status:500,contentType:'application/json',body:'{"ok":false,"error":"direct endpoint should not be needed"}'});
@@ -33,9 +34,10 @@ test('master report uploads through gateway and finalizes through lifecycle API'
     }
     return route.fulfill({status:400,contentType:'application/json',body:'{"ok":false,"error":"unexpected action"}'});
   });
-  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/order-lifecycle-api',async route=>{
+  await page.route(/\/(?:api\/proxy|functions\/v1)\/order-lifecycle-api(?:\?|$)/,async route=>{
     const body=route.request().postDataJSON()||{};
     if(body.action==='finalizeMasterReport'){
+      finalizeCalls++;
       finalizePayload=body;
       return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:{id:'M-1',status:'В работе',report_review_status:'pending',completed_at:null,master_payout:552.5},drive_archive_status:'pending'})});
     }
@@ -58,6 +60,7 @@ test('master report uploads through gateway and finalizes through lifecycle API'
   await expect(page.locator('#masterReportForm')).toHaveCount(0);
 
   expect(directCalls).toBe(0);
+  expect(finalizeCalls).toBe(1);
   expect(finalizePayload.act_url).toContain('/act-0');
   expect(finalizePayload.photo_urls).toEqual(['https://files.test/photo-1']);
 });
