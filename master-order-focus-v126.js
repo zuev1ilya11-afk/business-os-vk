@@ -59,6 +59,7 @@ function decorate(){
   decorateCards();
   const modal=document.querySelector('#modalRoot .modal');
   if(!modal||modal.querySelector('#masterReportForm,#masterAgreementForm,#masterRescheduleForm'))return;
+  if(modal.querySelector('.bosCompactMasterCard'))return;
   const panel=modal.querySelector('.bosMasterWorkflow');
   const id=String(panel?.dataset?.orderId||modal.dataset?.bosWorkflowOrderId||'');
   const o=orderById(id);

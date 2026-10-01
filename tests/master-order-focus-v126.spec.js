@@ -33,9 +33,8 @@ test('master order v126 highlights next step and keeps mobile actions usable',as
   await card.getByRole('button',{name:'Открыть заявку',exact:true}).click();
 
   const focus=page.locator('.masterV126Focus');
-  await expect(focus).toBeVisible();
-  await expect(focus.getByRole('heading',{name:'Заполните отчёт'})).toBeVisible();
-  await expect(focus).toContainText('После завершения прикрепите отчёт');
+  await expect(focus).toHaveCount(0);
+  await expect(page.locator('.moa179Step.current')).toContainText('Отправить отчёт');
 
   const phone=page.locator('.masterV126Phone');
   await expect(phone).toHaveAttribute('href','tel:+79990000002');

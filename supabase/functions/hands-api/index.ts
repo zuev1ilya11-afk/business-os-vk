@@ -1,3 +1,4 @@
+import { handsDetailsPatch, handsWorkText, updateAcceptedHandsDetails } from "../_shared/hands-details.ts";
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const cors={
@@ -24,12 +25,7 @@ function listFromResponse(d:any){
   for(const k of ['results','orders','items','data'])if(Array.isArray(d?.[k]))return d[k];
   return [];
 }
-function workText(o:any){
-  const title=clean(o?.title);
-  const works=Array.isArray(o?.works)?o.works:[];
-  const names=works.map((w:any)=>clean(w?.name)).filter(Boolean);
-  return title||names.join(', ')||'Заказ Hands';
-}
+function workText(o:any){return handsWorkText(o)}
 function phones(o:any){const x=Array.isArray(o?.client_phones)?o.client_phones:[];return clean(x[0]||o?.client_phone||o?.phone)}
 function schedule(o:any){
   const raw=clean(o?.work_time||o?.scheduled_at||'');
@@ -66,10 +62,11 @@ async function importOrder(db:any,o:any,staffByName:Map<string,any>){
     external_source:'hands',external_id:localExternalId(id),source:'Hands',client:clean(o?.client_name||o?.client),phone:phones(o),address:clean(o?.address),work:workText(o),status:localStatus(o),amount,original_amount:amount,master_payout:staff?.id?masterPayout(amount):0,scheduled_date:sched.scheduled_date,scheduled_time:sched.scheduled_time,master_name:specialist||staff?.full_name||'',source_updated_at:clean(o?.updated_at||o?.creation_time)||new Date().toISOString(),updated_at:new Date().toISOString(),sync_status:'synced'
   };
   if(staff?.id)base.master_staff_id=staff.id;
-  const prev=await db.from('orders').select('id,status,report_review_status,updated_at').eq('external_source','hands').eq('external_id',localExternalId(id)).maybeSingle();
+  const prev=await db.from('orders').select('id,status,report_review_status,updated_at,comment,hands_comment_source,hands_detail_overrides').eq('external_source','hands').eq('external_id',localExternalId(id)).maybeSingle();
   if(prev.error)throw prev.error;
   // External imports cannot reopen or rewrite an accepted report/receipt.
-  if(prev.data?.status==='Выполнена'||prev.data?.report_review_status==='approved')return {ok:true,id:prev.data.id,created:false,preserved:true};
+  if(prev.data?.status==='Выполнена'||prev.data?.report_review_status==='approved'){await updateAcceptedHandsDetails(db,o,prev.data,externalComment(o));return {ok:true,id:prev.data.id,created:false,preserved:true}};
+  Object.assign(base,handsDetailsPatch(o,prev.data,externalComment(o)));
   if(base.status==='Выполнена')base.status=prev.data?.status||'В работе';
   if(prev.data){
     let update=db.from('orders').update(base).eq('id',prev.data.id);
@@ -77,7 +74,7 @@ async function importOrder(db:any,o:any,staffByName:Map<string,any>){
     const q=await update.select('id').maybeSingle();if(q.error)throw q.error;if(!q.data)throw new Error('ORDER_CHANGED');
     return {ok:true,id:q.data.id,created:false};
   }
-  const ins={...base,comment:externalComment(o),external_source:'hands',created_by_vk_id:'hands-api'};
+  const ins={...base,external_source:'hands',created_by_vk_id:'hands-api'};
   const q=await db.from('orders').insert(ins).select('id').single();if(q.error)throw q.error;return {ok:true,id:q.data.id,created:true};
 }
 async function syncOrders(db:any,b:any){
@@ -85,7 +82,7 @@ async function syncOrders(db:any,b:any){
   if(status&&!['ACTIVE','COMPLETE'].includes(status))throw new Error('Неверный status');
   const perPage=Math.min(500,Math.max(1,Number(b.per_page||500))),maxPages=Math.min(10,Math.max(1,Number(b.max_pages||4)));
   const staffQ=await db.from('business_staff').select('id,full_name,role').eq('is_active',true).eq('role','master');if(staffQ.error)throw staffQ.error;
-  const staffByName=new Map((staffQ.data||[]).map((x:any)=>[clean(x.full_name).toLocaleLowerCase('ru-RU'),x]));
+  const staffByName=new Map<string,any>((staffQ.data||[]).map((x:any)=>[clean(x.full_name).toLocaleLowerCase('ru-RU'),x]));
   let seen=0,created=0,updated=0,pages=0;
   for(let page=1;page<=maxPages;page++){
     const q=new URLSearchParams({page:String(page),per_page:String(perPage)});if(status)q.set('status',status);if(b.date_from)q.set('date_from',clean(b.date_from));if(b.date_to)q.set('date_to',clean(b.date_to));if(b.search)q.set('search',clean(b.search));
