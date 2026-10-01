@@ -1,0 +1,48 @@
+name: Payroll structured QA
+on:
+  push:
+    branches: [qa/source-payroll-structured-results]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: c9efd8ad699eaa60d380b102f52f174b8602940b
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build:check
+      - run: npx playwright install chromium
+      - name: Complete browser suite with machine-readable evidence
+        run: |
+          git rev-parse HEAD > tested-sha.txt
+          npx playwright test --workers=2 --reporter=json > playwright-result.json
+      - name: Extract failed cases without changing the result
+        if: always()
+        run: |
+          node - <<'JS'
+          const fs=require('node:fs'),crypto=require('node:crypto');
+          const r=JSON.parse(fs.readFileSync('playwright-result.json','utf8'));
+          const failures=[];
+          function visit(suites){for(const s of suites||[]){for(const spec of s.specs||[]){if(!spec.ok){const p=spec.file;failures.push({file:p,line:spec.line,title:spec.title,tests:spec.tests,source_sha256:fs.existsSync(p)?crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex'):null});}}visit(s.suites);}}
+          visit(r.suites);
+          fs.writeFileSync('payroll-failures.json',JSON.stringify({sha:fs.readFileSync('tested-sha.txt','utf8').trim(),stats:r.stats,failures,errors:r.errors},null,2));
+          console.log(JSON.stringify({stats:r.stats,failed:failures.map(x=>({file:x.file,title:x.title}))},null,2));
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: payroll-exact-qa
+          path: |
+            tested-sha.txt
+            payroll-failures.json
+            playwright-result.json
+            test-results/
+          retention-days: 3
