@@ -44,7 +44,7 @@ test('master order v126 highlights next step and keeps mobile actions usable',as
 
   const actions=workflow.locator('.moa179Steps');
   await expect(actions).toBeVisible();
-  expect(await actions.evaluate(el=>getComputedStyle(el).position)).toBe('static');
+  await expect(actions).toHaveCSS('position','static');
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
 });

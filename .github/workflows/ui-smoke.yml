@@ -39,6 +39,13 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.9.7
+      - name: Master workflow and report functions TypeScript
+        run: >-
+          deno check --node-modules-dir=none --no-lock
+          supabase/functions/master-workflow-api/index.ts
+          supabase/functions/order-lifecycle-api/index.ts
+          supabase/functions/report-api/index.ts
+          supabase/functions/profile-self-api/index.ts
       - name: Frozen push sender dependencies and TypeScript
         working-directory: supabase/functions/push-api
         run: |
