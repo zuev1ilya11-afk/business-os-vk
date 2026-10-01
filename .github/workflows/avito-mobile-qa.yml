@@ -48,7 +48,7 @@ jobs:
           if ! git diff --cached --quiet; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git commit -m 'feat: implement approved compact mobile Avito inbox'
+            git commit -m 'fix: prevent mobile header crowding and give chat its own viewport'
             git push origin HEAD:refs/heads/feat/avito-mobile-layout
           fi
           git rev-parse HEAD > tested-sha.txt
@@ -58,7 +58,7 @@ jobs:
       - name: Chromium Avito layout and all existing Avito UI flows
         env:
           BOS_AVITO_CAPTURE: '1'
-        run: npx playwright test tests/avito*.spec.js --workers=2 --retries=0
+        run: npx playwright test tests/avito*.spec.js --workers=2 --retries=0 --reporter=json > avito-chromium-results.json
       - name: Install WebKit test runtime
         run: npx playwright install --with-deps webkit
       - name: WebKit responsive Avito and adjacent workspace flows
@@ -68,13 +68,27 @@ jobs:
           node - <<'JS'
           const fs=require('node:fs');fs.writeFileSync('avito-webkit.config.cjs',"const base=require('./playwright.config.js');module.exports={...base,retries:0,use:{...base.use,browserName:'webkit'},outputDir:'test-results-webkit'};");
           JS
-          npx playwright test -c avito-webkit.config.cjs tests/avito-mobile-layout.spec.js tests/avito-workspace.spec.js tests/avito-images.spec.js --workers=2
+          npx playwright test -c avito-webkit.config.cjs tests/avito-mobile-layout.spec.js tests/avito-workspace.spec.js tests/avito-images.spec.js --workers=2 --reporter=json > avito-webkit-results.json
+      - name: Summarize exact browser results
+        if: always()
+        run: |
+          node - <<'JS'
+          const fs=require('node:fs');
+          for(const name of ['avito-chromium-results.json','avito-webkit-results.json']){
+            if(!fs.existsSync(name))continue;
+            const r=JSON.parse(fs.readFileSync(name,'utf8')),failures=[];
+            function visit(suites){for(const suite of suites||[]){for(const spec of suite.specs||[])if(!spec.ok)failures.push({file:spec.file,line:spec.line,title:spec.title,tests:spec.tests});visit(suite.suites)}}
+            visit(r.suites);console.log(JSON.stringify({name,stats:r.stats,failures,errors:r.errors},null,2));
+          }
+          JS
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: avito-mobile-layout-qa
           path: |
             tested-sha.txt
+            avito-chromium-results.json
+            avito-webkit-results.json
             test-results/
             test-results-webkit/
           retention-days: 3

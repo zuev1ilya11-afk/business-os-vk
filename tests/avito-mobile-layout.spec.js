@@ -33,6 +33,9 @@ for(const [role,width,height] of [['owner',320,700],['owner',390,844],['dispatch
   const x=await setup(page,{role,width,height});
   const root=page.locator('.avitoWorkspace'),head=page.locator('#app>header');
   await expect(root).toHaveAttribute('data-pane','list');
+  await expect(head.locator('.bosInstallAppBtn--header')).toBeHidden();
+  const brand=head.locator('.brandText h1');
+  expect(await brand.evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
   const geometry=await page.evaluate(()=>({header:document.querySelector('#app>header').getBoundingClientRect().height,inbox:getComputedStyle(document.querySelector('.avitoInbox')).overflowY,desk:getComputedStyle(document.querySelector('.avitoDesk')).overflowY,search:document.querySelector('#avitoSearch').getBoundingClientRect().height}));
   expect(geometry.header).toBeLessThanOrEqual(116);expect(geometry.inbox).toBe('visible');expect(geometry.desk).toBe('visible');expect(geometry.search).toBeGreaterThanOrEqual(44);
   for(const button of await head.locator('button:visible').all()){const box=await button.boundingBox();expect(box.width).toBeGreaterThanOrEqual(44);expect(box.height).toBeGreaterThanOrEqual(44);expect(box.x+box.width).toBeLessThanOrEqual(width+1)}
@@ -69,14 +72,19 @@ test('mobile return preserves list scroll, drafts, search and inline order workf
  expect(x.calls.some(c=>c.action==='sendMessage')).toBe(false);expect(x.errors).toEqual([]);
 });
 
-test('mobile composer remains above navigation when the visible viewport shrinks',async({page})=>{
+test('mobile composer remains above navigation when the visible viewport shrinks',async({page},testInfo)=>{
  const x=await setup(page);await page.locator('.avitoChatRow').nth(1).click();await expect(page.locator('.avitoBubble')).toHaveCount(1);
  await page.locator('#avitoSendForm textarea').fill('Сохранить при изменении высоты');
  for(const height of [500,420,844]){
   await page.setViewportSize({width:390,height});
   await expect.poll(async()=>{const composer=await page.locator('#avitoSendForm').boundingBox(),nav=await page.locator('#app>nav').boundingBox();return composer.y+composer.height<=Math.min(nav.y,height)+1}).toBe(true);
-  await expect(page.locator('#avitoSendForm textarea')).toHaveValue('Сохранить при изменении высоты');await noOverflow(page);
+  await expect(page.locator('#avitoSendForm textarea')).toHaveValue('Сохранить при изменении высоты');
+  await expect(page.locator('#avitoSendForm button')).toBeVisible();
+  await page.locator('#avitoSendForm button').click({trial:true});
+  if(process.env.BOS_AVITO_CAPTURE&&height===420)await page.screenshot({path:testInfo.outputPath('avito-chat-short.png')});
+  await noOverflow(page);
  }
+ await page.locator('.avitoBackList').click();await expect(page.locator('#app>header')).toBeVisible();
  expect(x.errors).toEqual([]);
 });
 
@@ -87,6 +95,7 @@ test('mobile errors stay near search and returning to another tab restores its h
  await expect(page.locator('.avitoChatRow')).toHaveCount(12);
  await page.locator('#avitoSettings').click();await expect(page.locator('.modal')).toContainText('Домашний мастер');await page.locator('.modalClose').click();
  await page.locator('nav [data-page=orders]').click();await expect(page.locator('.avitoWorkspace')).toHaveCount(0);
+ await expect(page.locator('#app>header .bosInstallAppBtn--header')).toBeVisible();
  expect(await page.locator('#app>header').evaluate(e=>getComputedStyle(e).flexWrap)).toBe('wrap');expect(x.errors).toEqual([]);
 });
 
