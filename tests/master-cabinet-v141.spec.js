@@ -62,7 +62,7 @@ test('master cabinet shows day salary and selected completed orders in profile',
   }).toPass({timeout:5000});
   await last.click();
   await expect(page.locator('#modalRoot .modal')).toBeVisible();
-  await expect(page.locator('#modalRoot')).toContainText('Заявка завершена');
+  await expect(page.locator('#modalRoot')).toContainText('Отчёт принят');
   await page.evaluate(()=>closeModal());
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);

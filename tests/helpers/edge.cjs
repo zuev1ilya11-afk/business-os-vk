@@ -42,7 +42,8 @@ function edge(slug,db,extra={}){
   const raw=fs.readFileSync(filename,'utf8');
   const shared=raw.includes('import "../../../order-payroll.js";')?fs.readFileSync(path.join(__dirname,'../../order-payroll.js'),'utf8')+'\n':'';
   const deduction=raw.includes('import "../../../report-deduction.js";')?['service-catalog.js','report-deduction.js'].map(n=>fs.readFileSync(path.join(__dirname,'../../',n),'utf8')).join('\n'):'';
-  const source=shared+deduction+stripTypeScriptTypes(raw.replace(/^import .*?;\s*/gm,''),{mode:'transform'});
+  const details=raw.includes('hands-details.ts')?stripTypeScriptTypes(fs.readFileSync(path.join(__dirname,'../../supabase/functions/_shared/hands-details.ts'),'utf8').replace(/^export /gm,''),{mode:'transform'}):'';
+  const source=shared+deduction+details+stripTypeScriptTypes(raw.replace(/^import .*?;\s*/gm,''),{mode:'transform'});
   const context={createClient:()=>db,Deno:{env:{get:k=>({VK_APP_SECRET:secret,BOS_SYNC_KEY:secret,SUPABASE_URL:'https://test.invalid',SUPABASE_SERVICE_ROLE_KEY:'test-key',...(extra.env||{})}[k])},serve:fn=>handler=fn},crypto:webcrypto,Request,Response,Headers,File,FormData,AbortController,setTimeout,clearTimeout,URL,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,btoa,atob,console,fetch:()=>{throw new Error('Unexpected external fetch')},...extra};
   vm.runInNewContext(source,context,{filename});
   return async(body,uid='100',session=token(uid),headers={})=>{const r=await handler(new Request('https://test.invalid',{method:'POST',headers:{...(body instanceof FormData?{}:{'Content-Type':'application/json'}),'X-BOS-Session':session,...headers},body:body instanceof FormData?body:JSON.stringify(body)}));return {status:r.status,body:await r.json()}};

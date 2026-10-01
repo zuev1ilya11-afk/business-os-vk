@@ -46,7 +46,7 @@ for(const [role,width] of [['master',390],['owner',1280]])test(`${role}: salary 
  await panel.locator('[name="start"]').fill('2026-09-28');await panel.getByRole('button',{name:'Показать',exact:true}).click();await expect(panel.getByRole('alert')).toContainText('начало не позже окончания');
  await expect(hero(page)).toContainText(/3[\s ]?315/);
  await panel.getByRole('button',{name:'К текущему',exact:true}).click();
- await panel.locator('[data-v130-order="11"]').click();await expect(page.locator('#modalRoot')).toContainText('Заявка завершена');await page.evaluate(()=>closeModal());
+ await panel.locator('[data-v130-order="11"]').click();await expect(page.locator('#modalRoot')).toContainText('Отчёт принят');await page.evaluate(()=>closeModal());
  await panel.getByRole('button',{name:'День',exact:true}).click();await panel.locator('[data-money-field="anchor"]').fill('2026-09-26');
  await expect(hero(page)).toContainText('0 ₽');await expect(panel.locator('.salaryOrders')).toContainText('За выбранный период начислений нет');
  await page.setViewportSize({width:320,height:700});expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);

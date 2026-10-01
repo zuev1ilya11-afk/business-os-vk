@@ -12,8 +12,8 @@ async function screenshot(page,info,name){await expect(async()=>{await panel(pag
 for(const width of [320,390,768,1280])test(`${width}: confirmed 25 → 50 → 75 → 100, history, return and cancellation`,async({page},info)=>{
  const {db}=await open(page,{},width),o=db.tables.orders[0];
  const check=async(n,name,buttons=1)=>{await progress(page,n,buttons);await expect.poll(()=>panel(page).evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await screenshot(page,info,name)};
- await check(25,'assigned');await expect(panel(page).getByText('После предыдущего этапа',{exact:true})).toHaveCount(2);
- await expect(panel(page).getByRole('link',{name:'Позвонить клиенту'})).toBeVisible();
+ await check(25,'assigned');await expect(panel(page).locator('.moa179Step.future')).toHaveCount(2);
+ await expect(page.locator('.bosCompactClient').getByRole('link',{name:'Позвонить клиенту',exact:true})).toBeVisible();
  await panel(page).getByRole('button',{name:'Подтвердить: выехал',exact:true}).click();await check(50,'departed');
  await page.reload();await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrder('11'));await progress(page,50);
  await panel(page).getByRole('button',{name:'Подтвердить: начал работу',exact:true}).click();await check(75,'started');
@@ -47,7 +47,7 @@ for(const [extra,value,label] of [[{master_workflow_stage:'arrived'},50,'Под�
  const {db}=await open(page,extra);await progress(page,value);await expect(panel(page).getByRole('button',{name:label,exact:true})).toBeEnabled();expect(db.tables.orders[0].master_departed_at).toBeUndefined();expect(db.tables.orders[0].master_started_at).toBeUndefined();
 });
 test('agreement stays separate from departure and report confirmation waits for final response',async({page})=>{
- const {db}=await open(page);await panel(page).getByRole('button',{name:'Звонок выполнен',exact:true}).click();await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();await panel(page).getByRole('button',{name:'Подтвердить договорённость',exact:true}).click();await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();await progress(page,25);
+ const {db}=await open(page);await page.locator('.bosMasterClientActions').getByRole('button',{name:'Звонок выполнен',exact:true}).click();await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();await page.locator('.bosMasterClientActions').getByRole('button',{name:'Подтвердить договорённость',exact:true}).click();await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();await progress(page,25);
  await panel(page).getByRole('button',{name:'Подтвердить: выехал',exact:true}).click();await progress(page,50);await panel(page).getByRole('button',{name:'Подтвердить: начал работу',exact:true}).click();await progress(page,75);
  await page.route(/\/(?:api\/proxy|functions\/v1)\/report-api(?:\?|$)/,async route=>{const b=route.request().postDataJSON();if(b.action!=='uploadReportFile')return route.fallback();await route.fulfill({json:{ok:true,url:attachmentUrl('11',b.upload_token,b.file_kind+'.jpg')}})});
  await page.evaluate(()=>{window.progressFetch=window.fetch;window.fetch=async(input,init)=>{const b=JSON.parse(init?.body||'{}');if(b.action==='finalizeMasterReport')await new Promise(resolve=>window.progressRelease=resolve);return window.progressFetch(input,init)}});

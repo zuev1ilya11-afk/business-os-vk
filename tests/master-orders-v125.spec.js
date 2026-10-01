@@ -47,9 +47,9 @@ test('master orders v125 stays readable on mobile and shows concise real work',a
   await card.getByRole('button',{name:'Открыть заявку',exact:true}).click();
   const workflow=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(workflow).toBeVisible();
-  const received=page.locator('.masterV126ReceivedModal');
+  const received=page.locator('.bosCompactReceived');
   await expect(received).toBeVisible();
-  await expect(received).toContainText('Дата поступления заявки');
+  await expect(received).toContainText('Поступила');
   await expect(received).toContainText('20.09.2026');
   await expect(workflow.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
   await expect(workflow.getByRole('button',{name:/Отправить отчёт/})).toBeEnabled();

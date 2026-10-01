@@ -1,3 +1,4 @@
+import { handsDetailsPatch, handsWorkText, updateAcceptedHandsDetails } from "../_shared/hands-details.ts";
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import "../../../order-payroll.js";
 import "../../../service-catalog.js";
@@ -133,19 +134,20 @@ async function handsReportDelivery(db:any,req:Request,body:any){
 }
 
 function listFromResponse(d:any){if(Array.isArray(d))return d;for(const k of ['results','orders','items','data'])if(Array.isArray(d?.[k]))return d[k];return []}
-function workText(o:any){const title=clean(o?.title),works=Array.isArray(o?.works)?o.works:[],names=works.map((w:any)=>clean(w?.name)).filter(Boolean);return title||names.join(', ')||'Заказ Hands'}
+function workText(o:any){return handsWorkText(o)}
 function phones(o:any){const x=Array.isArray(o?.client_phones)?o.client_phones:[];return clean(x[0]||o?.client_phone||o?.phone)}
 function schedule(o:any){const raw=clean(o?.work_time||o?.scheduled_at||''),m=raw.match(/(\d{4}-\d{2}-\d{2})[T\s]+(\d{2}:\d{2})/);return m?{scheduled_date:m[1],scheduled_time:m[2]}:{scheduled_date:'',scheduled_time:''}}
 function externalComment(o:any){const parts=[] as string[];if(clean(o?.comment))parts.push(clean(o.comment));if(clean(o?.directions))parts.push(`Как добраться: ${clean(o.directions)}`);if(clean(o?.shop_name))parts.push(`Магазин: ${clean(o.shop_name)}`);if(clean(o?.payment_status))parts.push(`Оплата: ${clean(o.payment_status)}`);const works=Array.isArray(o?.works)?o.works:[],details=works.map((w:any)=>[clean(w?.name),clean(w?.description)].filter(Boolean).join(' — ')).filter(Boolean);if(details.length)parts.push(`Состав работ: ${details.join('; ')}`);return parts.join('\n')}
 async function hands(path:string){const key=Deno.env.get('HANDS_API_KEY')||'';if(!key)throw new Error('HANDS_API_KEY_NOT_CONFIGURED');const r=await fetch(`https://api.hands.ru/api/v1/specialist${path}`,{headers:{'X-Api-Key':key}});const text=await r.text();let data:any={};try{data=text?JSON.parse(text):{}}catch{data={raw:text}}if(!r.ok)throw new Error(`HANDS_${r.status}: ${clean(data?.error||data?.detail||text||r.statusText)}`);return data}
 async function importHandsOrder(db:any,o:any,staffByName:Map<string,any>){
   const id=externalId(o?.id);if(!id)return {ok:false,reason:'missing_id'};
-  const prev=await db.from('orders').select('id,status,report_review_status,updated_at').eq('external_source','hands').eq('external_id',localExternalId(id)).maybeSingle();if(prev.error)throw prev.error;
-  if(prev.data?.status==='Выполнена'||prev.data?.report_review_status==='approved')return {ok:true,id:prev.data.id,created:false,preserved:true};
+  const prev=await db.from('orders').select('id,status,report_review_status,updated_at,apartment,comment,hands_comment_source,hands_detail_overrides').eq('external_source','hands').eq('external_id',localExternalId(id)).maybeSingle();if(prev.error)throw prev.error;
+  if(prev.data?.status==='Выполнена'||prev.data?.report_review_status==='approved'){await updateAcceptedHandsDetails(db,o,prev.data,externalComment(o));return {ok:true,id:prev.data.id,created:false,preserved:true}};
   const sched=schedule(o),specialist=clean(o?.specialist),staff=specialist?staffByName.get(specialist.toLocaleLowerCase('ru-RU')):null,amount=money(o?.price),remote=clean(o?.status).toUpperCase();
   const approved=String(prev.data?.report_review_status||'')==='approved';
   const status=['CANCELLED','CANCELED'].includes(remote)?'Отменена':approved?'Выполнена':'В работе';
   const base:any={external_source:'hands',external_id:localExternalId(id),source:'Hands',client:clean(o?.client_name||o?.client),phone:phones(o),address:clean(o?.address),work:workText(o),status,amount,original_amount:amount,master_payout:staff?.id?masterPayout(amount):0,scheduled_date:sched.scheduled_date,scheduled_time:sched.scheduled_time,master_name:specialist||staff?.full_name||'',source_updated_at:clean(o?.updated_at||o?.creation_time)||new Date().toISOString(),updated_at:new Date().toISOString(),sync_status:'synced'};
+  Object.assign(base,handsDetailsPatch(o,prev.data,externalComment(o)));
   if(staff?.id)base.master_staff_id=staff.id;
   if(prev.data){
     let update=db.from('orders').update(base).eq('id',prev.data.id);
@@ -153,7 +155,7 @@ async function importHandsOrder(db:any,o:any,staffByName:Map<string,any>){
     const q=await update.select('id').maybeSingle();if(q.error)throw q.error;if(!q.data)throw new Error('ORDER_CHANGED');
     return {ok:true,id:q.data.id,created:false};
   }
-  const q=await db.from('orders').insert({...base,comment:externalComment(o),created_by_vk_id:'hands-api'}).select('id').single();if(q.error)throw q.error;return {ok:true,id:q.data.id,created:true};
+  const q=await db.from('orders').insert({...base,created_by_vk_id:'hands-api'}).select('id').single();if(q.error)throw q.error;return {ok:true,id:q.data.id,created:true};
 }
 async function syncHandsOrders(db:any,req:Request,body:any){
   const actor=await currentActor(db,req);if(!actor)return json({ok:false,error:'Доступ не подтверждён'},401);if(!ops(String(actor.role||'')))return json({ok:false,error:'Недостаточно прав'},403);

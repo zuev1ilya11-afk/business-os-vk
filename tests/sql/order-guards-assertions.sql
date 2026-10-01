@@ -32,5 +32,13 @@ DO $$BEGIN
  BEGIN UPDATE public.orders SET uncompleted_work_items='{}' WHERE id=1; RAISE EXCEPTION 'invalid item container accepted';
  EXCEPTION WHEN check_violation THEN NULL; END;
 END$$;
+SELECT pg_temp.check_contract(apartment IS NULL AND hands_comment_source IS NULL AND hands_detail_overrides='{}'::jsonb,'legacy optional details stay empty') FROM public.orders WHERE id=1;
+UPDATE public.orders SET apartment='',hands_detail_overrides='{"apartment":true,"comment":true}',hands_comment_source='{"comment":"fixture"}' WHERE id=1;
+SELECT pg_temp.check_contract(apartment='' AND hands_detail_overrides->>'apartment'='true','manual clearing and per-field overrides persist') FROM public.orders WHERE id=1;
+DO $$BEGIN
+ BEGIN UPDATE public.orders SET hands_detail_overrides='[]' WHERE id=1; RAISE EXCEPTION 'invalid overrides accepted'; EXCEPTION WHEN check_violation THEN NULL; END;
+ BEGIN UPDATE public.orders SET apartment=repeat('x',121) WHERE id=1; RAISE EXCEPTION 'long apartment accepted'; EXCEPTION WHEN check_violation THEN NULL; END;
+ BEGIN UPDATE public.orders SET hands_detail_overrides='{"comment":"true"}' WHERE id=1; RAISE EXCEPTION 'invalid override boolean accepted'; EXCEPTION WHEN check_violation THEN NULL; END;
+END$$;
 ROLLBACK;
 SELECT 'order trigger integration: PASS' AS result;

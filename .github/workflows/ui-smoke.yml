@@ -42,6 +42,8 @@ jobs:
       - name: Master workflow and report functions TypeScript
         run: >-
           deno check --node-modules-dir=none --no-lock
+          supabase/functions/mini-app-api/index.ts
+          supabase/functions/hands-api/index.ts
           supabase/functions/master-workflow-api/index.ts
           supabase/functions/order-lifecycle-api/index.ts
           supabase/functions/report-api/index.ts

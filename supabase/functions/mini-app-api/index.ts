@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import "../../../order-payroll.js";
+import { manualDetailsPatch } from "../_shared/hands-details.ts";
 const orderPayroll=(globalThis as any).BOS_ORDER_PAYROLL;
 // Provider IDs are opaque: preserve punctuation and encode only at the URL boundary.
 function validAvitoChatId(value:unknown):value is string{return typeof value==='string'&&/^[\x21-\x7e]{1,512}$/.test(value)&&!value.split('/').some(part=>part==='.'||part==='..')}
@@ -62,7 +63,7 @@ Deno.serve(async r=>{
         allRows(db.from('order_claims').select('*').order('opened_at',{ascending:false}).order('id'))
       ]);
       for(const q of [or,st,sr,cl])if(q.error)throw q.error;
-      const all=st.data||[],vis=role==='master'?all.filter((x:any)=>x.id===me.id):all,map=new Map(all.map((x:any)=>[String(x.id),x]));
+      const all=st.data||[],vis=role==='master'?all.filter((x:any)=>x.id===me.id):all,map=new Map<string,any>(all.map((x:any)=>[String(x.id),x]));
       let orders=(or.data||[]).map((o:any)=>({...o,id:String(o.id),master_vk_id:map.get(String(o.master_staff_id))?.external_id||'',master_name:o.master_name||map.get(String(o.master_staff_id))?.full_name||''}));
       if(role==='master')orders=orders.map(masterOrder);
       return j({ok:true,user:out(me),orders,users:vis.map(out),masters:(role==='master'?vis:all.filter((x:any)=>x.role==='master')).map(out),masterSchedule:(sr.data||[]).filter((x:any)=>role!=='master'||x.staff_id===me.id),claims:(cl.data||[]).filter((x:any)=>role!=='master'||x.master_staff_id===me.id),sources:[{source:'VK'},{source:'Google Sheets'},{source:'Авито'}],settings:{permissions:{can_manage_orders:ops(role),can_manage_schedule:ops(role),can_manage_staff:['owner','manager'].includes(role),can_review_reports:ops(role),can_view_finance:['owner','manager'].includes(role)}}});
@@ -100,6 +101,7 @@ Deno.serve(async r=>{
       for(const k of ['scheduled_date','scheduled_time'])if(k in p&&!p[k])p[k]=null;
       for(const k of ['extra_work_done','uncompleted_work_done','wall_over_3m','possible_extra_work'])if(k in p)p[k]=p[k]===true||p[k]==='true'||p[k]==='on';
       for(const k of ['extra_work_amount','uncompleted_work_amount'])if(k in p)p[k]=round(p[k]);
+      try{Object.assign(p,manualDetailsPatch(b,cur))}catch(error){return j({ok:false,error:(error as Error).message},400)}
       p.original_amount=original;
       p.amount=amount;
       if(ms!==undefined){p.master_staff_id=ms?.id||null;p.master_name=ms?.full_name||''}

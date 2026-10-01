@@ -9,7 +9,7 @@ async function setup(page,src,role='master',extra={}){
  await page.waitForFunction(()=>typeof window.BOS_REFRESH_NOW==='function');
  return data;
 }
-async function rows(page,values){for(const [key,value] of Object.entries(values))await expect.poll(async()=>money(await page.locator(`[data-cost-row="${key}"] dd`).innerText())).toBe(value);}
+async function rows(page,values){const details=page.locator('.bosCompactCost');if(await details.count()&&!await details.evaluate(e=>e.open))await details.locator('summary').first().click();for(const [key,value] of Object.entries(values))await expect.poll(async()=>money(await page.locator(`[data-cost-row="${key}"] dd`).innerText())).toBe(value);}
 for(const [source,width] of [['Авито',320],['Телефон',390],['VK',1280]])test(`master sees full cost and unchanged breakdown for ${source} at ${width}px`,async({page},testInfo)=>{
  await page.setViewportSize({width,height:1000});const {db}=await setup(page,{source,external_source:'mini_app'});const before=JSON.stringify(db.tables.orders);
  await page.evaluate(()=>show('orders'));
@@ -19,6 +19,7 @@ for(const [source,width] of [['Авито',320],['Телефон',390],['VK',128
  await expect.poll(async()=>money(await page.locator('[data-master-order-cost] b').innerText())).toBe(1100);
  await page.evaluate(()=>openOrder('11'));
  await expect(page.locator('[data-master-cost]')).toHaveCount(1);
+ await page.locator('.bosCompactCost>summary').click();
  await expect(page.locator('[data-master-cost]')).toBeVisible();
  await rows(page,{original:1000,deduction:-200,base:800,extras:300,total:1100,'master-base':480,'master-extras':300,company:320,'master-total':780});
  await expect(page.locator('[data-master-cost]')).toContainText('60%');await expect(page.locator('[data-master-cost]')).toContainText('40%');

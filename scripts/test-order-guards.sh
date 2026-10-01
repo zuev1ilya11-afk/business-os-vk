@@ -12,4 +12,6 @@ cat tests/sql/order-guards-schema.sql \
   supabase/migrations/20260929160000_capture_live_order_guards.sql \
   supabase/migrations/20260929160000_capture_live_order_guards.sql \
   supabase/migrations/20261001174717_report_uncompleted_items.sql \
+  supabase/migrations/20261001193413_master_hands_details.sql \
+  supabase/migrations/20261001193413_master_hands_details.sql \
   tests/sql/order-guards-assertions.sql | "${runner[@]}"
