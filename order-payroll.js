@@ -18,7 +18,7 @@
   function snapshot(o){return closed(o)||!!o?.report_uploaded_at||['pending','rejected'].includes(o?.report_review_status);}
   function calculate(amount,o,hasMaster=true){
     const base=round(amount);
-    if(isDirect(o)&&!closed(o))return {master_payout:hasMaster?round(base*.60):0,manager_payout:0,dispatcher_payout:0};
+    if(isDirect(o))return {master_payout:hasMaster?round(base*.60):0,manager_payout:0,dispatcher_payout:0};
     return {master_payout:hasMaster?round(base*.85*.65):0,manager_payout:round(base*.85*.94*.20),dispatcher_payout:round(base*.85*.94*.15)};
   }
   // null means use the unchanged Hands/legacy reader. Zero is a real amount, never a fallback.

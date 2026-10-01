@@ -58,7 +58,8 @@ for(const width of [320,1280])test(`new-order pricing follows source without cha
  await form.locator('[name="source"][value="Телефон"]').check();
  await expect(form.locator('#bosMasterPay')).toContainText('600');
  await expect(form.locator('#bosPricingRule')).toContainText('Компания 40%');
- await page.screenshot({path:testInfo.outputPath(`source-payroll-${width}.png`),fullPage:true});
+ await form.locator('#bosPricingRule').scrollIntoViewIfNeeded();
+ await page.screenshot({path:testInfo.outputPath(`source-payroll-${width}.png`)});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
 test('owner sees direct company pool and stored historical payout without repricing',async({page})=>{
