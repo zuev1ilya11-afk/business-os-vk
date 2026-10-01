@@ -160,22 +160,24 @@ window.addEventListener('resize',schedule);
 
 const style=document.createElement('style');
 style.textContent=`
-#content .dsd121{margin:10px 0 2px;padding:10px;border:1px solid rgba(86,156,214,.24);border-radius:12px;background:rgba(63,126,181,.07)}
-#content .dsd121.dsd121BoardList{margin:0 0 8px;width:100%;box-sizing:border-box}
-#content .dsd121Head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px}
-#content .dsd121Head>span{font-size:12px;font-weight:800;letter-spacing:.02em;color:var(--accent,#62a8ea)}
-#content .dsd121Head>small{font-size:11px;color:var(--muted,#8e9baa);text-align:right}
-#content .dsd121List{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
-#content .dsd121Candidate{min-width:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:rgba(255,255,255,.025)}
+#content .dsd121{min-width:0;width:100%;box-sizing:border-box;margin:10px 0 2px;padding:10px;border:1px solid rgba(86,156,214,.24);border-radius:12px;background:rgba(63,126,181,.07)}
+/* Desktop order cards are a four-column grid: recommendations get their own full row. */
+#content #bosOrderList .opsCompactOrder>.dsd121{grid-column:1/-1}
+#content .dsd121.dsd121BoardList{margin:0 0 8px}
+#content .dsd121Head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;margin-bottom:8px}
+#content .dsd121Head>span{flex:0 0 auto;white-space:nowrap;font-size:13px;font-weight:800;letter-spacing:.02em;color:var(--accent,#62a8ea)}
+#content .dsd121Head>small{flex:1 1 220px;min-width:0;font-size:12px;line-height:1.4;color:var(--muted,#8e9baa);text-align:right}
+/* Use the space inside the card, not the viewport, to choose the number of columns. */
+#content .dsd121List{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:8px;min-width:0}
+#content .dsd121Candidate{min-width:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:rgba(255,255,255,.025)}
 #content .dsd121Candidate.best{border-color:rgba(86,156,214,.42);background:rgba(63,126,181,.09)}
-#content .dsd121CandidateCopy{min-width:0;flex:1}
-#content .dsd121CandidateTitle{display:flex;align-items:center;justify-content:space-between;gap:7px;min-width:0}
-#content .dsd121CandidateTitle b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
-#content .dsd121CandidateTitle span{flex:0 0 auto;font-size:12px;font-weight:800}
-#content .dsd121Candidate small{display:block;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted,#8e9baa);font-size:10px}
-#content .dsd121Assign{min-height:36px;padding:7px 10px;font-size:11px;flex:0 0 auto}
-@media(max-width:980px){#content .dsd121List{grid-template-columns:1fr}#content .dsd121Candidate small{white-space:normal}}
-@media(max-width:520px){#content .dsd121{padding:9px;margin-top:8px}#content .dsd121Head{align-items:flex-start;flex-direction:column;gap:2px}#content .dsd121Head>small{text-align:left}#content .dsd121Candidate{padding:8px 7px}#content .dsd121Assign{min-height:42px;padding:8px 11px}}
+#content .dsd121CandidateCopy{min-width:0;flex:1 1 170px}
+#content .dsd121CandidateTitle{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 8px;min-width:0}
+#content .dsd121CandidateTitle b{min-width:0;white-space:normal;overflow-wrap:anywhere;font-size:13px;line-height:1.4}
+#content .dsd121CandidateTitle span{flex:0 0 auto;white-space:nowrap;font-size:13px;font-weight:800}
+#content .dsd121Candidate small{display:block;margin-top:4px;white-space:normal;overflow-wrap:anywhere;line-height:1.4;color:var(--muted,#8e9baa);font-size:12px}
+#content .dsd121Assign{box-sizing:border-box;min-height:44px;min-width:100px;max-width:100%;margin-left:auto;padding:9px 12px;font-size:13px;line-height:1.3;flex:0 0 auto;white-space:nowrap;word-break:normal;overflow-wrap:normal}
+@media(max-width:520px){#content .dsd121{padding:9px;margin-top:8px}#content .dsd121Head{align-items:flex-start;flex-direction:column;gap:2px}#content .dsd121Head>small{flex:auto;text-align:left}#content .dsd121Candidate{padding:9px}#content .dsd121Assign{width:100%}}
 `;
 document.head.appendChild(style);
 })();
