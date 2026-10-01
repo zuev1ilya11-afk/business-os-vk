@@ -2,7 +2,8 @@ const {edge,database,employee,token}=require('./edge.cjs');
 async function fullStack(page,role='owner',options={}){
  const me=employee(role,role,{external_id:role==='owner'?'100':`staff_${role}`,city:'Санкт-Петербург'});
  const master=role==='master'?me:employee('m','master',{full_name:'Тестовый мастер',city:'Санкт-Петербург'});
- const db=database({business_staff:[me,...(role==='master'?[]:[master])],orders:[{id:'11',client:'Анна',address:'Невский 1',work:'Монтаж',status:'В работе',amount:1000,original_amount:1000,master_staff_id:master.id,master_name:master.full_name,master_payout:552.5,source:'VK',scheduled_date:'2099-09-10',master_workflow_stage:'assigned'},{id:'12',client:'Борис',address:'Другой адрес',work:'Шторы',status:'В работе',amount:2000,original_amount:2000,master_staff_id:null,source:'Авито',master_workflow_stage:'assigned'}]});
+ // The legacy 552.50 fixture is explicitly Hands; the second order remains Avito.
+ const db=database({business_staff:[me,...(role==='master'?[]:[master])],orders:[{id:'11',client:'Анна',address:'Невский 1',work:'Монтаж',status:'В работе',amount:1000,original_amount:1000,master_staff_id:master.id,master_name:master.full_name,master_payout:552.5,source:'Hands',scheduled_date:'2099-09-10',master_workflow_stage:'assigned'},{id:'12',client:'Борис',address:'Другой адрес',work:'Шторы',status:'В работе',amount:2000,original_amount:2000,master_staff_id:null,source:'Авито',master_workflow_stage:'assigned'}]});
  // Model the existing SQL BEFORE UPDATE trigger, which the in-memory DB does not execute.
  // See 20260922104500_master_workflow_profile_bridge.sql.
  db.beforeUpdate=(table,staff,patch)=>{

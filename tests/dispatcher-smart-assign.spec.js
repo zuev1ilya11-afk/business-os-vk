@@ -24,7 +24,9 @@ test('smart dispatcher recommends the best contextual master and assigns only af
   await best.getByRole('button',{name:'Назначить'}).click();
   await expect.poll(()=>db.tables.orders[1].master_staff_id).toBe('m');
   expect(db.tables.orders[1].amount).toBe(2000);
-  expect(db.tables.orders[1].master_payout).toBe(1105);
+  // Assigning the Avito order prices its unchanged 2,000 base at 60%.
+  expect(db.tables.orders[1].source).toBe('Авито');
+  expect(db.tables.orders[1].master_payout).toBe(1200);
 });
 
 test('smart dispatcher stays desktop-only',async({page})=>{

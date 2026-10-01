@@ -11,6 +11,7 @@
     return (state.orders||[]).filter(o=>[o.master_id,o.master_vk_id,o.master_user_id,o.master_external_id].filter(Boolean).map(String).some(id=>ids.has(id)));
   }
   function masterPayout(o){
+  const direct=window.BOS_ORDER_PAYROLL?.directMaster(o);if(direct!=null)return direct;
     const raw=o?.amount;
     if(raw!==null&&raw!==undefined&&raw!==''){
       const amount=Number(raw);

@@ -6,7 +6,7 @@ const masterOrders=()=>typeof ownOrders==='function'?ownOrders():(state.orders||
 const displayNo=o=>{const ext=String(o?.external_id||'');return ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')};
 const dt=o=>{const d=String(o?.scheduled_date||'').slice(0,10)||'Дата не назначена';const t=String(o?.scheduled_time||o?.time_slot||'').slice(0,5)||'Время не назначено';return `${d} · ${t}`};
 const work=o=>String(o?.work||'Работа не указана').trim();
-const pay=o=>Number(o?.master_payout||0);
+const pay=o=>window.BOS_ORDER_PAYROLL?.directMaster(o)??Number(o?.master_payout||0);
 function card(o){return `<button class="masterCompactOrder" onclick="openOrder('${esc(o.id)}')"><div class="masterCompactTop"><b>№ ${esc(displayNo(o))}</b><span>${esc(dt(o))}</span></div><div class="masterCompactLine"><b>${esc(o.client||'Клиент не указан')}</b><span>Выплата: ${money(pay(o))}</span></div><div class="masterCompactAddress">${esc(o.address||'Адрес не указан')}</div><div class="masterCompactWork">${esc(work(o))}</div></button>`}
 const ordersBase=pages.orders;
 pages.orders=function(){if(!isMasterMode())return ordersBase();const all=masterOrders().slice().sort((a,b)=>String((a.scheduled_date||'9999')+(a.scheduled_time||'')).localeCompare(String((b.scheduled_date||'9999')+(b.scheduled_time||''))));return `<div class="masterSimple masterOrdersDense"><div class="masterSectionTitle"><div><h2>Мои заявки</h2><div class="muted">${all.length} шт.</div></div></div>${all.length?all.map(card).join(''):'<div class="masterEmpty">Заявок пока нет</div>'}</div>`};

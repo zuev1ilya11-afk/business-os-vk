@@ -2,12 +2,12 @@ const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 const {edge,employee,attachmentUrl}=require('./helpers/edge.cjs');
 
-test('real report handlers feed one approved salary into day, week, month and owner views',async({page})=>{
+test('Hands real report handlers feed one approved salary into day, week, month and owner views',async({page})=>{
  const fixed=new Date('2026-01-15T10:00:00Z');
  await page.clock.install({time:fixed});
  const {db,me}=await fullStack(page,'master');
  db.tables.business_staff.push(employee('owner','owner'),employee('d','dispatcher'));
- const order=db.tables.orders.find(o=>o.id==='11');order.scheduled_date='2026-01-15';
+ const order=db.tables.orders.find(o=>o.id==='11');order.scheduled_date='2026-01-15';order.source='Hands';order.external_source='hands';
  const FrozenDate=class extends Date{constructor(...args){super(...(args.length?args:[fixed.getTime()]))}static now(){return fixed.getTime()}};
  const lifecycle=edge('order-lifecycle-api',db,{Date:FrozenDate,fetch:async()=>new Response(JSON.stringify({ok:true,order:{...order,drive_archive_status:'archived',drive_archive_url:'https://drive.test/archive'}}))});
  await page.setViewportSize({width:390,height:844});

@@ -1,4 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import "../../../order-payroll.js";
+const orderPayroll=(globalThis as any).BOS_ORDER_PAYROLL;
 // Provider IDs are opaque: preserve punctuation and encode only at the URL boundary.
 function validAvitoChatId(value:unknown):value is string{return typeof value==='string'&&/^[\x21-\x7e]{1,512}$/.test(value)&&!value.split('/').some(part=>part==='.'||part==='..')}
 
@@ -8,14 +10,7 @@ const cors={
   'Access-Control-Allow-Methods':'GET,POST,OPTIONS'
 };
 const round=(n:any)=>Math.round(Number(n||0)*100)/100;
-const payouts=(a:any,has=true)=>{
-  const x=round(a);
-  return{
-    master_payout:has?round(x*.85*.65):0,
-    manager_payout:round(x*.85*.94*.20),
-    dispatcher_payout:round(x*.85*.94*.15)
-  }
-};
+const payouts=(a:any,has=true,order:any={})=>orderPayroll.calculate(a,order,has);
 const j=(x:any,s=200)=>new Response(JSON.stringify(x,(key,value)=>['password_hash','password'].includes(key)?undefined:value),{status:s,headers:{...cors,'Content-Type':'application/json'}});
 
 function b64u(a:Uint8Array){let s='';for(const b of a)s+=String.fromCharCode(b);return btoa(s).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_')}
@@ -23,7 +18,7 @@ async function hmac(m:string,s:string){const k=await crypto.subtle.importKey('ra
 async function sess(t:string,s:string){const p=String(t||'').split('.');if(!s||p.length!==3||!/^[A-Za-z0-9_-]{1,128}$/.test(p[0])||!/^\d{1,12}$/.test(p[1])||Number(p[1])<=Date.now()/1000)return null;return await hmac(`${p[0]}.${p[1]}`,s)===p[2]?p[0]:null}
 function norm(v:any){let d=String(v||'').replace(/\D/g,'');if(d.length===11&&d[0]==='8')d='7'+d.slice(1);if(d.length===10)d='7'+d;return d}
 const out=(s:any)=>{const x={...(s||{})};delete x.password_hash;return {...x,vk_user_id:x.external_id}};
-const masterOrder=(o:any)=>{const x={...o,master_payout:payouts(o?.amount,!!o?.master_staff_id).master_payout};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
+const masterOrder=(o:any)=>{const x={...o,master_payout:orderPayroll.directMaster(o)??payouts(o?.amount,!!o?.master_staff_id).master_payout};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
 const safeRequestId=(v:any)=>{const s=String(v||'').trim();return /^[A-Za-z0-9_-]{8,128}$/.test(s)?s:''};
 // PostgREST caps an unpaginated response at 1000 rows. Keep totals complete.
 async function allRows(query:any){
@@ -49,7 +44,7 @@ Deno.serve(async r=>{
     const db=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
     const b=await r.json().catch(()=>({}));
     const a=String(b.action||'health');
-    if(a==='health')return j({ok:true,version:'2026-09-12-team-critical-v13'});
+    if(a==='health')return j({ok:true,version:'2026-09-12-team-critical-v13',payroll_version:orderPayroll.version});
 
     if(a==='registerByPhone')return j({ok:false,error:'Регистрация по телефону отключена. Используйте код приглашения владельца.'},410);
 
@@ -108,9 +103,16 @@ Deno.serve(async r=>{
       p.original_amount=original;
       p.amount=amount;
       if(ms!==undefined){p.master_staff_id=ms?.id||null;p.master_name=ms?.full_name||''}
-      // A comment/status edit must not overwrite an explicitly adjusted payout.
-      if(!cur||amount!==Number(cur.amount)||original!==Number(cur.original_amount??cur.amount))Object.assign(p,payouts(amount,ms===undefined?!!cur?.master_staff_id:!!ms));
-      else if(ms!==undefined&&ms?.id!==cur.master_staff_id)p.master_payout=payouts(amount,!!ms).master_payout;
+      const pricingOrder=cur?{...cur,...p,status:cur.status,report_review_status:cur.report_review_status}:{external_source:createSource,source:avitoChat?'Авито':(b.source||'VK')};
+      const sourceChanged=!!cur&&orderPayroll.isDirect(cur)!==orderPayroll.isDirect(pricingOrder);
+      if(sourceChanged&&orderPayroll.snapshot(cur))return j({ok:false,error:'Нельзя менять схему расчёта отправленного или принятого отчёта.'},409);
+      // Plain edits and saved report snapshots do not get silently repriced.
+      if(!cur||amount!==Number(cur.amount)||original!==Number(cur.original_amount??cur.amount)||sourceChanged)Object.assign(p,payouts(amount,ms===undefined?!!cur?.master_staff_id:!!ms,pricingOrder));
+      else if(ms!==undefined&&ms?.id!==cur.master_staff_id){
+        const calculated=payouts(amount,!!ms,pricingOrder);
+        if(orderPayroll.isDirect(pricingOrder)&&!orderPayroll.snapshot(cur))Object.assign(p,calculated);
+        else p.master_payout=calculated.master_payout;
+      }
       if(a==='createOrder'){
         if(b.status==='Выполнена')return j({ok:false,error:'Заявка становится выполненной только после приёма отчёта.'},409);
         Object.assign(p,{status:b.status||'В работе',client:String(b.client).trim(),address:String(b.address).trim(),work:String(b.work).trim(),source:b.source||'VK',city:b.city||'Санкт-Петербург',external_source:'mini_app',external_id:createExternalId||('app_'+crypto.randomUUID()),created_by_vk_id:me.external_id,source_updated_at:now});

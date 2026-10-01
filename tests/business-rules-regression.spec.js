@@ -82,15 +82,24 @@ test('retrying a failed create-order submission reuses the same request_id',asyn
   expect(await page.evaluate(()=>state.orders.filter(order=>order.id==='IDEMP-1').length)).toBe(1);
 });
 
-test('tracked APIs and fallbacks enforce corrected master payout',async()=>{
+test('tracked APIs use source payroll while Hands fallbacks retain the approved rate',async()=>{
   const mini=fs.readFileSync(path.join(__dirname,'..','supabase','functions','mini-app-api','index.ts'),'utf8');
   const report=fs.readFileSync(path.join(__dirname,'..','supabase','functions','report-api','index.ts'),'utf8');
   const hands=fs.readFileSync(path.join(__dirname,'..','supabase','functions','hands-api','index.ts'),'utf8');
   const app=fs.readFileSync(path.join(__dirname,'..','app-public.js'),'utf8');
   const sheets=fs.readFileSync(path.join(__dirname,'..','google-apps-script','Code.gs'),'utf8');
-  expect(mini).toContain('master_payout:has?round(x*.85*.65):0');
-  expect(mini).not.toContain('master_payout:has?round(x*.85*.35):0');
-  expect(report).toContain('master_payout:round(x*.85*.65)');
+  const payroll=require('../order-payroll.js');
+  for(const slug of ['mini-app-api','report-api','order-lifecycle-api','integration-api']){
+    const code=fs.readFileSync(path.join(__dirname,'..','supabase','functions',slug,'index.ts'),'utf8');
+    expect(code).toContain('import "../../../order-payroll.js";');
+    expect(code).toContain('orderPayroll.calculate(a,order');
+  }
+  expect(mini).toContain('orderPayroll.calculate(a,order,has)');
+  expect(report).toContain('orderPayroll.calculate(a,order)');
+  expect(payroll.calculate(1000,{external_source:'hands'})).toEqual({master_payout:552.5,manager_payout:159.8,dispatcher_payout:119.85});
+  expect(payroll.calculate(1000,{source:'Авито'})).toEqual({master_payout:600,manager_payout:0,dispatcher_payout:0});
+  expect(payroll.directCompany({source:'Авито',amount:1000})).toBe(400);
+  expect(payroll.calculate(1000,{source:'Телефон'},false).master_payout).toBe(0);
   expect(hands).toContain('const masterPayout=(v:any)=>Math.round(money(v)*.85*.65*100)/100');
   expect(app).toContain('const payout=a=>Math.round(Number(a||0)*.85*.65*100)/100');
   expect(sheets).toContain('return round2_(n*0.85*0.65)');

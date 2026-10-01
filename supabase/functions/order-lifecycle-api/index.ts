@@ -1,4 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import "../../../order-payroll.js";
+const orderPayroll=(globalThis as any).BOS_ORDER_PAYROLL;
 
 const cors={
   'Access-Control-Allow-Origin':'*',
@@ -22,7 +24,7 @@ function validAttachmentUrl(raw:any,orderId:any,token:any){
 
 const round=(n:any)=>Math.round(Number(n||0)*100)/100;
 // Approved master contract: 65% of the base after 15%, no 6% withholding; extras stay separate.
-const payouts=(a:any)=>{const x=round(a);return{master_payout:round(x*.85*.65),manager_payout:round(x*.85*.94*.20),dispatcher_payout:round(x*.85*.94*.15)}};
+const payouts=(a:any,order:any)=>orderPayroll.calculate(a,order);
 const clean=(v:any)=>String(v??'').trim();
 const money=(v:any)=>{const n=Number(String(v??'0').replace(/\s/g,'').replace(',','.'));return Number.isFinite(n)?Math.round(n*100)/100:0};
 const masterPayout=(v:any)=>Math.round(money(v)*.85*.65*100)/100;
@@ -42,7 +44,7 @@ async function reportActor(db:any,req:Request,body:any){let actor=await currentA
 // Compare the row read by this request at write time; stale retries must never reopen a report.
 function reportWrite(db:any, order:any, patch:any){
   let q=db.from('orders').update(patch).eq('id',order.id);
-  for(const k of ['updated_at','status','master_staff_id','report_review_status','report_upload_token'])q=order[k]==null?q.is(k,null):q.eq(k,order[k]);
+  for(const k of ['updated_at','status','master_staff_id','report_review_status','report_upload_token','external_source','external_id','source'])q=order[k]==null?q.is(k,null):q.eq(k,order[k]);
   return q.select().maybeSingle();
 }
 class ReviewConflict extends Error{}
@@ -65,7 +67,7 @@ async function finalizeReport(db:any,req:Request,body:any){
   for(const k of ['uncompleted_work_amount','extra_work_amount'])if(k in body&&(!Number.isFinite(Number(body[k]))||Number(body[k])<0))return json({ok:false,error:'Сумма должна быть конечным неотрицательным числом'},400);
   const original=Number(q.data.original_amount??q.data.amount??0),unfinished=Number(body.uncompleted_work_amount||0);if(unfinished>original)return json({ok:false,error:'Невыполненные работы не могут превышать сумму заказа'},400);
   const amount=round(original-unfinished),now=new Date().toISOString();
-  const patch:any={status:'В работе',amount,extra_work_done:!!body.extra_work_done,extra_work_description:String(body.extra_work_description||''),extra_work_amount:round(body.extra_work_amount||0),uncompleted_work_done:!!body.uncompleted_work_done,uncompleted_work_description:String(body.uncompleted_work_description||''),uncompleted_work_amount:round(unfinished),report_type:'work',report_act_url:act,report_measurement_url:null,report_photo_urls:JSON.stringify(photos),report_uploaded_at:now,report_upload_token:token,report_review_status:'pending',report_reviewed_by:null,report_reviewed_at:null,report_review_comment:'',drive_archive_status:'pending',drive_archive_error:null,completed_at:null,sync_status:'pending_sheet',updated_at:now,...payouts(amount)};
+  const patch:any={status:'В работе',amount,extra_work_done:!!body.extra_work_done,extra_work_description:String(body.extra_work_description||''),extra_work_amount:round(body.extra_work_amount||0),uncompleted_work_done:!!body.uncompleted_work_done,uncompleted_work_description:String(body.uncompleted_work_description||''),uncompleted_work_amount:round(unfinished),report_type:'work',report_act_url:act,report_measurement_url:null,report_photo_urls:JSON.stringify(photos),report_uploaded_at:now,report_upload_token:token,report_review_status:'pending',report_reviewed_by:null,report_reviewed_at:null,report_review_comment:'',drive_archive_status:'pending',drive_archive_error:null,completed_at:null,sync_status:'pending_sheet',updated_at:now,...payouts(amount,q.data)};
   const r=await reportWrite(db,q.data,patch);if(r.error)throw r.error;if(!r.data)return reportConflict();
   return json({ok:true,order:masterOrder(r.data),drive_archive_status:'pending'});
 }

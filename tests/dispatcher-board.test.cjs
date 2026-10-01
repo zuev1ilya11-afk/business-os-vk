@@ -32,8 +32,10 @@ test('Dispatch Board reuses existing APIs and protects requested reschedules',()
   assert.match(ui,/confirm\(`/);
 });
 
-test('master payout source remains the approved 85% then 65% formula',()=>{
+test('Hands payout remains 85% then 65%; direct source uses the approved 60%',()=>{
   const api=fs.readFileSync('supabase/functions/mini-app-api/index.ts','utf8');
-  assert.match(api,/master_payout:has\?round\(x\*\.85\*\.65\):0/);
-  assert.doesNotMatch(api,/master_payout:has\?round\(x\*\.85\*\.35\):0/);
+  assert.match(api,/orderPayroll\.calculate/);
+  const payroll=require('../order-payroll.js');
+  assert.equal(payroll.calculate(1000,{external_source:'hands'}).master_payout,552.5);
+  assert.equal(payroll.calculate(1000,{source:'Авито'}).master_payout,600);
 });

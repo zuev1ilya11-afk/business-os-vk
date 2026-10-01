@@ -6,6 +6,7 @@
     "config.js",
     "schedule-contract.js",
     "dispatcher-permissions.js",
+    "order-payroll.js",
     "app-public.js",
     "network-fallback-v50.js",
     "vk-auth-patch.js",
