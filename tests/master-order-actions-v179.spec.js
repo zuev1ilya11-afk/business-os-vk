@@ -24,7 +24,6 @@ test('scheduled master order shows confirmed sequential progress and confirmed r
   await expect(panel.getByRole('button',{name:/Подтвердить: начал работу/})).toHaveCount(0);
   await expect(panel.getByRole('button',{name:/Отправить отчёт/})).toHaveCount(0);
   await expect(panel).toContainText('Требует подтверждения диспетчера или руководителя');
-  await panel.locator('.moa179Reschedule>summary').click();
   await expect(panel.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
 
   await panel.getByRole('button',{name:/Подтвердить: выехал/}).click();
@@ -83,7 +82,6 @@ test('reschedule action keeps existing approval request form',async({page})=>{
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await page.evaluate(()=>window.openOrder('11'));
-  await page.locator('.moa179Reschedule>summary').click();
   await page.locator('.bosMasterWorkflow[data-bos-v179="1"] button',{hasText:'Запросить перенос'}).click();
   await expect(page.locator('#masterRescheduleForm')).toBeVisible();
 });
