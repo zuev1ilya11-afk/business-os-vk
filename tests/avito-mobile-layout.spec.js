@@ -1,4 +1,5 @@
 const {test,expect}=require('@playwright/test');
+const fixtureCors={'access-control-allow-origin':'*','access-control-allow-headers':'content-type,x-bos-session,x-vk-launch-params,authorization,apikey','access-control-allow-methods':'GET,POST,OPTIONS'};
 const {fullStack}=require('./helpers/full-stack.cjs');
 test.use({timezoneId:'Europe/Moscow',screenshot:'only-on-failure'});
 
@@ -11,7 +12,7 @@ async function setup(page,{width=390,height=844,role='owner',count=12}={}){
  const chats=Array.from({length:count},(_,i)=>({id:'mobile-'+i,client:names[i%5],phone:'+79995554433',item_title:titles[i%5],last_message:i%5===1?'Определились с ремонтом штор?':'Здравствуйте, подскажите, когда сможет приехать мастер?',last_message_at:'2026-10-01T11:20:00Z',unread_count:i===2?2:0}));
  stack.db.tables.orders.push({id:'1709',client:'Сергей',work:titles[0],status:'В работе',source:'Авито',avito_chat_id:chats[0].id,amount:1000,original_amount:1000});
  let fail=false;
- await page.route('**/api/proxy/avito-api',async route=>{
+ await page.route('**/api/proxy/avito-api',async route=>{if(route.request().method()==='OPTIONS')return route.fulfill({status:204,headers:fixtureCors,body:''});
   const b=route.request().postDataJSON();calls.push(b);let d={ok:true},status=200;
   if(b.action==='chats'){
    if(fail){d={ok:false,error:'Нет связи с Авито. Повторите позже.'};status=502}
@@ -20,7 +21,7 @@ async function setup(page,{width=390,height=844,role='owner',count=12}={}){
   if(b.action==='messages')d={ok:true,messages:[{id:'m1',text:'Нужен монтаж карниза.',direction:'in',created_at:'2026-10-01T11:20:00Z'}],next_offset:null};
   if(b.action==='status')d={ok:true,configured:true,connected:true,connection:{account_name:'Домашний мастер',avito_user_id:'42'}};
   if(b.action==='read'){const chat=chats.find(c=>c.id===b.chat_id);if(chat)chat.unread_count=0}
-  await route.fulfill({status,contentType:'application/json',body:JSON.stringify(d)});
+  await route.fulfill({headers:fixtureCors,status,contentType:'application/json',body:JSON.stringify(d)});
  });
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
  await page.locator('#bosAvitoNav').click();await expect(page.locator('.avitoChatRow')).toHaveCount(count);

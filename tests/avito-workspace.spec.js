@@ -1,4 +1,5 @@
 const {test,expect}=require('@playwright/test');
+const fixtureCors={'access-control-allow-origin':'*','access-control-allow-headers':'content-type,x-bos-session,x-vk-launch-params,authorization,apikey','access-control-allow-methods':'GET,POST,OPTIONS'};
 const {fullStack}=require('./helpers/full-stack.cjs');
 async function setup(page,width=1440){
  await page.setViewportSize({width,height:900});
@@ -7,12 +8,12 @@ async function setup(page,width=1440){
  const chats=[{id:'u2i:ABC+def/ghi==',client:'Сергей',client_id:'99',phone:'+79995554433',item_title:'Установка карниза',item_id:'10',item_url:'https://www.avito.ru/ad',last_message:'Два карниза, стены бетонные',unread_count:2},{id:'second',client:'Анна',phone:'+79991112233',item_title:'Замена смесителя',last_message:'Когда приедет мастер?',unread_count:1}];
  const history=[{id:'1',text:'Здравствуйте! Нужно установить карнизы.',direction:'in',created_at:'2026-09-30T12:38:00Z'},{id:'2',text:'Здравствуйте! Установка карниза — от 1 500 ₽. Сколько карнизов и какие стены?',direction:'out',created_at:'2026-09-30T12:39:00Z'},{id:'3',text:'Два карниза, стены бетонные. Можно завтра после 15:00?',direction:'in',created_at:'2026-09-30T12:40:00Z'}];
  let more=false;
- await page.route('**/api/proxy/avito-api',async route=>{
+ await page.route('**/api/proxy/avito-api',async route=>{if(route.request().method()==='OPTIONS')return route.fulfill({status:204,headers:fixtureCors,body:''});
   const b=route.request().postDataJSON();calls.push(b);let d={ok:true};
   if(b.action==='chats')d={ok:true,chats:b.offset?[{id:'third',client:'Марина',item_title:'Навеска полок',unread_count:0}]:chats,next_offset:more&&!b.offset?100:null};
   if(b.action==='messages')d={ok:true,messages:history,next_offset:null};
   if(b.action==='read'){const c=chats.find(c=>c.id===b.chat_id);if(c)c.unread_count=0}
-  await route.fulfill({contentType:'application/json',body:JSON.stringify(d)});
+  await route.fulfill({headers:fixtureCors,contentType:'application/json',body:JSON.stringify(d)});
  });
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.locator('#bosAvitoNav').click();await expect(page.locator('.avitoChatRow')).toHaveCount(2);
  return {...x,chats,history,calls,errors,enableMore:()=>more=true};
@@ -50,6 +51,6 @@ test('filters, paginated refresh and navigation preserve separate message/order 
 test('failed inline create retains fields and retry creates one linked order',async({page})=>{
  const x=await setup(page);await page.locator('.avitoChatRow').first().click();const form=page.locator('#avitoLeadForm');await form.locator('[name=address]').fill('Адрес');await form.locator('[name=comment]').fill('Сохранить детали');
  let first=true;
- await page.route('**/api/proxy/mini-app-api',async route=>{const b=route.request().postDataJSON();if(b.action==='createOrder'&&first){first=false;await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({ok:false,error:'Временная ошибка'})});return}await route.fallback()});
+ await page.route('**/api/proxy/mini-app-api',async route=>{const b=route.request().postDataJSON();if(b.action==='createOrder'&&first){first=false;await route.fulfill({headers:fixtureCors,status:503,contentType:'application/json',body:JSON.stringify({ok:false,error:'Временная ошибка'})});return}await route.fallback()});
  await page.locator('#avitoToOrder').click();await expect(page.locator('#avitoOrderMsg')).toContainText('Временная ошибка');await expect(form.locator('[name=comment]')).toHaveValue('Сохранить детали');await page.locator('#avitoToOrder').click();await expect(page.locator('#avitoToOrder')).toHaveText('Открыть заявку');expect(x.db.tables.orders.filter(o=>o.avito_chat_id===x.chats[0].id)).toHaveLength(1);
 });
