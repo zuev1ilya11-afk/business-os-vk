@@ -1,0 +1,48 @@
+name: Avito public release verification
+on:
+  push:
+    branches: [feat/avito-mobile-layout]
+    paths: ['.github/workflows/avito-public-release-check.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/feat/avito-mobile-layout'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: b97a927b8961506f25dbd84f0305985f62c8b451
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Read-only comparison of live public files
+        run: |
+          node --input-type=module - <<'JS'
+          import fs from 'node:fs';
+          import {createHash} from 'node:crypto';
+          const base='https://zuev1ilya11-afk.github.io/business-os-vk/';
+          const build='0406dd7da54cdf1e380c';
+          const sha=b=>createHash('sha256').update(b).digest('hex');
+          const result={checked_at:new Date().toISOString(),merge:'b97a927b8961506f25dbd84f0305985f62c8b451',build,files:[]};
+          for(const path of ['index.html','build-version.js','avito-messages-v25.js','startup-shell.bundle.js','sw.js']){
+            const expected=fs.readFileSync(path);
+            try{
+              const response=await fetch(new URL(path,base),{method:'GET',redirect:'error',headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(20000)});
+              const actual=Buffer.from(await response.arrayBuffer());
+              result.files.push({path,status:response.status,bytes:actual.length,expected_sha256:sha(expected),actual_sha256:sha(actual),matches:response.ok&&actual.equals(expected)});
+            }catch(error){result.files.push({path,matches:false,error:String(error)});}
+          }
+          result.ok=result.files.every(f=>f.matches)&&fs.readFileSync('build-version.js','utf8').includes(build);
+          fs.writeFileSync('avito-public-release.json',JSON.stringify(result,null,2)+'\n');
+          console.log(JSON.stringify(result,null,2));
+          if(!result.ok)process.exitCode=1;
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: avito-public-release-check
+          path: avito-public-release.json
+          retention-days: 7
