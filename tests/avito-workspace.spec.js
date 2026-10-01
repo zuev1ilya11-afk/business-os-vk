@@ -1,4 +1,6 @@
 const {test,expect}=require('@playwright/test');
+// page.route cannot intercept service-worker traffic. These cases use only synthetic APIs; PWA tests stay separate.
+test.use({serviceWorkers:'block'});
 const fixtureCors={'access-control-allow-origin':'*','access-control-allow-headers':'content-type,x-bos-session,x-vk-launch-params,authorization,apikey','access-control-allow-methods':'GET,POST,OPTIONS'};
 const {fullStack}=require('./helpers/full-stack.cjs');
 async function setup(page,width=1440){
