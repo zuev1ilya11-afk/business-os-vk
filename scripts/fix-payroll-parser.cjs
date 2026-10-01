@@ -1,10 +1,8 @@
-const fs=require('node:fs'),crypto=require('node:crypto');
-const path='dispatcher-report-patch.js',s=fs.readFileSync(path,'utf8');
-const hash=v=>crypto.createHash('sha256').update(v).digest('hex');
-const target='3227e0672c77c7bc91775acab2c5b373f5d4de5374b86bfd478661cefab5cf41';
-if(hash(s)!==target){
- if(hash(s)!=='d247281b37902d3a3c422c912671e8c4dd755f530c8973d7db80adaae0c9c647')throw Error('Dispatcher source changed');
- const next=s.replaceAll('??(o.master_payout||payout(o.amount))||0','??(o.master_payout||payout(o.amount)||0)');
- if(hash(next)!==target)throw Error('Unexpected parser repair');
- fs.writeFileSync(path,next);
-}
+const fs=require('node:fs');
+function replace(path,before,after){const s=fs.readFileSync(path,'utf8');if(s.includes(after))return;if(s.split(before).length!==2)throw Error('Unexpected source: '+path);fs.writeFileSync(path,s.replace(before,after));}
+replace('order-payroll.js','if(isDirect(o)&&!closed(o))return','if(isDirect(o))return');
+replace('business-os-custom-v3.js',"const pricing=o||{external_source:'mini_app',source:form.elements.source?.value||'Авито'};","const pricing={...(o||{external_source:'mini_app'}),source:form.elements.source?.value||o?.source||'Авито'};");
+replace('business-os-custom-v3.js','window.BOS_ORDER_PAYROLL.label(model)+','window.BOS_ORDER_PAYROLL.label(saved?model:{...model,status:\'В работе\',report_review_status:\'not_submitted\',report_uploaded_at:null})+');
+replace('business-os-custom-v3.js','const merged={...d.order,...meta,...f,order_type:type};','const merged={...f,...d.order,...meta,order_type:type};');
+replace('docs/SOURCE-PAYROLL.md','Explicit financial edits to a previously completed row retain the existing legacy write calculation rather than applying the new scheme retroactively.','An explicitly saved financial change uses the source rule, including a previously completed direct order. Stored reports are never repriced just because they are loaded or a comment is edited.');
+replace('tests/source-payroll.spec.js',"await page.screenshot({path:testInfo.outputPath(`source-payroll-${width}.png`),fullPage:true});","await form.locator('#bosPricingRule').scrollIntoViewIfNeeded();\n await page.screenshot({path:testInfo.outputPath(`source-payroll-${width}.png`)});");

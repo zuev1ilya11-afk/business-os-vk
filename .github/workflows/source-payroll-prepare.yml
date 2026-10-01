@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Repair parser grouping and regenerate artifacts
+      - name: Preserve explicit source edits and server amounts
         env:
           EXPECTED_SHA: ${{ github.sha }}
         run: |
@@ -31,20 +31,25 @@ jobs:
           node --test tests/payroll-script-syntax.test.cjs
           git diff --check
           test "$(git ls-remote origin refs/heads/feat/source-payroll-60-40 | cut -f1)" = "$EXPECTED_SHA"
-          git add '*.js' scripts/startup-assets.json supabase/functions tests index.html
+          git add '*.js' scripts/startup-assets.json supabase/functions tests docs/SOURCE-PAYROLL.md index.html
           if ! git diff --cached --quiet; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git commit -m 'fix: preserve valid classic-script syntax for source payroll'
+            git commit -m 'fix: preserve source-aware financial edits and canonical server amounts'
             git push origin HEAD:refs/heads/feat/source-payroll-60-40
           fi
           git archive --format=tar HEAD > "$RUNNER_TEMP/source-payroll-source.tar"
       - run: npm ci
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.9.7
+      - name: Shared module works in the Edge module runtime
+        run: deno eval "await import('./order-payroll.js'); const p=(globalThis as any).BOS_ORDER_PAYROLL; if(p.calculate(1000,{source:'Авито'}).master_payout!==600 || p.calculate(1000,{external_source:'hands'}).master_payout!==552.5)throw Error('Shared runtime mismatch');"
       - name: Complete server regression
         run: npm run test:server
       - run: npx playwright install chromium
       - name: New source payroll and preserved Hands browser scenarios
-        run: npx playwright test tests/source-payroll.spec.js tests/report-payroll-contract.spec.js --workers=2
+        run: npx playwright test tests/source-payroll.spec.js tests/source-payroll-edit.spec.js tests/report-payroll-contract.spec.js --workers=2
       - uses: actions/upload-artifact@v4
         if: always()
         with:
