@@ -1,8 +1,0 @@
-const fs=require('node:fs');
-function replace(path,before,after){const s=fs.readFileSync(path,'utf8');if(s.includes(after))return;if(s.split(before).length!==2)throw Error('Unexpected source: '+path);fs.writeFileSync(path,s.replace(before,after));}
-replace('order-payroll.js','if(isDirect(o)&&!closed(o))return','if(isDirect(o))return');
-replace('business-os-custom-v3.js',"const pricing=o||{external_source:'mini_app',source:form.elements.source?.value||'Авито'};","const pricing={...(o||{external_source:'mini_app'}),source:form.elements.source?.value||o?.source||'Авито'};");
-replace('business-os-custom-v3.js','window.BOS_ORDER_PAYROLL.label(model)+','window.BOS_ORDER_PAYROLL.label(saved?model:{...model,status:\'В работе\',report_review_status:\'not_submitted\',report_uploaded_at:null})+');
-replace('business-os-custom-v3.js','const merged={...d.order,...meta,...f,order_type:type};','const merged={...f,...d.order,...meta,order_type:type};');
-replace('docs/SOURCE-PAYROLL.md','Explicit financial edits to a previously completed row retain the existing legacy write calculation rather than applying the new scheme retroactively.','An explicitly saved financial change uses the source rule, including a previously completed direct order. Stored reports are never repriced just because they are loaded or a comment is edited.');
-replace('tests/source-payroll.spec.js',"await page.screenshot({path:testInfo.outputPath(`source-payroll-${width}.png`),fullPage:true});","await form.locator('#bosPricingRule').scrollIntoViewIfNeeded();\n await page.screenshot({path:testInfo.outputPath(`source-payroll-${width}.png`)});");
