@@ -1,0 +1,55 @@
+name: Master cost branch verification
+on:
+  push:
+    branches: [feat/master-source-cost]
+    paths: ['scripts/master-cost-edits.json', 'scripts/apply-master-cost.cjs', '.github/workflows/master-cost-check.yml']
+permissions:
+  contents: write
+concurrency:
+  group: master-cost-branch-build
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/feat/master-source-cost'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Apply checked visibility edits and regenerate canonical assets
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          node scripts/apply-master-cost.cjs
+          npm run build
+          npm run build:check
+          npm run test:server
+          git diff --check
+          test "$(git ls-remote origin refs/heads/feat/master-source-cost | cut -f1)" = "$EXPECTED_SHA"
+          git add order-payroll.js master-order-hands-layout-v72.js master-orders-v125.js supabase/functions tests build-version.js index.html sw.js startup-shell.bundle.js startup-eager.bundle.js
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'feat: show master cost breakdown for non-Hands orders only'
+            git push origin HEAD:refs/heads/feat/master-source-cost
+          fi
+          git rev-parse HEAD > tested-sha.txt
+      - run: npm ci
+      - run: npx playwright install chromium
+      - name: Cost visibility and adjacent report flows
+        run: npx playwright test tests/master-cost-visibility.spec.js tests/source-payroll.spec.js tests/report-payroll-contract.spec.js tests/master-orders-v125.spec.js tests/business-rules-regression.spec.js tests/master-report-submit-regression.spec.js --workers=2 --reporter=json > master-cost-results.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: master-cost-qa
+          path: |
+            tested-sha.txt
+            master-cost-results.json
+            test-results/
+          retention-days: 3
