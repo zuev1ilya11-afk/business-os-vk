@@ -53,6 +53,8 @@ for(const [role,width] of [['owner',320],['dispatcher',390],['owner',768],['owne
     await expect(smart).toContainText('Александр Константинопольский');
     await expect(smart).toContainText('город совпадает');
     await card.screenshot({path:testInfo.outputPath(`smart-${role}-${width}.png`)});
+    // Trial clicks check normal scrolling/hit targets without assigning synthetic orders.
+    for(const button of await smart.locator('.dsd121Assign').all())await button.click({trial:true});
     // A normal list refresh must not duplicate or squeeze the recommendations again.
     await page.evaluate(()=>refreshBosOrders());
     await expect(card.locator(':scope > .dsd121')).toHaveCount(1);
@@ -61,7 +63,7 @@ for(const [role,width] of [['owner',320],['dispatcher',390],['owner',768],['owne
 }
 
 test('full-width smart assignment uses the existing single order update',async({page})=>{
-  const {db,master,smart}=await setup(page,'owner',1440);
+  const {db,smart}=await setup(page,'owner',1440);
   const updates=[];
   page.on('request',request=>{if(request.method()==='POST'){try{const b=request.postDataJSON();if(b?.action==='updateOrder')updates.push(b)}catch{}}});
   const best=smart.locator('.dsd121Candidate').first(),time=await best.getAttribute('data-time');
