@@ -43,10 +43,10 @@ function dateLabel(o){
 function orderNo(o){const ext=String(o?.external_id||'');return ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')}
 function step(o){
   if(reportApproved(o))return'Заявка завершена';
-  if(reportRejected(o))return reportUploaded(o)?'Исправить отчёт':'Повторить этапы заявки';
+  if(reportRejected(o))return'Исправить отчёт';
   if(reportUploaded(o))return'Отчёт на проверке';
   if(workDone(o))return'Заполнить отчёт';
-  if(agreementDone(o))return'Начать работу';
+  if(agreementDone(o))return stageOf(o)==='departed'?'Начать работу':'Подтвердить выезд';
   if(calledDone(o))return'Зафиксировать договорённость';
   return'Позвонить клиенту';
 }

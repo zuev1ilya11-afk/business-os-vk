@@ -44,7 +44,7 @@ async function reportActor(db:any,req:Request,body:any){let actor=await currentA
 // Compare the row read by this request at write time; stale retries must never reopen a report.
 function reportWrite(db:any, order:any, patch:any){
   let q=db.from('orders').update(patch).eq('id',order.id);
-  for(const k of ['updated_at','status','master_staff_id','report_review_status','report_upload_token','external_source','external_id','source'])q=order[k]==null?q.is(k,null):q.eq(k,order[k]);
+  for(const k of ['updated_at','status','master_staff_id','report_review_status','report_upload_token','report_uploaded_at','master_workflow_stage','master_started_at','external_source','external_id','source'])q=order[k]==null?q.is(k,null):q.eq(k,order[k]);
   return q.select().maybeSingle();
 }
 class ReviewConflict extends Error{}
@@ -53,6 +53,16 @@ const matchesDisplayedReport=(o:any,b:any)=>!!b.expected_report_token&&!!b.expec
 const reportConflict=()=>json({ok:false,error:'REPORT_CHANGED',message:'Отчёт или заявка уже изменены. Обновите заявку.'},409);
 const reportReceipt=(o:any,token:string)=>o.status!=='Отменена'&&o.report_uploaded_at&&['pending','approved'].includes(o.report_review_status)&&String(o.report_upload_token||'')===token;
 const reportLocked=(o:any)=>['Выполнена','Отменена'].includes(o.status)||['pending','approved'].includes(o.report_review_status);
+// Historical returns may have their timestamps cleared by the existing order trigger.
+// A server review proves previous submission; a photo/act URL alone does not.
+const reportWorkStarted=(o:any)=>o.master_workflow_stage==='started'||!!o.master_started_at||o.report_review_status==='rejected'||!!o.report_uploaded_at;
+async function reportWriteReceipt(db:any,order:any,patch:any,token:string){
+  const r=await reportWrite(db,order,patch);if(r.error||r.data)return r;
+  const fresh=await db.from('orders').select('*').eq('id',order.id).maybeSingle();
+  if(fresh.error)return fresh;
+  return {data:fresh.data&&String(fresh.data.master_staff_id||'')===String(order.master_staff_id||'')&&reportReceipt(fresh.data,token)?fresh.data:null,error:null};
+}
+
 
 async function finalizeReport(db:any,req:Request,body:any){
   const actor=await reportActor(db,req,body);if(!actor)return json({ok:false,error:'Отчёт может загрузить только мастер'},403);
@@ -61,14 +71,14 @@ async function finalizeReport(db:any,req:Request,body:any){
   if(String(q.data.master_staff_id||'')!==String(actor.id))return json({ok:false,error:'Эта заявка назначена другому мастеру'},403);
   const token=String(body.upload_token||'');if(!token)return json({ok:false,error:'UPLOAD_TOKEN_REQUIRED'},400);
   if(reportReceipt(q.data,token))return json({ok:true,order:masterOrder(q.data),drive_archive_status:q.data.drive_archive_status});
-  if(reportLocked(q.data))return reportConflict();
+  if(reportLocked(q.data))return reportConflict();if(!reportWorkStarted(q.data))return json({ok:false,error:'WORK_NOT_STARTED',message:'Сначала подтвердите начало работы'},409);
   const act=String(body.act_url||''),photos=Array.isArray(body.photo_urls)?body.photo_urls.filter(Boolean).slice(0,5):[];
   if(!act)return json({ok:false,error:'ACT_REQUIRED'},400);if(!photos.length)return json({ok:false,error:'PHOTO_REQUIRED'},400);if(![act,...photos].every(u=>validAttachmentUrl(u,orderId,token)))return json({ok:false,error:'INVALID_ATTACHMENT_URL'},400);
   for(const k of ['uncompleted_work_amount','extra_work_amount'])if(k in body&&(!Number.isFinite(Number(body[k]))||Number(body[k])<0))return json({ok:false,error:'Сумма должна быть конечным неотрицательным числом'},400);
   const original=Number(q.data.original_amount??q.data.amount??0),unfinished=Number(body.uncompleted_work_amount||0);if(unfinished>original)return json({ok:false,error:'Невыполненные работы не могут превышать сумму заказа'},400);
   const amount=round(original-unfinished),now=new Date().toISOString();
   const patch:any={status:'В работе',amount,extra_work_done:!!body.extra_work_done,extra_work_description:String(body.extra_work_description||''),extra_work_amount:round(body.extra_work_amount||0),uncompleted_work_done:!!body.uncompleted_work_done,uncompleted_work_description:String(body.uncompleted_work_description||''),uncompleted_work_amount:round(unfinished),report_type:'work',report_act_url:act,report_measurement_url:null,report_photo_urls:JSON.stringify(photos),report_uploaded_at:now,report_upload_token:token,report_review_status:'pending',report_reviewed_by:null,report_reviewed_at:null,report_review_comment:'',drive_archive_status:'pending',drive_archive_error:null,completed_at:null,sync_status:'pending_sheet',updated_at:now,...payouts(amount,q.data)};
-  const r=await reportWrite(db,q.data,patch);if(r.error)throw r.error;if(!r.data)return reportConflict();
+  const r=await reportWriteReceipt(db,q.data,patch,token);if(r.error)throw r.error;if(!r.data)return reportConflict();
   return json({ok:true,order:masterOrder(r.data),drive_archive_status:'pending'});
 }
 

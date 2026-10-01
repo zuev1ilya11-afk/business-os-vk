@@ -64,22 +64,22 @@ for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths
     if (role === 'master') {
       const workflow=modal.locator('.bosMasterWorkflow[data-bos-v179="1"]');
       await expect(workflow).toBeVisible();
-      const depart=workflow.getByRole('button',{name:/Выехал/});
+      const depart=workflow.getByRole('button',{name:/Подтвердить: выехал/});
       await expect(depart).toBeEnabled();
       await expect.poll(async () => depart.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
-      await expect(workflow.getByRole('button',{name:/Начал работу/})).toBeDisabled();
-      await expect(workflow.getByRole('button',{name:/Отправить отчет/})).toBeDisabled();
+      await expect(workflow.getByRole('button',{name:/Подтвердить: начал работу/})).toHaveCount(0);
+      await expect(workflow.getByRole('button',{name:/Отправить отчёт/})).toHaveCount(0);
       await expect(workflow.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
       await expect(page.getByRole('button', {name: 'Я на месте', exact: true})).toHaveCount(0);
 
       await depart.click();
       await expect.poll(()=>targetOrder.master_workflow_stage).toBe('departed');
-      await expect(workflow.getByRole('button',{name:/Начал работу/})).toBeEnabled();
+      await expect(workflow.getByRole('button',{name:/Подтвердить: начал работу/})).toBeEnabled();
 
-      await workflow.getByRole('button',{name:/Начал работу/}).click();
+      await workflow.getByRole('button',{name:/Подтвердить: начал работу/}).click();
       await expect.poll(()=>targetOrder.master_workflow_stage).toBe('started');
       expect(targetOrder.master_payout).toBe(552.5);
-      await expect(workflow.getByRole('button',{name:/Отправить отчет/})).toBeEnabled();
+      await expect(workflow.getByRole('button',{name:/Отправить отчёт/})).toBeEnabled();
       expect(targetOrder.status).toBe('В работе');
 
       if (width === 390) {
@@ -100,7 +100,7 @@ for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths
       }
 
       const activeWorkflow=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
-      await activeWorkflow.getByRole('button',{name:/Отправить отчет/}).click();
+      await activeWorkflow.getByRole('button',{name:/Отправить отчёт/}).click();
       await expect(page.locator('#masterReportForm')).toBeVisible();
     }
     if (process.env.BOS_UI_SCREENSHOTS && [390, 1440].includes(width)) {

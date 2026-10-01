@@ -44,3 +44,9 @@ test('platform denials and an outdated reserve allow direct Supabase without rep
  assert.equal((await fetch(primary,{method:'POST',body:'{"action":"reviewReport"}'})).status,200);
  assert.equal(calls.length,4);assert.match(calls[3],/supabase\.co/);
 });
+
+for(const action of ['setStage','finalizeMasterReport'])for(const failure of ['network','503','timeout'])test(`${action}: explicit reconciliation stops hidden transport retries on ${failure}`,async()=>{
+ let calls=0;const fetch=network(async()=>{calls++;if(failure==='network')throw new TypeError('Failed to fetch');if(failure==='503')return new Response('{}',{status:503});return new Promise(()=>{})},(fn)=>{if(failure==='timeout')queueMicrotask(fn);return 0});
+ const task=fetch('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/master-workflow-api',{method:'POST',body:JSON.stringify({action}),bosReconcileBeforeRetry:true});
+ if(failure==='503')assert.equal((await task).status,503);else await assert.rejects(task,/Обновите заявку/);assert.equal(calls,1);
+});

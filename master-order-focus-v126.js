@@ -22,9 +22,10 @@ const receivedDate=v=>{const raw=String(v||'').slice(0,10),m=raw.match(/^(\d{4})
 function nextStep(o){
   if(String(o?.status||'')==='Отменена')return{tone:'muted',title:'Заявка отменена',hint:'Дополнительных действий не требуется.'};
   if(reportApproved(o))return{tone:'done',title:'Заявка завершена',hint:'Отчёт принят, работа по заявке закончена.'};
-  if(reportRejected(o))return{tone:'danger',title:reportUploaded(o)?'Исправьте отчёт':'Повторите этапы заявки',hint:[o?.report_review_comment||'Отчёт вернули на доработку.',reportUploaded(o)?'Исправьте его и отправьте повторно.':'Этапы заявки начаты заново. Пройдите их по порядку перед повторным отчётом.'].join(' ')};
+  if(reportRejected(o))return{tone:'danger',title:'Исправьте отчёт',hint:[o?.report_review_comment||'Отчёт вернули на доработку.','Исправьте его и отправьте повторно. Повторный выезд не требуется.'].join(' ')};
   if(reportUploaded(o))return{tone:'waiting',title:'Отчёт на проверке',hint:'Дождитесь проверки диспетчером или руководителем.'};
   if(workDone(o))return{tone:'active',title:'Заполните отчёт',hint:'Работа отмечена начатой. После завершения прикрепите отчёт.'};
+  if(agreementDone(o)&&stageOf(o)==='assigned')return{tone:'active',title:'Подтвердите выезд',hint:'Когда отправитесь к клиенту, отметьте выезд в прогрессе заявки.'};
   if(agreementDone(o))return{tone:'active',title:'Начните работу',hint:'Дата и время согласованы. Когда приступите к заказу, отметьте начало работы.'};
   if(calledDone(o))return{tone:'waiting',title:'Зафиксируйте договорённость',hint:'Уточните с клиентом дату и время и сохраните договорённость.'};
   return{tone:'attention',title:'Позвоните клиенту',hint:'Свяжитесь с клиентом и после разговора отметьте выполненный звонок.'};

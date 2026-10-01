@@ -49,7 +49,7 @@ for(const [role,width] of [['owner',390],['dispatcher',390],['owner',1280]]){
     expect(order.report_review_status).toBe('pending');
    };
    await masterPage.evaluate(()=>openOrder('11'));
-   await masterPage.locator('.bosMasterWorkflow[data-bos-v179="1"]').getByRole('button',{name:/Отправить отчет/}).click();
+   await masterPage.locator('.bosMasterWorkflow[data-bos-v179="1"]').getByRole('button',{name:/Отправить отчёт/}).click();
    await upload();
    const firstToken=order.report_upload_token;
    await page.evaluate(()=>BOS_REFRESH_NOW());
@@ -68,12 +68,9 @@ for(const [role,width] of [['owner',390],['dispatcher',390],['owner',1280]]){
    await masterPage.evaluate(()=>openOrder('11'));
    const panel=masterPage.locator('.bosMasterWorkflow[data-bos-v179="1"]');
    await expect(panel.locator('.moa179Review.rejected')).toContainText(reason);
-   await expect(panel.getByRole('button',{name:/Исправить отчет/})).toBeDisabled();
-   await panel.getByRole('button',{name:/Выехал/}).click();
-   await expect.poll(()=>order.master_workflow_stage).toBe('departed');
-   await panel.getByRole('button',{name:/Начал работу/}).click();
-   await expect.poll(()=>order.master_workflow_stage).toBe('started');
-   await panel.getByRole('button',{name:/Исправить отчет/}).click();
+   await expect(panel.getByRole('progressbar')).toHaveAttribute('aria-valuenow','75');
+   await expect(panel.locator('.moa179Action')).toHaveCount(1);
+   await panel.getByRole('button',{name:'Исправить отчёт',exact:true}).click();
    await upload();
    expect(order.report_upload_token).not.toBe(firstToken);
    expect(order.report_review_comment).toBe('');

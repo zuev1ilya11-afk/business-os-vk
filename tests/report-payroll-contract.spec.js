@@ -7,7 +7,7 @@ test('Hands real report handlers feed one approved salary into day, week, month 
  await page.clock.install({time:fixed});
  const {db,me}=await fullStack(page,'master');
  db.tables.business_staff.push(employee('owner','owner'),employee('d','dispatcher'));
- const order=db.tables.orders.find(o=>o.id==='11');order.scheduled_date='2026-01-15';order.source='Hands';order.external_source='hands';
+ const order=db.tables.orders.find(o=>o.id==='11');order.master_workflow_stage='started';order.scheduled_date='2026-01-15';order.source='Hands';order.external_source='hands';
  const FrozenDate=class extends Date{constructor(...args){super(...(args.length?args:[fixed.getTime()]))}static now(){return fixed.getTime()}};
  const lifecycle=edge('order-lifecycle-api',db,{Date:FrozenDate,fetch:async()=>new Response(JSON.stringify({ok:true,order:{...order,drive_archive_status:'archived',drive_archive_url:'https://drive.test/archive'}}))});
  await page.setViewportSize({width:390,height:844});

@@ -8,8 +8,8 @@ function clearSession(){try{sessionStorage.removeItem('bos_vk_session_v2');local
 function clearReportRoute(){try{window.BOS_NETWORK_DIRECT_V86?.clearPreferredTarget?.('report-api')}catch(_){}}
 async function headers(){const h={'Content-Type':'application/json'};let s=session();if(!s&&window.BOS_ENSURE_VK_SESSION){try{await window.BOS_ENSURE_VK_SESSION();s=session()}catch(_){}}if(s)h['X-BOS-Session']=s;let lp=window.BOS_VK_LAUNCH_PARAMS||'';if(!lp&&window.BOS_ENSURE_VK_LAUNCH_PARAMS){try{lp=await window.BOS_ENSURE_VK_LAUNCH_PARAMS()}catch(_){}}if(lp)h['X-VK-Launch-Params']=lp;return h}
 function retryable(err,status){const t=String(err?.message||err||'');return !status||status===500||status===502||status===503||status===504||/failed to fetch|load failed|networkerror|upstream_|server.*answer|abort/i.test(t)}
-async function once(url,body,timeout=35000){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);try{const r=await fetch(url,{method:'POST',headers:await headers(),body:JSON.stringify(body),signal:controller.signal});const d=await r.json().catch(()=>({}));if(d?.session_token&&window.BOS_STORE_SESSION)window.BOS_STORE_SESSION(d.session_token);if(r.status===401){const e=new Error(d.error||'Доступ не подтверждён');e.status=401;throw e}if(!r.ok||!d.ok){const e=new Error(d.message||d.error||`Ошибка загрузки (${r.status})`);e.status=r.status;e.code=d.error;throw e}return d}catch(e){if(e?.name==='AbortError'){const x=new Error('Сервер загрузки не ответил вовремя. Повторите отправку.');x.status=504;throw x}throw e}finally{clearTimeout(timer)}}
-async function request(body){let authRetried=false,lastErr;for(const url of [REPORT_PROXY,REPORT_DIRECT]){for(let attempt=0;attempt<2;attempt++){try{return await once(url,body,url===REPORT_PROXY?35000:45000)}catch(e){lastErr=e;if(e?.status===401&&!authRetried){authRetried=true;clearSession();if(window.BOS_ENSURE_VK_SESSION){try{await window.BOS_ENSURE_VK_SESSION()}catch(_){}}continue}if(e?.status===500){clearReportRoute();if(url===REPORT_PROXY)break}if(!retryable(e,e?.status))throw e;if(attempt===0)await new Promise(r=>setTimeout(r,450));else break}}}const text=String(lastErr?.message||lastErr||'');if(/failed to fetch|load failed|networkerror|upstream_|не ответил вовремя/i.test(text))throw new Error('Не удалось связаться с сервером отчётов. Проверьте интернет и повторите отправку.');throw lastErr}
+async function once(url,body,timeout=35000){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);try{const r=await fetch(url,{method:'POST',headers:await headers(),body:JSON.stringify(body),signal:controller.signal,bosReconcileBeforeRetry:body.action==='finalizeMasterReport'});const d=await r.json().catch(()=>({}));if(d?.session_token&&window.BOS_STORE_SESSION)window.BOS_STORE_SESSION(d.session_token);if(r.status===401){const e=new Error(d.error||'Доступ не подтверждён');e.status=401;throw e}if(!r.ok||!d.ok){const e=new Error(d.message||d.error||`Ошибка загрузки (${r.status})`);e.status=r.status;e.code=d.error;throw e}return d}catch(e){if(e?.name==='AbortError'){const x=new Error('Сервер загрузки не ответил вовремя. Повторите отправку.');x.status=504;throw x}throw e}finally{clearTimeout(timer)}}
+async function request(body){let authRetried=false,lastErr;for(const url of [REPORT_PROXY,REPORT_DIRECT]){for(let attempt=0;attempt<2;attempt++){try{return await once(url,body,url===REPORT_PROXY?35000:45000)}catch(e){lastErr=e;if(e?.status===401&&!authRetried){authRetried=true;clearSession();if(window.BOS_ENSURE_VK_SESSION){try{await window.BOS_ENSURE_VK_SESSION()}catch(_){}}continue}if(e?.status===500){clearReportRoute();if(url===REPORT_PROXY)break}if(body.action==='finalizeMasterReport'||!retryable(e,e?.status))throw e;if(attempt===0)await new Promise(r=>setTimeout(r,450));else break}}}const text=String(lastErr?.message||lastErr||'');if(/failed to fetch|load failed|networkerror|upstream_|не ответил вовремя/i.test(text))throw new Error('Не удалось связаться с сервером отчётов. Проверьте интернет и повторите отправку.');throw lastErr}
 function dataUrl(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result||''));r.onerror=()=>rej(new Error('Не удалось прочитать файл'));r.readAsDataURL(file)})}
 function image(file){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),i=new Image();i.onload=()=>{URL.revokeObjectURL(u);res(i)};i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('Не удалось обработать изображение'))};i.src=u})}
 async function compact(file,photo=false){if(!file)throw new Error('Файл не выбран');const isImage=String(file.type||'').startsWith('image/'),maxRaw=isImage?30*1024*1024:(photo?12*1024*1024:7*1024*1024);if(file.size>maxRaw)throw new Error(isImage?`Файл ${file.name} слишком большой. Максимум 30 МБ`:`Файл ${file.name} слишком большой. Для PDF и других файлов максимум ${photo?12:7} МБ`);if(isImage){const img=await image(file),max=photo?800:1000,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));c.getContext('2d').drawImage(img,0,0,c.width,c.height);const u=c.toDataURL('image/jpeg',photo?.42:.52);return{name:file.name.replace(/\.[^.]+$/,'.jpg'),mime:'image/jpeg',data:u.split(',')[1]}}const u=await dataUrl(file);return{name:file.name,mime:file.type||'application/octet-stream',data:u.split(',')[1]}}
@@ -18,9 +18,10 @@ function acting(body){if(typeof isMasterPreview==='function'&&isMasterPreview()&
 // Use a fresh authorized read; cached rows cannot prove that a report was saved.
 async function reconcileReport(form,msg,id){
   const d=await api('bootstrap');
-  if(!d?.ok||!Array.isArray(d.orders))return false;
+  if(!d?.ok||!Array.isArray(d.orders))throw new Error('Не удалось обновить заявку');
+  form.dataset.reportReconciled='true';
   const o=d.orders.find(x=>String(x.id)===String(id));
-  if(!o)return false;
+  if(!o){form.dataset.reportLocked='true';setBusy(form,true);msg.textContent='Заявка больше не доступна вам. Обновите список заявок.';return true}
   const i=state.orders.findIndex(x=>String(x.id)===String(id));
   if(i>=0)state.orders[i]={...state.orders[i],...o};
   let text='';
@@ -43,7 +44,15 @@ async function submit(e,id){e.preventDefault();const form=e.currentTarget,msg=do
   let reconciled=false;
   if(conflict||finalizing){
     msg.textContent='Проверяем, сохранился ли отчёт…';
+    form.dataset.reportReconciled='false';
     try{reconciled=await reconcileReport(form,msg,id)}catch(_){}
+    if(form.dataset.reportReconciled!=='true'){
+      form.dataset.reportLocked='true';setBusy(form,true);
+      msg.textContent='Результат отправки неизвестен. Проверьте соединение и обновите состояние перед повтором.';
+      const refresh=document.createElement('button');refresh.type='button';refresh.className='secondary wide';refresh.textContent='Проверить состояние';
+      refresh.onclick=async()=>{refresh.disabled=true;try{const locked=await reconcileReport(form,msg,id);if(!locked){form.dataset.reportLocked='false';setBusy(form,false);msg.textContent='Отчёт не отправлен. Можно повторить отправку.'}refresh.remove()}catch(_){msg.textContent='Не удалось проверить состояние. Проверьте интернет.';refresh.disabled=false}};
+      msg.after(refresh);reconciled=true;
+    }
   }
   if(!reconciled)msg.textContent=conflict?'Состояние заявки изменилось. Закройте форму и откройте заявку заново.':(err?.message||String(err));
 }finally{

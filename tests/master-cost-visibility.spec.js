@@ -37,7 +37,7 @@ for(const src of [{source:'Hands',external_source:'hands'},{source:'Руки',ex
  await expect(page.locator('.bosHandsHead')).toContainText('442');
 });
 test('master report, retry, reopen and reload show one current breakdown without duplicate extras',async({page})=>{
- const {db,me}=await setup(page,{},'master',{amount:1000,original_amount:1000,extra_work_amount:0,uncompleted_work_amount:0,master_payout:600});
+ const {db,me}=await setup(page,{},'master',{master_workflow_stage:'started',amount:1000,original_amount:1000,extra_work_amount:0,uncompleted_work_amount:0,master_payout:600});
  const request=edge('order-lifecycle-api',db),body={action:'finalizeMasterReport',order_id:'11',upload_token:'visible-cost',act_url:attachmentUrl('11','visible-cost'),photo_urls:[attachmentUrl('11','visible-cost','photo.jpg')],uncompleted_work_amount:200,extra_work_amount:300};
  const sent=await request(body,me.external_id);expect(sent.status).toBe(200);expect(sent.body.order.amount).toBe(800);
  for(let i=0;i<2;i++){await page.evaluate(()=>window.BOS_REFRESH_NOW());await page.evaluate(()=>openOrder('11'));await expect(page.locator('[data-master-cost]')).toHaveCount(1);await rows(page,{total:1100,'master-total':780,company:320});await page.evaluate(()=>closeModal());}

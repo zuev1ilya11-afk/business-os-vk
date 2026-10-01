@@ -1,7 +1,7 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {edge,database,employee,attachmentUrl}=require('./helpers/edge.cjs');
-const order={id:'o',master_staff_id:'m',status:'В работе',amount:1000,original_amount:1000,updated_at:'2026-01-01',report_review_status:'pending',report_upload_token:'r1',report_uploaded_at:'2026-01-01',report_act_url:attachmentUrl('o','r1'),report_photo_urls:JSON.stringify([attachmentUrl('o','r1','photo.jpg')])};
+const order={id:'o',master_workflow_stage:'started',master_staff_id:'m',status:'В работе',amount:1000,original_amount:1000,updated_at:'2026-01-01',report_review_status:'pending',report_upload_token:'r1',report_uploaded_at:'2026-01-01',report_act_url:attachmentUrl('o','r1'),report_photo_urls:JSON.stringify([attachmentUrl('o','r1','photo.jpg')])};
 const fixture=(override={})=>database({business_staff:[employee('m'),employee('other'),employee('d','dispatcher')],orders:[{...order,...override}]});
 const invalid=['http://127.0.0.1/a','http://[::1]/a','file:///etc/passwd','javascript:alert(1)','https://evil.test/a',attachmentUrl('other','r1'),attachmentUrl('o','other'),attachmentUrl('o','r1').replace('business-os-vk-files','another-bucket'),attachmentUrl('o','r1').replace('test.invalid','test.invalid:8443'),attachmentUrl('o','r1').replace('https://','https://user@'),attachmentUrl('o','r1').replace('/act.pdf','/%2e%2e/act.pdf'),attachmentUrl('o','r1').split('?')[0]];
 for(const slug of ['order-lifecycle-api','report-api'])test(`${slug}: attachment URLs are bound to the own signed order/token path`,async()=>{
