@@ -4,7 +4,7 @@ const {edge,database,employee,attachmentUrl}=require('./helpers/edge.cjs');
 const routes=[['order-lifecycle-api','finalizeMasterReport'],['report-api','finalizeMasterReport'],['report-api','uploadMasterReport']];
 const request=(action,uploadToken='r1')=>({action,order_id:'o',upload_token:uploadToken,act_url:attachmentUrl('o',uploadToken),photo_urls:[attachmentUrl('o',uploadToken,'photo.jpg')],act_data:'YQ==',act_name:'act.pdf',photos_json:JSON.stringify([{name:'photo.jpg',data:'YQ=='}])});
 function fixture(overrides={}){
- const db=database({business_staff:[employee('m'),employee('owner','owner')],orders:[{id:'o',master_staff_id:'m',report_upload_token:'r1',status:'В работе',amount:1000,original_amount:1000,updated_at:'2026-01-01T00:00:00Z',...overrides}]});
+ const db=database({business_staff:[employee('m'),employee('owner','owner')],orders:[{id:'o',master_workflow_stage:'started',master_staff_id:'m',report_upload_token:'r1',status:'В работе',amount:1000,original_amount:1000,updated_at:'2026-01-01T00:00:00Z',...overrides}]});
  const uploads=[];
  db.storage={from:()=>({upload:async(path,data,options)=>{uploads.push({path,options});return {error:null}},createSignedUrl:async path=>({data:{signedUrl:'https://files.test/'+path}})})};
  return {db,uploads};

@@ -55,9 +55,11 @@ test('master cabinet shows day salary and selected completed orders in profile',
   await page.evaluate(()=>closeModal());
   await page.setViewportSize({width:320,height:640});
   const last=completed.locator('.salaryOrder').last();
-  await last.scrollIntoViewIfNeeded();
-  const reachable=await last.evaluate(el=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return el===hit||el.contains(hit)});
-  expect(reachable).toBe(true);
+  await expect(async()=>{
+    await last.scrollIntoViewIfNeeded();
+    const reachable=await last.evaluate(el=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return el===hit||el.contains(hit)});
+    expect(reachable).toBe(true);
+  }).toPass({timeout:5000});
   await last.click();
   await expect(page.locator('#modalRoot .modal')).toBeVisible();
   await expect(page.locator('#modalRoot')).toContainText('Заявка завершена');

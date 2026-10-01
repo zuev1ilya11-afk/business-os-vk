@@ -2,7 +2,7 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {edge,database,employee,attachmentUrl}=require('./helpers/edge.cjs');
 function fixture(extra={}){
- return database({business_staff:[employee('owner','owner'),employee('d','dispatcher'),employee('mgr','manager'),employee('m')],orders:[{id:'o',status:'В работе',master_staff_id:'m',original_amount:1000,amount:1000,master_payout:552.5,manager_payout:159.8,dispatcher_payout:119.85,report_upload_token:'r1',report_uploaded_at:'2026-01-01',report_act_url:'https://files.test/act',report_photo_urls:'["https://files.test/photo"]',report_review_status:'pending',...extra}]});
+ return database({business_staff:[employee('owner','owner'),employee('d','dispatcher'),employee('mgr','manager'),employee('m')],orders:[{id:'o',master_workflow_stage:'started',status:'В работе',master_staff_id:'m',original_amount:1000,amount:1000,master_payout:552.5,manager_payout:159.8,dispatcher_payout:119.85,report_upload_token:'r1',report_uploaded_at:'2026-01-01',report_act_url:'https://files.test/act',report_photo_urls:'["https://files.test/photo"]',report_review_status:'pending',...extra}]});
 }
 function linked(db,archiveResult){
  const calls=[];

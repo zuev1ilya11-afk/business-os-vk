@@ -4,7 +4,7 @@ const {fullStack}=require('./helpers/full-stack.cjs');
 const moscowDate=(offset=0)=>{const d=new Date(Date.now()+offset*24*60*60*1000);const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d).filter(({type})=>type!=='literal').map(({type,value})=>[type,value]));return `${parts.year}-${parts.month}-${parts.day}`};
 const order11=db=>db.tables.orders.find(o=>String(o.id)==='11');
 
-test('scheduled master order shows approved three-step actions and confirmed reschedule',async({page})=>{
+test('scheduled master order shows confirmed sequential progress and confirmed reschedule',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const {db}=await fullStack(page,'master');
   const order=order11(db);
@@ -20,21 +20,21 @@ test('scheduled master order shows approved three-step actions and confirmed res
 
   const panel=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(panel).toBeVisible();
-  await expect(panel.getByRole('button',{name:/Выехал/})).toBeEnabled();
-  await expect(panel.getByRole('button',{name:/Начал работу/})).toBeDisabled();
-  await expect(panel.getByRole('button',{name:/Отправить отчет/})).toBeDisabled();
+  await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toBeEnabled();
+  await expect(panel.getByRole('button',{name:/Подтвердить: начал работу/})).toHaveCount(0);
+  await expect(panel.getByRole('button',{name:/Отправить отчёт/})).toHaveCount(0);
   await expect(panel).toContainText('Требует подтверждения диспетчера или руководителя');
   await expect(panel.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
 
-  await panel.getByRole('button',{name:/Выехал/}).click();
+  await panel.getByRole('button',{name:/Подтвердить: выехал/}).click();
   await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('departed');
-  await expect(panel.getByRole('button',{name:/Начал работу/})).toBeEnabled();
+  await expect(panel.getByRole('button',{name:/Подтвердить: начал работу/})).toBeEnabled();
 
-  await panel.getByRole('button',{name:/Начал работу/}).click();
+  await panel.getByRole('button',{name:/Подтвердить: начал работу/}).click();
   await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('started');
-  await expect(panel.getByRole('button',{name:/Отправить отчет/})).toBeEnabled();
+  await expect(panel.getByRole('button',{name:/Отправить отчёт/})).toBeEnabled();
 
-  await panel.getByRole('button',{name:/Отправить отчет/}).click();
+  await panel.getByRole('button',{name:/Отправить отчёт/}).click();
   await expect(page.locator('#masterReportForm')).toBeVisible();
 });
 
@@ -55,7 +55,7 @@ test('order without date uses agreement form then switches to scheduled workflow
 
   const panel=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(panel.getByRole('button',{name:/Договориться/})).toBeVisible();
-  await expect(panel.getByRole('button',{name:/Выехал/})).toHaveCount(0);
+  await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toHaveCount(0);
 
   await panel.getByRole('button',{name:/Договориться/}).click();
   const form=page.locator('#masterOrderAgree179Form');
@@ -67,8 +67,8 @@ test('order without date uses agreement form then switches to scheduled workflow
   await expect.poll(()=>order11(db)?.scheduled_time).toBe('18:30');
   await expect.poll(()=>order11(db)?.master_called_at).toBeTruthy();
   await expect.poll(()=>order11(db)?.master_agreed_at).toBeTruthy();
-  await expect(panel.getByRole('button',{name:/Выехал/})).toBeEnabled();
-  await expect(panel.getByRole('button',{name:/Начал работу/})).toBeDisabled();
+  await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toBeEnabled();
+  await expect(panel.getByRole('button',{name:/Подтвердить: начал работу/})).toHaveCount(0);
 });
 
 test('reschedule action keeps existing approval request form',async({page})=>{

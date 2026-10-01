@@ -21,22 +21,22 @@ test('master follows departed started report sequence for scheduled order',async
   await page.evaluate(()=>window.openOrder('11'));
   const panel=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(panel).toBeVisible();
-  const departed=panel.getByRole('button',{name:/Выехал/});
-  const started=panel.getByRole('button',{name:/Начал работу/});
-  const report=panel.getByRole('button',{name:/Отправить отчет/});
+  const departed=panel.getByRole('button',{name:/Подтвердить: выехал/});
+  const started=panel.getByRole('button',{name:/Подтвердить: начал работу/});
+  const report=panel.getByRole('button',{name:/Отправить отчёт/});
   await expect(departed).toBeEnabled();
-  await expect(started).toBeDisabled();
-  await expect(report).toBeDisabled();
+  await expect(started).toHaveCount(0);
+  await expect(report).toHaveCount(0);
 
   await departed.click();
   await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('departed');
-  await expect(departed).toBeDisabled();
+  await expect(departed).toHaveCount(0);
   await expect(started).toBeEnabled();
-  await expect(report).toBeDisabled();
+  await expect(report).toHaveCount(0);
 
   await started.click();
   await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('started');
-  await expect(started).toBeDisabled();
+  await expect(started).toHaveCount(0);
   await expect(report).toBeEnabled();
 
   await report.click();
@@ -88,7 +88,7 @@ test('legacy departed stage maps to completed departed action',async({page})=>{
   await page.evaluate(()=>window.openOrder('11'));
   const panel=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(panel).toBeVisible();
-  await expect(panel.getByRole('button',{name:/Выехал/})).toBeDisabled();
-  await expect(panel.getByRole('button',{name:/Начал работу/})).toBeEnabled();
-  await expect(panel.getByRole('button',{name:/Отправить отчет/})).toBeDisabled();
+  await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toHaveCount(0);
+  await expect(panel.getByRole('button',{name:/Подтвердить: начал работу/})).toBeEnabled();
+  await expect(panel.getByRole('button',{name:/Отправить отчёт/})).toHaveCount(0);
 });

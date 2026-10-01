@@ -88,6 +88,8 @@
   }
 
   async function replayAllowed(info,input,init){
+    // The caller will reconcile the order before allowing another business write.
+    if(init?.bosReconcileBeforeRetry===true)return false;
     const method=String(init?.method||(input instanceof Request?input.method:'GET')||'GET').toUpperCase();
     if(method==='GET'||method==='HEAD')return true;
     if(info.slug==='password-session-api'||info.slug==='vk-session-api')return true;

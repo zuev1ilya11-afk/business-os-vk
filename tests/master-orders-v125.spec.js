@@ -52,5 +52,5 @@ test('master orders v125 stays readable on mobile and shows concise real work',a
   await expect(received).toContainText('Дата поступления заявки');
   await expect(received).toContainText('20.09.2026');
   await expect(workflow.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
-  await expect(workflow.getByRole('button',{name:/Отправить отчет/})).toBeEnabled();
+  await expect(workflow.getByRole('button',{name:/Отправить отчёт/})).toBeEnabled();
 });

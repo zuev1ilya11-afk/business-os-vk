@@ -18,7 +18,7 @@ test('master agrees unscheduled order and then enters scheduled workflow',async(
   const panel=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(panel).toBeVisible();
   await expect(panel.getByRole('button',{name:/Договориться/})).toBeEnabled();
-  await expect(panel.getByRole('button',{name:/Выехал/})).toHaveCount(0);
+  await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toHaveCount(0);
 
   await panel.getByRole('button',{name:/Договориться/}).click();
   await expect(page.getByRole('heading',{name:'Согласовать дату и время'})).toBeVisible();
@@ -31,8 +31,8 @@ test('master agrees unscheduled order and then enters scheduled workflow',async(
   expect(db.tables.orders.find(o=>String(o.id)==='11')?.time_slot).toBe('14:30–15:30');
   expect(db.tables.orders.find(o=>String(o.id)==='11')?.master_called_at).toBeTruthy();
   expect(db.tables.orders.find(o=>String(o.id)==='11')?.master_agreed_at).toBeTruthy();
-  await expect(panel.getByRole('button',{name:/Выехал/})).toBeEnabled();
-  await expect(panel.getByRole('button',{name:/Начал работу/})).toBeDisabled();
+  await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toBeEnabled();
+  await expect(panel.getByRole('button',{name:/Подтвердить: начал работу/})).toHaveCount(0);
 });
 
 test('scheduled order uses confirmed reschedule instead of direct date editing',async({page})=>{
@@ -51,7 +51,7 @@ test('scheduled order uses confirmed reschedule instead of direct date editing',
   const panel=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(panel).toBeVisible();
   await expect(panel.getByRole('button',{name:/Договориться/})).toHaveCount(0);
-  await expect(panel.getByRole('button',{name:/Выехал/})).toBeEnabled();
+  await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toBeEnabled();
   await expect(panel).toContainText('Требует подтверждения диспетчера или руководителя');
   await panel.getByRole('button',{name:'Запросить перенос',exact:true}).click();
   await expect(page.locator('#masterRescheduleForm')).toBeVisible();

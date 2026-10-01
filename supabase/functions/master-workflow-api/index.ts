@@ -21,13 +21,22 @@ const timeSlot=(v:string)=>{const [h,m]=v.split(':').map(Number);return `${v}–
 const hasSchedule=(o:any)=>!!String(o?.scheduled_date||'').slice(0,10)&&!!String(o?.scheduled_time||o?.time_slot||'').slice(0,5);
 const normalizedStage=(o:any)=>{const s=String(o?.master_workflow_stage||'assigned');return s==='arrived'?'departed':activeStages.includes(s)?s:'assigned'};
 
+// Every mutation compares the authorized snapshot at the instant of the UPDATE.
+function workflowWrite(db:any,order:any,patch:any){
+  let q=db.from('orders').update(patch).eq('id',order.id);
+  for(const k of ['updated_at','status','master_staff_id','master_workflow_stage','master_departed_at','master_arrived_at','master_started_at','master_called_at','master_agreed_at','report_uploaded_at','report_review_status','scheduled_date','scheduled_time','time_slot'])q=order[k]==null?q.is(k,null):q.eq(k,order[k]);
+  return q.select('*').maybeSingle();
+}
+const stageRank=(o:any)=>o.report_uploaded_at||['pending','rejected','approved'].includes(o.report_review_status)?3:o.master_started_at||normalizedStage(o)==='started'?2:o.master_departed_at||o.master_arrived_at||normalizedStage(o)==='departed'?1:0;
+const stageConfirmed=(o:any,stage:string)=>stage==='departed'?stageRank(o)>=1:stage==='started'?stageRank(o)>=2:!!o.master_arrived_at||o.master_workflow_stage==='arrived';
+
 Deno.serve(async r=>{
   if(r.method==='OPTIONS')return new Response('ok',{headers:cors});
   try{
     const db=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
     const b=await r.json().catch(()=>({}));
     const action=String(b.action||'health');
-    if(action==='health')return j({ok:true,version:'2026-09-27-master-workflow-v4'});
+    if(action==='health')return j({ok:true,version:'2026-10-01-confirmed-progress'});
     const me=await actor(db,r);
     if(!me)return j({ok:false,error:'Доступ не подтверждён'},401);
     if(String(me.role||'')!=='master')return j({ok:false,error:'Действие доступно только мастеру'},403);
@@ -39,12 +48,19 @@ Deno.serve(async r=>{
     if(String(cur.master_staff_id||'')!==String(me.id||''))return j({ok:false,error:'Можно менять только свою заявку'},403);
     if(['Выполнена','Отменена'].includes(String(cur.status||'')))return j({ok:false,error:'Завершённую или отменённую заявку менять нельзя'},409);
 
+    async function save(patch:any,confirmed:(o:any)=>boolean){
+      const u=await workflowWrite(db,cur,patch);if(u.error)throw u.error;
+      if(u.data)return j({ok:true,order:safeOrder(u.data)});
+      const fresh=await db.from('orders').select('*').eq('id',cur.id).maybeSingle();if(fresh.error)throw fresh.error;
+      if(!fresh.data||String(fresh.data.master_staff_id||'')!==String(me.id))return j({ok:false,error:'Заявка больше не назначена вам. Обновите список.'},403);
+      if(!['Выполнена','Отменена'].includes(fresh.data.status)&&confirmed(fresh.data))return j({ok:true,order:safeOrder(fresh.data),idempotent:true});
+      return j({ok:false,error:'Заявка уже изменена. Проверьте актуальный этап.',order:safeOrder(fresh.data)},409);
+    }
+
     if(action==='markCalled'){
       if(cur.master_called_at)return j({ok:true,order:safeOrder(cur),idempotent:true});
       const now=new Date().toISOString();
-      const u=await db.from('orders').update({master_called_at:now,updated_at:now,sync_status:'pending_sheet'}).eq('id',cur.id).select('*').single();
-      if(u.error)throw u.error;
-      return j({ok:true,order:safeOrder(u.data)});
+      return await save({master_called_at:now,updated_at:now,sync_status:'pending_sheet'},o=>!!o.master_called_at);
     }
 
     if(action==='confirmAgreement'){
@@ -52,14 +68,12 @@ Deno.serve(async r=>{
       if(!hasSchedule(cur))return j({ok:false,error:'В заявке не указаны дата и время'},409);
       if(cur.master_agreed_at)return j({ok:true,order:safeOrder(cur),idempotent:true});
       const now=new Date().toISOString();
-      const u=await db.from('orders').update({master_agreed_at:now,updated_at:now,sync_status:'pending_sheet'}).eq('id',cur.id).select('*').single();
-      if(u.error)throw u.error;
-      return j({ok:true,order:safeOrder(u.data)});
+      return await save({master_agreed_at:now,updated_at:now,sync_status:'pending_sheet'},o=>!!o.master_agreed_at);
     }
 
     if(action==='setAgreementSchedule'){
       if(!cur.master_called_at)return j({ok:false,error:'Сначала отметьте звонок клиенту'},409);
-      if(normalizedStage(cur)==='started'||cur.report_uploaded_at||cur.report_act_url)return j({ok:false,error:'После начала работы дату и время договорённости менять нельзя'},409);
+      if(stageRank(cur)>=2||cur.report_act_url)return j({ok:false,error:'После начала работы дату и время договорённости менять нельзя'},409);
       const date=String(b.scheduled_date||'').slice(0,10),time=String(b.scheduled_time||'').slice(0,5);
       if(!validDate(date)||!validTime(time))return j({ok:false,error:'Укажите корректные дату и время'},400);
       const today=new Date().toISOString().slice(0,10);
@@ -68,25 +82,19 @@ Deno.serve(async r=>{
       if(cur.master_agreed_at&&currentDate===date&&currentTime===time)return j({ok:true,order:safeOrder(cur),idempotent:true});
       const now=new Date().toISOString();
       const patch:any={scheduled_date:date,scheduled_time:time,time_slot:timeSlot(time),master_agreed_at:now,updated_at:now,sync_status:'pending_sheet'};
-      const u=await db.from('orders').update(patch).eq('id',cur.id).select('*').single();
-      if(u.error)throw u.error;
-      return j({ok:true,order:safeOrder(u.data)});
+      return await save(patch,o=>!!o.master_agreed_at&&String(o.scheduled_date||'').slice(0,10)===date&&String(o.scheduled_time||o.time_slot||'').slice(0,5)===time);
     }
 
     if(action!=='setStage')return j({ok:false,error:'UNKNOWN_ACTION'},404);
     const stage=String(b.stage||'');
     if(!['departed','arrived','started'].includes(stage))return j({ok:false,error:'Неверный этап работы'},400);
-    const raw=String(cur.master_workflow_stage||'assigned');
-    const current=normalizedStage(cur);
-    if(stage===raw)return j({ok:true,order:safeOrder(cur),idempotent:true});
-    if(stage==='started'&&current==='assigned'&&!cur.master_agreed_at)return j({ok:false,error:'Сначала сохраните договорённость с клиентом'},409);
-    const allowed=(stage==='departed'&&current==='assigned')||(stage==='arrived'&&current==='departed')||(stage==='started'&&current==='departed')||(stage==='started'&&current==='assigned'&&!!cur.master_agreed_at);
-    if(!allowed)return j({ok:false,error:'Этапы нужно отмечать по порядку'},409);
+    if(stageConfirmed(cur,stage))return j({ok:true,order:safeOrder(cur),idempotent:true});
+    const rank=stageRank(cur);
+    const allowed=(stage==='departed'&&rank===0)||((stage==='started'||stage==='arrived')&&rank===1);
+    if(!allowed)return j({ok:false,error:'Сначала подтвердите выезд. Этапы нужно отмечать по порядку'},409);
     const now=new Date().toISOString(),patch:any={master_workflow_stage:stage,updated_at:now,sync_status:'pending_sheet'};
-    patch[stamp[stage]]=now;
-    const u=await db.from('orders').update(patch).eq('id',cur.id).select('*').single();
-    if(u.error)throw u.error;
-    return j({ok:true,order:safeOrder(u.data)});
+    patch[stamp[stage]]=cur[stamp[stage]]||now;
+    return await save(patch,o=>stageConfirmed(o,stage));
   }catch(e){
     return j({ok:false,error:e instanceof Error?e.message:String(e)},500);
   }

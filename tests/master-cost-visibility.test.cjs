@@ -30,6 +30,7 @@ for(const src of [hands[2],direct[0]])test('workflow actions retain cost visibil
 });
 for(const slug of ['order-lifecycle-api','report-api'])for(const src of [hands[2],direct[0]])test(slug+' report response and retry preserve source-specific visibility: '+JSON.stringify(src),async()=>{
  const db=seed(src),api=edge(slug,db),reveal=payroll.isDirect(src);
+ db.tables.orders[0].master_workflow_stage='started';
  const b={action:'finalizeMasterReport',order_id:'1',upload_token:'cost-view',act_url:attachmentUrl('1','cost-view'),photo_urls:[attachmentUrl('1','cost-view','photo.jpg')],uncompleted_work_amount:200,extra_work_amount:300,source:'Авито',external_source:'avito'};
  const r=await api(b,'staff_m');assert.equal(r.status,200);visibility(r.body.order,reveal);assert.equal(r.body.order.master_payout,reveal?480:442);
  const before=JSON.stringify(db.tables.orders);visibility((await api(b,'staff_m')).body.order,reveal);assert.equal(JSON.stringify(db.tables.orders),before);

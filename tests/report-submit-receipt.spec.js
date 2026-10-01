@@ -41,7 +41,7 @@ test('lost finalization responses recover the saved receipt with only one write'
  });
  await page.getByRole('button',{name:'Отправить отчёт и завершить',exact:true}).click();
  await expect(page.locator('#mrMsg')).toContainText('Отчёт уже загружен и ожидает проверки',{timeout:25000});
- expect(calls).toBeGreaterThan(0);expect(f.order.report_review_status).toBe('pending');
+ expect(calls).toBe(1);expect(f.order.report_review_status).toBe('pending');
  expect(f.db.calls.filter(c=>c.table==='orders'&&c.mode==='update')).toHaveLength(1);
  expect(f.uploads).toHaveLength(2);
 });
@@ -56,9 +56,10 @@ test('a failed fresh read cannot turn cached report data into a success receipt'
   await route.fulfill({status:403,contentType:'application/json',body:'{"ok":false,"error":"READ_DENIED"}'});
  });
  await page.getByRole('button',{name:'Отправить отчёт и завершить',exact:true}).click();
- await expect(page.locator('#mrMsg')).toContainText('Состояние заявки изменилось');
+ await expect(page.locator('#mrMsg')).toContainText('Результат отправки неизвестен');
  await expect(page.locator('#mrMsg')).not.toContainText('уже загружен');
- await expect(page.getByRole('button',{name:'Отправить отчёт и завершить',exact:true})).toBeEnabled();
+ await expect(page.getByRole('button',{name:'Отправить отчёт и завершить',exact:true})).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Проверить состояние',exact:true})).toBeEnabled();
  expect(await page.locator('#mrAct').evaluate(el=>el.files.length)).toBe(1);
  expect(f.uploads).toEqual([]);expect(f.order.report_uploaded_at).toBeUndefined();
 });

@@ -1,4 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import "../../../order-payroll.js";
+const orderPayroll=(globalThis as any).BOS_ORDER_PAYROLL;
 
 const cors={
   'Access-Control-Allow-Origin':'*',
@@ -56,6 +58,31 @@ Deno.serve(async(req)=>{
     if(all.error)throw all.error;
     const dup=(all.data||[]).find((x:any)=>String(x.id)!==String(target.id)&&normPhone(x.phone)===normPhone(phone));
     if(dup)return json({ok:false,error:'Этот номер уже используется другим сотрудником'},409);
+    // Old installed clients encode stage changes in the district field. Handle only
+    // that marker here so the old SQL read/update bridge cannot overwrite a newer row.
+    if(district.startsWith('@@BOS_WF1@@|')){
+      const m=district.match(/^@@BOS_WF1@@\|(\d+)\|(departed|started)$/);
+      if(!m)return json({ok:false,error:'Неверный этап работы'},400);
+      const [,id,stage]=m;
+      const q=await db.from('orders').select('*').eq('id',id).maybeSingle();if(q.error)throw q.error;
+      const cur=q.data;
+      if(!cur||String(cur.master_staff_id||'')!==String(target.id))return json({ok:false,error:'Можно менять только свою заявку'},403);
+      const closed=(o:any)=>['Выполнена','Отменена'].includes(o.status);
+      const rank=(o:any)=>o.master_started_at||o.master_workflow_stage==='started'||o.report_uploaded_at||['pending','rejected','approved'].includes(o.report_review_status)?2:o.master_departed_at||o.master_arrived_at||['departed','arrived'].includes(o.master_workflow_stage)?1:0;
+      const next=stage==='started'?2:1;
+      if(closed(cur))return json({ok:false,error:'Заявка закрыта'},409);
+      const receipt=(o:any)=>json({ok:true,user:out(target),order:orderPayroll.masterView(o),idempotent:true});
+      if(rank(cur)>=next)return receipt(cur);
+      if(rank(cur)!==next-1)return json({ok:false,error:'Этапы нужно отмечать по порядку'},409);
+      const now=new Date().toISOString(),time=stage==='started'?'master_started_at':'master_departed_at';
+      let write=db.from('orders').update({master_workflow_stage:stage,[time]:cur[time]||now,updated_at:now,sync_status:'pending_sheet'}).eq('id',cur.id);
+      for(const k of ['updated_at','status','master_staff_id','master_workflow_stage','master_departed_at','master_arrived_at','master_started_at','report_uploaded_at','report_review_status'])write=cur[k]==null?write.is(k,null):write.eq(k,cur[k]);
+      const saved=await write.select('*').maybeSingle();if(saved.error)throw saved.error;
+      if(saved.data)return json({ok:true,user:out(target),order:orderPayroll.masterView(saved.data)});
+      const fresh=await db.from('orders').select('*').eq('id',id).maybeSingle();if(fresh.error)throw fresh.error;
+      if(fresh.data&&String(fresh.data.master_staff_id||'')===String(target.id)&&!closed(fresh.data)&&rank(fresh.data)>=next)return receipt(fresh.data);
+      return json({ok:false,error:'Заявка уже изменена. Обновите заявку.'},409);
+    }
     const r=await db.from('business_staff').update({phone,district,updated_at:new Date().toISOString()}).eq('id',target.id).select().single();
     if(r.error)throw r.error;
     return json({ok:true,user:out(r.data)});
