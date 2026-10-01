@@ -28,7 +28,7 @@ function database(seed = {}) {
       if(mode==='insert'){
         if(table==='orders'&&tables.orders.some(x=>x.external_id===payload.external_id&&x.external_source===payload.external_source))return {data:null,error:{code:'23505',message:'duplicate key'}};
         rows=(Array.isArray(payload)?payload:[payload]).map(x=>({id:String((tables[table]||[]).length+1),...x}));tables[table].push(...rows);
-      } else if(mode==='update')rows.forEach(x=>Object.assign(x,db.beforeUpdate?db.beforeUpdate(table,x,{...payload}):payload));
+      } else if(mode==='update')rows.forEach(x=>Object.assign(x,structuredClone(db.beforeUpdate?db.beforeUpdate(table,x,{...payload}):payload)));
       else if(mode==='delete')tables[table]=tables[table].filter(x=>!rows.includes(x));
       else if(mode==='upsert'){rows=payload;for(const p of payload){const x=tables[table].find(x=>x.staff_id===p.staff_id&&x.work_date===p.work_date);if(x)Object.assign(x,p);else tables[table].push({...p})}}
       rows=rows.slice(from,to+1).map(x=>columns==='*'?{...x}:Object.fromEntries(columns.split(',').map(k=>[k,x[k]])));
@@ -41,7 +41,8 @@ function edge(slug,db,extra={}){
   const filename=path.join(__dirname,'../../supabase/functions',slug,'index.ts');
   const raw=fs.readFileSync(filename,'utf8');
   const shared=raw.includes('import "../../../order-payroll.js";')?fs.readFileSync(path.join(__dirname,'../../order-payroll.js'),'utf8')+'\n':'';
-  const source=shared+stripTypeScriptTypes(raw.replace(/^import .*?;\s*/gm,''),{mode:'transform'});
+  const deduction=raw.includes('import "../../../report-deduction.js";')?['service-catalog.js','report-deduction.js'].map(n=>fs.readFileSync(path.join(__dirname,'../../',n),'utf8')).join('\n'):'';
+  const source=shared+deduction+stripTypeScriptTypes(raw.replace(/^import .*?;\s*/gm,''),{mode:'transform'});
   const context={createClient:()=>db,Deno:{env:{get:k=>({VK_APP_SECRET:secret,BOS_SYNC_KEY:secret,SUPABASE_URL:'https://test.invalid',SUPABASE_SERVICE_ROLE_KEY:'test-key',...(extra.env||{})}[k])},serve:fn=>handler=fn},crypto:webcrypto,Request,Response,Headers,File,FormData,AbortController,setTimeout,clearTimeout,URL,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,btoa,atob,console,fetch:()=>{throw new Error('Unexpected external fetch')},...extra};
   vm.runInNewContext(source,context,{filename});
   return async(body,uid='100',session=token(uid),headers={})=>{const r=await handler(new Request('https://test.invalid',{method:'POST',headers:{...(body instanceof FormData?{}:{'Content-Type':'application/json'}),'X-BOS-Session':session,...headers},body:body instanceof FormData?body:JSON.stringify(body)}));return {status:r.status,body:await r.json()}};

@@ -15,11 +15,12 @@ window.openMasterReportForm=function(id){
     <label>Фото выполненной работы *</label><input id="mrPhotos" type="file" accept="image/*" multiple required><p class="muted reportHint">Выберите до 5 фото из файлов или галереи.</p>
     <div class="reportQuestion"><b>Были ли допработы?</b><div class="reportChoices">${reportRadio('mrExtra','false','Нет',true)}${reportRadio('mrExtra','true','Да',false)}</div></div>
     <div id="mrExtraBox" class="reportConditional" style="display:none"><input id="mrExtraDesc" placeholder="Какие допработы"><input id="mrExtraAmount" type="number" min="0" step="0.01" placeholder="Сумма допработ"></div>
-    <div class="reportQuestion"><b>Все ли на заявке выполнено?</b><div class="reportChoices">${reportRadio('mrAllDone','true','Да',true)}${reportRadio('mrAllDone','false','Нет',false)}</div></div>
+    <div class="reportQuestion reportOutcome"><b>Все ли на заявке выполнено?</b><div class="reportChoices">${reportRadio('mrAllDone','true','Всё выполнено',true)}${reportRadio('mrAllDone','false','Сделано не всё',false)}</div></div>
     <div id="mrUnfinishedBox" class="reportConditional" style="display:none"><input id="mrUnfinishedDesc" placeholder="Что не выполнено"><input id="mrUnfinishedAmount" type="number" min="0" step="0.01" placeholder="Стоимость невыполненного"></div>
     <button class="primary wide" type="submit">Отправить отчёт и завершить</button><p id="mrMsg" class="muted"></p>
   </form>`);
   document.querySelectorAll('input[name="mrExtra"],input[name="mrAllDone"]').forEach(el=>el.addEventListener('change',reportToggleState));
+  window.BOS_INIT_REPORT_DEDUCTION($('#masterReportForm'),o);
   reportToggleState();
   $('#masterReportForm').onsubmit=e=>submitMasterReportV12(e,id);
 };
