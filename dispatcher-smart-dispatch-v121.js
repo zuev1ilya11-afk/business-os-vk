@@ -177,6 +177,8 @@ style.textContent=`
 #content .dsd121CandidateTitle span{flex:0 0 auto;white-space:nowrap;font-size:13px;font-weight:800}
 #content .dsd121Candidate small{display:block;margin-top:4px;white-space:normal;overflow-wrap:anywhere;line-height:1.4;color:var(--muted,#8e9baa);font-size:12px}
 #content .dsd121Assign{box-sizing:border-box;min-height:44px;min-width:100px;max-width:100%;margin-left:auto;padding:9px 12px;font-size:13px;line-height:1.3;flex:0 0 auto;white-space:nowrap;word-break:normal;overflow-wrap:normal}
+/* Keep the desktop all-orders table from inheriting the older two-card dispatcher grid. */
+@media(min-width:1280px){#content.dmDispatcherOrdersPolished #bosOrderList{grid-template-columns:minmax(0,1fr)}#content.dmDispatcherOrdersPolished .opsCompactTop{display:flex;align-items:flex-start}#content.dmDispatcherOrdersPolished .opsCompactTop>span:last-child{white-space:normal;text-align:left}}
 @media(max-width:520px){#content .dsd121{padding:9px;margin-top:8px}#content .dsd121Head{align-items:flex-start;flex-direction:column;gap:2px}#content .dsd121Head>small{flex:auto;text-align:left}#content .dsd121Candidate{padding:9px}#content .dsd121Assign{width:100%}}
 `;
 document.head.appendChild(style);

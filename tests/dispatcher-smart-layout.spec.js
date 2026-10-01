@@ -6,7 +6,7 @@ const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMon
 async function setup(page,role,width){
   const data=await fullStack(page,role);
   const {db,master}=data;
-  master.full_name='Александр Константинопольский';
+  db.tables.business_staff.find(s=>s.id===master.id).full_name='Александр Константинопольский';
   db.tables.business_staff.push(
     {id:'m2',external_id:'staff_m2',full_name:'Владимир Александрович',role:'master',is_active:true,city:'Санкт-Петербург'},
     {id:'m3',external_id:'staff_m3',full_name:'Дмитрий Владимирович',role:'master',is_active:true,city:'Санкт-Петербург'}
@@ -65,8 +65,10 @@ test('full-width smart assignment uses the existing single order update',async({
   const updates=[];
   page.on('request',request=>{if(request.method()==='POST'){try{const b=request.postDataJSON();if(b?.action==='updateOrder')updates.push(b)}catch{}}});
   const best=smart.locator('.dsd121Candidate').first(),time=await best.getAttribute('data-time');
+  const bestKey=await best.getAttribute('data-master'),chosen=db.tables.business_staff.find(s=>s.external_id===bestKey);
+  expect(chosen).toBeTruthy();
   await best.getByRole('button').click();
-  await expect.poll(()=>db.tables.orders[1].master_staff_id).toBe(master.id);
+  await expect.poll(()=>db.tables.orders[1].master_staff_id).toBe(chosen.id);
   expect(db.tables.orders[1].scheduled_time).toBe(time);
   expect(db.tables.orders[1].amount).toBe(2800);
   expect(db.tables.orders[1].master_payout).toBe(1547);
