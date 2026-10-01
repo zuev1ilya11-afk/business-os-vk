@@ -1,0 +1,80 @@
+name: Avito mobile layout QA
+on:
+  push:
+    branches: [feat/avito-mobile-layout]
+    paths: ['scripts/avito-mobile-edits.json', 'tests/avito-mobile-layout.spec.js', 'avito-messages-v25.js', '.github/workflows/avito-mobile-qa.yml']
+permissions:
+  contents: write
+concurrency:
+  group: avito-mobile-layout-qa
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/feat/avito-mobile-layout'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Apply exact checked layout edits and canonical build
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          node - <<'JS'
+          const fs=require('node:fs'),crypto=require('node:crypto');
+          const hash=s=>crypto.createHash('sha256').update(s).digest('hex');
+          const p=JSON.parse(fs.readFileSync('scripts/avito-mobile-edits.json','utf8'));
+          const text=fs.readFileSync(p.file,'utf8');
+          if(hash(text)!==p.after){
+            if(hash(text)!==p.before)throw Error('Baseline changed; do not overwrite');
+            let lines=text.match(/[^\n]*\n|[^\n]+$/g)||[];
+            for(const [start,end,replacement] of [...p.edits].reverse())lines.splice(start,end-start,replacement);
+            const out=lines.join('');if(hash(out)!==p.after)throw Error('Prepared source mismatch');
+            fs.writeFileSync(p.file,out);
+          }
+          JS
+          node --check avito-messages-v25.js
+          npm run build
+          npm run build:check
+          git diff --check
+          test "$(git ls-remote origin refs/heads/feat/avito-mobile-layout | cut -f1)" = "$EXPECTED_SHA"
+          git add avito-messages-v25.js build-version.js index.html sw.js startup-shell.bundle.js startup-eager.bundle.js
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'feat: implement approved compact mobile Avito inbox'
+            git push origin HEAD:refs/heads/feat/avito-mobile-layout
+          fi
+          git rev-parse HEAD > tested-sha.txt
+      - run: npm ci
+      - run: npm run test:server
+      - run: npx playwright install chromium
+      - name: Chromium Avito layout and all existing Avito UI flows
+        env:
+          BOS_AVITO_CAPTURE: '1'
+        run: npx playwright test tests/avito*.spec.js --workers=2 --retries=0
+      - name: Install WebKit test runtime
+        run: npx playwright install --with-deps webkit
+      - name: WebKit responsive Avito and adjacent workspace flows
+        env:
+          BOS_AVITO_CAPTURE: '1'
+        run: |
+          node - <<'JS'
+          const fs=require('node:fs');fs.writeFileSync('avito-webkit.config.cjs',"const base=require('./playwright.config.js');module.exports={...base,retries:0,use:{...base.use,browserName:'webkit'},outputDir:'test-results-webkit'};");
+          JS
+          npx playwright test -c avito-webkit.config.cjs tests/avito-mobile-layout.spec.js tests/avito-workspace.spec.js tests/avito-images.spec.js --workers=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: avito-mobile-layout-qa
+          path: |
+            tested-sha.txt
+            test-results/
+            test-results-webkit/
+          retention-days: 3
