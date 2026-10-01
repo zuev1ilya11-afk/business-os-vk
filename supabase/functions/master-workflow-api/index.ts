@@ -1,4 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import "../../../order-payroll.js";
+const orderPayroll=(globalThis as any).BOS_ORDER_PAYROLL;
 
 const cors={
   'Access-Control-Allow-Origin':'*',
@@ -10,7 +12,7 @@ function b64u(a:Uint8Array){let s='';for(const b of a)s+=String.fromCharCode(b);
 async function hmac(m:string,s:string){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(s),{name:'HMAC',hash:'SHA-256'},false,['sign']);return b64u(new Uint8Array(await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(m))))}
 async function sess(t:string,s:string){const p=String(t||'').split('.');if(!s||p.length!==3||!/^[A-Za-z0-9_-]{1,128}$/.test(p[0])||!/^\d{1,12}$/.test(p[1])||Number(p[1])<=Date.now()/1000)return null;return await hmac(`${p[0]}.${p[1]}`,s)===p[2]?p[0]:null}
 async function actor(db:any,r:Request){const uid=await sess(r.headers.get('x-bos-session')||'',Deno.env.get('VK_APP_SECRET')||'');if(!uid)return null;return (await db.from('business_staff').select('*').eq('external_id',uid).eq('is_active',true).maybeSingle()).data||null}
-const safeOrder=(o:any)=>{const x={...(o||{})};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
+const safeOrder=(o:any)=>orderPayroll.masterView(o);
 const activeStages=['assigned','departed','started'];
 const stamp:any={departed:'master_departed_at',arrived:'master_arrived_at',started:'master_started_at'};
 const validDate=(v:string)=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(v))return false;const d=new Date(`${v}T00:00:00Z`);return !Number.isNaN(d.getTime())&&d.toISOString().slice(0,10)===v};

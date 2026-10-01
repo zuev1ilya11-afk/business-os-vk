@@ -19,7 +19,7 @@ function validAttachmentUrl(raw:any,orderId:any,token:any){
 const round=(n:any)=>Math.round(Number(n||0)*100)/100;
 // Same approved contract as order-lifecycle-api; extra_work_amount is added once by salary readers.
 const payouts=(a:any,order:any)=>orderPayroll.calculate(a,order);
-const masterOrder=(o:any)=>{const x={...o};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
+const masterOrder=(o:any)=>orderPayroll.masterView(o);
 
 // Compare the row read by this request at write time; stale retries must never reopen a report.
 function reportWrite(db:any, order:any, patch:any){

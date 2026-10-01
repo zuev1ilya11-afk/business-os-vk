@@ -105,11 +105,18 @@ test('tracked APIs use source payroll while Hands fallbacks retain the approved 
   expect(sheets).toContain('return round2_(n*0.85*0.65)');
 });
 
-test('master API and master order UI do not expose order totals',async()=>{
+test('master API conditionally exposes direct cost and keeps Hands totals private',async()=>{
   const mini=fs.readFileSync(path.join(__dirname,'..','supabase','functions','mini-app-api','index.ts'),'utf8');
   const compact=fs.readFileSync(path.join(__dirname,'..','master-order-compact-v71.js'),'utf8');
   const handsLayout=fs.readFileSync(path.join(__dirname,'..','master-order-hands-layout-v72.js'),'utf8');
-  expect(mini).toContain("for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k]");
+  expect(mini).toContain('orderPayroll.masterView(');
+  const payroll=require('../order-payroll.js');
+  const original={amount:1000,original_amount:1000,manager_payout:159.8,dispatcher_payout:119.85};
+  for(const source of ['Hands','Руки']){
+    const view=payroll.masterView({...original,source});
+    for(const key of Object.keys(original))expect(view[key]).toBeUndefined();
+  }
+  expect(payroll.masterView({...original,source:'Авито'})).toEqual({source:'Авито',amount:1000,original_amount:1000});
   expect(compact).toContain('Выплата: ${money(pay(o))}');
   expect(handsLayout).toContain('Выплата: ${money(pay(o))}');
   expect(compact).not.toContain('money(o.amount||0)');

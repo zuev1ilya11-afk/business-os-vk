@@ -17,7 +17,7 @@ test('real handlers create, assign, work, reject, repeat, approve and preserve f
  expect((await request('mini-app-api',{action:'updateOrder',id,master_vk_id:master.external_id,scheduled_date:'2026-10-02',scheduled_time:'10:00'})).status).toBe(200);
  for(const stage of ['departed','started'])expect((await request('master-workflow-api',{action:'setStage',id,stage},master.external_id)).status).toBe(200);
  const submission=upload_token=>({action:'finalizeMasterReport',order_id:id,upload_token,act_url:attachmentUrl(id,upload_token),photo_urls:[attachmentUrl(id,upload_token,'photo.jpg')],uncompleted_work_amount:100,extra_work_amount:50,extra_work_done:true});
- const first=await request('order-lifecycle-api',submission('cycle1'),master.external_id);expect(first.status).toBe(200);expect(first.body.order.amount).toBeUndefined();expect(first.body.order.master_payout).toBe(540);
+ const first=await request('order-lifecycle-api',submission('cycle1'),master.external_id);expect(first.status).toBe(200);expect(first.body.order.amount).toBe(900);expect(first.body.order.original_amount).toBe(1000);expect(first.body.order.manager_payout).toBeUndefined();expect(first.body.order.master_payout).toBe(540);
  const snapshot=o=>({expected_report_token:o.report_upload_token,expected_report_uploaded_at:o.report_uploaded_at});
  const rejected=await request('mini-app-api',{action:'reviewReport',id,...snapshot(first.body.order),decision:'rejected',comment:'Fix photo'});expect(rejected.status).toBe(200);
  expect(rejected.body.order).toMatchObject({master_workflow_stage:'assigned',report_uploaded_at:null,report_upload_token:null,report_review_status:'rejected',report_review_comment:'Fix photo'});

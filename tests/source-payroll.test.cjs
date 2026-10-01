@@ -36,7 +36,7 @@ for(const [slug,action] of [['order-lifecycle-api','finalizeMasterReport'],['rep
   assert.equal(saved.amount,800);assert.equal(saved.master_payout,base);assert.equal(saved.extra_work_amount,300);
   assert.equal(saved.manager_payout,hands?127.84:0);assert.equal(saved.dispatcher_payout,hands?95.88:0);
   assert.equal(saved.master_payout+saved.extra_work_amount,hands?742:780);
-  assert.equal(res.body.order.amount,undefined);assert.equal(res.body.order.manager_payout,undefined);
+  assert.equal(res.body.order.amount,hands?undefined:800);assert.equal(res.body.order.original_amount,hands?undefined:1000);assert.equal(res.body.order.manager_payout,undefined);
   for(const who of ['100','staff_m']){const r=await edge('mini-app-api',db)({action:'bootstrap'},who);assert.equal(r.body.orders[0].master_payout,base);if(!hands)assert.equal(r.body.orders[1].master_payout,123);}
   const writes=db.calls.filter(c=>c.table==='orders'&&c.mode==='update').length;
   assert.equal((await api(report(action),'staff_m')).status,200);assert.equal(db.calls.filter(c=>c.table==='orders'&&c.mode==='update').length,writes,'receipt must not reprice or rewrite');
