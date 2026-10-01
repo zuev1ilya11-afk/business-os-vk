@@ -30,6 +30,12 @@ for(const [role,width] of [['owner',1280],['dispatcher',390],['manager',320]]){
   await expect(panel.locator('[data-oc-order="13"]')).not.toContainText('Прошёл день визита');
   await expect(panel.locator('[data-oc-order="14"]')).toContainText('<script>не выполнять</script>');
   await expect(panel.locator('img,script')).toHaveCount(0);
+  await expect(page.locator('.ownerProblemsCompact')).toBeHidden();
+  const metrics=page.locator('#content>.dashMetrics');
+  if(await metrics.count()){
+   const panelBox=await panel.boundingBox(),metricsBox=await metrics.boundingBox();
+   expect(panelBox.y).toBeLessThan(metricsBox.y);
+  }
   await page.screenshot({path:testInfo.outputPath(`order-control-${role}-${width}.png`)});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   await panel.locator('[data-oc-filter="reports"]').click();await expect(panel.locator('.ocItem')).toHaveCount(2);

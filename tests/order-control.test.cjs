@@ -79,3 +79,10 @@ test('classification never changes orders or payroll fields',()=>{
  const before=JSON.stringify(input);collect(input,now);assert.equal(JSON.stringify(input),before);
  assert.deepEqual(collect([null,undefined,{},'text'],now),[]);
 });
+
+test('active unfinished work stays actionable when replacing the legacy problem list',()=>{
+ const item=collect([order({uncompleted_work_amount:300,uncompleted_work_description:'Остался угол'})],now)[0];
+ assert.deepEqual(item.issues.map(x=>x.code),['unfinished_work']);
+ assert.equal(item.issues[0].next,'Остался угол');
+ assert.deepEqual(codes(order({status:'Выполнена',uncompleted_work_amount:300})),[]);
+});
