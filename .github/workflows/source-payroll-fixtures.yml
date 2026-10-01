@@ -1,0 +1,50 @@
+name: Source payroll fixture verification
+on:
+  push:
+    branches: [feat/source-payroll-60-40]
+    paths: ['.github/workflows/source-payroll-fixtures.yml']
+permissions:
+  contents: write
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/feat/source-payroll-60-40'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Make the expected source rule explicit without weakening assertions
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          node - <<'JS'
+          const fs=require('node:fs');
+          function edit(path,a,b,count=1){const s=fs.readFileSync(path,'utf8');if(s.split(a).length-1!==count)throw Error('Unexpected fixture: '+path);fs.writeFileSync(path,s.split(a).join(b));}
+          edit('tests/helpers/full-stack.cjs',"master_payout:552.5,source:'VK'","master_payout:552.5,source:'Hands'");
+          edit('tests/helpers/full-stack.cjs',' const db=database({',' // The legacy 552.50 fixture is explicitly Hands; the second order remains Avito.\n const db=database({');
+          for(const name of ['dispatcher-board','dispatcher-free-slots-v120','dispatcher-smart-assign','dispatcher-smart-assign-v119','dispatcher-smart-dispatch-v121','dispatcher-unassigned-queue-v122'])edit('tests/'+name+'.spec.js','expect(db.tables.orders[1].master_payout).toBe(1105);',"// Assigning the Avito order prices its unchanged 2,000 base at 60%.\n  expect(db.tables.orders[1].source).toBe('Авито');\n  expect(db.tables.orders[1].master_payout).toBe(1200);");
+          edit('tests/full-stack-audit.spec.js','expect(order.master_payout).toBe(552.5);',"expect(order.source).toBe('Авито');expect(order.master_payout).toBe(600);");
+          edit('tests/new-order-card-v104.spec.js',"await expect(form.locator('#bosMasterPay')).toContainText('552');","await expect(form.locator('#bosMasterPay')).toContainText(source==='Руки'?'552':'600');");
+          edit('tests/new-order-card-v104.spec.js','master_payout:552.5,wall_over_3m',"master_payout:source==='Руки'?552.5:600,wall_over_3m");
+          edit('tests/mobile-auth-fallback.spec.js','master_payout:2092.87','master_payout:2272.8');
+          edit('tests/mobile-auth-fallback.spec.js',"toContainText('2 092,87')","toContainText(/2[\\s ]?272[,.]8/)");
+          edit('tests/lifecycle-trigger-flow.spec.js',"work:'Монтаж',amount:1000,original_amount:1000","work:'Монтаж',source:'VK',amount:1000,original_amount:1000");
+          edit('tests/lifecycle-trigger-flow.spec.js','497.25','540',2);
+          JS
+          npm run build:check
+          git diff --check
+          test "$(git ls-remote origin refs/heads/feat/source-payroll-60-40 | cut -f1)" = "$EXPECTED_SHA"
+          git add tests
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'test: distinguish preserved Hands fixtures from new direct-source rates'
+          git push origin HEAD:refs/heads/feat/source-payroll-60-40
+      - run: npm ci
+      - run: npx playwright install chromium
+      - name: Verify source edits, historical Hands reads and changed direct creation
+        run: npx playwright test tests/source-payroll*.spec.js tests/report-payroll-contract.spec.js tests/full-stack-audit.spec.js tests/new-order-card-v104.spec.js tests/master-salary-periods.spec.js tests/lifecycle-trigger-flow.spec.js tests/dispatcher-board.spec.js --workers=2
