@@ -1,0 +1,52 @@
+select pg_temp.check_contract(not has_schema_privilege('anon','bos_control_private','USAGE'),'private schema is closed');
+select pg_temp.check_contract(not has_function_privilege('authenticated','public.bos_control_action(uuid,text,jsonb)','EXECUTE'),'no browser RPC');
+select pg_temp.check_contract((select count(*)=0 from bos_control_private.tasks),'no historical tasks created');
+insert into public.orders(id,status,scheduled_date,scheduled_time,amount,master_payout) values(71,'В работе',(now() at time zone 'Europe/Moscow')::date,'10:00',1000,552.5);
+-- Use canonical explicit-offset timestamp representation accepted by the API.
+create or replace function pg_temp.input(v integer default 0) returns jsonb language sql as $$ select jsonb_build_object('order_id','71','issue_code','unassigned','assignee_id','00000000-0000-4000-8000-000000000002','due_at',to_char(now() at time zone 'UTC'+interval '1 hour','YYYY-MM-DD"T"HH24:MI:SS')||'Z','remind',true,'expected_version',v) $$;
+select pg_temp.check_contract((public.bos_control_action('00000000-0000-4000-8000-000000000003','controlSave',pg_temp.input())->>'status')::int=403,'master cannot write');
+select pg_temp.check_contract((public.bos_control_action('00000000-0000-4000-8000-000000000005','controlList')->>'status')::int=403,'inactive cannot read');
+set local role service_role;
+select pg_temp.check_contract((public.bos_control_action('00000000-0000-4000-8000-000000000001','controlSave',pg_temp.input())->>'ok')::boolean,'service-scoped save');
+reset role;
+select pg_temp.check_contract((select count(*)=1 from bos_control_private.tasks),'one task persisted');
+create temporary table saved as select * from bos_control_private.tasks;
+select pg_temp.check_contract((public.bos_control_action('00000000-0000-4000-8000-000000000001','controlSave',pg_temp.input())->>'ok')::boolean,'identical retry accepted');
+select pg_temp.check_contract((select t.version=s.version and t.reminder_event=s.reminder_event from bos_control_private.tasks t cross join saved s),'retry has same version and reminder event');
+select pg_temp.check_contract((public.bos_control_action('00000000-0000-4000-8000-000000000001','controlSave',pg_temp.input()||'{"remind":false}')->>'status')::int=409,'concurrent stale edit rejected');
+select pg_temp.check_contract(jsonb_array_length(public.bos_control_action('00000000-0000-4000-8000-000000000003','controlList')->'tasks')=0,'master cannot read others tasks');
+select pg_temp.check_contract(jsonb_array_length(public.bos_control_action('00000000-0000-4000-8000-000000000003','controlList')->'staff')=0,'master cannot enumerate staff');
+select pg_temp.check_contract((public.bos_control_action('00000000-0000-4000-8000-000000000001','controlSave',pg_temp.input(1)||'{"assignee_id":"00000000-0000-4000-8000-000000000003"}')->>'status')::int=400,'unrelated master rejected');
+select pg_temp.check_contract((public.bos_control_action('00000000-0000-4000-8000-000000000001','controlSave',pg_temp.input(1)||'{"due_at":"2026-02-30T10:00:00Z"}')->>'status')::int=400,'impossible date rejected');
+select pg_temp.check_contract((public.bos_control_action('00000000-0000-4000-8000-000000000001','controlSave',pg_temp.input(1)||'{"due_at":"2000-01-01T10:00:00Z"}')->>'status')::int=400,'past deadline rejected');
+-- Explicit fixtures only; production runtime is never involved.
+update bos_control_private.tasks set due_at=now()-interval '1 minute';
+select bos_control_private.tick();
+select pg_temp.check_contract((select count(*)=0 from public.bos_push_deliveries),'disabled reminder runtime sends nothing');
+update bos_control_private.runtime set enabled=true;
+update bos_push_private.runtime set enabled=true;
+insert into public.bos_push_subscriptions(staff_id,external_id,endpoint,p256dh,auth_key,revoke_hash)
+values('00000000-0000-4000-8000-000000000002','staff_dispatcher','https://fcm.googleapis.com/fcm/send/control-fixture','key','auth',repeat('a',64));
+select bos_control_private.tick();select bos_control_private.tick();
+select pg_temp.check_contract((select count(*)=1 from public.bos_push_deliveries where event_type='control_due'),'repeated scheduler ticks enqueue once per device');
+create temporary table claimed as select public.bos_push_claim() as rows;
+select pg_temp.check_contract((select jsonb_array_length(rows)=1 from claimed),'one reminder claimed');
+select pg_temp.check_contract((select public.bos_push_delivery((rows->0->>'id')::uuid,(rows->0->>'lease_token')::uuid) is not null from claimed),'live due assignment authorized before sending');
+select public.bos_push_finish((rows->0->>'id')::uuid,(rows->0->>'lease_token')::uuid,0,true) from claimed;
+select pg_temp.check_contract(jsonb_array_length(public.bos_push_claim())=0,'uncertain network result never resends control reminder');
+select pg_temp.check_contract((select state='discarded' from public.bos_push_deliveries where event_type='control_due'),'uncertain delivery is not marked accepted');
+-- A new explicit deadline creates a new event; old queued delivery cannot escape.
+select pg_temp.check_contract((public.bos_control_action('00000000-0000-4000-8000-000000000001','controlSave',pg_temp.input(1))->>'ok')::boolean,'explicit reschedule works');
+select pg_temp.check_contract((select t.reminder_event<>s.reminder_event from bos_control_private.tasks t cross join saved s),'new explicit schedule has new event');
+update bos_control_private.tasks set due_at=now()-interval '1 minute';
+select bos_control_private.tick();truncate claimed;insert into claimed select public.bos_push_claim();
+update public.orders set master_staff_id='00000000-0000-4000-8000-000000000003' where id=71;
+select pg_temp.check_contract((select resolved_at is not null from bos_control_private.tasks),'solving condition closes task immediately');
+select pg_temp.check_contract((select public.bos_push_delivery((rows->0->>'id')::uuid,(rows->0->>'lease_token')::uuid) is null from claimed),'resolved task cannot send from stale lease');
+update public.orders set master_staff_id=null where id=71;
+select pg_temp.check_contract(jsonb_array_length(public.bos_control_action('00000000-0000-4000-8000-000000000001','controlList')->'tasks')=0,'a recurring problem does not resurrect an old task');
+select pg_temp.check_contract((select amount=1000 and master_payout=552.5 from public.orders where id=71),'financial fields untouched');
+select pg_temp.check_contract(bos_control_private.issues('{"status":"Выполнена","reschedule_requested":true}')='{}'::text[],'closed orders excluded');
+select pg_temp.check_contract(bos_control_private.issues('{"status":"В работе","report_review_status":"pending","report_uploaded_at":"2026-09-30","scheduled_date":"2020-01-01"}')=array['report_review'],'submitted report replaces obsolete date problems');
+select pg_temp.check_contract('undated'=any(bos_control_private.issues('{"status":"В работе","scheduled_date":"2026-02-30"}')),'bad date cannot break order trigger');
+ROLLBACK;

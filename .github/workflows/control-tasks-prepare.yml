@@ -1,0 +1,72 @@
+name: Control tasks v2 branch verification
+on:
+  push:
+    branches: [feat/order-control-tasks-v2]
+permissions:
+  contents: write
+concurrency:
+  group: control-tasks-v2-preparation
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17.6
+        env:
+          POSTGRES_PASSWORD: disposable-test-password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/order-control-tasks-v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Generate migration with official CLI and canonical frontend artifacts
+        run: |
+          if test -f supabase/order-control-tasks-v2.sql; then
+            npx --yes supabase@2.119.0 migration new --help
+            npx --yes supabase@2.119.0 migration new order_control_tasks_v2
+            migration=$(find supabase/migrations -name '*_order_control_tasks_v2.sql' -print -quit)
+            test -n "$migration"
+            cp supabase/order-control-tasks-v2.sql "$migration"
+            git rm supabase/order-control-tasks-v2.sql
+          fi
+          node scripts/prepare-control-v2.cjs
+          npm run build
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add supabase/migrations supabase/functions/push-api/index.ts pwa-register.js .github/workflows/ui-smoke.yml build-version.js index.html sw.js
+          git diff --cached --quiet || git commit -m 'build: register control tasks and generate versioned migration'
+          git push origin HEAD:feat/order-control-tasks-v2
+          git archive --format=tar HEAD > control-tasks-source.tar
+      - run: npm ci
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.9.7
+      - name: Frozen sender type check
+        working-directory: supabase/functions/push-api
+        run: deno check index.ts
+      - name: PostgreSQL contract and existing sender regression
+        env:
+          BOS_TEST_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: bash scripts/test-control-tasks.sh
+      - name: Node boundaries
+        run: node --test tests/control-tasks-v2.test.cjs tests/push-api-v211.test.cjs
+      - run: npx playwright install chromium
+      - name: Browser task and existing order-control checks
+        run: npx playwright test tests/control-tasks-v2.spec.js tests/order-control.spec.js tests/order-control-refresh.spec.js --workers=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: control-tasks-verification
+          path: |
+            control-tasks-source.tar
+            test-results/
+          retention-days: 3
