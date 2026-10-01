@@ -66,6 +66,7 @@ jobs:
           bash scripts/test-push.sh
           bash scripts/test-avito-assistant.sh
           bash scripts/test-hands-reports.sh
+          bash scripts/test-control-tasks.sh
 
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server

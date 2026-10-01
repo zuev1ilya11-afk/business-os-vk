@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import webpush from 'npm:web-push@3.6.7';
 
-const VERSION='web-push-v211';
+const VERSION='web-push-v211-control-v2';
 // Match password-session-api login/refresh issuance, with one minute of clock skew.
 const MAX_SESSION_TTL_SECONDS=60*60*24*365+60;
 const encoder=new TextEncoder();
@@ -56,7 +56,7 @@ function payload(row:any){
   // No client name, address, phone number, report contents or financial data on the lock screen.
   const titles:any={assigned:'Вам назначена заявка',unassigned:'Назначение изменилось',rescheduled:'Изменено время заявки',
     cancelled:'Заявка отменена',report_rejected:'Отчёт возвращён на доработку',new_order:'Новая заявка',
-    report_pending:'Отчёт ожидает проверки',test:'Уведомления Business OS подключены'};
+    report_pending:'Отчёт ожидает проверки',control_due:'Наступил срок поручения по заявке',test:'Уведомления Business OS подключены'};
   const order=/^\d{1,20}$/.test(String(row.order_id||''))?String(row.order_id):null;
   return {v:1,event_id:row.event_id,binding_id:row.binding_id,order_id:order,
     title:titles[row.event_type]||'Business OS',body:order?`Заявка №${order}. Откройте приложение.`:'Откройте приложение.',
@@ -130,13 +130,18 @@ Deno.serve(async(req:Request)=>{
       await rpc(db,'bos_push_revoke',{p_endpoint:body.endpoint,p_revoke_hash:await sha(body.revoke_token)});
       return json(req,{ok:true});
     }
-    if(!['status','subscribe','test'].includes(action))return json(req,{ok:false,error:'UNKNOWN_ACTION'},404);
+    if(!['status','subscribe','test','controlList','controlSave','controlClear'].includes(action))return json(req,{ok:false,error:'UNKNOWN_ACTION'},404);
     const uid=await subject(req.headers.get('x-bos-session')||'',Deno.env.get('VK_APP_SECRET')||'');
     if(!uid)return json(req,{ok:false,error:'Войдите в приложение заново.'},401);
     const actorQuery=await db.from('business_staff').select('id,external_id,role,is_active').eq('external_id',uid).eq('is_active',true).maybeSingle();
     if(actorQuery.error)throw new Error('ACTOR_READ_FAILED');
     const actor=actorQuery.data;
     if(!actor||!roles.has(actor.role))return json(req,{ok:false,error:'Доступ сотрудника отключён.'},403);
+    if(['controlList','controlSave','controlClear'].includes(action)){
+      if(action!=='controlList'&&actor.role==='master')return json(req,{ok:false,error:'Назначения меняет диспетчер или руководитель.'},403);
+      const result=await rpc(db,'bos_control_action',{p_actor:actor.id,p_action:action,p_input:body});
+      return json(req,result,result?.ok?200:([400,403,404,409].includes(result?.status)?result.status:500));
+    }
     const cfg=await config(db);
     if(!cfg.enabled)return json(req,{ok:false,error:'Уведомления ещё не включены на сервере.'},503);
     if(action==='status'){
