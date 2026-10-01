@@ -1,0 +1,46 @@
+name: Order control branch build
+on:
+  push:
+    branches: [feat/order-control-v1]
+    paths:
+      - 'order-control.js'
+      - 'pwa-register.js'
+      - '.github/workflows/order-control-build.yml'
+permissions:
+  contents: write
+concurrency:
+  group: order-control-branch-build
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.ref == 'refs/heads/feat/order-control-v1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Generate canonical frontend artifacts
+        run: |
+          npm run build
+          npm run build:check
+          git diff --check
+      - name: Commit generated files on this feature branch only
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          remote_sha=$(git ls-remote origin refs/heads/feat/order-control-v1 | cut -f1)
+          if [ "$remote_sha" != "$EXPECTED_SHA" ]; then
+            echo 'Branch advanced; do not overwrite newer work.'
+            exit 0
+          fi
+          git add build-version.js index.html sw.js startup-shell.bundle.js startup-eager.bundle.js
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'build: regenerate order control frontend artifacts'
+          git push origin HEAD:refs/heads/feat/order-control-v1
