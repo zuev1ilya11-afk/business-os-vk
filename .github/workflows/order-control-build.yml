@@ -23,19 +23,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Register the new operations module in the existing role loader
-        run: |
-          node - <<'JS'
-          const fs=require('node:fs');
-          const path='pwa-register.js';
-          let source=fs.readFileSync(path,'utf8');
-          const anchor="      './dispatcher-attention-v123.js',";
-          if(!source.includes("'./order-control.js'")) {
-            if(source.split(anchor).length!==2)throw Error('Unexpected role loader; stop rather than rewrite it.');
-            source=source.replace(anchor,anchor+"\n      './order-control.js',");
-            fs.writeFileSync(path,source);
-          }
-          JS
       - name: Generate canonical frontend artifacts
         run: |
           node --check order-control.js
@@ -57,5 +44,12 @@ jobs:
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'build: register order control and regenerate frontend artifacts'
+          git commit -m 'build: regenerate order control frontend artifacts'
           git push origin HEAD:refs/heads/feat/order-control-v1
+      - name: Archive tracked source only (no git credentials or untracked files)
+        run: git archive --format=tar HEAD -o "$RUNNER_TEMP/order-control-source.tar"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: order-control-source
+          path: ${{ runner.temp }}/order-control-source.tar
+          retention-days: 1
