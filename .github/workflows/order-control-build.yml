@@ -5,6 +5,7 @@ on:
     paths:
       - 'order-control.js'
       - 'pwa-register.js'
+      - 'tests/order-control.spec.js'
       - '.github/workflows/order-control-build.yml'
 permissions:
   contents: write
@@ -15,7 +16,7 @@ jobs:
   build:
     if: github.ref == 'refs/heads/feat/order-control-v1'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,6 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
       - name: Generate canonical frontend artifacts
         run: |
           node --check order-control.js
@@ -46,10 +48,13 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'build: regenerate order control frontend artifacts'
           git push origin HEAD:refs/heads/feat/order-control-v1
-      - name: Archive tracked source only (no git credentials or untracked files)
-        run: git archive --format=tar HEAD -o "$RUNNER_TEMP/order-control-source.tar"
+      - run: npm ci
+      - run: npx playwright install chromium
+      - name: Targeted order control and existing attention browser checks
+        run: npx playwright test tests/order-control.spec.js tests/dispatcher-attention-v123.spec.js --workers=2
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: order-control-source
-          path: ${{ runner.temp }}/order-control-source.tar
+          name: order-control-browser-checks
+          path: test-results/
           retention-days: 1

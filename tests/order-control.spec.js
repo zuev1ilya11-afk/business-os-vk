@@ -2,6 +2,7 @@ const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 const {businessDay,nextDay}=require('../order-control.js');
 const today=()=>businessDay(new Date());
+test.use({screenshot:'only-on-failure'});
 
 async function setup(page,role='owner'){
  const data=await fullStack(page,role);
@@ -19,7 +20,7 @@ async function setup(page,role='owner'){
  return data;
 }
 for(const [role,width] of [['owner',1280],['dispatcher',390],['manager',320]]){
- test(`order control: ${role} sees actionable queue at ${width}px`,async({page})=>{
+ test(`order control: ${role} sees actionable queue at ${width}px`,async({page},testInfo)=>{
   await page.setViewportSize({width,height:900});await setup(page,role);
   const panel=page.locator('#bosOrderControl');
   await expect(panel).toBeVisible();await expect(panel.locator('[data-oc-total]')).toHaveText('4');
@@ -29,6 +30,7 @@ for(const [role,width] of [['owner',1280],['dispatcher',390],['manager',320]]){
   await expect(panel.locator('[data-oc-order="13"]')).not.toContainText('Прошёл день визита');
   await expect(panel.locator('[data-oc-order="14"]')).toContainText('<script>не выполнять</script>');
   await expect(panel.locator('img,script')).toHaveCount(0);
+  await page.screenshot({path:testInfo.outputPath(`order-control-${role}-${width}.png`)});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   await panel.locator('[data-oc-filter="reports"]').click();await expect(panel.locator('.ocItem')).toHaveCount(2);
   await panel.locator('[data-oc-filter="master"]').click();await expect(panel.locator('.ocItem')).toHaveCount(1);
