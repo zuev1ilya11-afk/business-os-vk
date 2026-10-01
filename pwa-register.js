@@ -20,6 +20,7 @@
     './dispatcher-control-v24.js',
     './notification-center-v26.js',
     './web-push-v211.js',
+    './order-control-tasks.js',
     './employee-live-refresh-v27.js',
     './ui-dispatch-master-v94.js',
     './master-status-colors-v95.js',

@@ -70,7 +70,7 @@ declare actor public.business_staff; assignee public.business_staff; o public.or
  oid bigint; code text; ver bigint; deadline timestamptz; aid uuid; notify boolean; items jsonb; people jsonb; count_all integer;
 begin
  select * into actor from public.business_staff where id=p_actor and is_active;
- if actor.id is null or actor.role not in ('owner','manager','dispatcher','master') then return jsonb_build_object('ok',false,'status',403,'error','Недостаточно прав.'); end if;
+ if actor.id is null or (actor.role in ('owner','manager','dispatcher','master')) is not true then return jsonb_build_object('ok',false,'status',403,'error','Недостаточно прав.'); end if;
  if p_input ? 'order_id' then
   if coalesce(p_input->>'order_id','') !~ '^\d{1,18}$' then return jsonb_build_object('ok',false,'status',400,'error','Некорректная заявка.'); end if;
   oid:=(p_input->>'order_id')::bigint;
@@ -110,7 +110,7 @@ begin
    aid:=(p_input->>'assignee_id')::uuid;deadline:=(p_input->>'due_at')::timestamptz;notify:=(p_input->>'remind')::boolean;
   exception when others then return jsonb_build_object('ok',false,'status',400,'error','Укажите сотрудника и корректный срок.'); end;
   select * into assignee from public.business_staff where id=aid and is_active;
-  if assignee.id is null or not(assignee.role in ('owner','manager','dispatcher') or (assignee.role='master' and o.master_staff_id=aid and code in ('agreement','report_rejected'))) then
+  if assignee.id is null or (assignee.role in ('owner','manager','dispatcher') or (assignee.role='master' and o.master_staff_id=aid and code in ('agreement','report_rejected'))) is not true then
    return jsonb_build_object('ok',false,'status',400,'error','Этот сотрудник не может отвечать за данную проблему.'); end if;
   -- An identical retry never changes revision/event, even if the original response was lost.
   if t.id is not null and t.resolved_at is null and t.assignee_id=aid and t.due_at=deadline and t.remind=notify then return jsonb_build_object('ok',true,'task',bos_control_private.task_view(t)); end if;
@@ -159,3 +159,71 @@ begin
 end $$;
 revoke all on all functions in schema bos_control_private from public,anon,authenticated;
 grant execute on all functions in schema bos_control_private to service_role;
+
+-- Ordinary business push behavior is unchanged; control reminders get at most one network attempt.
+create or replace function public.bos_push_claim()
+returns jsonb language plpgsql security invoker set search_path='' as $$
+declare result jsonb;
+begin
+  update public.bos_push_deliveries set state='discarded',lease_token=null
+    where state in ('pending','sending') and (expires_at<=now() or ((attempts>=5 or (event_type='control_due' and attempts>=1)) and coalesce(locked_until,'-infinity')<now()));
+  with selected as (
+    select id from public.bos_push_deliveries where expires_at>now() and attempts<5 and (event_type<>'control_due' or attempts=0) and
+      ((state='pending' and next_attempt_at<=now()) or (state='sending' and locked_until<now()))
+      order by created_at,id for update skip locked limit 12
+  ), leased as (
+    update public.bos_push_deliveries d set state='sending',attempts=attempts+1,
+      locked_until=now()+interval '2 minutes',lease_token=gen_random_uuid()
+    from selected where d.id=selected.id returning d.id,d.lease_token
+  ) select coalesce(jsonb_agg(to_jsonb(leased)),'[]'::jsonb) into result from leased;
+  return result;
+end $$;
+revoke all on function public.bos_push_claim() from public, anon, authenticated;
+grant execute on function public.bos_push_claim() to service_role;
+
+-- Recheck binding and live authorization immediately before every provider request.
+create or replace function public.bos_push_delivery(p_id uuid,p_lease uuid)
+returns jsonb language sql security invoker set search_path='' as $$
+  select jsonb_build_object('id',d.id,'event_id',d.event_id,'binding_id',d.binding_id,'event_type',d.event_type,
+    'order_id',case when d.event_type='unassigned' then null else d.order_id::text end,
+    'expires_at',d.expires_at,'endpoint',s.endpoint,'p256dh',s.p256dh,'auth',s.auth_key)
+  from public.bos_push_deliveries d
+  join public.bos_push_subscriptions s on s.id=d.subscription_id and s.binding_id=d.binding_id and s.active and s.expires_at>now()
+  join public.business_staff b on b.id=s.staff_id and b.external_id=s.external_id and b.is_active
+  left join public.orders o on o.id=d.order_id
+  where d.id=p_id and d.lease_token=p_lease and d.state='sending' and d.locked_until>now() and d.expires_at>now()
+    and exists(select 1 from bos_push_private.runtime where enabled)
+    and ((d.event_type='control_due' and exists(select 1 from bos_control_private.tasks t where t.reminder_event=d.event_id and t.assignee_id=b.id and t.order_id=d.order_id and t.remind and t.due_at<=now() and bos_control_private.current_task(t)) and exists(select 1 from bos_control_private.runtime where enabled))
+      or (d.event_type='test' and b.role in ('owner','manager','dispatcher','master'))
+      or (o.id is not null and (
+        (b.role in ('owner','manager','dispatcher') and (d.event_type='new_order' or (d.event_type='report_pending' and o.report_review_status='pending')))
+        or (b.role='master' and ((d.event_type='unassigned' and o.master_staff_id is distinct from b.id)
+          or (o.master_staff_id=b.id and (
+            (d.event_type in ('assigned','rescheduled') and o.status::text not in ('Отменена','Выполнена'))
+            or (d.event_type='cancelled' and o.status::text='Отменена')
+            or (d.event_type='report_rejected' and o.report_review_status='rejected' and o.status::text<>'Отменена')
+          ))))
+      ))) limit 1;
+$$;
+revoke all on function public.bos_push_delivery(uuid,uuid) from public, anon, authenticated;
+grant execute on function public.bos_push_delivery(uuid,uuid) to service_role;
+
+create or replace function public.bos_push_finish(p_id uuid,p_lease uuid,p_status integer,p_retry boolean)
+returns void language plpgsql security invoker set search_path='' as $$
+declare d public.bos_push_deliveries;
+begin
+  select * into d from public.bos_push_deliveries where id=p_id and lease_token=p_lease and state='sending' for update;
+  if d.id is null then return; end if;
+  if p_status in (404,410) then
+    update public.bos_push_subscriptions set active=false,updated_at=now()
+      where id=d.subscription_id and binding_id=d.binding_id;
+  end if;
+  update public.bos_push_deliveries set
+    state=case when p_status between 200 and 299 then 'sent'
+      when p_retry and d.event_type<>'control_due' and attempts<5 and expires_at>now() then 'pending' else 'discarded' end,
+    next_attempt_at=now()+least(300,30*power(2,greatest(attempts-1,0)))::integer*interval '1 second',
+    locked_until=null,lease_token=null,last_http_status=p_status where id=d.id;
+end $$;
+revoke all on function public.bos_push_finish(uuid,uuid,integer,boolean) from public, anon, authenticated;
+grant execute on function public.bos_push_finish(uuid,uuid,integer,boolean) to service_role;
+
