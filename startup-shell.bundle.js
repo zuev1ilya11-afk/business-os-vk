@@ -2644,6 +2644,13 @@ const st=document.createElement('style');st.textContent=`.avitoOrderBlock,.avito
   #app:has(#content > .avitoWorkspace)>header .brandSub{font-size:10px;line-height:1.35;margin-top:3px}
   #app:has(#content > .avitoWorkspace)>header .roleBadge{align-self:flex-start;width:auto;max-width:100%;font-size:10px;line-height:1.4;padding:2px 6px;margin-top:4px}
   #app:has(#content > .avitoWorkspace)>header button{flex:0 0 44px;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;margin:0;border-radius:10px;font-size:18px}
+  /* Installation stays on the login/other app tabs; don't squeeze four actions into this inbox header. */
+  #app:has(#content > .avitoWorkspace)>header .bosInstallAppBtn--header{display:none}
+  #app:has(#content > .avitoWorkspace)>header .brandText h1{white-space:normal;text-overflow:clip;overflow:visible}
+  /* The conversation has its own back/client/actions header; avoid two headers above the keyboard. */
+  #app:has(#content > .avitoWorkspace:not([data-pane=list]))>header{display:none}
+  .avitoWorkspace:not([data-pane=list]) .avitoPageHead{display:none}
+  .avitoWorkspace:not([data-pane=list]){padding-top:8px}
   #app:has(#content > .avitoWorkspace)>header #bosNotificationBell .bosNB{right:-2px;top:-4px}
   .avitoWorkspace{min-height:0!important;gap:12px;padding-top:12px}
   .avitoWorkspace .avitoPageHead{flex:0 0 auto;gap:8px}
@@ -2690,7 +2697,7 @@ const st=document.createElement('style');st.textContent=`.avitoOrderBlock,.avito
   .avitoWorkspace .avitoBackChat{margin-bottom:12px}
   .avitoChatHead{padding:8px;gap:8px;flex-wrap:wrap;flex-shrink:0}
   .avitoChatHead .avitoAvatar{display:none}
-  .avitoChatHead>div{flex-basis:55%}
+  .avitoChatHead>div{flex:1 1 90px}
   .avitoChatHead>a{margin-left:auto}
   .avitoChatHead h3{font-size:16px}
   .avitoHistory{padding:10px}
