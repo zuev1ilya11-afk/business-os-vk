@@ -62,9 +62,12 @@ test('master report uploads through gateway and finalizes through lifecycle API'
   expect(finalizePayload.photo_urls).toEqual(['https://files.test/photo-1']);
 });
 
-test('master report response strips order totals and other-role payouts',async()=>{
+test('master report response applies source-specific cost visibility',async()=>{
   const api=fs.readFileSync(path.join(__dirname,'..','supabase','functions','report-api','index.ts'),'utf8');
-  expect(api).toContain("for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k]");
+  expect(api).toContain('orderPayroll.masterView(o)');
+  const payroll=require('../order-payroll.js');
+  expect(payroll.masterView({source:'Hands',amount:1000,original_amount:1000,manager_payout:1})).toEqual({source:'Hands'});
+  expect(payroll.masterView({source:'Телефон',amount:1000,original_amount:1000,manager_payout:1})).toEqual({source:'Телефон',amount:1000,original_amount:1000});
   expect(api.match(/order:masterOrder\(r\.data\)/g)||[]).toHaveLength(2);
   expect(api).not.toContain("order:r.data,drive_archive_status:'pending'");
 });

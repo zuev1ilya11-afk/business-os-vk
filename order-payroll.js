@@ -40,5 +40,22 @@
     if(snapshot(o)&&finite(o.master_payout)&&(round(o.master_payout)!==round(Number(o.amount)*.60)||Number(o.manager_payout||0)!==0||Number(o.dispatcher_payout||0)!==0))return 'Сохранённый расчёт отчёта';
     return 'Мастер 60% · Компания 40%';
   }
-  return Object.freeze({version,isHands,isDirect,closed,snapshot,calculate,directMaster,directCompany,label});
+  // Only known non-Hands orders expose the customer cost. Never disclose other-role pay.
+  // This creates a response copy; it does not recalculate or persist any payout.
+  function masterView(o){
+    const x={...(o||{})};
+    delete x.manager_payout;delete x.dispatcher_payout;
+    if(!isDirect(o)){delete x.amount;delete x.original_amount;}
+    return x;
+  }
+  function masterBreakdown(o){
+    if(!isDirect(o)||!finite(o.amount))return null;
+    const amount=round(o.amount),extras=round(o.extra_work_amount),master=directMaster(o);
+    const cancelled=o.status==='Отменена';
+    return {original:finite(o.original_amount)?round(o.original_amount):null,
+      deduction:round(o.uncompleted_work_amount),amount,extras,total:round(amount+extras),
+      master,masterTotal:cancelled?0:round(master+extras),company:directCompany(o),
+      saved:snapshot(o),standard:!cancelled&&round(master)===round(amount*.60),cancelled};
+  }
+  return Object.freeze({version,isHands,isDirect,closed,snapshot,calculate,directMaster,directCompany,label,masterView,masterBreakdown});
 });

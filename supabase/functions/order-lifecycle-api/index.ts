@@ -8,7 +8,7 @@ const cors={
   'Access-Control-Allow-Methods':'POST,OPTIONS'
 };
 const json=(x:any,s=200)=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'Content-Type':'application/json'}});
-const masterOrder=(o:any)=>{const x={...o};for(const k of ['amount','original_amount','manager_payout','dispatcher_payout'])delete x[k];return x};
+const masterOrder=(o:any)=>orderPayroll.masterView(o);
 
 // Only signed objects for this exact order/report may cross the attachment boundary.
 function validAttachmentUrl(raw:any,orderId:any,token:any){
