@@ -1,0 +1,51 @@
+name: Control v2 public release check
+on:
+  push:
+    branches: [qa/order-control-v2-release-check]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Read-only public asset and API verification
+        run: |
+          node - <<'JS'
+          const fs=require('node:fs'),crypto=require('node:crypto'),vm=require('node:vm');
+          const context={self:{}};vm.runInNewContext(fs.readFileSync('build-version.js','utf8'),context);
+          const build=context.self.BOS_BUILD.id,base='https://zuev1ilya11-afk.github.io/business-os-vk/';
+          const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+          (async()=>{
+            const result={build,release:'bc71be84eec9ca198e59590011f28c5e7a767754',checked_at:new Date().toISOString(),assets:[]};
+            for(const name of ['index.html','build-version.js','sw.js','pwa-register.js','order-control-tasks.js','startup-eager.bundle.js','startup-shell.bundle.js']){
+              const expected=hash(fs.readFileSync(name));let actual,status;
+              for(let attempt=0;attempt<4;attempt++){
+                const response=await fetch(base+name,{headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(15000)});
+                status=response.status;actual=hash(Buffer.from(await response.arrayBuffer()));
+                if(status===200&&actual===expected)break;
+                await new Promise(r=>setTimeout(r,10000));
+              }
+              result.assets.push({name,status,match:actual===expected,sha256:actual});
+              if(status!==200||actual!==expected)throw Error('Published bytes differ: '+name);
+            }
+            const endpoint='https://business-os-api-gateway.netlify.app/api/proxy/push-api';
+            for(const action of ['health','controlList','controlSave']){
+              const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action}),signal:AbortSignal.timeout(15000)});
+              const body=await response.json();result[action]={status:response.status,body};
+              if(action==='health'?(response.status!==200||body.version!=='web-push-v211-control-v2'):response.status!==401)throw Error('Unexpected API boundary: '+action);
+            }
+            const netlify=await fetch('https://business-os-api-gateway.netlify.app/build-version.js',{signal:AbortSignal.timeout(15000)});
+            const source=await netlify.text();result.netlify={status:netlify.status,build:source.match(/"id":"([a-f0-9]+)"/)?.[1]||null};
+            fs.writeFileSync('control-v2-release.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          JS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: control-v2-public-verification
+          path: control-v2-release.json
+          retention-days: 7
