@@ -1,5 +1,6 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
+const {edge,employee}=require('./helpers/edge.cjs');
 const work='Монтаж рулонной шторы — без сверления крепёжной системы';
 async function open(page,width,role='master',source='Hands'){
  await page.setViewportSize({width,height:1000});const ctx=await fullStack(page,role);
@@ -39,4 +40,15 @@ for(const role of ['owner','manager','dispatcher'])test(`${role}: edit apartment
 });
 for(const source of ['Hands','Авито'])test(`${source}: header money and full calculation preserve source rules`,async({page})=>{
  await open(page,390,'master',source);const card=page.locator('.bosCompactMasterCard');if(source==='Hands'){await expect(card).not.toContainText('Стоимость:');await expect(card.locator('.bosCompactCost')).toHaveCount(0);await expect(card.locator('.bosCompactMoney')).toContainText('552,5')}else{await expect(card.locator('.bosCompactMoney')).toContainText('Стоимость: 1');await expect(card.locator('.bosCompactMoney')).toContainText('600');await card.locator('.bosCompactCost>summary').click();await expect(card.locator('[data-cost-total]')).toContainText('1');await expect(card).toContainText('Мастеру — 60% основных работ')}
+});
+test('master sees apartment imported from Hands directions after reload, with no duplicate label',async({page})=>{
+ const {db,master}=await fullStack(page,'master');db.tables.business_staff.push(employee('ops','owner',{external_id:'100'}));
+ Object.assign(db.tables.orders[0],{external_source:'hands',external_id:'hands:TEST-123'});
+ const remote={id:'TEST-123',specialist:master.full_name,price:'1000',status:'ACTIVE',client_name:'Тестовый клиент',client_phones:['+70000000000'],address:'Тестовая улица, дом 10',work_time:'2099-09-10T10:00:00',directions:'кв. 42, эт. 3',comment:'Вход со двора',works:[{name:'Монтаж',quantity:'1',unit:'шт.'}]};
+ const sync=edge('hands-api',db,{env:{HANDS_API_KEY:'fixture'},fetch:async()=>Response.json({orders:[remote]})});
+ expect((await sync({action:'syncOrders',per_page:2,max_pages:1})).status).toBe(200);
+ await page.setViewportSize({width:390,height:1000});await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrder('11'));
+ await expect(page.locator('.bosApartment')).toHaveText('кв. 42');await expect(page.locator('.bosOrderComment')).toContainText('Как добраться: кв. 42, эт. 3');
+ remote.directions='квартира 43';expect((await sync({action:'syncOrders',per_page:2,max_pages:1})).status).toBe(200);
+ await page.reload();await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrder('11'));await expect(page.locator('.bosApartment')).toHaveText('кв. 43');await expect(page.locator('.bosCompactMasterCard input')).toHaveCount(0);
 });

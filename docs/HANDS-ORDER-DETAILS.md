@@ -9,7 +9,7 @@ The separate next-action, duplicate date/route and bottom contact blocks are gon
 Full non-Hands cost and payout are in the header; their unchanged calculation is
 expandable. Hands total cost remains hidden, including owner master preview.
 
-## Verified upstream contract and limitation
+## Verified upstream contract
 
 On 2026-10-01 an authenticated read-only GET to the existing specialist
 `/orders/?status=ACTIVE&per_page=1&page=1` returned 200. Only field names and types
@@ -20,12 +20,19 @@ status,payment_status,shop_name,comment,works,files`. Work entries contain strin
 `name,description,quantity,price,unit`. A detail GET for that returned order at
 `/orders/{id}/` returned 404.
 
-**That observed feed exposes no structured apartment, floor or entrance.**
-This release therefore supports persistent, authorized manual apartment entry;
-it does not claim automatic apartment import and does not guess a flat from an
-address. A confirmed upstream field/endpoint is still required for that part.
-The test fixture contains synthetic values under observed keys, not a fabricated
-apartment contract. Existing work quantities are preserved on both repo import paths.
+The observed feed has no separate apartment field. On 2026-10-01 the user
+confirmed with a real application screenshot that `directions` (rendered as
+"Как добраться") includes an explicit `кв.` label and apartment number.
+Import extracts a single explicit `кв.` / `квартира` number from that field,
+including a letter suffix or slash. It never parses the street address, house,
+building, floor or an unlabelled number. Multiple apartment references and
+alternatives are left intact in the comment without guessing a new value.
+Missing/ambiguous directions never clear the saved apartment. Both the initial
+import and ordinary updates persist the value, unless that field was edited
+manually. A stored directions snapshot can also fill an empty apartment.
+Fixtures use synthetic values under observed keys; the screenshot's personal
+customer data is not copied into the repository. Existing work quantities are
+preserved on both repo import paths.
 
 A temporary extension of the existing machine-only worker's read-only probe
 returned schema types for this check. The original worker source and deno.json

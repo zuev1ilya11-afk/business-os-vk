@@ -62,7 +62,7 @@ async function importOrder(db:any,o:any,staffByName:Map<string,any>){
     external_source:'hands',external_id:localExternalId(id),source:'Hands',client:clean(o?.client_name||o?.client),phone:phones(o),address:clean(o?.address),work:workText(o),status:localStatus(o),amount,original_amount:amount,master_payout:staff?.id?masterPayout(amount):0,scheduled_date:sched.scheduled_date,scheduled_time:sched.scheduled_time,master_name:specialist||staff?.full_name||'',source_updated_at:clean(o?.updated_at||o?.creation_time)||new Date().toISOString(),updated_at:new Date().toISOString(),sync_status:'synced'
   };
   if(staff?.id)base.master_staff_id=staff.id;
-  const prev=await db.from('orders').select('id,status,report_review_status,updated_at,comment,hands_comment_source,hands_detail_overrides').eq('external_source','hands').eq('external_id',localExternalId(id)).maybeSingle();
+  const prev=await db.from('orders').select('id,status,report_review_status,updated_at,apartment,comment,hands_comment_source,hands_detail_overrides').eq('external_source','hands').eq('external_id',localExternalId(id)).maybeSingle();
   if(prev.error)throw prev.error;
   // External imports cannot reopen or rewrite an accepted report/receipt.
   if(prev.data?.status==='Выполнена'||prev.data?.report_review_status==='approved'){await updateAcceptedHandsDetails(db,o,prev.data,externalComment(o));return {ok:true,id:prev.data.id,created:false,preserved:true}};

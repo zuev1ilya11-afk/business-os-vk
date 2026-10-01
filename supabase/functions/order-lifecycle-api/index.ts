@@ -141,7 +141,7 @@ function externalComment(o:any){const parts=[] as string[];if(clean(o?.comment))
 async function hands(path:string){const key=Deno.env.get('HANDS_API_KEY')||'';if(!key)throw new Error('HANDS_API_KEY_NOT_CONFIGURED');const r=await fetch(`https://api.hands.ru/api/v1/specialist${path}`,{headers:{'X-Api-Key':key}});const text=await r.text();let data:any={};try{data=text?JSON.parse(text):{}}catch{data={raw:text}}if(!r.ok)throw new Error(`HANDS_${r.status}: ${clean(data?.error||data?.detail||text||r.statusText)}`);return data}
 async function importHandsOrder(db:any,o:any,staffByName:Map<string,any>){
   const id=externalId(o?.id);if(!id)return {ok:false,reason:'missing_id'};
-  const prev=await db.from('orders').select('id,status,report_review_status,updated_at,comment,hands_comment_source,hands_detail_overrides').eq('external_source','hands').eq('external_id',localExternalId(id)).maybeSingle();if(prev.error)throw prev.error;
+  const prev=await db.from('orders').select('id,status,report_review_status,updated_at,apartment,comment,hands_comment_source,hands_detail_overrides').eq('external_source','hands').eq('external_id',localExternalId(id)).maybeSingle();if(prev.error)throw prev.error;
   if(prev.data?.status==='Выполнена'||prev.data?.report_review_status==='approved'){await updateAcceptedHandsDetails(db,o,prev.data,externalComment(o));return {ok:true,id:prev.data.id,created:false,preserved:true}};
   const sched=schedule(o),specialist=clean(o?.specialist),staff=specialist?staffByName.get(specialist.toLocaleLowerCase('ru-RU')):null,amount=money(o?.price),remote=clean(o?.status).toUpperCase();
   const approved=String(prev.data?.report_review_status||'')==='approved';

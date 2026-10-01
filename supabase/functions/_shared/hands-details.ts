@@ -1,6 +1,17 @@
-// Observed specialist /orders/ contract, 2026-10-01. No apartment field is
-// exposed by this feed: never infer a flat from the street/building address.
+// Observed specialist /orders/ contract, 2026-10-01. The user confirmed that
+// an explicit apartment label is supplied in directions ("Как добраться").
+// Never infer it from the street/building address or an unlabelled number.
 const cleanDetail=(value:unknown)=>typeof value==='string'?value.trim():'';
+export function apartmentFromDirections(value:unknown){
+  const text=cleanDetail(value);
+  const labels=[...text.matchAll(/(?:^|[^\p{L}\p{N}_])(?:квартира|кв\.?)(?=\s|№|\d)/giu)];
+  // Several apartment references or alternatives are ambiguous: retain the text.
+  if(labels.length!==1)return '';
+  const tail=text.slice(labels[0].index!+labels[0][0].length);
+  const match=tail.match(/^\s*(?:№\s*)?(\d+(?:[а-яёa-z]|\/[\dа-яёa-z]+)?)(?=$|[\s,;.)])/iu);
+  if(!match||/^\s*(?:или|и|[-–—,.])\s*\d/iu.test(tail.slice(match[0].length)))return '';
+  return match[1];
+}
 const commentKeys=['comment','directions','shop_name','payment_status'];
 function renderComment(source:Record<string,string>){
   return [source.comment,source.directions&&`Как добраться: ${source.directions}`,
@@ -14,14 +25,17 @@ export function handsDetailsPatch(remote:any,current:any=null,legacyComment=''){
     // Missing, null and temporarily empty upstream fields cannot erase data.
     if(value){source[key]=value;supplied=true}
   }
-  if(!supplied)return {};
-  const patch:any={hands_comment_source:source};
+  const patch:any=supplied?{hands_comment_source:source}:{};
   const overrides={...(current?.hands_detail_overrides||{})};
+  const apartment=apartmentFromDirections(source.directions),existingApartment=cleanDetail(current?.apartment);
+  // Preserve any pre-existing local value whose origin cannot be established.
+  if(apartment&&existingApartment&&!current?.hands_comment_source&&existingApartment!==apartment)overrides.apartment=true;
+  if(apartment&&!overrides.apartment)patch.apartment=apartment;
   const rendered=renderComment(source),existing=cleanDetail(current?.comment);
   // Before source snapshots existed we cannot distinguish a stale import from
   // a local correction. Preserve ambiguous text instead of silently losing it.
   if(current&&!current.hands_comment_source&&existing&&existing!==rendered&&existing!==cleanDetail(legacyComment))overrides.comment=true;
-  if(!overrides.comment)patch.comment=rendered;
+  if(supplied&&!overrides.comment)patch.comment=rendered;
   if(JSON.stringify(overrides)!==JSON.stringify(current?.hands_detail_overrides||{}))patch.hands_detail_overrides=overrides;
   return patch;
 }

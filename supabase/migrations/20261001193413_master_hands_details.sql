@@ -17,6 +17,6 @@ do $$ begin
     );
   end if;
 end $$;
-comment on column public.orders.apartment is 'Local apartment, editable by existing order-management roles. Hands specialist feed currently omits this field.';
+comment on column public.orders.apartment is 'Apartment from explicitly labelled Hands directions or an authorized local edit.';
 comment on column public.orders.hands_detail_overrides is 'Per-field manual edits, including explicit clearing. Never writable by masters.';
 comment on column public.orders.hands_comment_source is 'Last nonempty Hands comment components; not a full customer payload.';
