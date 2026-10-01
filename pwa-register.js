@@ -55,6 +55,7 @@
       './dispatcher-smart-dispatch-v121.js',
       './dispatcher-unassigned-queue-v122.js',
       './dispatcher-attention-v123.js',
+      './order-control.js',
       './dispatcher-ui-redesign-v183.js',
       './dispatcher-ui-redesign-v183-compat.js',
       './dispatcher-ui-polish-v184.js',
