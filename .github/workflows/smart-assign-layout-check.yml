@@ -1,0 +1,66 @@
+name: Smart assignment layout verification
+on:
+  push:
+    branches: [fix/smart-assignment-layout]
+permissions:
+  contents: write
+concurrency:
+  group: smart-assignment-layout-branch
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/fix/smart-assignment-layout'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Apply only the checked presentation block and regenerate canonical assets
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          node - <<'JS'
+          const fs=require('node:fs'),crypto=require('node:crypto');
+          const path='dispatcher-smart-dispatch-v121.js',source=fs.readFileSync(path,'utf8');
+          const hash=s=>crypto.createHash('sha256').update(s).digest('hex');
+          const expected='fcc2c86b6ad79ee35773da6f082937ea10018f302c9ee17772dbe5e930681942';
+          if(hash(source)!==expected){
+            if(hash(source)!=='26163f5b44f8650e8fde3671e67ea9d34cf9cf35cfdbb8737d7489098d2d36f3')throw Error('Source changed; stop');
+            const css=fs.readFileSync('scripts/smart-assign-layout.css.txt','utf8');
+            const next=source.replace(/style.textContent=`[\s\S]*?`;/,'style.textContent=`'+css+'`;');
+            if(hash(next)!==expected)throw Error('CSS-only patch mismatch');
+            fs.writeFileSync(path,next);
+          }
+          JS
+          node --check dispatcher-smart-dispatch-v121.js
+          npm run build
+          npm run build:check
+          git diff --check
+          test "$(git ls-remote origin refs/heads/fix/smart-assignment-layout | cut -f1)" = "$EXPECTED_SHA"
+          git add dispatcher-smart-dispatch-v121.js build-version.js index.html sw.js
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'fix: let smart assignment use the full card width and wrap candidates safely'
+            git push origin HEAD:refs/heads/fix/smart-assignment-layout
+          fi
+          git rev-parse HEAD > tested-sha.txt
+      - run: npm ci
+      - run: npx playwright install chromium
+      - name: Smart layout, one-click assignment and neighboring picker flows
+        run: npx playwright test tests/dispatcher-smart-layout.spec.js tests/dispatcher-smart-dispatch-v121.spec.js tests/dispatcher-smart-assign-v119.spec.js --workers=2 --reporter=json > smart-layout-results.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smart-assignment-layout-qa
+          path: |
+            tested-sha.txt
+            smart-layout-results.json
+            test-results/
+          retention-days: 3
