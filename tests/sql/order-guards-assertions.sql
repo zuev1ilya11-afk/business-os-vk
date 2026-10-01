@@ -25,5 +25,12 @@ SELECT pg_temp.check_contract(master_payout=0 AND manager_payout=0 AND dispatche
 INSERT INTO public.orders(id,status,master_payout,manager_payout,dispatcher_payout) VALUES(2,'Отменена',10,20,30);
 UPDATE public.orders SET master_payout=42 WHERE id=2;
 SELECT pg_temp.check_contract(master_payout=0 AND manager_payout=0 AND dispatcher_payout=0,'cancel insert and later payout edit remain zero') FROM public.orders WHERE id=2;
+SELECT pg_temp.check_contract(uncompleted_work_items IS NULL,'legacy rows remain without item details') FROM public.orders WHERE id=1;
+UPDATE public.orders SET uncompleted_work_items='[{"service_id":"standard_016","quantity":1.25,"unit_price":300,"amount":375}]' WHERE id=1;
+SELECT pg_temp.check_contract(jsonb_array_length(uncompleted_work_items)=1,'report item snapshot persists') FROM public.orders WHERE id=1;
+DO $$BEGIN
+ BEGIN UPDATE public.orders SET uncompleted_work_items='{}' WHERE id=1; RAISE EXCEPTION 'invalid item container accepted';
+ EXCEPTION WHEN check_violation THEN NULL; END;
+END$$;
 ROLLBACK;
 SELECT 'order trigger integration: PASS' AS result;

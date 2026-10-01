@@ -26,8 +26,20 @@
     line.classList.add('reportExtraWorkDetails');
     line.innerHTML=`<span>Допработы: <b>+${money(o.extra_work_amount)}</b></span><span class="muted"><b>Что указал мастер:</b> ${esc(description)}</span>`;
   }
+  function enrichUncompletedWork(id){
+    if(!canReview())return;
+    const o=(state?.orders||[]).find(x=>String(x.id)===String(id));
+    const root=document.getElementById('modalRoot');if(!o||!root)return;
+    const items=Array.isArray(o.uncompleted_work_items)?o.uncompleted_work_items:[];
+    const description=String(o.uncompleted_work_description||'').trim();
+    if(!items.length&&!description)return;
+    const line=[...root.querySelectorAll('p')].find(p=>String(p.textContent||'').trim().startsWith('Невыполненные работы:'));
+    const detail=document.createElement('section');detail.className='card reportUncompletedDetails';
+    detail.innerHTML=`<h3>Что не было сделано</h3>${items.length?items.map(r=>`<div class="reportDeductionReviewRow"><b>${esc(r.name)}</b><span>${esc(r.quantity)} ${esc(r.unit||'(ед. не указана)')} × ${money(r.unit_price)} = <b>${money(r.amount)}</b></span>${r.price_confirmed?'<small class="muted">Мастер подтвердил согласование цены и объёма</small>':''}</div>`).join(''):'<p class="muted">Старый отчёт без детализации по прайсу</p>'}<p>Сумма вычета: <b>${money(o.uncompleted_work_amount)}</b></p>${o.original_amount!=null?`<p>После вычета: <b>${money(Number(o.original_amount)-Number(o.uncompleted_work_amount||0))}</b> <span class="muted">без допработ</span></p>`:''}${description?`<p class="reportDeductionComment">${esc(description)}</p>`:''}`;
+    if(line)line.after(detail);else root.querySelector('.card')?.append(detail);
+  }
   const openReview=window.openReportReview;
-  if(typeof openReview==='function')window.openReportReview=function(id){openReview(id);enrichExtraWork(id)};
+  if(typeof openReview==='function')window.openReportReview=function(id){openReview(id);enrichExtraWork(id);enrichUncompletedWork(id)};
   const home=pages.home;
   pages.home=function(){
     const html=home();
@@ -35,6 +47,6 @@
     return queue()+html;
   };
   const style=document.createElement('style');
-  style.textContent='.reportExtraWorkDetails{display:flex;flex-direction:column;gap:6px}.reportExtraWorkDetails .muted{white-space:pre-wrap;overflow-wrap:anywhere}';
+  style.textContent='.reportUncompletedDetails{min-width:0}.reportDeductionReviewRow{display:grid;gap:6px;padding:10px 0;border-bottom:1px solid #34455c;overflow-wrap:anywhere}.reportDeductionComment{white-space:pre-wrap;overflow-wrap:anywhere}.reportExtraWorkDetails{display:flex;flex-direction:column;gap:6px}.reportExtraWorkDetails .muted{white-space:pre-wrap;overflow-wrap:anywhere}';
   document.head.appendChild(style);
 })();

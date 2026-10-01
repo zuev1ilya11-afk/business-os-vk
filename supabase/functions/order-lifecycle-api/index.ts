@@ -1,5 +1,8 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import "../../../order-payroll.js";
+import "../../../service-catalog.js";
+import "../../../report-deduction.js";
+const reportDeduction=(globalThis as any).BOS_REPORT_DEDUCTION;
 const orderPayroll=(globalThis as any).BOS_ORDER_PAYROLL;
 
 const cors={
@@ -75,9 +78,10 @@ async function finalizeReport(db:any,req:Request,body:any){
   const act=String(body.act_url||''),photos=Array.isArray(body.photo_urls)?body.photo_urls.filter(Boolean).slice(0,5):[];
   if(!act)return json({ok:false,error:'ACT_REQUIRED'},400);if(!photos.length)return json({ok:false,error:'PHOTO_REQUIRED'},400);if(![act,...photos].every(u=>validAttachmentUrl(u,orderId,token)))return json({ok:false,error:'INVALID_ATTACHMENT_URL'},400);
   for(const k of ['uncompleted_work_amount','extra_work_amount'])if(k in body&&(!Number.isFinite(Number(body[k]))||Number(body[k])<0))return json({ok:false,error:'Сумма должна быть конечным неотрицательным числом'},400);
-  const original=Number(q.data.original_amount??q.data.amount??0),unfinished=Number(body.uncompleted_work_amount||0);if(unfinished>original)return json({ok:false,error:'Невыполненные работы не могут превышать сумму заказа'},400);
+let deduction:any;try{deduction=reportDeduction.normalize(body,q.data)}catch(e){return json({ok:false,error:e instanceof Error?e.message:String(e)},400)}
+  const original=deduction.original_amount,unfinished=deduction.uncompleted_work_amount;
   const amount=round(original-unfinished),now=new Date().toISOString();
-  const patch:any={status:'В работе',amount,extra_work_done:!!body.extra_work_done,extra_work_description:String(body.extra_work_description||''),extra_work_amount:round(body.extra_work_amount||0),uncompleted_work_done:!!body.uncompleted_work_done,uncompleted_work_description:String(body.uncompleted_work_description||''),uncompleted_work_amount:round(unfinished),report_type:'work',report_act_url:act,report_measurement_url:null,report_photo_urls:JSON.stringify(photos),report_uploaded_at:now,report_upload_token:token,report_review_status:'pending',report_reviewed_by:null,report_reviewed_at:null,report_review_comment:'',drive_archive_status:'pending',drive_archive_error:null,completed_at:null,sync_status:'pending_sheet',updated_at:now,...payouts(amount,q.data)};
+  const patch:any={status:'В работе',amount,extra_work_done:!!body.extra_work_done,extra_work_description:String(body.extra_work_description||''),extra_work_amount:round(body.extra_work_amount||0),uncompleted_work_done:!!body.uncompleted_work_done,uncompleted_work_description:String(body.uncompleted_work_description||''),uncompleted_work_amount:round(unfinished),...deduction,report_type:'work',report_act_url:act,report_measurement_url:null,report_photo_urls:JSON.stringify(photos),report_uploaded_at:now,report_upload_token:token,report_review_status:'pending',report_reviewed_by:null,report_reviewed_at:null,report_review_comment:'',drive_archive_status:'pending',drive_archive_error:null,completed_at:null,sync_status:'pending_sheet',updated_at:now,...payouts(amount,q.data)};
   const r=await reportWriteReceipt(db,q.data,patch,token);if(r.error)throw r.error;if(!r.data)return reportConflict();
   return json({ok:true,order:masterOrder(r.data),drive_archive_status:'pending'});
 }

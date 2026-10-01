@@ -539,6 +539,109 @@ window.BOS_PERMISSIONS=Object.freeze({canUseDispatcherWorkspace,isDispatcherWork
 
 
 ;
+// Source: service-catalog.js
+// Shared catalogue: the existing prices and units, consumed by browser and server.
+(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.BOS_PRICE_CATALOG=api;})(typeof window==='undefined'?globalThis:window,function(){
+const standard=[
+{id:'standard_001',n:'Замер помещения. Выезд на объект, составление обмерного плана.',u:'выезд',p:1500},
+{id:'standard_002',n:'Выезд за пределы города (в одну сторону за каждый км)',u:'км',p:70},
+{id:'standard_003',n:'Минимальная стоимость выезда мастера',u:'',p:2800},
+{id:'standard_004',n:'Повторный выезд по вине магазина',u:'выезд',p:1200},
+{id:'standard_005',n:'Установка декоративного карниза длиной до 2,5 метров',u:'комплект',p:1699},
+{id:'standard_006',n:'Установка декоративного карниза длиной до 3,5 метров',u:'комплект',p:2229},
+{id:'standard_007',n:'Установка декоративного карниза длиной более 3,5 метров',u:'пог. м',p:999},
+{id:'standard_008',n:'Установка горизонтальных жалюзи на створку окна',u:'комплект',p:1005},
+{id:'standard_009',n:'Монтаж рулонной шторы / день-ночь на стену, потолок или в проём',u:'комплект',p:1340},
+{id:'standard_010',n:'Установка рулонной шторы / день-ночь на створку окна',u:'комплект',p:1199},
+{id:'standard_011',n:'Монтаж римской шторы на стену / потолок',u:'комплект',p:1290},
+{id:'standard_012',n:'Монтаж вертикальных жалюзи на стену / потолок',u:'п.м.',p:1270},
+{id:'standard_013',n:'Монтаж горизонтальных жалюзи на стену / потолок',u:'',p:null},
+{id:'standard_014',n:'Монтаж шторы плиссе',u:'комплект',p:1199},
+{id:'standard_015',n:'Установка декоративного крючка / подхвата',u:'шт',p:180},
+{id:'standard_016',n:'Установка бленды',u:'п.м.',p:300},
+{id:'standard_017',n:'Демонтаж декоративного крючка или подхвата',u:'шт',p:80},
+{id:'standard_018',n:'Демонтаж карниза',u:'шт',p:400},
+{id:'standard_019',n:'Демонтаж рулонных штор, римских штор и жалюзи всех видов',u:'шт',p:250},
+{id:'standard_020',n:'Подрезка карниза по длине',u:'пил.',p:200},
+{id:'standard_021',n:'Эркерное соединение карниза',u:'шт',p:250},
+{id:'standard_022',n:'Монтаж направляющих для рулонной шторы',u:'комплект',p:580},
+{id:'standard_023',n:'Монтаж дополнительной точки крепления декоративного карниза',u:'шт',p:380},
+{id:'standard_024',n:'Доплата за работы на высоте более 3 метров',u:'п.м.',p:550},
+{id:'standard_025',n:'Подрезка гладкой светопроницаемой рулонной шторы',u:'шт.',p:750},
+{id:'standard_026',n:'Подрезка рулонной шторы Блэкаут',u:'шт.',p:750},
+{id:'standard_027',n:'Подрезка рулонной шторы день-ночь',u:'шт.',p:750},
+{id:'standard_028',n:'Установка магнита для нижней фиксации рулонной шторы / жалюзи',u:'точка',p:200},
+{id:'standard_029',n:'Подрезка ламелей вертикальных жалюзи',u:'шт.',p:50},
+{id:'standard_030',n:'Монтаж ламелей',u:'шт.',p:150},
+{id:'standard_031',n:'Монтаж декоративного короба рулонной шторы',u:'шт.',p:550},
+{id:'standard_032',n:'Подрезка декоративного короба рулонной шторы',u:'пил.',p:440},
+{id:'standard_033',n:'Монтаж внешнего угла-поворота для карниза',u:'шт.',p:380},
+{id:'standard_034',n:'Средство подмащивания для высоты от 3 метров',u:'шт.',p:830}
+];
+const avito={"version":"2026-09-30","title":"Авито — Санкт-Петербург и Ленинградская область","currency":"RUB","regions":["Санкт-Петербург","Ленинградская область"],"priceMode":"from","minimumVisitPrice":null,"travelFee":null,"materialsIncluded":null,"categories":[{"id":"plumbing","name":"Сантехника"},{"id":"electrical","name":"Электрика"},{"id":"handyman","name":"Мастер на час"}],"services":[{"id":"dishwasher_washer","category":"plumbing","name":"Установка и подключение посудомойки, стиральной машины","fromPrice":1500},{"id":"water_heater","category":"plumbing","name":"Установка водонагревателя","fromPrice":2000},{"id":"mixer","category":"plumbing","name":"Установка и замена смесителя","fromPrice":1000},{"id":"toilet","category":"plumbing","name":"Установка и подключение унитаза","fromPrice":2000},{"id":"bath","category":"plumbing","name":"Установка и подключение ванны","fromPrice":3500},{"id":"shower_cabin","category":"plumbing","name":"Сборка и установка душевой кабины","fromPrice":5000},{"id":"installation_frame","category":"plumbing","name":"Сборка и установка каркаса инсталляции","fromPrice":2500,"note":"Цена указана за 2,5 м, далее каждый 1 м + 500 ₽. Размер и применимость расчёта уточнить.","requiresReview":true},{"id":"tap","category":"plumbing","name":"Замена крана","fromPrice":700},{"id":"flexible_hose","category":"plumbing","name":"Монтаж и демонтаж гибкой подводки","fromPrice":700},{"id":"shower_switch","category":"plumbing","name":"Ремонт переключателя душа","fromPrice":500},{"id":"shower_rail","category":"plumbing","name":"Установка штанги для душа","fromPrice":700},{"id":"sealant","category":"plumbing","name":"Герметизация ванны, мойки-раковины, душевой кабины или поддона","fromPrice":2000},{"id":"shower_tray","category":"plumbing","name":"Демонтаж и монтаж душевого поддона","fromPrice":2100},{"id":"filter","category":"plumbing","name":"Замена фильтра грубой и тонкой очистки","fromPrice":1500},{"id":"tee","category":"plumbing","name":"Установка тройника","fromPrice":1000},{"id":"manifold","category":"plumbing","name":"Установка коллектора","fromPrice":3000},{"id":"socket_install","category":"electrical","name":"Установка розеток и выключателей","fromPrice":300},{"id":"data_socket","category":"electrical","name":"Установка компьютерной, антенной, телефонной розетки","fromPrice":500},{"id":"cable_channel","category":"electrical","name":"Установка кабель-каналов","fromPrice":400},{"id":"chandelier","category":"electrical","name":"Сборка и установка люстры","fromPrice":1200},{"id":"light_fixture","category":"electrical","name":"Сборка и установка настенных и потолочных светильников, бра","fromPrice":1200},{"id":"breaker","category":"electrical","name":"Установка и подключение автомата","fromPrice":500},{"id":"electrical_panel","category":"electrical","name":"Установка и монтаж распределительного щита","fromPrice":2000},{"id":"panel_niche","category":"electrical","name":"Устройство ниши под электрощит","fromPrice":2000},{"id":"socket_replace","category":"electrical","name":"Замена розетки/выключателя","fromPrice":300},{"id":"switch_block","category":"electrical","name":"Замена блока выключателей туалет/ванна/кухня","fromPrice":850},{"id":"curtain_rod","category":"handyman","name":"Установка карнизов","fromPrice":1500},{"id":"tv_bracket","category":"handyman","name":"Монтаж кронштейнов для ТВ","fromPrice":800},{"id":"pull_up_bar","category":"handyman","name":"Установка турников","fromPrice":1000},{"id":"shelf","category":"handyman","name":"Навеска полок на стену","fromPrice":500},{"id":"wall_cabinet","category":"handyman","name":"Установка навесных шкафов","fromPrice":800},{"id":"mirror","category":"handyman","name":"Установка зеркала на стену","fromPrice":500},{"id":"dryer","category":"handyman","name":"Установка сушилки для белья","fromPrice":500},{"id":"vent_grille","category":"handyman","name":"Установка вентиляционных решёток","fromPrice":500},{"id":"drilling","category":"handyman","name":"Сверление отверстий","fromPrice":200},{"id":"plumbing_general","category":"handyman","name":"Установка унитаза, раковин, смесителей, ванн","fromPrice":1000,"note":"Общая позиция. Для конкретной услуги используйте соответствующую цену раздела «Сантехника».","requiresReview":true},{"id":"furniture","category":"handyman","name":"Ремонт, сборка мебели","fromPrice":1000}]};
+return {version:'2026-10-01',standard,avito};
+});
+
+
+;
+// Source: report-deduction.js
+// Catalogue snapshots and validation shared by every report submission route.
+(function(root,factory){
+  const api=factory(typeof module==='object'&&module.exports?require('./service-catalog.js'):root.BOS_PRICE_CATALOG);
+  if(typeof module==='object'&&module.exports)module.exports=api;else root.BOS_REPORT_DEDUCTION=api;
+})(typeof window==='undefined'?globalThis:window,function(prices){
+  'use strict';
+  const round=n=>Math.round((Number(n)+Number.EPSILON)*100)/100;
+  const fractional=unit=>['км','пог. м','п.м.','м','м²','м2','час'].includes(unit);
+  const catalog=[...prices.standard.map(s=>({id:s.id,name:s.n,unit:s.u,price:s.p,mode:s.p==null?'agreed':'fixed',group:'Основной прайс'})),
+    ...prices.avito.services.map(s=>({id:'avito_'+s.id,name:s.name,unit:s.unit||'',price:s.fromPrice,mode:'from',group:'Прайс Авито',note:s.note||''}))];
+  const fail=message=>{throw new Error(message)};
+  function number(v,label,max=1e9){
+    if(typeof v!=='number'||!Number.isFinite(v)||v<0||v>max)fail(label+': укажите конечное неотрицательное число');
+    return v;
+  }
+  function items(input){
+    if(!Array.isArray(input)||!input.length||input.length>100)fail('Добавьте от 1 до 100 невыполненных работ из прайса');
+    const seen=new Set();
+    return input.map(row=>{
+      const s=catalog.find(s=>s.id===row?.service_id);
+      if(!s||seen.has(s.id))fail('Неизвестная или повторяющаяся работа в вычете');
+      seen.add(s.id);
+      const qty=number(row.quantity,'Количество',10000);
+      if(qty<=0||Math.abs(qty*1000-Math.round(qty*1000))>1e-7||(!fractional(s.unit)&&!Number.isInteger(qty)))fail('Количество должно быть положительным и соответствовать единице прайса');
+      const price=number(row.unit_price,'Цена');
+      if(Math.abs(price*100-Math.round(price*100))>1e-7)fail('Цена должна быть указана с точностью до копеек');
+      if(s.mode==='fixed'&&price!==s.price)fail('Цена в прайсе изменилась. Откройте выбор работ заново');
+      if(s.mode!=='fixed'&&row.price_confirmed!==true)fail('Подтвердите согласованную цену и объём работы');
+      const amount=round(price*qty);
+      if(!Number.isSafeInteger(Math.round(amount*100))||amount>1e9)fail('Сумма позиции слишком велика');
+      if(row.amount!==undefined&&row.amount!==amount)fail('Сумма позиции не соответствует цене и количеству');
+      return {service_id:s.id,name:s.name,unit:s.unit,quantity:qty,unit_price:price,amount,price_mode:s.mode,price_confirmed:s.mode==='fixed'?false:true,catalog_version:prices.version};
+    });
+  }
+  function original(order){
+    // Preserve a recovered base for legacy rows without original_amount on first submission.
+    return round(order.original_amount??(Number(order.amount||0)+Number(order.uncompleted_work_amount||0)));
+  }
+  function normalize(body,order){
+    const base=original(order);
+    if(!Number.isFinite(base)||base<0)fail('Некорректная исходная сумма заявки');
+    const detailed=Object.prototype.hasOwnProperty.call(body,'uncompleted_work_items');
+    const enabled=body.uncompleted_work_done===true||body.uncompleted_work_done==='true'||(body.uncompleted_work_done==null&&!detailed&&Number(body.uncompleted_work_amount)>0);
+    if(!enabled)return {original_amount:base,uncompleted_work_done:false,uncompleted_work_items:[],uncompleted_work_amount:0,uncompleted_work_description:''};
+    const comment=String(body.uncompleted_work_description||'').trim();
+    if(comment.length>4000)fail('Комментарий: не более 4000 символов');
+    const rows=detailed?items(body.uncompleted_work_items):[];
+    const total=detailed?round(rows.reduce((sum,s)=>sum+s.amount,0)):round(Number(body.uncompleted_work_amount||0));
+    if(!Number.isFinite(total)||total<0||total>base)fail('Невыполненные работы не могут превышать исходную сумму заявки');
+    if(detailed&&body.uncompleted_work_amount!==undefined&&body.uncompleted_work_amount!==total)fail('Сумма вычета не соответствует выбранным работам');
+    return {original_amount:base,uncompleted_work_done:true,uncompleted_work_items:rows,uncompleted_work_amount:total,uncompleted_work_description:comment};
+  }
+  return {catalog,fractional,items,normalize,original,round};
+});
+
+
+;
 // Source: app-public.js
 const cfg=window.BUSINESS_OS_CONFIG||{};const ROLE_NAMES={owner:'Владелец',manager:'Руководитель',dispatcher:'Диспетчер',master:'Мастер'};const STATUSES=['В работе','Выполнена','Отменена'];const state={page:'home',user:{full_name:'Илья',role:'owner',city:'Москва'},orders:[],masters:[],users:[],sources:[],settings:{},masterSchedule:[],busy:false};const $=s=>document.querySelector(s);const esc=s=>String(s??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','\"':'&quot;'}[c]));const money=n=>Number(n||0).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽';const payout=a=>Math.round(Number(a||0)*.85*.65*100)/100;
 function api(action,payload={}){const url=cfg.API_URL||cfg.GAS_WEB_APP_URL;if(!url)return Promise.reject(new Error('Не настроен API'));const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...payload}),signal:controller.signal}).then(async r=>{let d;try{d=await r.json()}catch(_){throw new Error('Сервер вернул неверный ответ')}if(!r.ok&&!d?.error)throw new Error('Ошибка сервера '+r.status);return d}).catch(e=>{if(e&&e.name==='AbortError')throw new Error('Сервер не ответил');throw e}).finally(()=>clearTimeout(timer))}
@@ -1363,45 +1466,8 @@ const baseHome=pages.home;pages.home=function(){if(!(typeof isMasterPreview==='f
 ;
 // Source: business-os-custom-v3.js
 (()=>{
-// Generated from supabase/functions/_shared/avito-price-catalog.json.
-window.BOS_AVITO_PRICE_CATALOG={"version":"2026-09-30","title":"Авито — Санкт-Петербург и Ленинградская область","currency":"RUB","regions":["Санкт-Петербург","Ленинградская область"],"priceMode":"from","minimumVisitPrice":null,"travelFee":null,"materialsIncluded":null,"categories":[{"id":"plumbing","name":"Сантехника"},{"id":"electrical","name":"Электрика"},{"id":"handyman","name":"Мастер на час"}],"services":[{"id":"dishwasher_washer","category":"plumbing","name":"Установка и подключение посудомойки, стиральной машины","fromPrice":1500},{"id":"water_heater","category":"plumbing","name":"Установка водонагревателя","fromPrice":2000},{"id":"mixer","category":"plumbing","name":"Установка и замена смесителя","fromPrice":1000},{"id":"toilet","category":"plumbing","name":"Установка и подключение унитаза","fromPrice":2000},{"id":"bath","category":"plumbing","name":"Установка и подключение ванны","fromPrice":3500},{"id":"shower_cabin","category":"plumbing","name":"Сборка и установка душевой кабины","fromPrice":5000},{"id":"installation_frame","category":"plumbing","name":"Сборка и установка каркаса инсталляции","fromPrice":2500,"note":"Цена указана за 2,5 м, далее каждый 1 м + 500 ₽. Размер и применимость расчёта уточнить.","requiresReview":true},{"id":"tap","category":"plumbing","name":"Замена крана","fromPrice":700},{"id":"flexible_hose","category":"plumbing","name":"Монтаж и демонтаж гибкой подводки","fromPrice":700},{"id":"shower_switch","category":"plumbing","name":"Ремонт переключателя душа","fromPrice":500},{"id":"shower_rail","category":"plumbing","name":"Установка штанги для душа","fromPrice":700},{"id":"sealant","category":"plumbing","name":"Герметизация ванны, мойки-раковины, душевой кабины или поддона","fromPrice":2000},{"id":"shower_tray","category":"plumbing","name":"Демонтаж и монтаж душевого поддона","fromPrice":2100},{"id":"filter","category":"plumbing","name":"Замена фильтра грубой и тонкой очистки","fromPrice":1500},{"id":"tee","category":"plumbing","name":"Установка тройника","fromPrice":1000},{"id":"manifold","category":"plumbing","name":"Установка коллектора","fromPrice":3000},{"id":"socket_install","category":"electrical","name":"Установка розеток и выключателей","fromPrice":300},{"id":"data_socket","category":"electrical","name":"Установка компьютерной, антенной, телефонной розетки","fromPrice":500},{"id":"cable_channel","category":"electrical","name":"Установка кабель-каналов","fromPrice":400},{"id":"chandelier","category":"electrical","name":"Сборка и установка люстры","fromPrice":1200},{"id":"light_fixture","category":"electrical","name":"Сборка и установка настенных и потолочных светильников, бра","fromPrice":1200},{"id":"breaker","category":"electrical","name":"Установка и подключение автомата","fromPrice":500},{"id":"electrical_panel","category":"electrical","name":"Установка и монтаж распределительного щита","fromPrice":2000},{"id":"panel_niche","category":"electrical","name":"Устройство ниши под электрощит","fromPrice":2000},{"id":"socket_replace","category":"electrical","name":"Замена розетки/выключателя","fromPrice":300},{"id":"switch_block","category":"electrical","name":"Замена блока выключателей туалет/ванна/кухня","fromPrice":850},{"id":"curtain_rod","category":"handyman","name":"Установка карнизов","fromPrice":1500},{"id":"tv_bracket","category":"handyman","name":"Монтаж кронштейнов для ТВ","fromPrice":800},{"id":"pull_up_bar","category":"handyman","name":"Установка турников","fromPrice":1000},{"id":"shelf","category":"handyman","name":"Навеска полок на стену","fromPrice":500},{"id":"wall_cabinet","category":"handyman","name":"Установка навесных шкафов","fromPrice":800},{"id":"mirror","category":"handyman","name":"Установка зеркала на стену","fromPrice":500},{"id":"dryer","category":"handyman","name":"Установка сушилки для белья","fromPrice":500},{"id":"vent_grille","category":"handyman","name":"Установка вентиляционных решёток","fromPrice":500},{"id":"drilling","category":"handyman","name":"Сверление отверстий","fromPrice":200},{"id":"plumbing_general","category":"handyman","name":"Установка унитаза, раковин, смесителей, ванн","fromPrice":1000,"note":"Общая позиция. Для конкретной услуги используйте соответствующую цену раздела «Сантехника».","requiresReview":true},{"id":"furniture","category":"handyman","name":"Ремонт, сборка мебели","fromPrice":1000}]};
-const SERVICES=[
-{n:'Замер помещения. Выезд на объект, составление обмерного плана.',u:'выезд',p:1500},
-{n:'Выезд за пределы города (в одну сторону за каждый км)',u:'км',p:70},
-{n:'Минимальная стоимость выезда мастера',u:'',p:2800},
-{n:'Повторный выезд по вине магазина',u:'выезд',p:1200},
-{n:'Установка декоративного карниза длиной до 2,5 метров',u:'комплект',p:1699},
-{n:'Установка декоративного карниза длиной до 3,5 метров',u:'комплект',p:2229},
-{n:'Установка декоративного карниза длиной более 3,5 метров',u:'пог. м',p:999},
-{n:'Установка горизонтальных жалюзи на створку окна',u:'комплект',p:1005},
-{n:'Монтаж рулонной шторы / день-ночь на стену, потолок или в проём',u:'комплект',p:1340},
-{n:'Установка рулонной шторы / день-ночь на створку окна',u:'комплект',p:1199},
-{n:'Монтаж римской шторы на стену / потолок',u:'комплект',p:1290},
-{n:'Монтаж вертикальных жалюзи на стену / потолок',u:'п.м.',p:1270},
-{n:'Монтаж горизонтальных жалюзи на стену / потолок',u:'',p:null},
-{n:'Монтаж шторы плиссе',u:'комплект',p:1199},
-{n:'Установка декоративного крючка / подхвата',u:'шт',p:180},
-{n:'Установка бленды',u:'п.м.',p:300},
-{n:'Демонтаж декоративного крючка или подхвата',u:'шт',p:80},
-{n:'Демонтаж карниза',u:'шт',p:400},
-{n:'Демонтаж рулонных штор, римских штор и жалюзи всех видов',u:'шт',p:250},
-{n:'Подрезка карниза по длине',u:'пил.',p:200},
-{n:'Эркерное соединение карниза',u:'шт',p:250},
-{n:'Монтаж направляющих для рулонной шторы',u:'комплект',p:580},
-{n:'Монтаж дополнительной точки крепления декоративного карниза',u:'шт',p:380},
-{n:'Доплата за работы на высоте более 3 метров',u:'п.м.',p:550},
-{n:'Подрезка гладкой светопроницаемой рулонной шторы',u:'шт.',p:750},
-{n:'Подрезка рулонной шторы Блэкаут',u:'шт.',p:750},
-{n:'Подрезка рулонной шторы день-ночь',u:'шт.',p:750},
-{n:'Установка магнита для нижней фиксации рулонной шторы / жалюзи',u:'точка',p:200},
-{n:'Подрезка ламелей вертикальных жалюзи',u:'шт.',p:50},
-{n:'Монтаж ламелей',u:'шт.',p:150},
-{n:'Монтаж декоративного короба рулонной шторы',u:'шт.',p:550},
-{n:'Подрезка декоративного короба рулонной шторы',u:'пил.',p:440},
-{n:'Монтаж внешнего угла-поворота для карниза',u:'шт.',p:380},
-{n:'Средство подмащивания для высоты от 3 метров',u:'шт.',p:830}
-];
-// One catalog shared by the existing order form and the master's price view.
+window.BOS_AVITO_PRICE_CATALOG=window.BOS_PRICE_CATALOG.avito;
+const SERVICES=window.BOS_PRICE_CATALOG.standard;
 window.BOS_SERVICE_CATALOG=SERVICES;
 const WALLS=['Не указан','Бетон','Кирпич','Газобетон','Гипсокартон','Дерево','Плитка','Металл','Другое'];
 const SLOTS=Array.from({length:11},(_,i)=>{const h=10+i;return `${String(h).padStart(2,'0')}:00–${String(h+1).padStart(2,'0')}:00`});
@@ -1768,11 +1834,12 @@ window.openMasterReportForm=function(id){
     <label>Фото выполненной работы *</label><input id="mrPhotos" type="file" accept="image/*" multiple required><p class="muted reportHint">Выберите до 5 фото из файлов или галереи.</p>
     <div class="reportQuestion"><b>Были ли допработы?</b><div class="reportChoices">${reportRadio('mrExtra','false','Нет',true)}${reportRadio('mrExtra','true','Да',false)}</div></div>
     <div id="mrExtraBox" class="reportConditional" style="display:none"><input id="mrExtraDesc" placeholder="Какие допработы"><input id="mrExtraAmount" type="number" min="0" step="0.01" placeholder="Сумма допработ"></div>
-    <div class="reportQuestion"><b>Все ли на заявке выполнено?</b><div class="reportChoices">${reportRadio('mrAllDone','true','Да',true)}${reportRadio('mrAllDone','false','Нет',false)}</div></div>
+    <div class="reportQuestion reportOutcome"><b>Все ли на заявке выполнено?</b><div class="reportChoices">${reportRadio('mrAllDone','true','Всё выполнено',true)}${reportRadio('mrAllDone','false','Сделано не всё',false)}</div></div>
     <div id="mrUnfinishedBox" class="reportConditional" style="display:none"><input id="mrUnfinishedDesc" placeholder="Что не выполнено"><input id="mrUnfinishedAmount" type="number" min="0" step="0.01" placeholder="Стоимость невыполненного"></div>
     <button class="primary wide" type="submit">Отправить отчёт и завершить</button><p id="mrMsg" class="muted"></p>
   </form>`);
   document.querySelectorAll('input[name="mrExtra"],input[name="mrAllDone"]').forEach(el=>el.addEventListener('change',reportToggleState));
+  window.BOS_INIT_REPORT_DEDUCTION($('#masterReportForm'),o);
   reportToggleState();
   $('#masterReportForm').onsubmit=e=>submitMasterReportV12(e,id);
 };
@@ -1839,6 +1906,87 @@ async function submitMasterReportV12(e,id){
 }
 const style=document.createElement('style');style.textContent=`.reportCompactForm{gap:10px}.reportCompactForm>label{margin-top:2px}.reportHint{margin:-4px 0 2px;font-size:12px}.reportQuestion{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.07)}.reportQuestion b{font-size:14px}.reportChoices{display:flex;gap:6px}.reportChoice{cursor:pointer}.reportChoice input{position:absolute;opacity:0;pointer-events:none}.reportChoice span{display:block;min-width:52px;padding:7px 11px;text-align:center;border:1px solid #315271;border-radius:10px;font-size:13px}.reportChoice input:checked+span{background:#1f5f99;border-color:#4f91cf;color:#fff}.reportConditional{grid-template-columns:1fr 130px;gap:8px;margin:-2px 0 4px}.reportConditional input{min-height:40px;padding:9px 10px}.reportCompactForm input[type=file]{min-height:42px}@media(max-width:520px){.reportConditional{grid-template-columns:1fr}.reportQuestion{align-items:flex-start;flex-direction:column;gap:7px}.reportChoices{width:100%}.reportChoice{flex:1}.reportChoice span{width:100%;box-sizing:border-box}}`;document.head.appendChild(style);
 })();
+
+;
+// Source: report-uncompleted-ui.js
+(()=>{
+'use strict';
+const D=window.BOS_REPORT_DEDUCTION;
+const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const numeric=value=>String(value).trim()===''?NaN:Number(String(value).replace(',','.'));
+window.BOS_INIT_REPORT_DEDUCTION=function(form,order){
+  const box=form.querySelector('#mrUnfinishedBox');
+  let rows=Array.isArray(order.uncompleted_work_items)?order.uncompleted_work_items.map(r=>({...r})):[];
+  const visibleCost=window.BOS_ORDER_PAYROLL.isDirect(order)&&order.original_amount!=null;
+  const base=visibleCost?Number(order.original_amount):null;
+  box.innerHTML='<input id="mrUnfinishedDesc" type="hidden"><input id="mrUnfinishedAmount" type="hidden" value="0"><div id="mrDeductionSummary"></div><button type="button" class="secondary" id="mrEditDeduction">Что не было сделано</button>';
+  box.classList.add('reportDeductionSummary');
+  const dialog=document.createElement('dialog');dialog.id='mrDeductionDialog';dialog.className='reportDeductionDialog';
+  dialog.setAttribute('aria-labelledby','mrDeductionTitle');
+  dialog.innerHTML=`<div class="deductionHeading"><div><div class="eyebrow">ОТЧЁТ ПО ЗАЯВКЕ</div><h2 id="mrDeductionTitle">Что не было сделано</h2></div><button type="button" class="secondary" id="mrCloseDeduction" aria-label="Вернуться к отчёту">×</button></div>
+    <p class="muted">Выберите работы и укажите невыполненное количество. Допработы заполняются отдельно.</p>
+    <button type="button" class="secondary wide" id="mrAddCatalog">+ Добавить из прайса</button>
+    <section id="mrCatalogPicker" hidden><label for="mrCatalogSearch">Поиск услуги</label><input id="mrCatalogSearch" type="search" placeholder="Например, карниз или шторы" autocomplete="off"><div id="mrCatalogResults"></div></section>
+    <div id="mrDeductionRows"></div><p id="mrDeductionEmpty" class="muted">Пока нет выбранных работ</p>
+    <div class="deductionTotals" aria-live="polite"><div><span>Сумма вычета</span><b id="mrDeductionTotal"></b></div>${visibleCost?'<div><span>После вычета</span><b id="mrAfterDeduction"></b></div>':'<p class="muted">Полная стоимость заявки скрыта. Допустимый вычет проверяется при отправке отчёта.</p>'}</div>
+    <label for="mrDeductionComment">Комментарий к невыполненным работам</label><textarea id="mrDeductionComment" maxlength="4000" placeholder="Почему работы не выполнены"></textarea>
+    <p id="mrDeductionError" role="alert"></p><button type="button" class="primary wide" id="mrDeductionContinue">Продолжить</button>`;
+  form.append(dialog);
+  const $=id=>form.querySelector('#'+id);
+  $('mrDeductionComment').value=order.uncompleted_work_description||'';
+  const enabled=()=>form.querySelector('[name=mrAllDone]:checked')?.value==='false';
+  const total=()=>D.round(rows.reduce((sum,r)=>sum+(Number.isFinite(r.unit_price*r.quantity)?D.round(r.unit_price*r.quantity):0),0));
+  function update(){
+    const sum=total();$('mrDeductionTotal').textContent=money(sum);
+    if(visibleCost)$('mrAfterDeduction').textContent=money(base-sum);
+    $('mrUnfinishedAmount').value=String(enabled()?sum:0);
+    $('mrUnfinishedDesc').value=enabled()?$('mrDeductionComment').value.trim():'';
+    $('mrDeductionSummary').textContent=rows.length?`${rows.length} поз. · Сумма вычета: ${money(sum)}`:'Выберите невыполненные работы';
+    $('mrDeductionEmpty').hidden=rows.length>0;
+  }
+  function renderRows(){
+    $('mrDeductionRows').innerHTML=rows.map((r,i)=>{
+      const s=D.catalog.find(s=>s.id===r.service_id);
+      return `<article class="deductionItem" data-index="${i}"><div class="deductionItemHead"><b>${escape(s?.name||r.name)}</b><button type="button" class="secondary" data-remove="${i}" aria-label="Удалить ${escape(s?.name||r.name)}">×</button></div><p class="muted">${escape(s?.unit?'Единица: '+s.unit:'Единица в прайсе не указана; количество целое')}${s?.note?' · '+escape(s.note):''}</p><div class="deductionItemFields"><label>Цена за единицу${s?.mode==='from'?' (от '+money(s.price)+')':''}${s?.mode==='fixed'?`<span class="deductionFixedPrice">${money(s.price)}</span>`:`<input type="text" inputmode="decimal" data-price="${i}" aria-label="Согласованная цена ${escape(s?.name)}" value="${Number.isFinite(r.unit_price)?r.unit_price:''}" placeholder="Согласованная цена">`}</label><label>Количество<input type="text" inputmode="${D.fractional(s?.unit)?'decimal':'numeric'}" data-qty="${i}" aria-label="Количество ${escape(s?.name)}" value="${escape(r.quantity)}"></label><div>Сумма позиции<strong data-row-total="${i}">${money(Number.isFinite(r.unit_price*r.quantity)?D.round(r.unit_price*r.quantity):0)}</strong></div></div>${s?.mode!=='fixed'?`<label class="deductionAgreement"><input type="checkbox" data-confirm="${i}" ${r.price_confirmed?'checked':''}><span>Цена и объём согласованы с клиентом / диспетчером</span></label>`:''}</article>`;
+    }).join('');update();
+  }
+  function search(){
+    const q=$('mrCatalogSearch').value.trim().toLocaleLowerCase('ru');
+    const found=D.catalog.filter(s=>(s.name+' '+s.group).toLocaleLowerCase('ru').includes(q));
+    $('mrCatalogResults').innerHTML=found.length?found.map(s=>`<button type="button" class="secondary deductionCatalogItem" data-service="${s.id}" ${rows.some(r=>r.service_id===s.id)?'disabled':''}><span><b>${escape(s.name)}</b><small>${escape(s.group)}${s.unit?' · '+escape(s.unit):''}</small></span><strong>${s.mode==='fixed'?money(s.price):s.mode==='from'?'от '+money(s.price):'По согласованию'}</strong></button>`).join(''):'<p class="muted">Работы не найдены</p>';
+  }
+  function payload(){
+    if(!enabled())return {uncompleted_work_done:false,uncompleted_work_items:[],uncompleted_work_amount:0,uncompleted_work_description:''};
+    const items=D.items(rows.map(r=>({service_id:r.service_id,quantity:r.quantity,unit_price:r.unit_price,price_confirmed:r.price_confirmed})));
+    const sum=D.round(items.reduce((v,r)=>v+r.amount,0));
+    if(visibleCost&&sum>base)throw new Error('Сумма вычета превышает исходную сумму заявки');
+    return {uncompleted_work_done:true,uncompleted_work_items:items,uncompleted_work_amount:sum,uncompleted_work_description:$('mrDeductionComment').value.trim()};
+  }
+  function open(){if(!dialog.open)dialog.showModal();$('mrDeductionError').textContent='';update();}
+  form.bosDeductionPayload=payload;
+  form.querySelectorAll('[name=mrAllDone]').forEach(input=>input.addEventListener('change',()=>{update();if(enabled())open();else if(dialog.open)dialog.close();}));
+  $('mrEditDeduction').onclick=open;$('mrCloseDeduction').onclick=()=>dialog.close();
+  $('mrAddCatalog').onclick=()=>{$('mrCatalogPicker').hidden=!$('mrCatalogPicker').hidden;if(!$('mrCatalogPicker').hidden){search();$('mrCatalogSearch').focus();}};
+  $('mrCatalogSearch').oninput=search;
+  $('mrCatalogResults').onclick=e=>{const button=e.target.closest('[data-service]');if(!button)return;const s=D.catalog.find(s=>s.id===button.dataset.service);if(rows.some(r=>r.service_id===s.id))return;rows.push({service_id:s.id,quantity:1,unit_price:s.mode==='fixed'?s.price:NaN,price_confirmed:false});renderRows();search();$('mrCatalogPicker').hidden=true;};
+  $('mrDeductionRows').onclick=e=>{const button=e.target.closest('[data-remove]');if(!button)return;rows.splice(Number(button.dataset.remove),1);renderRows();};
+  $('mrDeductionRows').oninput=e=>{
+    const t=e.target;
+    if(t.dataset.qty!=null)rows[Number(t.dataset.qty)].quantity=numeric(t.value);
+    if(t.dataset.price!=null){rows[Number(t.dataset.price)].unit_price=numeric(t.value);rows[Number(t.dataset.price)].price_confirmed=false;const check=$('mrDeductionRows').querySelector(`[data-confirm="${t.dataset.price}"]`);if(check)check.checked=false;}
+    if(t.dataset.confirm!=null)rows[Number(t.dataset.confirm)].price_confirmed=t.checked;
+    rows.forEach((r,i)=>{const el=$('mrDeductionRows').querySelector(`[data-row-total="${i}"]`);if(el)el.textContent=money(Number.isFinite(r.quantity*r.unit_price)?D.round(r.quantity*r.unit_price):0);});update();
+  };
+  $('mrDeductionComment').oninput=update;
+  $('mrDeductionContinue').onclick=()=>{try{payload();update();dialog.close();$('mrEditDeduction').focus();}catch(e){$('mrDeductionError').textContent=e.message;}};
+  dialog.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'&&e.target.type!=='checkbox'){e.preventDefault();}});
+  renderRows();
+};
+const style=document.createElement('style');style.textContent=`
+.reportFixedV27 .reportOutcome .reportChoices{flex-wrap:wrap;max-width:100%;width:auto;gap:6px}.reportFixedV27 .reportOutcome .reportChoice{flex:1 0 130px}.reportFixedV27 .reportOutcome .reportChoice span{white-space:nowrap;word-break:normal;overflow-wrap:normal;min-width:130px;max-width:none;box-sizing:border-box}#mrUnfinishedBox.reportDeductionSummary{grid-template-columns:1fr}.reportDeductionDialog{box-sizing:border-box;width:min(660px,calc(100vw - 24px));max-height:calc(100dvh - 24px);margin:auto;padding:20px;border:1px solid #34455c;border-radius:20px;color:#ecf2fc;background:#111c2c;overflow:auto;overscroll-behavior:contain}.reportDeductionDialog::backdrop{background:rgba(0,0,0,.7)}.reportDeductionDialog [hidden]{display:none!important}.reportDeductionDialog input,.reportDeductionDialog textarea{box-sizing:border-box;width:100%;min-width:0;font-size:16px}.reportDeductionDialog button{min-height:44px;white-space:normal}.deductionHeading,.deductionItemHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.deductionHeading h2{margin:5px 0;font-size:23px}.deductionHeading button,.deductionItemHead button{flex:0 0 44px;padding:5px}.deductionItem{margin:12px 0;padding:14px;border:1px solid #34455c;border-radius:14px;overflow-wrap:anywhere}.deductionItem p{font-size:12px;margin:6px 0 12px}.deductionItemFields{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr) minmax(0,1fr);gap:10px;font-size:12px}.deductionItemFields label{display:grid;gap:6px;align-content:start}.deductionItemFields strong,.deductionFixedPrice{display:block;margin-top:8px;font-size:16px}.deductionAgreement{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:13px}.deductionAgreement input{width:20px;min-height:20px;flex:0 0 20px}.deductionTotals{padding:14px;border-radius:12px;background:#1a2c43;margin:16px 0}.deductionTotals>div{display:flex;justify-content:space-between;gap:8px;padding:6px 0}.deductionCatalogItem{display:flex;width:100%;gap:8px;justify-content:space-between;text-align:left;margin:6px 0;padding:10px}.deductionCatalogItem span{min-width:0;overflow-wrap:anywhere}.deductionCatalogItem strong{flex:0 0 95px;text-align:right}.deductionCatalogItem small{display:block;margin-top:4px;color:#a7b7ce}#mrCatalogPicker{margin:12px 0}#mrCatalogResults{max-height:240px;overflow:auto}#mrDeductionError{color:#ffb0a8}#mrDeductionComment{margin-top:6px;min-height:80px}@media(max-width:560px){.reportFixedV27 .reportOutcome{display:flex;flex-direction:column;align-items:stretch}.reportFixedV27 .reportOutcome .reportChoices{width:100%;min-width:0}}@media(max-width:390px){.reportDeductionDialog{padding:12px}.deductionHeading h2{font-size:20px}.deductionItem{padding:10px}.deductionItemFields{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.deductionItemFields>div{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center}.deductionItemFields strong{margin-top:0}.deductionCatalogItem strong{flex-basis:75px}.deductionTotals{padding:10px;font-size:14px}}`;
+document.head.append(style);
+})();
+
 
 ;
 // Source: owner-tools-v13.js
@@ -2222,7 +2370,7 @@ async function reconcileReport(form,msg,id){
   msg.after(open);
   return true;
 }
-async function submit(e,id){e.preventDefault();const form=e.currentTarget,msg=document.querySelector('#mrMsg');if(state.busy||submitting.has(form)||form.dataset.reportLocked==='true')return;const act=document.querySelector('#mrAct')?.files?.[0],photos=[...(document.querySelector('#mrPhotos')?.files||[])].slice(0,5),extra=document.querySelector('input[name="mrExtra"]:checked')?.value==='true',allDone=document.querySelector('input[name="mrAllDone"]:checked')?.value==='true',unfinished=!allDone,extraDesc=document.querySelector('#mrExtraDesc')?.value?.trim()||'',extraAmount=Number(document.querySelector('#mrExtraAmount')?.value||0),unfinishedDesc=document.querySelector('#mrUnfinishedDesc')?.value?.trim()||'',unfinishedAmount=Number(document.querySelector('#mrUnfinishedAmount')?.value||0);if(!act){msg.textContent='Приложите акт выполненных работ';return}if(!photos.length){msg.textContent='Приложите хотя бы одно фото';return}if(extra&&(!extraDesc||extraAmount<=0)){msg.textContent='Укажите допработы и сумму';return}if(unfinished&&(!unfinishedDesc||unfinishedAmount<=0)){msg.textContent='Укажите, что не выполнено, и стоимость';return}submitting.add(form);state.busy=true;setBusy(form,true);let finalizing=false;const token='report_'+Date.now()+'_'+Math.random().toString(36).slice(2);try{msg.textContent='Подготавливаем акт…';const a=await compact(act,false);msg.textContent='Загружаем акт…';const ar=await request(acting({action:'uploadReportFile',order_id:id,upload_token:token,file_kind:'act',file_index:0,file_name:a.name,file_mime:a.mime,file_data:a.data}));const photoUrls=[];for(let i=0;i<photos.length;i++){msg.textContent=`Подготавливаем фото ${i+1} из ${photos.length}…`;const p=await compact(photos[i],true);msg.textContent=`Загружаем фото ${i+1} из ${photos.length}…`;const pr=await request(acting({action:'uploadReportFile',order_id:id,upload_token:token,file_kind:'photo',file_index:i+1,file_name:p.name,file_mime:p.mime,file_data:p.data}));photoUrls.push(pr.url)}msg.textContent='Сохраняем отчёт…';finalizing=true;const d=await request(acting({action:'finalizeMasterReport',order_id:id,upload_token:token,act_url:ar.url,photo_urls:photoUrls,extra_work_done:extra,extra_work_description:extra?extraDesc:'',extra_work_amount:extra?extraAmount:0,uncompleted_work_done:unfinished,uncompleted_work_description:unfinished?unfinishedDesc:'',uncompleted_work_amount:unfinished?unfinishedAmount:0}));if(d.order){const i=state.orders.findIndex(x=>String(x.id)===String(id));if(i>=0)state.orders[i]={...state.orders[i],...d.order}}msg.textContent='Отчёт отправлен';state.busy=false;closeModal();try{await reloadData(true)}catch(_){show('orders')}}catch(err){
+async function submit(e,id){e.preventDefault();const form=e.currentTarget,msg=document.querySelector('#mrMsg');if(state.busy||submitting.has(form)||form.dataset.reportLocked==='true')return;const act=document.querySelector('#mrAct')?.files?.[0],photos=[...(document.querySelector('#mrPhotos')?.files||[])].slice(0,5),extra=document.querySelector('input[name="mrExtra"]:checked')?.value==='true',allDone=document.querySelector('input[name="mrAllDone"]:checked')?.value==='true',unfinished=!allDone,extraDesc=document.querySelector('#mrExtraDesc')?.value?.trim()||'',extraAmount=Number(document.querySelector('#mrExtraAmount')?.value||0),unfinishedDesc=document.querySelector('#mrUnfinishedDesc')?.value?.trim()||'',unfinishedAmount=Number(document.querySelector('#mrUnfinishedAmount')?.value||0);if(!act){msg.textContent='Приложите акт выполненных работ';return}if(!photos.length){msg.textContent='Приложите хотя бы одно фото';return}if(extra&&(!extraDesc||extraAmount<=0)){msg.textContent='Укажите допработы и сумму';return}let deduction;try{deduction=form.bosDeductionPayload?.();if(!deduction&&unfinished&&(!unfinishedDesc||unfinishedAmount<=0))throw new Error('Укажите, что не выполнено, и стоимость')}catch(e){msg.textContent=e.message;return}submitting.add(form);state.busy=true;setBusy(form,true);let finalizing=false;const token='report_'+Date.now()+'_'+Math.random().toString(36).slice(2);try{msg.textContent='Подготавливаем акт…';const a=await compact(act,false);msg.textContent='Загружаем акт…';const ar=await request(acting({action:'uploadReportFile',order_id:id,upload_token:token,file_kind:'act',file_index:0,file_name:a.name,file_mime:a.mime,file_data:a.data}));const photoUrls=[];for(let i=0;i<photos.length;i++){msg.textContent=`Подготавливаем фото ${i+1} из ${photos.length}…`;const p=await compact(photos[i],true);msg.textContent=`Загружаем фото ${i+1} из ${photos.length}…`;const pr=await request(acting({action:'uploadReportFile',order_id:id,upload_token:token,file_kind:'photo',file_index:i+1,file_name:p.name,file_mime:p.mime,file_data:p.data}));photoUrls.push(pr.url)}msg.textContent='Сохраняем отчёт…';finalizing=true;const d=await request(acting({action:'finalizeMasterReport',order_id:id,upload_token:token,act_url:ar.url,photo_urls:photoUrls,extra_work_done:extra,extra_work_description:extra?extraDesc:'',extra_work_amount:extra?extraAmount:0,uncompleted_work_done:unfinished,uncompleted_work_description:unfinished?unfinishedDesc:'',uncompleted_work_amount:unfinished?unfinishedAmount:0,...deduction}));if(d.order){const i=state.orders.findIndex(x=>String(x.id)===String(id));if(i>=0)state.orders[i]={...state.orders[i],...d.order}}msg.textContent='Отчёт отправлен';state.busy=false;closeModal();try{await reloadData(true)}catch(_){show('orders')}}catch(err){
   const conflict=err?.code==='REPORT_CHANGED'||err?.message==='REPORT_CHANGED';
   let reconciled=false;
   if(conflict||finalizing){
@@ -3319,8 +3467,20 @@ const st=document.createElement('style');st.textContent=`html,body,#app,main,#co
     line.classList.add('reportExtraWorkDetails');
     line.innerHTML=`<span>Допработы: <b>+${money(o.extra_work_amount)}</b></span><span class="muted"><b>Что указал мастер:</b> ${esc(description)}</span>`;
   }
+  function enrichUncompletedWork(id){
+    if(!canReview())return;
+    const o=(state?.orders||[]).find(x=>String(x.id)===String(id));
+    const root=document.getElementById('modalRoot');if(!o||!root)return;
+    const items=Array.isArray(o.uncompleted_work_items)?o.uncompleted_work_items:[];
+    const description=String(o.uncompleted_work_description||'').trim();
+    if(!items.length&&!description)return;
+    const line=[...root.querySelectorAll('p')].find(p=>String(p.textContent||'').trim().startsWith('Невыполненные работы:'));
+    const detail=document.createElement('section');detail.className='card reportUncompletedDetails';
+    detail.innerHTML=`<h3>Что не было сделано</h3>${items.length?items.map(r=>`<div class="reportDeductionReviewRow"><b>${esc(r.name)}</b><span>${esc(r.quantity)} ${esc(r.unit||'(ед. не указана)')} × ${money(r.unit_price)} = <b>${money(r.amount)}</b></span>${r.price_confirmed?'<small class="muted">Мастер подтвердил согласование цены и объёма</small>':''}</div>`).join(''):'<p class="muted">Старый отчёт без детализации по прайсу</p>'}<p>Сумма вычета: <b>${money(o.uncompleted_work_amount)}</b></p>${o.original_amount!=null?`<p>После вычета: <b>${money(Number(o.original_amount)-Number(o.uncompleted_work_amount||0))}</b> <span class="muted">без допработ</span></p>`:''}${description?`<p class="reportDeductionComment">${esc(description)}</p>`:''}`;
+    if(line)line.after(detail);else root.querySelector('.card')?.append(detail);
+  }
   const openReview=window.openReportReview;
-  if(typeof openReview==='function')window.openReportReview=function(id){openReview(id);enrichExtraWork(id)};
+  if(typeof openReview==='function')window.openReportReview=function(id){openReview(id);enrichExtraWork(id);enrichUncompletedWork(id)};
   const home=pages.home;
   pages.home=function(){
     const html=home();
@@ -3328,7 +3488,7 @@ const st=document.createElement('style');st.textContent=`html,body,#app,main,#co
     return queue()+html;
   };
   const style=document.createElement('style');
-  style.textContent='.reportExtraWorkDetails{display:flex;flex-direction:column;gap:6px}.reportExtraWorkDetails .muted{white-space:pre-wrap;overflow-wrap:anywhere}';
+  style.textContent='.reportUncompletedDetails{min-width:0}.reportDeductionReviewRow{display:grid;gap:6px;padding:10px 0;border-bottom:1px solid #34455c;overflow-wrap:anywhere}.reportDeductionComment{white-space:pre-wrap;overflow-wrap:anywhere}.reportExtraWorkDetails{display:flex;flex-direction:column;gap:6px}.reportExtraWorkDetails .muted{white-space:pre-wrap;overflow-wrap:anywhere}';
   document.head.appendChild(style);
 })();
 
