@@ -113,19 +113,46 @@ function workspaceHTML(){
   return `<section class="avitoWorkspace" data-pane="list" aria-label="Рабочая область Авито">
     <header class="avitoPageHead"><div><h2>Авито</h2><p class="muted">Диалоги и заявки в одной рабочей области</p></div><div class="avitoHeadActions"><span id="avitoConnection" role="status">Подключаемся…</span><button class="secondary" id="avitoRefresh" aria-label="Обновить Авито">↻</button><button class="secondary" id="avitoSettings">Настройки</button></div></header>
     <div class="avitoFilters" role="group" aria-label="Фильтры диалогов"><button data-avito-filter="all">Все <span></span></button><button data-avito-filter="unread">Непрочитанные <span id="avitoUnreadTotal"></span></button><button data-avito-filter="unlinked">Без заявки <span></span></button></div>
-    <div class="avitoDesk"><aside class="avitoQueue" aria-label="Диалоги"><label class="avitoSearch"><span class="sr-only">Поиск диалогов</span><input id="avitoSearch" type="search" placeholder="Поиск по имени или сообщению"></label><div class="avitoInbox">Загружаем диалоги…</div><div class="avitoQueueFoot"><p id="avitoInboxStatus" role="status" class="muted"></p><small id="avitoLoadedHint" class="muted"></small><button id="avitoMoreChats" class="secondary wide" hidden>Ещё диалоги</button></div></aside><div class="avitoConversation"><div class="avitoEmpty"><b>Выберите диалог</b><p>Переписка и данные обращения появятся здесь.</p></div></div><aside class="avitoLeadPane" aria-label="Обращение"><div class="avitoEmpty"><b>Обращение</b><p>Откройте диалог, чтобы подготовить заявку.</p></div></aside></div>
+    <div class="avitoDesk"><aside class="avitoQueue" aria-label="Диалоги"><p id="avitoInboxStatus" role="status" class="muted"></p><label class="avitoSearch"><span class="sr-only">Поиск по имени или сообщению</span><input id="avitoSearch" type="search" placeholder="Имя или сообщение"></label><div class="avitoInbox">Загружаем диалоги…</div><div class="avitoQueueFoot"><small id="avitoLoadedHint" class="muted"></small><button id="avitoMoreChats" class="secondary wide" hidden>Ещё диалоги</button></div></aside><div class="avitoConversation"><div class="avitoEmpty"><b>Выберите диалог</b><p>Переписка и данные обращения появятся здесь.</p></div></div><aside class="avitoLeadPane" aria-label="Обращение"><div class="avitoEmpty"><b>Обращение</b><p>Откройте диалог, чтобы подготовить заявку.</p></div></aside></div>
   </section>`;
 }
 pages.avito=function(){queueMicrotask(()=>{syncAvitoNavigation();mountWorkspace()});return workspaceHTML()};
 function renderChats(rows,selected){
-  return rows.map(c=>{const id=String(c.id||c.chat_id),order=linkedOrder(id);return `<button class="avitoChatRow ${id===selected?'selected':''}" data-chat-id="${esc(id)}" aria-pressed="${id===selected}"><i class="avitoAvatar" aria-hidden="true">${esc((c.client||c.name||'К').slice(0,1))}</i><span><b>${esc(c.client||c.name||'Клиент')}</b><small>${esc(c.item_title||c.work||'Авито')}</small><small>${esc(c.last_message||'Нет текстовых сообщений')}</small>${order?`<em>Заявка №${esc(order.id)}</em>`:''}</span><span class="avitoRowMeta"><small>${esc(time(c.last_message_at))}</small>${Number(c.unread_count||0)>0?`<i class="avitoUnread">${Number(c.unread_count)}</i>`:''}</span></button>`}).join('')||'<p class="avitoNoResults muted">Диалоги не найдены.</p>';
+  return rows.map(c=>{const id=String(c.id||c.chat_id),order=linkedOrder(id);return `<button class="avitoChatRow ${id===selected?'selected':''}" data-chat-id="${esc(id)}" aria-pressed="${id===selected}"><i class="avitoAvatar" aria-hidden="true">${esc((c.client||c.name||'К').slice(0,1))}</i><span class="avitoChatBody"><b class="avitoChatName">${esc(c.client||c.name||'Клиент')}</b><small class="avitoChatService">${esc(c.item_title||c.work||'Авито')}</small><small class="avitoChatPreview">${esc(c.last_message||'Нет текстовых сообщений')}</small>${order?`<em>Заявка №${esc(order.id)}</em>`:''}</span><span class="avitoRowMeta"><small>${esc(time(c.last_message_at))}</small>${Number(c.unread_count||0)>0?`<i class="avitoUnread">${Number(c.unread_count)}</i>`:''}</span></button>`}).join('')||'<p class="avitoNoResults muted">Диалоги не найдены.</p>';
 }
 function mountWorkspace(){
   const root=document.querySelector('#content .avitoWorkspace');
   if(!root||root.dataset.ready||!canUseAvitoNavigation())return root;
   root.dataset.ready='1';const ws=workingState();root.dataset.pane=ws.pane;
-  const fit=()=>{if(!root.isConnected)return;const viewport=window.visualViewport?.height||window.innerHeight,nav=document.querySelector('#app > nav'),bottom=window.innerWidth<1024&&nav?Math.min(viewport,nav.getBoundingClientRect().top):viewport-12;root.style.height=Math.max(350,bottom-root.getBoundingClientRect().top-10)+'px'};
-  fit();const sizing=new ResizeObserver(fit);const header=document.querySelector('#app > header');if(header)sizing.observe(header);window.addEventListener('resize',fit);window.visualViewport?.addEventListener('resize',fit);const cleanup=new MutationObserver(()=>{if(!root.isConnected){sizing.disconnect();window.removeEventListener('resize',fit);window.visualViewport?.removeEventListener('resize',fit);cleanup.disconnect()}});cleanup.observe(document.getElementById('content'),{childList:true});
+  const mobile=()=>window.innerWidth<768;
+  const nav=document.querySelector('#app > nav');
+  const fit=()=>{
+    if(!root.isConnected)return;
+    const viewport=window.visualViewport,visibleBottom=viewport?viewport.height+viewport.offsetTop:window.innerHeight;
+    if(mobile()){
+      root.style.setProperty('--avito-nav-height',(nav?.getBoundingClientRect().height||80)+'px');
+      if(root.dataset.pane==='list'){root.style.removeProperty('height');return}
+    }
+    const bottom=window.innerWidth<1024&&nav?Math.min(visibleBottom,nav.getBoundingClientRect().top):visibleBottom-12;
+    root.style.height=Math.max(mobile()?0:350,bottom-root.getBoundingClientRect().top-10)+'px';
+  };
+  root.avitoSetPane=pane=>{
+    if(mobile()&&root.dataset.pane==='list'&&pane!=='list')ws.listScrollY=window.scrollY;
+    ws.pane=pane;root.dataset.pane=pane;
+    if(mobile()){
+      if(pane==='list'){
+        const selected=[...root.querySelectorAll('[data-chat-id]')].find(button=>button.dataset.chatId===ws.selected);
+        (selected||root.querySelector('#avitoSearch'))?.focus({preventScroll:true});
+        requestAnimationFrame(()=>{if(root.isConnected&&root.dataset.pane==='list')window.scrollTo(0,ws.listScrollY||0)});
+      }else window.scrollTo(0,0);
+    }
+    fit();
+  };
+  fit();const sizing=new ResizeObserver(fit);const header=document.querySelector('#app > header');
+  if(header)sizing.observe(header);if(nav)sizing.observe(nav);
+  window.addEventListener('resize',fit);window.visualViewport?.addEventListener('resize',fit);
+  const cleanup=new MutationObserver(()=>{if(!root.isConnected){sizing.disconnect();window.removeEventListener('resize',fit);window.visualViewport?.removeEventListener('resize',fit);cleanup.disconnect()}});
+  cleanup.observe(document.getElementById('content'),{childList:true});
   const list=root.querySelector('.avitoInbox'),status=root.querySelector('#avitoInboxStatus'),more=root.querySelector('#avitoMoreChats'),search=root.querySelector('#avitoSearch');
   let busy=false;
   const alive=()=>root.isConnected&&state.page==='avito'&&canUseAvitoNavigation()&&workingState()===ws;
@@ -162,12 +189,12 @@ function mountWorkspace(){
   search.value=ws.query;search.oninput=()=>{ws.query=search.value;render()};
   root.querySelectorAll('[data-avito-filter]').forEach(button=>button.onclick=()=>{ws.filter=button.dataset.avitoFilter;render()});
   if(ws.rows.length)render();
-  if(ws.selected&&ws.rows.some(c=>String(c.id)===ws.selected)){const pane=ws.pane;root.avitoSelect(ws.selected);ws.pane=pane;root.dataset.pane=pane}
+  if(ws.selected&&ws.rows.some(c=>String(c.id)===ws.selected)){const pane=ws.pane;root.avitoSelect(ws.selected);root.avitoSetPane(pane)}
   root.avitoReady=refresh().catch(()=>{});pollView(root,()=>refresh());return root;
 }
 function selectWorkspaceChat(root,ws,id,renderList){
   const chat=ws.rows.find(c=>String(c.id)===id);if(!chat)return;
-  ws.selected=id;ws.pane='chat';root.dataset.pane='chat';renderList();
+  ws.selected=id;root.avitoSetPane('chat');renderList();
   const draft=draftFor(ws,chat),conversation=root.querySelector('.avitoConversation'),lead=root.querySelector('.avitoLeadPane');
   const safeItem=/^https:\/\/([a-z0-9-]+\.)?avito\.ru\//i.test(chat.item_url||'')?chat.item_url:'';
   conversation.innerHTML=`<section class="avitoChatView"><div class="avitoChatHead"><button class="secondary avitoBackList" type="button">‹ Диалоги</button><i class="avitoAvatar" aria-hidden="true">${esc((chat.client||'К').slice(0,1))}</i><div><h3>${esc(chat.client||chat.name||'Клиент Авито')}</h3><small class="muted">${esc(chat.item_title||'')}</small></div>${safeItem?`<a href="${esc(safeItem)}" target="_blank" rel="noopener noreferrer">Объявление ↗</a>`:''}<button class="secondary avitoShowLead" type="button">Обращение</button></div><div class="avitoHistory"><button class="secondary" id="avitoOlder" hidden>Ранее</button><div id="avitoMessages" aria-live="polite">Загружаем сообщения…</div></div><p id="avitoHistoryStatus" role="status" class="muted"></p><form id="avitoSendForm"><div class="avitoComposer"><textarea name="text" maxlength="1000" rows="2" aria-label="Сообщение клиенту" placeholder="Написать сообщение…" required></textarea><button class="primary" type="submit" aria-label="Отправить в Авито">➤</button></div><small class="muted avitoKeyboardHint">Enter — отправить · Shift+Enter — новая строка</small><p id="avitoSendMsg" role="status" class="muted"></p></form></section>`;
@@ -175,13 +202,13 @@ function selectWorkspaceChat(root,ws,id,renderList){
   const alive=()=>view.isConnected&&root.isConnected&&state.page==='avito'&&canUseAvitoNavigation()&&workingState()===ws;
   const visibleChat=()=>window.innerWidth>=1260||root.dataset.pane==='chat';
   let loading=false,next=null,history=[],olderLoaded=false,renderedHistory='';
-  view.querySelector('.avitoBackList').onclick=()=>{ws.pane='list';root.dataset.pane='list';root.querySelector('#avitoSearch').focus()};
-  view.querySelector('.avitoShowLead').onclick=()=>{ws.pane='details';root.dataset.pane='details';lead.querySelector('input')?.focus()};
+  view.querySelector('.avitoBackList').onclick=()=>{root.avitoSetPane('list')};
+  view.querySelector('.avitoShowLead').onclick=()=>{root.avitoSetPane('details');lead.querySelector('input')?.focus({preventScroll:true})};
   function renderLead(){
     const order=linkedOrder(id);
     const field=(name,label,required=false,placeholder='')=>`<label><span>${label}</span><input name="${name}" ${required?'required':''} value="${esc(draft[name]||'')}" placeholder="${placeholder}"></label>`;
     lead.innerHTML=`<button class="secondary avitoBackChat" type="button">‹ К переписке</button><div class="avitoLeadHead"><h3>Обращение</h3><span class="softChip">${order?'Заявка №'+esc(order.id):'Заявка ещё не создана'}</span></div>${order?`<section class="avitoLinked"><b>${esc(order.client)}</b><p>${esc(order.work)}</p><p class="muted">${esc(order.address)}</p><span>${esc(order.status||'В работе')}</span></section><button id="avitoToOrder" type="button" class="primary wide">Открыть заявку</button>`:`<form id="avitoLeadForm"><div class="avitoLeadFields">${field('client','Клиент',true)}${field('phone','Телефон',true,'+7…')}${field('work','Услуги',true)}${field('address','Адрес',true,'Улица, дом, квартира')}${field('desired_time','Пожелание по времени',false,'Например: завтра после 15:00')}<label><span>Комментарий</span><textarea name="comment" rows="2" placeholder="Детали работы">${esc(draft.comment)}</textarea></label><details class="avitoExtraFields"><summary>Город и стоимость</summary>${field('city','Город / населённый пункт',true)}<label><span>Согласованная сумма, ₽</span><input name="amount" type="number" min="0" step="0.01" value="${esc(draft.amount)}" placeholder="Пока не согласована"></label></details></div><button id="avitoToOrder" type="submit" class="primary wide">Создать заявку</button><small class="muted">Проверьте данные перед созданием. Пожелание по времени сохранится в комментарии.</small><p id="avitoOrderMsg" role="status" class="muted"></p></form>`}`;
-    lead.querySelector('.avitoBackChat').onclick=()=>{ws.pane='chat';root.dataset.pane='chat';form.elements.text.focus()};
+    lead.querySelector('.avitoBackChat').onclick=()=>{root.avitoSetPane('chat');form.elements.text.focus({preventScroll:true})};
     if(order){lead.querySelector('#avitoToOrder').onclick=()=>{show('orders');openOrder(order.id)};return}
     const fields=lead.querySelector('#avitoLeadForm'),msg=fields.querySelector('#avitoOrderMsg');fields.elements.phone.type='tel';fields.elements.phone.autocomplete='tel';
     fields.oninput=()=>{for(const [key,value] of new FormData(fields))draft[key]=value};
@@ -355,9 +382,87 @@ const st=document.createElement('style');st.textContent=`.avitoOrderBlock,.avito
 @media(min-width:1600px){.avitoDesk{grid-template-columns:300px minmax(300px,1fr) 300px}.avitoWorkspace .avitoRowMeta{flex-basis:52px}.avitoWorkspace .avitoRowMeta>small{display:block;font-size:10px}}
 @media(min-width:768px) and (max-width:1259px){.avitoDesk{grid-template-columns:240px minmax(0,1fr)}.avitoLeadPane{display:none;border-left:0}.avitoWorkspace[data-pane=details] .avitoLeadPane{display:block}.avitoWorkspace[data-pane=details] .avitoConversation{display:none}.avitoWorkspace .avitoShowLead,.avitoWorkspace .avitoBackChat{display:inline-flex;min-height:44px}.avitoBackChat{margin-bottom:12px}.avitoChatHead{flex-wrap:wrap}.avitoChatHead>a{margin-left:auto}}
 @media(max-width:1023px){.avitoWorkspace{height:calc(100dvh - 205px);min-height:550px}.avitoPageHead h2{font-size:24px}.avitoPageHead p{display:none}.avitoHeadActions [role=status]{font-size:11px}}
-@media(max-width:767px){.avitoWorkspace{height:calc(100dvh - 190px);min-height:420px;gap:10px}.avitoWorkspace .avitoPageHead{gap:8px}.avitoHeadActions{gap:5px}.avitoHeadActions button{font-size:12px;padding:8px}.avitoHeadActions [role=status]{display:none}.avitoFilters{gap:5px;flex-wrap:nowrap}.avitoFilters button{font-size:11px;padding:8px 6px;flex:1;min-width:0;white-space:nowrap}.avitoFilters span{margin-left:3px}.avitoDesk{display:flex;flex-direction:column}.avitoQueue{flex:1;border:0}.avitoConversation,.avitoLeadPane{display:none;flex:1;border:0}.avitoWorkspace[data-pane=chat] .avitoQueue,.avitoWorkspace[data-pane=details] .avitoQueue{display:none}.avitoWorkspace[data-pane=chat] .avitoConversation,.avitoWorkspace[data-pane=details] .avitoLeadPane{display:block}.avitoWorkspace .avitoBackList,.avitoWorkspace .avitoBackChat,.avitoWorkspace .avitoShowLead{display:inline-flex;align-items:center;min-height:44px;font-size:12px;padding:8px;margin:0}.avitoWorkspace .avitoBackChat{margin-bottom:12px}.avitoChatHead{padding:8px;gap:8px;flex-wrap:wrap}.avitoChatHead .avitoAvatar{display:none}.avitoChatHead>div{flex-basis:55%}.avitoChatHead>a{margin-left:auto}.avitoChatHead h3{font-size:16px}.avitoHistory{padding:10px}.avitoWorkspace .avitoBubble{font-size:15px;padding:10px 12px;max-width:93%}.avitoWorkspace #avitoSendForm{padding:9px}.avitoKeyboardHint{display:none}.avitoLeadPane{padding:12px}.avitoWorkspace input,.avitoWorkspace textarea{font-size:16px}.avitoWorkspace .avitoRowMeta{flex-basis:52px}.avitoWorkspace .avitoRowMeta>small{display:block}.avitoPageHead h2{font-size:24px}}
+/* Mobile Avito: compact shell, a page-scrolling inbox, separate inline chat/details. */
+@media(max-width:767px){
+  #app:has(#content > .avitoWorkspace)>header{flex-wrap:nowrap;gap:6px;padding:10px 0;min-height:0;align-items:center}
+  #app:has(#content > .avitoWorkspace)>header .brandWrap{flex:1 1 auto;gap:8px;min-width:0}
+  #app:has(#content > .avitoWorkspace)>header .brandLogo{width:32px;height:32px;border-radius:10px}
+  #app:has(#content > .avitoWorkspace)>header .brandLogo img{width:32px!important;height:32px!important}
+  #app:has(#content > .avitoWorkspace)>header .brandText h1{font-size:16px;line-height:1.2;letter-spacing:-.025em;overflow-wrap:normal}
+  #app:has(#content > .avitoWorkspace)>header .brandSub{font-size:10px;line-height:1.35;margin-top:3px}
+  #app:has(#content > .avitoWorkspace)>header .roleBadge{align-self:flex-start;width:auto;max-width:100%;font-size:10px;line-height:1.4;padding:2px 6px;margin-top:4px}
+  #app:has(#content > .avitoWorkspace)>header button{flex:0 0 44px;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;margin:0;border-radius:10px;font-size:18px}
+  /* Installation stays on the login/other app tabs; don't squeeze four actions into this inbox header. */
+  #app:has(#content > .avitoWorkspace)>header .bosInstallAppBtn--header{display:none}
+  #app:has(#content > .avitoWorkspace)>header .brandText h1{white-space:normal;text-overflow:clip;overflow:visible}
+  /* The conversation has its own back/client/actions header; avoid two headers above the keyboard. */
+  #app:has(#content > .avitoWorkspace:not([data-pane=list]))>header{display:none}
+  .avitoWorkspace:not([data-pane=list]) .avitoPageHead{display:none}
+  .avitoWorkspace:not([data-pane=list]){padding-top:8px}
+  #app:has(#content > .avitoWorkspace)>header #bosNotificationBell .bosNB{right:-2px;top:-4px}
+  .avitoWorkspace{min-height:0!important;gap:12px;padding-top:12px}
+  .avitoWorkspace .avitoPageHead{flex:0 0 auto;gap:8px}
+  .avitoPageHead h2{font-size:26px;line-height:1.2;margin:0}
+  .avitoHeadActions{gap:6px}
+  .avitoHeadActions button{font-size:13px;padding:8px 12px;min-height:44px;border-radius:12px}
+  .avitoHeadActions #avitoRefresh{width:44px;min-width:44px;padding:0;font-size:22px}
+  .avitoHeadActions [role=status]{display:none}
+  .avitoFilters{flex:0 0 auto;display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr) minmax(0,1.1fr);gap:6px}
+  .avitoFilters button{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:2px 5px;min-width:0;min-height:44px;padding:8px 5px;margin:0;font-size:12px;font-weight:500;white-space:normal;overflow-wrap:normal;word-break:normal;border-radius:12px}
+  .avitoFilters span{margin:0;white-space:nowrap}
+  .avitoDesk{display:flex;flex-direction:column;min-width:0}
+  .avitoQueue{flex:1;border:0}
+  .avitoConversation,.avitoLeadPane{display:none;flex:1;border:0;min-height:0}
+  .avitoWorkspace[data-pane=chat] .avitoQueue,.avitoWorkspace[data-pane=details] .avitoQueue{display:none}
+  .avitoWorkspace[data-pane=chat] .avitoConversation{display:block}
+  .avitoWorkspace[data-pane=details] .avitoLeadPane{display:flex}
+  .avitoWorkspace:not([data-pane=list]) .avitoFilters{display:none}
+  .avitoWorkspace[data-pane=list]{height:auto!important;padding-bottom:calc(var(--avito-nav-height,80px) + 12px)}
+  .avitoWorkspace[data-pane=list] .avitoDesk{flex:none;overflow:visible;border:0;background:none;border-radius:0}
+  .avitoWorkspace[data-pane=list] .avitoQueue{flex:none;overflow:visible;background:none}
+  .avitoWorkspace[data-pane=list] .avitoInbox{flex:none;display:flex;flex-direction:column;gap:8px;overflow:visible}
+  .avitoSearch{position:relative;margin:0 0 12px}
+  .avitoSearch::before{content:'';position:absolute;top:14px;left:14px;width:12px;height:12px;border:2px solid #8da1b8;border-radius:50%;pointer-events:none}
+  .avitoSearch::after{content:'';position:absolute;top:29px;left:27px;width:7px;height:2px;transform:rotate(45deg);background:#8da1b8;pointer-events:none}
+  .avitoSearch input{min-height:48px;padding-left:40px;border-radius:12px}
+  .avitoWorkspace .avitoChatRow{display:grid!important;grid-template-columns:40px minmax(0,1fr) auto;align-items:start;column-gap:10px;row-gap:4px;min-height:96px;margin:0;padding:12px;border:1px solid #25384d;border-radius:12px;background:#0d1a29;overflow:hidden}
+  .avitoWorkspace .avitoChatRow.selected{background:#18395b;border-color:#397fc8;box-shadow:inset 3px 0 #1683ff}
+  .avitoChatRow>.avitoAvatar{grid-column:1;grid-row:1/4;align-self:start;width:40px;height:40px;margin-top:1px}
+  .avitoWorkspace .avitoChatRow>span.avitoChatBody{display:contents;overflow:visible}
+  .avitoChatName{grid-column:2;grid-row:1;min-width:0;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;line-height:1.4}
+  .avitoChatService{grid-column:2/-1;grid-row:2;line-height:1.45}
+  .avitoChatPreview{grid-column:2/-1;grid-row:3;line-height:1.45;padding-right:14px}
+  .avitoChatRow em{grid-column:2/-1;grid-row:4;justify-self:start;max-width:100%;overflow-wrap:anywhere;margin-top:2px}
+  .avitoWorkspace .avitoChatRow>.avitoRowMeta{grid-column:3;grid-row:1;display:flex;flex-direction:row;align-items:center;gap:4px;overflow:visible;max-width:none}
+  .avitoWorkspace .avitoRowMeta>small{display:block;overflow:visible;text-overflow:clip;max-width:none;font-size:10px;line-height:2;white-space:nowrap;font-variant-numeric:tabular-nums;letter-spacing:0}
+  .avitoWorkspace .avitoUnread{font-size:10px;padding:2px 5px;min-width:18px;text-align:center}
+  .avitoWorkspace .avitoChatRow::after{content:'›';grid-column:3;grid-row:3;justify-self:end;align-self:center;font-size:20px;line-height:16px;color:#8da1b8}
+  .avitoWorkspace .avitoChatRow:focus-visible{outline:2px solid #8fc6ff;outline-offset:2px}
+  .avitoQueueFoot{padding:12px 0 0;flex:none}
+  .avitoQueueFoot small{font-size:11px;line-height:1.5}
+  .avitoQueueFoot #avitoMoreChats{min-height:46px;margin-top:8px;border-radius:12px;font-size:14px;font-weight:600}
+  .avitoWorkspace .avitoBackList,.avitoWorkspace .avitoBackChat,.avitoWorkspace .avitoShowLead{display:inline-flex;align-items:center;min-height:44px;font-size:12px;padding:8px;margin:0}
+  .avitoWorkspace .avitoBackChat{margin-bottom:12px}
+  .avitoChatHead{padding:8px;gap:8px;flex-wrap:wrap;flex-shrink:0}
+  .avitoChatHead .avitoAvatar{display:none}
+  .avitoChatHead>div{flex:1 1 90px}
+  .avitoChatHead>a{margin-left:auto}
+  .avitoChatHead h3{font-size:16px}
+  .avitoHistory{padding:10px}
+  .avitoWorkspace .avitoBubble{font-size:15px;padding:10px 12px;max-width:93%}
+  .avitoWorkspace #avitoSendForm{padding:9px;flex-shrink:0}
+  .avitoKeyboardHint{display:none}
+  .avitoLeadPane{padding:12px}
+  .avitoWorkspace input,.avitoWorkspace textarea{font-size:16px}
+}
+@media(max-width:359px){
+  #app:has(#content > .avitoWorkspace)>header .brandLogo{display:none}
+  #app:has(#content > .avitoWorkspace)>header .brandText h1{font-size:15px}
+}
+.avitoQueue>#avitoInboxStatus{margin:8px 12px;font-size:13px;line-height:1.4;overflow-wrap:anywhere}
+.avitoQueue>#avitoInboxStatus:empty{display:none}
 
-.avitoWorkspace{min-height:350px!important}.avitoWorkspace .sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(min-width:768px){.avitoWorkspace{min-height:350px!important}}.avitoWorkspace .sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .avitoLeadPane{display:flex;flex-direction:column;overflow:hidden}.avitoLeadPane form{display:flex;flex-direction:column;flex:1;min-height:0;gap:10px}.avitoLeadFields{display:grid;gap:12px;flex:1;min-height:0;overflow:auto;align-content:start;padding:3px 3px 10px}.avitoLeadHead{flex-shrink:0}.avitoLeadPane #avitoToOrder{flex-shrink:0}.avitoLeadPane form>small,.avitoLeadPane [role=status]{flex-shrink:0}
 #app:has(#content > .avitoWorkspace){padding-bottom:12px!important}
 @media(max-width:1259px){.avitoLeadPane{display:none}.avitoWorkspace[data-pane=details] .avitoLeadPane{display:flex}}

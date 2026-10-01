@@ -1,4 +1,5 @@
 const {edge,database,employee,token}=require('./edge.cjs');
+const fixtureCors={'access-control-allow-origin':'*','access-control-allow-headers':'content-type,x-bos-session,x-vk-launch-params,authorization,apikey','access-control-allow-methods':'GET,POST,OPTIONS'};
 async function fullStack(page,role='owner',options={}){
  const me=employee(role,role,{external_id:role==='owner'?'100':`staff_${role}`,city:'Санкт-Петербург'});
  const master=role==='master'?me:employee('m','master',{full_name:'Тестовый мастер',city:'Санкт-Петербург'});
@@ -43,12 +44,13 @@ async function fullStack(page,role='owner',options={}){
  };
  for(const s of ['mini-app-api','staff-admin-api','claims-api','profile-self-api','employee-meta-api','master-memo-api','order-meta-api','report-api','master-workflow-api','order-lifecycle-api'])handlers[s]=edge(s,db,{fetch:internalFetch});
  await page.addInitScript(t=>localStorage.setItem('bos_vk_session_v2',t),token(me.external_id));
- await page.route('https://unpkg.com/**',r=>r.fulfill({contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
+ await page.route('https://unpkg.com/**',r=>r.fulfill({headers:fixtureCors,contentType:'application/javascript',body:'window.vkBridge={send:async()=>({})};'}));
  await page.route(/https:\/\/.*(?:api\/proxy|functions\/v1)\/[^/?]+/,async r=>{
+  if(r.request().method()==='OPTIONS')return r.fulfill({status:204,headers:fixtureCors,body:''});
   const slug=new URL(r.request().url()).pathname.split('/').pop();const h=handlers[slug];
-  if(!h)return r.fulfill({status:404,contentType:'application/json',body:'{"ok":false,"error":"unsupported test service"}'});
+  if(!h)return r.fulfill({headers:fixtureCors,status:404,contentType:'application/json',body:'{"ok":false,"error":"unsupported test service"}'});
   const result=await h(r.request().postDataJSON()||{},me.external_id,r.request().headers()['x-bos-session']||'');
-  await r.fulfill({status:result.status,contentType:'application/json',body:JSON.stringify(result.body)});
+  await r.fulfill({headers:fixtureCors,status:result.status,contentType:'application/json',body:JSON.stringify(result.body)});
  });
  return {db,me,master};
 }
