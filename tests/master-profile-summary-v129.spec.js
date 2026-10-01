@@ -41,7 +41,11 @@ test('master v129 shows compact profile money metrics without duplicate schedule
   await expect(panel.getByText('Выполнено за всё время',{exact:true}).locator('..')).toContainText('3');
   const hero=panel.locator('.salaryHero');
   const weekExpected=priorInMonth>=weekStart?1757.5:652.5;
-  await expect(hero).toContainText(new RegExp(String(weekExpected).replace('.', '[,.]')));
+  // Periods crossing a month can exceed 1,000; ignore currency grouping, not the amount.
+  await expect.poll(async()=>{
+    const amount=await hero.locator('strong').innerText();
+    return Number(amount.replace(/\s/g,'').replace('₽','').replace(',','.'));
+  }).toBe(weekExpected);
   await panel.getByRole('button',{name:'Месяц',exact:true}).click();
   await expect(hero).toContainText(/1[\s ]?757[,.]5/);
   await panel.getByRole('button',{name:'Свои даты',exact:true}).click();
