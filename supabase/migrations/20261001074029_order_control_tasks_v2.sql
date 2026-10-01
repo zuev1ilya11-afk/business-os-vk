@@ -77,10 +77,10 @@ begin
  end if;
  code:=p_input->>'issue_code';
  if p_action='controlList' then
-  select count(*) into count_all from bos_control_private.tasks x where (actor.role<>'master' or x.assignee_id=actor.id)
+  select count(*) into count_all from bos_control_private.tasks x where (actor.role<>'master' or (x.assignee_id=actor.id and bos_control_private.current_task(x)))
    and ((oid is null and bos_control_private.current_task(x)) or (oid=x.order_id and code=x.issue_code));
   select coalesce(jsonb_agg(v),'[]') into items from (select bos_control_private.task_view(x) v from bos_control_private.tasks x
-   where (actor.role<>'master' or x.assignee_id=actor.id) and ((oid is null and bos_control_private.current_task(x)) or (oid=x.order_id and code=x.issue_code))
+   where (actor.role<>'master' or (x.assignee_id=actor.id and bos_control_private.current_task(x))) and ((oid is null and bos_control_private.current_task(x)) or (oid=x.order_id and code=x.issue_code))
    order by x.due_at,x.id limit 500) q;
   people:='[]';
   if actor.role<>'master' then
