@@ -12,7 +12,7 @@ for(const width of [360,390,430])test(`${width}: compact card, exact titles, exp
  await expect(card.locator('.bosCompactClient').getByRole('link',{name:'Позвонить клиенту',exact:true})).toHaveAttribute('href','tel:+79990000002');
  await expect(modal.getByText('Связь с клиентом',{exact:true})).toHaveCount(0);await expect(modal.locator('.masterV126Focus,.masterV149Route,.masterV126ReceivedModal')).toHaveCount(0);
  await expect(card.locator('.bosHandsWorkRow:visible')).toHaveCount(2);await expect(card.getByText(work,{exact:true})).toBeVisible();await expect(card.getByText('1,5 м',{exact:true})).toBeVisible();
- await card.getByText('Ещё 2 работ',{exact:true}).click();await expect(card.locator('.bosHandsWorkRow:visible')).toHaveCount(4);await card.getByText('Свернуть работы',{exact:true}).click();await expect(card.locator('.bosHandsWorkRow:visible')).toHaveCount(2);
+ await card.getByText('Ещё 2 работы',{exact:true}).click();await expect(card.locator('.bosHandsWorkRow:visible')).toHaveCount(4);await card.getByText('Свернуть работы',{exact:true}).click();await expect(card.locator('.bosHandsWorkRow:visible')).toHaveCount(2);
  await card.getByText('Показать полностью',{exact:true}).click();await expect(card.locator('.bosOrderComment p')).toHaveText(db.tables.orders[0].comment);await card.getByText('Свернуть комментарий',{exact:true}).click();
  expect((await modal.locator('.moa179StageCard').boundingBox()).height).toBeLessThan(400);
  await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','25');await expect(modal.locator('.moa179Action')).toHaveCount(1);await expect(modal.locator('.moa179Step.future button')).toHaveCount(0);
