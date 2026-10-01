@@ -22,6 +22,7 @@ function mine(){
 }
 function completedDay(o){return window.BOS_SALARY_PERIODS.completedDay(o)}
 function payout(o){
+  const direct=window.BOS_ORDER_PAYROLL?.directMaster(o);if(direct!=null)return direct;
   if(window.BOS_MASTER_PROFILE_SUMMARY_V129_API?.payout)return num(window.BOS_MASTER_PROFILE_SUMMARY_V129_API.payout(o));
   const raw=o?.amount;
   if(raw!==undefined&&raw!==null&&raw!==''){

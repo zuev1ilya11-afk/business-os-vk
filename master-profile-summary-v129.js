@@ -46,6 +46,7 @@ function completedDay(o){
   return dateOnly(o?.scheduled_date);
 }
 function payout(o){
+  const direct=window.BOS_ORDER_PAYROLL?.directMaster(o);if(direct!=null)return direct;
   const raw=o?.amount;
   if(raw!==undefined&&raw!==null&&raw!==''){
     const amount=Number(raw);

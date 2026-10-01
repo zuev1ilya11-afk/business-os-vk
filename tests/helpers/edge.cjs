@@ -39,7 +39,9 @@ function database(seed = {}) {
 function edge(slug,db,extra={}){
   let handler;
   const filename=path.join(__dirname,'../../supabase/functions',slug,'index.ts');
-  const source=stripTypeScriptTypes(fs.readFileSync(filename,'utf8').replace(/^import .*?;\s*/,'') ,{mode:'transform'});
+  const raw=fs.readFileSync(filename,'utf8');
+  const shared=raw.includes('import "../../../order-payroll.js";')?fs.readFileSync(path.join(__dirname,'../../order-payroll.js'),'utf8')+'\n':'';
+  const source=shared+stripTypeScriptTypes(raw.replace(/^import .*?;\s*/gm,''),{mode:'transform'});
   const context={createClient:()=>db,Deno:{env:{get:k=>({VK_APP_SECRET:secret,BOS_SYNC_KEY:secret,SUPABASE_URL:'https://test.invalid',SUPABASE_SERVICE_ROLE_KEY:'test-key',...(extra.env||{})}[k])},serve:fn=>handler=fn},crypto:webcrypto,Request,Response,Headers,File,FormData,AbortController,setTimeout,clearTimeout,URL,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,btoa,atob,console,fetch:()=>{throw new Error('Unexpected external fetch')},...extra};
   vm.runInNewContext(source,context,{filename});
   return async(body,uid='100',session=token(uid),headers={})=>{const r=await handler(new Request('https://test.invalid',{method:'POST',headers:{...(body instanceof FormData?{}:{'Content-Type':'application/json'}),'X-BOS-Session':session,...headers},body:body instanceof FormData?body:JSON.stringify(body)}));return {status:r.status,body:await r.json()}};

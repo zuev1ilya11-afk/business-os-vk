@@ -29,6 +29,7 @@ function completedDay(o){
 function completed(o){return String(o?.status||'')==='Выполнена'||String(o?.report_review_status||'')==='approved'}
 function completedToday(orders=mine()){const d=today();return orders.filter(o=>completed(o)&&completedDay(o)===d)}
 function payout(o){
+  const direct=window.BOS_ORDER_PAYROLL?.directMaster(o);if(direct!=null)return direct;
   if(window.BOS_MASTER_PROFILE_SUMMARY_V129_API?.payout)return window.BOS_MASTER_PROFILE_SUMMARY_V129_API.payout(o);
   const raw=o?.amount;
   if(raw!==undefined&&raw!==null&&raw!==''){

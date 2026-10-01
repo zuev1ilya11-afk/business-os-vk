@@ -6,7 +6,7 @@
   function mOrders(){if(typeof ownOrders==='function'&&typeof isMasterPreview==='function'&&isMasterPreview())return ownOrders();return state.orders||[]}
   function activeOrders(){return mOrders().filter(o=>!['Выполнена','Отменена'].includes(String(o.status||'')))}
   function doneOrders(){return mOrders().filter(o=>String(o.status||'')==='Выполнена')}
-  function orderPay(o){const raw=o?.amount;if(raw!==null&&raw!==undefined&&raw!==''){const amount=Number(raw);if(Number.isFinite(amount))return amount*0.85*0.65}const stored=Number(o?.master_payout||0);return Number.isFinite(stored)?stored:0}
+  function orderPay(o){const direct=window.BOS_ORDER_PAYROLL?.directMaster(o);if(direct!=null)return direct;const raw=o?.amount;if(raw!==null&&raw!==undefined&&raw!==''){const amount=Number(raw);if(Number.isFinite(amount))return amount*0.85*0.65}const stored=Number(o?.master_payout||0);return Number.isFinite(stored)?stored:0}
   function basePay(){return doneOrders().reduce((a,o)=>a+orderPay(o),0)}
   function extras(){return doneOrders().reduce((a,o)=>a+Number(o.extra_work_amount||0),0)}
   function unfinished(){return doneOrders().reduce((a,o)=>a+Number(o.uncompleted_work_amount||0),0)}

@@ -24,6 +24,7 @@ window.reportMasterId=function(order){
 };
 
 function reportPayout(order){
+  const direct=window.BOS_ORDER_PAYROLL?.directMaster(order);if(direct!=null)return direct;
   const raw=order?.master_payout;
   if(raw!==null&&raw!==undefined&&raw!==''){
     const value=Number(raw);
@@ -99,6 +100,7 @@ window.weeklyLoad=function(){
 };
 
 function explicitPayout(order){
+  const direct=window.BOS_ORDER_PAYROLL?.directMaster(order);if(direct!=null)return direct;
   const raw=order?.master_payout;
   if(raw===null||raw===undefined||raw==='')return null;
   const value=Number(raw);

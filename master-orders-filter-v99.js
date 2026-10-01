@@ -25,7 +25,7 @@ const doneThisWeek=o=>isCompleted(o)&&!isClaim(o)&&(!completionDate(o)||completi
 const archived=o=>!isClaim(o)&&(isCancelled(o)||(isCompleted(o)&&!!completionDate(o)&&completionDate(o)<weekStart()));
 const current=o=>isNew(o)||isWorking(o);
 const orderNo=o=>{const x=String(o?.external_id||'');return x.startsWith('hands:')?x.slice(6):String(o?.id||'')};
-const pay=o=>{const raw=o?.amount;if(raw!==null&&raw!==undefined&&raw!==''){const n=Number(raw);if(Number.isFinite(n))return n*.85*.65}const n=Number(o?.master_payout||0);return Number.isFinite(n)?n:0};
+const pay=o=>{const direct=window.BOS_ORDER_PAYROLL?.directMaster(o);if(direct!=null)return direct;const raw=o?.amount;if(raw!==null&&raw!==undefined&&raw!==''){const n=Number(raw);if(Number.isFinite(n))return n*.85*.65}const n=Number(o?.master_payout||0);return Number.isFinite(n)?n:0};
 const dateTime=o=>{const d=scheduledDate(o)||'Дата не назначена',t=String(o?.scheduled_time||o?.time_slot||'').slice(0,5)||'Время не назначено';return `${d} · ${t}`};
 const works=o=>String(o?.work||'Работа не указана').split(/\n+/).map(x=>x.trim()).filter(Boolean);
 function escv(v){return typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}

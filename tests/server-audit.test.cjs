@@ -91,8 +91,8 @@ test('memo text persists and role permissions are server enforced',async()=>{
 });
 test('integration and Apps Script payroll agree with subtract-15-then-subtract-35 rule',()=>{
  const fs=require('node:fs'),vm=require('node:vm'),{stripTypeScriptTypes}=require('node:module');
- const source=stripTypeScriptTypes(fs.readFileSync('supabase/functions/integration-api/index.ts','utf8').replace(/^import .*?;\s*/,''),{mode:'transform'});
- assert.equal(vm.runInNewContext(source+';payouts(1000,true).master_payout',{Deno:{serve:()=>{}}}),552.5);
+ const source=stripTypeScriptTypes(fs.readFileSync('supabase/functions/integration-api/index.ts','utf8').replace(/^import .*?;\s*/gm,''),{mode:'transform'});
+ assert.equal(vm.runInNewContext(fs.readFileSync('order-payroll.js','utf8')+'\n'+source+';payouts(1000,true).master_payout',{Deno:{serve:()=>{}}}),552.5);
  assert.equal(vm.runInNewContext(fs.readFileSync('google-apps-script/Code.gs','utf8')+';masterPayout_(1000)'),552.5);
 });
 test('bootstrap includes orders beyond the default PostgREST page limit',async()=>{

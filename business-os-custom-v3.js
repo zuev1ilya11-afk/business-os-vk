@@ -73,8 +73,17 @@ window.openOrderForm=function(id){
  const selectedService=()=>!o?(service.value.trim()?{n:service.value.trim(),p:null}:null):service.value==='legacy'&&o?.work?{n:o.work,u:'Работа из ранее созданной заявки',p:null}:service.value!==''?SERVICES[Number(service.value)]:null;
  phoneEl.oninput=()=>phoneEl.value=phoneEl.value.replace(/\D/g,'').slice(0,10);
  const showService=()=>{const s=selectedService();info.textContent=!o?'Напишите своими словами, что нужно сделать':s?`${s.u||'Цена за услугу'}${s.p!=null?' · '+money(s.p):' · цена не указана в прайсе'}`:'';if(s&&s.p!=null&&!amount.value)amount.value=s.p;recalc()};
- const recalc=()=>{$('#bosMasterPay').textContent=money(master.value?payout(Number(amount.value||0)):0)};
- service.onchange=()=>{const s=selectedService();if(s&&s.p!=null)amount.value=s.p;showService()};amount.oninput=recalc;master.onchange=()=>recalc();showService();
+ const recalc=()=>{
+    const base=Math.max(0,Number(amount.value||0)-Number(o?.uncompleted_work_amount||0));
+    const pricing=o||{external_source:'mini_app',source:form.elements.source?.value||'Авито'};
+    const model={...pricing,amount:base};
+    const pay=window.BOS_ORDER_PAYROLL.calculate(base,model,!!master.value);
+    const saved=window.BOS_ORDER_PAYROLL.snapshot(model)&&base===Number(o?.amount);
+    $('#bosMasterPay').textContent=money(master.value?(saved?(o.master_payout??pay.master_payout):pay.master_payout):0);
+    let note=form.querySelector('#bosPricingRule');if(!note){note=document.createElement('p');note.id='bosPricingRule';note.className='muted';$('#bosMasterPay').closest('.card').appendChild(note)}
+    note.textContent=window.BOS_ORDER_PAYROLL.label(model)+(window.BOS_ORDER_PAYROLL.isDirect(model)?' · Компании: '+money(saved?window.BOS_ORDER_PAYROLL.directCompany(model):Math.round((base-Math.round(base*.6*100)/100)*100)/100):'')+' · Допработы учитываются отдельно';
+  };
+ service.onchange=()=>{const s=selectedService();if(s&&s.p!=null)amount.value=s.p;showService()};amount.oninput=recalc;master.onchange=()=>recalc();form.addEventListener('change',e=>{if(e.target.name==='source')recalc()});showService();
  form.onsubmit=async e=>{e.preventDefault();if(state.busy)return;const msg=$('#formMsg'),s=selectedService();if(!s){msg.textContent=o?'Выберите работу из списка':'Опишите услуги, которые нужно выполнить';service.focus();return}if(phoneEl.value.length!==10){msg.textContent='Введите 10 цифр телефона после +7';return}const f=Object.fromEntries(new FormData(form));const type=o?f.order_type:'work';delete f.order_type;f.phone='+7'+phoneEl.value;f.work=s.n;f.original_amount=Number(f.original_amount||0);f.amount=f.original_amount;f.wall_over_3m=!!form.elements.wall_over_3m.checked;f.possible_extra_work=!!form.elements.possible_extra_work?.checked;f.city=master.options[master.selectedIndex]?.dataset?.city||o?.city||state.user?.city||'';f.scheduled_time=f.time_slot?f.time_slot.split('–')[0]:'';if(o)f.id=o.id;msg.textContent='Сохраняем…';setBusy(form,true);try{const d=await api(o?'updateOrder':'createOrder',f);if(!d.ok)throw new Error(d.error);const meta=o?await saveOrderType(d.order.id,type):{};const merged={...d.order,...meta,...f,order_type:type};if(o){const i=state.orders.findIndex(x=>String(x.id)===String(o.id));state.orders[i]=merged}else{const i=state.orders.findIndex(x=>String(x.id)===String(merged.id));if(i>=0)state.orders[i]=merged;else state.orders.unshift(merged)};state.busy=false;closeModal();show('orders')}catch(err){msg.textContent=err.message;setBusy(form,false)}finally{state.busy=false}}
 };
 const prevOpen=window.openOrder;
