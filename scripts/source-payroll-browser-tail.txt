@@ -1,0 +1,30 @@
+
+for(const width of [320,1280])test(`new-order pricing follows source without changing Hands at ${width}px`,async({page},testInfo)=>{
+ await page.setViewportSize({width,height:900});await fullStack(page,'owner');await page.goto('/');
+ await expect(page.locator('#authGate')).toBeHidden();
+ await page.evaluate(()=>openOrderForm());
+ const form=page.locator('#orderForm');
+ await form.locator('[name="original_amount"]').fill('1000');
+ await form.locator('[name="master_vk_id"]').selectOption('staff_m');
+ await expect(form.locator('#bosMasterPay')).toContainText('600');
+ await expect(form.locator('#bosPricingRule')).toContainText('400');
+ await form.locator('[name="source"][value="Руки"]').check();
+ await expect(form.locator('#bosMasterPay')).toContainText(/552[,.]5/);
+ await expect(form.locator('#bosPricingRule')).toContainText('Hands');
+ await expect(form.locator('#bosPricingRule')).not.toContainText('40%');
+ await form.locator('[name="source"][value="Телефон"]').check();
+ await expect(form.locator('#bosMasterPay')).toContainText('600');
+ await expect(form.locator('#bosPricingRule')).toContainText('Компания 40%');
+ await page.screenshot({path:testInfo.outputPath(`source-payroll-${width}.png`),fullPage:true});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
+test('owner sees direct company pool and stored historical payout without repricing',async({page})=>{
+ const {db}=await fullStack(page,'owner');
+ Object.assign(db.tables.orders[0],{source:'Телефон',external_source:'mini_app',amount:1000,status:'Выполнена',report_review_status:'approved',master_payout:123,manager_payout:45,dispatcher_payout:67});
+ const before=JSON.stringify(db.tables.orders);await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
+ await page.evaluate(()=>openOrder('11'));
+ await expect(page.locator('#payoutPreview')).toContainText('123');
+ await expect(page.locator('[data-payroll-company]')).toContainText('Сохранённый расчёт');
+ await expect(page.locator('[data-payroll-company]')).toContainText('877');
+ expect(JSON.stringify(db.tables.orders)).toBe(before);
+});

@@ -1,0 +1,54 @@
+name: Source payroll branch verification
+on:
+  push:
+    branches: [feat/source-payroll-60-40]
+    paths: ['order-payroll.js', 'scripts/source-payroll-*', 'scripts/prepare-source-payroll.cjs', '.github/workflows/source-payroll-prepare.yml']
+permissions:
+  contents: write
+concurrency:
+  group: source-payroll-branch-verification
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/feat/source-payroll-60-40'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Apply hash-checked source edits and regenerate artifacts
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          node scripts/prepare-source-payroll.cjs
+          npm run build
+          npm run build:check
+          git diff --check
+          test "$(git ls-remote origin refs/heads/feat/source-payroll-60-40 | cut -f1)" = "$EXPECTED_SHA"
+          git add '*.js' scripts/startup-assets.json supabase/functions tests index.html
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'feat: apply source-aware payroll and regenerate frontend artifacts'
+            git push origin HEAD:refs/heads/feat/source-payroll-60-40
+          fi
+          git archive --format=tar HEAD > "$RUNNER_TEMP/source-payroll-source.tar"
+      - run: npm ci
+      - name: Complete server regression
+        run: npm run test:server
+      - run: npx playwright install chromium
+      - name: New source payroll and preserved Hands browser scenarios
+        run: npx playwright test tests/source-payroll.spec.js tests/report-payroll-contract.spec.js --workers=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: source-payroll-verification
+          path: |
+            ${{ runner.temp }}/source-payroll-source.tar
+            test-results/
+          retention-days: 3
