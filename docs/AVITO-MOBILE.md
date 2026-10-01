@@ -4,11 +4,11 @@ Baseline: main d1f5a42c295f2dc622041e7a4f70cb9d898d8629, after the smart-assignm
 
 ## Change
 
-At widths below 768px the inbox uses normal page scrolling instead of a short, height-constrained inner list. Search, all loaded conversation cards, the loaded-data notice and pagination are in one flow. The footer has room for the measured bottom navigation, including its safe-area padding. The company header is compact only while Avito is open; all existing quick actions retain at least 44px targets. On the narrowest screens the redundant logo is hidden to keep the company name and actions readable.
+At widths below 768px the inbox uses normal page scrolling instead of a short, height-constrained inner list. Search, all loaded conversation cards, the loaded-data notice and pagination are in one flow. The footer has room for the measured bottom navigation, including its safe-area padding. The company header is compact only while Avito is open; refresh, notifications and profile retain at least 44px targets. The supplementary installation shortcut stays available on the login screen and other tabs, rather than crowding the Avito header.
 
 Cards expose client, category, message preview, full date/time, unread count and linked order badge. Dates have their own grid cell rather than a clipped 52px column. Counts still come from loaded provider data; no decorative/mock totals are introduced. Provider errors appear above search rather than below a long list.
 
-Opening a chat switches the existing inline pane to a viewport-fitted conversation. Returning restores the selected row's focus and prior page scroll without focusing the search keyboard. In-app message/lead drafts and filters use the existing workspace state. The minimum desktop height does not force a short mobile composer underneath navigation. This is not new offline draft persistence.
+Opening a chat switches the existing inline pane to a viewport-fitted conversation with its own client/back/action header. The duplicate company/Avito headers are hidden only in mobile chat/details and return with the inbox. This preserves room for the composer on short screens. Returning restores the selected row's focus and prior page scroll without focusing the search keyboard. In-app message/lead drafts and filters use the existing workspace state. This is not new offline draft persistence.
 
 ## Unchanged boundaries
 
@@ -16,6 +16,10 @@ The existing polling interval, provider transport, cooldown/retry behavior, mess
 
 ## Verification scope
 
-The new responsive regression checks 320/375/390/430px operations roles, page-scrolling pagination, untruncated timestamps, touch targets, long-list return, search/draft retention, inline lead editing/reload, visible errors, reduced viewport height and 900/1440px split panes. Existing Avito navigation, sending, image, retry and order-creation tests remain release gates. Browser checks use synthetic data, not customer accounts.
+The responsive regression checks 320/375/390/430px operations roles, page-scrolling pagination, untruncated timestamps, touch targets, long-list return, search/draft retention, inline lead editing/reload, visible errors, reduced viewport height and 900/1440px split panes. Existing Avito navigation, sending, image, retry and order-creation tests remain release gates. Browser checks use synthetic data, not customer accounts.
 
-Cross-browser QA and final CI/deployment evidence are recorded in the release PR. Tests that resize the viewport approximate a keyboard-reduced area; they are not a physical iPhone keyboard test. The local Chromium environment blocks loopback navigation, so browser rendering is verified in GitHub Actions without bypassing that policy.
+454 server tests pass locally. All new responsive scenarios passed in Chromium after fixing header crowding and the short conversation viewport. A previous targeted run failed one existing photo-retention assertion; its code path was not modified and it is retained in subsequent targeted/full runs. Exact cross-browser results and final publication evidence are recorded in the release PR rather than inferred from a passing build step.
+
+Tests that resize the viewport approximate a keyboard-reduced area; they are not a physical iPhone keyboard test. The local Chromium environment blocks loopback navigation, so browser rendering is verified in GitHub Actions without bypassing that policy. Temporary feature-branch edit/build helpers are removed from the final release diff. The shared CI workflow is unchanged.
+
+Canonical BUILD_ID: 0406dd7da54cdf1e380c.
