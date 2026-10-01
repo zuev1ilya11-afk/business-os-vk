@@ -19,7 +19,9 @@ test('dispatcher assigns an unassigned order from Dispatch Board and preserves a
   expect(db.tables.orders[1].master_staff_id).toBe('m');
   expect(db.tables.orders[1].scheduled_date).toBe(today());
   expect(db.tables.orders[1].scheduled_time).toBe('11:00');
-  expect(db.tables.orders[1].master_payout).toBe(1105);
+  // Assigning the Avito order prices its unchanged 2,000 base at 60%.
+  expect(db.tables.orders[1].source).toBe('Авито');
+  expect(db.tables.orders[1].master_payout).toBe(1200);
   await expect(page.locator('.dbOrderCard[data-order-id="12"]')).toContainText('Борис');
 });
 

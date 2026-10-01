@@ -69,13 +69,13 @@ for(const [source,role,width]of [['Авито','dispatcher',390],['Руки','ow
  await form.locator('#bosService').fill(work);
  await expect(form.locator('[name=original_amount]')).toHaveValue('1000');
  await form.locator('[name=master_vk_id]').selectOption('staff_m');
- await expect(form.locator('#bosMasterPay')).toContainText('552');
+ await expect(form.locator('#bosMasterPay')).toContainText(source==='Руки'?'552':'600');
  await form.locator('[name=wall_over_3m]').check();await form.locator('[name=possible_extra_work]').check();
  await form.locator('[name=wall_material]').selectOption('Кирпич');
  await form.locator('[name=comment]').fill('Позвонить заранее');
  await form.getByRole('button',{name:'Создать заявку',exact:true}).click();await expect(form).toHaveCount(0);
  const saved=db.tables.orders.find(o=>o.client==='Новая '+source);
- expect(saved).toMatchObject({work,source,original_amount:1000,amount:1000,master_staff_id:'m',master_payout:552.5,wall_over_3m:true,wall_material:'Кирпич',possible_extra_work:true,comment:'Позвонить заранее'});
+ expect(saved).toMatchObject({work,source,original_amount:1000,amount:1000,master_staff_id:'m',master_payout:source==='Руки'?552.5:600,wall_over_3m:true,wall_material:'Кирпич',possible_extra_work:true,comment:'Позвонить заранее'});
  expect(db.tables.orders).toHaveLength(3);
  await page.reload();await expect(page.locator('#authGate')).toBeHidden();
  expect(await page.evaluate(id=>state.orders.find(o=>String(o.id)===String(id)).work,saved.id)).toBe(work);

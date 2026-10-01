@@ -53,6 +53,8 @@ test('dispatcher assigns an unassigned order from a free slot without changing m
   await expect.poll(()=>db.tables.orders[1].master_staff_id).toBe(master.id);
   await expect.poll(()=>db.tables.orders[1].scheduled_time).toBe('10:00');
   expect(db.tables.orders[1].amount).toBe(2000);
-  expect(db.tables.orders[1].master_payout).toBe(1105);
+  // Assigning the Avito order prices its unchanged 2,000 base at 60%.
+  expect(db.tables.orders[1].source).toBe('Авито');
+  expect(db.tables.orders[1].master_payout).toBe(1200);
   await expect(page.locator('.dfs120Panel')).toContainText('Тестовый мастер');
 });
