@@ -1,0 +1,72 @@
+name: Order control public release check
+on:
+  push:
+    branches: [qa/order-control-v1-release-check]
+    paths: ['.github/workflows/order-control-release-check.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: c8fa920669f2e36eb4634d11dd27ee0cc86d73a3
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Verify public release bytes and record mirror status
+        run: |
+          node --input-type=module - <<'JS'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          const hash=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+          const parseBuild=bytes=>{
+            const match=bytes.toString().match(/self\.BOS_BUILD=(\{[^\n]*\});/);
+            if(!match)throw new Error('Invalid build manifest');
+            return JSON.parse(match[1]);
+          };
+          const expected=parseBuild(fs.readFileSync('build-version.js'));
+          const result={commit:'c8fa920669f2e36eb4634d11dd27ee0cc86d73a3',checked_at:new Date().toISOString(),expected_build:expected.id,pages:[],netlify:{}};
+          const read=async url=>{
+            const response=await fetch(url,{headers:{'Cache-Control':'no-cache'},redirect:'error',signal:AbortSignal.timeout(20000)});
+            const bytes=Buffer.from(await response.arrayBuffer());
+            return {status:response.status,bytes};
+          };
+          const base='https://zuev1ilya11-afk.github.io/business-os-vk/';
+          const files=['index.html','build-version.js','sw.js','pwa-register.js','order-control.js','startup-shell.bundle.js','startup-eager.bundle.js'];
+          await Promise.all(files.map(async path=>{
+            const url=base+(path==='index.html'?'':path)+(path==='index.html'||path==='sw.js'?'':'?build='+expected.id);
+            try{
+              const {status,bytes}=await read(url);
+              const expected_sha256=hash(fs.readFileSync(path)),actual_sha256=hash(bytes);
+              result.pages.push({path,status,expected_sha256,actual_sha256,matches:status===200&&expected_sha256===actual_sha256});
+            }catch(error){result.pages.push({path,matches:false,error:error.name});}
+          }));
+          result.pages.sort((a,b)=>a.path.localeCompare(b.path));
+          for(const [name,path] of [['build','build-version.js'],['health','api/_healthcheck']]){
+            try{
+              const {status,bytes}=await read('https://business-os-api-gateway.netlify.app/'+path);
+              result.netlify[name]={status};
+              if(name==='build'&&status===200){
+                result.netlify.build.build_id=parseBuild(bytes).id;
+                result.netlify.build.matches_release=hash(bytes)===hash(fs.readFileSync('build-version.js'));
+              }
+              if(name==='health'&&status===200){
+                try{result.netlify.health.ok=JSON.parse(bytes).ok===true;}catch{result.netlify.health.ok=false;}
+              }
+            }catch(error){result.netlify[name]={error:error.name};}
+          }
+          result.pages_verified=result.pages.length===files.length&&result.pages.every(x=>x.matches);
+          fs.writeFileSync('order-control-release-check.json',JSON.stringify(result,null,2));
+          console.log(JSON.stringify(result,null,2));
+          if(!result.pages_verified)process.exitCode=1;
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: order-control-release-check
+          path: order-control-release-check.json
+          retention-days: 7
