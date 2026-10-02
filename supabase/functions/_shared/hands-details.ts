@@ -56,15 +56,41 @@ export function manualDetailsPatch(body:any,current:any=null){
   return patch;
 }
 
+const cleanWork=(value:any)=>value===null||value===undefined?'':String(value).trim().replace(/\s+/g,' ');
+const workCollections=['works','services','work_items','jobs'];
+const unitLabel=(value:any)=>{
+  const raw=cleanWork(value),key=raw.toUpperCase();
+  return ({PIECE:'шт.',PCS:'шт.',FIX:'шт.',METER:'м',METERS:'м',KM:'км'} as Record<string,string>)[key]||raw;
+};
+function specificWorkName(work:any){
+  // Provider payloads can expose a generic category in `name` and the actual
+  // selected operation in one of the more specific fields. Never replace
+  // "Замер" or "Подрезка карниза" with the parent "карнизы" category.
+  for(const value of [work?.work_name,work?.service_name,work?.title,work?.service?.title,work?.service?.name,work?.name]){
+    const text=cleanWork(value);if(text)return text;
+  }
+  return '';
+}
+function workLine(work:any){
+  const name=specificWorkName(work);if(!name)return '';
+  const quantity=cleanWork(work?.quantity??work?.count??work?.qty??work?.volume??work?.units_count);
+  const number=Number(quantity.replace(',','.'));
+  const unit=unitLabel(work?.unit_name??work?.unit??work?.measure??work?.measurement_unit);
+  return name+(quantity&&Number.isFinite(number)&&number>=0?' × '+quantity+(unit?' '+unit:''):'');
+}
 export function handsWorkText(remote:any){
-  const rows=Array.isArray(remote?.works)?remote.works:[];
-  const lines=rows.map((work:any)=>{
-    const name=cleanDetail(work?.name);if(!name)return '';
-    const quantity=cleanDetail(work.quantity),unit=cleanDetail(work.unit);
-    const number=Number(quantity.replace(',','.'));
-    return name+(quantity&&Number.isFinite(number)&&number>=0?' × '+quantity+(unit?' '+unit:''):'');
-  }).filter(Boolean);
-  return lines.length?lines.join('\n'):cleanDetail(remote?.title)||'Заказ Hands';
+  const lines:string[]=[];
+  // Some Hands payload variants split main and additional operations between
+  // different arrays. Read all known work collections and de-duplicate exact
+  // lines so measurement/cutting/minimum-charge rows are not lost.
+  for(const key of workCollections){
+    const rows=Array.isArray(remote?.[key])?remote[key]:[];
+    for(const work of rows){
+      const line=workLine(work);
+      if(line&&!lines.some(existing=>existing.toLocaleLowerCase('ru-RU')===line.toLocaleLowerCase('ru-RU')))lines.push(line);
+    }
+  }
+  return lines.length?lines.join('\n'):cleanWork(remote?.title||remote?.work||remote?.description)||'Заказ Hands';
 }
 
 // Accepted reports may receive missing descriptive data, never amounts/statuses.

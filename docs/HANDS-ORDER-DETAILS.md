@@ -38,6 +38,14 @@ Fixtures use synthetic values under observed keys; the screenshot's personal
 customer data is not copied into the repository. Existing work quantities are
 preserved on both repo import paths.
 
+Work import treats the concrete operation as authoritative, not its parent
+category. Specific fields such as `work_name`, `service_name` and `title` are
+preferred before a generic `name`. Known work collections (`works`, `services`,
+`work_items`, `jobs`) are combined and exact duplicate rows are removed. Thus a
+measurement remains «Замер», curtain-rod cutting remains «Подрезка карниза», and
+additional/minimum-charge rows are not silently replaced by a generic curtain-rod
+label.
+
 A temporary extension of the existing machine-only worker's read-only probe
 returned schema types for this check. The original worker source and deno.json
 were restored byte-for-byte (worker v6); report delivery behavior was unchanged.
