@@ -53,7 +53,7 @@ function callOrderId(link){
   const match=String(clickable?.getAttribute?.('onclick')||'').match(/openOrder\\(['"]([^'"]+)/);
   return match?String(match[1]):currentModalId();
 }
-function recordAndDial(link,id=''){
+function recordAndDial(link,id='',shouldDial=true){
   const dial=String(link?.getAttribute?.('href')||'');
   if(!dial)return false;
   const orderId=String(id||callOrderId(link)||'');
@@ -61,17 +61,17 @@ function recordAndDial(link,id=''){
     try{sessionStorage.setItem('bosPendingClientCallOrder',orderId)}catch(_){}
     Promise.resolve(recordClientCall(orderId)).then(()=>{try{sessionStorage.removeItem('bosPendingClientCallOrder')}catch(_){}}).catch(()=>{});
   }
-  window.location.href=dial;
+  if(shouldDial)window.location.href=dial;
   return false;
 }
-window.masterWorkflowCallAndAdvance=function(event,id){if(event?.preventDefault)event.preventDefault();return recordAndDial(event?.currentTarget,id)};
+window.masterWorkflowCallAndAdvance=function(event,id){if(event?.preventDefault)event.preventDefault();return recordAndDial(event?.currentTarget,id,event?.isTrusted!==false)};
 document.addEventListener('click',event=>{
   if(!liveMaster())return;
   const link=event.target?.closest?.('a[href^="tel:"]');
   if(!link||link.dataset.bosCallTracked==='1')return;
   const id=callOrderId(link);if(!id)return;
   event.preventDefault();link.dataset.bosCallTracked='1';
-  try{recordAndDial(link,id)}finally{setTimeout(()=>delete link.dataset.bosCallTracked,500)}
+  try{recordAndDial(link,id,event.isTrusted!==false)}finally{setTimeout(()=>delete link.dataset.bosCallTracked,500)}
 },true);
 window.masterWorkflowOpenReschedule=function(id){if(typeof window.openMasterRescheduleForm!=='function'){setMsg(id,'Форма переноса временно недоступна');return}clearWorkflowMarker();window.openMasterRescheduleForm(id);setTimeout(()=>{const form=document.getElementById('masterRescheduleForm');if(!form)return;const buttons=[...form.querySelectorAll('button')];const back=buttons.find(b=>(b.textContent||'').includes('Назад'));if(back){back.textContent='Назад к заявке';back.onclick=()=>window.openOrder?.(id)}},0)};
 const previousComplete=window.masterWorkflowComplete;
@@ -87,7 +87,7 @@ function patchLegacyLabels(){
 }
 function enhance(){patchLegacyLabels();const id=currentModalId();if(id)renderPanel(id)}
 let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;enhance()})});obs.observe(document.documentElement,{childList:true,subtree:true});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible'||!liveMaster())return;const id=currentModalId();if(typeof reloadData==='function'){Promise.resolve(reloadData(true)).catch(()=>{}).finally(()=>refreshMasterUi(id))}else refreshMasterUi(id)});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible'||!liveMaster())return;const id=currentModalId();const after=async()=>{let pending='';try{pending=sessionStorage.getItem('bosPendingClientCallOrder')||''}catch(_){}if(pending){const order=findOrder(pending);if(order?.master_called_at){try{sessionStorage.removeItem('bosPendingClientCallOrder')}catch(_){}}else await recordClientCall(pending).then(()=>{try{sessionStorage.removeItem('bosPendingClientCallOrder')}catch(_){}}).catch(()=>{})}refreshMasterUi(id)};if(typeof reloadData==='function'){Promise.resolve(reloadData(true)).catch(()=>{}).finally(after)}else after()});
 setTimeout(enhance,0);
 
 const style=document.createElement('style');style.textContent=`
