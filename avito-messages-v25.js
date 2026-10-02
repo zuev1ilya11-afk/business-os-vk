@@ -386,7 +386,7 @@ const st=document.createElement('style');st.textContent=`.avitoOrderBlock,.avito
 @media(max-width:767px){
   #app:has(#content > .avitoWorkspace)>header{flex-wrap:nowrap;gap:6px;padding:10px 0;min-height:0;align-items:center}
   #app:has(#content > .avitoWorkspace)>header .brandWrap{flex:1 1 auto;gap:8px;min-width:0}
-  #app:has(#content > .avitoWorkspace)>header .brandLogo{width:32px;height:32px;border-radius:10px}
+  #app:has(#content > .avitoWorkspace)>header .brandLogo{width:32px!important;height:32px!important;min-width:32px!important;border-radius:10px}
   #app:has(#content > .avitoWorkspace)>header .brandLogo img{width:32px!important;height:32px!important}
   #app:has(#content > .avitoWorkspace)>header .brandText h1{font-size:16px;line-height:1.2;letter-spacing:-.025em;overflow-wrap:normal}
   #app:has(#content > .avitoWorkspace)>header .brandSub{font-size:10px;line-height:1.35;margin-top:3px}
