@@ -48,6 +48,7 @@ test('order without date uses agreement form then switches to scheduled workflow
   order.master_called_at=null;
   order.master_agreed_at=null;
   order.master_workflow_stage='assigned';
+  order.phone='+79990000002';
 
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
