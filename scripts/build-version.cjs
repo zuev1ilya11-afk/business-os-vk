@@ -39,5 +39,5 @@ for(const [name,text] of Object.entries(output)){
   if(process.argv.includes('--check')){console.error('Stale build artifact: '+name);stale=true}else fs.writeFileSync(path.join(root,name),text);
  }
 }
-if(stale){console.error('BUILD_ID='+id);console.error('Run npm run build before committing.');process.exit(1)}
+if(stale){console.error('Run npm run build before committing.');process.exit(1)}
 console.log('BUILD_ID='+id);
