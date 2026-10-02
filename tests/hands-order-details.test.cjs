@@ -56,6 +56,23 @@ for(const kind of ['hands-api','order-lifecycle-api','production-hands']){
   await assert.rejects(sync,/ORDER_CHANGED/);assert.equal(o.comment,'Concurrent local');
  });
 }
+test('work parser prefers the exact operation over a generic category',()=>{
+ const ctx=vm.createContext({});vm.runInContext(shared,ctx);
+ assert.equal(ctx.handsWorkText({works:[{name:'Установка карнизов и светозащиты',title:'Подрезка карниза по длине',quantity:2,unit:'PIECE'}]}),'Подрезка карниза по длине × 2 шт.');
+ assert.equal(ctx.handsWorkText({works:[{name:'Карнизы',work_name:'Замер',quantity:'1',unit_name:'PIECE'}]}),'Замер × 1 шт.');
+});
+test('work parser combines main and additional Hands collections without duplicates',()=>{
+ const ctx=vm.createContext({});vm.runInContext(shared,ctx);
+ const value=ctx.handsWorkText({
+  works:[{name:'Установка декоративного карниза',quantity:'1',unit:'PIECE'}],
+  services:[
+   {title:'Установка декоративного карниза',quantity:'1',unit:'PIECE'},
+   {title:'Подрезка карниза по длине',quantity:'2',unit:'PIECE'},
+   {service_name:'Минимальная стоимость заказа, светозащита и карнизы',quantity:'1',unit:'PIECE'}
+  ]
+ });
+ assert.equal(value,'Установка декоративного карниза × 1 шт.\nПодрезка карниза по длине × 2 шт.\nМинимальная стоимость заказа, светозащита и карнизы × 1 шт.');
+});
 test('directions parser requires one explicit apartment, never a house/floor or ambiguous alternatives',()=>{
  const ctx=vm.createContext({});vm.runInContext(shared,ctx);
  for(const [input,expected] of [['кв. 42, эт. 3','42'],['КВАРТИРА № 12А; подъезд 2','12А'],['Вход со двора\nкв.7/2','7/2'],['кв 5','5'],['дом 42, корп. 3, стр. 1, этаж 2',''],['42',''],['квартиры 42 и 43',''],['кв. 12 или 13',''],['кв. 12, затем кв. 13',''],['кв. 12–15',''],[null,'']])assert.equal(ctx.apartmentFromDirections(input),expected,input);
