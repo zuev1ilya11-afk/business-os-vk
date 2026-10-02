@@ -1454,14 +1454,16 @@ const baseHome=pages.home;pages.home=function(){if(!(typeof isMasterPreview==='f
   window.BOS_OPEN_AUTH_SETTINGS=profileModal;
   document.addEventListener('click',e=>{
     const t=e.target.closest?.('#profileBtn');if(!t)return;
-    const role=String(window.state?.user?.role||'');
+    // app-public declares a classic-script lexical state, not window.state.
+    const role=String(typeof state!=='undefined'?state?.user?.role||'':'');
     if(window.BOS_IS_MANAGER_PREVIEW?.()){e.preventDefault();e.stopImmediatePropagation();profileModal();return}
-    if(role==='owner'&&typeof window.openOwnerProfile==='function'){e.preventDefault();e.stopImmediatePropagation();window.openOwnerProfile();return}
-    if(role==='master'&&typeof window.show==='function'){e.preventDefault();e.stopImmediatePropagation();window.show('team');return}
+    if(['owner','dispatcher'].includes(role)&&typeof window.openOwnerProfile==='function'){e.preventDefault();e.stopImmediatePropagation();window.openOwnerProfile();return}
+    // Other accounts retain the existing header shortcut to login settings.
     e.preventDefault();e.stopImmediatePropagation();profileModal();
   },true);
   if(manual()&&!getSession())setTimeout(loginScreen,50);
 })();
+
 
 ;
 // Source: business-os-custom-v3.js
@@ -2789,7 +2791,7 @@ const st=document.createElement('style');st.textContent=`.avitoOrderBlock,.avito
 @media(max-width:767px){
   #app:has(#content > .avitoWorkspace)>header{flex-wrap:nowrap;gap:6px;padding:10px 0;min-height:0;align-items:center}
   #app:has(#content > .avitoWorkspace)>header .brandWrap{flex:1 1 auto;gap:8px;min-width:0}
-  #app:has(#content > .avitoWorkspace)>header .brandLogo{width:32px;height:32px;border-radius:10px}
+  #app:has(#content > .avitoWorkspace)>header .brandLogo{width:32px!important;height:32px!important;min-width:32px!important;border-radius:10px}
   #app:has(#content > .avitoWorkspace)>header .brandLogo img{width:32px!important;height:32px!important}
   #app:has(#content > .avitoWorkspace)>header .brandText h1{font-size:16px;line-height:1.2;letter-spacing:-.025em;overflow-wrap:normal}
   #app:has(#content > .avitoWorkspace)>header .brandSub{font-size:10px;line-height:1.35;margin-top:3px}

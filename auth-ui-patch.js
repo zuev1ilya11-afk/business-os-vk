@@ -17,10 +17,11 @@
   window.BOS_OPEN_AUTH_SETTINGS=profileModal;
   document.addEventListener('click',e=>{
     const t=e.target.closest?.('#profileBtn');if(!t)return;
-    const role=String(window.state?.user?.role||'');
+    // app-public declares a classic-script lexical state, not window.state.
+    const role=String(typeof state!=='undefined'?state?.user?.role||'':'');
     if(window.BOS_IS_MANAGER_PREVIEW?.()){e.preventDefault();e.stopImmediatePropagation();profileModal();return}
-    if(role==='owner'&&typeof window.openOwnerProfile==='function'){e.preventDefault();e.stopImmediatePropagation();window.openOwnerProfile();return}
-    if(role==='master'&&typeof window.show==='function'){e.preventDefault();e.stopImmediatePropagation();window.show('team');return}
+    if(['owner','dispatcher'].includes(role)&&typeof window.openOwnerProfile==='function'){e.preventDefault();e.stopImmediatePropagation();window.openOwnerProfile();return}
+    // Other accounts retain the existing header shortcut to login settings.
     e.preventDefault();e.stopImmediatePropagation();profileModal();
   },true);
   if(manual()&&!getSession())setTimeout(loginScreen,50);

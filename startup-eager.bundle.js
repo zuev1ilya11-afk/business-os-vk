@@ -40,10 +40,21 @@ function initials(user,fallback){
 }
 function syncRoleChrome(){
   const role=effectiveRole();
+  const dispatcherPreview=String(appState()?.user?.role||'')==='owner'&&isDispatcherRolePreview();
   const labels=role==='master'?['Главная','Мои заявки','График','Профиль']:role==='dispatcher'?['Главная','Заявки','График','Мастера']:['Главная','Заявки','График','Команда'];
   document.querySelectorAll('nav button').forEach((button,index)=>{if(labels[index])button.textContent=labels[index]});
   const badge=document.querySelector('#roleBadge');
   if(badge)badge.textContent=role==='owner'?'Владелец':role==='manager'?(isManagerRolePreview()?'Руководитель · тест':'Руководитель'):role==='dispatcher'?'Диспетчер':'Мастер';
+  let exit=document.getElementById('dispatcherPreviewReturn');
+  if(dispatcherPreview&&badge){
+    badge.textContent='Диспетчер · просмотр';
+    if(!exit){
+      exit=document.createElement('button');exit.id='dispatcherPreviewReturn';exit.type='button';exit.className='secondary';exit.textContent='К владельцу';
+      exit.title='Завершить просмотр интерфейса диспетчера';
+      exit.onclick=()=>{if(String(appState()?.user?.role||'')==='owner'&&isDispatcherRolePreview())window.exitDispatcherPreview?.()};
+      badge.after(exit);
+    }
+  }else if(exit)exit.remove();
   const profile=document.querySelector('#profileBtn');
   if(profile&&role!=='owner')profile.textContent=initials(effectiveUser(role),role==='manager'?'Р':role==='dispatcher'?'Д':'М');
   const ownerTools=document.querySelector('#ownerToolsBtn');
@@ -73,6 +84,9 @@ if(typeof baseOpenOrder==='function')window.openOrder=function(id){
 const previousShow=window.show;
 if(typeof previousShow==='function')window.show=function(){const result=previousShow.apply(this,arguments);setTimeout(syncRoleChrome,0);return result};
 window.BOS_SYNC_ROLE_CHROME=syncRoleChrome;
+const style=document.createElement('style');
+style.textContent='#app > header .brandText:has(#dispatcherPreviewReturn){display:grid!important;grid-template-columns:max-content 1fr;align-items:center;flex:1}#app > header .brandText:has(#dispatcherPreviewReturn) > h1,#app > header .brandText:has(#dispatcherPreviewReturn) > .brandSub{grid-column:1/-1}#app > header #dispatcherPreviewReturn{justify-self:start;display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-left:7px;padding:7px 10px;font-size:12px;vertical-align:middle;white-space:nowrap}';
+document.head.appendChild(style);
 setTimeout(syncRoleChrome,0);
 })();
 

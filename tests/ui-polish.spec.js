@@ -92,7 +92,7 @@ test('owner logout remains usable and the login card fits a short mobile viewpor
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await page.locator('#profileBtn').click();
-  const logout = page.locator('#bosLogout');
+  const logout = page.locator('#bosOwnerLogout');
   await expect(logout).toBeVisible();
   await logout.click();
   await expect(page.locator('#bosLogoutLoginForm')).toBeVisible();
