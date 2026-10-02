@@ -1,10 +1,14 @@
 # Compact master order and Hands comments
 
 The master modal retains the current dark Business OS surface, source payroll
-helpers, authenticated workflow actions and report form. The client call and
-mandatory contact confirmations are together. Only two work lines are initially
-shown; native details disclose all exact names/quantities. Comments have a visible
-preview and full expansion. The next workflow action remains the only active step.
+helpers, authenticated workflow actions and report form. Pressing the client phone
+action records the contact receipt automatically; the master has no separate
+contact-confirmation button or contact timestamp. Only two work lines are initially
+shown; native details disclose all exact names/quantities. The apartment is shown
+separately. For Hands orders the comment block displays only the actual customer
+comment: directions, store and payment metadata are not rendered there. Comments
+have a visible preview and full expansion. The next workflow action remains the
+only active step.
 The separate next-action, duplicate date/route and bottom contact blocks are gone.
 Full non-Hands cost and payout are in the header; their unchanged calculation is
 expandable. Hands total cost remains hidden, including owner master preview.

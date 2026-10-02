@@ -2,6 +2,7 @@
 'use strict';
 if(window.BOS_MASTER_CALL_WORKFLOW_V26)return;window.BOS_MASTER_CALL_WORKFLOW_V26=true;
 const PROFILE_URL='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/profile-self-api';
+const CONTACT_URL='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/master-workflow-api';
 const STAGES=['assigned','departed','started','completed'];
 const LABELS={assigned:'Назначена',departed:'Выехал',started:'Работа начата',completed:'Завершена',cancelled:'Отменена'};
 const TIMES={departed:'master_departed_at',started:'master_started_at',completed:'completed_at'};
@@ -35,8 +36,43 @@ function setMsg(id,text){const modal=modalFor(id);const el=modal?.querySelector(
 function refreshMasterUi(id){if(id)renderPanel(id);patchLegacyLabels()}
 
 window.masterWorkflowSetStage=async function(id,stage){if(!liveMaster()||sending)return;const o=findOrder(id);if(!o)return;const current=effectiveStage(o),expected=current==='assigned'?'departed':current==='departed'?'started':'';if(stage!==expected){setMsg(id,'Этапы нужно отмечать по порядку');return}sending=true;setMsg(id,'Сохраняем этап…');try{const d=await stageCall(id,stage);mergeOrder(id,d.order);setMsg(id,'');refreshMasterUi(id)}catch(e){setMsg(id,e?.message||String(e))}finally{sending=false}};
-// Compatibility for already-rendered/cached markup: a call must never change a stage.
-window.masterWorkflowCallAndAdvance=function(event){if(event?.preventDefault)event.preventDefault();const dial=String(event?.currentTarget?.getAttribute?.('href')||'');if(dial)window.location.href=dial;return false};
+// Calling the client records the contact automatically. It never changes the work stage.
+async function recordClientCall(id){
+  const order=findOrder(id);
+  if(!liveMaster()||!order||order.master_called_at)return;
+  const r=await fetch(CONTACT_URL,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action:'markCalled',id,contact_confirmed:true}),keepalive:true});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok||!d.ok||!d.order)throw new Error(d.error||'Не удалось сохранить время звонка');
+  mergeOrder(id,d.order);refreshMasterUi(id);
+}
+function callOrderId(link){
+  const host=link?.closest?.('[data-master-order-id],[data-order-id]');
+  const direct=host?.dataset?.masterOrderId||host?.dataset?.orderId;
+  if(direct)return String(direct);
+  const clickable=link?.closest?.('[onclick*="openOrder"]');
+  const match=String(clickable?.getAttribute?.('onclick')||'').match(/openOrder\(['"]([^'"]+)/);
+  return match?String(match[1]):currentModalId();
+}
+function recordAndDial(link,id='',shouldDial=true){
+  const dial=String(link?.getAttribute?.('href')||'');
+  if(!dial)return false;
+  const orderId=String(id||callOrderId(link)||'');
+  if(liveMaster()&&orderId){
+    try{sessionStorage.setItem('bosPendingClientCallOrder',orderId)}catch(_){}
+    Promise.resolve(recordClientCall(orderId)).then(()=>{try{sessionStorage.removeItem('bosPendingClientCallOrder')}catch(_){}}).catch(()=>{});
+  }
+  if(shouldDial)window.location.href=dial;
+  return false;
+}
+window.masterWorkflowCallAndAdvance=function(event,id){if(event?.preventDefault)event.preventDefault();return recordAndDial(event?.currentTarget,id,event?.isTrusted!==false)};
+document.addEventListener('click',event=>{
+  if(!liveMaster())return;
+  const link=event.target?.closest?.('a[href^="tel:"]');
+  if(!link||link.dataset.bosCallTracked==='1')return;
+  const id=callOrderId(link);if(!id)return;
+  event.preventDefault();link.dataset.bosCallTracked='1';
+  try{recordAndDial(link,id,event.isTrusted!==false)}finally{setTimeout(()=>delete link.dataset.bosCallTracked,500)}
+},true);
 window.masterWorkflowOpenReschedule=function(id){if(typeof window.openMasterRescheduleForm!=='function'){setMsg(id,'Форма переноса временно недоступна');return}clearWorkflowMarker();window.openMasterRescheduleForm(id);setTimeout(()=>{const form=document.getElementById('masterRescheduleForm');if(!form)return;const buttons=[...form.querySelectorAll('button')];const back=buttons.find(b=>(b.textContent||'').includes('Назад'));if(back){back.textContent='Назад к заявке';back.onclick=()=>window.openOrder?.(id)}},0)};
 const previousComplete=window.masterWorkflowComplete;
 window.masterWorkflowComplete=function(id){if(!liveMaster())return;clearWorkflowMarker();if(typeof window.openMasterReportForm==='function')return window.openMasterReportForm(id);return typeof previousComplete==='function'?previousComplete(id):undefined};
@@ -51,7 +87,7 @@ function patchLegacyLabels(){
 }
 function enhance(){patchLegacyLabels();const id=currentModalId();if(id)renderPanel(id)}
 let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;enhance()})});obs.observe(document.documentElement,{childList:true,subtree:true});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible'||!liveMaster())return;const id=currentModalId();if(typeof reloadData==='function'){Promise.resolve(reloadData(true)).catch(()=>{}).finally(()=>refreshMasterUi(id))}else refreshMasterUi(id)});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible'||!liveMaster())return;const id=currentModalId();const after=async()=>{let pending='';try{pending=sessionStorage.getItem('bosPendingClientCallOrder')||''}catch(_){}if(pending){const order=findOrder(pending);if(order?.master_called_at){try{sessionStorage.removeItem('bosPendingClientCallOrder')}catch(_){}}else await recordClientCall(pending).then(()=>{try{sessionStorage.removeItem('bosPendingClientCallOrder')}catch(_){}}).catch(()=>{})}refreshMasterUi(id)};if(typeof reloadData==='function'){Promise.resolve(reloadData(true)).catch(()=>{}).finally(after)}else after()});
 setTimeout(enhance,0);
 
 const style=document.createElement('style');style.textContent=`

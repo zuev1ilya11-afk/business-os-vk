@@ -41,10 +41,11 @@ function scheduledActions(o,preview){
 }
 function contactBlock(o,preview){
  const disabled=preview||!liveMaster()||busy||uncertain.has(String(o.id));
- const status=window.BOS_CONTACT_STATUS?.html(o,{details:true})||'';
+ // The master does not need a separate contact confirmation or its timestamp.
+ // Operations roles keep the timestamp through the shared contact-status renderer.
+ const status=preview?(window.BOS_CONTACT_STATUS?.html(o,{details:true})||''):'';
  if(!active(o))return status;
- const confirmed=window.BOS_CONTACT_STATUS?.confirmed(o);
- return `${status}${!confirmed?`<button type="button" class="secondary" ${disabled?'disabled':`onclick="masterOrderContact179('${escv(o.id)}','markCalled')"`}>Связался с клиентом</button>`:''}${confirmedCount(o)>=3?'':o.master_agreed_at?'<small>✓ Время согласовано</small>':hasSchedule(o)?`<button type="button" class="secondary" ${disabled||!o.master_called_at?'disabled':`onclick="masterOrderContact179('${escv(o.id)}','confirmAgreement')"`}>Подтвердить договорённость</button>`:''}`;
+ return `${status}${confirmedCount(o)>=3?'':o.master_agreed_at?'<small>✓ Время согласовано</small>':hasSchedule(o)?`<button type="button" class="secondary" ${disabled||!o.master_called_at?'disabled':`onclick="masterOrderContact179('${escv(o.id)}','confirmAgreement')"`}>Подтвердить договорённость</button>`:''}`;
 }
 function unscheduledActions(o,preview){if(!active(o))return '<section class="moa179StageCard"><h3>Этапы выполнения заявки</h3><p class="moa179Hint">Заявка закрыта. Действия недоступны.</p></section>';const disabled=preview||!liveMaster();return `<section class="moa179StageCard"><h3>Этапы выполнения заявки</h3><button type="button" class="moa179Action agree" ${disabled?'disabled':`onclick="masterOrderAgree179('${escv(o.id)}')"`}><span class="moa179Icon">▣</span><span>Договориться</span><b>›</b></button><p class="moa179Hint">Согласуйте с клиентом дату и время. После сохранения заявка перейдёт в рабочий сценарий мастера.</p></section>`}
 function rescheduleBlock(o,preview){if(!active(o))return'';const disabled=preview||!liveMaster()||busy;return `<section class="moa179Reschedule"><div><b>Перенос заявки</b><span>Требует подтверждения диспетчера или руководителя</span></div><button type="button" class="secondary wide" ${disabled?'disabled':`onclick="masterWorkflowOpenReschedule('${escv(o.id)}')"`}>Запросить перенос</button></section>`}
@@ -81,19 +82,12 @@ window.masterOrderAgree179=function(id){
  const msg=form.querySelector('#masterOrderAgree179Msg'),contact=form.querySelector('.moa179AgreementContact'),submit=form.querySelector('[type=submit]');
  function refreshContact(){
   const current=orderById(id)||o;submit.disabled=busy||!current.master_called_at;
-  contact.innerHTML=(window.BOS_CONTACT_STATUS?.html(current)||'')+(!window.BOS_CONTACT_STATUS?.confirmed(current)?'<button type="button" class="secondary wide" data-confirm-contact>Связался с клиентом</button>':'');
-  const button=contact.querySelector('[data-confirm-contact]');if(!button)return;button.disabled=busy;
-  button.onclick=async()=>{
-   if(busy||!liveMaster())return;busy=true;refreshContact();msg.textContent='Сохраняем…';
-   try{const d=await api('markCalled',id,{contact_confirmed:true});mergeOrder(id,d.order);msg.textContent=''}
-   catch(error){msg.textContent=error?.message||'Не удалось подтвердить связь. Повторите действие.'}
-   finally{busy=false;refreshContact()}
-  };
+  contact.innerHTML=current.master_called_at?'':'<small class="muted">Сначала нажмите «Позвонить» в заявке.</small>';
  }
  refreshContact();
  form.onsubmit=async e=>{
   e.preventDefault();if(busy||state.busy)return;
-  if(!(orderById(id)||o).master_called_at){msg.textContent='Сначала подтвердите связь с клиентом.';return}
+  if(!(orderById(id)||o).master_called_at){msg.textContent='Сначала нажмите «Позвонить» клиенту.';return}
   const date=String(form.elements.scheduled_date.value||''),time=String(form.elements.scheduled_time.value||'').slice(0,5);
   if(!date||!time){msg.textContent='Укажите дату и время';return}
   busy=true;state.busy=true;if(typeof setBusy==='function')setBusy(form,true);msg.textContent='Сохраняем…';
