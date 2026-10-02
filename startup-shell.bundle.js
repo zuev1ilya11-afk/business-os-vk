@@ -4882,7 +4882,7 @@ function callOrderId(link){
   const direct=host?.dataset?.masterOrderId||host?.dataset?.orderId;
   if(direct)return String(direct);
   const clickable=link?.closest?.('[onclick*="openOrder"]');
-  const match=String(clickable?.getAttribute?.('onclick')||'').match(/openOrder\\(['"]([^'"]+)/);
+  const match=String(clickable?.getAttribute?.('onclick')||'').match(/openOrder\(['"]([^'"]+)/);
   return match?String(match[1]):currentModalId();
 }
 function recordAndDial(link,id='',shouldDial=true){
