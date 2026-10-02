@@ -24,9 +24,10 @@ const normalizedStage=(o:any)=>{const s=String(o?.master_workflow_stage||'assign
 // Every mutation compares the authorized snapshot at the instant of the UPDATE.
 function workflowWrite(db:any,order:any,patch:any){
   let q=db.from('orders').update(patch).eq('id',order.id);
-  for(const k of ['updated_at','status','master_staff_id','master_workflow_stage','master_departed_at','master_arrived_at','master_started_at','master_called_at','master_agreed_at','report_uploaded_at','report_review_status','scheduled_date','scheduled_time','time_slot'])q=order[k]==null?q.is(k,null):q.eq(k,order[k]);
+  for(const k of ['updated_at','status','master_staff_id','master_workflow_stage','master_departed_at','master_arrived_at','master_started_at','master_called_at','master_called_by_staff_id','master_called_by_name','master_agreed_at','report_uploaded_at','report_review_status','scheduled_date','scheduled_time','time_slot'])q=order[k]==null?q.is(k,null):q.eq(k,order[k]);
   return q.select('*').maybeSingle();
 }
+const contactConfirmed=(o:any)=>!!o.master_called_at&&!!o.master_called_by_staff_id&&!!String(o.master_called_by_name||'').trim();
 const stageRank=(o:any)=>o.report_uploaded_at||['pending','rejected','approved'].includes(o.report_review_status)?3:o.master_started_at||normalizedStage(o)==='started'?2:o.master_departed_at||o.master_arrived_at||normalizedStage(o)==='departed'?1:0;
 const stageConfirmed=(o:any,stage:string)=>stage==='departed'?stageRank(o)>=1:stage==='started'?stageRank(o)>=2:!!o.master_arrived_at||o.master_workflow_stage==='arrived';
 
@@ -36,7 +37,7 @@ Deno.serve(async r=>{
     const db=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
     const b=await r.json().catch(()=>({}));
     const action=String(b.action||'health');
-    if(action==='health')return j({ok:true,version:'2026-10-01-confirmed-progress'});
+    if(action==='health')return j({ok:true,version:'2026-10-02-contact-confirmation'});
     const me=await actor(db,r);
     if(!me)return j({ok:false,error:'Доступ не подтверждён'},401);
     if(String(me.role||'')!=='master')return j({ok:false,error:'Действие доступно только мастеру'},403);
@@ -58,9 +59,15 @@ Deno.serve(async r=>{
     }
 
     if(action==='markCalled'){
-      if(cur.master_called_at)return j({ok:true,order:safeOrder(cur),idempotent:true});
+      if(contactConfirmed(cur))return j({ok:true,order:safeOrder(cur),idempotent:true});
       const now=new Date().toISOString();
-      return await save({master_called_at:now,updated_at:now,sync_status:'pending_sheet'},o=>!!o.master_called_at);
+      // Cached clients used this action implicitly when saving an agreement.
+      // Keep their legacy call mark, but only the explicit new action is proof.
+      if(b.contact_confirmed!==true){
+        if(cur.master_called_at)return j({ok:true,order:safeOrder(cur),idempotent:true});
+        return await save({master_called_at:now,updated_at:now,sync_status:'pending_sheet'},o=>!!o.master_called_at);
+      }
+      return await save({master_called_at:now,master_called_by_staff_id:me.id,master_called_by_name:String(me.full_name||'').trim()||'Мастер',updated_at:now,sync_status:'pending_sheet'},contactConfirmed);
     }
 
     if(action==='confirmAgreement'){

@@ -16,10 +16,10 @@ async function setup(page,role='owner'){
  );
  await page.goto('/');
  await expect(page.locator('#authGate')).toBeHidden();
- if(role!=='master')await page.waitForFunction(()=>!!window.BOS_ORDER_CONTROL);
+ if(role!=='master'){await page.waitForFunction(()=>!!window.BOS_ORDER_CONTROL);await page.locator('#bosOrderControlSummary').click();}
  return data;
 }
-for(const [role,width] of [['owner',1280],['dispatcher',390],['manager',320]]){
+for(const [role,width] of [['owner',1280],['dispatcher',360],['dispatcher',390],['manager',430]]){
  test(`order control: ${role} sees actionable queue at ${width}px`,async({page},testInfo)=>{
   await page.setViewportSize({width,height:900});await setup(page,role);
   const panel=page.locator('#bosOrderControl');
@@ -30,7 +30,7 @@ for(const [role,width] of [['owner',1280],['dispatcher',390],['manager',320]]){
   await expect(panel.locator('[data-oc-order="13"]')).not.toContainText('Прошёл день визита');
   await expect(panel.locator('[data-oc-order="14"]')).toContainText('<script>не выполнять</script>');
   await expect(panel.locator('img,script')).toHaveCount(0);
-  await expect(page.locator('.ownerProblemsCompact')).toBeHidden();
+  await expect(page.locator('.ownerProblemsCompact')).toHaveCount(0);
   const metrics=page.locator('#content>.dashMetrics');
   if(await metrics.count()){
    const panelBox=await panel.boundingBox(),metricsBox=await metrics.boundingBox();
@@ -48,11 +48,11 @@ for(const [role,width] of [['owner',1280],['dispatcher',390],['manager',320]]){
 }
 
 test('order control clears resolved issues without rendering an idle loop',async({page})=>{
- await setup(page);const panel=page.locator('#bosOrderControl');await expect(panel).toBeVisible();
+ const {db}=await setup(page);const panel=page.locator('#bosOrderControl');await expect(panel).toBeVisible();
  await page.evaluate(()=>{window.__ocNode=document.querySelector('#bosOrderControl .ocItem');window.BOS_ORDER_CONTROL.refresh();});
  await page.waitForTimeout(150);
  expect(await page.evaluate(()=>window.__ocNode===document.querySelector('#bosOrderControl .ocItem'))).toBe(true);
- await page.evaluate(()=>{state.orders=[];window.BOS_ORDER_CONTROL.refresh();});
+ db.tables.orders=[];await page.evaluate(()=>window.BOS_REFRESH_NOW());
  await expect(panel.locator('.ocItem')).toHaveCount(0);await expect(panel.locator('[data-oc-total]')).toHaveText('0');
  await expect(panel).toContainText('По проверяемым условиям проблем не найдено.');
  await page.locator('nav [data-page="orders"]').click();await expect(panel).toHaveCount(0);
@@ -72,18 +72,16 @@ test('order control disappears in master preview and after logout',async({page})
  await setup(page);const panel=page.locator('#bosOrderControl');await expect(panel).toBeVisible();
  await page.evaluate(()=>{window.__ocPreview=isMasterPreview;window.isMasterPreview=()=>true;window.BOS_ORDER_CONTROL.refresh();});
  await expect(panel).toHaveCount(0);
- await page.evaluate(()=>{window.isMasterPreview=window.__ocPreview;window.BOS_ORDER_CONTROL.refresh();});
- await expect(panel).toBeVisible();
+ await page.evaluate(()=>{window.isMasterPreview=window.__ocPreview;show('home');window.BOS_ORDER_CONTROL.refresh();});
+ await page.locator('#bosOrderControlSummary').click();await expect(panel).toBeVisible();
  await page.evaluate(()=>document.body.classList.remove('bos-auth-ok'));
  await expect(panel).toHaveCount(0);
 });
 
 test('order control pagination keeps every issue available',async({page})=>{
- await setup(page);const panel=page.locator('#bosOrderControl');await expect(panel).toBeVisible();
- await page.evaluate(()=>{
-  state.orders=Array.from({length:16},(_,i)=>({id:String(100+i),client:'Клиент '+i,status:'В работе',scheduled_date:window.BOS_ORDER_CONTROL.businessDay(),scheduled_time:'10:00'}));
-  window.BOS_ORDER_CONTROL.refresh();
- });
+ const {db}=await setup(page);const panel=page.locator('#bosOrderControl');await expect(panel).toBeVisible();
+ db.tables.orders=Array.from({length:16},(_,i)=>({id:String(100+i),client:'Клиент '+i,status:'В работе',scheduled_date:today(),scheduled_time:'10:00'}));
+ await page.evaluate(()=>window.BOS_REFRESH_NOW());
  await expect(panel.locator('[data-oc-total]')).toHaveText('16');await expect(panel.locator('.ocItem')).toHaveCount(12);
  await panel.locator('[data-oc-more]').click();await expect(panel.locator('.ocItem')).toHaveCount(16);
  await expect(panel.locator('[data-oc-more]')).toHaveCount(0);

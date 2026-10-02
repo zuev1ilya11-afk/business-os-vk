@@ -24,6 +24,7 @@ test('master agrees unscheduled order and then enters scheduled workflow',async(
   await expect(page.getByRole('heading',{name:'Согласовать дату и время'})).toBeVisible();
   await page.locator('#masterOrderAgree179Form input[name="scheduled_date"]').fill('2099-09-15');
   await page.locator('#masterOrderAgree179Form input[name="scheduled_time"]').fill('14:30');
+  await page.locator('#masterOrderAgree179Form').getByRole('button',{name:'Связался с клиентом',exact:true}).click();
   await page.getByRole('button',{name:'Сохранить',exact:true}).click();
 
   await expect.poll(()=>db.tables.orders.find(o=>String(o.id)==='11')?.scheduled_date).toBe('2099-09-15');

@@ -19,7 +19,7 @@ for(const width of [360,390,430])test(`${width}: compact card, exact titles, exp
  await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','25');await expect(modal.locator('.moa179Action')).toHaveCount(1);await expect(modal.locator('.moa179Step.future button')).toHaveCount(0);
  for(const el of [card,modal,modal.locator('.moa179StageCard')])expect(await el.evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
- const client=card.locator('.bosMasterClientActions');await expect(client.getByRole('button',{name:'Подтвердить договорённость'})).toBeDisabled();await client.getByRole('button',{name:'Звонок выполнен'}).click();await client.getByRole('button',{name:'Подтвердить договорённость'}).click();await expect(client).toContainText('Время согласовано');
+ const client=card.locator('.bosMasterClientActions');await expect(client.getByRole('button',{name:'Подтвердить договорённость'})).toBeDisabled();await client.getByRole('button',{name:'Связался с клиентом'}).click();await client.getByRole('button',{name:'Подтвердить договорённость'}).click();await expect(client).toContainText('Время согласовано');
  await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();
  await modal.getByRole('button',{name:'Подтвердить: выехал',exact:true}).click();await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','50');
  await modal.evaluate(e=>e.scrollTop=0);

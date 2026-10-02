@@ -9,6 +9,7 @@
     "order-payroll.js",
     "service-catalog.js",
     "report-deduction.js",
+    "contact-status.js",
     "app-public.js",
     "network-fallback-v50.js",
     "vk-auth-patch.js",
@@ -97,6 +98,7 @@
     "dispatcher-mobile-v2-conflicts.js",
     "dispatcher-orders-polish-v98.js",
     "dispatcher-mobile-dispatch-v107.js",
-    "dispatcher-board-enhancements-v108.js"
+    "dispatcher-board-enhancements-v108.js",
+    "ops-contact-status.js"
   ]
 }

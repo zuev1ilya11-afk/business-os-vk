@@ -40,7 +40,7 @@ function workflowLabel(o){
  if(stage(o)==='started')return'В работе';
  if(stage(o)==='departed'||stage(o)==='arrived')return'В дороге';
  if(o?.master_agreed_at)return'Договорено';
- if(o?.master_called_at)return'Созвонился';
+ if(o?.master_called_at)return window.BOS_CONTACT_STATUS?.confirmed(o)?'Связался':'Звонок отмечен';
  return'Нужно позвонить';
 }
 function stageClass(o){const s=workflowLabel(o);if(['Выполнена'].includes(s))return'done';if(['Рекламация','Отменена','Отчёт на доработку'].includes(s))return'danger';if(['Нужно позвонить'].includes(s))return'attention';if(['В работе','В дороге'].includes(s))return'active';return'info'}
