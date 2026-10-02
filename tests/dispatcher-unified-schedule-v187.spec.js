@@ -132,7 +132,7 @@ test('range conflicts warn, cancel cleanly and remain separately clickable',asyn
   await expect(page.locator('#dispatchBoardDetail')).toContainText('Анна');
   await other.click();
   await expect(page.locator('#dispatchBoardDetail')).toContainText('Борис');
-  await page.getByRole('button',{name:/Контроль/}).click();
+  await page.locator('.dbV24Tab').filter({hasText:/Контроль/}).click();
   await expect(page.locator('.du187Root')).toHaveCount(0);
   await page.getByRole('button',{name:/Конфликт времени ·/}).click();
   await expect(page.locator('.dbV24Card')).toHaveCount(2);

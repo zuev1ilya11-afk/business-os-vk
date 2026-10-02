@@ -5,6 +5,7 @@
  if(root.BOS_CONTROL_TASKS)return;
  const API='https://business-os-api-gateway.netlify.app/api/proxy/push-api',SESSION='bos_vk_session_v2';
  const stateNow=()=>typeof state==='undefined'?{}:state;
+ const activePage=()=>stateNow().user?.role==='master'?stateNow().page==='home':!!root.BOS_ORDER_CONTROL?.isActive();
  const token=()=>{try{return sessionStorage.getItem(SESSION)||localStorage.getItem(SESSION)||''}catch{return ''}};
  const escape=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let identity='',generation=0,tasks=[],staff=[],enabled=false,more=false,loaded=false,error='',loading=false,paintQueued=false,lastLoad=0,dialog=null;
@@ -13,7 +14,7 @@
   if(!u?.id||!session||!document.body.classList.contains('bos-auth-ok')||(u.external_id&&String(u.external_id)!==session.split('.')[0]))return '';
   try{const shared=localStorage.getItem(SESSION)||'';if(localStorage.getItem('bos_manual_logout_v1')==='1'||(shared&&shared.split('.')[0]!==session.split('.')[0]))return ''}catch{return ''}
   if(u.role!=='master'&&!root.BOS_PERMISSIONS?.isDispatcherWorkspaceActive(u))return '';
-  return JSON.stringify([u.id,u.external_id,u.role,session.split('.')[0]]);
+  return JSON.stringify([u.id,u.external_id,u.role,session.split('.')[0],u.role==='master'?'master':root.BOS_ORDER_CONTROL?.identity()||'']);
  }
  function reset(){identity=who();generation++;tasks=[];staff=[];loaded=false;loading=false;error='';lastLoad=0;closeEditor();}
  async function request(action,data={}){
@@ -28,7 +29,7 @@
  }
  async function load(force=false){
   if(who()!==identity)reset();
-  if(!identity||stateNow().page!=='home'||document.hidden||loading||(!force&&Date.now()-lastLoad<60000))return;
+  if(!identity||!activePage()||document.hidden||loading||(!force&&Date.now()-lastLoad<60000))return;
   const run=generation;loading=true;lastLoad=Date.now();refresh();
   try{const data=await request('controlList');if(run!==generation)return;tasks=data.tasks||[];staff=data.staff||[];enabled=!!data.reminders_enabled;more=!!data.more;loaded=true;error=''}
   catch(e){if(run===generation)error=e.message}finally{if(run===generation){loading=false;refresh()}}
@@ -45,7 +46,7 @@
   paintQueued=false;
   if(who()!==identity)reset();
   const s=stateNow(),panel=document.getElementById('bosOrderControl');
-  if(!identity||s.page!=='home'){
+  if(!identity||!activePage()){
    document.querySelectorAll('.ctBar,.ctMeta,#bosMyControlTasks').forEach(n=>n.remove());return;
   }
   if(s.user.role==='master'){

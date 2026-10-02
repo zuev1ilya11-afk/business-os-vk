@@ -15,3 +15,6 @@ cat tests/sql/order-guards-schema.sql \
   supabase/migrations/20261001193413_master_hands_details.sql \
   supabase/migrations/20261001193413_master_hands_details.sql \
   tests/sql/order-guards-assertions.sql | "${runner[@]}"
+
+# The confirmation guard must also run alongside the captured production guard.
+bash scripts/test-master-contact.sh

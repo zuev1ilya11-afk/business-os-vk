@@ -62,6 +62,7 @@ test('order without date uses agreement form then switches to scheduled workflow
   await expect(form).toBeVisible();
   await form.locator('input[name="scheduled_date"]').fill(moscowDate(1));
   await form.locator('input[name="scheduled_time"]').fill('18:30');
+  await page.locator('#masterOrderAgree179Form').getByRole('button',{name:'Связался с клиентом',exact:true}).click();
   await form.getByRole('button',{name:'Сохранить',exact:true}).click();
 
   await expect.poll(()=>order11(db)?.scheduled_time).toBe('18:30');

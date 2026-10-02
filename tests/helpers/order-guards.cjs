@@ -21,6 +21,8 @@ function orderGuards(old,patch){
   }
  }
  if(['status','master_payout','manager_payout','dispatcher_payout'].some(has)&&next.status==='Отменена')next.master_payout=next.manager_payout=next.dispatcher_payout=0;
+ // zz_bos_guard_master_contact runs after the captured restart guard.
+ if(old.master_called_at&&old.master_called_by_staff_id&&String(old.master_called_by_name||'').trim())for(const key of ['master_called_at','master_called_by_staff_id','master_called_by_name'])next[key]=old[key];
  next.updated_at=new Date().toISOString();return next;
 }
 module.exports={orderGuards};

@@ -16,6 +16,7 @@ async function ready(page){
  await page.goto('/');
  await expect(page.locator('#authGate')).toBeHidden();
  await page.waitForFunction(()=>!!window.BOS_ORDER_CONTROL&&!!window.BOS_REFRESH_NOW);
+ await page.locator('#bosOrderControlSummary').click();
  await expect(page.locator('#bosOrderControl [data-oc-total]')).toHaveText('2');
  return data;
 }

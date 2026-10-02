@@ -26,7 +26,7 @@ window.openOrder=function(id){
   <div class="bosOrderFacts">
     ${line('Магазин',source||'—')}
     ${line('Дата и время',[date,time].filter(Boolean).join(' · ')||'—')}
-    ${line('Клиент',[client,phone].filter(Boolean).join(' · ')||'—')}
+    <div class="bosOrderFact"><small>Клиент</small><b>${esc([client,phone].filter(Boolean).join(' · ')||'—')}</b><div data-bos-contact-order="${esc(o.id)}">${window.BOS_CONTACT_STATUS?.html(o,{details:true})||''}</div></div>
     ${line('Адрес',address||'—')}
   </div>
   <div class="bosOrderBlock"><small>Работы</small><p><b>${esc(work||'Не указаны')}</b></p>${conditions&&conditions!==work?`<p class="muted">${esc(conditions)}</p>`:''}</div>

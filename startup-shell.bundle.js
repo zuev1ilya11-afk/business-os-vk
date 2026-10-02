@@ -642,6 +642,32 @@ return {version:'2026-10-01',standard,avito};
 
 
 ;
+// Source: contact-status.js
+(function(root){
+'use strict';
+const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function time(value){
+ if(!value)return'';
+ const date=new Date(value);if(Number.isNaN(date.getTime()))return'';
+ const parts=Object.fromEntries(new Intl.DateTimeFormat('ru-RU',{timeZone:'Europe/Moscow',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(date).map(p=>[p.type,p.value]));
+ return `${parts.day}.${parts.month}, ${parts.hour}:${parts.minute}`;
+}
+const confirmed=order=>!!time(order?.master_called_at)&&!!order?.master_called_by_staff_id&&!!String(order?.master_called_by_name||'').trim();
+function html(order,{details=false}={}){
+ const at=time(order?.master_called_at),proven=confirmed(order),legacy=!!order?.master_called_at;
+ const label=proven?'Связался':legacy?'Звонок отмечен':'Связь не подтверждена';
+ const author=proven?String(order.master_called_by_name).trim():'';
+ return `<span class="bosContactStatus ${proven?'confirmed':legacy?'legacy':'unconfirmed'}"${author?` title="Подтвердил мастер: ${escape(author)}"`:''}>${label}${at?' · '+escape(at):''}</span>${details&&author?`<small class="bosContactAuthor">Подтвердил мастер: ${escape(author)}</small>`:''}`;
+}
+const api={html,confirmed,time};root.BOS_CONTACT_STATUS=api;
+if(typeof module==='object'&&module.exports)module.exports=api;
+if(typeof document!=='undefined'){
+ const style=document.createElement('style');style.textContent='.bosContactStatus{display:block;font-size:12px;line-height:1.4;color:var(--muted,#91a3b7);font-weight:500;white-space:normal;overflow-wrap:anywhere}.bosContactStatus.confirmed{color:#76c9a0}.bosContactAuthor{display:block;font-size:11px;line-height:1.4;color:var(--muted,#91a3b7);overflow-wrap:anywhere}.bosMasterClientActions>.bosContactStatus,.bosMasterClientActions>.bosContactAuthor{flex-basis:100%}';document.head.appendChild(style);
+}
+})(typeof window==='object'?window:globalThis);
+
+
+;
 // Source: app-public.js
 const cfg=window.BUSINESS_OS_CONFIG||{};const ROLE_NAMES={owner:'Владелец',manager:'Руководитель',dispatcher:'Диспетчер',master:'Мастер'};const STATUSES=['В работе','Выполнена','Отменена'];const state={page:'home',user:{full_name:'Илья',role:'owner',city:'Москва'},orders:[],masters:[],users:[],sources:[],settings:{},masterSchedule:[],busy:false};const $=s=>document.querySelector(s);const esc=s=>String(s??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','\"':'&quot;'}[c]));const money=n=>Number(n||0).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽';const payout=a=>Math.round(Number(a||0)*.85*.65*100)/100;
 function api(action,payload={}){const url=cfg.API_URL||cfg.GAS_WEB_APP_URL;if(!url)return Promise.reject(new Error('Не настроен API'));const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...payload}),signal:controller.signal}).then(async r=>{let d;try{d=await r.json()}catch(_){throw new Error('Сервер вернул неверный ответ')}if(!r.ok&&!d?.error)throw new Error('Ошибка сервера '+r.status);return d}).catch(e=>{if(e&&e.name==='AbortError')throw new Error('Сервер не ответил');throw e}).finally(()=>clearTimeout(timer))}
@@ -4408,7 +4434,7 @@ window.openOrder=function(id){
   <div class="bosOrderFacts">
     ${line('Магазин',source||'—')}
     ${line('Дата и время',[date,time].filter(Boolean).join(' · ')||'—')}
-    ${line('Клиент',[client,phone].filter(Boolean).join(' · ')||'—')}
+    <div class="bosOrderFact"><small>Клиент</small><b>${esc([client,phone].filter(Boolean).join(' · ')||'—')}</b><div data-bos-contact-order="${esc(o.id)}">${window.BOS_CONTACT_STATUS?.html(o,{details:true})||''}</div></div>
     ${line('Адрес',address||'—')}
   </div>
   <div class="bosOrderBlock"><small>Работы</small><p><b>${esc(work||'Не указаны')}</b></p>${conditions&&conditions!==work?`<p class="muted">${esc(conditions)}</p>`:''}</div>
@@ -4901,9 +4927,11 @@ function scheduledActions(o,preview){
  return `<section class="moa179StageCard"><h3>Прогресс выполнения заявки</h3><div class="moa179ProgressLabel"><b>Завершено ${n} из 4</b><span>${n*25}%</span></div><div class="moa179Progress" role="progressbar" aria-label="Подтверждённый прогресс" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${n*25}"><i style="width:${n*25}%"></i></div><ol class="moa179Steps">${rows.map(([title,at,hint],i)=>{const done=i<n,current=i===n&&active(o)&&ready,t=done?actualTime(at):'';return `<li class="moa179Step ${done?'done':current?'current':'future'}" ${current?'aria-current="step"':''}><span class="moa179StepIcon" aria-hidden="true">${done?'✓':current?'→':'○'}</span><div><b>${escv(title)}</b>${done&&t?`<small>${escv(t)}</small>`:current?'<small>Текущий этап</small>':''}${current?`${actionButton(labels[i],i===1?'depart':i===2?'start':'report',canWrite,false,handlers[i])}`:''}</div></li>`}).join('')}</ol>${n===4?`<div class="moa179Review ${o.report_review_status==='approved'?'approved':''}"><b>${o.report_review_status==='approved'?'Отчёт принят':'Отчёт отправлен — ожидает проверки'}</b><span>${o.report_review_status==='approved'?'Повторная отправка не требуется.':'Действия мастера завершены. Приёмка выполняется отдельно.'}</span></div>`:''}</section>`;
 }
 function contactBlock(o,preview){
- if(!active(o)||confirmedCount(o)>=3)return'';
- const phone=String(o.phone||o.client_phone||'').replace(/[^+0-9]/g,''),disabled=preview||!liveMaster()||busy;
- return `${o.master_called_at?'<small>✓ Звонок отмечен</small>':phone?`<button type="button" class="secondary" ${disabled?'disabled':`onclick="masterOrderContact179('${escv(o.id)}','markCalled')"`}>Звонок выполнен</button>`:''}${o.master_agreed_at?'<small>✓ Время согласовано</small>':hasSchedule(o)?`<button type="button" class="secondary" ${disabled||!o.master_called_at?'disabled':`onclick="masterOrderContact179('${escv(o.id)}','confirmAgreement')"`}>Подтвердить договорённость</button>`:''}`;
+ const disabled=preview||!liveMaster()||busy||uncertain.has(String(o.id));
+ const status=window.BOS_CONTACT_STATUS?.html(o,{details:true})||'';
+ if(!active(o))return status;
+ const confirmed=window.BOS_CONTACT_STATUS?.confirmed(o);
+ return `${status}${!confirmed?`<button type="button" class="secondary" ${disabled?'disabled':`onclick="masterOrderContact179('${escv(o.id)}','markCalled')"`}>Связался с клиентом</button>`:''}${confirmedCount(o)>=3?'':o.master_agreed_at?'<small>✓ Время согласовано</small>':hasSchedule(o)?`<button type="button" class="secondary" ${disabled||!o.master_called_at?'disabled':`onclick="masterOrderContact179('${escv(o.id)}','confirmAgreement')"`}>Подтвердить договорённость</button>`:''}`;
 }
 function unscheduledActions(o,preview){if(!active(o))return '<section class="moa179StageCard"><h3>Этапы выполнения заявки</h3><p class="moa179Hint">Заявка закрыта. Действия недоступны.</p></section>';const disabled=preview||!liveMaster();return `<section class="moa179StageCard"><h3>Этапы выполнения заявки</h3><button type="button" class="moa179Action agree" ${disabled?'disabled':`onclick="masterOrderAgree179('${escv(o.id)}')"`}><span class="moa179Icon">▣</span><span>Договориться</span><b>›</b></button><p class="moa179Hint">Согласуйте с клиентом дату и время. После сохранения заявка перейдёт в рабочий сценарий мастера.</p></section>`}
 function rescheduleBlock(o,preview){if(!active(o))return'';const disabled=preview||!liveMaster()||busy;return `<section class="moa179Reschedule"><div><b>Перенос заявки</b><span>Требует подтверждения диспетчера или руководителя</span></div><button type="button" class="secondary wide" ${disabled?'disabled':`onclick="masterWorkflowOpenReschedule('${escv(o.id)}')"`}>Запросить перенос</button></section>`}
@@ -4911,7 +4939,7 @@ function rejectionNotice(o){return reportRejected(o)?`<div class="moa179Review r
 function approvalNotice(o){return String(o?.report_review_status||'')==='approved'&&String(o?.status||'')!=='Отменена'?'<div class="moa179Review approved"><b>Отчёт принят</b><span>Повторно отправлять отчёт не требуется.</span></div>':''}
 function panelHtml(o){const preview=masterMode()&&!liveMaster(),heading=String(o?.status||'')==='Выполнена'?'ЗАЯВКА ВЫПОЛНЕНА':String(o?.status||'')==='Отменена'?'ЗАЯВКА ОТМЕНЕНА':hasSchedule(o)?'ЗАЯВКА НАЗНАЧЕНА':'БЕЗ ДАТЫ И ВРЕМЕНИ';return `<span class="mwv2Head moa179Compat" hidden></span>${!active(o)?`<div class="moa179Head"><b>${escv(heading)}</b></div>`:''}${rejectionNotice(o)}${scheduledActions(o,preview)}${!hasSchedule(o)&&active(o)&&confirmedCount(o)===1?unscheduledActions(o,preview):''}${rescheduleBlock(o,preview)}${preview?'<p class="muted">В режиме просмотра действия недоступны.</p>':''}<p class="muted moa179Msg" role="status" aria-live="polite">${escv(messages.get(String(o.id))||'')}</p>${uncertain.has(String(o.id))?`<button type="button" class="secondary wide" ${busy?'disabled':''} onclick="masterOrderRefresh179('${escv(o.id)}')">Проверить состояние</button>`:''}`}
 
-function decorate(){queued=false;if(!masterMode())return;document.querySelectorAll('#modalRoot .bosMasterAgreementModalBtn').forEach(x=>x.remove());const panel=currentPanel();if(!panel||document.querySelector('#masterReportForm,#masterRescheduleForm,#masterAgreementForm,#masterOrderAgree179Form'))return;const id=String(panel.dataset.orderId||document.querySelector('#modalRoot .modal')?.dataset?.bosWorkflowOrderId||''),o=orderById(id);if(!o)return;const sig=JSON.stringify([busy,uncertain.has(String(o.id)),messages.get(String(o.id)),o.master_staff_id,o.master_called_at,o.master_agreed_at,o.master_arrived_at,o.id,o.status,o.scheduled_date,o.scheduled_time,o.time_slot,o.master_workflow_stage,o.master_departed_at,o.master_started_at,o.report_uploaded_at,o.report_act_url,o.report_review_status,o.report_review_comment]);const contact=document.querySelector('#modalRoot .bosMasterClientActions');if(contact&&contact.dataset.sig!==sig){contact.dataset.sig=sig;contact.innerHTML=contactBlock(o,masterMode()&&!liveMaster())}if(panel.dataset.moa179Sig===sig&&panel.dataset.bosV179==='1'&&panel.querySelector('.moa179StageCard'))return;panel.dataset.moa179Sig=sig;panel.dataset.bosV179='1';panel.innerHTML=panelHtml(o)}
+function decorate(){queued=false;if(!masterMode())return;document.querySelectorAll('#modalRoot .bosMasterAgreementModalBtn').forEach(x=>x.remove());const panel=currentPanel();if(!panel||document.querySelector('#masterReportForm,#masterRescheduleForm,#masterAgreementForm,#masterOrderAgree179Form'))return;const id=String(panel.dataset.orderId||document.querySelector('#modalRoot .modal')?.dataset?.bosWorkflowOrderId||''),o=orderById(id);if(!o)return;const sig=JSON.stringify([busy,uncertain.has(String(o.id)),messages.get(String(o.id)),o.master_staff_id,o.master_called_at,o.master_called_by_staff_id,o.master_called_by_name,o.master_agreed_at,o.master_arrived_at,o.id,o.status,o.scheduled_date,o.scheduled_time,o.time_slot,o.master_workflow_stage,o.master_departed_at,o.master_started_at,o.report_uploaded_at,o.report_act_url,o.report_review_status,o.report_review_comment]);const contact=document.querySelector('#modalRoot .bosMasterClientActions');if(contact&&contact.dataset.sig!==sig){contact.dataset.sig=sig;contact.innerHTML=contactBlock(o,masterMode()&&!liveMaster())}if(panel.dataset.moa179Sig===sig&&panel.dataset.bosV179==='1'&&panel.querySelector('.moa179StageCard'))return;panel.dataset.moa179Sig=sig;panel.dataset.bosV179='1';panel.innerHTML=panelHtml(o)}
 function schedule(){if(queued)return;queued=true;setTimeout(decorate,0)}
 async function reconcile(id){
  // Reuse the existing authorized bootstrap, including assignment changes/removal.
@@ -4931,9 +4959,36 @@ async function saveAction(id,action,payload={}){
  }finally{busy=false;decorate()}
 }
 window.masterOrderStage179=async function(id,stage){const o=orderById(id);if(!o||!active(o)||!hasSchedule(o))return;const n=confirmedCount(o),expected=n===1?'departed':n===2?'started':'';if(stage!==expected){message(id,'Этапы нужно отмечать по порядку');return}return saveAction(id,'setStage',{stage})};
-window.masterOrderContact179=(id,action)=>['markCalled','confirmAgreement'].includes(action)?saveAction(id,action):undefined;
+window.masterOrderContact179=(id,action)=>['markCalled','confirmAgreement'].includes(action)?saveAction(id,action,action==='markCalled'?{contact_confirmed:true}:{}):undefined;
 window.masterOrderReport179=function(id){const o=orderById(id);if(!liveMaster()||busy||uncertain.has(String(id))||!active(o)||confirmedCount(o)!==3)return;return window.masterWorkflowComplete?.(id)};
-window.masterOrderAgree179=function(id){const o=orderById(id);if(!o||!liveMaster()||!active(o))return;openModal(`<h2>Согласовать дату и время</h2><p class="muted">Договоритесь с клиентом и укажите согласованные дату и время.</p><form id="masterOrderAgree179Form" class="form"><label>Дата *</label><input type="date" name="scheduled_date" required min="${localToday()}" value="${escv(dateOf(o))}"><label>Время *</label><input type="time" name="scheduled_time" required step="900" value="${escv(timeOf(o))}"><p class="muted">После сохранения заявка перейдёт в рабочий сценарий мастера.</p><button type="submit" class="primary wide">Сохранить</button><button type="button" class="secondary wide" onclick="openOrder('${escv(o.id)}')">Отмена</button><p id="masterOrderAgree179Msg" class="muted"></p></form>`);const form=document.getElementById('masterOrderAgree179Form');if(!form)return;form.onsubmit=async e=>{e.preventDefault();if(busy||state.busy)return;const date=String(form.elements.scheduled_date.value||''),time=String(form.elements.scheduled_time.value||'').slice(0,5),msg=document.getElementById('masterOrderAgree179Msg');if(!date||!time){msg.textContent='Укажите дату и время';return}busy=true;state.busy=true;if(typeof setBusy==='function')setBusy(form,true);msg.textContent='Сохраняем…';try{let current=orderById(id)||o;if(!current.master_called_at){const called=await api('markCalled',id);mergeOrder(id,called.order);current=orderById(id)||current}const d=await api('setAgreementSchedule',id,{scheduled_date:date,scheduled_time:time});mergeOrder(id,d.order);closeModal();window.openOrder?.(id)}catch(err){msg.textContent=err?.message||String(err);if(typeof setBusy==='function')setBusy(form,false)}finally{busy=false;state.busy=false}}};
+window.masterOrderAgree179=function(id){
+ const o=orderById(id);if(!o||!liveMaster()||!active(o))return;
+ openModal(`<h2>Согласовать дату и время</h2><p class="muted">Договоритесь с клиентом и укажите согласованные дату и время.</p><form id="masterOrderAgree179Form" class="form"><label>Дата *</label><input type="date" name="scheduled_date" required min="${localToday()}" value="${escv(dateOf(o))}"><label>Время *</label><input type="time" name="scheduled_time" required step="900" value="${escv(timeOf(o))}"><div class="moa179AgreementContact"></div><p class="muted">После сохранения заявка перейдёт в рабочий сценарий мастера.</p><button type="submit" class="primary wide">Сохранить</button><button type="button" class="secondary wide" onclick="openOrder('${escv(o.id)}')">Отмена</button><p id="masterOrderAgree179Msg" class="muted" role="status"></p></form>`);
+ const form=document.getElementById('masterOrderAgree179Form');if(!form)return;
+ const msg=form.querySelector('#masterOrderAgree179Msg'),contact=form.querySelector('.moa179AgreementContact'),submit=form.querySelector('[type=submit]');
+ function refreshContact(){
+  const current=orderById(id)||o;submit.disabled=busy||!current.master_called_at;
+  contact.innerHTML=(window.BOS_CONTACT_STATUS?.html(current)||'')+(!window.BOS_CONTACT_STATUS?.confirmed(current)?'<button type="button" class="secondary wide" data-confirm-contact>Связался с клиентом</button>':'');
+  const button=contact.querySelector('[data-confirm-contact]');if(!button)return;button.disabled=busy;
+  button.onclick=async()=>{
+   if(busy||!liveMaster())return;busy=true;refreshContact();msg.textContent='Сохраняем…';
+   try{const d=await api('markCalled',id,{contact_confirmed:true});mergeOrder(id,d.order);msg.textContent=''}
+   catch(error){msg.textContent=error?.message||'Не удалось подтвердить связь. Повторите действие.'}
+   finally{busy=false;refreshContact()}
+  };
+ }
+ refreshContact();
+ form.onsubmit=async e=>{
+  e.preventDefault();if(busy||state.busy)return;
+  if(!(orderById(id)||o).master_called_at){msg.textContent='Сначала подтвердите связь с клиентом.';return}
+  const date=String(form.elements.scheduled_date.value||''),time=String(form.elements.scheduled_time.value||'').slice(0,5);
+  if(!date||!time){msg.textContent='Укажите дату и время';return}
+  busy=true;state.busy=true;if(typeof setBusy==='function')setBusy(form,true);msg.textContent='Сохраняем…';
+  try{const d=await api('setAgreementSchedule',id,{scheduled_date:date,scheduled_time:time});mergeOrder(id,d.order);closeModal();window.openOrder?.(id)}
+  catch(err){msg.textContent=err?.message||String(err);if(typeof setBusy==='function')setBusy(form,false)}
+  finally{busy=false;state.busy=false;refreshContact()}
+ };
+};
 window.openMasterAgreement=window.masterOrderAgree179;
 const baseOpen=window.openOrder;if(typeof baseOpen==='function')window.openOrder=function(){const out=baseOpen.apply(this,arguments);setTimeout(decorate,40);setTimeout(decorate,180);return out};
 window.BOS_MASTER_ORDER_ACTIONS_V179_REFRESH=decorate;
@@ -5940,4 +5995,33 @@ const style=document.createElement('style');style.textContent=`
 }
 `;document.head.appendChild(style);
 })();
+
+;
+// Source: ops-contact-status.js
+(()=>{
+'use strict';
+if(window.BOS_OPS_CONTACT_STATUS)return;
+let queued=false;
+const ops=()=>['owner','manager','dispatcher'].includes(String(state?.user?.role||''))&&!(typeof isMasterPreview==='function'&&isMasterPreview())&&!(typeof liveMasterMode==='function'&&liveMasterMode());
+const order=id=>(state?.orders||[]).find(o=>String(o.id)===String(id));
+const cardId=node=>node.dataset.orderId||String(node.getAttribute('onclick')||'').match(/(?:openOrder|selectDispatchBoardOrder)\(['"]([^'"]+)/)?.[1]||'';
+function render(node,o,details){const html=window.BOS_CONTACT_STATUS?.html(o,{details})||'';if(node.innerHTML!==html)node.innerHTML=html}
+function decorate(){
+ queued=false;if(!ops()){document.querySelectorAll('.bosOpsContact').forEach(node=>node.remove());return}
+ document.querySelectorAll('#content .opsCompactOrder,#content .dbOrderCard[data-order-id],#content .dbV94ListCard[data-order-id],#content .ddQueueCard[data-order-id],#content .dmv2Card[data-order-id],#content section.card[onclick]').forEach(card=>{
+  const o=order(cardId(card));if(!o)return;
+  let slot=card.querySelector(':scope>.bosOpsContact');if(!slot){slot=document.createElement('div');slot.className='bosOpsContact';card.appendChild(slot)}render(slot,o,false);
+ });
+ document.querySelectorAll('[data-bos-contact-order]').forEach(node=>{const o=order(node.dataset.bosContactOrder);if(o)render(node,o,true)});
+ const selected=document.querySelector('.dbOrderCard.selected[data-order-id],.dbV94ListCard.du183Selected[data-order-id],.ddQueueCard.isSelected[data-order-id]');
+ const detail=document.querySelector('#dispatchBoardDetail .dbDetail,.ddDetail'),o=selected&&order(cardId(selected));
+ if(detail&&o){let slot=detail.querySelector(':scope>.bosOpsContact');if(!slot){slot=document.createElement('div');slot.className='bosOpsContact';const anchor=detail.querySelector('.dbDetailGrid,.ddInfoGrid,.dbPanelHead');if(anchor)anchor.insertAdjacentElement('afterend',slot);else detail.appendChild(slot)}render(slot,o,true)}
+}
+function schedule(){if(queued)return;queued=true;requestAnimationFrame(decorate)}
+window.BOS_OPS_CONTACT_STATUS={refresh:schedule};
+new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
+window.addEventListener('bos:data-refreshed',schedule);window.addEventListener('resize',schedule);schedule();
+const style=document.createElement('style');style.textContent='.bosOpsContact{min-width:0;margin-top:5px}.dbV94ListCard>.bosOpsContact{grid-column:2/-1}.dbDetail>.bosOpsContact,.ddDetail>.bosOpsContact{margin:8px 0}';document.head.appendChild(style);
+})();
+
 ;

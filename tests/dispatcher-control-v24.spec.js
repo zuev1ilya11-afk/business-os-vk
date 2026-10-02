@@ -18,8 +18,8 @@ test('dispatcher v2.4 collects attention items with unique order cards',async({p
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await page.locator('nav [data-page=orders]').click();
-  await expect(page.getByRole('button',{name:/Контроль/})).toBeVisible();
-  await page.getByRole('button',{name:/Контроль/}).click();
+  await expect(page.locator('.dbV24Tab').filter({hasText:/Контроль/})).toBeVisible();
+  await page.locator('.dbV24Tab').filter({hasText:/Контроль/}).click();
   await expect(page.locator('.dbV24Control')).toBeVisible();
   await expect(page.locator('.dbV24Card[data-order-id="11"]')).toHaveCount(1);
   await expect(page.locator('.dbV24Card[data-order-id="12"]')).toHaveCount(1);
@@ -47,7 +47,7 @@ test('dispatcher v2.4 detects schedule conflicts and can jump to unified schedul
   await page.goto('/');
   await page.waitForFunction(()=>window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187?.version==='187');
   await page.locator('nav [data-page=orders]').click();
-  await page.getByRole('button',{name:/Контроль/}).click();
+  await page.locator('.dbV24Tab').filter({hasText:/Контроль/}).click();
   await page.getByRole('button',{name:/Конфликт времени ·/}).click();
   await expect(page.locator('.dbV24Card')).toHaveCount(2);
   await expect(page.locator('.dbV24Card').first()).toContainText('Конфликт времени');
@@ -65,6 +65,6 @@ test('dispatch control v2.4 stays desktop-only',async({page})=>{
   await expect(page.locator('#authGate')).toBeHidden();
   await page.locator('nav [data-page=orders]').click();
   await expect(page.locator('.dbV24Control')).toHaveCount(0);
-  await expect(page.getByRole('button',{name:/Контроль/})).toHaveCount(0);
+  await expect(page.locator('.dbV24Tab').filter({hasText:/Контроль/})).toHaveCount(0);
   await expect(page.locator('#bosOrderSearch')).toBeVisible();
 });
