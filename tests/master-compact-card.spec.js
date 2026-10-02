@@ -19,7 +19,8 @@ for(const width of [360,390,430])test(`${width}: compact card, exact titles, exp
  await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','25');await expect(modal.locator('.moa179Action')).toHaveCount(1);await expect(modal.locator('.moa179Step.future button')).toHaveCount(0);
  for(const el of [card,modal,modal.locator('.moa179StageCard')])expect(await el.evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
- const client=card.locator('.bosMasterClientActions');await expect(client.getByRole('button',{name:'Подтвердить договорённость'})).toBeDisabled();await client.getByRole('button',{name:'Связался с клиентом'}).click();await client.getByRole('button',{name:'Подтвердить договорённость'}).click();await expect(client).toContainText('Время согласовано');
+ const client=card.locator('.bosMasterClientActions');await expect(client.getByRole('button',{name:'Связался с клиентом'})).toHaveCount(0);await expect(client.locator('.bosContactStatus')).toHaveCount(0);await expect(client.getByRole('button',{name:'Подтвердить договорённость'})).toBeDisabled();
+ await card.locator('a[aria-label="Позвонить клиенту"]').click();await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();await client.getByRole('button',{name:'Подтвердить договорённость'}).click();await expect(client).toContainText('Время согласовано');
  await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();
  await modal.getByRole('button',{name:'Подтвердить: выехал',exact:true}).click();await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','50');
  await modal.evaluate(e=>e.scrollTop=0);
@@ -44,11 +45,11 @@ for(const source of ['Hands','Авито'])test(`${source}: header money and ful
 test('master sees apartment imported from Hands directions after reload, with no duplicate label',async({page})=>{
  const {db,master}=await fullStack(page,'master');db.tables.business_staff.push(employee('ops','owner',{external_id:'100'}));
  Object.assign(db.tables.orders[0],{external_source:'hands',external_id:'hands:TEST-123'});
- const remote={id:'TEST-123',specialist:master.full_name,price:'1000',status:'ACTIVE',client_name:'Тестовый клиент',client_phones:['+70000000000'],address:'Тестовая улица, дом 10',work_time:'2099-09-10T10:00:00',directions:'кв. 42, эт. 3',comment:'Вход со двора',works:[{name:'Монтаж',quantity:'1',unit:'шт.'}]};
+ const remote={id:'TEST-123',specialist:master.full_name,price:'1000',status:'ACTIVE',client_name:'Тестовый клиент',client_phones:['+70000000000'],address:'Тестовая улица, дом 10',work_time:'2099-09-10T10:00:00',directions:'кв. 42, эт. 3',comment:'Связаться для установки.',shop_name:'LM_TEST',payment_status:'PAID',works:[{name:'Монтаж',quantity:'1',unit:'шт.'}]};
  const sync=edge('hands-api',db,{env:{HANDS_API_KEY:'fixture'},fetch:async()=>Response.json({orders:[remote]})});
  expect((await sync({action:'syncOrders',per_page:2,max_pages:1})).status).toBe(200);
  await page.setViewportSize({width:390,height:1000});await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrder('11'));
- await expect(page.locator('.bosApartment')).toHaveText('кв. 42');await expect(page.locator('.bosOrderComment')).toContainText('Как добраться: кв. 42, эт. 3');
+ await expect(page.locator('.bosApartment')).toHaveText('кв. 42');await expect(page.locator('.bosOrderComment')).toHaveText('КомментарийСвязаться для установки.');await expect(page.locator('.bosOrderComment')).not.toContainText('Как добраться:');await expect(page.locator('.bosOrderComment')).not.toContainText('Магазин:');
  remote.directions='квартира 43';expect((await sync({action:'syncOrders',per_page:2,max_pages:1})).status).toBe(200);
  await page.reload();await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrder('11'));await expect(page.locator('.bosApartment')).toHaveText('кв. 43');await expect(page.locator('.bosCompactMasterCard input')).toHaveCount(0);
 });
