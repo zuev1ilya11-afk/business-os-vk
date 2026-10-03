@@ -4169,7 +4169,7 @@ document.addEventListener('click',event=>{const btn=event.target?.closest?.('[da
 const baseOrders=pages.orders;
 pages.orders=function(){if(!masterMode())return baseOrders();const all=(typeof ownOrders==='function'?ownOrders():(state.orders||[])).slice().sort((a,b)=>String((a.scheduled_date||'9999')+(a.scheduled_time||'')).localeCompare(String((b.scheduled_date||'9999')+(b.scheduled_time||''))));return `<div class="masterSimple masterOrdersDense"><div class="masterSectionTitle"><div><h2>Мои заявки</h2><div class="muted">${all.length} шт.</div></div></div>${filters(all)}${all.length?grouped(all):'<div class="masterEmpty">Заявок пока нет</div>'}</div>`};
 const baseOpen=window.openOrder;
-window.openOrder=function(id){if(!masterMode())return baseOpen.apply(this,arguments);const o=(state.orders||[]).find(x=>String(x.id)===String(id));if(!o)return;const d=breakdown(o);openModal(`<div class="bosHandsOrder bosCompactMasterCard"><div class="bosHandsHead"><b>№ ${esc(no(o))}</b><div class="bosCompactMoney">${d?`<strong>Стоимость: ${money(d.total)}</strong>`:''}<span>Выплата: ${money(totalPay(o))}</span></div></div>${costHtml(o)?`<details class="bosCompactCost"><summary>Расчёт стоимости</summary>${costHtml(o)}</details>`:''}<div class="bosHandsBlock bosCompactAddress"><span class="bosHandsIcon">⌖</span><div>${addressHtml(o)}${apartmentHtml(o)}</div></div><div class="bosHandsBlock bosCompactDate"><span class="bosHandsIcon">◷</span><div>${esc(dateTime(o))}</div></div><div class="bosHandsBlock bosCompactClient"><span class="bosHandsIcon">◉</span><div><b>${esc(o.client||'Клиент не указан')}</b>${phoneHtml(o)}<div class="bosMasterClientActions"></div></div></div>${commentHtml(o)}<section class="bosHandsWorks"><b class="bosWorksLabel">Состав работ</b><div class="bosHandsWorkList">${rows(o)}</div></section><div class="bosCompactReceived">Поступила ${esc(received(o))}</div></div>`);const modal=document.querySelector('#modalRoot .modal');modal?.classList.add('bosCompactOrderModal');const close=modal?.querySelector('.modalClose');if(close){close.setAttribute('aria-label','Закрыть заявку');modal.querySelector('.bosHandsHead').appendChild(close)}};
+window.openOrder=function(id){if(!masterMode())return baseOpen.apply(this,arguments);const o=(state.orders||[]).find(x=>String(x.id)===String(id));if(!o)return;const d=breakdown(o);openModal(`<div class="bosHandsOrder bosCompactMasterCard"><div class="bosHandsHead"><div class="bosMasterTitle"><b>№ ${esc(no(o))}</b><small class="bosReceivedInline">Поступила ${esc(received(o))}</small></div><div class="bosCompactMoney">${d?`<strong>Стоимость: ${money(d.total)}</strong>`:''}<span>Выплата: ${money(totalPay(o))}</span></div></div>${costHtml(o)?`<details class="bosCompactCost"><summary>Расчёт стоимости</summary>${costHtml(o)}</details>`:''}<div class="bosHandsBlock bosCompactAddress"><span class="bosHandsIcon">⌖</span><div>${addressHtml(o)}${apartmentHtml(o)}</div></div><div class="bosHandsBlock bosCompactDate"><span class="bosHandsIcon">◷</span><div>${esc(dateTime(o))}</div></div><div class="bosHandsBlock bosCompactClient"><span class="bosHandsIcon">◉</span><div><b>${esc(o.client||'Клиент не указан')}</b>${phoneHtml(o)}<div class="bosMasterClientActions"></div></div></div>${commentHtml(o)}<section class="bosHandsWorks"><b class="bosWorksLabel">Состав работ</b><div class="bosHandsWorkList">${rows(o)}</div></section></div>`);const modal=document.querySelector('#modalRoot .modal');modal?.classList.add('bosCompactOrderModal');const close=modal?.querySelector('.modalClose');if(close){close.setAttribute('aria-label','Закрыть заявку');modal.querySelector('.bosHandsHead').appendChild(close)}};
 
 function stripStaffManagement(){if(!masterMode())return;document.querySelectorAll('button,a,[role="button"],section,.card').forEach(el=>{const txt=(el.textContent||'').trim().toLowerCase();if(txt==='управление сотрудниками'||txt==='сотрудники'||txt==='команда сотрудников')el.style.display='none'})}
 const baseShow=window.show;window.show=function(){const r=baseShow.apply(this,arguments);setTimeout(stripStaffManagement,0);return r};
@@ -4179,7 +4179,7 @@ const compact=document.createElement('style');compact.textContent=`
 .modal.bosCompactOrderModal{padding:16px!important;max-width:560px!important}
 .bosCompactMasterCard{font-size:14px;line-height:1.45;min-width:0}
 .bosCompactMasterCard .bosHandsHead{display:grid;grid-template-columns:auto minmax(0,1fr) 44px;gap:10px;align-items:center;padding:0 0 12px;margin:0}
-.bosCompactMasterCard .bosHandsHead>b{font-size:18px;overflow-wrap:anywhere}
+.bosCompactMasterCard .bosMasterTitle{display:flex;align-items:baseline;gap:8px;min-width:0;flex-wrap:wrap}.bosCompactMasterCard .bosMasterTitle>b{font-size:18px;overflow-wrap:anywhere}.bosCompactMasterCard .bosReceivedInline{font-size:12px;color:var(--muted,#91a3b7);white-space:nowrap}
 .bosCompactMasterCard .bosCompactMoney{text-align:right;display:grid;gap:2px;font-size:13px;min-width:0;overflow-wrap:anywhere}
 .bosCompactMasterCard .bosCompactMoney strong{font-size:14px}
 .bosCompactOrderModal .bosHandsHead .modalClose{position:static!important;float:none!important;margin:0!important;width:44px;height:44px;min-width:44px;min-height:44px;font-size:26px;padding:0}
@@ -4205,7 +4205,6 @@ const compact=document.createElement('style');compact.textContent=`
 .bosCompactMasterCard .bosHandsWorkRow span{overflow-wrap:anywhere}.bosCompactMasterCard .bosHandsWorkRow b{font-size:14px;white-space:nowrap;color:var(--muted,#91a3b7)}
 .bosCompactMasterCard summary{cursor:pointer;min-height:44px;box-sizing:border-box;padding:10px 0;color:#7eb9ff;font-size:14px}
 .bosCompactMasterCard .bosCollapse{display:none}.bosCompactMasterCard details[open]>summary .bosExpand{display:none}.bosCompactMasterCard details[open]>summary .bosCollapse{display:inline}
-.bosCompactReceived{font-size:12px;color:var(--muted,#91a3b7);margin:10px 0 12px}
 .bosCompactMasterCard .masterCostBreakdown{padding:10px;margin-bottom:8px}.bosCompactMasterCard .masterCostTotal strong{font-size:20px}
 .bosCompactOrderModal .bosMasterWorkflow[data-bos-v179="1"]{padding:0!important;margin:0!important;border:0!important;background:transparent!important}
 .bosCompactOrderModal .moa179StageCard{padding:12px}.bosCompactOrderModal .moa179StageCard h3{font-size:15px;margin:0 0 8px}
@@ -4213,7 +4212,7 @@ const compact=document.createElement('style');compact.textContent=`
 .bosCompactOrderModal .moa179Step{padding:7px 8px;gap:8px}.bosCompactOrderModal .moa179Step b{font-size:14px;line-height:1.4}
 .bosCompactOrderModal .moa179Step small{font-size:12px;margin:2px 0 0}.bosCompactOrderModal .moa179Step.current{padding:10px 8px}
 .bosCompactOrderModal .moa179Action{min-height:44px;margin-top:8px}.bosCompactOrderModal .moa179Msg:empty{display:none}
-@media(max-width:380px){.modal.bosCompactOrderModal{padding:12px!important}.bosCompactMasterCard .bosHandsHead{gap:8px}.bosCompactMasterCard .bosHandsHead>b{font-size:16px}.bosCompactMasterCard .bosCompactMoney{font-size:12px}}
+@media(max-width:380px){.modal.bosCompactOrderModal{padding:12px!important}.bosCompactMasterCard .bosHandsHead{gap:8px}.bosCompactMasterCard .bosMasterTitle>b{font-size:16px}.bosCompactMasterCard .bosCompactMoney{font-size:12px}}
 `;document.head.appendChild(compact);
 setTimeout(stripStaffManagement,0);
 })();
@@ -4422,45 +4421,70 @@ const previousOpenOrder=window.openOrder;
 const previousSaveQuickOrder=window.saveQuickOrder;
 const masterContext=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&!!isMasterPreview())||(typeof liveMasterMode==='function'&&!!liveMasterMode());
 const pick=(o,...keys)=>{for(const k of keys){const v=o?.[k];if(v!==undefined&&v!==null&&String(v).trim()!=='')return v}return ''};
-const line=(label,value)=>value?`<div class="bosOrderFact"><small>${esc(label)}</small><b>${esc(value)}</b></div>`:'';
+const displayNo=o=>{const ext=String(o?.external_id||'');return ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')};
+const dateTime=o=>{const d=String(o?.scheduled_date||o?.date||'').slice(0,10);const t=String(o?.scheduled_time||o?.time||o?.time_slot||'').slice(0,5);return [d||'Дата не назначена',t||'Время не назначено'].join(' · ')};
+const received=o=>{const raw=String(o?.created_at||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:'—'};
+const unit=u=>({PIECE:'шт.',PCS:'шт.',FIX:'шт.',METER:'м',METERS:'м',KM:'км'}[String(u||'').toUpperCase()]||String(u||''));
+const works=o=>String(o?.work||o?.works||o?.work_description||o?.service||'Работа не указана').split(/\n+/).map(x=>x.trim()).filter(Boolean);
+function parseWork(x){const clean=String(x||'').trim();const m=clean.match(/^(.*?)\s*[×x]\s*([\d.,]+)\s*(.*?)\s*$/i);if(!m)return{title:clean,qty:''};return{title:m[1].trim(),qty:`${m[2]}${m[3]?' '+unit(m[3]):''}`}}
+const workRow=x=>{const w=parseWork(x);return `<div class="bosHandsWorkRow"><span>${esc(w.title)}</span>${w.qty?`<b>${esc(w.qty)}</b>`:''}</div>`};
+const workCount=n=>n%10===1&&n%100!==11?'работа':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'работы':'работ';
+const workRows=o=>{const all=works(o);return all.slice(0,2).map(workRow).join('')+(all.length>2?`<details class="bosMoreWorks"><summary><span class="bosExpand">Ещё ${all.length-2} ${workCount(all.length-2)}</span><span class="bosCollapse">Свернуть работы</span></summary>${all.slice(2).map(workRow).join('')}</details>`:'')};
+const handsOrder=o=>String(o?.external_source||o?.source||'').trim().toLowerCase()==='hands'||String(o?.external_id||'').toLowerCase().startsWith('hands:');
+const visibleComment=o=>{
+  const raw=String(o?.comment||'').trim();if(!handsOrder(o))return raw;
+  const manual=!!o?.hands_detail_overrides?.comment,source=o?.hands_comment_source;
+  if(!manual&&source&&Object.prototype.hasOwnProperty.call(source,'comment'))return String(source.comment||'').trim();
+  return raw.split(/\n+/).map(x=>x.trim()).filter(x=>x&&!/^(?:Как добраться|Магазин|Оплата)\s*:/iu.test(x)).join('\n').trim();
+};
+const commentHtml=o=>{const text=visibleComment(o);if(!text)return'';const long=text.length>180||text.split('\n').length>3;return `<section class="bosOrderComment"><b>Комментарий</b>${long?`<details><summary><span class="bosCommentPreview">${esc(text.slice(0,180))}…</span><span class="bosExpand">Показать полностью</span><span class="bosCollapse">Свернуть комментарий</span></summary><p>${esc(text)}</p></details>`:`<p>${esc(text)}</p>`}</section>`};
+const routeAddress=o=>{const address=String(o?.address||'').trim();if(!address)return'';const city=String(o?.city||'').trim();return city&&!address.toLowerCase().includes(city.toLowerCase())?`${city}, ${address}`:address};
+const addressHtml=o=>{const address=String(o?.address||'').trim();if(!address)return'<b>Адрес не указан</b>';const href=`https://yandex.ru/maps/?text=${encodeURIComponent(routeAddress(o))}`;return `<b><a class="bosHandsAddressLink" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(address)}</a></b>`};
+const apartmentHtml=o=>{const flat=String(o?.apartment||'').trim().replace(/^(?:квартира|кв\.?)\s*/iu,'');const bits=[flat?'кв. '+flat:'',o?.floor?'этаж '+o.floor:'',o?.entrance?'подъезд '+o.entrance:''].filter(Boolean);return bits.length?`<div class="bosApartment">${bits.map(esc).join(' · ')}</div>`:''};
+const phoneHtml=o=>{const label=String(o?.phone||o?.client_phone||'').trim(),phone=label.replace(/[^+0-9]/g,'');return phone?`<div class="bosCompactPhone"><a class="masterV126Phone" href="tel:${esc(phone)}">${esc(label)}</a><a class="secondary bosClientCallAction" href="tel:${esc(phone)}" aria-label="Позвонить клиенту">Позвонить</a></div>`:'<small>Телефон не указан</small>'};
+const sourceLabel=o=>String(pick(o,'external_source','source','store','shop','store_name','shop_name')||'').trim();
 window.openOrder=function(id){
   const role=String(state?.user?.role||'');
   if(masterContext()||!managementRoles.has(role))return typeof previousOpenOrder==='function'?previousOpenOrder.apply(this,arguments):undefined;
-  const o=state.orders.find(x=>String(x.id)===String(id));if(!o)return;
-  const source=pick(o,'store','shop','store_name','shop_name','source');
-  const work=pick(o,'work','works','work_description','service');
-  const conditions=pick(o,'conditions','work_conditions','terms','comment');
-  const date=pick(o,'scheduled_date','date');
-  const time=pick(o,'scheduled_time','time');
-  const client=pick(o,'client','client_name');
-  const phone=pick(o,'phone','client_phone');
-  const address=pick(o,'address');
+  const o=(state.orders||[]).find(x=>String(x.id)===String(id));if(!o)return;
+  const date=String(pick(o,'scheduled_date','date')||'').slice(0,10);
+  const time=String(pick(o,'scheduled_time','time','time_slot')||'').slice(0,5);
+  const client=pick(o,'client','client_name')||'Клиент не указан';
+  const source=sourceLabel(o);
   const pay=o.master_vk_id?(window.BOS_ORDER_PAYROLL?.directMaster(o)??(o.master_payout||payout(o.amount))):0;
-  openModal(`<style>
-    .bosOrderHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}.bosOrderHead h2{margin:0;font-size:22px}.bosOrderFacts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.bosOrderFact{min-width:0;padding:9px 10px;border:1px solid rgba(127,127,127,.18);border-radius:12px}.bosOrderFact small{display:block;opacity:.65;font-size:11px;margin-bottom:2px}.bosOrderFact b{display:block;font-size:13px;line-height:1.25;overflow-wrap:anywhere}.bosOrderBlock{margin:10px 0;padding:10px 12px;border:1px solid rgba(127,127,127,.18);border-radius:12px}.bosOrderBlock>small{display:block;opacity:.65;font-size:11px;margin-bottom:4px}.bosOrderBlock p{margin:3px 0;line-height:1.3}.bosOrderFinance{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.bosOrderMoney{padding:10px 12px;border-radius:12px;background:rgba(127,127,127,.08)}.bosOrderMoney small{display:block;opacity:.65;font-size:11px}.bosOrderMoney b{font-size:17px}.bosOrderControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.bosOrderControls label{display:block;font-size:11px;opacity:.65}.bosOrderControls select,.bosOrderControls input{width:100%;min-height:44px;margin-top:4px;box-sizing:border-box}.bosOrderActions{margin-top:10px}@media(max-width:430px){.bosOrderFacts,.bosOrderControls{grid-template-columns:1fr 1fr}.bosOrderFact{padding:8px}.bosOrderHead h2{font-size:20px}}
-  </style>
-  <div class="bosOrderHead"><h2>Заявка №${esc(o.id)}</h2><span class="status info">${esc(o.status||'В работе')}</span></div>
-  <div class="bosOrderFacts">
-    ${line('Магазин',source||'—')}
-    ${line('Дата и время',[date,time].filter(Boolean).join(' · ')||'—')}
-    <div class="bosOrderFact"><small>Клиент</small><b>${esc([client,phone].filter(Boolean).join(' · ')||'—')}</b><div data-bos-contact-order="${esc(o.id)}">${window.BOS_CONTACT_STATUS?.html(o,{details:true})||''}</div></div>
-    ${line('Адрес',address||'—')}
-  </div>
-  <div class="bosOrderBlock"><small>Работы</small><p><b>${esc(work||'Не указаны')}</b></p>${conditions&&conditions!==work?`<p class="muted">${esc(conditions)}</p>`:''}</div>
-  <div class="bosOrderControls bosOrderScheduleControls"><div><label for="quickScheduledDate">Дата заявки</label><input id="quickScheduledDate" type="date" value="${esc(date)}"></div><div><label for="quickScheduledTime">Время</label><input id="quickScheduledTime" type="time" value="${esc(time)}"></div></div>
-  <div class="bosOrderControls"><div><label for="quickStatus">Статус</label><select id="quickStatus">${STATUSES.map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}</select></div><div><label for="quickMaster">Мастер</label><select id="quickMaster"><option value="">Не назначен</option>${state.masters.map(m=>`<option value="${esc(m.vk_user_id)}" ${String(o.master_vk_id||'')===String(m.vk_user_id)?'selected':''}>${esc(m.full_name)}</option>`).join('')}</select></div></div>
-  <div class="bosOrderFinance"><div class="bosOrderMoney"><small>Сумма</small><b>${money(o.amount)}</b></div><div class="bosOrderMoney"><small>Мастеру</small><b id="payoutPreview">${money(pay)}</b></div></div>
-  ${window.BOS_ORDER_PAYROLL?.isDirect(o)?`<div class="bosOrderMoney" data-payroll-company><small>${esc(window.BOS_ORDER_PAYROLL.label(o))} · Компании из основной суммы</small><b>${money(window.BOS_ORDER_PAYROLL.directCompany(o))}</b><p class="muted">Допработы учитываются отдельно. Это доля компании, не чистая прибыль.</p></div>`:''}
-  <div class="two bosOrderActions"><button class="primary" onclick="saveQuickOrder('${esc(o.id)}')">Сохранить</button><button class="secondary" onclick="openOrderForm('${esc(o.id)}')">Редактировать</button></div><p id="quickMsg" class="muted"></p>`);
+  openModal(`<div class="bosManageOrder">
+    <div class="bosManageHead">
+      <div class="bosManageTitle"><b>№ ${esc(displayNo(o))}</b><small>Поступила ${esc(received(o))}</small></div>
+      <div class="bosManageMoney"><strong>Сумма: ${money(o.amount)}</strong><span>Мастеру: ${money(pay)}</span></div>
+    </div>
+    <div class="bosManageMeta"><span class="status info">${esc(o.status||'В работе')}</span>${source?`<span class="bosSourceChip">${esc(source)}</span>`:''}</div>
+    <div class="bosHandsBlock"><span class="bosHandsIcon">⌖</span><div>${addressHtml(o)}${apartmentHtml(o)}</div></div>
+    <div class="bosHandsBlock"><span class="bosHandsIcon">◷</span><div>${esc(dateTime(o))}</div></div>
+    <div class="bosHandsBlock"><span class="bosHandsIcon">◉</span><div><b>${esc(client)}</b>${phoneHtml(o)}<div data-bos-contact-order="${esc(o.id)}">${window.BOS_CONTACT_STATUS?.html(o,{details:true})||''}</div></div></div>
+    ${commentHtml(o)}
+    <section class="bosHandsWorks"><b class="bosWorksLabel">Состав работ</b><div class="bosHandsWorkList">${workRows(o)}</div></section>
+    <details class="bosManagementQuickEdit">
+      <summary><span class="bosExpand">Быстрое редактирование</span><span class="bosCollapse">Свернуть редактирование</span></summary>
+      <div class="bosOrderControls"><div><label for="quickScheduledDate">Дата заявки</label><input id="quickScheduledDate" type="date" value="${esc(date)}"></div><div><label for="quickScheduledTime">Время</label><input id="quickScheduledTime" type="time" value="${esc(time)}"></div></div>
+      <div class="bosOrderControls"><div><label for="quickStatus">Статус</label><select id="quickStatus">${STATUSES.map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}</select></div><div><label for="quickMaster">Мастер</label><select id="quickMaster"><option value="">Не назначен</option>${state.masters.map(m=>`<option value="${esc(m.vk_user_id)}" ${String(o.master_vk_id||'')===String(m.vk_user_id)?'selected':''}>${esc(m.full_name)}</option>`).join('')}</select></div></div>
+      <div class="bosOrderFinance"><div class="bosOrderMoney"><small>Сумма</small><b>${money(o.amount)}</b></div><div class="bosOrderMoney"><small>Мастеру</small><b id="payoutPreview">${money(pay)}</b></div></div>
+      <button class="primary wide" type="button" onclick="saveQuickOrder('${esc(o.id)}')">Сохранить быстрые изменения</button>
+    </details>
+    <button class="secondary wide bosManageFullEdit" type="button" onclick="openOrderForm('${esc(o.id)}')">Редактировать заявку</button>
+    <p id="quickMsg" class="muted"></p>
+  </div>`);
+  const modal=document.querySelector('#modalRoot .modal');modal?.classList.add('bosManageOrderModal');
+  const close=modal?.querySelector('.modalClose');if(close){close.setAttribute('aria-label','Закрыть заявку');modal.querySelector('.bosManageHead')?.appendChild(close)}
   const master=document.querySelector('#quickMaster');
   if(master)master.addEventListener('change',()=>{const out=document.querySelector('#payoutPreview');if(out)out.textContent=money(master.value?(window.BOS_ORDER_PAYROLL?.directMaster(o)??(o.master_payout||payout(o.amount))):0)});
   window.BOS_HANDS_RENDER_ORDER?.(id);
+  window.BOS_OPS_CONTACT_STATUS?.refresh?.();
 };
 window.saveQuickOrder=async function(id){
   const dateInput=document.querySelector('#quickScheduledDate');
   const timeInput=document.querySelector('#quickScheduledTime');
   if(!dateInput&&!timeInput)return typeof previousSaveQuickOrder==='function'?previousSaveQuickOrder.apply(this,arguments):undefined;
-  const o=state.orders.find(x=>String(x.id)===String(id));
+  const o=(state.orders||[]).find(x=>String(x.id)===String(id));
   const msg=document.querySelector('#quickMsg');
   if(!o||state.busy)return;
   state.busy=true;
@@ -4476,12 +4500,27 @@ window.saveQuickOrder=async function(id){
       scheduled_time:timeInput?timeInput.value:''
     });
     if(!d.ok)throw new Error(d.error);
-    const i=state.orders.findIndex(x=>String(x.id)===String(id));
+    const i=(state.orders||[]).findIndex(x=>String(x.id)===String(id));
     if(i>=0)state.orders[i]={...state.orders[i],...d.order,scheduled_date:dateInput?dateInput.value:'',scheduled_time:timeInput?timeInput.value:''};
     closeModal();
     show(state.page);
   }catch(e){if(msg)msg.textContent=e?.message||'Не удалось сохранить дату и время'}finally{state.busy=false}
 };
+const style=document.createElement('style');style.textContent=`
+.modal.bosManageOrderModal{padding:16px!important;max-width:620px!important;overflow-x:hidden!important}
+.bosManageOrder{font-size:14px;line-height:1.45;min-width:0}
+.bosManageHead{display:grid;grid-template-columns:minmax(0,1fr) auto 44px;gap:10px;align-items:center;padding:0 0 10px;margin:0}
+.bosManageTitle{display:flex;align-items:baseline;gap:10px;min-width:0;flex-wrap:wrap}.bosManageTitle>b{font-size:19px;overflow-wrap:anywhere}.bosManageTitle small{font-size:12px;color:var(--muted,#91a3b7);white-space:nowrap}
+.bosManageMoney{text-align:right;display:grid;gap:2px;min-width:0}.bosManageMoney strong{font-size:14px}.bosManageMoney span{font-size:12px;color:var(--muted,#91a3b7)}
+.bosManageOrderModal .bosManageHead .modalClose{position:static!important;float:none!important;margin:0!important;width:44px;height:44px;min-width:44px;min-height:44px;font-size:26px;padding:0}
+.bosManageMeta{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:0 0 4px}.bosManageMeta .status,.bosManageMeta .bosSourceChip{display:inline-flex;width:auto;margin:0}
+.bosManageOrder .bosHandsBlock{padding:10px 0;gap:10px;font-size:14px}.bosManageOrder .bosHandsBlock b{font-size:15px;line-height:1.4}.bosManageOrder .bosApartment{color:var(--muted,#91a3b7);font-size:13px;margin-top:4px}
+.bosManageOrder .bosHandsWorks{padding:0;margin:0}.bosManageOrder .bosHandsWorkRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:8px 0;font-size:14px;line-height:1.45}.bosManageOrder .bosHandsWorkRow span{overflow-wrap:anywhere}.bosManageOrder .bosHandsWorkRow b{font-size:14px;white-space:nowrap;color:var(--muted,#91a3b7)}
+.bosManageOrder summary{cursor:pointer;min-height:44px;box-sizing:border-box;padding:10px 0;color:#7eb9ff;font-size:14px}.bosManageOrder .bosCollapse{display:none}.bosManageOrder details[open]>summary .bosExpand{display:none}.bosManageOrder details[open]>summary .bosCollapse{display:inline}
+.bosManagementQuickEdit{margin-top:10px;border-top:1px solid rgba(255,255,255,.08)}.bosManagementQuickEdit>.bosOrderControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.bosManagementQuickEdit label{display:block;font-size:11px;color:var(--muted,#91a3b7)}.bosManagementQuickEdit select,.bosManagementQuickEdit input{width:100%;min-height:44px;margin-top:4px;box-sizing:border-box}.bosManagementQuickEdit .bosOrderFinance{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.bosManagementQuickEdit .bosOrderMoney{padding:10px 12px;border-radius:12px;background:rgba(127,127,127,.08)}.bosManagementQuickEdit .bosOrderMoney small{display:block;color:var(--muted,#91a3b7);font-size:11px}.bosManagementQuickEdit .bosOrderMoney b{font-size:16px}
+.bosManageFullEdit{margin-top:10px}.bosManageOrder #quickMsg:empty{display:none}
+@media(max-width:430px){.modal.bosManageOrderModal{padding:12px!important}.bosManageHead{grid-template-columns:minmax(0,1fr) 44px}.bosManageMoney{grid-column:1/-1;grid-row:2;text-align:left;display:flex;gap:10px;align-items:baseline}.bosManageOrderModal .bosManageHead .modalClose{grid-column:2;grid-row:1}.bosManagementQuickEdit>.bosOrderControls{grid-template-columns:1fr}}
+`;document.head.appendChild(style);
 })();
 
 
