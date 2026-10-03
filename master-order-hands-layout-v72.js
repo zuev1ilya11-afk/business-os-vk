@@ -62,7 +62,8 @@ const compact=document.createElement('style');compact.textContent=`
 .bosCompactMasterCard{font-size:14px;line-height:1.45;min-width:0}
 .bosCompactMasterCard .bosHandsHead{display:grid;grid-template-columns:auto minmax(0,1fr) 44px;gap:10px;align-items:center;padding:0 0 12px;margin:0}
 .bosCompactMasterCard .bosMasterTitle{display:flex;align-items:baseline;gap:8px;min-width:0;flex-wrap:wrap}.bosCompactMasterCard .bosMasterTitle>b{font-size:18px;overflow-wrap:anywhere}.bosCompactMasterCard .bosReceivedInline{font-size:12px;color:var(--muted,#91a3b7);white-space:nowrap}
-.bosCompactMasterCard .bosCompactMoney{text-align:right;display:grid;gap:2px;font-size:13px;min-width:0;overflow-wrap:anywhere}
+.bosCompactMasterCard .bosCompactMoney{text-align:right;display:grid;gap:2px;font-size:13px;min-width:0}
+.bosCompactMasterCard .bosCompactMoney strong,.bosCompactMasterCard .bosCompactMoney span{white-space:nowrap}
 .bosCompactMasterCard .bosCompactMoney strong{font-size:14px}
 .bosCompactOrderModal .bosHandsHead .modalClose{position:static!important;float:none!important;margin:0!important;width:44px;height:44px;min-width:44px;min-height:44px;font-size:26px;padding:0}
 .bosCompactMasterCard .bosHandsBlock{padding:10px 0;gap:10px;font-size:14px;min-width:0}
@@ -94,6 +95,7 @@ const compact=document.createElement('style');compact.textContent=`
 .bosCompactOrderModal .moa179Step{padding:7px 8px;gap:8px}.bosCompactOrderModal .moa179Step b{font-size:14px;line-height:1.4}
 .bosCompactOrderModal .moa179Step small{font-size:12px;margin:2px 0 0}.bosCompactOrderModal .moa179Step.current{padding:10px 8px}
 .bosCompactOrderModal .moa179Action{min-height:44px;margin-top:8px}.bosCompactOrderModal .moa179Msg:empty{display:none}
+@media(max-width:520px){.bosCompactMasterCard .bosHandsHead{grid-template-columns:minmax(0,1fr) 44px;align-items:center}.bosCompactMasterCard .bosMasterTitle{grid-column:1;grid-row:1}.bosCompactOrderModal .bosHandsHead .modalClose{grid-column:2;grid-row:1}.bosCompactMasterCard .bosCompactMoney{grid-column:1/-1;grid-row:2;display:flex;justify-content:flex-end;align-items:baseline;gap:10px;text-align:right;width:100%;font-size:13px}.bosCompactMasterCard .bosCompactMoney strong,.bosCompactMasterCard .bosCompactMoney span{white-space:nowrap}}
 @media(max-width:380px){.modal.bosCompactOrderModal{padding:12px!important}.bosCompactMasterCard .bosHandsHead{gap:8px}.bosCompactMasterCard .bosMasterTitle>b{font-size:16px}.bosCompactMasterCard .bosCompactMoney{font-size:12px}}
 `;document.head.appendChild(compact);
 setTimeout(stripStaffManagement,0);
