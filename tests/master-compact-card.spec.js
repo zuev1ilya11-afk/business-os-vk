@@ -11,6 +11,7 @@ for(const width of [360,390,430])test(`${width}: compact card, exact titles, exp
  const {db}=await open(page,width),card=page.locator('.bosCompactMasterCard'),modal=page.locator('.bosCompactOrderModal');
  await expect(card.locator('.bosApartment')).toHaveText('кв. 42');await expect(card.locator('.bosHandsAddressLink')).toHaveAttribute('href',/yandex.ru\/maps/);
  await expect(card.locator('.bosCompactClient').getByRole('link',{name:'Позвонить клиенту',exact:true})).toHaveAttribute('href','tel:+79990000002');
+ const payout=card.locator('.bosCompactMoney');await expect(payout).toBeVisible();await expect(payout.locator('span')).toHaveCSS('white-space','nowrap');expect(await payout.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
  await expect(modal.getByText('Связь с клиентом',{exact:true})).toHaveCount(0);await expect(modal.locator('.masterV126Focus,.masterV149Route,.masterV126ReceivedModal')).toHaveCount(0);
  await expect(card.locator('.bosHandsWorkRow:visible')).toHaveCount(2);await expect(card.getByText(work,{exact:true})).toBeVisible();await expect(card.getByText('1,5 м',{exact:true})).toBeVisible();
  await card.getByText('Ещё 2 работы',{exact:true}).click();await expect(card.locator('.bosHandsWorkRow:visible')).toHaveCount(4);await card.getByText('Свернуть работы',{exact:true}).click();await expect(card.locator('.bosHandsWorkRow:visible')).toHaveCount(2);
