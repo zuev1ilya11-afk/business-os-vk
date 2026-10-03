@@ -1,0 +1,31 @@
+name: Temporary build v256
+
+on:
+  push:
+    branches:
+      - feat/order-details-master-layout-v256
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Refresh generated build artifacts
+        run: npm run build
+      - name: Commit generated artifacts
+        run: |
+          if git diff --quiet -- startup-shell.bundle.js startup-eager.bundle.js index.html sw.js build-version.js; then
+            echo "Generated artifacts are already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add startup-shell.bundle.js startup-eager.bundle.js index.html sw.js build-version.js
+          git commit -m "Build: refresh generated assets"
+          git push origin HEAD:feat/order-details-master-layout-v256
