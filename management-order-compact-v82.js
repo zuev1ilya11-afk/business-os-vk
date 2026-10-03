@@ -47,13 +47,14 @@ window.openOrder=function(id){
     <div class="bosHandsBlock"><span class="bosHandsIcon">◉</span><div><b>${esc(client)}</b>${phoneHtml(o)}<div data-bos-contact-order="${esc(o.id)}">${window.BOS_CONTACT_STATUS?.html(o,{details:true})||''}</div></div></div>
     ${commentHtml(o)}
     <section class="bosHandsWorks"><b class="bosWorksLabel">Состав работ</b><div class="bosHandsWorkList">${workRows(o)}</div></section>
-    <details class="bosManagementQuickEdit">
-      <summary><span class="bosExpand">Быстрое редактирование</span><span class="bosCollapse">Свернуть редактирование</span></summary>
+    <section class="bosManagementQuickEdit" aria-label="Быстрое редактирование">
+      <div class="bosQuickEditLabel">Быстрое редактирование</div>
       <div class="bosOrderControls"><div><label for="quickScheduledDate">Дата заявки</label><input id="quickScheduledDate" type="date" value="${esc(date)}"></div><div><label for="quickScheduledTime">Время</label><input id="quickScheduledTime" type="time" value="${esc(time)}"></div></div>
       <div class="bosOrderControls"><div><label for="quickStatus">Статус</label><select id="quickStatus">${STATUSES.map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}</select></div><div><label for="quickMaster">Мастер</label><select id="quickMaster"><option value="">Не назначен</option>${state.masters.map(m=>`<option value="${esc(m.vk_user_id)}" ${String(o.master_vk_id||'')===String(m.vk_user_id)?'selected':''}>${esc(m.full_name)}</option>`).join('')}</select></div></div>
       <div class="bosOrderFinance"><div class="bosOrderMoney"><small>Сумма</small><b>${money(o.amount)}</b></div><div class="bosOrderMoney"><small>Мастеру</small><b id="payoutPreview">${money(pay)}</b></div></div>
-      <button class="primary wide" type="button" onclick="saveQuickOrder('${esc(o.id)}')">Сохранить быстрые изменения</button>
-    </details>
+      ${window.BOS_ORDER_PAYROLL?.isDirect(o)?`<div class="bosOrderMoney bosCompanyPool" data-payroll-company><small>${esc(window.BOS_ORDER_PAYROLL.label(o))} · Компании из основной суммы</small><b>${money(window.BOS_ORDER_PAYROLL.directCompany(o))}</b><p class="muted">Допработы учитываются отдельно. Это доля компании, не чистая прибыль.</p></div>`:''}
+      <button class="primary wide" type="button" onclick="saveQuickOrder('${esc(o.id)}')">Сохранить</button>
+    </section>
     <button class="secondary wide bosManageFullEdit" type="button" onclick="openOrderForm('${esc(o.id)}')">Редактировать заявку</button>
     <p id="quickMsg" class="muted"></p>
   </div>`);
@@ -101,8 +102,9 @@ const style=document.createElement('style');style.textContent=`
 .bosManageOrder .bosHandsBlock{padding:10px 0;gap:10px;font-size:14px}.bosManageOrder .bosHandsBlock b{font-size:15px;line-height:1.4}.bosManageOrder .bosApartment{color:var(--muted,#91a3b7);font-size:13px;margin-top:4px}
 .bosManageOrder .bosHandsWorks{padding:0;margin:0}.bosManageOrder .bosHandsWorkRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:8px 0;font-size:14px;line-height:1.45}.bosManageOrder .bosHandsWorkRow span{overflow-wrap:anywhere}.bosManageOrder .bosHandsWorkRow b{font-size:14px;white-space:nowrap;color:var(--muted,#91a3b7)}
 .bosManageOrder summary{cursor:pointer;min-height:44px;box-sizing:border-box;padding:10px 0;color:#7eb9ff;font-size:14px}.bosManageOrder .bosCollapse{display:none}.bosManageOrder details[open]>summary .bosExpand{display:none}.bosManageOrder details[open]>summary .bosCollapse{display:inline}
-.bosManagementQuickEdit{margin-top:10px;border-top:1px solid rgba(255,255,255,.08)}.bosManagementQuickEdit>.bosOrderControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.bosManagementQuickEdit label{display:block;font-size:11px;color:var(--muted,#91a3b7)}.bosManagementQuickEdit select,.bosManagementQuickEdit input{width:100%;min-height:44px;margin-top:4px;box-sizing:border-box}.bosManagementQuickEdit .bosOrderFinance{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.bosManagementQuickEdit .bosOrderMoney{padding:10px 12px;border-radius:12px;background:rgba(127,127,127,.08)}.bosManagementQuickEdit .bosOrderMoney small{display:block;color:var(--muted,#91a3b7);font-size:11px}.bosManagementQuickEdit .bosOrderMoney b{font-size:16px}
+.bosManagementQuickEdit{margin-top:10px;border-top:1px solid rgba(255,255,255,.08);padding-top:10px}.bosQuickEditLabel{font-size:12px;color:var(--muted,#91a3b7);margin:0 0 6px}.bosManagementQuickEdit>.bosOrderControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.bosManagementQuickEdit label{display:block;font-size:11px;color:var(--muted,#91a3b7)}.bosManagementQuickEdit select,.bosManagementQuickEdit input{width:100%;min-height:44px;margin-top:4px;box-sizing:border-box}.bosManagementQuickEdit .bosOrderFinance{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.bosManagementQuickEdit .bosOrderMoney{padding:10px 12px;border-radius:12px;background:rgba(127,127,127,.08)}.bosManagementQuickEdit .bosOrderMoney small{display:block;color:var(--muted,#91a3b7);font-size:11px}.bosManagementQuickEdit .bosOrderMoney b{font-size:16px}.bosManagementQuickEdit .bosCompanyPool{margin:8px 0}.bosManagementQuickEdit .bosCompanyPool p{margin:4px 0 0;font-size:11px}
 .bosManageFullEdit{margin-top:10px}.bosManageOrder #quickMsg:empty{display:none}
+@media(max-width:520px){.bosManagementQuickEdit>.bosOrderControls{grid-template-columns:1fr}}
 @media(max-width:430px){.modal.bosManageOrderModal{padding:12px!important}.bosManageHead{grid-template-columns:minmax(0,1fr) 44px}.bosManageMoney{grid-column:1/-1;grid-row:2;text-align:left;display:flex;gap:10px;align-items:baseline}.bosManageOrderModal .bosManageHead .modalClose{grid-column:2;grid-row:1}.bosManagementQuickEdit>.bosOrderControls{grid-template-columns:1fr}}
 `;document.head.appendChild(style);
 })();
