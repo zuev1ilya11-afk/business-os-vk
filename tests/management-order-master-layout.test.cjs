@@ -20,5 +20,5 @@ test('management order mirrors master information blocks and stays editable',()=
 test('master received date is shown inline with the order number',()=>{
   assert.match(master,/bosMasterTitle/);
   assert.match(master,/bosReceivedInline/);
-  assert.doesNotMatch(master,/class="bosCompactReceived"/);
+  assert.match(master,/bosReceivedInline bosCompactReceived/);
 });
