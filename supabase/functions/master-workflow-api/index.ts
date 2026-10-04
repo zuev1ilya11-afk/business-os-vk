@@ -20,6 +20,22 @@ const validTime=(v:string)=>{if(!/^\d{2}:\d{2}$/.test(v))return false;const [h,m
 const timeSlot=(v:string)=>{const [h,m]=v.split(':').map(Number);return `${v}–${String((h+1)%24).padStart(2,'0')}:${String(m).padStart(2,'0')}`};
 const hasSchedule=(o:any)=>!!String(o?.scheduled_date||'').slice(0,10)&&!!String(o?.scheduled_time||o?.time_slot||'').slice(0,5);
 const normalizedStage=(o:any)=>{const s=String(o?.master_workflow_stage||'assigned');return s==='arrived'?'departed':activeStages.includes(s)?s:'assigned'};
+const contactResults=['no_answer','thinking','waiting_delivery','call_later','agreed','other'];
+const successfulContact=new Set(['thinking','waiting_delivery','call_later','agreed','other']);
+const contactHistory=(o:any)=>Array.isArray(o?.master_contact_history)?o.master_contact_history.filter((x:any)=>x&&typeof x==='object').slice(-50):[];
+function normalizePhone(v:any){
+  const digits=String(v||'').replace(/\D/g,'');
+  if(digits.length===10)return '+7'+digits;
+  if(digits.length===11&&(digits[0]==='7'||digits[0]==='8'))return '+7'+digits.slice(1);
+  return digits.length>=10&&digits.length<=15?('+'+digits):'';
+}
+function orderPhones(o:any){
+  const raw=String(o?.phone||o?.client_phone||'').trim();if(!raw)return[];
+  const hits=raw.match(/(?:\+?7|8)?[\s(.-]*\d{3}[\s).-]*\d{3}[\s.-]*\d{2}[\s.-]*\d{2}/g)||[raw];
+  return [...new Set(hits.map(normalizePhone).filter(Boolean))];
+}
+const validAttemptId=(v:any)=>/^[A-Za-z0-9_-]{8,96}$/.test(String(v||''));
+const sameContactResult=(event:any,result:string,comment:string,callbackAt:string|null)=>String(event?.result||'')===result&&String(event?.comment||'')===comment&&String(event?.callback_at||'')===String(callbackAt||'');
 
 // Every mutation compares the authorized snapshot at the instant of the UPDATE.
 function workflowWrite(db:any,order:any,patch:any){
@@ -37,7 +53,7 @@ Deno.serve(async r=>{
     const db=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
     const b=await r.json().catch(()=>({}));
     const action=String(b.action||'health');
-    if(action==='health')return j({ok:true,version:'2026-10-02-contact-confirmation'});
+    if(action==='health')return j({ok:true,version:'2026-10-04-contact-journal'});
     const me=await actor(db,r);
     if(!me)return j({ok:false,error:'Доступ не подтверждён'},401);
     if(String(me.role||'')!=='master')return j({ok:false,error:'Действие доступно только мастеру'},403);
@@ -56,6 +72,38 @@ Deno.serve(async r=>{
       if(!fresh.data||String(fresh.data.master_staff_id||'')!==String(me.id))return j({ok:false,error:'Заявка больше не назначена вам. Обновите список.'},403);
       if(!['Выполнена','Отменена'].includes(fresh.data.status)&&confirmed(fresh.data))return j({ok:true,order:safeOrder(fresh.data),idempotent:true});
       return j({ok:false,error:'Заявка уже изменена. Проверьте актуальный этап.',order:safeOrder(fresh.data)},409);
+    }
+
+    if(action==='recordContactAttempt'){
+      const attemptId=String(b.attempt_id||'');
+      const phone=normalizePhone(b.phone);
+      if(!validAttemptId(attemptId))return j({ok:false,error:'Некорректный ID попытки звонка'},400);
+      if(!phone||!orderPhones(cur).includes(phone))return j({ok:false,error:'Номер не относится к этой заявке'},400);
+      const oldHistory=contactHistory(cur),existing=oldHistory.find((x:any)=>String(x.id||'')===attemptId);
+      if(existing)return j({ok:true,order:safeOrder(cur),contact_event:existing,idempotent:true});
+      const now=new Date().toISOString();
+      const event={id:attemptId,at:now,phone,result:'pending',comment:'',callback_at:null,by_staff_id:me.id,by_name:String(me.full_name||'').trim()||'Мастер'};
+      const next=[...oldHistory,event].slice(-50);
+      return await save({master_contact_history:next,master_contact_status:'pending',master_contact_comment:null,master_contact_phone:phone,master_contact_updated_at:now,master_contact_callback_at:null,updated_at:now,sync_status:'pending_sheet'},o=>contactHistory(o).some((x:any)=>String(x.id||'')===attemptId));
+    }
+
+    if(action==='recordContactResult'){
+      const attemptId=String(b.attempt_id||''),result=String(b.result||''),phone=normalizePhone(b.phone);
+      let comment=String(b.comment||'').trim();if(comment.length>500)comment=comment.slice(0,500);
+      if(!validAttemptId(attemptId)||!contactResults.includes(result))return j({ok:false,error:'Некорректный итог звонка'},400);
+      if(result==='other'&&!comment)return j({ok:false,error:'Для варианта «Другое» добавьте комментарий'},400);
+      if(!phone||!orderPhones(cur).includes(phone))return j({ok:false,error:'Номер не относится к этой заявке'},400);
+      let callbackAt:string|null=null;
+      if(result==='call_later'&&b.callback_at){const d=new Date(String(b.callback_at));if(Number.isNaN(d.getTime()))return j({ok:false,error:'Некорректное время повторного звонка'},400);callbackAt=d.toISOString();}
+      const now=new Date().toISOString(),history=contactHistory(cur);let index=history.findIndex((x:any)=>String(x.id||'')===attemptId);
+      if(index<0){history.push({id:attemptId,at:now,phone,result:'pending',comment:'',callback_at:null,by_staff_id:me.id,by_name:String(me.full_name||'').trim()||'Мастер'});index=history.length-1;}
+      const event=history[index];
+      if(String(event.by_staff_id||'')&&String(event.by_staff_id)!==String(me.id))return j({ok:false,error:'Эта попытка звонка принадлежит другому мастеру'},403);
+      if(sameContactResult(event,result,comment,callbackAt))return j({ok:true,order:safeOrder(cur),contact_event:event,idempotent:true});
+      history[index]={...event,phone,result,comment,callback_at:callbackAt,result_at:now,by_staff_id:me.id,by_name:String(me.full_name||'').trim()||'Мастер'};
+      const patch:any={master_contact_history:history.slice(-50),master_contact_status:result,master_contact_comment:comment||null,master_contact_phone:phone,master_contact_updated_at:now,master_contact_callback_at:callbackAt,updated_at:now,sync_status:'pending_sheet'};
+      if(successfulContact.has(result)&&!contactConfirmed(cur)){patch.master_called_at=now;patch.master_called_by_staff_id=me.id;patch.master_called_by_name=String(me.full_name||'').trim()||'Мастер';}
+      return await save(patch,o=>contactHistory(o).some((x:any)=>String(x.id||'')===attemptId&&String(x.result||'')===result));
     }
 
     if(action==='markCalled'){
