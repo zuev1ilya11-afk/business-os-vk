@@ -42,6 +42,23 @@ async function verifySession(token:string,secret:string){const p=String(token||'
 async function currentActor(db:any,req:Request){const secret=Deno.env.get('VK_APP_SECRET')||'';let uid=await verifySession(req.headers.get('x-bos-session')||'',secret);if(!uid)uid=await verifyLaunch(req.headers.get('x-vk-launch-params')||'',secret);if(!uid)return null;const q=await db.from('business_staff').select('*').eq('external_id',uid).eq('is_active',true).maybeSingle();if(q.error)throw q.error;return q.data||null}
 const ops=(r:string)=>['owner','manager','dispatcher'].includes(r);
 
+// Leadership only. The transaction rechecks the active staff row under lock.
+async function manualCompleteOrder(db:any,req:Request,body:any){
+  const actor=await currentActor(db,req);if(!actor)return json({ok:false,error:'Доступ не подтверждён'},401);
+  if(!['owner','manager'].includes(String(actor.role||'')))return json({ok:false,error:'Недостаточно прав'},403);
+  const id=String(body.id||''),reason=String(body.reason||'').trim(),version=body.expected_updated_at;
+  if(!/^[1-9]\d*$/.test(id)||!reason||reason.length>1000||typeof version!=='string'||!/^\d{4}-\d{2}-\d{2}T/.test(version)||!Number.isFinite(Date.parse(version)))return json({ok:false,error:'Укажите причину (до 1000 символов) и обновите заявку.'},400);
+  const r=await db.rpc('bos_manual_complete_order',{p_order_id:id,p_actor_id:actor.id,p_reason:reason,p_expected_updated_at:version});
+  if(r.error)throw r.error;
+  const result=r.data;
+  if(!result?.ok){
+    const errors:any={FORBIDDEN:[403,'Недостаточно прав'],ORDER_NOT_FOUND:[404,'Заявка не найдена'],ORDER_CANCELLED:[409,'Отменённую заявку нельзя завершить'],ORDER_CHANGED:[409,'Заявка изменилась. Откройте её заново и проверьте данные.'],REASON_REQUIRED:[400,'Укажите причину ручного завершения (до 1000 символов).']};
+    const [status,message]=errors[result?.error]||[409,'Не удалось подтвердить завершение. Обновите заявку.'];
+    return json({ok:false,error:result?.error||'COMPLETION_NOT_CONFIRMED',message},status);
+  }
+  return json(result);
+}
+
 async function reportActor(db:any,req:Request,body:any){let actor=await currentActor(db,req);if(!actor)return null;if(actor.role==='owner'&&body.acting_master_vk_id){const q=await db.from('business_staff').select('*').eq('external_id',String(body.acting_master_vk_id)).eq('role','master').eq('is_active',true).maybeSingle();if(q.error)throw q.error;return q.data||null}return actor.role==='master'?actor:null}
 
 
@@ -112,7 +129,7 @@ async function reviewReport(db:any,req:Request,body:any){
   if(!q.data.report_uploaded_at)return json({ok:false,error:'Отчёт ещё не загружен'},400);
   let order=q.data;if(decision==='approved')order=await archiveBeforeApproval(req,order);
   if(order.report_upload_token!==q.data.report_upload_token||order.report_uploaded_at!==q.data.report_uploaded_at||order.report_review_status!=='pending'||order.status==='Отменена')return reportConflict();
-  const now=new Date().toISOString(),patch:any={report_review_status:decision,report_reviewed_by:String(actor.full_name||actor.external_id),report_reviewed_at:now,report_review_comment:String(body.comment||''),status:decision==='approved'?'Выполнена':'В работе',completed_at:decision==='approved'?now:null,sync_status:'pending_sheet',updated_at:now};
+  const now=new Date().toISOString(),patch:any={report_review_status:decision,report_reviewed_by:String(actor.full_name||actor.external_id),report_reviewed_at:now,report_review_comment:String(body.comment||''),status:decision==='approved'?'Выполнена':'В работе',completed_at:decision==='approved'?(order.completed_at||now):null,sync_status:'pending_sheet',updated_at:now};
   const u=await reportWrite(db,order,patch);if(u.error)throw u.error;if(!u.data)return reportConflict();
   return json({ok:true,order:u.data,archived:decision==='approved'});
 }
@@ -176,6 +193,7 @@ Deno.serve(async(req:Request)=>{
     const body=await req.json().catch(()=>({}));const action=String(body.action||'health');
     if(action==='health')return json({ok:true,service:'order-lifecycle-api',version:'2026-09-23-v106'});
     const url=Deno.env.get('SUPABASE_URL')!,key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;if(!url||!key)throw new Error('Server configuration missing');const db=createClient(url,key,{auth:{persistSession:false}});
+    if(action==='manualCompleteOrder')return await manualCompleteOrder(db,req,body);
     if(action==='finalizeMasterReport')return await finalizeReport(db,req,body);
     if(action==='reviewReport')return await reviewReport(db,req,body);
     if(action==='getHandsReportDelivery'||action==='retryHandsReportDelivery')return await handsReportDelivery(db,req,body);

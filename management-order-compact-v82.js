@@ -42,6 +42,7 @@ window.openOrder=function(id){
       <div class="bosManageMoney"><strong>Сумма: ${money(o.amount)}</strong><span>Мастеру: ${money(pay)}</span></div>
     </div>
     <div class="bosManageMeta"><span class="status info">${esc(o.status||'В работе')}</span>${source?`<span class="bosSourceChip">${esc(source)}</span>`:''}</div>
+    ${window.BOS_MANUAL_COMPLETION?.history(o)||''}
     <div class="bosHandsBlock"><span class="bosHandsIcon">⌖</span><div>${addressHtml(o)}${apartmentHtml(o)}</div></div>
     <div class="bosHandsBlock"><span class="bosHandsIcon">◷</span><div>${esc(dateTime(o))}</div></div>
     <div class="bosHandsBlock"><span class="bosHandsIcon">◉</span><div><b>${esc(client)}</b>${phoneHtml(o)}<div data-bos-contact-order="${esc(o.id)}">${window.BOS_CONTACT_STATUS?.html(o,{details:true})||''}</div></div></div>
@@ -52,10 +53,11 @@ window.openOrder=function(id){
       <div class="bosOrderControls"><div><label for="quickScheduledDate">Дата заявки</label><input id="quickScheduledDate" type="date" value="${esc(date)}"></div><div><label for="quickScheduledTime">Время</label><input id="quickScheduledTime" type="time" value="${esc(time)}"></div></div>
       <div class="bosOrderControls"><div><label for="quickStatus">Статус</label><select id="quickStatus">${STATUSES.map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}</select></div><div><label for="quickMaster">Мастер</label><select id="quickMaster"><option value="">Не назначен</option>${state.masters.map(m=>`<option value="${esc(m.vk_user_id)}" ${String(o.master_vk_id||'')===String(m.vk_user_id)?'selected':''}>${esc(m.full_name)}</option>`).join('')}</select></div></div>
       <div class="bosOrderFinance"><div class="bosOrderMoney"><small>Сумма</small><b>${money(o.amount)}</b></div><div class="bosOrderMoney"><small>Мастеру</small><b id="payoutPreview">${money(pay)}</b></div></div>
-      ${window.BOS_ORDER_PAYROLL?.isDirect(o)?`<div class="bosOrderMoney bosCompanyPool" data-payroll-company><small>${esc(window.BOS_ORDER_PAYROLL.label(o))} · Компании из основной суммы</small><b>${money(window.BOS_ORDER_PAYROLL.directCompany(o))}</b><p class="muted">Допработы учитываются отдельно. Это доля компании, не чистая прибыль.</p></div>`:''}
+      ${window.BOS_ORDER_PAYROLL?.isDirect(o)?`<div class="bosOrderMoney bosCompanyPool" data-payroll-company><small>${esc(o.manual_completion_history?.length&&!o.report_uploaded_at?window.BOS_ORDER_PAYROLL.label(o).replace('отчёта','заявки'):window.BOS_ORDER_PAYROLL.label(o))} · Компании из основной суммы</small><b>${money(window.BOS_ORDER_PAYROLL.directCompany(o))}</b><p class="muted">Допработы учитываются отдельно. Это доля компании, не чистая прибыль.</p></div>`:''}
       <button class="primary wide" type="button" onclick="saveQuickOrder('${esc(o.id)}')">Сохранить</button>
     </section>
     <button class="secondary wide bosManageFullEdit" type="button" onclick="openOrderForm('${esc(o.id)}')">Редактировать заявку</button>
+    ${window.BOS_MANUAL_COMPLETION?.can(o)?`<button class="secondary wide bosManualCompleteAction" type="button" onclick="openManualCompletion('${esc(o.id)}')">Завершить вручную</button>`:''}
     <p id="quickMsg" class="muted"></p>
   </div>`);
   const modal=document.querySelector('#modalRoot .modal');modal?.classList.add('bosManageOrderModal');

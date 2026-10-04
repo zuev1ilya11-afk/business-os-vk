@@ -18,3 +18,4 @@ cat tests/sql/order-guards-schema.sql \
 
 # The confirmation guard must also run alongside the captured production guard.
 bash scripts/test-master-contact.sh
+bash scripts/test-manual-completion.sh
