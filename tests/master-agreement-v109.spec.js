@@ -20,9 +20,12 @@ test('master agrees unscheduled order and then enters scheduled workflow',async(
   await expect(panel.getByRole('button',{name:/Договориться/})).toBeEnabled();
   await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toHaveCount(0);
 
-  await page.locator('.bosCompactClient a[aria-label="Позвонить клиенту"]').click();
+  await page.locator('.bosCompactClient a[aria-label="Позвонить клиенту"]').dispatchEvent('click');
+  const contactResult=page.locator('#masterContactResultForm');
+  await expect(contactResult).toBeVisible();
+  await contactResult.locator('input[value="agreed"]').check();
+  await contactResult.getByRole('button',{name:'Сохранить итог',exact:true}).click();
   await expect.poll(()=>db.tables.orders.find(o=>String(o.id)==='11')?.master_called_at).toBeTruthy();
-  await panel.getByRole('button',{name:/Договориться/}).click();
   await expect(page.getByRole('heading',{name:'Согласовать дату и время'})).toBeVisible();
   await expect(page.locator('#masterOrderAgree179Form').getByRole('button',{name:'Связался с клиентом',exact:true})).toHaveCount(0);
   await page.locator('#masterOrderAgree179Form input[name="scheduled_date"]').fill('2099-09-15');

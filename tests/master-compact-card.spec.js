@@ -21,8 +21,8 @@ for(const width of [360,390,430])test(`${width}: compact card, exact titles, exp
  for(const el of [card,modal,modal.locator('.moa179StageCard')])expect(await el.evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  const client=card.locator('.bosMasterClientActions');await expect(client.getByRole('button',{name:'Связался с клиентом'})).toHaveCount(0);await expect(client.locator('.bosContactStatus')).toHaveCount(0);await expect(client.getByRole('button',{name:'Подтвердить договорённость'})).toBeDisabled();
- await card.locator('a[aria-label="Позвонить клиенту"]').click();await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();await client.getByRole('button',{name:'Подтвердить договорённость'}).click();await expect(client).toContainText('Время согласовано');
- await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();
+ await card.locator('a[aria-label="Позвонить клиенту"]').dispatchEvent('click');const contactResult=page.locator('#masterContactResultForm');await expect(contactResult).toBeVisible();await contactResult.locator('input[value="agreed"]').check();await contactResult.getByRole('button',{name:'Сохранить итог',exact:true}).click();await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();
+ const agreement=page.locator('#masterOrderAgree179Form');await expect(agreement).toBeVisible();await agreement.getByRole('button',{name:'Сохранить',exact:true}).click();await expect(agreement).toHaveCount(0);await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();
  await modal.getByRole('button',{name:'Подтвердить: выехал',exact:true}).click();await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','50');
  await modal.evaluate(e=>e.scrollTop=0);
  await modal.screenshot({path:info.outputPath(`card-${width}.png`)});

@@ -120,6 +120,7 @@ Deno.serve(async r=>{
 
     if(action==='confirmAgreement'){
       if(!cur.master_called_at)return j({ok:false,error:'Сначала отметьте звонок клиенту'},409);
+      if(cur.master_contact_status&&cur.master_contact_status!=='agreed')return j({ok:false,error:'Сначала выберите итог «Договорились»'},409);
       if(!hasSchedule(cur))return j({ok:false,error:'В заявке не указаны дата и время'},409);
       if(cur.master_agreed_at)return j({ok:true,order:safeOrder(cur),idempotent:true});
       const now=new Date().toISOString();
@@ -128,6 +129,7 @@ Deno.serve(async r=>{
 
     if(action==='setAgreementSchedule'){
       if(!cur.master_called_at)return j({ok:false,error:'Сначала отметьте звонок клиенту'},409);
+      if(cur.master_contact_status&&cur.master_contact_status!=='agreed')return j({ok:false,error:'Сначала выберите итог «Договорились»'},409);
       if(stageRank(cur)>=2||cur.report_act_url)return j({ok:false,error:'После начала работы дату и время договорённости менять нельзя'},409);
       const date=String(b.scheduled_date||'').slice(0,10),time=String(b.scheduled_time||'').slice(0,5);
       if(!validDate(date)||!validTime(time))return j({ok:false,error:'Укажите корректные дату и время'},400);

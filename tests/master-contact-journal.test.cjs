@@ -32,3 +32,14 @@ test('journal rejects a number outside the order and requires comment for other'
  assert.equal((await api({action:'recordContactResult',id:'1',phone:'+79990000002',attempt_id:'other_result_01',result:'other',comment:''},'staff_m')).status,400);
  assert.equal((await api({action:'recordContactResult',id:'1',phone:'+79990000002',attempt_id:'other_result_01',result:'other',comment:'Нужно уточнить детали'},'staff_m')).status,200);
 });
+
+test('new journal blocks agreement until the result is agreed',async()=>{
+ const db=fixture(),api=edge('master-workflow-api',db);
+ await api({action:'recordContactAttempt',id:'1',phone:'+79990000002',attempt_id:'thinking_gate_01'},'staff_m');
+ assert.equal((await api({action:'recordContactResult',id:'1',phone:'+79990000002',attempt_id:'thinking_gate_01',result:'thinking',comment:'Клиент решает'},'staff_m')).status,200);
+ db.tables.orders[0].scheduled_date='2099-09-10';db.tables.orders[0].scheduled_time='10:00';db.tables.orders[0].time_slot='10:00–11:00';
+ assert.equal((await api({action:'confirmAgreement',id:'1'},'staff_m')).status,409);
+ await api({action:'recordContactAttempt',id:'1',phone:'+79990000002',attempt_id:'agreed_gate_02'},'staff_m');
+ assert.equal((await api({action:'recordContactResult',id:'1',phone:'+79990000002',attempt_id:'agreed_gate_02',result:'agreed',comment:''},'staff_m')).status,200);
+ assert.equal((await api({action:'confirmAgreement',id:'1'},'staff_m')).status,200);
+});
