@@ -76,7 +76,7 @@ function resultOptions(){
  ];
 }
 function openContactResult(pending){
- if(!liveMaster()||!pending)return;
+ if(!liveMaster()||!pending||document.getElementById('masterContactResultForm'))return;
  const id=String(pending.id),phone=normalizeClientPhone(pending.phone),attemptId=String(pending.attempt_id||'');
  if(!id||!phone||!attemptId)return;
  const o=findOrder(id);if(!o)return;
