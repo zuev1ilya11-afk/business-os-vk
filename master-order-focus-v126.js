@@ -39,8 +39,16 @@ function nextStep(o){
   if(workDone(o))return{tone:'active',title:'Заполните отчёт',hint:'Работа отмечена начатой. После завершения прикрепите отчёт.'};
   if(agreementDone(o)&&stageOf(o)==='assigned')return{tone:'active',title:'Подтвердите выезд',hint:'Когда отправитесь к клиенту, отметьте выезд в прогрессе заявки.'};
   if(agreementDone(o))return{tone:'active',title:'Начните работу',hint:'Дата и время согласованы. Когда приступите к заказу, отметьте начало работы.'};
+  const contact=String(o?.master_contact_status||''),note=String(o?.master_contact_comment||'').trim();
+  if(contact==='pending')return{tone:'attention',title:'Укажите итог звонка',hint:'Звонок зафиксирован. Выберите результат разговора, чтобы диспетчер видел актуальную ситуацию.'};
+  if(contact==='no_answer'&&!calledDone(o))return{tone:'attention',title:'Попробуйте связаться снова',hint:note||'Клиент не ответил. Можно позвонить на этот или другой номер.'};
+  if(contact==='thinking')return{tone:'waiting',title:'Клиент пока думает',hint:note||'Дождитесь решения клиента и свяжитесь повторно.'};
+  if(contact==='waiting_delivery')return{tone:'waiting',title:'Ожидается доставка',hint:note||'После доставки свяжитесь с клиентом и согласуйте выезд.'};
+  if(contact==='call_later')return{tone:'waiting',title:'Перезвоните клиенту',hint:note||'Клиент попросил связаться позже.'};
+  if(contact==='agreed'&&!agreementDone(o))return{tone:'active',title:'Сохраните дату и время',hint:'Клиент согласен. Зафиксируйте договорённость по выезду.'};
+  if(contact==='other'&&calledDone(o))return{tone:'waiting',title:'Уточните дальнейшие действия',hint:note||'Связь состоялась, но договорённость ещё не зафиксирована.'};
   if(calledDone(o))return{tone:'waiting',title:'Зафиксируйте договорённость',hint:'Уточните с клиентом дату и время и сохраните договорённость.'};
-  return{tone:'attention',title:'Позвоните клиенту',hint:'Свяжитесь с клиентом и после разговора отметьте выполненный звонок.'};
+  return{tone:'attention',title:'Позвоните клиенту',hint:'Свяжитесь с клиентом. После звонка укажите его итог.'};
 }
 function focusHtml(o){const step=nextStep(o),phone=phoneHref(o?.phone||o?.client_phone),call=liveMaster()&&phone&&!calledDone(o)?`<a class="secondary masterV126QuickCall" href="tel:${escv(phone)}">Позвонить сейчас</a>`:'';return `<section class="masterV126Focus ${escv(step.tone)}" aria-label="Следующий шаг"><div class="masterV126FocusText"><small>СЛЕДУЮЩИЙ ШАГ</small><h3>${escv(step.title)}</h3><p>${escv(step.hint)}</p></div>${call}</section>`}
 function decoratePhone(modal,o){
