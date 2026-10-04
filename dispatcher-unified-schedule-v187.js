@@ -58,7 +58,7 @@ function layoutOrders(orders){
   }
   flush();return result;
 }
-function signature(date,masters){return JSON.stringify({date,masters:masters.map(m=>[m.id,m.external_id,m.full_name]),orders:dayAssigned(date).map(o=>[o.id,o.master_staff_id,o.master_vk_id,o.master_name,o.scheduled_time,o.time_slot,o.status,o.reschedule_requested,o.master_workflow_stage]),schedule:(st()?.masterSchedule||[]).filter(r=>String(r.work_date||r.date||'').slice(0,10)===date).map(r=>[r.staff_id,r.master_staff_id,r.master_vk_id,r.is_working,r.work_start,r.work_end])})}
+function signature(date,masters){return JSON.stringify({date,masters:masters.map(m=>[m.id,m.external_id,m.full_name]),orders:dayAssigned(date).map(o=>[o.id,o.client,o.work,o.master_staff_id,o.master_vk_id,o.master_name,o.scheduled_time,o.time_slot,o.status,o.reschedule_requested,o.master_workflow_stage]),schedule:(st()?.masterSchedule||[]).filter(r=>String(r.work_date||r.date||'').slice(0,10)===date).map(r=>[r.staff_id,r.master_staff_id,r.master_vk_id,r.is_working,r.work_start,r.work_end])})}
 function scheduleView(board){if(sessionStorage.getItem('bosDispatchV24Control')==='1')return false;const tabs=[...(board?.querySelectorAll('.dbViewTabs button')||[])],list=tabs.find(b=>String(b.textContent||'').trim()==='Список'),schedule=tabs.find(b=>String(b.textContent||'').trim()==='Расписание');if(list?.classList.contains('primary'))return false;return !schedule||schedule.classList.contains('primary')}
 function cardHtml(o,layout={lane:0,lanes:1}){
   const r=orderInterval(o),warn=o.reschedule_requested?' warn':'',slots=Math.max(1,r.slots);
@@ -90,9 +90,11 @@ function render(force=false){
   if(!force&&sig===lastSignature&&schedule.querySelector(':scope>.du187Root'))return;
   rendering=true;try{
     schedule.classList.add('du187ScheduleHost');
-    schedule.querySelector(':scope>.du187Root')?.remove();
-    schedule.insertAdjacentHTML('afterbegin',gridHtml(date,masters));
-    const root=schedule.querySelector(':scope>.du187Root');lastSignature=sig;if(root)installResize(root)
+    let root=schedule.querySelector(':scope>.du187Root');
+    if(root?.classList.contains('dh190Root')&&window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190){window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190.refresh();lastSignature=sig;return}
+    if(root&&window.BOS_PATCH_CONTENT){const template=document.createElement('template');template.innerHTML=gridHtml(date,masters);window.BOS_PATCH_CONTENT(root,template.content.firstElementChild.innerHTML)}
+    else{root?.remove();schedule.insertAdjacentHTML('afterbegin',gridHtml(date,masters));root=schedule.querySelector(':scope>.du187Root')}
+    lastSignature=sig;if(root)installResize(root)
   }finally{rendering=false}
 }
 function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>render(false))}

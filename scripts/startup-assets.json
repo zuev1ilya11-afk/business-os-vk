@@ -10,6 +10,7 @@
     "service-catalog.js",
     "report-deduction.js",
     "contact-status.js",
+    "background-view.js",
     "app-public.js",
     "network-fallback-v50.js",
     "vk-auth-patch.js",

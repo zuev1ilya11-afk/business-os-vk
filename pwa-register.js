@@ -100,6 +100,7 @@
     const list=[];
     if(window.BOS_PERMISSIONS.canUseDispatcherWorkspace({role:value}))list.push(...roleScripts.dispatcher);
     if(['master','owner','manager'].includes(value))list.push(...roleScripts.master);
+    if(window.BOS_PERMISSIONS.canViewFinance(state.user,state.settings?.permissions))list.push('./finance-data.js','./finance-page.js');
     await loadList(list);
     return true;
   };

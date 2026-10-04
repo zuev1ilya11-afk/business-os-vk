@@ -42,8 +42,10 @@ for(const [role,width]of [['owner',1600],['dispatcher',390]])test(`${role}: mont
  await first.locator('.usDayHead').click();await expect(page.locator('#modalRoot .usMasterRow')).toHaveCount(5);
  await expect(page.locator('#modalRoot [data-schedule-order]')).toHaveCount(6);await expect(page.locator('#modalRoot')).not.toContainText('№ 199');await page.evaluate(()=>closeModal());
  // Live refresh must update the day color and counts, not leave a stale visual.
+ await first.locator('.usPerson').first().focus();await page.evaluate(()=>window.__calendarFocus=document.activeElement);
  const secondMasterRow=db.tables.staff_schedule.find(r=>r.staff_id==='m2'&&r.work_date==='2026-10-01');secondMasterRow.is_working=false;
  db.tables.orders=db.tables.orders.filter(o=>o.id!=='101');await page.evaluate(()=>BOS_REFRESH_NOW());
+ expect(await page.evaluate(()=>window.__calendarFocus.isConnected&&window.__calendarFocus===document.activeElement)).toBe(true);
  await expect(first).toHaveClass(/partial/);await expect(first.locator('.usDayCount')).toHaveText('5 заяв.');
  await page.locator('.usMonthHead button').last().click();await expect(page.locator('.usMonthHead h3')).toContainText('ноябрь');
  await expect(page.locator('.usTeamDay')).toHaveCount(30);await page.locator('.usMonthHead button').first().click();await expect(first.locator('.usDayCount')).toHaveText('5 заяв.');

@@ -101,7 +101,12 @@ function renderChanged(){
     decoratePresence();
     return;
   }
-  if(!document.querySelector('#modalRoot .modal')&&typeof show==='function'&&state?.page)show(state.page);
+  if(!document.querySelector('#modalRoot .modal')){
+    if(window.BOS_OWNER_DASHBOARD?.refresh?.())return;
+    if(window.BOS_ORDER_CONTROL?.isActive?.()){window.BOS_ORDER_CONTROL.refresh();return}
+    if(state?.page==='finance'&&window.BOS_FINANCE_PAGE){window.BOS_FINANCE_PAGE.refresh();return}
+    if(typeof show==='function'&&state?.page)show(state.page);
+  }
   decoratePresence();
 }
 
@@ -111,11 +116,15 @@ async function syncEmployeeData(reason='manual'){
   if(!urgent&&lastSync&&Date.now()-lastSync<MIN_AUTO_GAP)return false;
   if(inFlight||document.hidden||state?.busy||!authReady()||editingInline()||typeof api!=='function'||(modal&&!employeeProfileModal()))return false;
   inFlight=true;
+  const refreshButton=document.getElementById('bosManualRefresh');
+  if(refreshButton){refreshButton.disabled=true;refreshButton.classList.add('isRefreshing');refreshButton.title='Обновляем…'}
   lastError='';
   window.BOS_LAST_REFRESH_ERROR='';
   try{
-    const before=stateSignature();
+    const before=stateSignature(),sessionBefore=getSession();
     const d=await api('bootstrap');
+    if(!d?.ok||!Array.isArray(d.orders))throw new Error(d?.error||'Не удалось обновить данные');
+    if(sessionBefore!==getSession()||(d.user?.id&&String(d.user.id)!==String(state.user?.id)))return false;
     if(!d?.ok||state.busy||before!==stateSignature()||!authReady()||editingInline()||
       (document.querySelector('#modalRoot .modal')&&!employeeProfileModal()))return false;
     const normalizedOrders=normalizeOrders(d.orders||[]);
@@ -136,7 +145,7 @@ async function syncEmployeeData(reason='manual'){
     }
     const changed=before!==stateSignature();
     lastSync=Date.now();
-    if(changed)renderChanged();else decoratePresence();
+    if(changed){const x=window.scrollX,y=window.scrollY;window.BOS_BACKGROUND_RENDER=true;try{renderChanged()}finally{window.BOS_BACKGROUND_RENDER=false;window.scrollTo?.(x,y)}}else decoratePresence();
     window.bosRefreshNotifications?.();
     window.dispatchEvent(new CustomEvent('bos:employee-data-refreshed',{detail:{changed,reason,at:lastSync}}));
     return changed;
@@ -147,6 +156,7 @@ async function syncEmployeeData(reason='manual'){
     return false;
   }finally{
     inFlight=false;
+    if(refreshButton){refreshButton.disabled=false;refreshButton.classList.remove('isRefreshing');refreshButton.title=lastError?'Не удалось обновить данные. Повторить':'Обновить данные'}
   }
 }
 

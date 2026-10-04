@@ -51,7 +51,7 @@ function updateNavForRole(){
   $('#profileBtn').textContent=isMasterPreview()?(previewUser.full_name||'М').trim().split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase():'БО';
 }
 
-show=function(name){state.busy=false;state.page=name;$('#content').innerHTML=pages[name]();document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===name));updateNavForRole()};
+show=function(name){state.busy=false;state.page=name;const html=pages[name]();if(window.BOS_BACKGROUND_RENDER&&window.BOS_PATCH_CONTENT)window.BOS_PATCH_CONTENT($('#content'),html);else if(window.BOS_RENDER_CONTENT)window.BOS_RENDER_CONTENT($('#content'),html);else $('#content').innerHTML=html;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===name));updateNavForRole()};
 
 function enterMasterPreview(id){
   const u=state.users.find(x=>String(x.vk_user_id)===String(id)&&x.role==='master');

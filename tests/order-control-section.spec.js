@@ -36,7 +36,7 @@ test('home has only a compact unique-order indicator and opens the Orders contro
  expect(db.calls.filter(c=>c.table==='orders'&&['update','insert','delete'].includes(c.mode))).toEqual([]);
 });
 
-test('loading and failed refresh never announce all clear; successful empty data does',async({page})=>{
+test('background refresh retains a successful empty snapshot, then marks it stale on error',async({page})=>{
  const {db}=await ready(page);
  db.tables.orders.length=0;
  await page.evaluate(()=>window.BOS_REFRESH_NOW());
@@ -48,11 +48,12 @@ test('loading and failed refresh never announce all clear; successful empty data
   await route.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"Сеть недоступна"}'});
  });
  await page.evaluate(()=>{window.__controlRefresh=window.BOS_REFRESH_NOW()});
- await expect(page.locator('#bosOrderControlSummary')).not.toContainText('Всё в порядке');
- await expect(page.locator('#ownerDashboard')).toHaveAttribute('aria-busy','true');
+ await expect(page.locator('#bosOrderControlSummary')).toContainText('Всё в порядке');
+ await expect(page.locator('#bosOrderControlSummary')).not.toContainText('Загрузка');
+ await expect(page.locator('#ownerDashboard')).toHaveAttribute('aria-busy','false');
  release();
  await page.evaluate(()=>window.__controlRefresh);
- await expect(page.locator('#bosOrderControlSummary')).toContainText('Не удалось загрузить');
+ await expect(page.locator('#bosOrderControlSummary')).toContainText('Не удалось обновить');
  await expect(page.locator('#ownerDashboard')).toHaveAttribute('aria-busy','false');
  await page.evaluate(()=>show('home'));
  await expect(page.locator('#ownerDashboard .odRefreshState')).toBeVisible();
