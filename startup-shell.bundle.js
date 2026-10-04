@@ -4300,7 +4300,33 @@ const visibleComment=o=>{
  return raw.split(/\n+/).map(x=>x.trim()).filter(x=>x&&!/^(?:Как добраться|Магазин|Оплата)\s*:/iu.test(x)).join('\n').trim();
 };
 const commentHtml=o=>{const text=visibleComment(o);if(!text)return '';const long=text.length>180||text.split('\n').length>3;return `<section class="bosOrderComment"><b>Комментарий</b>${long?`<details><summary><span class="bosCommentPreview">${esc(text.slice(0,180))}…</span><span class="bosExpand">Показать полностью</span><span class="bosCollapse">Свернуть комментарий</span></summary><p>${esc(text)}</p></details>`:`<p>${esc(text)}</p>`}</section>`};
-const phoneHtml=o=>{const label=String(o.phone||o.client_phone||'').trim(),phone=label.replace(/[^+0-9]/g,'');return phone?`<div class="bosCompactPhone"><a class="masterV126Phone" href="tel:${esc(phone)}">${esc(label)}</a><a class="secondary bosClientCallAction" href="tel:${esc(phone)}" aria-label="Позвонить клиенту">Позвонить</a></div>`:'<small>Телефон не указан</small>'};
+function phoneList72(v){
+ const raw=String(v||'').trim();if(!raw)return[];
+ const hits=raw.match(/(?:\+?7|8)?[\s(.-]*\d{3}[\s).-]*\d{3}[\s.-]*\d{2}[\s.-]*\d{2}/g)||[];
+ const source=hits.length?hits:[raw],seen=new Set(),out=[];
+ source.forEach(label=>{
+  const clean=String(label||'').trim().replace(/^[,;|/\s]+|[,;|/\s]+$/g,'');
+  const digits=clean.replace(/\D/g,'');if(digits.length<10)return;
+  const tel=digits.length===10?'+7'+digits:(digits.length===11&&(digits[0]==='7'||digits[0]==='8')?'+7'+digits.slice(1):'+'+digits);
+  if(seen.has(tel))return;seen.add(tel);out.push({label:clean||tel,tel});
+ });
+ return out;
+}
+window.copyMasterPhone72=async function(phone,button){
+ const value=String(phone||'').trim();if(!value)return;
+ try{
+  if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(value);
+  else{
+   const area=document.createElement('textarea');area.value=value;area.setAttribute('readonly','');area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();document.execCommand('copy');area.remove();
+  }
+  if(button){const old=button.textContent;button.textContent='Скопировано';button.disabled=true;setTimeout(()=>{button.textContent=old;button.disabled=false},900)}
+ }catch(_){if(button)button.textContent='Не скопировано'}
+};
+const phoneHtml=o=>{
+ const phones=phoneList72(o.phone||o.client_phone);
+ if(!phones.length)return'<small>Телефон не указан</small>';
+ return `<div class="bosCompactPhone masterV126PhoneList">${phones.map((item,index)=>`<div class="masterV126PhoneRow"><a class="masterV126Phone" href="tel:${esc(item.tel)}">${esc(item.label)}</a><div class="masterV126PhoneActions"><button type="button" class="secondary masterV126CopyPhone" onclick="copyMasterPhone72('${esc(item.tel)}',this)" aria-label="Скопировать номер ${index+1}">Копировать</button><a class="secondary bosClientCallAction" href="tel:${esc(item.tel)}" aria-label="${index===0?'Позвонить клиенту':'Позвонить клиенту '+(index+1)}">Позвонить</a></div></div>`).join('')}</div>`;
+};
 const received=o=>{const raw=String(o.created_at||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:'—'};
 
 const shortRows=o=>works(o).slice(0,3).map(x=>{const w=parseWork(x);return `<div class="bosHandsMiniWork"><span>${esc(w.title)}</span>${w.qty?`<b>${esc(w.qty)}</b>`:''}</div>`}).join('')+(works(o).length>3?`<div class="bosHandsMore">+ ещё ${works(o).length-3}</div>`:'');
@@ -4334,8 +4360,12 @@ const compact=document.createElement('style');compact.textContent=`
 .bosCompactMasterCard .bosHandsBlock b{font-size:15px;line-height:1.4}
 .bosCompactMasterCard .bosHandsIcon{font-size:18px;width:20px;flex:0 0 20px}
 .bosCompactMasterCard .bosApartment{color:var(--muted,#91a3b7);font-size:13px;margin-top:4px}
-.bosCompactPhone{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:2px}
-.bosCompactPhone .bosClientCallAction{font-size:14px;min-height:44px;padding:8px 12px}
+.bosCompactPhone{display:grid;gap:7px;margin-top:4px;width:100%}
+.masterV126PhoneRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;min-width:0}
+.masterV126PhoneActions{display:flex;gap:6px;align-items:center}
+.bosCompactPhone .masterV126PhoneActions .secondary{font-size:12px;min-height:38px;padding:7px 9px;text-decoration:none}
+.masterV126CopyPhone{white-space:nowrap}
+@media(max-width:520px){.masterV126PhoneRow{grid-template-columns:1fr}.masterV126PhoneActions{justify-content:flex-start;flex-wrap:wrap}.masterV126PhoneActions .secondary{flex:1 1 110px}}
 .bosMasterClientActions{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .bosMasterClientActions:empty{display:none}
 .bosMasterClientActions button{font-size:13px;min-height:44px;white-space:normal;text-align:left;padding:8px 10px}
