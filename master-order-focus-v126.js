@@ -43,6 +43,15 @@ function nextStep(o){
   return{tone:'attention',title:'Позвоните клиенту',hint:'Свяжитесь с клиентом и после разговора отметьте выполненный звонок.'};
 }
 function focusHtml(o){const step=nextStep(o),phone=phoneHref(o?.phone||o?.client_phone),call=liveMaster()&&phone&&!calledDone(o)?`<a class="secondary masterV126QuickCall" href="tel:${escv(phone)}">Позвонить сейчас</a>`:'';return `<section class="masterV126Focus ${escv(step.tone)}" aria-label="Следующий шаг"><div class="masterV126FocusText"><small>СЛЕДУЮЩИЙ ШАГ</small><h3>${escv(step.title)}</h3><p>${escv(step.hint)}</p></div>${call}</section>`}
+function decoratePhone(modal,o){
+ const phone=phoneHref(o?.phone||o?.client_phone);if(!phone)return;
+ const blocks=[...modal.querySelectorAll('.bosHandsBlock')];
+ const clientBlock=blocks.find(x=>x.querySelector('small')&&(x.textContent||'').includes(String(o?.client||'')))||blocks.find(x=>x.querySelector('small'));
+ if(!clientBlock)return;
+ const old=clientBlock.querySelector('small');if(!old||old.querySelector('a'))return;
+ const label=(old.textContent||o?.phone||o?.client_phone||'').trim();if(!label)return;
+ old.innerHTML=`<a class="masterV126Phone" href="tel:${escv(phone)}">${escv(label)}</a>`;
+}
 function decorateRoute(modal,o,panel){const href=yandexRouteHref(o);if(!href)return;let route=modal.querySelector('.masterV149Route');if(!route){route=document.createElement('a');route.className='primary wide masterV149Route';route.target='_blank';route.rel='noopener noreferrer';route.innerHTML='<span>📍</span><span>Построить маршрут в Яндекс Картах</span>';const addressBlock=[...modal.querySelectorAll('.bosHandsBlock')].find(x=>(x.textContent||'').includes(String(o?.address||'')));if(addressBlock)addressBlock.insertAdjacentElement('afterend',route);else if(panel)panel.insertAdjacentElement('beforebegin',route);else modal.prepend(route)}route.href=href;route.setAttribute('aria-label',`Построить маршрут до адреса ${routeAddress(o)}`)}
 function decorateCards(){
   document.querySelectorAll('.masterV125Card[data-master-order-id]').forEach(card=>{
