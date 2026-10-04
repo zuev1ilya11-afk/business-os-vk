@@ -9,7 +9,7 @@ const token = (uid, exp = Math.floor(Date.now()/1000)+3600) => {
   return `${msg}.${createHmac('sha256',secret).update(msg).digest('base64url')}`;
 };
 function database(seed = {}) {
-  const tables = structuredClone({business_staff:[],orders:[],staff_schedule:[],order_claims:[],master_memo_materials:[],...seed});
+  const tables = structuredClone({business_staff:[],finance_expenses:[],orders:[],staff_schedule:[],order_claims:[],master_memo_materials:[],...seed});
   const db = {tables, calls:[], rpc:async(name,p)=>{
     db.calls.push({rpc:name,p});
     if(name==='bos_verify_staff_credentials')return {data:tables.business_staff.find(x=>x.is_active&&x.login?.toLowerCase()===p.p_login.trim().toLowerCase()&&x.password_hash===p.p_password)?.id||null,error:null};
@@ -21,7 +21,7 @@ function database(seed = {}) {
     throw new Error(`Unexpected RPC ${name}`);
   },from(table){
     let filters=[], mode='select', payload, columns='*', single=false, from=0, to=999;
-    const q={select(c='*'){columns=c;return q},is(k,v){filters.push(x=>v===null?x[k]==null:x[k]===v);return q},eq(k,v){filters.push(x=>String(x[k])===String(v));return q},neq(k,v){filters.push(x=>String(x[k])!==String(v));return q},in(k,vs){filters.push(x=>vs.includes(x[k]));return q},order(){return q},limit(n){to=n-1;return q},range(a,b){from=a;to=b;return q},maybeSingle(){single=true;return q},single(){single=true;return q},insert(p){mode='insert';payload=p;return q},update(p){mode='update';payload=p;return q},upsert(p){mode='upsert';payload=p;return q},delete(){mode='delete';return q},then(resolve,reject){return Promise.resolve().then(()=>{
+    const q={select(c='*'){columns=c;return q},is(k,v){filters.push(x=>v===null?x[k]==null:x[k]===v);return q},eq(k,v){filters.push(x=>String(x[k])===String(v));return q},neq(k,v){filters.push(x=>String(x[k])!==String(v));return q},in(k,vs){filters.push(x=>vs.includes(x[k]));return q},gte(k,v){filters.push(x=>x[k]>=v);return q},lte(k,v){filters.push(x=>x[k]<=v);return q},order(){return q},limit(n){to=n-1;return q},range(a,b){from=a;to=b;return q},maybeSingle(){single=true;return q},single(){single=true;return q},insert(p){mode='insert';payload=p;return q},update(p){mode='update';payload=p;return q},upsert(p){mode='upsert';payload=p;return q},delete(){mode='delete';return q},then(resolve,reject){return Promise.resolve().then(()=>{
       db.calls.push({table,mode,payload:structuredClone(payload)});
       if(db.beforeQuery)db.beforeQuery(table,mode,payload);
       let rows=(tables[table]||[]).filter(x=>filters.every(f=>f(x)));
@@ -43,7 +43,8 @@ function edge(slug,db,extra={}){
   const shared=raw.includes('import "../../../order-payroll.js";')?fs.readFileSync(path.join(__dirname,'../../order-payroll.js'),'utf8')+'\n':'';
   const deduction=raw.includes('import "../../../report-deduction.js";')?['service-catalog.js','report-deduction.js'].map(n=>fs.readFileSync(path.join(__dirname,'../../',n),'utf8')).join('\n'):'';
   const details=raw.includes('hands-details.ts')?stripTypeScriptTypes(fs.readFileSync(path.join(__dirname,'../../supabase/functions/_shared/hands-details.ts'),'utf8').replace(/^export /gm,''),{mode:'transform'}):'';
-  const source=shared+deduction+details+stripTypeScriptTypes(raw.replace(/^import .*?;\s*/gm,''),{mode:'transform'});
+  const expenses=raw.includes('import "../../../finance-expenses.js";')?fs.readFileSync(path.join(__dirname,'../../finance-expenses.js'),'utf8')+'\n':'';
+  const source=shared+deduction+details+expenses+stripTypeScriptTypes(raw.replace(/^import .*?;\s*/gm,''),{mode:'transform'});
   const context={createClient:()=>db,Deno:{env:{get:k=>({VK_APP_SECRET:secret,BOS_SYNC_KEY:secret,SUPABASE_URL:'https://test.invalid',SUPABASE_SERVICE_ROLE_KEY:'test-key',...(extra.env||{})}[k])},serve:fn=>handler=fn},crypto:webcrypto,Request,Response,Headers,File,FormData,AbortController,setTimeout,clearTimeout,URL,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,btoa,atob,console,fetch:()=>{throw new Error('Unexpected external fetch')},...extra};
   vm.runInNewContext(source,context,{filename});
   return async(body,uid='100',session=token(uid),headers={})=>{const r=await handler(new Request('https://test.invalid',{method:'POST',headers:{...(body instanceof FormData?{}:{'Content-Type':'application/json'}),'X-BOS-Session':session,...headers},body:body instanceof FormData?body:JSON.stringify(body)}));return {status:r.status,body:await r.json()}};

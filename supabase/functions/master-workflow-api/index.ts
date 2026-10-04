@@ -98,10 +98,12 @@ Deno.serve(async r=>{
       const now=new Date().toISOString(),history=contactHistory(cur);let index=history.findIndex((x:any)=>String(x.id||'')===attemptId);
       if(index<0){history.push({id:attemptId,at:now,phone,result:'pending',comment:'',callback_at:null,by_staff_id:me.id,by_name:String(me.full_name||'').trim()||'Мастер'});index=history.length-1;}
       const event=history[index];
+      if(normalizePhone(event.phone)!==phone)return j({ok:false,error:'Номер попытки звонка изменить нельзя'},409);
       if(String(event.by_staff_id||'')&&String(event.by_staff_id)!==String(me.id))return j({ok:false,error:'Эта попытка звонка принадлежит другому мастеру'},403);
       if(sameContactResult(event,result,comment,callbackAt))return j({ok:true,order:safeOrder(cur),contact_event:event,idempotent:true});
       history[index]={...event,phone,result,comment,callback_at:callbackAt,result_at:now,by_staff_id:me.id,by_name:String(me.full_name||'').trim()||'Мастер'};
-      const patch:any={master_contact_history:history.slice(-50),master_contact_status:result,master_contact_comment:comment||null,master_contact_phone:phone,master_contact_updated_at:now,master_contact_callback_at:callbackAt,updated_at:now,sync_status:'pending_sheet'};
+      const latest=history[history.length-1];
+      const patch:any={master_contact_history:history.slice(-50),master_contact_status:latest.result,master_contact_comment:latest.comment||null,master_contact_phone:latest.phone,master_contact_updated_at:latest.result_at||latest.at,master_contact_callback_at:latest.callback_at||null,updated_at:now,sync_status:'pending_sheet'};
       if(successfulContact.has(result)&&!contactConfirmed(cur)){patch.master_called_at=now;patch.master_called_by_staff_id=me.id;patch.master_called_by_name=String(me.full_name||'').trim()||'Мастер';}
       return await save(patch,o=>contactHistory(o).some((x:any)=>String(x.id||'')===attemptId&&String(x.result||'')===result));
     }
