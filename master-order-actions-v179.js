@@ -82,12 +82,12 @@ window.masterOrderAgree179=function(id){
  const msg=form.querySelector('#masterOrderAgree179Msg'),contact=form.querySelector('.moa179AgreementContact'),submit=form.querySelector('[type=submit]');
  function refreshContact(){
   const current=orderById(id)||o;submit.disabled=busy||!current.master_called_at;
-  contact.innerHTML=current.master_called_at?'':'<small class="muted">Сначала нажмите «Позвонить» в заявке.</small>';
+  contact.innerHTML=current.master_called_at?'':'<small class="muted">Сначала свяжитесь с клиентом и укажите итог звонка, подтверждающий разговор.</small>';
  }
  refreshContact();
  form.onsubmit=async e=>{
   e.preventDefault();if(busy||state.busy)return;
-  if(!(orderById(id)||o).master_called_at){msg.textContent='Сначала нажмите «Позвонить» клиенту.';return}
+  if(!(orderById(id)||o).master_called_at){msg.textContent='Сначала свяжитесь с клиентом и укажите итог звонка, подтверждающий разговор.';return}
   const date=String(form.elements.scheduled_date.value||''),time=String(form.elements.scheduled_time.value||'').slice(0,5);
   if(!date||!time){msg.textContent='Укажите дату и время';return}
   busy=true;state.busy=true;if(typeof setBusy==='function')setBusy(form,true);msg.textContent='Сохраняем…';
