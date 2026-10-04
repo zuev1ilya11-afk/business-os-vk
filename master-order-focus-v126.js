@@ -17,11 +17,11 @@ const agreementDone=o=>!!o?.master_agreed_at||progressed(o);
 const workDone=o=>['started','completed'].includes(stageOf(o))||reportUploaded(o);
 function phoneList(v){
  const raw=String(v||'').trim();if(!raw)return[];
- const hits=raw.match(/(?:\\+?7|8)?[\\s(.-]*\\d{3}[\\s).-]*\\d{3}[\\s.-]*\\d{2}[\\s.-]*\\d{2}/g)||[];
+ const hits=raw.match(/(?:\+?7|8)?[\s(.-]*\d{3}[\s).-]*\d{3}[\s.-]*\d{2}[\s.-]*\d{2}/g)||[];
  const source=hits.length?hits:[raw],seen=new Set(),out=[];
  source.forEach(label=>{
-  const clean=String(label||'').trim().replace(/^[,;|/\\s]+|[,;|/\\s]+$/g,'');
-  const digits=clean.replace(/\\D/g,'');if(digits.length<10)return;
+  const clean=String(label||'').trim().replace(/^[,;|/\s]+|[,;|/\s]+$/g,'');
+  const digits=clean.replace(/\D/g,'');if(digits.length<10)return;
   let tel=digits.length===10?'+7'+digits:(digits.length===11&&(digits[0]==='7'||digits[0]==='8')?'+7'+digits.slice(1):'+'+digits);
   if(seen.has(tel))return;seen.add(tel);out.push({label:clean||tel,tel});
  });
