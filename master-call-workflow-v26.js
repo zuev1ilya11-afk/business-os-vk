@@ -14,7 +14,7 @@ function liveMaster(){return String(state?.user?.role||'')==='master'}
 function masterUser(){return typeof liveMasterUser==='function'?(liveMasterUser()||state?.user||{}):(state?.user||{})}
 function findOrder(id){return (state?.orders||[]).find(o=>String(o.id)===String(id))||null}
 function escv(v){return typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function phoneHref(v){let p=String(v||'').trim().replace(/[^\d+]/g,'');if(/^8\d{10}$/.test(p))p='+7'+p.slice(1);else if(/^\d{10}$/.test(p))p='+7'+p;return p}
+function phoneHref(v){const raw=String(v||'').trim(),hit=raw.match(/(?:\+?7|8)?[\s(.-]*\d{3}[\s).-]*\d{3}[\s.-]*\d{2}[\s.-]*\d{2}/);return normalizeClientPhone(hit?.[0]||raw)}
 function effectiveStage(o){if(String(o?.status||'')==='Выполнена')return'completed';if(String(o?.status||'')==='Отменена')return'cancelled';const raw=String(o?.master_workflow_stage||'assigned');if(raw==='arrived')return'departed';return STAGES.includes(raw)?raw:'assigned'}
 function fmt(v){if(!v)return'';const d=new Date(v);return Number.isNaN(d.getTime())?'':d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}
 function timeline(o){const stage=effectiveStage(o),current=STAGES.indexOf(stage);return `<div class="bosMwSteps bosMwStepsV26">${STAGES.map((s,i)=>{const done=stage==='completed'?true:i<=current,at=fmt(o?.[TIMES[s]]);return `<div class="bosMwStep${done?' done':''}${s===stage?' current':''}"><i></i><span><b>${LABELS[s]}</b>${at?`<small>${escv(at)}</small>`:''}</span></div>`}).join('')}</div>`}
