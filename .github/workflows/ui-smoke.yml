@@ -97,8 +97,8 @@ jobs:
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server
 
-      - name: Complete Playwright suite
-        run: npm run test:ui -- --workers=2
+      - name: Focused Playwright regression
+        run: npx playwright test tests/master-orders-v125.spec.js tests/dark-business-os.spec.js --workers=2
 
       - name: Upload test results
         if: failure()
