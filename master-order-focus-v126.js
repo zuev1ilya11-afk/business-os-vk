@@ -99,7 +99,6 @@ function decorate(){
   let focus=modal.querySelector('.masterV126Focus');
   if(!focus){focus=document.createElement('div');const anchor=panel||modal.querySelector('.bosHandsOrder');if(panel)panel.insertAdjacentElement('beforebegin',focus);else if(anchor)anchor.insertAdjacentElement('afterend',focus);else modal.prepend(focus)}
   if(focus.dataset.sig!==sig){focus.outerHTML=focusHtml(o);focus=modal.querySelector('.masterV126Focus');if(focus)focus.dataset.sig=sig}
-  decoratePhone(modal,o);
   decorateRoute(modal,o,panel);
   const primary=panel?.querySelector('.mwv2Actions .primary,.bosMwActions .primary');
   panel?.querySelectorAll('.masterV126PrimaryAction').forEach(x=>x.classList.remove('masterV126PrimaryAction'));
