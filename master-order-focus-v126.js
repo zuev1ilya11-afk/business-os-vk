@@ -28,17 +28,6 @@ function phoneList(v){
  return out;
 }
 const phoneHref=v=>phoneList(v)[0]?.tel||'';
-async function copyPhone126(phone,button){
- const value=String(phone||'').trim();if(!value)return;
- try{
-  if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(value);
-  else{
-   const area=document.createElement('textarea');area.value=value;area.setAttribute('readonly','');area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();document.execCommand('copy');area.remove();
-  }
-  if(button){const old=button.textContent;button.textContent='Скопировано';button.disabled=true;setTimeout(()=>{button.textContent=old;button.disabled=false},900)}
- }catch(_){if(button)button.textContent='Не скопировано'}
-}
-window.copyMasterPhone126=copyPhone126;
 const routeAddress=o=>{const address=String(o?.address||'').trim();if(!address)return'';const city=String(o?.city||'').trim();return city&&!address.toLowerCase().includes(city.toLowerCase())?`${city}, ${address}`:address};
 const yandexRouteHref=o=>{const destination=routeAddress(o);return destination?`https://yandex.ru/maps/?text=${encodeURIComponent(destination)}`:''};
 const receivedDate=v=>{const raw=String(v||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:(raw||'—')};
@@ -54,24 +43,6 @@ function nextStep(o){
   return{tone:'attention',title:'Позвоните клиенту',hint:'Свяжитесь с клиентом и после разговора отметьте выполненный звонок.'};
 }
 function focusHtml(o){const step=nextStep(o),phone=phoneHref(o?.phone||o?.client_phone),call=liveMaster()&&phone&&!calledDone(o)?`<a class="secondary masterV126QuickCall" href="tel:${escv(phone)}">Позвонить сейчас</a>`:'';return `<section class="masterV126Focus ${escv(step.tone)}" aria-label="Следующий шаг"><div class="masterV126FocusText"><small>СЛЕДУЮЩИЙ ШАГ</small><h3>${escv(step.title)}</h3><p>${escv(step.hint)}</p></div>${call}</section>`}
-function phoneRowsHtml(o){
- const phones=phoneList(o?.phone||o?.client_phone);
- return phones.map((item,index)=>`<div class="masterV126PhoneRow"><a class="masterV126Phone" href="tel:${escv(item.tel)}">${escv(item.label)}</a><div class="masterV126PhoneActions"><button type="button" class="secondary masterV126CopyPhone" onclick="copyMasterPhone126('${escv(item.tel)}',this)" aria-label="Скопировать номер ${index+1}">Копировать</button><a class="secondary bosClientCallAction" href="tel:${escv(item.tel)}" aria-label="${index===0?'Позвонить клиенту':'Позвонить клиенту '+(index+1)}">Позвонить</a></div></div>`).join('');
-}
-function decoratePhone(modal,o){
- const phones=phoneList(o?.phone||o?.client_phone);if(!phones.length)return;
- const compact=modal.querySelector('.bosCompactPhone');
- if(compact){
-  const sig=phones.map(x=>x.tel).join('|');
-  if(compact.dataset.masterPhoneSig!==sig){compact.dataset.masterPhoneSig=sig;compact.innerHTML=`<div class="masterV126PhoneList">${phoneRowsHtml(o)}</div>`}
-  return;
- }
- const blocks=[...modal.querySelectorAll('.bosHandsBlock')];
- const clientBlock=blocks.find(x=>x.querySelector('small')&&(x.textContent||'').includes(String(o?.client||'')))||blocks.find(x=>x.querySelector('small'));
- if(!clientBlock)return;
- const old=clientBlock.querySelector('small');if(!old)return;
- old.outerHTML=`<div class="masterV126PhoneList">${phoneRowsHtml(o)}</div>`;
-}
 function decorateRoute(modal,o,panel){const href=yandexRouteHref(o);if(!href)return;let route=modal.querySelector('.masterV149Route');if(!route){route=document.createElement('a');route.className='primary wide masterV149Route';route.target='_blank';route.rel='noopener noreferrer';route.innerHTML='<span>📍</span><span>Построить маршрут в Яндекс Картах</span>';const addressBlock=[...modal.querySelectorAll('.bosHandsBlock')].find(x=>(x.textContent||'').includes(String(o?.address||'')));if(addressBlock)addressBlock.insertAdjacentElement('afterend',route);else if(panel)panel.insertAdjacentElement('beforebegin',route);else modal.prepend(route)}route.href=href;route.setAttribute('aria-label',`Построить маршрут до адреса ${routeAddress(o)}`)}
 function decorateCards(){
   document.querySelectorAll('.masterV125Card[data-master-order-id]').forEach(card=>{
@@ -139,10 +110,9 @@ setTimeout(schedule,0);
 const style=document.createElement('style');style.textContent=`
 .masterV126Received{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted,#91a3b7);font-size:12px;line-height:1.3}.masterV126Received b{color:var(--text,#f5f8fc);font-size:12px;font-weight:700;white-space:nowrap}.masterV126ReceivedModal{margin:10px 0;padding:10px 12px;border:1px solid rgba(96,165,250,.18);border-radius:12px;background:rgba(37,99,235,.06)}
 .masterV126Address{display:flex;align-items:flex-start;gap:7px;color:var(--muted,#91a3b7);font-size:12px;line-height:1.35;min-width:0}.masterV126Address span{flex:0 0 auto}.masterV126Address b{color:var(--text,#f5f8fc);font-weight:650;min-width:0;overflow-wrap:anywhere}
-.masterV126PhoneList{display:grid;gap:7px;width:100%;margin-top:4px}.masterV126PhoneRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;min-width:0}.masterV126PhoneActions{display:flex;gap:6px;align-items:center}.masterV126PhoneActions .secondary{min-height:38px!important;padding:7px 9px!important;font-size:12px!important;text-decoration:none}.masterV126CopyPhone{white-space:nowrap}
 .masterV126Focus{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 2px;padding:13px 14px;border:1px solid rgba(96,165,250,.24);border-radius:14px;background:rgba(37,99,235,.09)}
 .masterV126FocusText{min-width:0}.masterV126Focus small{display:block;font-size:10px;letter-spacing:.08em;color:var(--muted,#91a3b7);font-weight:800}.masterV126Focus h3{margin:3px 0 3px;font-size:17px;line-height:1.2}.masterV126Focus p{margin:0;color:var(--muted,#91a3b7);font-size:12px;line-height:1.35}.masterV126Focus.attention{border-color:rgba(245,158,11,.34);background:rgba(245,158,11,.08)}.masterV126Focus.danger{border-color:rgba(239,68,68,.34);background:rgba(239,68,68,.08)}.masterV126Focus.done{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}.masterV126Focus.muted{opacity:.82}.masterV126QuickCall{flex:0 0 auto;min-height:42px;display:flex;align-items:center;justify-content:center;text-decoration:none}.masterV126Phone{color:inherit;text-decoration:underline;text-decoration-color:rgba(96,165,250,.55);text-underline-offset:3px;font-weight:700}.masterV126PrimaryAction{box-shadow:0 0 0 2px rgba(96,165,250,.16)}
 .masterV149Route{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;margin:10px 0 12px;text-decoration:none;box-sizing:border-box}.masterV149Route span:first-child{font-size:18px}
-@media(max-width:520px){.masterV126Received{font-size:11px}.masterV126Received b{font-size:11px}.masterV126ReceivedModal{padding:9px 10px}.masterV126Focus{align-items:stretch;flex-direction:column;margin-top:10px}.masterV126QuickCall{width:100%;box-sizing:border-box}.bosMasterWorkflow[data-bos-v116="1"] .mwv2Actions,.bosMasterWorkflow[data-bos-v115="1"] .mwv2Actions{position:static;bottom:auto;z-index:auto;padding:9px;margin:8px -5px 0;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(12,22,34,.96);box-shadow:0 8px 26px rgba(0,0,0,.32);backdrop-filter:blur(10px)}.bosMasterWorkflow .mwv2Actions>*{min-width:0}.masterV126Focus h3{font-size:18px} .masterV149Route{width:100%}.masterV126PhoneRow{grid-template-columns:1fr}.masterV126PhoneActions{justify-content:flex-start;flex-wrap:wrap}.masterV126PhoneActions .secondary{flex:1 1 110px}.masterV126Address{font-size:11px}}
+@media(max-width:520px){.masterV126Received{font-size:11px}.masterV126Received b{font-size:11px}.masterV126ReceivedModal{padding:9px 10px}.masterV126Focus{align-items:stretch;flex-direction:column;margin-top:10px}.masterV126QuickCall{width:100%;box-sizing:border-box}.bosMasterWorkflow[data-bos-v116="1"] .mwv2Actions,.bosMasterWorkflow[data-bos-v115="1"] .mwv2Actions{position:static;bottom:auto;z-index:auto;padding:9px;margin:8px -5px 0;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(12,22,34,.96);box-shadow:0 8px 26px rgba(0,0,0,.32);backdrop-filter:blur(10px)}.bosMasterWorkflow .mwv2Actions>*{min-width:0}.masterV126Focus h3{font-size:18px} .masterV149Route{width:100%}.masterV126Address{font-size:11px}}
 `;document.head.appendChild(style);
 })();
