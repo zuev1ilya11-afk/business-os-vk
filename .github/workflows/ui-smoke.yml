@@ -27,8 +27,18 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Verify single build version
-        run: npm run build:check
+      - name: Generate build artifacts
+        run: npm run build
+      - name: Upload generated build
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-build
+          path: |
+            index.html
+            sw.js
+            build-version.js
+            startup-shell.bundle.js
+            startup-eager.bundle.js
 
       # ubuntu-latest already provides the browser runtime dependencies we need.
       # Installing them again through apt made PR checks spend most of their time
