@@ -104,7 +104,12 @@ function decorate(){
   decorateCards();
   const modal=document.querySelector('#modalRoot .modal');
   if(!modal||modal.querySelector('#masterReportForm,#masterAgreementForm,#masterRescheduleForm'))return;
-  if(modal.querySelector('.bosCompactMasterCard'))return;
+  const compact=modal.querySelector('.bosCompactMasterCard');
+  if(compact){
+    const id=String(modal.dataset?.bosMasterOrderId||window.__bosLastMasterOrderId||''),o=orderById(id);
+    if(o)decoratePhone(modal,o);
+    return;
+  }
   const panel=modal.querySelector('.bosMasterWorkflow');
   const id=String(panel?.dataset?.orderId||modal.dataset?.bosWorkflowOrderId||'');
   const o=orderById(id);
@@ -122,7 +127,12 @@ function decorate(){
 }
 function schedule(){if(queued)return;queued=true;requestAnimationFrame(decorate)}
 const baseOpen=window.openOrder;
-if(typeof baseOpen==='function')window.openOrder=function(){const out=baseOpen.apply(this,arguments);setTimeout(schedule,30);setTimeout(schedule,180);return out};
+if(typeof baseOpen==='function')window.openOrder=function(){
+ const id=String(arguments[0]??'');if(id)window.__bosLastMasterOrderId=id;
+ const out=baseOpen.apply(this,arguments);
+ const tag=()=>{const modal=document.querySelector('#modalRoot .modal');if(modal&&id)modal.dataset.bosMasterOrderId=id;schedule()};
+ setTimeout(tag,30);setTimeout(tag,180);return out;
+};
 new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
 window.addEventListener('resize',schedule);
 setTimeout(schedule,0);
