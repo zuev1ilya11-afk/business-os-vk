@@ -17,7 +17,7 @@ for(const role of ['owner','manager','dispatcher'])for(const width of [320,1440]
   const x=await setup(page,role,width),nav=page.locator('#app > nav'),entry=nav.getByRole('button',{name:'Авито',exact:true});
   await expect(entry).toBeVisible();await expect(entry).toHaveAttribute('aria-controls','content');
   const keys=await nav.locator(':scope > *').evaluateAll(els=>els.filter(el=>el.id==='bosAvitoNav'||el.dataset.page).map(el=>el.id==='bosAvitoNav'?'avito':el.dataset.page));
-  expect(keys).toEqual(['home','orders','avito','dispatch','team']);
+  expect(keys).toEqual(['home','orders','avito','dispatch','team',...(['owner','manager'].includes(role)?['finance']:[])]);
   await expect(nav.locator('[data-page=dispatch]')).toHaveText('График');
   await expect(nav.locator('[data-page=team]')).toHaveText(role==='dispatcher'?'Мастера':'Команда');
   const geometry=await nav.evaluate(n=>{

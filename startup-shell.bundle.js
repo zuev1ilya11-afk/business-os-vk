@@ -469,7 +469,10 @@ window.BOS_SCHEDULE_CONTRACT={minutes,format,range,timeOf,move,masterIds,orderId
 // UI capability only: API authorization remains authoritative.
 const canUseDispatcherWorkspace=user=>['owner','manager','dispatcher'].includes(String(user?.role||''));
 const isDispatcherWorkspaceActive=user=>canUseDispatcherWorkspace(user)&&!(typeof isMasterPreview==='function'&&isMasterPreview());
-window.BOS_PERMISSIONS=Object.freeze({canUseDispatcherWorkspace,isDispatcherWorkspaceActive});
+// Read the existing server capability; never grant finance access by an owner-only shortcut.
+const canViewFinance=(user,permissions)=>!!user&&user.role!=='master'&&permissions?.can_view_finance===true;
+const isFinanceWorkspaceActive=(user,permissions)=>canViewFinance(user,permissions)&&!(typeof isMasterPreview==='function'&&isMasterPreview())&&!(typeof isDispatcherPreview==='function'&&isDispatcherPreview());
+window.BOS_PERMISSIONS=Object.freeze({canUseDispatcherWorkspace,isDispatcherWorkspaceActive,canViewFinance,isFinanceWorkspaceActive});
 })();
 
 
@@ -676,6 +679,69 @@ if(typeof document!=='undefined'){
 
 
 ;
+// Source: background-view.js
+// Reconcile renderer-owned nodes; retain decorations installed by other UI layers.
+(()=>{
+ 'use strict';
+ const snapshots=new WeakMap();
+ const keys=['id','data-fin-key','data-fin-kpi','data-fin-detail-kpi','data-owner-kpi','data-owner-order','data-owner-master','data-oc-order','data-order-id','data-date'];
+ const markup=node=>node.nodeType===1?node.outerHTML:node.nodeType===11?node.innerHTML:node.nodeValue;
+ function key(node){
+  if(node.nodeType!==1)return '';
+  for(const name of keys)if(node.hasAttribute(name))return node.tagName+':'+name+':'+node.getAttribute(name);
+  if(node.hasAttribute('data-master'))return node.tagName+':slot:'+node.getAttribute('data-master')+':'+(node.getAttribute('data-time')||'');
+  return '';
+ }
+ function source(node){return snapshots.get(node)?.source||node}
+ function compatible(a,b){const before=source(a);return a.nodeType===b.nodeType&&(a.nodeType!==1||(a.tagName===b.tagName&&key(before)===key(b)&&(!/^(DIV|SECTION|ASIDE|MAIN|HEADER|ARTICLE)$/.test(a.tagName)||before.classList[0]===b.classList[0])))}
+ function remember(node,template=node){
+  snapshots.set(node,{source:template.cloneNode(false),html:markup(template),children:[...node.childNodes]});
+  [...node.childNodes].forEach((child,i)=>remember(child,template.childNodes[i]));
+ }
+ function update(node,next){
+  const previous=snapshots.get(node);
+  if(previous&&previous.html===markup(next))return;
+  if(node.nodeType!==1){if(node.nodeValue!==next.nodeValue)node.nodeValue=next.nodeValue;remember(node,next);return}
+  const before=previous?.source||node,open=node.tagName==='DETAILS'?node.open:null;
+  for(const attr of [...before.attributes])if(!next.hasAttribute(attr.name))node.removeAttribute(attr.name);
+  for(const attr of next.attributes)if(before.getAttribute(attr.name)!==attr.value)node.setAttribute(attr.name,attr.value);
+  reconcile(node,next);
+  if(open!==null)node.open=open;
+ }
+ function reconcile(parent,next){
+  // Some legacy controls replace all children directly. Adopt that current tree
+  // before reconciling; otherwise its replacement would look like a decoration.
+  const saved=snapshots.get(parent);
+  if(saved?.children.length&&parent.childNodes.length&&!saved.children.some(n=>n.parentNode===parent||n.isConnected))remember(parent);
+  const previous=snapshots.get(parent),old=(previous?.children||[...parent.childNodes]).filter(n=>n.parentNode===parent||n.isConnected),owned=new Set(old),used=new Set();
+  const keyed=new Map(old.map(n=>[key(source(n)),n]).filter(([k])=>k));
+  const children=[];
+  let cursor=parent.firstChild;
+  const nextOwned=()=>{while(cursor&&!owned.has(cursor))cursor=cursor.nextSibling};nextOwned();
+  for(const desired of [...next.childNodes]){
+   const k=key(desired);let node=k?keyed.get(k):old.find(n=>!used.has(n)&&!key(source(n))&&compatible(n,desired));
+   if(!node||!compatible(node,desired)){node=desired.cloneNode(true);remember(node,desired);parent.insertBefore(node,cursor)}
+   else{used.add(node);if(node.parentNode===parent&&node!==cursor)parent.insertBefore(node,cursor);update(node,desired)}
+   children.push(node);if(node.parentNode===parent){cursor=node.nextSibling;nextOwned()}
+  }
+  for(const node of old)if(!used.has(node))node.remove();
+  const shell=next.nodeType===11?(previous?.source||parent.cloneNode(false)):next.cloneNode(false);
+  const desired=shell.cloneNode(false);desired.append(...[...next.childNodes].map(n=>n.cloneNode(true)));
+  snapshots.set(parent,{source:shell,html:markup(desired),children});
+ }
+ window.BOS_RENDER_CONTENT=function(parent,html){parent.innerHTML=html;remember(parent)};
+ window.BOS_PATCH_CONTENT=function(parent,html){
+  const template=document.createElement('template');template.innerHTML=html;
+  const focused=document.activeElement;
+  const scroll=[parent,...parent.querySelectorAll('*')].filter(n=>n.scrollTop||n.scrollLeft).map(n=>[n,n.scrollTop,n.scrollLeft]);
+  reconcile(parent,template.content);
+  if(focused!==document.activeElement&&focused?.isConnected)focused.focus({preventScroll:true});
+  for(const [node,top,left] of scroll)if(node.isConnected){node.scrollTop=top;node.scrollLeft=left}
+ };
+})();
+
+
+;
 // Source: app-public.js
 const cfg=window.BUSINESS_OS_CONFIG||{};const ROLE_NAMES={owner:'Владелец',manager:'Руководитель',dispatcher:'Диспетчер',master:'Мастер'};const STATUSES=['В работе','Выполнена','Отменена'];const state={page:'home',user:{full_name:'Илья',role:'owner',city:'Москва'},orders:[],masters:[],users:[],sources:[],settings:{},masterSchedule:[],busy:false};const $=s=>document.querySelector(s);const esc=s=>String(s??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','\"':'&quot;'}[c]));const money=n=>Number(n||0).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽';const payout=a=>Math.round(Number(a||0)*.85*.65*100)/100;
 function api(action,payload={}){const url=cfg.API_URL||cfg.GAS_WEB_APP_URL;if(!url)return Promise.reject(new Error('Не настроен API'));const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...payload}),signal:controller.signal}).then(async r=>{let d;try{d=await r.json()}catch(_){throw new Error('Сервер вернул неверный ответ')}if(!r.ok&&!d?.error)throw new Error('Ошибка сервера '+r.status);return d}).catch(e=>{if(e&&e.name==='AbortError')throw new Error('Сервер не ответил');throw e}).finally(()=>clearTimeout(timer))}
@@ -684,7 +750,7 @@ async function init(){try{$('#roleBadge').textContent='Владелец';$('#con
 function weekStart(d=new Date()){const x=new Date(d);x.setHours(0,0,0,0);const n=(x.getDay()+6)%7;x.setDate(x.getDate()-n);return x}function ymd(d){return d.toISOString().slice(0,10)}function weeklyLoad(){const start=weekStart(),days=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];return days.map((label,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);const date=ymd(d);const schedules=(state.masterSchedule||[]).filter(s=>String(s.work_date||s.date||'').slice(0,10)===date);const scheduledMasters=new Set(schedules.map(s=>String(s.master_vk_id||s.vk_user_id||s.master_id||''))).size;const orders=state.orders.filter(o=>String(o.scheduled_date||'').slice(0,10)===date&&o.status!=='Отменена');const workingMasters=new Set(orders.map(o=>String(o.master_vk_id||'')).filter(Boolean)).size;const total=Math.max(state.masters.length,1);const available=Math.max(scheduledMasters,workingMasters);const off=Math.max(total-available,0);const busy=Math.min(workingMasters,total);const pct=Math.round(busy/total*100);return{label,date,day:d.getDate(),busy,available,off,pct,total}})}
 function loadChart(){const data=weeklyLoad();return `<section class="card loadCard"><div class="row"><div><div class="eyebrow">НЕДЕЛЬНЫЙ ГРАФИК</div><h2>Загруженность мастеров</h2></div><span class="softChip">${state.masters.length} маст.</span></div><div class="loadLegend"><span><i class="dot busyDot"></i>Занят</span><span><i class="dot freeDot"></i>Работает</span><span><i class="dot offDot"></i>Выходной</span></div><div class="loadBars">${data.map(x=>{const workPct=x.total?Math.round(x.available/x.total*100):0;const busyH=Math.max(4,x.pct),freeH=Math.max(0,workPct-x.pct),offH=Math.max(0,100-workPct);return `<div class="loadDay"><div class="bar" title="${x.label}: ${x.pct}%"><span class="barOff" style="height:${offH}%"></span><span class="barFree" style="height:${freeH}%"></span><span class="barBusy" style="height:${busyH}%"></span></div><b>${x.label}</b><small>${x.day}</small><strong>${x.pct}%</strong></div>`}).join('')}</div><p class="chartHint muted">Синим — мастера с заявками, зелёным — вышли по графику без заявки, серым — выходные.</p></section>`}
 const pages={home(){const done=state.orders.filter(o=>o.status==='Выполнена');const rev=done.reduce((a,o)=>a+Number(o.amount||0),0),pay=done.reduce((a,o)=>a+Number(window.BOS_ORDER_PAYROLL?.directMaster(o)??(o.master_payout||payout(o.amount))),0);return `${loadChart()}<div class="grid"><div class="card metric"><span class="muted">Заявок</span><strong>${state.orders.length}</strong></div><div class="card metric"><span class="muted">Мастеров</span><strong>${state.masters.length}</strong></div><div class="card metric"><span class="muted">В работе</span><strong>${state.orders.filter(o=>o.status==='В работе').length}</strong></div><div class="card metric"><span class="muted">Выручка</span><strong>${money(rev)}</strong></div><div class="card metric"><span class="muted">Начислено мастерам</span><strong>${money(pay)}</strong></div></div>`},orders(){return `<div class="row"><div><h2>Заявки</h2><div class="muted">${state.orders.length} шт.</div></div><button class="primary" onclick="openOrderForm()">+ Новая</button></div>${state.orders.map(o=>`<section class="card" onclick="openOrder('${esc(o.id)}')"><div class="row"><b>${esc(o.id)}</b><span class="status info">${esc(o.status||'В работе')}</span></div><h3>${esc(o.work)}</h3><p class="muted">${esc(o.client)} · ${esc(o.address)}</p><div class="row"><span>${esc(o.master_name||'Не назначен')}</span><b>${money(o.amount)}</b></div>${o.master_vk_id?`<p class="muted">Мастеру: ${money(window.BOS_ORDER_PAYROLL?.directMaster(o)??(o.master_payout||payout(o.amount)))}</p>`:''}</section>`).join('')||'<p class="muted">Заявок пока нет.</p>'}`},dispatch(){const a=state.orders.filter(o=>o.scheduled_date).sort((x,y)=>String(x.scheduled_date+x.scheduled_time).localeCompare(String(y.scheduled_date+y.scheduled_time)));return `<h2>График</h2>${a.map(o=>`<section class="card" onclick="openOrder('${esc(o.id)}')"><b>${esc(o.scheduled_date)} · ${esc(o.scheduled_time||'')}</b><p>${esc(o.work)} · ${esc(o.master_name||'Не назначен')}</p><span class="status info">${esc(o.status||'В работе')}</span></section>`).join('')||'<p class="muted">Нет запланированных заявок.</p>'}`},team(){return `<div class="row"><div><h2>Команда</h2><div class="muted">${state.users.length} сотрудников · ${state.masters.length} мастеров</div></div><button class="primary" onclick="openEmployeeForm()">+ Сотрудник</button></div>${state.users.map(u=>`<section class="card"><div class="row"><div><b>${esc(u.full_name)}</b><p class="muted">${esc(u.city||'')} · ${esc(u.phone||'')}</p></div><span class="status info">${esc(ROLE_NAMES[u.role]||u.role)}</span></div></section>`).join('')||'<p class="muted">Сотрудников пока нет.</p>'}`}};
-function show(name){state.busy=false;state.page=name;$('#content').innerHTML=pages[name]();document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===name))}function openModal(html){state.busy=false;$('#modalRoot').innerHTML=`<div class="modalBackdrop" onclick="if(event.target===this)closeModal()"><div class="modal"><button class="modalClose" onclick="closeModal()">×</button>${html}</div></div>`}function closeModal(){state.busy=false;$('#modalRoot').innerHTML=''}function setBusy(form,b){state.busy=b;form.querySelectorAll('button,input,select,textarea').forEach(el=>el.disabled=b)}
+function show(name){state.busy=false;state.page=name;const html=pages[name]();if(window.BOS_BACKGROUND_RENDER&&window.BOS_PATCH_CONTENT)window.BOS_PATCH_CONTENT($('#content'),html);else if(window.BOS_RENDER_CONTENT)window.BOS_RENDER_CONTENT($('#content'),html);else $('#content').innerHTML=html;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===name))}function openModal(html){state.busy=false;$('#modalRoot').innerHTML=`<div class="modalBackdrop" onclick="if(event.target===this)closeModal()"><div class="modal"><button class="modalClose" onclick="closeModal()">×</button>${html}</div></div>`}function closeModal(){state.busy=false;$('#modalRoot').innerHTML=''}function setBusy(form,b){state.busy=b;form.querySelectorAll('button,input,select,textarea').forEach(el=>el.disabled=b)}
 function openOrder(id){const o=state.orders.find(x=>String(x.id)===String(id));if(!o)return;openModal(`<h2>${esc(o.id)}</h2><p><b>${esc(o.work)}</b></p><p>${esc(o.client)} · ${esc(o.phone||'')}</p><p>${esc(o.address)}</p><label>Статус</label><select id="quickStatus">${STATUSES.map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}</select><label>Мастер</label><select id="quickMaster"><option value="">Не назначен</option>${state.masters.map(m=>`<option value="${esc(m.vk_user_id)}" ${String(o.master_vk_id||'')===String(m.vk_user_id)?'selected':''}>${esc(m.full_name)}</option>`).join('')}</select><p>Сумма: <b>${money(o.amount)}</b></p><p>Мастеру: <b id="payoutPreview">${money(o.master_vk_id?(window.BOS_ORDER_PAYROLL?.directMaster(o)??(o.master_payout||payout(o.amount))):0)}</b></p><div class="two"><button class="primary" onclick="saveQuickOrder('${esc(o.id)}')">Сохранить</button><button class="secondary" onclick="openOrderForm('${esc(o.id)}')">Редактировать</button></div><p id="quickMsg" class="muted"></p>`)}
 async function saveQuickOrder(id){const o=state.orders.find(x=>String(x.id)===String(id)),msg=$('#quickMsg');if(!o||state.busy)return;state.busy=true;msg.textContent='Сохраняем…';try{const d=await api('updateOrder',{id,status:$('#quickStatus').value,master_vk_id:$('#quickMaster').value});if(!d.ok)throw new Error(d.error);const i=state.orders.findIndex(x=>String(x.id)===String(id));state.orders[i]=d.order;closeModal();show(state.page)}catch(e){msg.textContent=e.message}finally{state.busy=false}}
 function openOrderForm(id){const o=id?state.orders.find(x=>String(x.id)===String(id)):null;const requestId=o?'':(globalThis.crypto?.randomUUID?.()||('req_'+Date.now()+'_'+Math.random().toString(36).slice(2)));openModal(`<h2>${o?'Редактировать':'Новая заявка'}</h2><form id="orderForm" class="form"><input name="client" placeholder="Клиент" required value="${esc(o?.client||'')}"><input name="phone" placeholder="Телефон" value="${esc(o?.phone||'')}"><input name="address" placeholder="Адрес" required value="${esc(o?.address||'')}"><input name="work" placeholder="Работа" required value="${esc(o?.work||'')}"><div class="two"><input type="date" name="scheduled_date" value="${esc(o?.scheduled_date||'')}"><input type="time" name="scheduled_time" value="${esc(o?.scheduled_time||'')}"></div><select name="status">${STATUSES.map(s=>`<option ${String(o?.status||'В работе')===s?'selected':''}>${s}</option>`).join('')}</select><select name="master_vk_id"><option value="">Не назначен</option>${state.masters.map(m=>`<option value="${esc(m.vk_user_id)}" ${String(o?.master_vk_id||'')===String(m.vk_user_id)?'selected':''}>${esc(m.full_name)}</option>`).join('')}</select><input type="number" name="amount" min="0" step="0.01" placeholder="Сумма" value="${esc(o?.amount||'')}"><div class="card"><span class="muted">Расчёт мастеру</span><b id="calcPay">${money(o?.master_vk_id?(o?.master_payout||payout(o?.amount)):0)}</b><small class="muted">сумма − 15%, затем − 35% от остатка</small></div><select name="source">${(state.sources.length?state.sources:[{source:'VK'}]).map(s=>`<option ${o?.source===s.source?'selected':''}>${esc(s.source)}</option>`).join('')}</select><textarea name="comment" placeholder="Комментарий">${esc(o?.comment||'')}</textarea><button class="primary wide" type="submit">Сохранить</button><p id="formMsg" class="muted"></p></form>`);const form=$('#orderForm'),amount=form.elements.amount,master=form.elements.master_vk_id;const recalc=()=>{$('#calcPay').textContent=money(master.value?payout(amount.value):0)};amount.oninput=recalc;master.onchange=recalc;form.onsubmit=async e=>{e.preventDefault();if(state.busy)return;const f=Object.fromEntries(new FormData(form));f.amount=Number(f.amount||0);if(o)f.id=o.id;else f.request_id=requestId;const msg=$('#formMsg');msg.textContent='Сохраняем…';setBusy(form,true);try{const d=await api(o?'updateOrder':'createOrder',f);if(!d.ok)throw new Error(d.error);if(o){const i=state.orders.findIndex(x=>String(x.id)===String(o.id));state.orders[i]=d.order}else state.orders.unshift(d.order);state.busy=false;closeModal();show('orders')}catch(err){msg.textContent=err.message;setBusy(form,false)}finally{state.busy=false}}}
@@ -850,7 +916,7 @@ function updateNavForRole(){
   $('#profileBtn').textContent=isMasterPreview()?(previewUser.full_name||'М').trim().split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase():'БО';
 }
 
-show=function(name){state.busy=false;state.page=name;$('#content').innerHTML=pages[name]();document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===name));updateNavForRole()};
+show=function(name){state.busy=false;state.page=name;const html=pages[name]();if(window.BOS_BACKGROUND_RENDER&&window.BOS_PATCH_CONTENT)window.BOS_PATCH_CONTENT($('#content'),html);else if(window.BOS_RENDER_CONTENT)window.BOS_RENDER_CONTENT($('#content'),html);else $('#content').innerHTML=html;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===name));updateNavForRole()};
 
 function enterMasterPreview(id){
   const u=state.users.find(x=>String(x.vk_user_id)===String(id)&&x.role==='master');
@@ -1847,10 +1913,16 @@ root.addEventListener('bos:employee-data-refreshed',()=>{refreshDay();refreshNot
 function setLoadState(value){
  const node=document.getElementById('ownerDashboard');if(!node)return;
  const busy=String(value==='loading');if(node.getAttribute('aria-busy')!==busy)node.setAttribute('aria-busy',busy);
- const notice=node.querySelector('.odRefreshState'),text=value==='loading'?'Обновляем данные…':value==='error'?'Не удалось обновить данные. Показаны ранее загруженные значения.':'';
+ const notice=node.querySelector('.odRefreshState'),text=value==='error'?'Не удалось обновить данные. Показаны ранее загруженные значения.':'';
  if(notice){if(notice.hidden!==!text)notice.hidden=!text;if(notice.textContent!==text)notice.textContent=text}
 }
-root.BOS_OWNER_DASHBOARD=Object.freeze({days:calendar.days,active:isOwnerNow,setLoadState});
+function refreshView(){
+ const node=document.getElementById('ownerDashboard');
+ if(!node||!isOwnerNow()||state.page!=='home'||!root.BOS_PATCH_CONTENT)return false;
+ const template=document.createElement('template');template.innerHTML=dashboard();const fresh=template.content.firstElementChild;
+ root.BOS_PATCH_CONTENT(node,fresh.innerHTML);node.dataset.day=fresh.dataset.day;root.BOS_ORDER_CONTROL?.refresh();return true;
+}
+root.BOS_OWNER_DASHBOARD=Object.freeze({days:calendar.days,active:isOwnerNow,setLoadState,refresh:refreshView});
 clock();
 })(typeof window==='undefined'?globalThis:window,function(){
 'use strict';

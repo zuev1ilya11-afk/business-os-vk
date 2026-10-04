@@ -87,10 +87,16 @@ root.addEventListener('bos:employee-data-refreshed',()=>{refreshDay();refreshNot
 function setLoadState(value){
  const node=document.getElementById('ownerDashboard');if(!node)return;
  const busy=String(value==='loading');if(node.getAttribute('aria-busy')!==busy)node.setAttribute('aria-busy',busy);
- const notice=node.querySelector('.odRefreshState'),text=value==='loading'?'Обновляем данные…':value==='error'?'Не удалось обновить данные. Показаны ранее загруженные значения.':'';
+ const notice=node.querySelector('.odRefreshState'),text=value==='error'?'Не удалось обновить данные. Показаны ранее загруженные значения.':'';
  if(notice){if(notice.hidden!==!text)notice.hidden=!text;if(notice.textContent!==text)notice.textContent=text}
 }
-root.BOS_OWNER_DASHBOARD=Object.freeze({days:calendar.days,active:isOwnerNow,setLoadState});
+function refreshView(){
+ const node=document.getElementById('ownerDashboard');
+ if(!node||!isOwnerNow()||state.page!=='home'||!root.BOS_PATCH_CONTENT)return false;
+ const template=document.createElement('template');template.innerHTML=dashboard();const fresh=template.content.firstElementChild;
+ root.BOS_PATCH_CONTENT(node,fresh.innerHTML);node.dataset.day=fresh.dataset.day;root.BOS_ORDER_CONTROL?.refresh();return true;
+}
+root.BOS_OWNER_DASHBOARD=Object.freeze({days:calendar.days,active:isOwnerNow,setLoadState,refresh:refreshView});
 clock();
 })(typeof window==='undefined'?globalThis:window,function(){
 'use strict';
