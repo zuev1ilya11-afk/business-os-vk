@@ -640,3 +640,21 @@ body #content>.ocSummary.odAttention { display:flex; flex-wrap:wrap; align-items
  #app > nav:has(> #bosAvitoNav):has(> [data-page="finance"]) { grid-template-columns:repeat(6,minmax(0,1fr))!important; gap:2px; padding-inline:4px; }
  #app > nav:has(> [data-page="finance"]) button { min-width:0; font-size:10px; padding-inline:2px; }
 }
+
+/* Expense records use the existing finance workspace and modal. */
+#financePage .finHeadingActions { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+#financePage .finExpenseCategory, #financePage .finExpenseHeading { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+#financePage .finExpenseCategory { padding:10px 0; border-bottom:1px solid var(--bos-border); }
+#financePage .finExpenseCategories, #financePage .finExpenseList { margin:14px 0; }
+#financePage .finExpense { padding:15px 0; border-bottom:1px solid var(--bos-border); overflow-wrap:anywhere; }
+#financePage .finExpense h3 { margin:4px 0; }
+#financePage .finExpenseHeading strong { white-space:nowrap; }
+#financePage .finExpense p { margin:6px 0; white-space:pre-wrap; }
+#financePage .finExpenseActions { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+[data-fin-expense-dialog] { min-width:0; max-width:100%; }
+[data-fin-expense-dialog] label { display:grid; gap:5px; min-width:0; }
+[data-fin-expense-dialog] input, [data-fin-expense-dialog] select, [data-fin-expense-dialog] textarea { min-width:0; width:100%; max-width:100%; box-sizing:border-box; }
+[data-fin-expense-dialog] textarea { resize:vertical; }
+[data-fin-expense-dialog] .finError { color:#f5a524; overflow-wrap:anywhere; }
+.finExpenseOptional { display:grid; gap:8px; }
+.finExpenseOptional label { margin-top:10px; }

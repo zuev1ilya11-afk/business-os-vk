@@ -687,7 +687,7 @@ function html(order,{details=false}={}){
   const result=String(event.result||'pending'),label=LABELS[result]||'Звонок',at=time(event.result_at||event.at),phone=String(event.phone||'').trim(),comment=String(event.comment||'').trim();
   const summary=`<span class="bosContactStatus ${tone(result)}">${escape(label)}${at?' · '+escape(at):''}${phone?' · '+escape(phone):''}</span>`;
   if(!details)return summary;
-  const events=history(order).slice(-8).reverse();
+  const events=history(order).slice(-50).reverse();
   return summary+`${comment?`<small class="bosContactLatestComment">${escape(comment)}</small>`:''}<div class="bosContactHistory"><b>История связи</b>${events.map(eventHtml).join('')}</div>`;
  }
  const at=time(order?.master_called_at),proven=confirmed(order),legacy=!!order?.master_called_at;
@@ -703,7 +703,7 @@ if(typeof document!=='undefined'){
  .bosContactStatus.confirmed{color:#76c9a0}.bosContactStatus.attention{color:#f5a524}.bosContactStatus.info{color:#70b7ff}
  .bosContactAuthor,.bosContactLatestComment{display:block;font-size:11px;line-height:1.4;color:var(--muted,#91a3b7);overflow-wrap:anywhere;margin-top:3px}
  .bosMasterClientActions>.bosContactStatus,.bosMasterClientActions>.bosContactAuthor{flex-basis:100%}
- .bosContactHistory{display:grid;gap:7px;margin-top:9px}.bosContactHistory>b{font-size:11px;color:var(--muted,#91a3b7);text-transform:uppercase;letter-spacing:.05em}
+ .bosContactHistory{display:grid;gap:7px;margin-top:9px;max-height:480px;overflow:auto;overscroll-behavior:contain}.bosContactHistory>b{font-size:11px;color:var(--muted,#91a3b7);text-transform:uppercase;letter-spacing:.05em}
  .bosContactEvent{padding:9px 10px;border:1px solid rgba(127,127,127,.16);border-radius:10px;background:rgba(127,127,127,.04);min-width:0}
  .bosContactEventTop{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.bosContactEventTop b{font-size:12px}.bosContactEventTop span,.bosContactEvent small{font-size:10px;color:var(--muted,#91a3b7)}
  .bosContactEventPhone{font-size:12px;font-weight:700;margin-top:3px}.bosContactEventComment,.bosContactEventCallback{font-size:11px;line-height:1.4;margin-top:3px;overflow-wrap:anywhere}

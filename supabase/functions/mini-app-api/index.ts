@@ -1,5 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import "../../../order-payroll.js";
+import "../../../finance-expenses.js";
+const expenseRules=(globalThis as any).BOS_FINANCE_EXPENSES;
 import { manualDetailsPatch } from "../_shared/hands-details.ts";
 const orderPayroll=(globalThis as any).BOS_ORDER_PAYROLL;
 // Provider IDs are opaque: preserve punctuation and encode only at the URL boundary.
@@ -67,6 +69,47 @@ Deno.serve(async r=>{
       let orders=(or.data||[]).map((o:any)=>({...o,id:String(o.id),master_vk_id:map.get(String(o.master_staff_id))?.external_id||'',master_name:o.master_name||map.get(String(o.master_staff_id))?.full_name||''}));
       if(role==='master')orders=orders.map(masterOrder);
       return j({ok:true,user:out(me),orders,users:vis.map(out),masters:(role==='master'?vis:all.filter((x:any)=>x.role==='master')).map(out),masterSchedule:(sr.data||[]).filter((x:any)=>role!=='master'||x.staff_id===me.id),claims:(cl.data||[]).filter((x:any)=>role!=='master'||x.master_staff_id===me.id),sources:[{source:'VK'},{source:'Google Sheets'},{source:'Авито'}],settings:{permissions:{can_manage_orders:ops(role),can_manage_schedule:ops(role),can_manage_staff:['owner','manager'].includes(role),can_review_reports:ops(role),can_view_finance:['owner','manager'].includes(role)}}});
+    }
+
+    if(['listExpenses','createExpense','updateExpense','deleteExpense'].includes(a)){
+      // Exactly the same server capability returned by bootstrap; never read a payload role.
+      if(!leadership(role))return j({ok:false,error:'Недостаточно прав для просмотра финансов'},403);
+      if(a==='listExpenses'){
+        const start=String(b.start||''),end=String(b.end||'');
+        if((start||end)&&(!expenseRules.validDate(start)||!expenseRules.validDate(end)||start>end))return j({ok:false,error:'Некорректный период'},400);
+        let q=db.from('finance_expenses').select('*').order('expense_date',{ascending:false}).order('id');
+        if(start)q=q.gte('expense_date',start).lte('expense_date',end);
+        const found=await allRows(q);if(found.error)throw found.error;
+        return j({ok:true,expenses:found.data,categories:expenseRules.categories});
+      }
+      const id=String(b.id||'');
+      if(!expenseRules.validId(id))return j({ok:false,error:'Некорректный ID расхода'},400);
+      let fields:any;
+      if(a!=='deleteExpense'){
+        try{fields=expenseRules.validate(b)}catch(e){return j({ok:false,error:(e as Error).message},400)}
+        if(fields.order_id){const q=await db.from('orders').select('id').eq('id',fields.order_id).maybeSingle();if(q.error)throw q.error;if(!q.data)return j({ok:false,error:'Заявка не найдена'},400)}
+        if(fields.employee_id){const q=await db.from('business_staff').select('id').eq('id',fields.employee_id).maybeSingle();if(q.error)throw q.error;if(!q.data)return j({ok:false,error:'Сотрудник не найден'},400)}
+      }
+      const found=await db.from('finance_expenses').select('*').eq('id',id).maybeSingle();if(found.error)throw found.error;
+      const current=found.data;
+      const same=(row:any)=>String(row.created_by_staff_id)===String(me.id)&&Object.keys(fields).every(k=>String(row[k]??'')===String(fields[k]??''));
+      if(a==='createExpense'){
+        if(current)return same(current)?j({ok:true,expense:current,idempotent:true}):j({ok:false,error:'Расход с этим ID уже существует. Обновите список.'},409);
+        const now=new Date().toISOString();
+        const saved=await db.from('finance_expenses').insert({id,...fields,created_by_staff_id:me.id,created_by_name:String(me.full_name||'').trim()||'Сотрудник',created_at:now,updated_at:now}).select('*').single();
+        if(saved.error?.code==='23505'){
+          const duplicate=await db.from('finance_expenses').select('*').eq('id',id).single();if(duplicate.error)throw duplicate.error;
+          return same(duplicate.data)?j({ok:true,expense:duplicate.data,idempotent:true}):j({ok:false,error:'Расход уже существует'},409);
+        }
+        if(saved.error)throw saved.error;return j({ok:true,expense:saved.data});
+      }
+      if(!current)return j({ok:false,error:'Расход не найден. Обновите список.'},404);
+      if(!b.updated_at||String(b.updated_at)!==String(current.updated_at))return j({ok:false,error:'Расход уже изменён. Обновите список и повторите действие.'},409);
+      const q=a==='deleteExpense'?db.from('finance_expenses').delete():db.from('finance_expenses').update({...fields,updated_at:new Date(Math.max(Date.now(),Date.parse(current.updated_at)+1)).toISOString()});
+      const saved=await q.eq('id',id).eq('updated_at',current.updated_at).select('*').maybeSingle();
+      if(saved.error)throw saved.error;
+      if(!saved.data)return j({ok:false,error:'Расход уже изменён. Обновите список.'},409);
+      return j({ok:true,...(a==='deleteExpense'?{deleted_id:id}:{expense:saved.data})});
     }
 
     if(a==='createOrder'||a==='updateOrder'){
