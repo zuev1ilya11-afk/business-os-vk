@@ -548,3 +548,8 @@ body #content>.ocSummary.odAttention { display:flex; flex-wrap:wrap; align-items
 
 #ownerDashboard[aria-busy="true"] .odMetrics strong { color:transparent; background:var(--bos-line,#263b50); border-radius:5px; }
 #ownerDashboard[aria-busy="true"] .odMetrics strong * { visibility:hidden; }
+/* Audited manual closure: compact disclosure, shared by all order cards. */
+.bosManualCompletionHistory{margin:10px 0;padding:9px 12px;border:1px solid #35556d;border-radius:10px;font-size:13px;overflow-wrap:anywhere}
+.bosManualCompletionHistory summary{cursor:pointer;color:#a5d4ff;min-height:26px;display:flex;align-items:center}
+.bosManualCompletionHistory>div{padding-top:10px}.bosManualCompletionHistory p{margin:4px 0;color:#afc2d5}.bosManualReason{white-space:pre-wrap}
+.bosManualCompleteAction{margin-top:8px}#manualCompletionForm textarea{min-height:100px}#manualCompletionForm button{min-height:44px}#manualCompletionForm [hidden]{display:none!important}

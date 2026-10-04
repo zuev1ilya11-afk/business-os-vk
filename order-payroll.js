@@ -21,8 +21,16 @@
     if(isDirect(o))return {master_payout:hasMaster?round(base*.60):0,manager_payout:0,dispatcher_payout:0};
     return {master_payout:hasMaster?round(base*.85*.65):0,manager_payout:round(base*.85*.94*.20),dispatcher_payout:round(base*.85*.94*.15)};
   }
+  // A manual closure is a stored snapshot for every source, including Hands.
+  // Match the current completion so an older audit event cannot affect a reopened cycle.
+  function manualSnapshot(o){
+    const events=o?.manual_completion_history;
+    const at=Array.isArray(events)&&events.length?Date.parse(events[events.length-1]?.at):NaN;
+    return o?.status==='Выполнена'&&Number.isFinite(at)&&at===Date.parse(o.completed_at);
+  }
   // null means use the unchanged Hands/legacy reader. Zero is a real amount, never a fallback.
   function directMaster(o){
+    if(manualSnapshot(o)&&finite(o.master_payout))return Number(o.master_payout);
     if(!isDirect(o))return null;
     if(o.status==='Отменена')return 0;
     if(snapshot(o)&&finite(o.master_payout))return Number(o.master_payout);

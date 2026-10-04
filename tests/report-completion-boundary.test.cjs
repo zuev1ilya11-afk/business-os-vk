@@ -30,6 +30,15 @@ test('editing an already completed order preserves its completion date',async()=
  const r=await edge('mini-app-api',db)({action:'updateOrder',id:'o',status:'Выполнена',comment:'Уточнение'});
  assert.equal(r.status,200);assert.equal(db.tables.orders[0].completed_at,'2020-01-01T00:00:00Z');assert.equal(db.tables.orders[0].comment,'Уточнение');
 });
+test('reviewing a real report after manual closure preserves completion time, history and payroll',async()=>{
+ const history=[{actor_id:'owner',actor_role:'owner',actor_name:'Владелец',at:'2026-01-01T12:00:00Z',reason:'Проверено'}];
+ const db=fixture({status:'Выполнена',completed_at:history[0].at,manual_completion_history:history}),{lifecycle,calls}=linked(db);
+ const before=structuredClone(db.tables.orders[0]);
+ const r=await lifecycle({action:'reviewReport',id:'o',decision:'approved',expected_report_token:'r1',expected_report_uploaded_at:'2026-01-01'});
+ assert.equal(r.status,200);assert.deepEqual(calls,['archive']);assert.equal(db.tables.orders[0].completed_at,before.completed_at);
+ assert.deepEqual(db.tables.orders[0].manual_completion_history,history);
+ for(const key of ['master_payout','manager_payout','dispatcher_payout','amount','original_amount','report_act_url','report_photo_urls','report_upload_token'])assert.equal(db.tables.orders[0][key],before[key],key);
+});
 for(const uid of ['100','staff_d','staff_mgr'])test(`${uid}: legacy review archives through the real lifecycle and duplicate keeps receipt`,async()=>{
  const db=fixture(),{mini,calls}=linked(db);
  const b={action:'reviewReport',id:'o',expected_report_token:'r1',expected_report_uploaded_at:'2026-01-01',decision:'approved',reviewer_name:'spoofed'};

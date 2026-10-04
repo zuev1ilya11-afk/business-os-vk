@@ -2086,11 +2086,51 @@ window.BOS_ORDER_NO=displayNo;
 const dispatcherMode=()=>String(state?.user?.role||'')==='dispatcher'||(typeof isDispatcherPreview==='function'&&isDispatcherPreview());
 
 async function authHeaders(){const h=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};h['Content-Type']='application/json';return h}
-async function lifecycle(action,payload={}){const r=await nativeFetch(LIFECYCLE,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action,...payload})}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.message||d.error||'Ошибка жизненного цикла заявки');return d}
+async function lifecycle(action,payload={},options={}){const r=await nativeFetch(LIFECYCLE,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action,...payload}),...options}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok){const e=new Error(d.message||d.error||'Ошибка жизненного цикла заявки');e.status=r.status;throw e}return d}
 async function claims(action,payload={}){let last;for(const url of [CLAIMS_GATEWAY,CLAIMS_DIRECT]){try{const r=await nativeFetch(url,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action,...payload})}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok){const e=new Error(d.error||`HTTP ${r.status}`);e.status=r.status;throw e}return d}catch(e){last=e;if(url===CLAIMS_GATEWAY&&(e?.status===404||/failed to fetch|load failed|network|SERVICE_NOT_ALLOWED/i.test(String(e?.message||''))))continue;throw e}}throw last}
 
 function parseBody(init){try{return typeof init?.body==='string'?JSON.parse(init.body):null}catch(_){return null}}
 function syntheticError(error,status=409){return new Response(JSON.stringify({ok:false,error}),{status,headers:{'Content-Type':'application/json'}})}
+
+const canManualComplete=o=>o&&['owner','manager'].includes(String(state?.user?.role||''))&&!['Выполнена','Отменена'].includes(o.status)&&!(typeof isMasterPreview==='function'&&isMasterPreview())&&!(typeof isDispatcherPreview==='function'&&isDispatcherPreview());
+function manualHistory(o){
+  const events=Array.isArray(o?.manual_completion_history)?o.manual_completion_history:[];if(!events.length)return '';
+  const last=events[events.length-1],current=o.status==='Выполнена'&&Number.isFinite(Date.parse(o.completed_at))&&Date.parse(last.at)===Date.parse(o.completed_at);
+  return `<details class="bosManualCompletionHistory"><summary>${current?'Завершено вручную':'История ручного завершения'}</summary>${events.map(event=>`<div><b>Заявка завершена вручную</b><p>${esc(event.actor_name||'Сотрудник')} · ${esc(({owner:'Владелец',manager:'Руководитель'})[event.actor_role]||event.actor_role||'')}</p><p>${esc(new Date(event.at).toLocaleString('ru-RU',{timeZone:'Europe/Moscow'}))} МСК</p><p class="bosManualReason">${esc(event.reason||'')}</p></div>`).join('')}</details>`;
+}
+window.BOS_MANUAL_COMPLETION={can:canManualComplete,history:manualHistory};
+window.openManualCompletion=function(id){
+  const o=(state.orders||[]).find(x=>String(x.id)===String(id));if(state.busy||!canManualComplete(o))return;
+  const version=o.updated_at;
+  openModal(`<h2>Завершить заявку вручную?</h2><p>Заявка будет переведена в статус “Выполнено”. Используйте ручное завершение только если мастер не может завершить заявку стандартным способом.</p><form id="manualCompletionForm" class="form"><label for="manualCompletionReason">Причина ручного завершения</label><textarea id="manualCompletionReason" name="reason" required maxlength="1000" rows="3" placeholder="Например: мастер не может отправить отчёт"></textarea><p class="muted">Сохранённые выплаты и существующий отчёт сохранятся. Ручное завершение не отправляет отчёт в Hands.</p><div class="two"><button type="button" class="secondary" data-manual-cancel>Отмена</button><button type="submit" class="primary">Завершить заявку</button></div><button type="button" class="secondary wide" data-manual-refresh hidden>Проверить состояние</button><p role="status" aria-live="polite" data-manual-message></p></form>`);
+  const form=document.getElementById('manualCompletionForm'),msg=form.querySelector('[data-manual-message]'),submit=form.querySelector('[type=submit]'),cancel=form.querySelector('[data-manual-cancel]'),refresh=form.querySelector('[data-manual-refresh]');
+  let saving=false,uncertain=false,changed=false;
+  const current=()=>(state.orders||[]).find(x=>String(x.id)===String(id));
+  const syncButtons=()=>{submit.disabled=saving||uncertain||changed;cancel.disabled=saving;refresh.disabled=saving;refresh.hidden=!uncertain;form.setAttribute('aria-busy',String(saving));const close=form.closest('.modal')?.querySelector('.modalClose');if(close)close.disabled=saving};
+  const finish=order=>{const index=state.orders.findIndex(x=>String(x.id)===String(id));if(index>=0)state.orders[index]={...state.orders[index],...order};closeModal();if(typeof show==='function')show(state.page||'orders');openOrder(id)};
+  async function reconcile(){
+    await reloadData(true);const fresh=current();
+    if(fresh?.status==='Выполнена'){finish(fresh);return true}
+    uncertain=false;changed=!canManualComplete(fresh)||fresh.updated_at!==version;
+    if(changed)msg.textContent='Заявка изменилась. Нажмите «Отмена» и проверьте её перед повтором.';
+    return false;
+  }
+  cancel.onclick=()=>{if(!saving)openOrder(id)};
+  refresh.onclick=async()=>{if(saving)return;saving=true;syncButtons();try{if(!await reconcile()&&!changed)msg.textContent='Завершение не подтверждено. Можно повторить.'}catch(_){msg.textContent='Не удалось проверить состояние. Проверьте интернет и повторите проверку.'}finally{saving=false;syncButtons()}};
+  form.onsubmit=async e=>{
+    e.preventDefault();if(saving||uncertain||changed||state.busy)return;
+    const reason=form.elements.reason.value.trim();if(!reason){msg.textContent='Укажите причину ручного завершения.';form.elements.reason.focus();return}
+    if(!canManualComplete(current())){msg.textContent='Действие недоступно. Обновите заявку.';return}
+    saving=true;state.busy=true;msg.textContent='Завершаем заявку…';syncButtons();
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
+    try{const result=await lifecycle('manualCompleteOrder',{id,reason,expected_updated_at:version},{signal:controller.signal,bosReconcileBeforeRetry:true});if(result.order?.status!=='Выполнена')throw new Error('Завершение не подтверждено');finish(result.order)}
+    catch(error){
+      uncertain=true;msg.textContent='Проверяем состояние заявки…';
+      try{if(!await reconcile()&&!changed)msg.textContent=error.status?error.message:'Завершение не подтверждено. Причина сохранена, можно повторить.'}
+      catch(_){msg.textContent='Результат сохранения неизвестен. Проверьте интернет и нажмите «Проверить состояние».'}
+    }finally{clearTimeout(timer);saving=false;state.busy=false;if(form.isConnected)syncButtons()}
+  };
+};
 window.fetch=async function(input,init){
   const url=typeof input==='string'?input:String(input?.url||''),body=parseBody(init);
   if(body?.action==='finalizeMasterReport'&&/\/report-api(?:$|\?)/.test(url))return nativeFetch(LIFECYCLE,{...init,headers:init?.headers||await authHeaders(),body:JSON.stringify({...body,action:'finalizeMasterReport'})});
