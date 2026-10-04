@@ -41,11 +41,11 @@ function scheduledActions(o,preview){
 }
 function contactBlock(o,preview){
  const disabled=preview||!liveMaster()||busy||uncertain.has(String(o.id));
- // The master does not need a separate contact confirmation or its timestamp.
- // Operations roles keep the timestamp through the shared contact-status renderer.
+ // New journal entries require explicit "agreed"; legacy orders without a journal stay compatible.
  const status=preview?(window.BOS_CONTACT_STATUS?.html(o,{details:true})||''):'';
+ const contactStatus=String(o?.master_contact_status||''),canAgree=!contactStatus||contactStatus==='agreed';
  if(!active(o))return status;
- return `${status}${confirmedCount(o)>=3?'':o.master_agreed_at?'<small>✓ Время согласовано</small>':hasSchedule(o)?`<button type="button" class="secondary" ${disabled||!o.master_called_at?'disabled':`onclick="masterOrderContact179('${escv(o.id)}','confirmAgreement')"`}>Подтвердить договорённость</button>`:''}`;
+ return `${status}${confirmedCount(o)>=3?'':o.master_agreed_at?'<small>✓ Время согласовано</small>':hasSchedule(o)?`<button type="button" class="secondary" ${disabled||!o.master_called_at||!canAgree?'disabled':`onclick="masterOrderContact179('${escv(o.id)}','confirmAgreement')"`}>Подтвердить договорённость</button>`:''}`;
 }
 function unscheduledActions(o,preview){if(!active(o))return '<section class="moa179StageCard"><h3>Этапы выполнения заявки</h3><p class="moa179Hint">Заявка закрыта. Действия недоступны.</p></section>';const disabled=preview||!liveMaster();return `<section class="moa179StageCard"><h3>Этапы выполнения заявки</h3><button type="button" class="moa179Action agree" ${disabled?'disabled':`onclick="masterOrderAgree179('${escv(o.id)}')"`}><span class="moa179Icon">▣</span><span>Договориться</span><b>›</b></button><p class="moa179Hint">Согласуйте с клиентом дату и время. После сохранения заявка перейдёт в рабочий сценарий мастера.</p></section>`}
 function rescheduleBlock(o,preview){if(!active(o))return'';const disabled=preview||!liveMaster()||busy;return `<section class="moa179Reschedule"><div><b>Перенос заявки</b><span>Требует подтверждения диспетчера или руководителя</span></div><button type="button" class="secondary wide" ${disabled?'disabled':`onclick="masterWorkflowOpenReschedule('${escv(o.id)}')"`}>Запросить перенос</button></section>`}
@@ -81,13 +81,13 @@ window.masterOrderAgree179=function(id){
  const form=document.getElementById('masterOrderAgree179Form');if(!form)return;
  const msg=form.querySelector('#masterOrderAgree179Msg'),contact=form.querySelector('.moa179AgreementContact'),submit=form.querySelector('[type=submit]');
  function refreshContact(){
-  const current=orderById(id)||o;submit.disabled=busy||!current.master_called_at;
-  contact.innerHTML=current.master_called_at?'':'<small class="muted">Сначала свяжитесь с клиентом и укажите итог звонка, подтверждающий разговор.</small>';
+  const current=orderById(id)||o,status=String(current?.master_contact_status||''),canAgree=!status||status==='agreed';submit.disabled=busy||!current.master_called_at||!canAgree;
+  contact.innerHTML=current.master_called_at&&canAgree?'':'<small class="muted">Сначала свяжитесь с клиентом и выберите итог «Договорились».</small>';
  }
  refreshContact();
  form.onsubmit=async e=>{
   e.preventDefault();if(busy||state.busy)return;
-  if(!(orderById(id)||o).master_called_at){msg.textContent='Сначала свяжитесь с клиентом и укажите итог звонка, подтверждающий разговор.';return}
+  const current=orderById(id)||o,status=String(current?.master_contact_status||'');if(!current.master_called_at||(status&&status!=='agreed')){msg.textContent='Сначала свяжитесь с клиентом и выберите итог «Договорились».';return}
   const date=String(form.elements.scheduled_date.value||''),time=String(form.elements.scheduled_time.value||'').slice(0,5);
   if(!date||!time){msg.textContent='Укажите дату и время';return}
   busy=true;state.busy=true;if(typeof setBusy==='function')setBusy(form,true);msg.textContent='Сохраняем…';
