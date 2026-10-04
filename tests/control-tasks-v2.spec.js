@@ -16,7 +16,7 @@ async function setup(page,{role='owner',failSave=false}={}){
   await route.fulfill({status,contentType:'application/json',body:JSON.stringify(result)});
  });
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.waitForFunction(()=>!!window.BOS_CONTROL_TASKS);
- if(role!=='master')await page.locator('#bosOrderControlSummary').click();
+ if(role!=='master')await page.locator('#bosOrderControlSummary [data-oc-enter], button#bosOrderControlSummary').click();
  return {...data,store,writes};
 }
 for(const width of [320,1280])test(`control tasks save server-backed responsibility and Moscow deadline at ${width}px`,async({page},info)=>{
@@ -31,7 +31,7 @@ for(const width of [320,1280])test(`control tasks save server-backed responsibil
  await box.getByRole('button',{name:'Сохранить',exact:true}).click();await expect(box).toHaveCount(0);
  expect(data.writes).toHaveLength(1);expect(data.writes[0].due_at).toBe(core.parseDue(due));expect(data.writes[0].expected_version).toBe(0);
  await expect(button).toHaveText('Изменить поручение');
- await page.reload();await page.locator('#bosOrderControlSummary').click();await expect(page.locator('[data-ct-edit="12"][data-ct-code="unassigned"]')).toHaveText('Изменить поручение');
+ await page.reload();await page.locator('#bosOrderControlSummary [data-oc-enter], button#bosOrderControlSummary').click();await expect(page.locator('[data-ct-edit="12"][data-ct-code="unassigned"]')).toHaveText('Изменить поручение');
  await page.locator('[data-ct-edit="12"][data-ct-code="unassigned"]').click();await expect(box.locator('[name=due]')).toHaveValue(due);
  await box.getByRole('button',{name:'Снять поручение',exact:true}).click();await expect(box).toHaveCount(0);expect(data.writes.at(-1).action).toBe('controlClear');
 });

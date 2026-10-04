@@ -8,7 +8,8 @@
   const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let filter='all',limit=12,queued=false,actor='',midnightTimer,loadState='loading',rows=[],trustedOrders=null,requestRun=0,identityRevision=0,verifyQueued=false,scrollTop=0,restoreScroll=false,modalWasOpen=false,scrollRestoreQueued=false;
   const filters=[['all','Все'],['urgent','Срочно'],['dispatcher','Диспетчеру'],['master','Мастеру'],['reports','Отчёты']];
-  const matches=(item,key)=>key==='all'||(key==='urgent'?item.priority===0:key==='reports'?item.issues.some(x=>x.code.startsWith('report_')):item.issues.some(x=>x.role===key));
+  const homeFilters=[['unassigned','Без мастера'],['overdue','Просрочено'],['contact','Не связались']];
+  const matches=(item,key)=>key==='all'||(key==='urgent'?item.priority===0:key==='reports'?item.issues.some(x=>x.code.startsWith('report_')):key==='contact'?item.issues.some(x=>x.code==='agreement')&&!currentRows().find(o=>String(o.id)===item.id)?.master_called_at:['unassigned','overdue'].includes(key)?item.issues.some(x=>x.code===key):item.issues.some(x=>x.role===key));
   const session=()=>{try{return sessionStorage.getItem(SESSION)||localStorage.getItem(SESSION)||''}catch{return ''}};
   function identity(){
     const u=getState().user,token=session();
@@ -67,9 +68,14 @@
       document.getElementById('bosOrderControl')?.remove();
       const id=s.page==='home'?'bosOrderControlSummary':'bosOrderControlEntry';
       let entry=document.getElementById(id);
-      if(!entry){entry=document.createElement('button');entry.id=id;entry.type='button';entry.className='secondary ocSummary';entry.dataset.ocEnter='';content.prepend(entry)}
+      const management=s.page==='home'&&!!content.querySelector('#ownerDashboard');
+      if(management)root.BOS_OWNER_DASHBOARD?.setLoadState(loadState);
+      if(entry&&entry.tagName!==(management?'DIV':'BUTTON')){entry.remove();entry=null;}
+      if(!entry){entry=document.createElement(management?'div':'button');entry.id=id;if(!management)entry.type='button';entry.className='secondary ocSummary'+(management?' odAttention':'');entry.dataset.ocEnter='';content.prepend(entry)}
       const text=`${s.page==='home'?'Контроль заявок':'Контроль'} · ${summary(all.length)}`;
-      if(entry.dataset.label!==text){entry.dataset.label=text;entry.innerHTML=`<span>${escape(text)}</span><span aria-hidden="true">→</span>`;}
+      const counts=homeFilters.map(([key])=>loadState==='ready'?all.filter(item=>matches(item,key)).length:'—');
+      const label=JSON.stringify([text,management,counts]);
+      if(entry.dataset.label!==label){entry.dataset.label=label;entry.innerHTML=management?`<div class="odAttentionTitle"><b>${escape(text)}</b><small>Проверьте заявки, чтобы не потерять клиентов</small></div><div class="odAttentionFilters">${homeFilters.map(([key,title],i)=>`<button type="button" class="secondary" data-oc-home-filter="${key}">${title} <b>${counts[i]}</b></button>`).join('')}</div><button type="button" class="linkBtn" data-oc-enter>Перейти к заявкам →</button>`:`<span>${escape(text)}</span><span aria-hidden="true">→</span>`;}
       // Remove the old large problem list; it is replaced by the compact entry.
       if(s.page==='home')content.querySelectorAll('.ownerProblemsCompact').forEach(n=>n.remove());
       return;
@@ -83,7 +89,7 @@
     if(panel.dataset.signature!==signature){
       const focused=document.activeElement,restore=panel.contains(focused)?focused?.getAttribute('data-oc-filter'):null;
       panel.dataset.signature=signature;
-      panel.innerHTML=`<button type="button" class="secondary ocBack" data-oc-back>← Заявки</button><div class="ocHeading"><div><div class="eyebrow">ЗАЯВКИ · КОНТРОЛЬ</div><h2 id="ocTitle">Требует внимания</h2></div><span class="softChip" data-oc-total>${loadState==='ready'?all.length:'—'}</span></div><p class="muted ocNote">По загруженным заявкам. Даты визитов — по Москве. Автонапоминания не включены.</p><div class="ocFilters" aria-label="Фильтры контроля заявок">${filters.map(([key,title])=>`<button type="button" class="${filter===key?'primary':'secondary'}" data-oc-filter="${key}" aria-pressed="${filter===key}">${title} <b>${loadState==='ready'?all.filter(item=>matches(item,key)).length:'—'}</b></button>`).join('')}</div><div class="ocList">${loadState!=='ready'?`<p class="muted" role="status">${loadState==='error'?'Не удалось загрузить заявки. Повторите загрузку.':'Загружаем заявки…'}</p>${loadState==='error'?'<button type="button" class="secondary" data-oc-retry>Повторить</button>':''}`:visible.length?visible.slice(0,limit).map(card).join(''):'<p class="muted ocEmpty">'+(all.length?'По этому фильтру задач нет.':'По проверяемым условиям проблем не найдено.')+'</p>'}</div>${visible.length>limit?`<button type="button" class="secondary wide" data-oc-more>Показать ещё (${visible.length-limit})</button>`:''}`;
+      panel.innerHTML=`<button type="button" class="secondary ocBack" data-oc-back>← Заявки</button><div class="ocHeading"><div><div class="eyebrow">ЗАЯВКИ · КОНТРОЛЬ</div><h2 id="ocTitle">Требует внимания</h2></div><span class="softChip" data-oc-total>${loadState==='ready'?all.length:'—'}</span></div><p class="muted ocNote">По загруженным заявкам. Даты визитов — по Москве. Автонапоминания не включены.</p><div class="ocFilters" aria-label="Фильтры контроля заявок">${filters.concat(homeFilters.filter(([key])=>key===filter)).map(([key,title])=>`<button type="button" class="${filter===key?'primary':'secondary'}" data-oc-filter="${key}" aria-pressed="${filter===key}">${title} <b>${loadState==='ready'?all.filter(item=>matches(item,key)).length:'—'}</b></button>`).join('')}</div><div class="ocList">${loadState!=='ready'?`<p class="muted" role="status">${loadState==='error'?'Не удалось загрузить заявки. Повторите загрузку.':'Загружаем заявки…'}</p>${loadState==='error'?'<button type="button" class="secondary" data-oc-retry>Повторить</button>':''}`:visible.length?visible.slice(0,limit).map(card).join(''):'<p class="muted ocEmpty">'+(all.length?'По этому фильтру задач нет.':'По проверяемым условиям проблем не найдено.')+'</p>'}</div>${visible.length>limit?`<button type="button" class="secondary wide" data-oc-more>Показать ещё (${visible.length-limit})</button>`:''}`;
       if(restore)panel.querySelector(`[data-oc-filter="${restore}"]`)?.focus({preventScroll:true});
     }
     root.BOS_CONTROL_TASKS?.refresh();
@@ -99,6 +105,8 @@
   if(typeof pages==='object')pages[PAGE]=()=>identity()?'<div data-oc-host></div>':'';
   document.addEventListener('click',event=>{
     if(!identity())return;
+    const homeFilter=event.target.closest?.('[data-oc-home-filter]');
+    if(homeFilter){filter=homeFilter.dataset.ocHomeFilter;limit=12;scrollTop=0;enter();return;}
     if(event.target.closest?.('[data-oc-enter]')){enter();return;}
     const panel=event.target.closest?.('#bosOrderControl');if(!panel)return;
     if(event.target.closest('[data-oc-back]')){rememberScroll();root.show?.('orders');refresh();return;}

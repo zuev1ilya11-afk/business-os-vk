@@ -16,7 +16,7 @@ async function setup(page,role='owner'){
  );
  await page.goto('/');
  await expect(page.locator('#authGate')).toBeHidden();
- if(role!=='master'){await page.waitForFunction(()=>!!window.BOS_ORDER_CONTROL);await page.locator('#bosOrderControlSummary').click();}
+ if(role!=='master'){await page.waitForFunction(()=>!!window.BOS_ORDER_CONTROL);await page.locator('#bosOrderControlSummary [data-oc-enter], button#bosOrderControlSummary').click();}
  return data;
 }
 for(const [role,width] of [['owner',1280],['dispatcher',360],['dispatcher',390],['manager',430]]){
@@ -73,7 +73,7 @@ test('order control disappears in master preview and after logout',async({page})
  await page.evaluate(()=>{window.__ocPreview=isMasterPreview;window.isMasterPreview=()=>true;window.BOS_ORDER_CONTROL.refresh();});
  await expect(panel).toHaveCount(0);
  await page.evaluate(()=>{window.isMasterPreview=window.__ocPreview;show('home');window.BOS_ORDER_CONTROL.refresh();});
- await page.locator('#bosOrderControlSummary').click();await expect(panel).toBeVisible();
+ await page.locator('#bosOrderControlSummary [data-oc-enter], button#bosOrderControlSummary').click();await expect(panel).toBeVisible();
  await page.evaluate(()=>document.body.classList.remove('bos-auth-ok'));
  await expect(panel).toHaveCount(0);
 });

@@ -457,3 +457,94 @@ body :is(.status, .softChip) { max-width: 100%; font-weight: 600; }
     scroll-behavior: auto !important;
   }
 }
+
+/* Owner/manager home. Scoped to leave the dispatcher and master workspaces intact. */
+body #app > #content:has(> #ownerDashboard) { display:flex; flex-direction:column; gap:14px; }
+#ownerDashboard { display:grid; gap:14px; min-width:0; width:100%; }
+#ownerDashboard .card { margin:0; padding:18px; min-width:0; }
+#ownerDashboard :is(h2,h3,p) { margin:0; }
+#ownerDashboard h2 { font-size:18px; line-height:1.35; }
+#ownerDashboard h3 { font-size:14px; line-height:1.4; }
+#ownerDashboard .muted { font-size:12px; line-height:1.5; }
+#ownerDashboard .odMetrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+#ownerDashboard .dashMetric { min-height:108px; padding:16px; }
+#ownerDashboard .dashMetric em { font-size:18px; font-style:normal; color:var(--bos-muted); }
+#ownerDashboard .odMain { display:grid; grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr); gap:14px; align-items:stretch; }
+#ownerDashboard .odBottom { display:grid; grid-template-columns:minmax(180px,.85fr) minmax(240px,1.35fr) minmax(220px,1fr) minmax(240px,1fr); gap:14px; align-items:start; }
+#ownerDashboard .odHeading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+#ownerDashboard .odHeading h2 { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+#ownerDashboard .odHeading p { margin-top:4px; }
+#ownerDashboard .linkBtn { font-size:12px; white-space:nowrap; min-height:36px; }
+#ownerDashboard .softChip { font-size:11px; padding:5px 9px; }
+#ownerDashboard .odLegend { display:flex; gap:12px; flex-wrap:wrap; margin:0 0 14px; color:var(--bos-muted); font-size:11px; }
+#ownerDashboard .odLegend span { display:flex; align-items:center; gap:6px; }
+#ownerDashboard .odLegend i { width:10px; height:10px; border-radius:50%; }
+#ownerDashboard .busy { background:#1686e8; color:white; }
+#ownerDashboard .free { background:#118765; color:#eefff9; }
+#ownerDashboard .off { background:#38495e; color:#d1dbe6; }
+#ownerDashboard .conflict { background:#c7374b; color:white; }
+#ownerDashboard .odTableScroll { overflow:auto; max-height:480px; border:1px solid var(--bos-line); border-radius:10px; }
+#ownerDashboard .odTable { display:table; overflow:visible; border-collapse:separate; border-spacing:0; width:100%; table-layout:fixed; min-width:620px; font-size:12px; }
+#ownerDashboard .odTable th { text-align:center; font-weight:500; }
+#ownerDashboard .odTable :is(th,td) { padding:7px 5px; border-right:1px solid var(--bos-line); border-bottom:1px solid var(--bos-line); }
+#ownerDashboard .odTable tr:last-child :is(th,td) { border-bottom:0; }
+#ownerDashboard .odTable tr>:last-child { border-right:0; }
+#ownerDashboard .odTable thead th { white-space:nowrap; position:sticky; top:0; z-index:2; background:var(--bos-surface,#0d1926); padding:10px 5px; }
+#ownerDashboard .odTable thead span { display:block; margin-top:4px; font-size:11px; color:var(--bos-muted); }
+#ownerDashboard .odTable th:first-child { position:sticky; left:0; width:160px; text-align:left; background:var(--bos-surface,#0d1926); z-index:1; }
+#ownerDashboard .odTable thead th:first-child { z-index:3; }
+#ownerDashboard .odTable tbody th { padding:8px; }
+#ownerDashboard .odTable tbody th>span:last-child { display:inline-block; vertical-align:middle; max-width:105px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#ownerDashboard .odAvatar { display:inline-flex; width:27px; height:27px; justify-content:center; align-items:center; margin-right:7px; border-radius:50%; background:#163c64; font-size:10px; color:#b6dbff; }
+#ownerDashboard .odTable .odToday { background:#0b2944; }
+#ownerDashboard button.odDay { width:100%; min-height:30px; height:30px; padding:4px 2px; border:0; border-radius:5px; font-size:10px; box-shadow:none; white-space:nowrap; }
+#ownerDashboard .odScheduleLink { display:flex; width:100%; justify-content:space-between; gap:10px; margin-top:10px; padding:10px; font-size:11px; text-align:left; }
+#ownerDashboard .odScheduleLink span:last-child { color:var(--bos-accent-text,#77bcff); }
+#ownerDashboard .odOrders { display:grid; }
+#ownerDashboard .odOrder { display:grid; grid-template-columns:42px minmax(0,1fr) auto; align-items:center; gap:9px; width:100%; min-height:69px; padding:12px 0; background:transparent; color:inherit; border:0; border-top:1px solid var(--bos-line); border-radius:0; text-align:left; }
+#ownerDashboard .odOrder time { font-size:12px; color:var(--bos-accent-text); }
+#ownerDashboard .odOrderText { display:grid; gap:4px; min-width:0; }
+#ownerDashboard .odOrderText b { font-size:12px; }
+#ownerDashboard .odOrderText :is(span,small) { color:var(--bos-muted); font-size:11px; line-height:1.4; overflow-wrap:anywhere; }
+#ownerDashboard .odOrderText b small { font-size:10px; font-weight:400; }
+#ownerDashboard .odStatus,.odModalList .odStatus { display:inline-block; border:1px solid #254463; background:#112b44; color:#b7d9fb; padding:6px 8px; border-radius:20px; font-size:10px; line-height:1.3; text-align:center; max-width:120px; }
+#ownerDashboard .odStatus.complete { color:#6be7b7; border-color:#166449; background:#123c32; }
+#ownerDashboard .odHeadingButton { color:inherit; border:0; background:transparent; padding:0; width:100%; text-align:left; }
+#ownerDashboard .odBig { display:block; font-size:30px; margin:4px 0; }
+#ownerDashboard .odNumbers { margin:15px 0 10px; }
+#ownerDashboard .odNumbers>div { display:flex; justify-content:space-between; gap:10px; padding:11px 0; border-top:1px solid var(--bos-line); font-size:12px; }
+#ownerDashboard .odNumbers dt { color:var(--bos-muted); }
+#ownerDashboard .odNumbers dd { margin:0; font-weight:700; text-align:right; white-space:nowrap; }
+#ownerDashboard .odCorrection,.odModalList .odCorrection { display:flex; align-items:flex-start; gap:10px; justify-content:space-between; background:transparent; border:0; border-top:1px solid var(--bos-line); border-radius:0; color:inherit; padding:13px 0; width:100%; text-align:left; font-size:12px; }
+#ownerDashboard .odCorrection>span:first-child { flex:1; min-width:0; overflow-wrap:anywhere; }
+#ownerDashboard .odCorrection small { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-top:6px; color:var(--bos-muted); font-size:11px; line-height:1.5; }
+#ownerDashboard .odNote { margin-top:14px; }
+#ownerDashboard .odQuick { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:12px; }
+#ownerDashboard .odQuick button { padding:10px 6px; font-size:11px; min-height:44px; white-space:normal; }
+#ownerDashboard .odDayResult { border-top:1px solid var(--bos-line); margin-top:16px; padding-top:14px; }
+#ownerDashboard .odDayResult p { font-size:12px; margin:8px 0; }
+#ownerDashboard progress { accent-color:#1686e8; width:100%; height:5px; }
+#ownerDashboard .odEmpty { padding:22px 0; }
+#ownerDashboard .odRefreshState { padding:12px; background:#392a12; border:1px solid #776133; border-radius:10px; color:#ffda88; font-size:13px; }
+#ownerDashboard :is(button,a,[tabindex]):focus-visible { outline:2px solid #69b5ff; outline-offset:2px; }
+.odModalList { display:grid; gap:8px; margin:12px 0; }
+body #content>.ocSummary.odAttention { display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin:0; padding:13px 16px; background:var(--bos-surface,#0d1926); border:1px solid var(--bos-line); border-radius:var(--bos-radius,14px); }
+.odAttention .odAttentionTitle { flex:1 1 240px; display:flex; flex-direction:column; gap:4px; }
+.odAttention .odAttentionTitle small { color:var(--bos-muted); font-size:11px; }
+.odAttention .odAttentionFilters { display:flex; gap:10px; flex-wrap:wrap; }
+.odAttention .odAttentionFilters button { display:flex; align-items:center; gap:14px; min-height:44px; padding:8px 12px; font-size:12px; }
+.odAttention .odAttentionFilters b { color:#ffbc62; font-size:18px; }
+.odAttention .odAttentionFilters button:first-child b { color:#fb7185; }
+.odAttention .linkBtn { font-size:12px; min-height:40px; }
+@media(min-width:1500px){#ownerDashboard .odMetrics:has(> :nth-child(5)){grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}}
+@media(max-width:1250px){#ownerDashboard .odBottom{grid-template-columns:repeat(2,minmax(0,1fr))}#ownerDashboard .odMain{grid-template-columns:minmax(0,1.45fr) minmax(275px,1fr)}#ownerDashboard .odOrder{grid-template-columns:38px minmax(0,1fr)}#ownerDashboard .odOrder>.odStatus{grid-column:2;justify-self:start}}
+@media(max-width:1000px){#ownerDashboard .odMain{grid-template-columns:minmax(0,1fr)}#ownerDashboard .odMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}#ownerDashboard .odOrder{grid-template-columns:42px minmax(0,1fr) auto}#ownerDashboard .odOrder>.odStatus{grid-column:3}#ownerDashboard .odOrders{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}#ownerDashboard .odTable{min-width:620px}}
+@media(max-width:600px){#ownerDashboard .card{padding:13px}#ownerDashboard .odBottom{grid-template-columns:minmax(0,1fr)}#ownerDashboard .odOrders{grid-template-columns:minmax(0,1fr)}#ownerDashboard .dashMetric{padding:12px;min-height:115px;grid-template-columns:1fr!important}#ownerDashboard .dashMetric .dashIcon{display:none}#ownerDashboard .dashMetric>*{grid-column:1!important}#ownerDashboard .dashMetric strong{font-size:22px}#ownerDashboard .dashMetric .muted{font-size:11px}#ownerDashboard .dashMetric small{font-size:10px}#ownerDashboard .odScheduleLink{flex-direction:column}#ownerDashboard .odHeading{gap:8px}#ownerDashboard h2{font-size:16px}#ownerDashboard .odLegend{gap:8px;font-size:10px}body #content>.ocSummary.odAttention{padding:12px;gap:10px}.odAttention .odAttentionTitle{flex-basis:100%}.odAttention .odAttentionFilters{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.odAttention .odAttentionFilters button{padding:7px 4px;gap:4px;flex-direction:column;font-size:10px}.odAttention .linkBtn{width:100%;text-align:right;min-height:32px}}
+#ownerDashboard .odReportShortcut { display:flex; flex-direction:column; align-items:flex-start; gap:5px; min-width:0; width:100%; padding:10px; font-size:11px; text-align:left; }
+#ownerDashboard .odReportShortcut small { color:var(--bos-muted); font-size:10px; overflow-wrap:anywhere; }
+#ownerDashboard .odReportShortcut span { color:var(--bos-accent-text); }
+
+#ownerDashboard .odArchive { margin-top:12px; font-size:12px; min-height:44px; }
+
+#ownerDashboard[aria-busy="true"] .odMetrics strong { color:transparent; background:var(--bos-line,#263b50); border-radius:5px; }
+#ownerDashboard[aria-busy="true"] .odMetrics strong * { visibility:hidden; }

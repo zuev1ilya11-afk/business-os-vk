@@ -15,7 +15,7 @@ async function fits(page) {
         const rect = el.getBoundingClientRect();
         // Date/filter strips and the desktop month grid intentionally scroll internally.
         // calendar-master-details.spec.js verifies access to the grid's last column.
-        const strip = el.closest('.bosOrderFilters, .masterDayFilters, .masterWeekDays, .masterV129Week, .masterStatusFilters, .dmShortcuts, .usManagement .usMonthScroll');
+        const strip = el.closest('.bosOrderFilters, .masterDayFilters, .masterWeekDays, .masterV129Week, .masterStatusFilters, .dmShortcuts, .usManagement .usMonthScroll, #ownerDashboard .odTableScroll');
         return !strip && (rect.left < -1 || rect.right > width + 1);
       }).map(el => el.id || el.className),
       small: controls.filter(el => el.matches('.primary, .secondary, .wide, .modalClose') &&

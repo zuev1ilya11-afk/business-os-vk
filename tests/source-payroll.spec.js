@@ -45,8 +45,11 @@ test('Direct source real report handlers feed one approved salary into day, week
 for(const width of [320,1280])test(`new-order pricing follows source without changing Hands at ${width}px`,async({page},testInfo)=>{
  await page.setViewportSize({width,height:900});await fullStack(page,'owner');await page.goto('/');
  await expect(page.locator('#authGate')).toBeHidden();
+ // Opening the form directly must wait for the same async enhancement as a UI click.
+ await page.waitForFunction(()=>String(window.openOrderForm||'').includes('enhanceNewOrderForm'));
  await page.evaluate(()=>openOrderForm());
  const form=page.locator('#orderForm');
+ await expect(form).toHaveClass(/newOrderForm/);
  await form.locator('[name="original_amount"]').fill('1000');
  await form.locator('[name="master_vk_id"]').selectOption('staff_m');
  await expect(form.locator('#bosMasterPay')).toContainText('600');
