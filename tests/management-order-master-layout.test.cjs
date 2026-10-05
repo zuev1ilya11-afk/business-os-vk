@@ -20,8 +20,10 @@ test('management order mirrors master information blocks and stays editable',()=
 
 test('leadership editor supports multiple phones, works and a master comment',()=>{
   assert.match(editor,/bosPhoneStack/);
+  assert.match(editor,/id="bosPhone"/);
   assert.match(editor,/bosAddPhone/);
   assert.match(editor,/bosWorkStack/);
+  assert.match(editor,/id="bosService"/);
   assert.match(editor,/bosAddWork/);
   assert.match(editor,/Комментарий мастеру/);
   assert.doesNotMatch(editor,/цена не указана в прайсе/);
