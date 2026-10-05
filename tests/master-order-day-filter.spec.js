@@ -17,20 +17,17 @@ test('master orders can be filtered by day and upcoming orders are grouped by da
   await page.waitForFunction(()=>window.BOS_MASTER_ORDERS_FILTER_V99===true);
   await page.evaluate(({masterVkId})=>enterMasterPreview(masterVkId),{masterVkId:master.external_id});
 
-  await expect(page.getByText('Ближайшие заявки')).toBeVisible();
-  const days=page.locator('.bosMasterUpcomingDay');
-  await expect(days).toHaveCount(2);
-  const cards=page.locator('.bosMasterUpcomingCard');
+  await expect(page.locator('#masterDailyV127').getByRole('heading',{name:'Рабочий день',exact:true})).toBeVisible();
+  const cards=page.locator('#masterDailyV127 button[data-order-id]');
   await expect(cards).toHaveCount(2);
   await expect(cards.nth(0)).toContainText('№ 11');
-  await expect(cards.nth(0)).toContainText('552,5');
   await expect(cards.nth(0)).toContainText('10:00');
   await expect(cards.nth(0)).not.toContainText('Монтаж');
   await expect(cards.nth(1)).toContainText('№ day-filter-2');
   await expect(cards.nth(1)).toContainText('12:00');
   await expect(cards.nth(1)).not.toContainText('Вторая заявка');
 
-  await page.getByRole('button',{name:'Все',exact:true}).click();
+  await page.getByRole('button',{name:'Все заявки',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Мои заявки',exact:true})).toBeVisible();
   await expect(page.locator('.masterDayFilters')).toBeVisible();
   await expect(page.locator('.masterDayGroup')).toHaveCount(2);

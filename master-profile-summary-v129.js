@@ -84,6 +84,7 @@ function removeByHeading(root,names){
   });
 }
 function cleanupHome(root){
+  root.querySelectorAll('.masterSalarySummary').forEach(el=>el.remove());
   root.querySelectorAll('.masterKpis').forEach(el=>el.remove());
   removeByHeading(root,['Мой график','Расчёт зарплаты','Зарплата','График работы']);
 }

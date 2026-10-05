@@ -20,13 +20,12 @@ test('master final cabinet keeps upcoming compact, workflow, schedule summary an
   await expect(page.locator('#authGate')).toBeHidden();
   await page.evaluate(({masterVkId})=>enterMasterPreview(masterVkId),{masterVkId:master.external_id});
 
-  const upcoming=page.locator('.bosMasterUpcomingDays');
+  const upcoming=page.locator('#masterDailyV127');
   await expect(upcoming).toBeVisible();
-  const card=page.locator('.bosMasterUpcomingCard').first();
+  const card=page.locator('.masterV127Next');
   await expect(card).toContainText('№ 11');
-  await expect(card).toContainText('552,5');
   await expect(card).toContainText('10:00');
-  await expect(card).not.toContainText('Невский');
+  await expect(card).toContainText('Невский');
   await expect(card).not.toContainText('Монтаж');
 
   await card.click();

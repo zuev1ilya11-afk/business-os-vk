@@ -40,9 +40,9 @@ test('master home keeps time and stage readable and shows concise real upcoming 
   expect(layout.stageLeft).toBeGreaterThanOrEqual(layout.mainLeft-1);
   expect(layout.stageHeight).toBeLessThan(34);
 
-  const upcoming=page.locator('.bosMasterUpcomingCard[data-order-id="11"]');
+  const upcoming=page.locator('.masterV127Next[data-order-id="11"]');
   await expect(upcoming).toBeVisible();
-  const summary=upcoming.locator('.bosUpcomingWork');
+  const summary=upcoming.locator('.masterV127Work');
   await expect(summary).toHaveText('Шторы ×2 · Мин. стоимость');
   await expect(summary).not.toContainText('Подрезка');
   await expect(summary).not.toContainText('Дополнительная');

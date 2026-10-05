@@ -85,8 +85,11 @@ function restoreEmpty(days){
   empty.textContent='Ближайших выездов пока нет';
   days.replaceWith(empty);
 }
+function openClaims(){return [...new Map((state?.claims||[]).filter(c=>String(c?.status||'')==='open'&&mine(c)).map(c=>[String(c.id),c])).values()]}
+window.BOS_MASTER_UPCOMING_CLAIMS_API={openClaims,linkedOrder,claimText,claimMeta};
 function renderClaims(){
   if(!masterMode()||String(state?.page||'')!=='home')return;
+  if(window.BOS_MASTER_DAILY_HOME_V127_API){window.BOS_MASTER_DAILY_HOME_V127_API.refresh();return}
   const claims=(state?.claims||[]).filter(c=>String(c?.status||'')==='open'&&mine(c)).sort((a,b)=>String((a.scheduled_date||'0000')+(a.scheduled_time||'00:00')).localeCompare(String((b.scheduled_date||'0000')+(b.scheduled_time||'00:00'))));
   const days=ensureDays(claims);if(!days)return;
   const sig=JSON.stringify(claims.map(c=>[c.id,c.order_id,c.status,c.scheduled_date,c.scheduled_time,c.reason,c.required_work,c.pay_revisit,c.revisit_payment]));

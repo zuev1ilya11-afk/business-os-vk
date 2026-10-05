@@ -58,8 +58,8 @@ test('master v127 home shows request number, day cards and attention queue on mo
   await expect(nextCard).toContainText('Позвонить клиенту');
   await expect(nextCard.locator('text=/№/')).toHaveCount(1);
 
-  const daySection=dashboard.locator('.masterV127Day');
-  await expect(daySection).toContainText('Остальные заявки на день');
+  const daySection=dashboard.locator('.masterV127Attention');
+  await expect(daySection).toContainText('Требуют внимания');
   const dayItem=daySection.locator('.masterV127DayItem').filter({hasText:'13:30'});
   await expect(dayItem).toHaveCount(1);
   await expect(dayItem).toContainText(`№ ${attention.id}`);
@@ -102,7 +102,7 @@ test('master v127 keeps started request until report and marks overdue red',asyn
   await expect(card).toHaveClass(/reportOverdue/);
   await expect(card).toContainText('ТЕКУЩАЯ ЗАЯВКА');
   await expect(card).toContainText('Отправьте отчёт по заявке');
-  await expect(page.locator('#masterDailyV127 .masterV127AttentionItem').filter({hasText:'Отчёт не отправлен вовремя'})).toHaveCount(1);
+  await expect(page.locator('#masterDailyV127 .masterV127Next').filter({hasText:'Отчёт не отправлен вовремя'})).toHaveCount(1);
 
   await page.evaluate(({id})=>{const o=state.orders.find(x=>String(x.id)===String(id));o.report_uploaded_at='2099-09-10T15:32:00.000Z';o.report_act_url='https://example.test/report-current.pdf';window.BOS_MASTER_DAILY_HOME_V127_API.refresh()},{id:current.id});
   await expect(card).toHaveAttribute('data-order-id',String(future.id));
