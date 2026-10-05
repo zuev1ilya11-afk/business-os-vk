@@ -25,7 +25,13 @@ const commentHtml=o=>{const text=visibleComment(o);if(!text)return'';const long=
 const routeAddress=o=>{const address=String(o?.address||'').trim();if(!address)return'';const city=String(o?.city||'').trim();return city&&!address.toLowerCase().includes(city.toLowerCase())?`${city}, ${address}`:address};
 const addressHtml=o=>{const address=String(o?.address||'').trim();if(!address)return'<b>Адрес не указан</b>';const href=`https://yandex.ru/maps/?text=${encodeURIComponent(routeAddress(o))}`;return `<b><a class="bosHandsAddressLink" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(address)}</a></b>`};
 const apartmentHtml=o=>{const flat=String(o?.apartment||'').trim().replace(/^(?:квартира|кв\.?)\s*/iu,'');const bits=[flat?'кв. '+flat:'',o?.floor?'этаж '+o.floor:'',o?.entrance?'подъезд '+o.entrance:''].filter(Boolean);return bits.length?`<div class="bosApartment">${bits.map(esc).join(' · ')}</div>`:''};
-const phoneHtml=o=>{const label=String(o?.phone||o?.client_phone||'').trim(),phone=label.replace(/[^+0-9]/g,'');return phone?`<div class="bosCompactPhone"><a class="masterV126Phone" href="tel:${esc(phone)}">${esc(label)}</a><a class="secondary bosClientCallAction" href="tel:${esc(phone)}" aria-label="Позвонить клиенту">Позвонить</a></div>`:'<small>Телефон не указан</small>'};
+function phoneList(o){
+ const raw=String(o?.phone||o?.client_phone||'').trim();if(!raw)return[];
+ const hits=raw.match(/(?:\+?7|8)?[\s(.-]*\d{3}[\s).-]*\d{3}[\s.-]*\d{2}[\s.-]*\d{2}/g)||[],source=hits.length?hits:[raw],seen=new Set(),out=[];
+ for(const value of source){const label=String(value||'').trim().replace(/^[,;|/\s]+|[,;|/\s]+$/g,''),digits=label.replace(/\D/g,'');if(digits.length<10)continue;const phone=digits.length===10?'+7'+digits:(digits.length===11&&(digits[0]==='7'||digits[0]==='8')?'+7'+digits.slice(1):'+'+digits);if(seen.has(phone))continue;seen.add(phone);out.push({label:label||phone,phone})}
+ return out;
+}
+const phoneHtml=o=>{const phones=phoneList(o);return phones.length?`<div class="bosCompactPhone bosManagementPhones">${phones.map((item,index)=>`<div class="bosManagementPhoneRow"><a class="masterV126Phone" href="tel:${esc(item.phone)}">${esc(item.label)}</a><a class="secondary bosClientCallAction" href="tel:${esc(item.phone)}" aria-label="Позвонить клиенту ${index+1}">Позвонить</a></div>`).join('')}</div>`:'<small>Телефон не указан</small>'};
 const sourceLabel=o=>String(pick(o,'external_source','source','store','shop','store_name','shop_name')||'').trim();
 window.openOrder=function(id){
   const role=String(state?.user?.role||'');
@@ -101,6 +107,7 @@ const style=document.createElement('style');style.textContent=`
 .bosManageMoney{text-align:right;display:grid;gap:2px;min-width:0}.bosManageMoney strong{font-size:14px}.bosManageMoney span{font-size:12px;color:var(--muted,#91a3b7)}
 .bosManageOrderModal .bosManageHead .modalClose{position:static!important;float:none!important;margin:0!important;width:44px;height:44px;min-width:44px;min-height:44px;font-size:26px;padding:0}
 .bosManageMeta{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:0 0 4px}.bosManageMeta .status,.bosManageMeta .bosSourceChip{display:inline-flex;width:auto;margin:0}
+.bosManagementPhones{display:grid;gap:6px;margin-top:5px}.bosManagementPhoneRow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.bosManagementPhoneRow .bosClientCallAction{min-height:34px;padding:6px 10px}
 .bosManageOrder .bosHandsBlock{padding:10px 0;gap:10px;font-size:14px}.bosManageOrder .bosHandsBlock b{font-size:15px;line-height:1.4}.bosManageOrder .bosApartment{color:var(--muted,#91a3b7);font-size:13px;margin-top:4px}
 .bosManageOrder .bosHandsWorks{padding:0;margin:0}.bosManageOrder .bosHandsWorkRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:8px 0;font-size:14px;line-height:1.45}.bosManageOrder .bosHandsWorkRow span{overflow-wrap:anywhere}.bosManageOrder .bosHandsWorkRow b{font-size:14px;white-space:nowrap;color:var(--muted,#91a3b7)}
 .bosManageOrder summary{cursor:pointer;min-height:44px;box-sizing:border-box;padding:10px 0;color:#7eb9ff;font-size:14px}.bosManageOrder .bosCollapse{display:none}.bosManageOrder details[open]>summary .bosExpand{display:none}.bosManageOrder details[open]>summary .bosCollapse{display:inline}

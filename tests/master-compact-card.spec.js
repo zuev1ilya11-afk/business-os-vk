@@ -54,3 +54,50 @@ test('master sees apartment imported from Hands directions after reload, with no
  remote.directions='квартира 43';expect((await sync({action:'syncOrders',per_page:2,max_pages:1})).status).toBe(200);
  await page.reload();await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrder('11'));await expect(page.locator('.bosApartment')).toHaveText('кв. 43');await expect(page.locator('.bosCompactMasterCard input')).toHaveCount(0);
 });
+
+
+test('management full edit keeps separate phones, multiple works and a master comment',async({page})=>{
+ const {db}=await fullStack(page,'manager');
+ Object.assign(db.tables.orders[0],{
+  external_source:'hands',source:'Hands',external_id:'hands:7367110',
+  client:'Дмитрий',
+  phone:'+79516827739 +79214453890',
+  work:'Установка декоративного карниза (одно, двух, трехрядный) длиной до 2,5 метров × 1 шт.\nМинимальная стоимость заказа, светозащита и карнизы × 1 шт.',
+  comment:''
+ });
+ await page.setViewportSize({width:390,height:1000});
+ await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
+ await page.evaluate(()=>openOrderForm('11'));
+ const form=page.locator('#orderForm');
+ await expect(form).toBeVisible();
+ await expect(form.locator('.bosPhoneInput')).toHaveCount(2);
+ await expect(form.locator('.bosPhoneInput').nth(0)).toHaveValue('9516827739');
+ await expect(form.locator('.bosPhoneInput').nth(1)).toHaveValue('9214453890');
+ await expect(form.locator('.bosWorkSelect')).toHaveCount(2);
+ await expect(form.locator('#bosServiceInfo')).toBeHidden();
+ await expect(form.getByText('Комментарий мастеру',{exact:true})).toBeVisible();
+
+ await form.locator('#bosAddPhone').click();
+ await expect(form.locator('.bosPhoneInput')).toHaveCount(3);
+ await form.locator('.bosPhoneInput').nth(2).fill('9990001122');
+ await form.locator('#bosAddWork').click();
+ await expect(form.locator('.bosWorkSelect')).toHaveCount(3);
+ await form.locator('.bosWorkSelect').nth(2).selectOption('4');
+ await form.locator('[name=comment]').fill('Позвонить клиенту за 30 минут до выезда.');
+ await form.locator('button[type=submit]').click();
+ await expect(form).toBeHidden();
+
+ expect(db.tables.orders[0].phone).toBe('+79516827739; +79214453890; +79990001122');
+ expect(db.tables.orders[0].work.split('\n')).toEqual([
+  'Установка декоративного карниза (одно, двух, трехрядный) длиной до 2,5 метров × 1 шт.',
+  'Минимальная стоимость заказа, светозащита и карнизы × 1 шт.',
+  'Установка декоративного карниза длиной до 2,5 метров'
+ ]);
+ expect(db.tables.orders[0].comment).toBe('Позвонить клиенту за 30 минут до выезда.');
+ expect(db.tables.orders[0].hands_detail_overrides.comment).toBe(true);
+
+ await page.evaluate(()=>openOrder('11'));
+ await expect(page.locator('.bosManagementPhoneRow')).toHaveCount(3);
+ await expect(page.locator('.bosManagementPhoneRow').nth(0)).toContainText('+79516827739');
+ await expect(page.locator('.bosManagementPhoneRow').nth(1)).toContainText('+79214453890');
+});
