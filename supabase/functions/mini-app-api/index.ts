@@ -20,7 +20,8 @@ function b64u(a:Uint8Array){let s='';for(const b of a)s+=String.fromCharCode(b);
 async function hmac(m:string,s:string){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(s),{name:'HMAC',hash:'SHA-256'},false,['sign']);return b64u(new Uint8Array(await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(m))))}
 async function sess(t:string,s:string){const p=String(t||'').split('.');if(!s||p.length!==3||!/^[A-Za-z0-9_-]{1,128}$/.test(p[0])||!/^\d{1,12}$/.test(p[1])||Number(p[1])<=Date.now()/1000)return null;return await hmac(`${p[0]}.${p[1]}`,s)===p[2]?p[0]:null}
 function norm(v:any){let d=String(v||'').replace(/\D/g,'');if(d.length===11&&d[0]==='8')d='7'+d.slice(1);if(d.length===10)d='7'+d;return d}
-const out=(s:any)=>{const x={...(s||{})};delete x.password_hash;return {...x,vk_user_id:x.external_id}};
+// Match staff-admin's owner-only credential metadata boundary in every staff response.
+const out=(s:any,includeCredentials=false)=>{const x={...(s||{})};delete x.password_hash;if(!includeCredentials){delete x.login;delete x.has_password}return {...x,vk_user_id:x.external_id}};
 const masterOrder=(o:any)=>orderPayroll.masterView({...o,master_payout:orderPayroll.directMaster(o)??payouts(o?.amount,!!o?.master_staff_id).master_payout});
 const safeRequestId=(v:any)=>{const s=String(v||'').trim();return /^[A-Za-z0-9_-]{8,128}$/.test(s)?s:''};
 // PostgREST caps an unpaginated response at 1000 rows. Keep totals complete.
@@ -68,7 +69,7 @@ Deno.serve(async r=>{
       const all=st.data||[],vis=role==='master'?all.filter((x:any)=>x.id===me.id):all,map=new Map<string,any>(all.map((x:any)=>[String(x.id),x]));
       let orders=(or.data||[]).map((o:any)=>({...o,id:String(o.id),master_vk_id:map.get(String(o.master_staff_id))?.external_id||'',master_name:o.master_name||map.get(String(o.master_staff_id))?.full_name||''}));
       if(role==='master')orders=orders.map(masterOrder);
-      return j({ok:true,user:out(me),orders,users:vis.map(out),masters:(role==='master'?vis:all.filter((x:any)=>x.role==='master')).map(out),masterSchedule:(sr.data||[]).filter((x:any)=>role!=='master'||x.staff_id===me.id),claims:(cl.data||[]).filter((x:any)=>role!=='master'||x.master_staff_id===me.id),sources:[{source:'VK'},{source:'Google Sheets'},{source:'Авито'}],settings:{permissions:{can_manage_orders:ops(role),can_manage_schedule:ops(role),can_manage_staff:['owner','manager'].includes(role),can_review_reports:ops(role),can_view_finance:['owner','manager'].includes(role)}}});
+      return j({ok:true,user:out(me,role==='owner'),orders,users:vis.map((x:any)=>out(x,role==='owner')),masters:(role==='master'?vis:all.filter((x:any)=>x.role==='master')).map((x:any)=>out(x,role==='owner')),masterSchedule:(sr.data||[]).filter((x:any)=>role!=='master'||x.staff_id===me.id),claims:(cl.data||[]).filter((x:any)=>role!=='master'||x.master_staff_id===me.id),sources:[{source:'VK'},{source:'Google Sheets'},{source:'Авито'}],settings:{permissions:{can_manage_orders:ops(role),can_manage_schedule:ops(role),can_manage_staff:['owner','manager'].includes(role),can_review_reports:ops(role),can_view_finance:['owner','manager'].includes(role)}}});
     }
 
     if(['listExpenses','createExpense','updateExpense','deleteExpense'].includes(a)){
@@ -210,7 +211,7 @@ Deno.serve(async r=>{
       if(norm(phone).length!==11)return j({ok:false,error:'Укажите корректный номер телефона сотрудника'},400);
       const q=await db.from('business_staff').insert({external_id:'staff_'+Date.now()+'_'+crypto.randomUUID().slice(0,8),full_name:String(b.full_name||'Сотрудник').trim(),role:rr,phone,city:String(b.city||'Санкт-Петербург'),specialization:String(b.specialization||''),is_active:true,work_start:b.work_start||null,work_end:b.work_end||null,comment:String(b.comment||'')}).select().single();
       if(q.error)throw q.error;
-      return j({ok:true,user:out(q.data),master:rr==='master'?out(q.data):null,registration_by_phone:true});
+      return j({ok:true,user:out(q.data,role==='owner'),master:rr==='master'?out(q.data,role==='owner'):null,registration_by_phone:true});
     }
 
     if(a==='updateEmployee'){
@@ -228,7 +229,7 @@ Deno.serve(async r=>{
       }
       const q=await db.from('business_staff').update(p).eq('id',target.id).select().single();
       if(q.error)throw q.error;
-      return j({ok:true,user:out(q.data)});
+      return j({ok:true,user:out(q.data,role==='owner')});
     }
 
     if(a==='saveMasterSchedule'){

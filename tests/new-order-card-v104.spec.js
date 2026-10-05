@@ -18,11 +18,11 @@ test('dispatcher new order card is grouped and touch friendly on mobile',async({
     await expect(form.getByRole('heading',{name:heading,exact:true})).toBeVisible();
   }
 
-  for(const name of ['client','address','work','scheduled_date','time_slot','status','master_vk_id','wall_over_3m','wall_material','original_amount','comment']){
+  for(const name of ['client','address','scheduled_date','time_slot','status','master_vk_id','wall_over_3m','wall_material','original_amount','comment']){
     await expect(form.locator(`[name="${name}"]`)).toHaveCount(1);
   }
   await expect(form.locator('#bosPhone')).toHaveCount(1);
-  await expect(form.locator('textarea#bosService[name=work]')).toHaveCount(1);
+  await expect(form.locator('select#bosService.bosWorkSelect')).toHaveCount(1);
   await expect(form.locator('[name=order_type]')).toHaveCount(0);
   await expect(form.locator('.newOrderChannel')).toHaveCount(6);
   expect(await form.locator('.newOrderChannel').evaluateAll(els=>els.every(el=>el.getBoundingClientRect().height>=44))).toBe(true);
@@ -66,7 +66,7 @@ for(const [source,role,width]of [['Авито','dispatcher',390],['Руки','ow
  await form.locator('[name=address]').fill('Адрес проверки');await form.getByRole('radio',{name:source,exact:true}).check();
  await form.locator('[name=original_amount]').fill('1000');
  const work='Установка карниза — 2 шт.\nНавеска штор <без подрезки>';
- await form.locator('#bosService').fill(work);
+ await form.locator('#bosService').selectOption('custom');await form.locator('.bosCustomWork:visible').fill(work);
  await expect(form.locator('[name=original_amount]')).toHaveValue('1000');
  await form.locator('[name=master_vk_id]').selectOption('staff_m');
  await expect(form.locator('#bosMasterPay')).toContainText(source==='Руки'?'552':'600');
@@ -87,11 +87,11 @@ test('empty services cannot save and a failed create preserves the complete draf
  await page.waitForFunction(()=>String(window.openOrderForm||'').includes('enhanceNewOrderForm'));
  await page.evaluate(()=>openOrderForm());const form=page.locator('#orderForm');await expect(form).toHaveClass(/newOrderForm/);
  await form.locator('[name=client]').fill('Повтор');await form.locator('#bosPhone').fill('9991234567');await form.locator('[name=address]').fill('Адрес');
- await form.locator('#bosService').fill('   ');await form.getByRole('button',{name:'Создать заявку',exact:true}).click();
- await expect(form.locator('#formMsg')).toContainText('Опишите услуги');expect(db.tables.orders).toHaveLength(2);
- await form.locator('#bosService').fill('Нестандартный монтаж');await form.getByRole('radio',{name:'Телефон',exact:true}).check();await form.locator('[name=original_amount]').fill('1200');
+ await form.locator('#bosService').selectOption('custom');await form.locator('.bosCustomWork:visible').fill('   ');await form.getByRole('button',{name:'Создать заявку',exact:true}).click();
+ await expect(form.locator('#formMsg')).toContainText('Добавьте хотя бы одну работу');expect(db.tables.orders).toHaveLength(2);
+ await form.locator('#bosService').selectOption('custom');await form.locator('.bosCustomWork:visible').fill('Нестандартный монтаж');await form.getByRole('radio',{name:'Телефон',exact:true}).check();await form.locator('[name=original_amount]').fill('1200');
  await page.evaluate(()=>{const previous=window.api;let fail=true;window.api=async function(action,...args){if(action==='createOrder'&&fail){fail=false;return {ok:false,error:'Временная ошибка'}}return previous.call(this,action,...args)}});
  await form.getByRole('button',{name:'Создать заявку',exact:true}).click();await expect(form.locator('#formMsg')).toContainText('Временная ошибка');
- await expect(form.locator('#bosService')).toHaveValue('Нестандартный монтаж');await expect(form.getByRole('radio',{name:'Телефон',exact:true})).toBeChecked();await expect(form.locator('[name=original_amount]')).toHaveValue('1200');
+ await expect(form.locator('.bosCustomWork:visible')).toHaveValue('Нестандартный монтаж');await expect(form.getByRole('radio',{name:'Телефон',exact:true})).toBeChecked();await expect(form.locator('[name=original_amount]')).toHaveValue('1200');
  await form.getByRole('button',{name:'Создать заявку',exact:true}).click();await expect(form).toHaveCount(0);expect(db.tables.orders.filter(o=>o.client==='Повтор')).toHaveLength(1);
 });

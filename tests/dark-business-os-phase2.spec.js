@@ -32,7 +32,7 @@ test('management order cards and order form stay compact and usable on mobile',a
   await expectViewportSafe(page,'owner order form');
 
   const formLayout=await page.locator('#orderForm').evaluate(form=>{
-    const controls=[...form.querySelectorAll('input:not([type="checkbox"]):not([type="radio"]),select,textarea,button.primary.wide')].map(el=>{
+    const controls=[...form.querySelectorAll('input:not([type="checkbox"]):not([type="radio"]),select,textarea,button.primary.wide')].filter(el=>!el.hidden).map(el=>{
       const r=el.getBoundingClientRect();return {tag:el.tagName,height:r.height,width:r.width};
     });
     const checkRows=[...form.querySelectorAll('.checkRow')].map(el=>el.getBoundingClientRect().height);

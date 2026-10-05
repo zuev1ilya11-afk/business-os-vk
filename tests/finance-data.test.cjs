@@ -49,6 +49,14 @@ test('work execution excludes stored deductions and does not assign unstructured
  const rows=F.records([order({work:'Подрезка карниза по длине × 3 пил.',uncompleted_work_amount:200,uncompleted_work_items:[{service_id:'standard_020',quantity:1}]})],[]);
  const g=F.workGroups(rows)[0];assert.equal(g.quantity,2);assert.equal(g.revenue,1000);assert.equal(g.extras,null);
 });
+test('work execution subtracts each service deduction once across repeated work lines',()=>{
+ const rows=F.records([order({work:'Подрезка карниза по длине × 2 пил.\nПодрезка карниза по длине × 3 пил.',uncompleted_work_amount:200,uncompleted_work_items:[{service_id:'standard_020',quantity:1}]})],[]);
+ const before=structuredClone(rows),g=F.workGroups(rows)[0];
+ assert.equal(g.quantity,4);assert.equal(g.total,1);assert.equal(g.revenue,null);
+ assert.deepEqual(rows,before);
+ rows[0].order.uncompleted_work_items[0].quantity=10;
+ assert.equal(F.workGroups(rows)[0].quantity,0);
+});
 test('period comparison uses the previous calendar bucket, never the previous nonempty year',()=>{
  const rows=F.records([order({completed_at:'2026-10-04T08:00:00Z'}),order({id:'2',completed_at:'2026-09-01T08:00:00Z',amount:500,extra_work_amount:0}),order({id:'3',completed_at:'2024-09-01T08:00:00Z'})],[]);
  const groups=F.periodGroups(rows,'month');assert.equal(groups.find(g=>g.key==='2026-10').delta,120);assert.equal(groups.find(g=>g.key==='2026-09').delta,null);

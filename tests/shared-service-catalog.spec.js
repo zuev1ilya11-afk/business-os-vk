@@ -12,9 +12,9 @@ test('dispatcher enters custom work and saves its text and manual price',async({
   await form.locator('[name=client]').fill('Клиент каталога');
   await form.locator('#bosPhone').fill('9991234567');
   await form.locator('[name=address]').fill('Адрес каталога');
-  await form.locator('#bosService').fill('Установка карниза — 2 шт.');
+  await form.locator('#bosService').selectOption('custom');await form.locator('.bosCustomWork:visible').fill('Установка карниза — 2 шт.');
   await form.locator('[name=original_amount]').fill('1699');
-  await expect(form.locator('#bosServiceInfo')).toContainText('своими словами');
+  await expect(form.locator('.bosCustomWork:visible')).toHaveAttribute('placeholder','Опишите работу своими словами');
   await expect(form.locator('[name=original_amount]')).toHaveValue('1699');
   await form.locator('[name=comment]').fill('Нестандартное крепление согласовать');
   await form.getByRole('button',{name:'Создать заявку',exact:true}).click();

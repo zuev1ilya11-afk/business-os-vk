@@ -1,5 +1,10 @@
 const {test}=require('node:test');
 const fs=require('node:fs'),vm=require('node:vm');
+test('all root JavaScript assets parse before they are included in the PWA cache',()=>{
+ for(const name of fs.readdirSync('.').filter(name=>name.endsWith('.js'))){
+  try{new vm.Script(fs.readFileSync(name,'utf8'),{filename:name})}catch(e){throw new Error(name+': '+e.message,{cause:e})}
+ }
+});
 test('production classic scripts and generated bundles parse before release',()=>{
  const shell=JSON.parse(fs.readFileSync('scripts/startup-assets.json','utf8')).shell;
  const lazy=[...fs.readFileSync('pwa-register.js','utf8').matchAll(/'\.\/([^']+\.js)'/g)].map(x=>x[1]);

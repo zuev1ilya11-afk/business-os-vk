@@ -75,7 +75,11 @@
  function workGroups(rows){
   const map=new Map();
   for(const r of rows.filter(r=>r.completed)){
-   const ws=r.works.length?r.works:[{key:'unknown',name:'Без точного соответствия каталогу',quantity:1,unit:''}];
+   // A report stores one deduction per service, even if the imported work list
+   // has several lines for that service. Combine quantities before deducting it.
+   const byService=new Map();
+   for(const w of r.works){const item=byService.get(w.key);if(item)item.quantity+=w.quantity;else byService.set(w.key,{...w})}
+   const ws=byService.size?[...byService.values()]:[{key:'unknown',name:'Без точного соответствия каталогу',quantity:1,unit:''}];
    for(const w of ws){if(!map.has(w.key))map.set(w.key,{key:w.key,name:w.name,unit:w.unit,quantity:0,rows:[],revenue:0,extras:0,missing:false,missingQuantity:false,missingExtras:false});const g=map.get(w.key);
     const deductions=Array.isArray(r.order.uncompleted_work_items)?r.order.uncompleted_work_items:[];
     const removed=deductions.filter(x=>x.service_id===w.key).reduce((n,x)=>n+(number(x.quantity)??0),0);

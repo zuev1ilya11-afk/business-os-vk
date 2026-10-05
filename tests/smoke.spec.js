@@ -82,7 +82,7 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   await page.locator('input[name="client"]').fill('Тест');
   await page.locator('#bosPhone').fill('9991234567');
   await page.locator('input[name="address"]').fill('Тестовый адрес');
-  await page.locator('#bosService').fill('Установка карниза');
+  await page.locator('#bosService').selectOption('custom');await page.locator('.bosCustomWork:visible').fill('Установка карниза');
   await page.locator('input[name="original_amount"]').fill('1000');
   await page.locator('select[name="time_slot"]').selectOption({label:'10:00–11:00'});
   await page.locator('select[name="wall_material"]').selectOption('Кирпич');

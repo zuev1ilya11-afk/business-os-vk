@@ -67,7 +67,7 @@ function enhanceNewOrderForm(){
   const client=makeSection('Клиент','');
   const clientInput=form.elements.client;
   const phoneInput=form.querySelector('#bosPhone');
-  const phoneGroup=phoneInput?.closest('.two');
+  const phoneGroup=phoneInput?.closest('.bosPhoneEditor,.two');
   const addressInput=form.elements.address;
   [field(clientInput,'Имя клиента'),groupedField(phoneGroup,'Телефон'),field(addressInput,'Адрес',true)].filter(Boolean).forEach(node=>client.body.appendChild(node));
   if(phoneInput)phoneInput.setAttribute('aria-label','Телефон');
@@ -77,7 +77,8 @@ function enhanceNewOrderForm(){
   const work=makeSection('Услуги','');
   const service=form.querySelector('#bosService');
   if(service){
-    const serviceField=field(service,'Услуги',true);
+    const workStack=form.querySelector('#bosWorkStack');
+    const serviceField=workStack?groupedField(workStack,'Услуги',true):field(service,'Услуги',true);
     serviceField.querySelector('.newOrderFieldLabel').hidden=true;
     service.setAttribute('aria-label','Услуги');
     const serviceInfo=form.querySelector('#bosServiceInfo');
@@ -177,6 +178,7 @@ style.textContent=`
 .newOrderConditions,.newOrderTotals{grid-column:1/-1;margin:0!important;background:rgba(255,255,255,.025)!important;box-shadow:none!important}.newOrderConditions{padding:10px!important}.newOrderTotals{padding:10px 12px!important}.newOrderCompletionSection[hidden]{display:none!important}.newOrderCompletionSection #completionBlock{display:grid;gap:10px}.newOrderCompletionSection #completionBlock>.card{margin:0}
 .newOrderChannels{border:0;padding:0;margin:0;min-width:0}.newOrderChannels legend{font-size:14px;font-weight:600;margin-bottom:10px;padding:0;color:#d8e5f3}.newOrderChannelOptions{display:flex;flex-wrap:wrap;gap:8px}.newOrderChannel{display:flex!important;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:9px 13px!important;margin:0!important;border:1px solid #304b63;border-radius:10px;background:#142638;color:#ecf4ff!important;cursor:pointer;font-size:14px;line-height:1.3}.newOrderChannel input[type=radio]{width:16px!important;height:16px!important;min-height:16px!important;padding:0!important;margin:0!important;flex:none;accent-color:#6cb7ff}.newOrderChannel:has(input:checked){background:#086bd7;border-color:#419cfb;color:white!important}.newOrderChannel:focus-within{outline:2px solid #8cc9ff;outline-offset:2px}.newOrderBottom{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
 .newOrderActions{position:sticky;bottom:-1px;z-index:3;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:9px;margin:2px -2px -2px;padding:10px 2px 2px;background:linear-gradient(to bottom,rgba(7,11,18,0),rgba(7,11,18,.96) 26%)}.newOrderActions button{min-height:50px}.newOrderActions #formMsg{grid-column:1/-1;margin:0;min-height:18px}
+.newOrderForm .bosAddField,.newOrderForm .bosRemoveField{min-height:44px}.newOrderForm .bosPhoneEditRow,.newOrderForm .bosWorkEditRow{grid-template-columns:minmax(0,1fr) 44px}.newOrderForm .bosRemoveField{width:44px;min-width:44px}
 @media(min-width:761px){.newOrderActions{grid-template-columns:minmax(180px,auto) minmax(100px,auto);justify-content:end}.newOrderConditions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center}.newOrderConditions h3{grid-column:1/-1}.newOrderConditions select{grid-column:2;grid-row:3}.newOrderConditions>label:not(.checkRow){grid-column:2;grid-row:2}.newOrderConditions .checkRow{grid-column:1}}
 @media(max-width:760px){.newOrderBottom{grid-template-columns:minmax(0,1fr);gap:0}}
 @media(max-width:600px){.newOrderSubtitle{margin-right:28px}.newOrderSection{padding:10px 0}.newOrderGrid{grid-template-columns:1fr;gap:9px}.newOrderFieldWide{grid-column:auto}.newOrderActions{grid-template-columns:1fr 1fr;padding-bottom:calc(2px + env(safe-area-inset-bottom))}.newOrderActions button{min-height:52px;font-size:15px}.newOrderForm input:not([type="checkbox"]):not([type="radio"]),.newOrderForm select,.newOrderForm textarea{min-height:48px;font-size:16px;box-sizing:border-box}.newOrderConditions,.newOrderTotals{grid-column:auto}.newOrderForm .two{min-width:0}.newOrderForm .two>*{min-width:0}.newOrderChannel{flex:1 0 calc(33.333% - 8px);padding:8px!important;font-size:13px}}
