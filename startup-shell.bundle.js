@@ -1620,15 +1620,15 @@ function phoneDigitsList(value){
  for(const item of source){const digits=String(item||'').replace(/\D/g,'');const ten=digits.length===10?digits:(digits.length===11&&(digits[0]==='7'||digits[0]==='8')?digits.slice(1):'');if(ten.length===10&&!seen.has(ten)){seen.add(ten);out.push(ten)}}
  return out.length?out:[''];
 }
-const phoneEditRow=(value='')=>`<div class="bosPhoneEditRow"><input class="bosPhoneInput" inputmode="numeric" maxlength="10" value="${esc(value)}" placeholder="9991234567" aria-label="Номер телефона"><button class="bosRemoveField bosRemovePhone" type="button" aria-label="Удалить номер">×</button></div>`;
-const phoneEditor=value=>`<div class="bosPhoneEditor"><div class="bosPhonePrefix">+7</div><div class="bosPhoneStack" id="bosPhoneStack">${phoneDigitsList(value).map(phoneEditRow).join('')}<button id="bosAddPhone" class="secondary bosAddField" type="button">＋ Добавить телефон</button></div></div>`;
+const phoneEditRow=(value='',primary=false)=>`<div class="bosPhoneEditRow"><input ${primary?'id="bosPhone" ':''}class="bosPhoneInput" inputmode="numeric" maxlength="10" value="${esc(value)}" placeholder="9991234567" aria-label="Номер телефона"><button class="bosRemoveField bosRemovePhone" type="button" aria-label="Удалить номер">×</button></div>`;
+const phoneEditor=value=>`<div class="bosPhoneEditor"><div class="bosPhonePrefix">+7</div><div class="bosPhoneStack" id="bosPhoneStack">${phoneDigitsList(value).map((phone,index)=>phoneEditRow(phone,index===0)).join('')}<button id="bosAddPhone" class="secondary bosAddField" type="button">＋ Добавить телефон</button></div></div>`;
 const workLines=value=>String(value||'').split(/\n+/).map(x=>x.trim()).filter(Boolean);
 function workOptions(selected=''){
  const exact=SERVICES.findIndex(s=>s.n===selected);
  return '<option value="">Выберите работу</option>'+(selected&&exact<0?`<option value="legacy" data-work="${esc(selected)}" selected>${esc(selected)}</option>`:'')+SERVICES.map((item,index)=>`<option value="${index}" ${index===exact?'selected':''}>${esc(item.n)}${item.p!=null?' — '+money(item.p):''}${item.u?' / '+esc(item.u):''}</option>`).join('');
 }
-const workEditRow=(value='')=>`<div class="bosWorkEditRow"><select class="bosWorkSelect" aria-label="Работа">${workOptions(value)}</select><button class="bosRemoveField bosRemoveWork" type="button" aria-label="Удалить работу">×</button></div>`;
-const workEditor=value=>{const rows=workLines(value);return `<div class="bosWorkStack" id="bosWorkStack">${(rows.length?rows:['']).map(workEditRow).join('')}<button id="bosAddWork" class="secondary bosAddField" type="button">＋ Добавить работу</button></div>`};
+const workEditRow=(value='',primary=false)=>`<div class="bosWorkEditRow"><select ${primary?'id="bosService" ':''}class="bosWorkSelect" aria-label="Работа">${workOptions(value)}</select><button class="bosRemoveField bosRemoveWork" type="button" aria-label="Удалить работу">×</button></div>`;
+const workEditor=value=>{const rows=workLines(value);return `<div class="bosWorkStack" id="bosWorkStack">${(rows.length?rows:['']).map((work,index)=>workEditRow(work,index===0)).join('')}<button id="bosAddWork" class="secondary bosAddField" type="button">＋ Добавить работу</button></div>`};
 function selectedWork(select){
  if(!select||!select.value)return null;
  if(select.value==='legacy')return {n:String(select.selectedOptions?.[0]?.dataset?.work||select.selectedOptions?.[0]?.textContent||'').trim(),p:null};
@@ -1663,7 +1663,7 @@ window.openOrderForm=function(id){
  if(phoneStack){phoneStack.addEventListener('input',event=>{if(event.target.classList.contains('bosPhoneInput'))event.target.value=event.target.value.replace(/\D/g,'').slice(0,10)});phoneStack.addEventListener('click',event=>{const remove=event.target.closest('.bosRemovePhone');if(remove){const rows=phoneStack.querySelectorAll('.bosPhoneEditRow');if(rows.length>1)remove.closest('.bosPhoneEditRow').remove();syncPhoneButtons()}});$('#bosAddPhone').onclick=()=>{const add=$('#bosAddPhone'),holder=document.createElement('div');holder.innerHTML=phoneEditRow('');add.insertAdjacentElement('beforebegin',holder.firstElementChild);syncPhoneButtons();phoneStack.querySelector('.bosPhoneEditRow:last-of-type .bosPhoneInput')?.focus()}}else if(phoneEl)phoneEl.oninput=()=>phoneEl.value=phoneEl.value.replace(/\D/g,'').slice(0,10);
  if(workStack){workStack.addEventListener('click',event=>{const remove=event.target.closest('.bosRemoveWork');if(remove){const rows=workStack.querySelectorAll('.bosWorkEditRow');if(rows.length>1)remove.closest('.bosWorkEditRow').remove();syncWorkButtons()}});$('#bosAddWork').onclick=()=>{const add=$('#bosAddWork'),holder=document.createElement('div');holder.innerHTML=workEditRow('');add.insertAdjacentElement('beforebegin',holder.firstElementChild);syncWorkButtons();workStack.querySelector('.bosWorkEditRow:last-of-type select')?.focus()}}
  syncPhoneButtons();syncWorkButtons();
- const showService=()=>{if(o){info.textContent='';return}info.textContent='Напишите своими словами, что нужно сделать';recalc()};
+ const showService=()=>{if(o){info.textContent='';recalc();return}info.textContent='Напишите своими словами, что нужно сделать';recalc()};
  const recalc=()=>{
     const base=Math.max(0,Number(amount.value||0)-Number(o?.uncompleted_work_amount||0));
     const pricing={...(o||{external_source:'mini_app'}),source:form.elements.source?.value||o?.source||'Авито'};
