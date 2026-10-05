@@ -79,6 +79,7 @@ function candidatesFor(o,date){
 window.__dispatchSmartDraftCandidates=(draft,date)=>candidatesFor(draft||{},String(date||draft?.scheduled_date||'').slice(0,10));
 
 function serviceText(form){
+  if(typeof form?.bosWorkText==='function')return form.bosWorkText();
   const control=form?.querySelector('#bosService');
   if(control&&control.tagName!=='SELECT')return String(control.value||'').trim();
   const option=form?.querySelector('#bosService option:checked');
@@ -135,8 +136,9 @@ function enhanceOrderForm(){
   const target=plan.querySelector('.newOrderGrid')||plan;
   const box=document.createElement('section');box.className='dsa119Form';box.hidden=true;target.appendChild(box);
   const refresh=()=>requestAnimationFrame(()=>renderFormSmart(box,form));
-  date.addEventListener('change',refresh);slot.addEventListener('change',refresh);service?.addEventListener('change',refresh);
-  if(service?.tagName==='TEXTAREA')service.addEventListener('input',refresh);
+  date.addEventListener('change',refresh);slot.addEventListener('change',refresh);
+  const work=form.querySelector('#bosWorkStack')||service;
+  work?.addEventListener('change',refresh);work?.addEventListener('input',refresh);
   refresh();
 }
 

@@ -59,7 +59,7 @@ test('retrying a failed create-order submission reuses the same request_id',asyn
   else await page.locator('input[name="phone"]').fill('9991234567');
   await page.locator('input[name="address"]').fill('Тестовый адрес');
   const service=page.locator('#bosService');
-  if(await service.count())await service.fill('Монтаж');
+  if(await service.count()){await service.selectOption('custom');await page.locator('.bosCustomWork:visible').fill('Монтаж')}
   else await page.locator('input[name="work"]').fill('Монтаж');
   const original=page.locator('input[name="original_amount"]');
   if(await original.count())await original.fill('1000');

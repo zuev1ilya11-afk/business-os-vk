@@ -9,6 +9,6 @@
     "build:check": "node scripts/build-version.cjs --check"
   },
   "devDependencies": {
-    "@playwright/test": "1.55.0"
+    "@playwright/test": "1.55.1"
   }
 }

@@ -24,7 +24,7 @@ function odMatchFilter(o){
   if(bosOrderFilter==='reclamation')return odStatus(o)==='Рекламация'||(!!o.is_claim&&!o.claim_closed_at);
   if(bosOrderFilter==='cancelled')return odCancelled(o);
   if(bosOrderFilter==='unassigned')return odOperational(o)&&!odHasMaster(o);
-  if(bosOrderFilter==='today')return odOperational(o)&&String(o.scheduled_date||'').slice(0,10)===odToday();
+  if(bosOrderFilter==='today')return String(o.scheduled_date||'').slice(0,10)===odToday();
   if(bosOrderFilter==='avito')return /^(авито|avito)$/i.test(odSource(o));
   if(bosOrderFilter==='reschedule')return odRescheduleRole()&&!!o.reschedule_requested;
   return true;
