@@ -1,0 +1,32 @@
+name: Build management order editor assets once
+on:
+  push:
+    branches: [feat/management-order-editor-v265]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/management-order-editor-v265
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Commit generated assets and remove this one-shot workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/build-management-order-editor.yml
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m "Build PWA assets for management order editor"
+          git push origin HEAD:feat/management-order-editor-v265
