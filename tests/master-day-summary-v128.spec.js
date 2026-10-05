@@ -30,6 +30,7 @@ test('master v128 shows today totals with current payout formula and no legacy d
 
   const summary=page.locator('#masterDaySummaryV128');
   await expect(summary).toBeVisible();
+  await summary.locator('summary').click();
   await expect(summary.getByRole('heading',{name:'Сегодня'})).toBeVisible();
   await expect(summary.locator('.masterV128Head')).toContainText('1 выполнено');
   await expect(summary.getByText('Выполнено',{exact:true}).locator('..')).toContainText('1');
@@ -60,6 +61,7 @@ test('approved order refresh flows from working day to daily totals and cabinet 
   await page.setViewportSize({width:390,height:844});
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
+  await page.locator('#masterDaySummaryV128 summary').click();
   await expect(page.locator('#masterDaySummaryV128 .masterV128Empty')).toBeVisible();
 
   // Model the existing report approval response in the server fixture; refresh via real bootstrap.

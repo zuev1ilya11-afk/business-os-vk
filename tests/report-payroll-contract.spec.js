@@ -15,6 +15,7 @@ test('Hands real report handlers feed one approved salary into day, week, month 
  await expect(page.locator('#authGate')).toBeHidden();
  await page.waitForFunction(()=>typeof window.BOS_REFRESH_NOW==='function');
  const summary=page.locator('#masterDaySummaryV128');
+ await summary.locator('summary').click();
  await expect(summary.locator('.masterV128Empty')).toBeVisible();
 
  const submitted=await lifecycle({action:'finalizeMasterReport',order_id:'11',upload_token:'payroll-contract',act_url:attachmentUrl('11','payroll-contract'),photo_urls:[attachmentUrl('11','payroll-contract','photo.jpg')],uncompleted_work_done:true,uncompleted_work_amount:200,extra_work_done:true,extra_work_amount:300},me.external_id);
