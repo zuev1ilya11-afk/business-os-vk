@@ -15,6 +15,9 @@ test('background bootstrap polling is reduced without removing event refreshes',
   expect(source).toContain("document.addEventListener('visibilitychange'");
   expect(source).toContain("window.addEventListener('bos:data-mutated'");
   expect(source).toContain("const isPresenceSubject=()=>String(state?.user?.role||'')==='master';");
+  expect(source).toContain('const PRESENCE_MS=90000;');
+  expect(source).toContain('const ONLINE_MS=210000;');
+  expect(source).toContain("window.addEventListener('focus',()=>{touchPresence(false)");
 });
 
 test('PWA caches verified build assets and keeps navigation fresh',async()=>{
