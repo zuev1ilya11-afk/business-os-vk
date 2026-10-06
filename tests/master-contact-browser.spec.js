@@ -16,7 +16,7 @@ for(const comment of ['', 'Delivery tomorrow', 'Доставка завтра'])
   await form.getByRole('button',{name:'Сохранить итог',exact:true}).click();
   await expect(form).toHaveCount(0);expect(db.tables.orders[0].master_contact_comment||'').toBe(comment);expect(db.tables.orders[0].master_contact_history).toHaveLength(1);
  }finally{
-  const native=await page.evaluate(()=>window.__contactNativeFailures),message=await form.locator('.bosContactResultMsg').textContent().catch(()=>'closed');
+  const native=await page.evaluate(()=>window.__contactNativeFailures),message=await form.count()?await form.locator('.bosContactResultMsg').textContent():'closed';
   const diagnostic=JSON.stringify({requests,failures,errors,native,message},null,2);console.log(diagnostic);await info.attach('contact-transport.json',{body:diagnostic,contentType:'application/json'});
  }
 });
