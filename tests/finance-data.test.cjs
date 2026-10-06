@@ -9,9 +9,9 @@ test('stored payouts including zero are never recalculated; extras counted once'
  assert.deepEqual([a.total,a.completed,a.cancelled,a.revenue,a.extras,a.pay,a.company,a.average],[3,2,1,2200,200,700,1500,1100]);
  assert.deepEqual(input,copy);
 });
-test('Hands uses stored pay and missing Hands company share is not fabricated',()=>{
- const rows=F.records([order({source:'Hands',master_payout:400})],[]),a=F.aggregate(rows);
- assert.equal(a.pay,500);assert.equal(a.company,null);assert.equal(a.missing.company,1);
+test('Hands uses stored master pay and moves the remaining base amount to company share',()=>{
+ const rows=F.records([order({source:'Hands',master_payout:400,manager_payout:159.8,dispatcher_payout:119.85})],[]),a=F.aggregate(rows);
+ assert.equal(a.pay,500);assert.equal(a.company,600);assert.equal(a.missing.company,0);
 });
 test('missing historical payout stays unknown and canceled approved orders are excluded',()=>{
  const a=F.aggregate(F.records([order({master_payout:null}),order({id:'2',status:'Отменена',report_review_status:'approved'})],[]));
