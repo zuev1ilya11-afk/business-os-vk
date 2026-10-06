@@ -1,0 +1,43 @@
+name: Contact WebKit verification
+on:
+  push:
+    branches: [fix/master-contact-agreement-form]
+permissions:
+  contents: read
+concurrency:
+  group: contact-webkit-verification
+  cancel-in-progress: true
+jobs:
+  webkit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Snapshot for local verification
+        run: tar --exclude=.git --exclude=test-results -czf /tmp/contact-workspace.tar.gz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: contact-workspace
+          path: /tmp/contact-workspace.tar.gz
+      - run: npx playwright install --with-deps webkit >/tmp/webkit-install.log 2>&1
+      - name: WebKit diagnostic regression
+        run: |
+          cat > contact-check.config.cjs <<'JS'
+          const base=require('./playwright.config.js');
+          module.exports={...base,retries:0,use:{...base.use,browserName:'webkit'},webServer:{...base.webServer,command:base.webServer.command+' 2>/tmp/contact-http.log'}};
+          JS
+          npx playwright test --config=contact-check.config.cjs tests/master-contact-browser.spec.js --workers=1 >/tmp/contact-webkit-diagnostic.log 2>&1 && code=0 || code=$?
+          cat /tmp/contact-webkit-diagnostic.log
+          exit "$code"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: contact-webkit-diagnostics
+          path: |
+            test-results/
+            /tmp/contact-webkit-diagnostic.log
