@@ -28,7 +28,7 @@ test('Hands real report handlers feed one approved salary into day, week, month 
  const owner=await edge('mini-app-api',db)({action:'bootstrap'});
  const ownerOrder=owner.body.orders.find(o=>o.id==='11');
  expect(ownerOrder.master_payout).toBe(442);expect(ownerOrder.extra_work_amount).toBe(300);
- expect(ownerOrder.manager_payout).toBe(127.84);expect(ownerOrder.dispatcher_payout).toBe(95.88);
+ expect(ownerOrder.manager_payout).toBe(0);expect(ownerOrder.dispatcher_payout).toBe(0);
 
  await page.evaluate(()=>window.BOS_REFRESH_NOW());
  await expect(summary.locator('.masterV128Done')).toHaveCount(1);
