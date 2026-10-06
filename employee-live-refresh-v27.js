@@ -3,15 +3,18 @@
 if(window.BOS_EMPLOYEE_LIVE_REFRESH_V27)return;
 window.BOS_EMPLOYEE_LIVE_REFRESH_V27=true;
 
-const POLL_MS=45000;
-const MIN_AUTO_GAP=2500;
-const PRESENCE_MS=45000;
-const ONLINE_MS=120000;
+const POLL_TICK_MS=30000;
+const MIN_AUTO_GAP=10000;
+const MODAL_REFRESH_MS=30000;
+const RETURN_EVENT_GAP=1500;
+const PRESENCE_MS=90000;
+const ONLINE_MS=210000;
 const PRESENCE_URL='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/profile-self-api';
 let inFlight=false;
 let lastSync=0;
 window.addEventListener('bos:auth-ready',()=>{lastSync=Date.now()});
 let lastError='';
+let lastReturnRefresh=0;
 let presenceInFlight=false;
 let lastPresence=0;
 
@@ -29,6 +32,14 @@ const dataSignature=data=>JSON.stringify({
 const stateSignature=()=>dataSignature(state||{});
 const getSession=()=>{try{return sessionStorage.getItem('bos_vk_session_v2')||localStorage.getItem('bos_vk_session_v2')||''}catch(_){return ''}};
 const isPresenceViewer=()=>['owner','manager','dispatcher'].includes(String(state?.user?.role||''));
+const isPresenceSubject=()=>String(state?.user?.role||'')==='master';
+const pollGap=()=>{
+  const role=String(state?.user?.role||'');
+  if(role==='dispatcher')return 60000;
+  if(role==='master')return 120000;
+  return 180000;
+};
+const isReturnReason=reason=>['focus','visible','pageshow','online'].includes(reason);
 
 function presenceState(master,now=Date.now()){
   const stamp=Date.parse(master?.last_seen_at||'');
@@ -69,7 +80,7 @@ function decoratePresence(){
 }
 
 async function touchPresence(force=false){
-  if(presenceInFlight||document.hidden||!authReady())return false;
+  if(presenceInFlight||document.hidden||!authReady()||!isPresenceSubject())return false;
   if(!force&&lastPresence&&Date.now()-lastPresence<PRESENCE_MS-3000)return false;
   const session=getSession();
   if(!session)return false;
@@ -111,10 +122,17 @@ function renderChanged(){
 }
 
 async function syncEmployeeData(reason='manual'){
-  const urgent=['manual','modal-close','mutation'].includes(reason);
+  const urgent=['manual','mutation'].includes(reason);
   const modal=document.querySelector('#modalRoot .modal');
-  if(!urgent&&lastSync&&Date.now()-lastSync<MIN_AUTO_GAP)return false;
+  const now=Date.now();
+  if(!urgent){
+    if(reason==='poll'&&lastSync&&now-lastSync<pollGap())return false;
+    if(reason==='modal-close'&&lastSync&&now-lastSync<MODAL_REFRESH_MS)return false;
+    if(isReturnReason(reason)){const lastReturn=Math.max(lastReturnRefresh,lastSync);if(lastReturn&&now-lastReturn<RETURN_EVENT_GAP)return false;}
+    if(!['poll','modal-close'].includes(reason)&&!isReturnReason(reason)&&lastSync&&now-lastSync<MIN_AUTO_GAP)return false;
+  }
   if(inFlight||document.hidden||state?.busy||!authReady()||editingInline()||typeof api!=='function'||(modal&&!employeeProfileModal()))return false;
+  if(isReturnReason(reason))lastReturnRefresh=now;
   inFlight=true;
   const refreshButton=document.getElementById('bosManualRefresh');
   if(refreshButton){refreshButton.disabled=true;refreshButton.classList.add('isRefreshing');refreshButton.title='Обновляем…'}
@@ -219,12 +237,13 @@ if(typeof MutationObserver==='function'){
   const content=document.getElementById('content');
   if(content)new MutationObserver(()=>{if(String(state?.page||'')==='team')queueMicrotask(decoratePresence)}).observe(content,{childList:true,subtree:true});
 }
-window.addEventListener('online',()=>{touchPresence(true);syncEmployeeData('online')});
-window.addEventListener('focus',()=>{touchPresence(true);syncEmployeeData('focus')});
-window.addEventListener('pageshow',()=>{touchPresence(true);syncEmployeeData('pageshow')});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){touchPresence(true);syncEmployeeData('visible')}});
+window.addEventListener('online',()=>{touchPresence(false);syncEmployeeData('online')});
+window.addEventListener('focus',()=>{touchPresence(false);syncEmployeeData('focus')});
+window.addEventListener('pageshow',()=>{touchPresence(false);syncEmployeeData('pageshow')});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){touchPresence(false);syncEmployeeData('visible')}});
 window.addEventListener('bos:data-mutated',()=>setTimeout(()=>syncEmployeeData('mutation'),250));
+if(authReady())lastSync=Date.now();
 if(typeof setTimeout==='function')setTimeout(()=>touchPresence(true),900);
 setInterval(()=>touchPresence(false),PRESENCE_MS);
-setInterval(()=>syncEmployeeData('poll'),POLL_MS);
+setInterval(()=>syncEmployeeData('poll'),POLL_TICK_MS);
 })();

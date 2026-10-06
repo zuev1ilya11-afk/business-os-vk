@@ -24,9 +24,26 @@ test('manual refresh button reloads bootstrap data',async({page})=>{
   await expect.poll(()=>page.evaluate(()=>state.orders.length)).toBe(1);
 });
 
-test('closing a profile/form schedules an immediate refresh',async({page})=>{
+test('fresh modal close does not reload bootstrap, while a data mutation still refreshes immediately',async({page})=>{
   await boot(page);
   await page.evaluate(()=>{window.apiCalls=0;state.orders=[];closeModal()});
-  await expect.poll(()=>page.evaluate(()=>window.apiCalls),{timeout:2000}).toBeGreaterThan(0);
+  await page.waitForTimeout(700);
+  expect(await page.evaluate(()=>window.apiCalls)).toBe(0);
+  await page.evaluate(()=>window.dispatchEvent(new CustomEvent('bos:data-mutated')));
+  await expect.poll(()=>page.evaluate(()=>window.apiCalls),{timeout:2000}).toBe(1);
   await expect.poll(()=>page.evaluate(()=>state.orders.length),{timeout:2000}).toBe(1);
+});
+
+
+test('fresh return events are coalesced, then refresh once the return-event gap expires',async({page})=>{
+  await boot(page);
+  await page.evaluate(()=>{window.apiCalls=0;state.orders=[];window.dispatchEvent(new Event('focus'))});
+  await page.waitForTimeout(500);
+  expect(await page.evaluate(()=>window.apiCalls)).toBe(0);
+  await page.waitForTimeout(1100);
+  await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+  await expect.poll(()=>page.evaluate(()=>window.apiCalls),{timeout:2000}).toBe(1);
+  await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));
+  await page.waitForTimeout(500);
+  expect(await page.evaluate(()=>window.apiCalls)).toBe(1);
 });
