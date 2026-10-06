@@ -236,6 +236,11 @@
     // Keep their proven transport route rather than restarting a failed gateway chain.
     const uploadTarget=reportFinalize&&info.slug==='order-lifecycle-api'?preferredTargets.get('report-api'):null;
     const ordered=orderedTargets(info);
+    // Stage and review writes follow the authenticated bootstrap's working route.
+    // Changing service must not restart a failed gateway chain before the write.
+    const bootstrapWrite=(info.slug==='master-workflow-api'&&action==='setStage'&&init?.bosReconcileBeforeRetry===true)||(info.slug==='order-lifecycle-api'&&action==='reviewReport');
+    const bootstrapTarget=bootstrapWrite?preferredTargets.get('mini-app-api'):null;
+    if(bootstrapTarget){const index=ordered.findIndex(target=>targetKey(target)===targetKey(bootstrapTarget));if(index>0)ordered.unshift(...ordered.splice(index,1))}
     const targets=uploadTarget?[uploadTarget,...ordered.filter(target=>targetKey(target)!==targetKey(uploadTarget))]:ordered;
     let target=targets[0];
     let currentInput=attemptInput(input);
