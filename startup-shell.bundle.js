@@ -500,7 +500,7 @@ window.BOS_PERMISSIONS=Object.freeze({canUseDispatcherWorkspace,isDispatcherWork
   else root.BOS_ORDER_PAYROLL=api;
 })(typeof window==='undefined'?globalThis:window,function(){
   'use strict';
-  const version='source-60-40-v1';
+  const version='company-share-v2';
   const text=v=>String(v??'').trim().toLowerCase();
   const finite=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v));
   const round=v=>Math.round(Number(v||0)*100)/100;
@@ -514,7 +514,7 @@ window.BOS_PERMISSIONS=Object.freeze({canUseDispatcherWorkspace,isDispatcherWork
   function calculate(amount,o,hasMaster=true){
     const base=round(amount);
     if(isDirect(o))return {master_payout:hasMaster?round(base*.60):0,manager_payout:0,dispatcher_payout:0};
-    return {master_payout:hasMaster?round(base*.85*.65):0,manager_payout:round(base*.85*.94*.20),dispatcher_payout:round(base*.85*.94*.15)};
+    return {master_payout:hasMaster?round(base*.85*.65):0,manager_payout:0,dispatcher_payout:0};
   }
   // A manual closure is a stored snapshot for every source, including Hands.
   // Match the current completion so an older audit event cannot affect a reopened cycle.
@@ -537,8 +537,14 @@ window.BOS_PERMISSIONS=Object.freeze({canUseDispatcherWorkspace,isDispatcherWork
     if(o.status==='Отменена')return 0;
     return round(Number(o.amount)-directMaster(o));
   }
+  function companyShare(o){
+    if(!finite(o?.amount))return null;
+    if(o?.status==='Отменена')return 0;
+    const master=isDirect(o)?directMaster(o):(snapshot(o)&&finite(o.master_payout)?Number(o.master_payout):calculate(o.amount,o,true).master_payout);
+    return round(Number(o.amount)-Number(master||0));
+  }
   function label(o){
-    if(isHands(o))return 'Hands: действующий расчёт';
+    if(isHands(o))return 'Hands: выплата мастеру без изменений · остаток компании';
     if(!isDirect(o))return 'Прежний расчёт: источник не указан';
     if(snapshot(o)&&finite(o.master_payout)&&(round(o.master_payout)!==round(Number(o.amount)*.60)||Number(o.manager_payout||0)!==0||Number(o.dispatcher_payout||0)!==0))return 'Сохранённый расчёт отчёта';
     return 'Мастер 60% · Компания 40%';
@@ -560,7 +566,7 @@ window.BOS_PERMISSIONS=Object.freeze({canUseDispatcherWorkspace,isDispatcherWork
       master,masterTotal:cancelled?0:round(master+extras),company:directCompany(o),
       saved:snapshot(o),standard:!cancelled&&round(master)===round(amount*.60),cancelled};
   }
-  return Object.freeze({version,isHands,isDirect,closed,snapshot,calculate,directMaster,directCompany,label,masterView,masterBreakdown});
+  return Object.freeze({version,isHands,isDirect,closed,snapshot,calculate,directMaster,directCompany,companyShare,label,masterView,masterBreakdown});
 });
 
 
@@ -864,8 +870,6 @@ function closeModal(){
 
 ;
 // Source: finance-patch.js
-const managerPayout=a=>Math.round(Number(a||0)*.85*.94*.20*100)/100;
-const dispatcherPayout=a=>Math.round(Number(a||0)*.85*.94*.15*100)/100;
 const originalHome=pages.home;
 pages.home=function(){
   const done=state.orders.filter(o=>o.status==='Выполнена');
@@ -874,9 +878,8 @@ pages.home=function(){
   const uncompleted=done.reduce((a,o)=>a+Number(o.uncompleted_work_amount||0),0);
   const collected=rev+extras;
   const masters=done.reduce((a,o)=>a+(window.BOS_ORDER_PAYROLL?.directMaster(o)??payout(o.amount)),0);
-  const managers=done.reduce((a,o)=>a+Number(o.manager_payout??managerPayout(o.amount)),0);
-  const dispatchers=done.reduce((a,o)=>a+Number(o.dispatcher_payout??dispatcherPayout(o.amount)),0);
-  return `<section class="hero"><div class="eyebrow">ВЛАДЕЛЕЦ · БЕЗ ВХОДА</div><h2>Business OS</h2><p class="muted">Google Sheets синхронизированы с приложением.</p></section><div class="grid"><div class="card metric"><span class="muted">Заявок</span><strong>${state.orders.length}</strong></div><div class="card metric"><span class="muted">Мастеров</span><strong>${state.masters.length}</strong></div><div class="card metric"><span class="muted">В работе</span><strong>${state.orders.filter(o=>o.status==='В работе').length}</strong></div><div class="card metric"><span class="muted">Выручка по заявкам</span><strong>${money(rev)}</strong></div><div class="card metric"><span class="muted">Допработы</span><strong>${money(extras)}</strong></div><div class="card metric"><span class="muted">Невыполненные работы</span><strong>− ${money(uncompleted)}</strong></div><div class="card metric"><span class="muted">Получено с допработами</span><strong>${money(collected)}</strong></div><div class="card metric"><span class="muted">Мастерам</span><strong>${money(masters)}</strong></div><div class="card metric"><span class="muted">Руководителю</span><strong>${money(managers)}</strong></div><div class="card metric"><span class="muted">Диспетчеру</span><strong>${money(dispatchers)}</strong></div></div><section class="card"><h3>Формулы</h3><p class="muted">Мастер: сумма после вычета невыполненных работ − 15%, затем − 35%.</p><p class="muted">Руководитель: сумма − 15%, затем − 6%, затем 20% от остатка.</p><p class="muted">Диспетчер: сумма − 15%, затем − 6%, затем 15% от остатка.</p><p class="muted">Допработы учитываются отдельно от основной заявки.</p></section>`;
+  const company=done.reduce((a,o)=>a+Number(window.BOS_ORDER_PAYROLL?.companyShare?.(o)??0),0);
+  return `<section class="hero"><div class="eyebrow">ВЛАДЕЛЕЦ · БЕЗ ВХОДА</div><h2>Business OS</h2><p class="muted">Google Sheets синхронизированы с приложением.</p></section><div class="grid"><div class="card metric"><span class="muted">Заявок</span><strong>${state.orders.length}</strong></div><div class="card metric"><span class="muted">Мастеров</span><strong>${state.masters.length}</strong></div><div class="card metric"><span class="muted">В работе</span><strong>${state.orders.filter(o=>o.status==='В работе').length}</strong></div><div class="card metric"><span class="muted">Выручка по заявкам</span><strong>${money(rev)}</strong></div><div class="card metric"><span class="muted">Допработы</span><strong>${money(extras)}</strong></div><div class="card metric"><span class="muted">Невыполненные работы</span><strong>− ${money(uncompleted)}</strong></div><div class="card metric"><span class="muted">Получено с допработами</span><strong>${money(collected)}</strong></div><div class="card metric"><span class="muted">Мастерам</span><strong>${money(masters)}</strong></div><div class="card metric"><span class="muted">Доля компании</span><strong>${money(company)}</strong></div></div><section class="card"><h3>Формулы</h3><p class="muted">Выплата мастеру рассчитывается по действующей формуле источника без изменений.</p><p class="muted">Руководителю и диспетчеру отдельная зарплата по заявкам не начисляется. Остаток после выплаты мастеру относится к доле компании.</p><p class="muted">Допработы учитываются отдельно и полностью относятся к выплате мастеру.</p></section>`;
 };
 
 ;
@@ -902,8 +905,8 @@ function employeeMasterData(u){return state.masters.find(m=>String(m.vk_user_id|
 function employeeClaims(u){const m=employeeMasterData(u);const ids=[u.vk_user_id,u.id,m?.id,m?.user_id].filter(Boolean).map(String);return (state.claims||[]).filter(c=>ids.includes(String(c.master_id||'')))}
 function qualityLabel(rate){if(rate<=3)return'Отлично';if(rate<=7)return'Норма';if(rate<=12)return'Требует внимания';return'Высокий возврат'}
 function openEmployeeProfile(id){const u=state.users.find(x=>String(x.vk_user_id||x.id)===String(id));if(!u)return;const orders=employeeOrders(u);const done=orders.filter(o=>o.status==='Выполнена');const active=orders.filter(o=>['Назначена','В работе'].includes(o.status));const total=done.reduce((a,o)=>a+Number(o.amount||0),0);const extras=done.reduce((a,o)=>a+Number(o.extra_work_amount||0),0);const m=employeeMasterData(u);let roleStats='';if(u.role==='master'){const pay=done.reduce((a,o)=>a+Number(window.BOS_ORDER_PAYROLL?.directMaster(o)??payout(o.amount)),0);const claims=employeeClaims(u);const claimCount=claims.length;const closedClaims=claims.filter(c=>c.status==='closed').length;const openClaims=claims.filter(c=>c.status==='open').length;const rate=done.length?Math.round(claimCount/done.length*1000)/10:0;const revisitPay=claims.reduce((a,c)=>a+Number(c.revisit_payment||0),0);roleStats=`<div class="grid"><div class="card metric"><span class="muted">В работе</span><strong>${active.length}</strong></div><div class="card metric"><span class="muted">Выполнено</span><strong>${done.length}</strong></div><div class="card metric"><span class="muted">Сумма заявок</span><strong>${money(total)}</strong></div><div class="card metric"><span class="muted">Выплата</span><strong>${money(pay)}</strong></div><div class="card metric"><span class="muted">Допработы</span><strong>${money(extras)}</strong></div><div class="card metric"><span class="muted">Претензии</span><strong>${claimCount}</strong></div><div class="card metric"><span class="muted">Возвраты</span><strong>${rate}%</strong><small class="muted">${qualityLabel(rate)}</small></div><div class="card metric"><span class="muted">Открыто претензий</span><strong>${openClaims}</strong></div><div class="card metric"><span class="muted">Закрыто претензий</span><strong>${closedClaims}</strong></div><div class="card metric"><span class="muted">Оплата повторных выездов</span><strong>${money(revisitPay)}</strong></div></div>${m?`<section class="card"><p><b>Специализация:</b> ${esc(m.specialization||'—')}</p><p><b>График:</b> ${esc(m.work_start||'—')}–${esc(m.work_end||'—')}</p></section>`:''}${claimCount?`<section class="card"><div class="row"><h3>Претензии мастера</h3><button class="secondary" onclick="closeModal();refreshClaims().then(()=>showClaims())">Все претензии</button></div>${claims.slice(0,5).map(c=>`<button class="secondary wide" style="margin:8px 0;text-align:left" onclick="openClaimDetails('${esc(c.id)}')"><b>${esc(c.reason||'Претензия')}</b><br><span class="muted">${c.status==='closed'?'Закрыта':'Открыта'}${c.scheduled_date?' · '+esc(c.scheduled_date):''}</span></button>`).join('')}</section>`:''}`}
-else if(u.role==='manager'){const pay=state.orders.filter(o=>o.status==='Выполнена').reduce((a,o)=>a+Number(o.manager_payout??managerPayout(o.amount)),0);roleStats=`<div class="grid"><div class="card metric"><span class="muted">Выполнено заявок</span><strong>${state.orders.filter(o=>o.status==='Выполнена').length}</strong></div><div class="card metric"><span class="muted">Начислено</span><strong>${money(pay)}</strong></div></div>`}
-else if(u.role==='dispatcher'){const pay=state.orders.filter(o=>o.status==='Выполнена').reduce((a,o)=>a+Number(o.dispatcher_payout??dispatcherPayout(o.amount)),0);roleStats=`<div class="grid"><div class="card metric"><span class="muted">Заявок в работе</span><strong>${state.orders.filter(o=>['Новая','Назначена','В работе'].includes(o.status)).length}</strong></div><div class="card metric"><span class="muted">Начислено</span><strong>${money(pay)}</strong></div></div>`}
+else if(u.role==='manager'){const completed=state.orders.filter(o=>o.status==='Выполнена').length;const inWork=state.orders.filter(o=>['Новая','Назначена','В работе'].includes(o.status)).length;roleStats=`<div class="grid"><div class="card metric"><span class="muted">Выполнено заявок</span><strong>${completed}</strong></div><div class="card metric"><span class="muted">Заявок в работе</span><strong>${inWork}</strong></div></div>`}
+else if(u.role==='dispatcher'){const inWork=state.orders.filter(o=>['Новая','Назначена','В работе'].includes(o.status)).length;const unassigned=state.orders.filter(o=>['Новая','Назначена','В работе'].includes(o.status)&&!String(o.master_staff_id||o.master_vk_id||o.master_id||'').trim()).length;roleStats=`<div class="grid"><div class="card metric"><span class="muted">Заявок в работе</span><strong>${inWork}</strong></div><div class="card metric"><span class="muted">Без мастера</span><strong>${unassigned}</strong></div></div>`}
 openModal(`<h2>${esc(u.full_name||u.name)}</h2><p><span class="status info">${esc(ROLE_NAMES[u.role]||u.role)}</span></p><section class="card"><p><b>Телефон:</b> ${esc(u.phone||'—')}</p><p><b>Город:</b> ${esc(u.city||'—')}</p><p><b>Статус:</b> ${String(u.is_active??u.active)==='false'?'Неактивен':'Активен'}</p>${u.comment?`<p><b>Комментарий:</b> ${esc(u.comment)}</p>`:''}</section>${roleStats}${u.role==='master'&&orders.length?`<section class="card"><h3>Последние заявки</h3>${orders.slice(0,5).map(o=>`<div class="row" style="margin:10px 0"><span>${esc(o.id)} · ${esc(o.status)}</span><b>${money(o.amount)}</b></div>`).join('')}</section>`:''}<button class="secondary wide" onclick="openOwnerProfile()">← К списку сотрудников</button>`)}
 function openOwnerProfile(){openModal(`<h2>Профиль владельца</h2><section class="card"><p><b>Имя:</b> ${esc(state.user.full_name||'Илья')}</p><p><b>Роль:</b> Владелец</p><p><b>Город:</b> ${esc(state.user.city||'Москва')}</p></section><div class="row"><h3>Сотрудники</h3><span class="muted">${state.users.filter(u=>u.role!=='owner').length}</span></div>${state.users.filter(u=>u.role!=='owner').map(u=>`<button class="secondary wide" style="margin:8px 0;text-align:left" onclick="openEmployeeProfile('${esc(u.vk_user_id||u.id)}')"><b>${esc(u.full_name||u.name)}</b><br><span class="muted">${esc(ROLE_NAMES[u.role]||u.role)} · ${esc(u.city||'')}</span></button>`).join('')||'<p class="muted">Других сотрудников пока нет.</p>'}<button class="primary wide" onclick="closeModal();reloadData(true)">Обновить данные</button>`)}
 $('#profileBtn').onclick=openOwnerProfile;
