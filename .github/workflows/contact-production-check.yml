@@ -1,0 +1,39 @@
+name: Contact production verification
+on:
+  push:
+    branches: [fix/master-contact-agreement-form]
+permissions:
+  contents: read
+jobs:
+  published-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 1966b570dcbcfe96763ade874383d7268c2a09ee
+      - name: Compare published PWA assets to reviewed production commit
+        run: |
+          node - <<'JS'
+          const fs=require('node:fs');
+          const {createHash}=require('node:crypto');
+          const base='https://zuev1ilya11-afk.github.io/business-os-vk/';
+          const build='c69ab493c4978d23731b';
+          const files=['build-version.js','index.html','sw.js','startup-shell.bundle.js','network-direct-v86.js','master-call-workflow-v26.js','master-order-actions-v179.js'];
+          const hash=data=>createHash('sha256').update(data).digest('hex');
+          (async()=>{
+            for(let attempt=1;attempt<=8;attempt++){
+              const results=await Promise.all(files.map(async file=>{
+                try{
+                  const response=await fetch(base+file+'?verify='+build,{signal:AbortSignal.timeout(15000),cache:'no-store'});
+                  const bytes=Buffer.from(await response.arrayBuffer());
+                  return {file,status:response.status,match:response.ok&&hash(bytes)===hash(fs.readFileSync(file))};
+                }catch(error){return {file,match:false,error:error.message}}
+              }));
+              console.log(JSON.stringify({build,attempt,results},null,2));
+              if(results.every(result=>result.match)){console.log('Published assets match reviewed commit 1966b570dcbcfe96763ade874383d7268c2a09ee');return}
+              if(attempt<8)await new Promise(resolve=>setTimeout(resolve,10000));
+            }
+            throw new Error('Published assets do not yet match the reviewed production build');
+          })().catch(error=>{console.error(error.message);process.exitCode=1});
+          JS
