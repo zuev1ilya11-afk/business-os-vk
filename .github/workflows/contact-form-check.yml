@@ -3,11 +3,14 @@ on:
   push:
     branches: [fix/master-contact-agreement-form]
 permissions:
-  contents: read
+  contents: write
+concurrency:
+  group: contact-form-regression
+  cancel-in-progress: true
 jobs:
   contact:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -15,20 +18,56 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Contact route regression
-        id: route
-        continue-on-error: true
-        run: node --test tests/master-contact-route.test.cjs
+      - name: Apply exact scoped patch and rebuild PWA
+        run: |
+          node scripts/apply-contact-fix.cjs
+          node --check master-call-workflow-v26.js
+          node --check master-order-actions-v179.js
+          node --check network-direct-v86.js
+          npm run build
+          npm run build:check
+          git diff --exit-code -- supabase order-payroll.js finance-data.js
+          git diff --stat
+          git add master-call-workflow-v26.js master-order-actions-v179.js network-direct-v86.js startup-shell.bundle.js startup-eager.bundle.js index.html sw.js build-version.js
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'fix: restore contact selection and reconcile agreement receipts'
+            git push origin HEAD:refs/heads/fix/master-contact-agreement-form
+          fi
+      - name: Server regressions
+        run: |
+          npm run test:server >/tmp/contact-server.log 2>&1 && code=0 || code=$?
+          tail -n 100 /tmp/contact-server.log
+          exit "$code"
       - run: npx playwright install chromium
-      - name: Contact UI regression
-        id: ui
-        continue-on-error: true
-        run: npx playwright test tests/master-contact-form-recovery.spec.js --workers=2
+      - name: Local browser config
+        run: |
+          cat > contact-check.config.cjs <<'JS'
+          const base=require('./playwright.config.js');
+          module.exports={...base,retries:0,use:{...base.use,browserName:process.env.CONTACT_BROWSER||'chromium'},webServer:{...base.webServer,command:base.webServer.command+' 2>/tmp/contact-http.log'}};
+          JS
+      - name: Chromium contact and adjacent workflow regressions
+        run: |
+          npx playwright test --config=contact-check.config.cjs tests/master-contact-form-recovery.spec.js tests/master-contact-confirmation.spec.js tests/master-order-actions-v179.spec.js tests/master-confirmed-progress.spec.js --workers=2 >/tmp/contact-ui.log 2>&1 && code=0 || code=$?
+          tail -n 180 /tmp/contact-ui.log
+          exit "$code"
+      - name: Install WebKit
+        run: npx playwright install --with-deps webkit >/tmp/contact-webkit-install.log 2>&1
+      - name: WebKit contact form regressions
+        env:
+          CONTACT_BROWSER: webkit
+        run: |
+          npx playwright test --config=contact-check.config.cjs tests/master-contact-form-recovery.spec.js --workers=2 >/tmp/contact-webkit.log 2>&1 && code=0 || code=$?
+          tail -n 160 /tmp/contact-webkit.log
+          exit "$code"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: contact-form-evidence
-          path: test-results/
-      - name: Require passing regressions
-        if: steps.route.outcome != 'success' || steps.ui.outcome != 'success'
-        run: exit 1
+          path: |
+            test-results/
+            /tmp/contact-server.log
+            /tmp/contact-ui.log
+            /tmp/contact-webkit.log
+            /tmp/contact-webkit-install.log
