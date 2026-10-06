@@ -50,3 +50,15 @@ for(const action of ['setStage','finalizeMasterReport'])for(const failure of ['n
  const task=fetch('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/master-workflow-api',{method:'POST',body:JSON.stringify({action}),bosReconcileBeforeRetry:true});
  if(failure==='503')assert.equal((await task).status,503);else await assert.rejects(task,/Обновите заявку/);assert.equal(calls,1);
 });
+
+
+test('finalizeMasterReport gets a 30s single-write window before reconciliation',async()=>{
+ let calls=0;const timers=[];
+ const fetch=network(async()=>{calls++;return new Promise(()=>{})},(fn,ms)=>{timers.push(ms);queueMicrotask(fn);return 0});
+ await assert.rejects(
+  fetch('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/report-api',{method:'POST',body:JSON.stringify({action:'finalizeMasterReport'}),bosReconcileBeforeRetry:true}),
+  /Обновите заявку/
+ );
+ assert.equal(calls,1);
+ assert.equal(timers[0],30000);
+});

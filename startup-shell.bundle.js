@@ -95,6 +95,9 @@ window.BOS_WATCH_UPDATE=registration=>{
   const ALT_GATEWAY_DEADLINE_MS=2200;
   const EDGE_DEADLINE_MS=5000;
   const REVIEW_DEADLINE_MS=90000;
+  // Report finalization is a single business write: give a slow mobile/gateway route time to finish,
+  // but keep replay disabled so an ambiguous response cannot submit the report twice.
+  const REPORT_FINALIZE_DEADLINE_MS=30000;
   const AUTH_GATEWAY_DEADLINE_MS=1800;
   const AUTH_BACKUP_GATEWAY_DEADLINE_MS=3500;
   const AUTH_FALLBACK_DEADLINE_MS=1800;
@@ -311,18 +314,21 @@ window.BOS_WATCH_UPDATE=registration=>{
   }
 
   async function singleWriteFetch(info,input,init,outer,passwordAuth){
-    const review=info.slug==='drive-archive-api'||await requestAction(input,init)==='reviewReport';
+    const action=await requestAction(input,init);
+    const review=info.slug==='drive-archive-api'||action==='reviewReport';
+    const reportFinalize=action==='finalizeMasterReport'&&init?.bosReconcileBeforeRetry===true;
+    const writeDeadline=review?REVIEW_DEADLINE_MS:reportFinalize?REPORT_FINALIZE_DEADLINE_MS:null;
     const targets=orderedTargets(info);
     let target=targets[0];
     let currentInput=attemptInput(input);
-    let response=await fetchAt(targetUrl(target,info),currentInput,attemptInit(target,passwordAuth,currentInput,init),review?REVIEW_DEADLINE_MS:deadlineFor(target,passwordAuth),outer,true,passwordAuth);
+    let response=await fetchAt(targetUrl(target,info),currentInput,attemptInit(target,passwordAuth,currentInput,init),writeDeadline??deadlineFor(target,passwordAuth),outer,true,passwordAuth);
     if(!await rejectedBeforeForward(response,target))return response;
     // Only explicit pre-forward denials permit another route for a business write.
     for(let i=1;i<targets.length;i++){
       target=targets[i];
       currentInput=attemptInput(input);
       try{
-        response=await fetchAt(targetUrl(target,info),currentInput,attemptInit(target,passwordAuth,currentInput,init),review?REVIEW_DEADLINE_MS:deadlineFor(target,passwordAuth),outer,true,passwordAuth);
+        response=await fetchAt(targetUrl(target,info),currentInput,attemptInit(target,passwordAuth,currentInput,init),writeDeadline??deadlineFor(target,passwordAuth),outer,true,passwordAuth);
       }catch(error){
         if(outer?.aborted||!retryable(error))throw error;
         throw error;
@@ -371,7 +377,7 @@ window.BOS_WATCH_UPDATE=registration=>{
     gateway:GATEWAY,primaryGateway:GATEWAY,backupGateway:BACKUP_GATEWAY,secondaryGateway:ALT_GATEWAY,edge:EDGE,
     directUrl,proxyInfo,
     gatewayDeadlineMs:GATEWAY_DEADLINE_MS,backupGatewayDeadlineMs:BACKUP_GATEWAY_DEADLINE_MS,alternateGatewayDeadlineMs:ALT_GATEWAY_DEADLINE_MS,edgeDeadlineMs:EDGE_DEADLINE_MS,
-    authGatewayDeadlineMs:AUTH_GATEWAY_DEADLINE_MS,authBackupGatewayDeadlineMs:AUTH_BACKUP_GATEWAY_DEADLINE_MS,authAlternateGatewayDeadlineMs:AUTH_FALLBACK_DEADLINE_MS,authEdgeDeadlineMs:AUTH_EDGE_DEADLINE_MS,
+    authGatewayDeadlineMs:AUTH_GATEWAY_DEADLINE_MS,authBackupGatewayDeadlineMs:AUTH_BACKUP_GATEWAY_DEADLINE_MS,authAlternateGatewayDeadlineMs:AUTH_FALLBACK_DEADLINE_MS,authEdgeDeadlineMs:AUTH_EDGE_DEADLINE_MS,reportFinalizeDeadlineMs:REPORT_FINALIZE_DEADLINE_MS,
     preferredTarget:(slug='mini-app-api')=>({...preferredTargetFor(slug,TARGETS[0])}),clearPreferredTarget,
     transientHttpFailover:'safe-actions-only',writeReplay:'idempotent-actions-only',passwordDirectSimpleCors:true,passwordBufferedResponse:true,passwordSessionHeaderFastPath:true,directEdgeFailover:true,sourceRoutePreserved:true,restricted402Failover:true
   };
