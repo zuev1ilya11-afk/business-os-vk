@@ -318,7 +318,11 @@ window.BOS_WATCH_UPDATE=registration=>{
     const review=info.slug==='drive-archive-api'||action==='reviewReport';
     const reportFinalize=action==='finalizeMasterReport'&&init?.bosReconcileBeforeRetry===true;
     const writeDeadline=review?REVIEW_DEADLINE_MS:reportFinalize?REPORT_FINALIZE_DEADLINE_MS:null;
-    const targets=orderedTargets(info);
+    // The lifecycle wrapper changes the service after report files have uploaded.
+    // Keep their proven transport route rather than restarting a failed gateway chain.
+    const uploadTarget=reportFinalize&&info.slug==='order-lifecycle-api'?preferredTargets.get('report-api'):null;
+    const ordered=orderedTargets(info);
+    const targets=uploadTarget?[uploadTarget,...ordered.filter(target=>targetKey(target)!==targetKey(uploadTarget))]:ordered;
     let target=targets[0];
     let currentInput=attemptInput(input);
     let response=await fetchAt(targetUrl(target,info),currentInput,attemptInit(target,passwordAuth,currentInput,init),writeDeadline??deadlineFor(target,passwordAuth),outer,true,passwordAuth);
