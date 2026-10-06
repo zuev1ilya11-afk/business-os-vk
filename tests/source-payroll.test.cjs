@@ -9,7 +9,7 @@ const report=action=>({action,order_id:'1',upload_token:'source-payroll',act_url
 const directSources=[{source:'Авито',external_source:'avito'},{source:'Телефон',external_source:'mini_app'},{source:'VK'},{source:'Рекомендация'},{external_source:'api:website'},{source:'Другое'}];
 const handsSources=[{source:'Hands'},{source:' Руки '},{external_source:'HANDS',source:'Авито'},{external_id:'hands:123',source:'Телефон'}];
 for(const src of handsSources)test('Hands marker always preserves rates: '+JSON.stringify(src),()=>{
- assert.equal(payroll.isHands(src),true);assert.deepEqual(payroll.calculate(1000,src),{master_payout:552.5,manager_payout:159.8,dispatcher_payout:119.85});assert.equal(payroll.directMaster({...src,amount:1000}),null);
+ assert.equal(payroll.isHands(src),true);assert.deepEqual(payroll.calculate(1000,src),{master_payout:552.5,manager_payout:0,dispatcher_payout:0});assert.equal(payroll.directMaster({...src,amount:1000}),null);assert.equal(payroll.companyShare({...src,amount:1000}),447.5);
 });
 for(const src of directSources)test('direct source has one 60/40 split: '+JSON.stringify(src),()=>{
  assert.deepEqual(payroll.calculate(1000,src),{master_payout:600,manager_payout:0,dispatcher_payout:0});assert.equal(payroll.directCompany({...src,amount:1000}),400);
@@ -22,8 +22,8 @@ test('kopecks conserve the full base; no second subtraction of unfinished work',
  assert.equal(payroll.directMaster({source:'Авито',status:'Отменена',amount:1000,master_payout:600}),0);
  assert.equal(payroll.directCompany({source:'Авито',status:'Отменена',amount:1000}),0);
 });
-test('source-less legacy records retain old contract and direct historical zero is not recomputed',()=>{
- assert.equal(payroll.calculate(1000,{}).master_payout,552.5);
+test('source-less legacy records retain the master contract without management payroll and direct historical zero is not recomputed',()=>{
+ assert.deepEqual(payroll.calculate(1000,{}),{master_payout:552.5,manager_payout:0,dispatcher_payout:0});
  for(const value of [0,123,552.5,600])assert.equal(payroll.directMaster({source:'VK',status:'Выполнена',amount:1000,master_payout:value}),value);
 });
 for(const [slug,action] of [['order-lifecycle-api','finalizeMasterReport'],['report-api','finalizeMasterReport'],['report-api','uploadMasterReport']]){
@@ -34,7 +34,7 @@ for(const [slug,action] of [['order-lifecycle-api','finalizeMasterReport'],['rep
   const api=edge(slug,db);const res=await api(report(action),'staff_m');assert.equal(res.status,200);
   const saved=db.tables.orders[0],hands=payroll.isHands(src),base=hands?442:480;
   assert.equal(saved.amount,800);assert.equal(saved.master_payout,base);assert.equal(saved.extra_work_amount,300);
-  assert.equal(saved.manager_payout,hands?127.84:0);assert.equal(saved.dispatcher_payout,hands?95.88:0);
+  assert.equal(saved.manager_payout,0);assert.equal(saved.dispatcher_payout,0);
   assert.equal(saved.master_payout+saved.extra_work_amount,hands?742:780);
   assert.equal(res.body.order.amount,hands?undefined:800);assert.equal(res.body.order.original_amount,hands?undefined:1000);assert.equal(res.body.order.manager_payout,undefined);
   for(const who of ['100','staff_m']){const r=await edge('mini-app-api',db)({action:'bootstrap'},who);assert.equal(r.body.orders[0].master_payout,base);if(!hands)assert.equal(r.body.orders[1].master_payout,123);}
@@ -47,7 +47,7 @@ for(const source of ['Авито','Телефон','VK','Рекомендаци�
  const db=database({business_staff:staff});const api=edge('mini-app-api',db);
  let r=await api({action:'createOrder',client:'x',address:'x',work:'x',source,amount:1000,master_vk_id:'staff_m',external_source:'hands',master_payout:999});
  assert.equal(r.status,200);assert.equal(r.body.order.external_source,'mini_app');assert.equal(r.body.order.master_payout,source==='Руки'?552.5:600);
- assert.equal(r.body.order.manager_payout,source==='Руки'?159.8:0);
+ assert.equal(r.body.order.manager_payout,0);assert.equal(r.body.order.dispatcher_payout,0);
  r=await api({action:'updateOrder',id:r.body.order.id,master_vk_id:''});assert.equal(r.status,200);assert.equal(r.body.order.master_payout,0);
  r=await api({action:'updateOrder',id:r.body.order.id,master_vk_id:'staff_m'});assert.equal(r.body.order.master_payout,source==='Руки'?552.5:600);
 });

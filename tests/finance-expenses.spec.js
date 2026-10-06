@@ -45,7 +45,7 @@ test('expenses use their own dates, appear in expense-only periods and compare w
  const {db}=await setup(page);db.tables.finance_expenses.push({id:'b1b34875-2935-4e79-93e2-1c6b5a135b08',expense_date:'2026-10-04',amount:100,category:'rent',created_at:'2026-10-04T01:00:00Z',created_by_name:'Владелец'},{id:'b1b34875-2935-4e79-93e2-1c6b5a135b09',expense_date:'2026-09-02',amount:50,category:'tools',created_at:'2026-09-02T01:00:00Z',created_by_name:'Владелец'});
  await page.evaluate(()=>window.dispatchEvent(new Event('bos:employee-data-refreshed')));await expect(page.locator('[data-fin-kpi="expenses"]')).toContainText('+100%');await expect(page.locator('[data-fin-kpi="net"] strong')).toContainText('300');
  await page.locator('[data-fin-period="all"]').click();await expect(page.locator('[data-fin-kpi="expenses"] strong')).toContainText('150');await page.locator('[data-fin-tab="periods"]').click();await page.locator('[data-fin-group="day"]').click();await expect(page.locator('[data-fin-key="group:2026-09-02"]')).toContainText('−50'.replace('−','-'));
- Object.assign(db.tables.orders[0],{source:'Hands',external_source:'hands'});await page.evaluate(()=>BOS_REFRESH_NOW());await expect(page.locator('[data-fin-kpi="net"] strong')).toHaveText('—');
+ Object.assign(db.tables.orders[0],{source:'Hands',external_source:'hands'});await page.evaluate(()=>BOS_REFRESH_NOW());await expect(page.locator('[data-fin-kpi="net"] strong')).toContainText('250');
 });
 test('editing an expense preserves its inactive employee link',async({page})=>{
  const {db}=await setup(page),employeeId='b1b34875-2935-4e79-93e2-1c6b5a135b10';

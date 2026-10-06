@@ -56,7 +56,7 @@
    const pay=completed&&storedPay!==null?round(storedPay+extra):completed?null:0;
    // The existing reader supports non-Hands residuals only. Require stored pay
    // before calling it, otherwise it would estimate historical pay at current rates.
-   const company=completed?(storedPay!==null?P.directCompany(o):null):0;
+   const company=completed?(storedPay!==null?P.companyShare(o):null):0;
    const ws=works(o),allLines=text(o.work).split(/\n+/).filter(Boolean);
    const date=completed?D.completedDay(o):D.valid(text(o.scheduled_date).slice(0,10))?text(o.scheduled_date).slice(0,10):o.created_at?D.day(o.created_at):'';
    return {order:o,id:text(o.id),date,master:masterKey,name:text(master?.full_name||master?.name||o.master_name)||'Без мастера',inactive:!master||master.is_active===false,source:P.isHands(o)?'Hands':text(o.source||o.external_source)||'Источник не указан',city:text(o.city)||'Город не указан',works:ws,workKnown:ws.length===allLines.length&&ws.length>0,completed,cancelled,base:completed?base:0,revenue,pay,company,extras:completed?extra:0};

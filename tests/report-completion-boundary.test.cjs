@@ -65,7 +65,7 @@ test('lifecycle submission and receipt hide internal financial fields from maste
    for(const key of ['amount','original_amount','manager_payout','dispatcher_payout'])assert.equal(key in r.body.order,false,key);
    assert.equal(r.body.order.master_payout,552.5);assert.equal(r.body.order.extra_work_amount,0);
   }
-  assert.equal(db.tables.orders[0].amount,1000);assert.equal(db.tables.orders[0].manager_payout,159.8);
+  assert.equal(db.tables.orders[0].amount,1000);assert.equal(db.tables.orders[0].manager_payout,0);assert.equal(db.tables.orders[0].dispatcher_payout,0);
  }
 });
 

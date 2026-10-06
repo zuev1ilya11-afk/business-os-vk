@@ -82,7 +82,7 @@ test('retrying a failed create-order submission reuses the same request_id',asyn
   expect(await page.evaluate(()=>state.orders.filter(order=>order.id==='IDEMP-1').length)).toBe(1);
 });
 
-test('tracked APIs use source payroll while Hands fallbacks retain the approved rate',async()=>{
+test('tracked APIs use source payroll while Hands keeps the approved master rate without management payroll',async()=>{
   const mini=fs.readFileSync(path.join(__dirname,'..','supabase','functions','mini-app-api','index.ts'),'utf8');
   const report=fs.readFileSync(path.join(__dirname,'..','supabase','functions','report-api','index.ts'),'utf8');
   const hands=fs.readFileSync(path.join(__dirname,'..','supabase','functions','hands-api','index.ts'),'utf8');
@@ -96,7 +96,7 @@ test('tracked APIs use source payroll while Hands fallbacks retain the approved 
   }
   expect(mini).toContain('orderPayroll.calculate(a,order,has)');
   expect(report).toContain('orderPayroll.calculate(a,order)');
-  expect(payroll.calculate(1000,{external_source:'hands'})).toEqual({master_payout:552.5,manager_payout:159.8,dispatcher_payout:119.85});
+  expect(payroll.calculate(1000,{external_source:'hands'})).toEqual({master_payout:552.5,manager_payout:0,dispatcher_payout:0});
   expect(payroll.calculate(1000,{source:'Авито'})).toEqual({master_payout:600,manager_payout:0,dispatcher_payout:0});
   expect(payroll.directCompany({source:'Авито',amount:1000})).toBe(400);
   expect(payroll.calculate(1000,{source:'Телефон'},false).master_payout).toBe(0);

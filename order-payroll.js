@@ -5,7 +5,7 @@
   else root.BOS_ORDER_PAYROLL=api;
 })(typeof window==='undefined'?globalThis:window,function(){
   'use strict';
-  const version='source-60-40-v1';
+  const version='company-share-v2';
   const text=v=>String(v??'').trim().toLowerCase();
   const finite=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v));
   const round=v=>Math.round(Number(v||0)*100)/100;
@@ -19,7 +19,7 @@
   function calculate(amount,o,hasMaster=true){
     const base=round(amount);
     if(isDirect(o))return {master_payout:hasMaster?round(base*.60):0,manager_payout:0,dispatcher_payout:0};
-    return {master_payout:hasMaster?round(base*.85*.65):0,manager_payout:round(base*.85*.94*.20),dispatcher_payout:round(base*.85*.94*.15)};
+    return {master_payout:hasMaster?round(base*.85*.65):0,manager_payout:0,dispatcher_payout:0};
   }
   // A manual closure is a stored snapshot for every source, including Hands.
   // Match the current completion so an older audit event cannot affect a reopened cycle.
@@ -42,8 +42,14 @@
     if(o.status==='Отменена')return 0;
     return round(Number(o.amount)-directMaster(o));
   }
+  function companyShare(o){
+    if(!finite(o?.amount))return null;
+    if(o?.status==='Отменена')return 0;
+    const master=isDirect(o)?directMaster(o):(snapshot(o)&&finite(o.master_payout)?Number(o.master_payout):calculate(o.amount,o,true).master_payout);
+    return round(Number(o.amount)-Number(master||0));
+  }
   function label(o){
-    if(isHands(o))return 'Hands: действующий расчёт';
+    if(isHands(o))return 'Hands: выплата мастеру без изменений · остаток компании';
     if(!isDirect(o))return 'Прежний расчёт: источник не указан';
     if(snapshot(o)&&finite(o.master_payout)&&(round(o.master_payout)!==round(Number(o.amount)*.60)||Number(o.manager_payout||0)!==0||Number(o.dispatcher_payout||0)!==0))return 'Сохранённый расчёт отчёта';
     return 'Мастер 60% · Компания 40%';
@@ -65,5 +71,5 @@
       master,masterTotal:cancelled?0:round(master+extras),company:directCompany(o),
       saved:snapshot(o),standard:!cancelled&&round(master)===round(amount*.60),cancelled};
   }
-  return Object.freeze({version,isHands,isDirect,closed,snapshot,calculate,directMaster,directCompany,label,masterView,masterBreakdown});
+  return Object.freeze({version,isHands,isDirect,closed,snapshot,calculate,directMaster,directCompany,companyShare,label,masterView,masterBreakdown});
 });
