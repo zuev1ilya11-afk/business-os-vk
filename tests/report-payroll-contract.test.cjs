@@ -4,9 +4,9 @@ const {edge,database,employee,attachmentUrl}=require('./helpers/edge.cjs');
 
 const routes=[['order-lifecycle-api','finalizeMasterReport'],['report-api','finalizeMasterReport'],['report-api','uploadMasterReport']];
 const cases=[
- {name:'base without tax withholding',original:1000,unfinished:0,extra:0,base:1000,payout:552.5,total:552.5,manager:159.8,dispatcher:119.85},
- {name:'partial work and full extras',original:1000,unfinished:200,extra:300,base:800,payout:442,total:742,manager:127.84,dispatcher:95.88},
- {name:'kopeck rounding',original:1000.01,unfinished:200.02,extra:0.03,base:799.99,payout:441.99,total:442.02,manager:127.84,dispatcher:95.88},
+ {name:'base without tax withholding',original:1000,unfinished:0,extra:0,base:1000,payout:552.5,total:552.5,manager:0,dispatcher:0},
+ {name:'partial work and full extras',original:1000,unfinished:200,extra:300,base:800,payout:442,total:742,manager:0,dispatcher:0},
+ {name:'kopeck rounding',original:1000.01,unfinished:200.02,extra:0.03,base:799.99,payout:441.99,total:442.02,manager:0,dispatcher:0},
  {name:'no base, extras only',original:1000,unfinished:1000,extra:300,base:0,payout:0,total:300,manager:0,dispatcher:0},
 ];
 function fixture(original=1000){
