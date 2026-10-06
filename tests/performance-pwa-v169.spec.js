@@ -10,7 +10,8 @@ test('background bootstrap polling is reduced without removing event refreshes',
   expect(source).toContain("if(role==='dispatcher')return 60000;");
   expect(source).toContain("if(role==='master')return 120000;");
   expect(source).toContain('return 180000;');
-  expect(source).toContain('const RETURN_REFRESH_MS=30000;');
+  expect(source).toContain('const MODAL_REFRESH_MS=30000;');
+  expect(source).toContain('const RETURN_EVENT_GAP=5000;');
   expect(source).toContain("window.addEventListener('focus'");
   expect(source).toContain("document.addEventListener('visibilitychange'");
   expect(source).toContain("window.addEventListener('bos:data-mutated'");
