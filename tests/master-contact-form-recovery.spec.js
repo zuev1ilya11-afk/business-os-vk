@@ -15,7 +15,7 @@ for(const width of [320,390,1280])test(`${width}: whole contact option is tappab
  await page.setViewportSize({width,height:850});const {form}=await setup(page);
  await expect(form.getByRole('button',{name:'Сохранить итог',exact:true})).toBeDisabled();
  for(const result of ['no_answer','thinking','waiting_delivery','call_later','agreed','other']){
-  const input=form.locator(`input[value="${result}"]`),row=form.locator('.bosContactResultChoice').filter({has:input});
+  const input=form.locator(`input[value="${result}"]`),row=input.locator('..');
   await row.locator('b').click();await expect(input).toBeChecked();
   await expect(form.locator('input[type=radio]:checked')).toHaveCount(1);
   await expect(form.getByRole('button',{name:'Сохранить итог',exact:true})).toBeEnabled();
