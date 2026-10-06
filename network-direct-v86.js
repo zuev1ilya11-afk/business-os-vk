@@ -9,6 +9,7 @@
   const ALT_GATEWAY_DEADLINE_MS=2200;
   const EDGE_DEADLINE_MS=5000;
   const REVIEW_DEADLINE_MS=90000;
+  const CONTACT_WRITE_DEADLINE_MS=20000;
   // Report finalization is a single business write: give a slow mobile/gateway route time to finish,
   // but keep replay disabled so an ambiguous response cannot submit the report twice.
   const REPORT_FINALIZE_DEADLINE_MS=30000;
@@ -231,14 +232,15 @@
     const action=await requestAction(input,init);
     const review=info.slug==='drive-archive-api'||action==='reviewReport';
     const reportFinalize=action==='finalizeMasterReport'&&init?.bosReconcileBeforeRetry===true;
-    const writeDeadline=review?REVIEW_DEADLINE_MS:reportFinalize?REPORT_FINALIZE_DEADLINE_MS:null;
+    const contactWrite=info.slug==='master-workflow-api'&&['recordContactAttempt','recordContactResult','markCalled','confirmAgreement','setAgreementSchedule'].includes(action);
+    const writeDeadline=review?REVIEW_DEADLINE_MS:reportFinalize?REPORT_FINALIZE_DEADLINE_MS:contactWrite?CONTACT_WRITE_DEADLINE_MS:null;
     // The lifecycle wrapper changes the service after report files have uploaded.
     // Keep their proven transport route rather than restarting a failed gateway chain.
     const uploadTarget=reportFinalize&&info.slug==='order-lifecycle-api'?preferredTargets.get('report-api'):null;
     const ordered=orderedTargets(info);
     // Stage and review writes follow the authenticated bootstrap's working route.
     // Changing service must not restart a failed gateway chain before the write.
-    const bootstrapWrite=(info.slug==='master-workflow-api'&&action==='setStage'&&init?.bosReconcileBeforeRetry===true)||(info.slug==='order-lifecycle-api'&&action==='reviewReport');
+    const bootstrapWrite=contactWrite||(info.slug==='master-workflow-api'&&action==='setStage'&&init?.bosReconcileBeforeRetry===true)||(info.slug==='order-lifecycle-api'&&action==='reviewReport');
     const bootstrapTarget=bootstrapWrite?preferredTargets.get('mini-app-api'):null;
     if(bootstrapTarget){const index=ordered.findIndex(target=>targetKey(target)===targetKey(bootstrapTarget));if(index>0)ordered.unshift(...ordered.splice(index,1))}
     const targets=uploadTarget?[uploadTarget,...ordered.filter(target=>targetKey(target)!==targetKey(uploadTarget))]:ordered;
