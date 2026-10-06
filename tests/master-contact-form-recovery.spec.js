@@ -1,6 +1,9 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 const {edge}=require('./helpers/edge.cjs');
+// Keep mocked-network tests isolated in WebKit after the PWA would claim the page.
+// The separate PWA tests continue to exercise the production service worker.
+test.use({serviceWorkers:'block'});
 async function setup(page){
  await page.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():route.abort());
  const ctx=await fullStack(page,'master');
