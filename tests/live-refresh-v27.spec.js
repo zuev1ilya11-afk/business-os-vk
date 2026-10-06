@@ -33,3 +33,13 @@ test('fresh modal close does not reload bootstrap, while a data mutation still r
   await expect.poll(()=>page.evaluate(()=>window.apiCalls),{timeout:2000}).toBe(1);
   await expect.poll(()=>page.evaluate(()=>state.orders.length),{timeout:2000}).toBe(1);
 });
+
+
+test('first focus refresh stays immediate but duplicate return events are coalesced',async({page})=>{
+  await boot(page);
+  await page.evaluate(()=>{window.apiCalls=0;state.orders=[];window.dispatchEvent(new Event('focus'))});
+  await expect.poll(()=>page.evaluate(()=>window.apiCalls),{timeout:2000}).toBe(1);
+  await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));
+  await page.waitForTimeout(500);
+  expect(await page.evaluate(()=>window.apiCalls)).toBe(1);
+});
