@@ -1,22 +1,20 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
-
-const pad=n=>String(n).padStart(2,'0');
-const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const periods=require('../salary-periods.js');
 
 test('master cabinet shows day salary and selected completed orders in profile',async({page})=>{
   const {db,master}=await fullStack(page,'master');
-  const today=iso(new Date());
-  const yesterdayDate=new Date();yesterdayDate.setDate(yesterdayDate.getDate()-1);const yesterday=iso(yesterdayDate);
+  // Salary periods are Moscow days, including the 21:00–24:00 UTC boundary.
+  const today=periods.day(),yesterday=periods.addDays(today,-1);
   const primary=db.tables.orders.find(o=>String(o.id)==='11');
   const secondary=db.tables.orders.find(o=>String(o.id)==='12')||{...primary,id:'14102'};
   Object.assign(primary,{
-    status:'Выполнена',report_review_status:'approved',scheduled_date:today,completed_at:`${today}T12:00:00`,
+    status:'Выполнена',report_review_status:'approved',scheduled_date:today,completed_at:`${today}T12:00:00+03:00`,
     amount:1000,original_amount:1000,master_payout:552.5,extra_work_amount:100,uncompleted_work_amount:0,
     extra_work_description:'Дополнительное крепление',master_staff_id:master.id,master_name:master.full_name,work:'Установка карниза',client:'Клиент кабинета',address:'Очень длинный адрес '+ 'домкорпус'.repeat(30)
   });
   Object.assign(secondary,{
-    id:String(secondary.id||'14102'),status:'Выполнена',report_review_status:'approved',scheduled_date:yesterday,completed_at:`${yesterday}T12:00:00`,
+    id:String(secondary.id||'14102'),status:'Выполнена',report_review_status:'approved',scheduled_date:yesterday,completed_at:`${yesterday}T12:00:00+03:00`,
     amount:2000,original_amount:2200,master_payout:1105,extra_work_amount:0,uncompleted_work_amount:200,
     uncompleted_work_description:'Не установлен держатель',master_staff_id:master.id,master_name:master.full_name,work:'Установка штор'
   });
