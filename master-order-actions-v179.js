@@ -20,7 +20,7 @@ const reportApproved=o=>String(o?.status||'')==='Выполнена'||String(o?.
 const localToday=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 async function authHeaders(){const h=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};return {...h,'Content-Type':'application/json'}}
 async function api(action,id,payload={}){
- const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),['setAgreementSchedule','confirmAgreement'].includes(action)?25000:20000);
  try{const r=await fetch(API_URL,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action,id,...payload}),signal:controller.signal,bosReconcileBeforeRetry:true});const d=await r.json();if(!r.ok||!d.ok||!d.order){const e=new Error(d.message||d.error||'Не удалось подтвердить сохранение');e.status=r.status;throw e}return d}finally{clearTimeout(timer)}
 }
 function mergeOrder(id,data){const i=(state?.orders||[]).findIndex(o=>String(o.id)===String(id));if(i>=0)state.orders[i]={...state.orders[i],...(data||{})}}
@@ -89,20 +89,33 @@ window.masterOrderAgree179=function(id){
  openModal(`<h2>Согласовать дату и время</h2><p class="muted">Договоритесь с клиентом и укажите согласованные дату и время.</p><form id="masterOrderAgree179Form" class="form"><label>Дата *</label><input type="date" name="scheduled_date" required min="${localToday()}" value="${escv(dateOf(o))}"><label>Время *</label><input type="time" name="scheduled_time" required step="900" value="${escv(timeOf(o))}"><div class="moa179AgreementContact"></div><p class="muted">После сохранения заявка перейдёт в рабочий сценарий мастера.</p><button type="submit" class="primary wide">Сохранить</button><button type="button" class="secondary wide" onclick="openOrder('${escv(o.id)}')">Отмена</button><p id="masterOrderAgree179Msg" class="muted" role="status"></p></form>`);
  const form=document.getElementById('masterOrderAgree179Form');if(!form)return;
  const msg=form.querySelector('#masterOrderAgree179Msg'),contact=form.querySelector('.moa179AgreementContact'),submit=form.querySelector('[type=submit]');
+ const actorKey=()=>JSON.stringify([state?.user?.role,state?.user?.id,state?.user?.vk_user_id,state?.user?.external_id]),who=actorKey();
  function refreshContact(){
   const current=orderById(id)||o,status=String(current?.master_contact_status||''),canAgree=!status||status==='agreed';submit.disabled=busy||!current.master_called_at||!canAgree;
   contact.innerHTML=current.master_called_at&&canAgree?'':'<small class="muted">Сначала свяжитесь с клиентом и выберите итог «Договорились».</small>';
  }
  refreshContact();
  form.onsubmit=async e=>{
-  e.preventDefault();if(busy||state.busy)return;
+  e.preventDefault();if(busy||state.busy||!liveMaster()||who!==actorKey())return;
   const current=orderById(id)||o,status=String(current?.master_contact_status||'');if(!current.master_called_at||(status&&status!=='agreed')){msg.textContent='Сначала свяжитесь с клиентом и выберите итог «Договорились».';return}
   const date=String(form.elements.scheduled_date.value||''),time=String(form.elements.scheduled_time.value||'').slice(0,5);
   if(!date||!time){msg.textContent='Укажите дату и время';return}
   busy=true;state.busy=true;if(typeof setBusy==='function')setBusy(form,true);msg.textContent='Сохраняем…';
-  try{const d=await api('setAgreementSchedule',id,{scheduled_date:date,scheduled_time:time});mergeOrder(id,d.order);closeModal();window.openOrder?.(id)}
-  catch(err){msg.textContent=err?.message||String(err);if(typeof setBusy==='function')setBusy(form,false)}
-  finally{busy=false;state.busy=false;refreshContact()}
+  let saved=null;
+  try{const d=await api('setAgreementSchedule',id,{scheduled_date:date,scheduled_time:time});if(String(d.order?.id)===String(id))saved=d.order}
+  catch(err){
+   if(form.isConnected)msg.textContent='Проверяем, сохранились ли дата и время…';
+   if(who===actorKey()&&liveMaster()&&(!err.status||err.status>=500)&&typeof window.api==='function'){
+    try{
+     const data=await window.api('bootstrap');
+     const fresh=data?.ok&&Array.isArray(data.orders)?data.orders.find(x=>String(x.id)===String(id)):null;
+     if(fresh&&active(fresh)&&fresh.master_agreed_at&&dateOf(fresh)===date&&timeOf(fresh)===time)saved=fresh;
+    }catch(_){}
+   }
+   if(!saved&&form.isConnected)msg.textContent=err?.name==='AbortError'?'Ответ на сохранение не получен. Проверьте интернет и повторите проверку заявки.':err?.message||String(err);
+  }
+  finally{busy=false;state.busy=false;if(form.isConnected){if(typeof setBusy==='function')setBusy(form,false);refreshContact()}}
+  if(saved&&who===actorKey()&&liveMaster()){mergeOrder(id,saved);if(form.isConnected){closeModal();window.openOrder?.(id)}}
  };
 };
 window.openMasterAgreement=window.masterOrderAgree179;

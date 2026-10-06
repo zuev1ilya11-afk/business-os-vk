@@ -1,8 +1,9 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
-// Keep the failing CI interaction, DOM snapshots and mocked API exchange reviewable.
-test.use({trace:'retain-on-failure'});
+// The fixture uses Moscow calendar days; the browser must use that same day.
+// Keep failed CI interactions, DOM snapshots and mocked API exchanges reviewable.
+test.use({trace:'retain-on-failure',timezoneId:'Europe/Moscow'});
 
 const moscowDate=(offset=0)=>{const d=new Date(Date.now()+offset*24*60*60*1000);const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d).filter(({type})=>type!=='literal').map(({type,value})=>[type,value]));return `${parts.year}-${parts.month}-${parts.day}`};
 
