@@ -5,7 +5,8 @@ window.BOS_EMPLOYEE_LIVE_REFRESH_V27=true;
 
 const POLL_TICK_MS=30000;
 const MIN_AUTO_GAP=10000;
-const RETURN_REFRESH_MS=30000;
+const MODAL_REFRESH_MS=30000;
+const RETURN_EVENT_GAP=5000;
 const PRESENCE_MS=90000;
 const ONLINE_MS=210000;
 const PRESENCE_URL='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/profile-self-api';
@@ -13,6 +14,7 @@ let inFlight=false;
 let lastSync=0;
 window.addEventListener('bos:auth-ready',()=>{lastSync=Date.now()});
 let lastError='';
+let lastReturnRefresh=0;
 let presenceInFlight=false;
 let lastPresence=0;
 
@@ -37,7 +39,7 @@ const pollGap=()=>{
   if(role==='master')return 120000;
   return 180000;
 };
-const automaticGap=reason=>reason==='poll'?pollGap():['focus','visible','pageshow','online','modal-close'].includes(reason)?RETURN_REFRESH_MS:MIN_AUTO_GAP;
+const isReturnReason=reason=>['focus','visible','pageshow','online'].includes(reason);
 
 function presenceState(master,now=Date.now()){
   const stamp=Date.parse(master?.last_seen_at||'');
@@ -122,8 +124,15 @@ function renderChanged(){
 async function syncEmployeeData(reason='manual'){
   const urgent=['manual','mutation'].includes(reason);
   const modal=document.querySelector('#modalRoot .modal');
-  if(!urgent&&lastSync&&Date.now()-lastSync<automaticGap(reason))return false;
+  const now=Date.now();
+  if(!urgent){
+    if(reason==='poll'&&lastSync&&now-lastSync<pollGap())return false;
+    if(reason==='modal-close'&&lastSync&&now-lastSync<MODAL_REFRESH_MS)return false;
+    if(isReturnReason(reason)&&lastReturnRefresh&&now-lastReturnRefresh<RETURN_EVENT_GAP)return false;
+    if(!['poll','modal-close'].includes(reason)&&!isReturnReason(reason)&&lastSync&&now-lastSync<MIN_AUTO_GAP)return false;
+  }
   if(inFlight||document.hidden||state?.busy||!authReady()||editingInline()||typeof api!=='function'||(modal&&!employeeProfileModal()))return false;
+  if(isReturnReason(reason))lastReturnRefresh=now;
   inFlight=true;
   const refreshButton=document.getElementById('bosManualRefresh');
   if(refreshButton){refreshButton.disabled=true;refreshButton.classList.add('isRefreshing');refreshButton.title='Обновляем…'}
