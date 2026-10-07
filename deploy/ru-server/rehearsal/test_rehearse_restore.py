@@ -1,4 +1,5 @@
 import hashlib
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -8,6 +9,70 @@ import subprocess
 import rehearse_restore as rr
 
 class RehearsalTests(unittest.TestCase):
+    def image_info(self):
+        return {'Id': 'sha256:' + 'a' * 64, 'Os': 'linux', 'Architecture': 'amd64',
+                'RepoDigests': [rr.CANDIDATE_IMAGE]}
+
+    def test_candidate_selection_uses_inspected_manifest_without_pull(self):
+        info = self.image_info()
+        with patch('rehearse_restore.subprocess.run', return_value=
+                   subprocess.CompletedProcess([], 0, json.dumps([info]), '')) as run:
+            image, provenance = rr.resolve_image(rr.CANDIDATE_IMAGE)
+        self.assertEqual(image, info['Id'])
+        self.assertEqual(provenance['requested_ref'], rr.CANDIDATE_IMAGE)
+        self.assertEqual(provenance['image_id'], image)
+        self.assertEqual(run.call_args.args[0], ['docker', 'image', 'inspect', rr.CANDIDATE_IMAGE])
+        args = rr.create_args('bos-restore-trial-new', Path('/new'), Path('/backup'), image)
+        self.assertIn(image, args)
+        self.assertNotIn(rr.IMAGE, args)
+        self.assertIn('none', args)
+
+    def test_image_preflight_refuses_other_images_or_unmatched_identity(self):
+        with patch('rehearse_restore.subprocess.run') as run:
+            with self.assertRaises(ValueError):
+                rr.resolve_image('supabase/postgres:latest')
+            run.assert_not_called()
+        for replacement in ({'RepoDigests': []}, {'Id': 'not-an-image-id'},
+                            {'Architecture': 'arm64'}, {'Os': 'windows'}):
+            info = dict(self.image_info(), **replacement)
+            with self.subTest(replacement=replacement):
+                with patch('rehearse_restore.subprocess.run', return_value=
+                           subprocess.CompletedProcess([], 0, json.dumps([info]), '')):
+                    with self.assertRaises(ValueError):
+                        rr.resolve_image(rr.CANDIDATE_IMAGE)
+
+    def test_candidate_success_requires_actual_server_and_extension_versions(self):
+        extensions = {'pg_net':'0.20.4', 'pg_cron':'1.6.4', 'supabase_vault':'0.3.1',
+                      'pgcrypto':'1.3', 'uuid-ossp':'1.1', 'btree_gist':'1.7',
+                      'pg_stat_statements':'1.11', 'plpgsql':'1.0'}
+        stats = {'cron_enabled':'off', 'server_version_num':170011, 'extensions':extensions}
+        rr.check_restored_versions(stats, rr.CANDIDATE_IMAGE)
+        for name in extensions:
+            if name == 'plpgsql':
+                continue
+            for change in ('missing', 'changed'):
+                changed = dict(extensions)
+                if change == 'missing':
+                    del changed[name]
+                else:
+                    changed[name] = '0.0'
+                with self.subTest(name=name, change=change):
+                    with self.assertRaises(RuntimeError):
+                        rr.check_restored_versions(dict(stats, extensions=changed), rr.CANDIDATE_IMAGE)
+        for replacement in ({'server_version_num':170006}, {'cron_enabled':'on'}):
+            with self.assertRaises(RuntimeError):
+                rr.check_restored_versions(dict(stats, **replacement), rr.CANDIDATE_IMAGE)
+
+    def test_original_image_remains_available_and_cron_must_stay_off(self):
+        info = dict(self.image_info(), RepoDigests=[])
+        with patch('rehearse_restore.subprocess.run', return_value=
+                   subprocess.CompletedProcess([], 0, json.dumps([info]), '')):
+            image, _ = rr.resolve_image(rr.IMAGE)
+        self.assertEqual(image, info['Id'])
+        rr.check_restored_versions({'cron_enabled':'off'}, rr.IMAGE)
+        with self.assertRaises(RuntimeError):
+            rr.check_restored_versions({'cron_enabled':'on'}, rr.IMAGE)
+
     def test_bootstrap_works_when_postgres_is_not_superuser(self):
         writes = []
         def sql(query, user='postgres', db='postgres'):
