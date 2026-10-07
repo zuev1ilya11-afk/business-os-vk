@@ -99,6 +99,45 @@ class AccessInventoryTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.v.validate_baseline(wrong, b'query')
 
+    def test_detail_comparison_preserves_object_changes_and_flags_definers(self):
+        first = 'vault|function|vault.first()'
+        second = 'vault|function|vault.second()'
+        expected = {'schema_metadata': {'public': ['postgres', []]},
+                    'extension_member_owners': {first: 'postgres', second: 'supabase_admin'},
+                    'extension_security_definers': [first]}
+        actual = copy.deepcopy(expected)
+        actual['extension_member_owners'] = {first: 'supabase_admin', second: 'postgres'}
+        actual['schema_metadata']['public'] = ['postgres', [['postgres', 'anon', 'USAGE', False]]]
+        report = self.v.compare_details(expected, actual)
+        self.assertEqual(set(report['schema_differences']), {'public'})
+        self.assertEqual(set(report['member_owner_differences']), {first, second})
+        self.assertEqual(report['changed_security_definers'], [first])
+        self.assertFalse(report['all_match'])
+        self.assertTrue(self.v.compare_details(expected, expected)['all_match'])
+
+    def test_details_reject_missing_or_malformed_metadata(self):
+        valid = {'schema_metadata': {'public': ['postgres', []]},
+                 'extension_member_owners': {'x|function|public.x()': 'postgres'},
+                 'extension_security_definers': []}
+        for mutate in (lambda x: x.pop('schema_metadata'),
+                       lambda x: x['schema_metadata'].update(public=['postgres', 'bad']),
+                       lambda x: x.update(extension_security_definers=['missing']),
+                       lambda x: x.update(extension_member_owners={})):
+            actual = copy.deepcopy(valid)
+            mutate(actual)
+            with self.assertRaises(ValueError):
+                self.v.compare_details(valid, actual)
+
+    def test_custom_detail_validator_failure_still_stops(self):
+        def run(command, stage, **kwargs):
+            value = b'{}' if kwargs.get('input') == b'detail query' else b'off'
+            return subprocess.CompletedProcess(command, 0, value, b'')
+        with tempfile.TemporaryDirectory() as folder, patch.object(self.v, 'stop_trial', return_value=True) as stop:
+            with patch.object(self.v, 'run_command', side_effect=run):
+                with self.assertRaises(ValueError):
+                    self.v.collect('a' * 64, Path(folder), b'detail query', self.v.validate_details)
+            stop.assert_called_once_with('a' * 64)
+
 
 if __name__ == '__main__':
     unittest.main()
