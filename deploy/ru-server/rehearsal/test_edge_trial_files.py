@@ -110,4 +110,46 @@ class EdgeFilesTests(unittest.TestCase):
                 self.m.read_snapshot(root,baseline)
 
 
+    def make_export(self, root, entry, files, metadata):
+        row={'id':'id','slug':'avito-assistant-api','version':2,'status':'ACTIVE','verify_jwt':False,
+             'entrypoint_path':'file:///tmp/user_fn_project_id_1/source/'+entry,'import_map':False}
+        body=(b'--bos\r\nContent-Disposition: form-data; name="metadata"\r\n\r\n'+
+              json.dumps(metadata).encode()+b'\r\n')
+        body+=b''.join(b'--bos\r\nContent-Disposition: form-data; name="file"; filename="'+
+              name.encode()+b'"\r\n\r\n'+data+b'\r\n' for name,data in files.items())+b'--bos--\r\n'
+        class Client:
+            def inventory(self,count):return [row]
+            def get(self,*args):return 'multipart/form-data; boundary=bos',body
+        snapshot(Client(),root,1)
+        return {'functions':[row],'audited':{}}
+
+    def test_export_metadata_selects_relocated_entry_and_preserves_import_layout(self):
+        files={'functions/avito-assistant-api/index.ts':b'import "./core.ts"; import "../_shared/avito-price-catalog.json";',
+               'functions/avito-assistant-api/core.ts':b'export const core = true;',
+               'functions/_shared/avito-price-catalog.json':b'{"items":[]}'}
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)
+            baseline=self.make_export(root,'supabase/functions/avito-assistant-api/index.ts',files,
+                                      {'deno2_entrypoint_path':'functions/avito-assistant-api/index.ts'})
+            before=(root/'manifest.json').read_bytes()
+            functions=self.m.read_snapshot(root,baseline)
+            self.assertEqual(functions[0]['entrypoint'],'functions/avito-assistant-api/index.ts')
+            routes=self.m.assemble(functions,root/'assembled')
+            entry=root/'assembled/avito-assistant-api'/routes['avito-assistant-api']['entrypoint']
+            self.assertEqual((entry.parent/'core.ts').read_bytes(),b'export const core = true;')
+            self.assertEqual((entry.parent/'../_shared/avito-price-catalog.json').read_bytes(),b'{"items":[]}')
+            self.assertEqual((root/'manifest.json').read_bytes(),before)
+            baseline['audited']={'avito-assistant-api':'0'*64}
+            with self.assertRaisesRegex(ValueError,'Audited handler differs'):
+                self.m.read_snapshot(root,baseline)
+
+    def test_export_metadata_cannot_fall_back_when_path_is_missing_or_unsafe(self):
+        for value in ('../index.ts','missing.ts','','/other/index.ts','source/../index.ts',123):
+            with self.subTest(value=value),tempfile.TemporaryDirectory() as d:
+                root=Path(d)
+                baseline=self.make_export(root,'index.ts',{'index.ts':b'original entry'},
+                                          {'deno2_entrypoint_path':value})
+                with self.assertRaises(ValueError):self.m.read_snapshot(root,baseline)
+
+
 if __name__=='__main__':unittest.main()

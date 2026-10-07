@@ -78,7 +78,12 @@ def read_snapshot(root,baseline):
             rel=source_relative(part['source_path'],prefix)
             if rel in mapped:raise ValueError('Source path collision')
             mapped[rel]=data
-        entry=source_relative(entry,prefix)
+        metadata=f.get('body_metadata',{})
+        if not isinstance(metadata,dict):raise ValueError('Invalid body metadata')
+        # Deno 2 exports may rebase the source tree relative to its common root.
+        # The checksummed multipart metadata names the entry in that exported tree.
+        exported_entry=metadata.get('deno2_entrypoint_path')
+        entry=source_relative(entry if exported_entry is None else exported_entry,prefix)
         imap=source_relative(row['import_map_path'],prefix) if row.get('import_map') else None
         if entry not in mapped or (imap and imap not in mapped):raise ValueError('Missing entrypoint or import map')
         expected=baseline.get('audited',{}).get(slug)
