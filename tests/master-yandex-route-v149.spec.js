@@ -1,13 +1,13 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
-test('master order client address is clickable and opens exact address in Yandex Maps',async({page})=>{
+test('master order client address searches Yandex Maps by street and building only',async({page})=>{
   const {db}=await fullStack(page,'master');
   const order=db.tables.orders[0];
   Object.assign(order,{
     id:'11',
     status:'В работе',
-    address:'Невский проспект, 28',
+    address:'Невский проспект, 28, кв. 14, подъезд 2',
     city:'Санкт-Петербург',
     master_workflow_stage:'assigned'
   });
@@ -24,10 +24,12 @@ test('master order client address is clickable and opens exact address in Yandex
 
   const address=page.locator('.bosHandsAddressLink');
   await expect(address).toBeVisible();
-  await expect(address).toHaveText('Невский проспект, 28');
+  await expect(address).toHaveText('Невский проспект, 28, кв. 14, подъезд 2');
   const href=await address.getAttribute('href');
   expect(href).toContain('https://yandex.ru/maps/?text=');
   expect(decodeURIComponent(href)).toContain('Санкт-Петербург, Невский проспект, 28');
+  expect(decodeURIComponent(href)).not.toContain('кв. 14');
+  expect(decodeURIComponent(href)).not.toContain('подъезд 2');
   await expect(page.locator('.masterV149Route')).toBeHidden();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
