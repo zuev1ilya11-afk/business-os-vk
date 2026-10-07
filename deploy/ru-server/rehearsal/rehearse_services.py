@@ -22,7 +22,7 @@ from repair_trial_grants import expected_states, project_state, check_state
 from verify_trial_access import validate_baseline, validate_inventory, validate_details
 
 IMAGES={'rest':'postgrest/postgrest:v14.17','auth':'supabase/gotrue:v2.196.0',
-        'storage':'supabase/storage-api:v1.74.0'}
+        'storage':'supabase/storage-api:v1.80.0'}
 DATABASE='bos_restore_check'
 STORAGE_COUNT=374
 STORAGE_BYTES=23749699

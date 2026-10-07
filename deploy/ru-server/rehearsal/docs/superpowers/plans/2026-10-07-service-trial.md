@@ -13,9 +13,9 @@
 ## Global constraints
 
 - PostgreSQL exact candidate manifest sha256:4b438c22395a9a2bd19ee0522742cc9a1ff91db4732ff0c1b08fc07e9c767c22.
-- Official pinned-source compose tags: postgrest/postgrest:v14.17, supabase/gotrue:v2.196.0, supabase/storage-api:v1.74.0. Resolve linux/amd64 immutable image IDs after pulling; persist provenance.
+- Service image pins (REST/Auth from pinned official compose; Storage compatibility override): postgrest/postgrest:v14.17, supabase/gotrue:v2.196.0, supabase/storage-api:v1.80.0 (replaces incompatible1.74.0 after observed42P10). Resolve linux/amd64 immutable image IDs after pulling; persist provenance.
 - Source snapshot374objects/23749699bytes, source dump SHA must match the snapshot manifest. Validate every filename/hash/size/MD5 before copying; no symlinks or traversal.
-- Storage v1.74.0 file backend verified against upstream: root/global_bucket/tenant_id/bucket/name/version with TUS_USE_FILE_VERSION_SEPARATOR=false. Use global_bucket=stub, tenant=stub; set user.supabase.content-type and user.supabase.cache-control xattrs. No source metadata updates for byte assembly.
+- Storage v1.80.0 file backend verified against upstream: root/global_bucket/tenant_id/bucket/name/version with TUS_USE_FILE_VERSION_SEPARATOR=false. Use global_bucket=stub, tenant=stub; set user.supabase.content-type and user.supabase.cache-control xattrs. No source metadata updates for byte assembly.
 - No network bridge/host network, published ports or automatic restarts. DB cron off; shared namespace has loopback only. Docker image pulls occur outside application execution.
 - Generate trial-only JWT/API keys and service-role DB passwords on server. No recovered business secrets needed for this stage. Read original loader environment privately; no credentials in arguments, terminal or reports.
 - Core functions only: REST count/read and denied-anon test, Auth health/adminread/deniedanon (no user creation/password change), Storage all-object byte/type check, private-anon denial and new synthetic bucket/upload/read/sign/delete lifecycle. Never invoke business mutation RPCs.
@@ -53,8 +53,8 @@ Consumes Task1 helpers; existing resolve_image, validate_container, stop_trial, 
 ### Task3: review and delivery
 
 - [x] One fresh review of the complete new service-trial change; fix Important/Critical with failing regressions and onegreen suite, no repeated review.
-- [ ] Publish on existing feat/ru-infra-migration-v172 branch, nevermerge. Include service_trial.SHA256SUMS for dependencies.
-- [ ] Verify remote contents at immutablecommit. Supply one git-archive/checksum/run block.
+- [x] Publish on existing feat/ru-infra-migration-v172 branch, nevermerge. Include service_trial.SHA256SUMS for dependencies.
+- [x] Verify remote contents at immutablecommit. Supply one git-archive/checksum/run block.
 - [x] BOS_SERVICE_TRIAL_OK means this scoped runtime trial only; no full migration success claim.
 
 Self-review: snapshot validation feeds exact probe paths/hashes; cloned DB loader credentials preserve access while local service passwords are separately generated. Vault comparison uses existing verified export and no rekey. Admin extension-owner exceptions remain explicit. Fixtures are root-private and container-read only where possible. An already authorized inline preparation task does not need another plan-approval round trip.
