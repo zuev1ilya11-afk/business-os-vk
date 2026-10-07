@@ -1,0 +1,130 @@
+{
+  "project_id": "obsropbslfwtanyspjbi",
+  "captured_at": "2026-10-07T18:35:13.408Z",
+  "query_sha256": "1cfe09acbbc9e43deaa16ed7036162cd39d9aba268efc59941a5f5dafc957770",
+  "inventory": {
+    "categories": {
+      "column_acl": {
+        "objects": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "default_acl": {
+        "objects": 27,
+        "fingerprint": "f16377db0ac552c68352dee6bc2f4700"
+      },
+      "extension_function_access": {
+        "objects": 1827,
+        "fingerprint": "3b7c83d1b3e1b61cef445a6f4a60c7fe"
+      },
+      "extension_member_owners": {
+        "objects": 272,
+        "fingerprint": "132cd3bd1d191ea33a3e6232313aef25"
+      },
+      "extension_relation_access": {
+        "objects": 392,
+        "fingerprint": "83cc861ab9debce3f05e867047c8f336"
+      },
+      "extension_sequence_access": {
+        "objects": 63,
+        "fingerprint": "a1398b83e517039819d83660eaacc07f"
+      },
+      "function_metadata": {
+        "objects": 100,
+        "fingerprint": "83fdd2d81763096100d4e82f5a292a2c"
+      },
+      "memberships": {
+        "objects": 21,
+        "fingerprint": "a6c73b059b584be72010116e2b9c2689"
+      },
+      "policies": {
+        "objects": 12,
+        "fingerprint": "bb3d2815b097992609b97e3d9edac201"
+      },
+      "relation_metadata": {
+        "objects": 104,
+        "fingerprint": "be72e83cee2148cb06d1330c7aae80af"
+      },
+      "roles": {
+        "objects": 16,
+        "fingerprint": "40de956d70b80b29005148deb80b871b"
+      },
+      "schema_metadata": {
+        "objects": 18,
+        "fingerprint": "77feb1e59656cf5d1abc66f235f73d65"
+      }
+    },
+    "database_grants": [
+      [
+        "postgres",
+        "PUBLIC",
+        "CONNECT",
+        false
+      ],
+      [
+        "postgres",
+        "PUBLIC",
+        "TEMPORARY",
+        false
+      ],
+      [
+        "postgres",
+        "dashboard_user",
+        "CONNECT",
+        false
+      ],
+      [
+        "postgres",
+        "dashboard_user",
+        "CREATE",
+        false
+      ],
+      [
+        "postgres",
+        "dashboard_user",
+        "TEMPORARY",
+        false
+      ],
+      [
+        "postgres",
+        "postgres",
+        "CONNECT",
+        false
+      ],
+      [
+        "postgres",
+        "postgres",
+        "CREATE",
+        false
+      ],
+      [
+        "postgres",
+        "postgres",
+        "TEMPORARY",
+        false
+      ],
+      [
+        "postgres",
+        "supabase_etl_admin",
+        "CREATE",
+        false
+      ],
+      [
+        "postgres",
+        "supabase_storage_admin",
+        "CREATE",
+        false
+      ]
+    ],
+    "database_owner": "postgres",
+    "extension_owners": {
+      "plpgsql": "supabase_admin",
+      "pg_stat_statements": "postgres",
+      "uuid-ossp": "postgres",
+      "pgcrypto": "postgres",
+      "supabase_vault": "supabase_admin",
+      "btree_gist": "supabase_admin",
+      "pg_cron": "supabase_admin",
+      "pg_net": "supabase_admin"
+    }
+  }
+}
