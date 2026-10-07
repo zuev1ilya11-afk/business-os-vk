@@ -1,0 +1,131 @@
+"""Deterministic release configuration; never reads source credentials."""
+import hashlib
+import ipaddress
+import json
+from pathlib import Path
+import re
+from urllib.parse import urlsplit, unquote
+
+SOURCE='https://obsropbslfwtanyspjbi.supabase.co'
+MAIN='7e3fb7198a45e1d2c2ab3ca7d6439c73ff154ae8'
+GATEWAYS=('https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e',
+          'https://api-v2.appdeploy.ai/app/business-os-api-gateway-ukp6ew',
+          'https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai',
+          'https://business-os-api-gateway.netlify.app')
+CORE_PROOFS=('rest_read','rest_anon_denied','auth_admin_read','auth_anon_denied',
+             'storage_private_denied','storage_write_cycle','storage_signed_read')
+EDGE_PROOFS=('bos_anon_denied','bos_bad_password_denied','bos_password_login','bos_session_refresh',
+             'bos_signature_verified','bos_invalid_session_denied','bos_credentials_hidden',
+             'fixture_removed','original_row_hashes_match')
+
+def origin_host(origin):
+    u=urlsplit(origin)
+    if u.scheme!='https' or u.path or u.query or u.fragment or u.username or u.password or u.port:
+        raise ValueError('Expected bare HTTPS origin')
+    if str(ipaddress.IPv4Address(u.hostname))!='139.100.237.167':
+        raise ValueError('Wrong target server')
+    return u.hostname
+
+def check_report(report):
+    from rehearse_services import EXPECTED_COUNTS, STORAGE_COUNT, STORAGE_BYTES
+    if (report.get('all_trial_containers_stopped') is not True or report.get('vault_values_verified')!=3
+        or report.get('counts')!=EXPECTED_COUNTS
+        or report.get('api',{}).get('storage_objects')!=STORAGE_COUNT
+        or report.get('api',{}).get('storage_bytes')!=STORAGE_BYTES
+        or report.get('edge',{}).get('bos_bootstrap_orders')!=EXPECTED_COUNTS['orders']
+        or report.get('source_container')!='bos-restore-trial-avcpcsf0'
+        or not re.fullmatch('[a-f0-9]{64}',report.get('source_dump_sha256',''))
+        or set(report.get('image_ids',{}))!={'db','rest','auth','storage'}
+        or not all(report.get('api',{}).get(k) is True for k in CORE_PROOFS)
+        or not all(report.get('edge',{}).get(k) is True for k in EDGE_PROOFS)
+        or report.get('edge',{}).get('bundled_functions')!=35
+        or report.get('edge',{}).get('jwt_required_denied')!=6):
+        raise ValueError('Incomplete successful Edge/core proof')
+
+def validate_trial(path):
+    if path.is_symlink() or path.stat().st_uid!=0 or path.stat().st_mode&0o077:
+        raise ValueError('Trial must be root private')
+    report=json.loads((path/'report.json').read_bytes());check_report(report)
+    routes=json.loads((path/'edge/bundles.json').read_bytes())
+    if len(routes)!=35:raise ValueError('Incomplete routes')
+    for slug,route in routes.items():
+        if not re.fullmatch('[a-z0-9][a-z0-9_-]{0,127}',slug):raise ValueError('Invalid route')
+        bundle=path/'edge/bundles'/(slug+'.eszip')
+        if bundle.is_symlink() or hashlib.sha256(bundle.read_bytes()).hexdigest()!=route['bundle_sha256']:
+            raise ValueError('Bundle differs from proven trial')
+        for name,expected in route['source_sha256'].items():
+            from edge_trial_files import relative
+            source=path/'edge/sources'/slug/relative(name)
+            if source.is_symlink() or hashlib.sha256(source.read_bytes()).hexdigest()!=expected:
+                raise ValueError('Source differs from proven bundle')
+    for image in [*report['image_ids'].values(),report['edge']['image_id']]:
+        if not re.fullmatch('sha256:[a-f0-9]{64}',image):raise ValueError('Invalid image ID')
+    return report,routes
+
+def rewrite_frontend(text,origin):
+    origin_host(origin)
+    for old in (*GATEWAYS,SOURCE):text=text.replace(old,origin)
+    return text
+
+def transform_attachment(value,signer):
+    if isinstance(value,list):return [transform_attachment(x,signer) for x in value]
+    if isinstance(value,dict):return {k:transform_attachment(v,signer) for k,v in value.items()}
+    if not isinstance(value,str) or SOURCE+'/storage/' not in value:return value
+    if value.startswith(SOURCE+'/storage/v1/object/sign/'):
+        u=urlsplit(value);path=unquote(u.path.removeprefix('/storage/v1/object/sign/'))
+        if (u.fragment or not u.query or any(p in ('','.','..') for p in path.split('/'))
+            or '\\' in path or any(ord(c)<32 for c in path)):
+            raise ValueError('Unsafe attachment path')
+        return signer(path)
+    try:parsed=json.loads(value)
+    except (ValueError,TypeError):raise ValueError('Unsupported source attachment URL') from None
+    if not isinstance(parsed,(list,dict,str)):raise ValueError('Unsupported source attachment value')
+    return json.dumps(transform_attachment(parsed,signer),ensure_ascii=False,separators=(',',':'))
+
+def render_caddy(origin,service_key,active):
+    host=origin_host(origin)
+    if not re.fullmatch('[A-Za-z0-9_.-]+',service_key):raise ValueError('Invalid service token')
+    gate='' if active else f'''@locked {{
+      path /api/* /functions/* /rest/* /auth/* /storage/*
+      not header Authorization "Bearer {service_key}"
+    }}
+    respond @locked "Выполняется перенос. Повторите позже." 503
+'''
+    return f'''{{
+  admin 127.0.0.1:12019
+  default_sni {host}
+}}
+https://{host} {{
+  tls {{
+    issuer acme https://acme-v02.api.letsencrypt.org/directory {{
+      profile shortlived
+    }}
+  }}
+  header {{
+    -Server
+    X-Content-Type-Options nosniff
+    Referrer-Policy no-referrer
+    Cache-Control "no-cache"
+  }}
+  route {{
+    respond /_bos/ready "BOS_HTTPS_READY" 200
+    {gate}
+    @api path /api/* /functions/* /rest/* /auth/* /storage/*
+    handle @api {{
+      reverse_proxy 127.0.0.1:19000 {{
+        header_up -Cf-Connecting-Ip
+        header_up X-Real-Ip {{remote_host}}
+      }}
+    }}
+    handle {{
+      root * /srv
+      header Content-Security-Policy "connect-src 'self' https://api.vk.com https://vk.com; object-src 'none'; base-uri 'self'"
+      @static path_regexp static ^/(?:[A-Za-z0-9_-]+\\.(?:html|js|css|svg|webmanifest|png|jpg|jpeg|webp|ico|woff|woff2))?$
+      handle @static {{
+        file_server
+      }}
+      respond 404
+    }}
+  }}
+}}
+'''

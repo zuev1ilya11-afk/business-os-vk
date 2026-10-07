@@ -1,0 +1,60 @@
+import json
+import copy
+import tempfile
+import unittest
+from pathlib import Path
+import release_files as r
+
+
+class ReleaseFilesTests(unittest.TestCase):
+    def test_proof_requires_edge_cleanup_and_core(self):
+        with self.assertRaises(ValueError):
+            r.check_report({'all_trial_containers_stopped': True})
+        good={'all_trial_containers_stopped':True,'api':{k:True for k in r.CORE_PROOFS},
+              'edge':{k:True for k in r.EDGE_PROOFS},'vault_values_verified':3}
+        good['edge'].update(bundled_functions=35,jwt_required_denied=6,bos_bootstrap_orders=114,image_id='sha256:'+'a'*64)
+        good['counts']={'orders':114,'staff':14,'auth_users':1,'storage_objects':374,'vault_rows':3,'cron_enabled':'off'}
+        good['api'].update(storage_objects=374,storage_bytes=23749699)
+        good.update(source_container='bos-restore-trial-avcpcsf0',source_dump_sha256='a'*64,
+                    image_ids={k:'sha256:'+'a'*64 for k in ('db','rest','auth','storage')})
+        r.check_report(good)
+        for section,key in [('counts','orders'),('counts','storage_objects'),('api','storage_objects'),('api','storage_bytes'),('edge','bos_bootstrap_orders')]:
+            for value in (None,0,1):
+                bad=copy.deepcopy(good)
+                if value is None:del bad[section][key]
+                else:bad[section][key]=value
+                with self.subTest(section=section,key=key,value=value),self.assertRaises(ValueError):r.check_report(bad)
+        good['edge']['fixture_removed']=False
+        with self.assertRaises(ValueError):r.check_report(good)
+
+    def test_attachment_transform_preserves_other_values_and_signs_exact_path(self):
+        seen=[]
+        sign=lambda path:seen.append(path) or 'https://139.100.237.167/storage/v1/object/sign/'+path+'?token=NEW'
+        old=r.SOURCE+'/storage/v1/object/sign/business-os-vk-files/orders/1/a%20b.jpg?token=OLD'
+        value=json.dumps([old,'https://drive.google.com/file/1'])
+        result=json.loads(r.transform_attachment(value,sign))
+        self.assertEqual(seen,['business-os-vk-files/orders/1/a b.jpg'])
+        self.assertIn('token=NEW',result[0]);self.assertEqual(result[1],'https://drive.google.com/file/1')
+        self.assertEqual(r.transform_attachment(None,sign),None)
+        for bad in [r.SOURCE+'/storage/v1/object/public/a/b',r.SOURCE+'/storage/v1/object/sign/a/%2e%2e/b?token=X',
+                    'text '+old]:
+            with self.subTest(bad=bad),self.assertRaises(ValueError):r.transform_attachment(bad,sign)
+
+    def test_caddy_gates_api_and_hides_private_paths(self):
+        config=r.render_caddy('https://139.100.237.167','abc.def.ghi',False)
+        self.assertIn('profile shortlived',config)
+        self.assertIn('respond @locked',config)
+        self.assertIn('reverse_proxy 127.0.0.1:19000',config)
+        self.assertIn('respond 404',config)
+        self.assertNotIn('try_files',config)
+        self.assertNotIn('respond @locked',r.render_caddy('https://139.100.237.167','abc.def.ghi',True))
+        for origin in ['http://139.100.237.167','https://example.com/path','https://evil;foo']:
+            with self.assertRaises(ValueError):r.render_caddy(origin,'key',False)
+
+    def test_frontend_rewrites_only_known_network_origins(self):
+        value="const a='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e/api/proxy/report-api'; const b='"+r.SOURCE+"/functions/v1/mini-app-api'; const c='https://api.avito.ru';"
+        result=r.rewrite_frontend(value,'https://139.100.237.167')
+        self.assertNotIn(r.SOURCE,result);self.assertNotIn('appdeploy.ai',result)
+        self.assertIn('https://api.avito.ru',result)
+
+if __name__=='__main__':unittest.main()
