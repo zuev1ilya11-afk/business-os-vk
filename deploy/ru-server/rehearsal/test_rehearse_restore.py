@@ -8,6 +8,30 @@ import subprocess
 import rehearse_restore as rr
 
 class RehearsalTests(unittest.TestCase):
+    def test_bootstrap_works_when_postgres_is_not_superuser(self):
+        writes = []
+        def sql(query, user='postgres', db='postgres'):
+            if query.startswith('SELECT'):
+                return subprocess.CompletedProcess([], 0, user + ('|t\n' if user == 'supabase_admin' else '|f\n'))
+            if user != 'supabase_admin':
+                raise PermissionError('Only roles with SUPERUSER may create SUPERUSER roles')
+            writes.append(query)
+            return subprocess.CompletedProcess([], 0, 'CREATE ROLE\nCREATE DATABASE\n')
+        rr.prepare_database(sql)
+        self.assertEqual(len(writes), 1)
+        self.assertIn('CREATE ROLE bos_restore_loader LOGIN SUPERUSER', writes[0])
+        self.assertIn('CREATE DATABASE bos_restore_check TEMPLATE template0 OWNER postgres', writes[0])
+
+    def test_bootstrap_stops_before_writes_when_admin_is_not_superuser(self):
+        writes = []
+        def sql(query, user='postgres', db='postgres'):
+            if not query.startswith('SELECT'):
+                writes.append(query)
+            return subprocess.CompletedProcess([], 0, user + '|f\n')
+        with self.assertRaises(RuntimeError):
+            rr.prepare_database(sql)
+        self.assertEqual(writes, [])
+
     def test_cleanup_timeout_never_reports_verified_stop(self):
         with patch('rehearse_restore.subprocess.run', side_effect=subprocess.TimeoutExpired('docker', 40)):
             self.assertFalse(rr.stop_trial('a' * 64))
