@@ -21,6 +21,9 @@ class EdgeFilesTests(unittest.TestCase):
         self.assertEqual(self.m.source_relative(prefix+'supabase/functions/a/index.ts',prefix),
                          'supabase/functions/a/index.ts')
         self.assertEqual(self.m.source_relative('order-payroll.js',prefix),'order-payroll.js')
+        self.assertEqual(self.m.source_relative('source/supabase/functions/a/index.ts',prefix),
+                         'supabase/functions/a/index.ts')
+        self.assertEqual(self.m.source_relative(prefix+'source/helper.ts',prefix),'source/helper.ts')
         for bad in ('../evil','a/../../evil','/other/source/index.ts','file:///other/index.ts',
                     'a\\evil','a/./evil','a//evil','https://example/x','a\x00x'):
             with self.subTest(bad=bad),self.assertRaises(ValueError):
@@ -73,6 +76,38 @@ class EdgeFilesTests(unittest.TestCase):
             obj=json.loads(receipt.read_text());obj['secrets_file_sha256']='0'*64
             receipt.write_text(json.dumps(obj))
             with self.assertRaises(ValueError):self.m.read_verified_secrets(root)
+
+    def test_deno2_export_entrypoint_import_map_and_relative_shared_module(self):
+        row={'id':'id','slug':'a','version':1,'status':'ACTIVE','verify_jwt':False,
+             'entrypoint_path':'file:///tmp/user_fn_project_id_1/source/supabase/functions/a/index.ts',
+             'import_map':True,
+             'import_map_path':'file:///tmp/user_fn_project_id_1/source/supabase/functions/a/deno.json'}
+        files={'source/supabase/functions/a/index.ts':b'import "../../../shared.js";',
+               'source/supabase/functions/a/deno.json':b'{"imports":{"zod":"npm:zod@3.25.76"}}',
+               'source/shared.js':b'export const shared = true;'}
+        def body():
+            return b''.join(b'--bos\r\nContent-Disposition: form-data; name="file"; filename="'+
+                name.encode()+b'"\r\n\r\n'+data+b'\r\n' for name,data in files.items())+b'--bos--\r\n'
+        class Client:
+            def inventory(self,count):return [row]
+            def get(self,*args):return 'multipart/form-data; boundary=bos',body()
+        baseline={'functions':[row],'audited':{'a':hashlib.sha256(files['source/supabase/functions/a/index.ts']).hexdigest()}}
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);snapshot(Client(),root,1)
+            functions=self.m.read_snapshot(root,baseline)
+            self.assertEqual(functions[0]['entrypoint'],'supabase/functions/a/index.ts')
+            self.assertEqual(functions[0]['import_map'],'supabase/functions/a/deno.json')
+            self.assertEqual(functions[0]['files']['shared.js'],b'export const shared = true;')
+        del files['source/supabase/functions/a/deno.json']
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);snapshot(Client(),root,1)
+            with self.assertRaisesRegex(ValueError,'Missing entrypoint or import map'):
+                self.m.read_snapshot(root,baseline)
+        files['supabase/functions/a/index.ts']=b'conflicting source'
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);snapshot(Client(),root,1)
+            with self.assertRaisesRegex(ValueError,'Source path collision'):
+                self.m.read_snapshot(root,baseline)
 
 
 if __name__=='__main__':unittest.main()

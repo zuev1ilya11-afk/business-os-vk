@@ -26,6 +26,10 @@ def source_relative(value,prefix):
     if value.startswith('/'):
         if not value.startswith(prefix):raise ValueError('Source prefix mismatch')
         value=value[len(prefix):]
+    else:
+        # Deno 2 multipart filenames are relative to the deployment directory,
+        # with a leading source/; Deno 1 paths above already consumed that part.
+        value=value.removeprefix('source/')
     return relative(value)
 
 
