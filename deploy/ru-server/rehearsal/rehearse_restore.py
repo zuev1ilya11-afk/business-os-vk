@@ -106,6 +106,17 @@ def stop_trial(cid):
         return False
 
 
+def prepare_database(sql):
+    admin = 'supabase_admin'
+    result = sql('SELECT current_user, rolsuper FROM pg_roles WHERE rolname = current_user;',
+                 user=admin)
+    if result.stdout.strip() != 'supabase_admin|t':
+        raise RuntimeError('Bootstrap administrator must already be a superuser')
+    sql("\\getenv local_pw POSTGRES_PASSWORD\n"
+        f"CREATE ROLE {LOADER} LOGIN SUPERUSER PASSWORD :'local_pw';\n"
+        f"CREATE DATABASE {DATABASE} TEMPLATE template0 OWNER postgres;\n", user=admin)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--backup', type=Path, required=True)
@@ -188,9 +199,7 @@ def main():
         if sql('SHOW cron.database_name;').stdout.strip() != DATABASE:
             raise RuntimeError('Cron database does not match rehearsal database')
         phase = 'prepare_database'
-        sql("\\getenv local_pw POSTGRES_PASSWORD\n"
-            f"CREATE ROLE {LOADER} LOGIN SUPERUSER PASSWORD :'local_pw';\n"
-            f"CREATE DATABASE {DATABASE} TEMPLATE template0 OWNER postgres;\n")
+        prepare_database(sql)
         phase = 'roles'
         print('Восстановление ролей в отдельном контейнере...', flush=True)
         # Separate loader keeps its privileges when source role attributes are applied.
