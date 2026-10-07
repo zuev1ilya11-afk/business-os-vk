@@ -32,6 +32,23 @@ class ServiceOrchestrationTests(unittest.TestCase):
                     runner.create('bos-service-trial-abc-db',['docker','create'])
             self.assertEqual(runner.created,['bos-service-trial-abc-db'])
 
+    def test_optional_inspect_accepts_docker_missing_case_variants_only(self):
+        with tempfile.TemporaryDirectory() as folder:
+            runner=self.s.Runner(Path(folder),'bos-service-trial-abc')
+            name='bos-service-trial-abc-copy'
+            for message in (b'error: no such object: ', b'Error: No such object: ',
+                            b'error: no such container: ', b'Error: No such container: '):
+                result=self.s.subprocess.CompletedProcess([],1,b'[]',message+name.encode())
+                with self.subTest(message=message), patch.object(runner,'command',return_value=result):
+                    self.assertIsNone(runner.inspect(name,optional=True))
+                    with self.assertRaises(RuntimeError):
+                        runner.inspect(name)
+            for message in (b'permission denied', b'Cannot connect to the Docker daemon'):
+                result=self.s.subprocess.CompletedProcess([],1,b'',message)
+                with self.subTest(message=message), patch.object(runner,'command',return_value=result):
+                    with self.assertRaises(RuntimeError):
+                        runner.inspect(name,optional=True)
+
     def test_cleanup_reverses_order_and_stop_failure_is_not_success(self):
         with tempfile.TemporaryDirectory() as folder:
             runner=self.s.Runner(Path(folder),'bos-service-trial-abc')

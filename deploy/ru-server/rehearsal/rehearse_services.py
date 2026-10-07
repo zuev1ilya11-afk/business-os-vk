@@ -78,7 +78,8 @@ class Runner:
     def inspect(self,name,optional=False):
         r=self.command(['docker','inspect',name],timeout=20,required=False)
         if r.returncode:
-            if optional and (b'No such object' in r.stderr or b'No such container' in r.stderr):
+            error=r.stderr.lower()
+            if optional and (b'no such object' in error or b'no such container' in error):
                 return None
             raise RuntimeError('Container inspection failed')
         return json.loads(r.stdout)[0]
