@@ -167,6 +167,7 @@ def main():
     parser.add_argument('--backup',type=Path,required=True)
     parser.add_argument('--storage',type=Path,required=True)
     parser.add_argument('--vault-export',type=Path,required=True)
+    parser.add_argument('--edge-secrets',type=Path,help='Include offline Edge/BOS login trial with verified server secrets')
     args=parser.parse_args()
     if os.geteuid()!=0:
         raise ValueError('Run as root')
@@ -218,6 +219,12 @@ def main():
         runner.redactions.append(loader_password)
         services=resolve_services(runner)
         (stage/'images.json').write_text(json.dumps({'db':image_provenance,**services},indent=2)+'\n')
+        prepared_edge=None
+        if args.edge_secrets:
+            phase='edge_prepare'
+            from edge_trial import prepare_edge, run_edge
+            edge_secrets=private_folder(args.edge_secrets,deploy,'runtime-secrets-')
+            prepared_edge=prepare_edge(runner,Path('/opt/business-os/backups'),edge_secrets)
         phase='storage_files'
         materialize_storage(snapshot,stage/'storage')
         shutil.copyfile(folder/'service_probe.mjs',stage/'service_probe.mjs')
@@ -320,6 +327,8 @@ SET LOCAL log_statement='none'; SET LOCAL log_min_error_statement='panic'; SET L
                 command[-1:-1]=['--mount',f'type=bind,source={stage/"storage"},target=/var/lib/storage',
                   '--mount',f'type=bind,source={stage/"service_probe.mjs"},target=/bos/service_probe.mjs,readonly',
                   '--mount',f'type=bind,source={stage/"probe-config.json"},target=/bos/probe-config.json,readonly']
+                if prepared_edge:
+                    command[-1:-1]=['--mount',f'type=bind,source={prepared_edge["root"]/"probe"},target=/bos-edge,readonly']
             cid=runner.create(name,command)
             if runner.inspect(cid)['HostConfig']['NetworkMode']!='container:'+db:
                 raise ValueError('Service is not confined to clone namespace')
@@ -346,6 +355,11 @@ SET LOCAL log_statement='none'; SET LOCAL log_min_error_statement='panic'; SET L
                   'storage_write_cycle','storage_signed_read')
         if (not all(api.get(k) is True for k in required) or api.get('storage_objects')!=STORAGE_COUNT
                 or api.get('storage_bytes')!=STORAGE_BYTES):raise ValueError('API proof incomplete')
+        edge_report=None
+        if prepared_edge:
+            phase='edge_runtime_probe'
+            edge_report=run_edge(runner,prepared_edge,db,storage_id,
+                                 {'jwt_secret':jwt_secret,'anon':anon,'service':service})
         phase='postcheck'
         counts=json.loads(runner.sql(db,COUNTS_SQL).stdout)
         if counts!=EXPECTED_COUNTS or json.loads(runner.sql(db,OBJECTS_SQL).stdout)!=expected_objects:
@@ -356,6 +370,9 @@ SET LOCAL log_statement='none'; SET LOCAL log_min_error_statement='panic'; SET L
         report={'api':api,'counts':counts,'vault_values_verified':3,'source_container':args.source_container,
                 'source_dump_sha256':source_sha,'image_ids':{'db':image,**{k:v['image_id'] for k,v in services.items()}},
                 'scope':'offline REST/Auth-admin/Storage trial; no app login, Edge Functions or cutover verified'}
+        if edge_report:
+            report['edge']=edge_report
+            report['scope']='offline core services and synthetic BOS login/bootstrap; no browser UI, external integrations, HTTPS or cutover'
         success=True
     except (Exception,KeyboardInterrupt):
         print('BOS_SERVICE_TRIAL_FAILED phase='+phase,flush=True)
@@ -373,7 +390,12 @@ SET LOCAL log_statement='none'; SET LOCAL log_min_error_statement='panic'; SET L
             os.fsync(output.fileno())
         print('Проверено:',json.dumps(report['api'],ensure_ascii=False),flush=True)
         print('BOS_SERVICE_TRIAL_OK',flush=True)
-        print('Edge Functions, вход в приложение, HTTPS и финальное переключение ещё впереди.')
+        if report.get('edge'):
+            print('Проверка BOS:',json.dumps({k:v for k,v in report['edge'].items()
+                                            if k not in ('image_id','function_snapshot','scope')},ensure_ascii=False),flush=True)
+            print('BOS_EDGE_TRIAL_OK',flush=True)
+            print('Вход проверен через API на временном сотруднике. Браузер, интеграции, HTTPS и переключение ещё впереди.')
+        else:print('Edge Functions, вход в приложение, HTTPS и финальное переключение ещё впереди.')
         return 0
     print('Файлы и закрытый журнал сохранены; полный журнал в чат не отправляйте.',flush=True)
     return 1
