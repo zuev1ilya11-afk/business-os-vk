@@ -5500,6 +5500,13 @@ window.masterOrderContact179=(id,action)=>['markCalled','confirmAgreement'].incl
 window.masterOrderReport179=function(id){const o=orderById(id);if(!liveMaster()||busy||uncertain.has(String(id))||!active(o)||confirmedCount(o)!==3)return;return window.masterWorkflowComplete?.(id)};
 window.masterOrderAgree179=function(id){
  const o=orderById(id);if(!o||!liveMaster()||!active(o))return;
+ const contactStatus=String(o?.master_contact_status||'');
+ if(contactStatus==='pending'){
+  const pending=[...(Array.isArray(o?.master_contact_history)?o.master_contact_history:[])].reverse().find(x=>String(x?.result||'')==='pending');
+  if(pending&&typeof window.openMasterContactResultForOrder==='function'){window.openMasterContactResultForOrder(id);return}
+  message(id,'Сначала укажите итог звонка.');return;
+ }
+ if(!o.master_called_at||(contactStatus&&contactStatus!=='agreed')){message(id,'Сначала свяжитесь с клиентом и выберите итог «Договорились».');return}
  openModal(`<h2>Согласовать дату и время</h2><p class="muted">Договоритесь с клиентом и укажите согласованные дату и время.</p><form id="masterOrderAgree179Form" class="form"><label>Дата *</label><input type="date" name="scheduled_date" required min="${localToday()}" value="${escv(dateOf(o))}"><label>Время *</label><input type="time" name="scheduled_time" required step="900" value="${escv(timeOf(o))}"><div class="moa179AgreementContact"></div><p class="muted">После сохранения заявка перейдёт в рабочий сценарий мастера.</p><button type="submit" class="primary wide">Сохранить</button><button type="button" class="secondary wide" onclick="openOrder('${escv(o.id)}')">Отмена</button><p id="masterOrderAgree179Msg" class="muted" role="status"></p></form>`);
  const form=document.getElementById('masterOrderAgree179Form');if(!form)return;
  const msg=form.querySelector('#masterOrderAgree179Msg'),contact=form.querySelector('.moa179AgreementContact'),submit=form.querySelector('[type=submit]');
