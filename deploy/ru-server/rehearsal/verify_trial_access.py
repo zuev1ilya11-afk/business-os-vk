@@ -54,12 +54,58 @@ def validate_inventory(value):
         raise ValueError('Duplicate database grant')
 
 
-def validate_baseline(baseline, query):
+def validate_baseline(baseline, query, validator=validate_inventory):
     if (baseline.get('project_id') != 'obsropbslfwtanyspjbi'
             or baseline.get('query_sha256') != hashlib.sha256(query).hexdigest()
             or not baseline.get('captured_at')):
         raise ValueError('Source baseline identity mismatch')
-    validate_inventory(baseline['inventory'])
+    validator(baseline['inventory'])
+
+
+def validate_details(value):
+    if (not isinstance(value, dict) or set(value) != {
+            'schema_metadata', 'extension_member_owners', 'extension_security_definers'}):
+        raise ValueError('Incomplete access details')
+    for category in ('schema_metadata', 'extension_member_owners'):
+        if (not isinstance(value[category], dict) or not value[category]
+                or not all(isinstance(k, str) and k for k in value[category])):
+            raise ValueError('Missing named access entries')
+    for owner in value['extension_member_owners'].values():
+        if not isinstance(owner, str) or not owner:
+            raise ValueError('Invalid member owner')
+    definers = value['extension_security_definers']
+    if (not isinstance(definers, list) or not all(isinstance(k, str) for k in definers)
+            or len(set(definers)) != len(definers)
+            or not set(definers).issubset(value['extension_member_owners'])):
+        raise ValueError('Invalid security definer inventory')
+    for schema in value['schema_metadata'].values():
+        if (not isinstance(schema, list) or len(schema) != 2
+                or not isinstance(schema[0], str) or not schema[0] or not isinstance(schema[1], list)):
+            raise ValueError('Invalid schema metadata')
+        for grant in schema[1]:
+            if (not isinstance(grant, list) or len(grant) != 4
+                    or not all(isinstance(v, str) and v for v in grant[:2])
+                    or grant[2] not in ('CREATE', 'USAGE') or type(grant[3]) is not bool):
+                raise ValueError('Invalid schema grant')
+
+
+def compare_details(expected, actual):
+    validate_details(expected)
+    validate_details(actual)
+
+    def differences(category):
+        return {k: {'source': expected[category].get(k), 'trial': actual[category].get(k)}
+                for k in sorted(set(expected[category]) | set(actual[category]))
+                if expected[category].get(k) != actual[category].get(k)}
+
+    schemas = differences('schema_metadata')
+    owners = differences('extension_member_owners')
+    old_definers, new_definers = map(set, (expected['extension_security_definers'],
+                                          actual['extension_security_definers']))
+    changed_definers = sorted(((old_definers | new_definers) & set(owners)) | (old_definers ^ new_definers))
+    return {'schema_differences': schemas, 'member_owner_differences': owners,
+            'changed_security_definers': changed_definers,
+            'all_match': not (schemas or owners or changed_definers)}
 
 
 def compare(expected, actual):
@@ -86,7 +132,7 @@ def run_command(command, stage, **kwargs):
     return result
 
 
-def collect(cid, stage, query):
+def collect(cid, stage, query, validator=validate_inventory):
     psql = ['docker', 'exec', '-i', cid, 'psql', '-X', '-w', '-qAt',
             '-h', '127.0.0.1', '-U', 'bos_restore_loader', '-d', 'bos_restore_check',
             '-v', 'ON_ERROR_STOP=1', '-v', 'VERBOSITY=terse']
@@ -107,7 +153,7 @@ def collect(cid, stage, query):
         if result.returncode:
             raise RuntimeError('Catalog read failed')
         inventory = json.loads(result.stdout)
-        validate_inventory(inventory)
+        validator(inventory)
         return inventory
     finally:
         if not stop_trial(cid):
@@ -119,14 +165,17 @@ def collect(cid, stage, query):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--container', required=True)
+    parser.add_argument('--details', action='store_true', help='Compare named schemas and extension member owners')
     args = parser.parse_args()
     os.umask(0o077)
     if os.geteuid() != 0:
         raise ValueError('Run as root')
     folder = Path(__file__).resolve().parent
-    query = (folder / 'access_inventory.sql').read_bytes()
-    baseline = json.loads((folder / 'source_access_inventory.json').read_bytes())
-    validate_baseline(baseline, query)
+    mode = 'details' if args.details else 'inventory'
+    validator = validate_details if args.details else validate_inventory
+    query = (folder / f'access_{mode}.sql').read_bytes()
+    baseline = json.loads((folder / f'source_access_{mode}.json').read_bytes())
+    validate_baseline(baseline, query, validator)
     info = json.loads(subprocess.run(['docker', 'inspect', args.container], check=True,
                       capture_output=True, text=True, timeout=20).stdout)[0]
     cid = validate_container(info, args.container)
@@ -138,13 +187,27 @@ def main():
 
     signal.signal(signal.SIGTERM, interrupted)
     signal.signal(signal.SIGHUP, interrupted)
-    actual = collect(cid, stage, query)
-    comparison = compare(baseline['inventory'], actual)
+    actual = collect(cid, stage, query, validator)
+    comparator = compare_details if args.details else compare
+    comparison = comparator(baseline['inventory'], actual)
     report = {'source_project': baseline['project_id'], 'source_captured_at': baseline['captured_at'],
               'query_sha256': baseline['query_sha256'], 'container_id': cid,
-              'expected': baseline['inventory'], 'actual': actual, 'comparison': comparison,
+              'expected': baseline['inventory'], 'actual': actual, 'comparison': comparison, 'mode': mode,
               'scope': 'current catalog metadata; not complete service or migration validation'}
     (stage / 'report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
+    if args.details:
+        print('Расхождения схем (источник / пробная БД):', json.dumps(comparison['schema_differences'], ensure_ascii=False))
+        groups = {}
+        for name, change in comparison['member_owner_differences'].items():
+            group = (name.split('|', 1)[0], change['source'], change['trial'])
+            groups[group] = groups.get(group, 0) + 1
+        print('Различия владельцев объектов расширений:', json.dumps([
+            {'extension': k[0], 'source_owner': k[1], 'trial_owner': k[2], 'objects': count}
+            for k, count in sorted(groups.items(), key=lambda item: json.dumps(item[0]))]))
+        print('Изменённые SECURITY DEFINER:', json.dumps(comparison['changed_security_definers']))
+        print('BOS_TRIAL_ACCESS_DETAILS_OK', flush=True)
+        print('BOS_TRIAL_ACCESS_DETAILS_MATCH' if comparison['all_match'] else 'BOS_TRIAL_ACCESS_DETAILS_DIFFERENCES', flush=True)
+        return 0
     print('Категорий совпало:', len(CATEGORIES) - len(comparison['different_categories']), '/', len(CATEGORIES))
     print('Расхождения категорий:', json.dumps(comparison['different_categories'], ensure_ascii=False))
     print('Владелец базы совпал:', comparison['database_owner_match'])
