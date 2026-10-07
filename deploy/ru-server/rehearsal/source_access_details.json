@@ -1,0 +1,917 @@
+{
+  "project_id": "obsropbslfwtanyspjbi",
+  "captured_at": "2026-10-07T18:41:49.191Z",
+  "query_sha256": "b9955ddb584eda2e567d9b275a5136caca112f181290a05d3d43d3121fc307ff",
+  "inventory": {
+    "schema_metadata": {
+      "bos": [
+        "postgres",
+        [
+          [
+            "postgres",
+            "postgres",
+            "CREATE",
+            false
+          ],
+          [
+            "postgres",
+            "postgres",
+            "USAGE",
+            false
+          ],
+          [
+            "postgres",
+            "service_role",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "net": [
+        "supabase_admin",
+        [
+          [
+            "supabase_admin",
+            "PUBLIC",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "anon",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "authenticated",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "postgres",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "service_role",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "CREATE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_functions_admin",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "auth": [
+        "supabase_admin",
+        [
+          [
+            "supabase_admin",
+            "anon",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "authenticated",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "dashboard_user",
+            "CREATE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "dashboard_user",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "postgres",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "service_role",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "CREATE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_auth_admin",
+            "CREATE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_auth_admin",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "cron": [
+        "supabase_admin",
+        [
+          [
+            "supabase_admin",
+            "postgres",
+            "USAGE",
+            true
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "CREATE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "agent": [
+        "postgres",
+        [
+          [
+            "postgres",
+            "postgres",
+            "CREATE",
+            false
+          ],
+          [
+            "postgres",
+            "postgres",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "vault": [
+        "supabase_admin",
+        [
+          [
+            "supabase_admin",
+            "postgres",
+            "USAGE",
+            true
+          ],
+          [
+            "supabase_admin",
+            "service_role",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "CREATE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "public": [
+        "pg_database_owner",
+        [
+          [
+            "pg_database_owner",
+            "PUBLIC",
+            "USAGE",
+            false
+          ],
+          [
+            "pg_database_owner",
+            "anon",
+            "USAGE",
+            false
+          ],
+          [
+            "pg_database_owner",
+            "authenticated",
+            "USAGE",
+            false
+          ],
+          [
+            "pg_database_owner",
+            "pg_database_owner",
+            "CREATE",
+            false
+          ],
+          [
+            "pg_database_owner",
+            "pg_database_owner",
+            "USAGE",
+            false
+          ],
+          [
+            "pg_database_owner",
+            "postgres",
+            "USAGE",
+            false
+          ],
+          [
+            "pg_database_owner",
+            "service_role",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "graphql": [
+        "supabase_admin",
+        [
+          [
+            "supabase_admin",
+            "anon",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "authenticated",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "postgres",
+            "USAGE",
+            true
+          ],
+          [
+            "supabase_admin",
+            "service_role",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "CREATE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "storage": [
+        "supabase_admin",
+        [
+          [
+            "supabase_admin",
+            "anon",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "authenticated",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "dashboard_user",
+            "CREATE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "dashboard_user",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "postgres",
+            "USAGE",
+            true
+          ],
+          [
+            "supabase_admin",
+            "service_role",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "CREATE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_storage_admin",
+            "CREATE",
+            true
+          ],
+          [
+            "supabase_admin",
+            "supabase_storage_admin",
+            "USAGE",
+            true
+          ]
+        ]
+      ],
+      "realtime": [
+        "supabase_admin",
+        [
+          [
+            "supabase_admin",
+            "anon",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "authenticated",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "postgres",
+            "USAGE",
+            true
+          ],
+          [
+            "supabase_admin",
+            "service_role",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "CREATE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_realtime_admin",
+            "CREATE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_realtime_admin",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "pgbouncer": [
+        "pgbouncer",
+        [
+          [
+            "pgbouncer",
+            "pgbouncer",
+            "CREATE",
+            false
+          ],
+          [
+            "pgbouncer",
+            "pgbouncer",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "extensions": [
+        "postgres",
+        [
+          [
+            "postgres",
+            "anon",
+            "USAGE",
+            false
+          ],
+          [
+            "postgres",
+            "authenticated",
+            "USAGE",
+            false
+          ],
+          [
+            "postgres",
+            "dashboard_user",
+            "CREATE",
+            false
+          ],
+          [
+            "postgres",
+            "dashboard_user",
+            "USAGE",
+            false
+          ],
+          [
+            "postgres",
+            "postgres",
+            "CREATE",
+            false
+          ],
+          [
+            "postgres",
+            "postgres",
+            "USAGE",
+            false
+          ],
+          [
+            "postgres",
+            "service_role",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "graphql_public": [
+        "supabase_admin",
+        [
+          [
+            "supabase_admin",
+            "anon",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "authenticated",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "postgres",
+            "USAGE",
+            true
+          ],
+          [
+            "supabase_admin",
+            "service_role",
+            "USAGE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "CREATE",
+            false
+          ],
+          [
+            "supabase_admin",
+            "supabase_admin",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "bos_push_private": [
+        "postgres",
+        [
+          [
+            "postgres",
+            "postgres",
+            "CREATE",
+            false
+          ],
+          [
+            "postgres",
+            "postgres",
+            "USAGE",
+            false
+          ],
+          [
+            "postgres",
+            "service_role",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "bos_avito_private": [
+        "postgres",
+        [
+          [
+            "postgres",
+            "postgres",
+            "CREATE",
+            false
+          ],
+          [
+            "postgres",
+            "postgres",
+            "USAGE",
+            false
+          ],
+          [
+            "postgres",
+            "service_role",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "bos_hands_private": [
+        "postgres",
+        [
+          [
+            "postgres",
+            "postgres",
+            "CREATE",
+            false
+          ],
+          [
+            "postgres",
+            "postgres",
+            "USAGE",
+            false
+          ],
+          [
+            "postgres",
+            "service_role",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "bos_control_private": [
+        "postgres",
+        [
+          [
+            "postgres",
+            "postgres",
+            "CREATE",
+            false
+          ],
+          [
+            "postgres",
+            "postgres",
+            "USAGE",
+            false
+          ],
+          [
+            "postgres",
+            "service_role",
+            "USAGE",
+            false
+          ]
+        ]
+      ],
+      "supabase_migrations": [
+        "postgres",
+        [
+          [
+            "postgres",
+            "postgres",
+            "CREATE",
+            false
+          ],
+          [
+            "postgres",
+            "postgres",
+            "USAGE",
+            false
+          ]
+        ]
+      ]
+    },
+    "extension_member_owners": {
+      "pg_cron|relation|cron.job": "supabase_admin",
+      "pg_net|function|net.wake()": "supabase_admin",
+      "pg_cron|relation|cron.jobid_seq": "supabase_admin",
+      "pg_cron|relation|cron.runid_seq": "supabase_admin",
+      "pg_net|relation|net._http_response": "supabase_admin",
+      "pg_net|function|net.worker_restart()": "supabase_admin",
+      "pg_cron|relation|cron.job_run_details": "supabase_admin",
+      "supabase_vault|relation|vault.secrets": "supabase_admin",
+      "pg_net|relation|net.http_request_queue": "supabase_admin",
+      "pg_net|function|net.check_worker_is_up()": "supabase_admin",
+      "pg_net|function|net.wait_until_running()": "supabase_admin",
+      "uuid-ossp|function|extensions.uuid_nil()": "postgres",
+      "pgcrypto|function|extensions.armor(bytea)": "postgres",
+      "pgcrypto|function|extensions.dearmor(text)": "postgres",
+      "pgcrypto|function|extensions.gen_salt(text)": "postgres",
+      "uuid-ossp|function|extensions.uuid_ns_dns()": "postgres",
+      "uuid-ossp|function|extensions.uuid_ns_oid()": "postgres",
+      "uuid-ossp|function|extensions.uuid_ns_url()": "postgres",
+      "pg_cron|function|cron.job_cache_invalidate()": "supabase_admin",
+      "uuid-ossp|function|extensions.uuid_ns_x500()": "postgres",
+      "pg_net|relation|net.http_request_queue_id_seq": "supabase_admin",
+      "pgcrypto|function|extensions.crypt(text, text)": "postgres",
+      "pgcrypto|function|extensions.gen_random_uuid()": "postgres",
+      "pgcrypto|function|extensions.pgp_key_id(bytea)": "postgres",
+      "pg_cron|function|cron.unschedule(job_id bigint)": "supabase_admin",
+      "pg_cron|function|cron.unschedule(job_name text)": "supabase_admin",
+      "pgcrypto|function|extensions.digest(text, text)": "postgres",
+      "supabase_vault|relation|vault.decrypted_secrets": "supabase_admin",
+      "pgcrypto|function|extensions.digest(bytea, text)": "postgres",
+      "uuid-ossp|function|extensions.uuid_generate_v1()": "postgres",
+      "uuid-ossp|function|extensions.uuid_generate_v4()": "postgres",
+      "btree_gist|function|extensions.oid_dist(oid, oid)": "supabase_admin",
+      "uuid-ossp|function|extensions.uuid_generate_v1mc()": "postgres",
+      "pgcrypto|function|extensions.hmac(text, text, text)": "postgres",
+      "btree_gist|function|extensions.date_dist(date, date)": "supabase_admin",
+      "pgcrypto|function|extensions.gen_salt(text, integer)": "postgres",
+      "btree_gist|function|extensions.gbt_ts_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbtreekey2_in(cstring)": "supabase_admin",
+      "btree_gist|function|extensions.gbtreekey4_in(cstring)": "supabase_admin",
+      "btree_gist|function|extensions.gbtreekey8_in(cstring)": "supabase_admin",
+      "pgcrypto|function|extensions.hmac(bytea, bytea, text)": "postgres",
+      "btree_gist|function|extensions.cash_dist(money, money)": "supabase_admin",
+      "btree_gist|function|extensions.float4_dist(real, real)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_oid_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_var_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbtreekey16_in(cstring)": "supabase_admin",
+      "btree_gist|function|extensions.gbtreekey32_in(cstring)": "supabase_admin",
+      "pg_net|function|net._await_response(request_id bigint)": "supabase_admin",
+      "pgcrypto|function|extensions.gen_random_bytes(integer)": "postgres",
+      "btree_gist|function|extensions.gbt_bool_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_cash_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_date_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_decompress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_enum_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int2_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int4_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int8_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_intv_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_time_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_uuid_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_ts_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbtreekey_var_in(cstring)": "supabase_admin",
+      "btree_gist|function|extensions.int8_dist(bigint, bigint)": "supabase_admin",
+      "pgcrypto|function|extensions.decrypt(bytea, bytea, text)": "postgres",
+      "pgcrypto|function|extensions.encrypt(bytea, bytea, text)": "postgres",
+      "pgcrypto|function|extensions.pgp_sym_encrypt(text, text)": "postgres",
+      "btree_gist|function|extensions.gbt_bit_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float4_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float8_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad8_fetch(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_oid_compress(internal)": "supabase_admin",
+      "pg_stat_statements|relation|extensions.pg_stat_statements": "postgres",
+      "pgcrypto|function|extensions.armor(bytea, text[], text[])": "postgres",
+      "pgcrypto|function|extensions.pgp_pub_encrypt(text, bytea)": "postgres",
+      "pgcrypto|function|extensions.pgp_sym_decrypt(bytea, text)": "postgres",
+      "supabase_vault|function|vault._crypto_aead_det_noncegen()": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bool_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_cash_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_date_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_enum_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_inet_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int2_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int4_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int8_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_intv_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_text_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_time_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_tstz_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_uuid_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.int4_dist(integer, integer)": "supabase_admin",
+      "pgcrypto|function|extensions.pgp_pub_decrypt(bytea, bytea)": "postgres",
+      "btree_gist|function|extensions.gbt_bytea_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_var_decompress(internal)": "supabase_admin",
+      "pg_cron|function|cron.schedule(schedule text, command text)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bpchar_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float4_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float8_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_intv_decompress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad8_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_timetz_compress(internal)": "supabase_admin",
+      "btree_gist|function|extensions.int2_dist(smallint, smallint)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_numeric_compress(internal)": "supabase_admin",
+      "pg_stat_statements|relation|extensions.pg_stat_statements_info": "postgres",
+      "pgcrypto|function|extensions.pgp_sym_encrypt(text, text, text)": "postgres",
+      "btree_gist|function|extensions.gbt_ts_union(internal, internal)": "supabase_admin",
+      "pg_net|function|net._urlencode_string(string character varying)": "supabase_admin",
+      "pgcrypto|function|extensions.pgp_pub_encrypt(text, bytea, text)": "postgres",
+      "pgcrypto|function|extensions.pgp_sym_decrypt(bytea, text, text)": "postgres",
+      "pgcrypto|function|extensions.pgp_sym_decrypt_bytea(bytea, text)": "postgres",
+      "pgcrypto|function|extensions.pgp_sym_encrypt_bytea(bytea, text)": "postgres",
+      "btree_gist|function|extensions.gbt_bit_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_oid_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.interval_dist(interval, interval)": "supabase_admin",
+      "pgcrypto|function|extensions.pgp_pub_decrypt(bytea, bytea, text)": "postgres",
+      "pgcrypto|function|extensions.pgp_pub_decrypt_bytea(bytea, bytea)": "postgres",
+      "pgcrypto|function|extensions.pgp_pub_encrypt_bytea(bytea, bytea)": "postgres",
+      "btree_gist|function|extensions.gbt_bool_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_cash_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_date_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_enum_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_inet_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int2_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int4_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int8_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_intv_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_text_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_time_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_uuid_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bytea_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad_union(internal, internal)": "supabase_admin",
+      "pgcrypto|function|extensions.decrypt_iv(bytea, bytea, bytea, text)": "postgres",
+      "pgcrypto|function|extensions.encrypt_iv(bytea, bytea, bytea, text)": "postgres",
+      "btree_gist|function|extensions.gbt_float4_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float8_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad8_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_ts_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bit_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_numeric_union(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_oid_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbtreekey2_out(extensions.gbtreekey2)": "supabase_admin",
+      "btree_gist|function|extensions.gbtreekey4_out(extensions.gbtreekey4)": "supabase_admin",
+      "btree_gist|function|extensions.gbtreekey8_out(extensions.gbtreekey8)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bool_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_cash_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_date_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_enum_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_inet_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int2_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int4_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int8_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_intv_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_text_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_time_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_uuid_picksplit(internal, internal)": "supabase_admin",
+      "pgcrypto|function|extensions.pgp_sym_decrypt_bytea(bytea, text, text)": "postgres",
+      "pgcrypto|function|extensions.pgp_sym_encrypt_bytea(bytea, text, text)": "postgres",
+      "btree_gist|function|extensions.gbt_bytea_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbtreekey16_out(extensions.gbtreekey16)": "supabase_admin",
+      "btree_gist|function|extensions.gbtreekey32_out(extensions.gbtreekey32)": "supabase_admin",
+      "pgcrypto|function|extensions.pgp_pub_decrypt(bytea, bytea, text, text)": "postgres",
+      "pgcrypto|function|extensions.pgp_pub_decrypt_bytea(bytea, bytea, text)": "postgres",
+      "pgcrypto|function|extensions.pgp_pub_encrypt_bytea(bytea, bytea, text)": "postgres",
+      "btree_gist|function|extensions.gbt_float4_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float8_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad8_picksplit(internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_numeric_picksplit(internal, internal)": "supabase_admin",
+      "uuid-ossp|function|extensions.uuid_generate_v3(namespace uuid, name text)": "postgres",
+      "uuid-ossp|function|extensions.uuid_generate_v5(namespace uuid, name text)": "postgres",
+      "btree_gist|function|extensions.gbtreekey_var_out(extensions.gbtreekey_var)": "supabase_admin",
+      "pg_cron|function|cron.schedule(job_name text, schedule text, command text)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_ts_penalty(internal, internal, internal)": "supabase_admin",
+      "pg_net|function|net.http_collect_response(request_id bigint, async boolean)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bit_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_oid_penalty(internal, internal, internal)": "supabase_admin",
+      "pg_net|function|net._http_collect_response(request_id bigint, async boolean)": "supabase_admin",
+      "pgcrypto|function|extensions.pgp_pub_decrypt_bytea(bytea, bytea, text, text)": "postgres",
+      "btree_gist|function|extensions.gbt_bool_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_cash_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_date_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_enum_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_inet_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int2_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int4_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int8_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_intv_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_text_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_time_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_uuid_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.float8_dist(double precision, double precision)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bytea_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float4_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float8_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad8_penalty(internal, internal, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_numeric_penalty(internal, internal, internal)": "supabase_admin",
+      "pg_net|function|net._encode_url_with_params_array(url text, params_array text[])": "supabase_admin",
+      "pgcrypto|function|extensions.pgp_armor_headers(text, OUT key text, OUT value text)": "postgres",
+      "btree_gist|function|extensions.gbt_oid_distance(internal, oid, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.time_dist(time without time zone, time without time zone)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bit_consistent(internal, bit, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_date_distance(internal, date, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_oid_consistent(internal, oid, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_cash_distance(internal, money, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_date_consistent(internal, date, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float4_distance(internal, real, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_inet_consistent(internal, inet, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int8_distance(internal, bigint, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_text_consistent(internal, text, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_uuid_consistent(internal, uuid, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_cash_consistent(internal, money, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int4_distance(internal, integer, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.tstz_dist(timestamp with time zone, timestamp with time zone)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bytea_consistent(internal, bytea, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float4_consistent(internal, real, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int2_distance(internal, smallint, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int8_consistent(internal, bigint, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_intv_distance(internal, interval, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bool_consistent(internal, boolean, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_enum_consistent(internal, anyenum, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int4_consistent(internal, integer, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int2_consistent(internal, smallint, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_intv_consistent(internal, interval, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad_consistent(internal, macaddr, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.ts_dist(timestamp without time zone, timestamp without time zone)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad8_consistent(internal, macaddr8, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_numeric_consistent(internal, numeric, smallint, oid, internal)": "supabase_admin",
+      "pg_net|function|net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bpchar_consistent(internal, character, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_oid_same(extensions.gbtreekey8, extensions.gbtreekey8, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bool_same(extensions.gbtreekey2, extensions.gbtreekey2, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_date_same(extensions.gbtreekey8, extensions.gbtreekey8, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_enum_same(extensions.gbtreekey8, extensions.gbtreekey8, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int2_same(extensions.gbtreekey4, extensions.gbtreekey4, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int4_same(extensions.gbtreekey8, extensions.gbtreekey8, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_ts_same(extensions.gbtreekey16, extensions.gbtreekey16, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_cash_same(extensions.gbtreekey16, extensions.gbtreekey16, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float4_same(extensions.gbtreekey8, extensions.gbtreekey8, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_inet_same(extensions.gbtreekey16, extensions.gbtreekey16, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_int8_same(extensions.gbtreekey16, extensions.gbtreekey16, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_intv_same(extensions.gbtreekey32, extensions.gbtreekey32, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_time_same(extensions.gbtreekey16, extensions.gbtreekey16, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_uuid_same(extensions.gbtreekey32, extensions.gbtreekey32, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float8_distance(internal, double precision, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad_same(extensions.gbtreekey16, extensions.gbtreekey16, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float8_same(extensions.gbtreekey16, extensions.gbtreekey16, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_macad8_same(extensions.gbtreekey16, extensions.gbtreekey16, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bit_same(extensions.gbtreekey_var, extensions.gbtreekey_var, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_float8_consistent(internal, double precision, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_text_same(extensions.gbtreekey_var, extensions.gbtreekey_var, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_bytea_same(extensions.gbtreekey_var, extensions.gbtreekey_var, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_time_distance(internal, time without time zone, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_timetz_consistent(internal, time with time zone, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_numeric_same(extensions.gbtreekey_var, extensions.gbtreekey_var, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_time_consistent(internal, time without time zone, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_tstz_distance(internal, timestamp with time zone, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_ts_distance(internal, timestamp without time zone, smallint, oid, internal)": "supabase_admin",
+      "pg_net|function|net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_tstz_consistent(internal, timestamp with time zone, smallint, oid, internal)": "supabase_admin",
+      "btree_gist|function|extensions.gbt_ts_consistent(internal, timestamp without time zone, smallint, oid, internal)": "supabase_admin",
+      "pg_net|function|net.http_delete(url text, params jsonb, headers jsonb, timeout_milliseconds integer, body jsonb)": "supabase_admin",
+      "supabase_vault|function|vault.create_secret(new_secret text, new_name text, new_description text, new_key_id uuid)": "supabase_admin",
+      "pg_cron|function|cron.alter_job(job_id bigint, schedule text, command text, database text, username text, active boolean)": "supabase_admin",
+      "pg_stat_statements|function|extensions.pg_stat_statements_reset(userid oid, dbid oid, queryid bigint, minmax_only boolean)": "postgres",
+      "pg_stat_statements|function|extensions.pg_stat_statements_info(OUT dealloc bigint, OUT stats_reset timestamp with time zone)": "postgres",
+      "supabase_vault|function|vault._crypto_aead_det_decrypt(message bytea, additional bytea, key_id bigint, context bytea, nonce bytea)": "supabase_admin",
+      "supabase_vault|function|vault._crypto_aead_det_encrypt(message bytea, additional bytea, key_id bigint, context bytea, nonce bytea)": "supabase_admin",
+      "supabase_vault|function|vault.update_secret(secret_id uuid, new_secret text, new_name text, new_description text, new_key_id uuid)": "supabase_admin",
+      "pg_cron|function|cron.schedule_in_database(job_name text, schedule text, command text, database text, username text, active boolean)": "supabase_admin",
+      "pg_stat_statements|function|extensions.pg_stat_statements(showtext boolean, OUT userid oid, OUT dbid oid, OUT toplevel boolean, OUT queryid bigint, OUT query text, OUT plans bigint, OUT total_plan_time double precision, OUT min_plan_time double precision, OUT max_plan_time double precision, OUT mean_plan_time double precision, OUT stddev_plan_time double precision, OUT calls bigint, OUT total_exec_time double precision, OUT min_exec_time double precision, OUT max_exec_time double precision, OUT mean_exec_time double precision, OUT stddev_exec_time double precision, OUT rows bigint, OUT shared_blks_hit bigint, OUT shared_blks_read bigint, OUT shared_blks_dirtied bigint, OUT shared_blks_written bigint, OUT local_blks_hit bigint, OUT local_blks_read bigint, OUT local_blks_dirtied bigint, OUT local_blks_written bigint, OUT temp_blks_read bigint, OUT temp_blks_written bigint, OUT shared_blk_read_time double precision, OUT shared_blk_write_time double precision, OUT local_blk_read_time double precision, OUT local_blk_write_time double precision, OUT temp_blk_read_time double precision, OUT temp_blk_write_time double precision, OUT wal_records bigint, OUT wal_fpi bigint, OUT wal_bytes numeric, OUT jit_functions bigint, OUT jit_generation_time double precision, OUT jit_inlining_count bigint, OUT jit_inlining_time double precision, OUT jit_optimization_count bigint, OUT jit_optimization_time double precision, OUT jit_emission_count bigint, OUT jit_emission_time double precision, OUT jit_deform_count bigint, OUT jit_deform_time double precision, OUT stats_since timestamp with time zone, OUT minmax_stats_since timestamp with time zone)": "postgres"
+    },
+    "extension_security_definers": [
+      "supabase_vault|function|vault.create_secret(new_secret text, new_name text, new_description text, new_key_id uuid)",
+      "supabase_vault|function|vault.update_secret(secret_id uuid, new_secret text, new_name text, new_description text, new_key_id uuid)"
+    ]
+  }
+}
