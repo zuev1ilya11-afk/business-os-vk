@@ -33,6 +33,20 @@ for(const width of [320,390,1280])test(`${width}: whole contact option is tappab
  await page.locator('#modalRoot .modal').screenshot({path:info.outputPath('contact-selected.png')});
  expect(await form.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
 });
+test('agreement action resumes a pending call result instead of opening a disabled date form',async({page})=>{
+ const {form}=await setup(page);
+ await expect.poll(()=>page.evaluate(()=>state.orders.find(o=>String(o.id)==='11')?.master_contact_status||'')).toBe('pending');
+ await page.evaluate(()=>{closeModal();window.masterOrderAgree179('11')});
+ await expect(page.locator('#masterContactResultForm')).toBeVisible();
+ await expect(page.locator('#masterOrderAgree179Form')).toHaveCount(0);
+ const result=page.locator('#masterContactResultForm');
+ await result.locator('input[value="agreed"]').check();
+ await result.getByRole('button',{name:'Сохранить итог',exact:true}).click();
+ const agreement=page.locator('#masterOrderAgree179Form');
+ await expect(agreement).toBeVisible();
+ await expect(agreement.getByRole('button',{name:'Сохранить',exact:true})).toBeEnabled();
+});
+
 test('form cannot change or submit twice while a result is saving; failed save keeps the draft',async({page})=>{
  const {form,db}=await setup(page);let release,writes=0;
  const gate=new Promise(resolve=>release=resolve);
