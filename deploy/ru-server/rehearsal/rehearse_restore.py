@@ -18,8 +18,45 @@ import tempfile
 import time
 
 IMAGE = 'supabase/postgres:17.6.1.136'
+CANDIDATE_IMAGE = ('supabase/postgres@sha256:'
+                   '4b438c22395a9a2bd19ee0522742cc9a1ff91db4732ff0c1b08fc07e9c767c22')
+EXPECTED_EXTENSIONS = {'pg_net': '0.20.4', 'pg_cron': '1.6.4', 'supabase_vault': '0.3.1',
+                       'pgcrypto': '1.3', 'uuid-ossp': '1.1', 'btree_gist': '1.7',
+                       'pg_stat_statements': '1.11'}
 DATABASE = 'bos_restore_check'
 LOADER = 'bos_restore_loader'
+
+
+def resolve_image(reference):
+    if reference not in (IMAGE, CANDIDATE_IMAGE):
+        raise ValueError('Image reference is not an inspected rehearsal candidate')
+    # Resolve the requested already-pulled image; never fall back to another tag.
+    result = subprocess.run(['docker', 'image', 'inspect', reference], check=True,
+                            capture_output=True, text=True, timeout=30)
+    rows = json.loads(result.stdout)
+    if not isinstance(rows, list) or len(rows) != 1:
+        raise ValueError('Expected exactly one local image')
+    info = rows[0]
+    image = info.get('Id', '')
+    if (not re.fullmatch(r'sha256:[a-f0-9]{64}', image)
+            or info.get('Os') != 'linux' or info.get('Architecture') != 'amd64'
+            or (reference == CANDIDATE_IMAGE and reference not in (info.get('RepoDigests') or []))):
+        raise ValueError('Local image identity differs from inspected candidate')
+    return image, {'requested_ref': reference, 'image_id': image,
+                   'repo_digests': info.get('RepoDigests') or [],
+                   'os': info['Os'], 'architecture': info['Architecture']}
+
+
+def check_restored_versions(stats, reference):
+    if stats['cron_enabled'] != 'off':
+        raise RuntimeError('Cron setting changed during restore')
+    if reference == CANDIDATE_IMAGE:
+        if stats.get('server_version_num') != 170011:
+            raise RuntimeError('Candidate PostgreSQL version differs')
+        versions = stats.get('extensions')
+        if (not isinstance(versions, dict)
+                or any(versions.get(name) != version for name, version in EXPECTED_EXTENSIONS.items())):
+            raise RuntimeError('Candidate installed extension versions differ')
 
 
 def adapt_roles(sql, loader):
@@ -120,6 +157,8 @@ def prepare_database(sql):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--backup', type=Path, required=True)
+    parser.add_argument('--image', choices=(IMAGE, CANDIDATE_IMAGE), default=IMAGE,
+                        help='Already-pulled original image or inspected immutable candidate')
     args = parser.parse_args()
     if os.geteuid() != 0:
         raise ValueError('Run as root on the new server')
@@ -129,12 +168,10 @@ def main():
         raise ValueError('Backup must be directly under /opt/business-os/backups')
     validate_backup(backup)
     role_sql = adapt_roles((backup / 'roles.sql').read_text(), LOADER)
-    # Resolve the already-pulled tag to a local immutable image ID. Never pull here.
-    info = subprocess.run(['docker', 'image', 'inspect', IMAGE], check=True,
-                          capture_output=True, text=True)
-    image = json.loads(info.stdout)[0]['Id']
+    image, provenance = resolve_image(args.image)
     stage = Path(tempfile.mkdtemp(prefix='restore-trial-', dir='/opt/business-os/deploy'))
     (stage / 'data').mkdir(mode=0o700)
+    (stage / 'image.json').write_text(json.dumps(provenance, sort_keys=True, indent=2) + '\n')
     password = secrets.token_hex(32)
     (stage / 'trial.env').write_text(
         f'POSTGRES_PASSWORD={password}\nPGPASSWORD={password}\n'
@@ -149,6 +186,7 @@ def main():
     success = False
     print('Каталог проверки:', stage, flush=True)
     print('Контейнер:', name, flush=True)
+    print('Образ:', args.image, flush=True)
 
     def run(command, input=None, timeout=300, required=True):
         result = subprocess.run(command, input=input, capture_output=True,
@@ -177,6 +215,7 @@ def main():
         run(['docker', 'start', cid])
         inspected = json.loads(run(['docker', 'inspect', cid]).stdout)[0]
         if (inspected['HostConfig']['NetworkMode'] != 'none'
+                or inspected.get('Image') != image
                 or inspected['HostConfig'].get('PortBindings')
                 or inspected['HostConfig']['RestartPolicy']['Name'] != 'no'):
             raise RuntimeError('Rehearsal isolation check failed')
@@ -213,6 +252,9 @@ def main():
              '--exit-on-error', '--single-transaction', '/backup/source.dump'], timeout=600)
         phase = 'verification'
         result = sql("SELECT json_build_object("
+                     "'postgresql', current_setting('server_version'),"
+                     "'server_version_num', current_setting('server_version_num')::integer,"
+                     "'extensions', (SELECT json_object_agg(extname,extversion) FROM pg_extension),"
                      "'orders', (SELECT count(*) FROM public.orders),"
                      "'staff', (SELECT count(*) FROM public.business_staff),"
                      "'auth_users', (SELECT count(*) FROM auth.users),"
@@ -222,8 +264,7 @@ def main():
                      "'pg_net', (SELECT extversion FROM pg_extension WHERE extname='pg_net'));",
                      user=LOADER, db=DATABASE)
         stats = json.loads(result.stdout)
-        if stats['cron_enabled'] != 'off':
-            raise RuntimeError('Cron setting changed during restore')
+        check_restored_versions(stats, args.image)
         print('Результат:', json.dumps(stats, ensure_ascii=False), flush=True)
         success = True
     except (Exception, KeyboardInterrupt):
