@@ -85,6 +85,7 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
+          python3 tests/ru-check.test.py
           python3 tests/ru-hands-stage.test.py
           python3 tests/ru-hands-activate.test.py
 

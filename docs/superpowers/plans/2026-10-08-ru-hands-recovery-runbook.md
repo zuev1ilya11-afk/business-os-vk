@@ -36,7 +36,7 @@
 | Public readiness URL | `/__bos_ready` returned 404 | Do not use this unexposed path as an activation gate |
 | Active release | `bos-release-to2wblxf`; bind-mounted sources/main/bundles | Fresh mount/config checks at each run |
 | RU DB | Earlier read-only inspection found the active release DB, order uniqueness and 4 active cron jobs | Actual edge-to-service routing, current snapshots, job success and backup restore |
-| Missing intake | One privately identified post-cutover order existed in source and was absent from RU | Full cutover-window comparison and live provider destination |
+| Missing intake | Post-cutover orders exist in the old source. The initial RU incident lookup omitted the canonical `hands:` prefix, so its zero result does not prove absence | Corrected RU lookup, complete comparison and live provider destination |
 | Hands patch | Pagination/error regressions tested; exact private sync matches; bundle creation, isolated validation and guarded activation succeeded | Actual provider intake and reconciliation |
 | Candidate startup | Owner's 16:41 screenshot confirms `BOS_HANDS_PREPARED`; all routing/container metadata checks passed; no production activation | Recheck the same release at activation |
 | Application regression | CI run `37789617299` on activation commit `c8cc5b94a366a3f3e4fe8818d664f2165e90740f` completed successfully | Legacy GAS test origin and actual RU roles/devices |
@@ -88,7 +88,7 @@ Local verification: 24 activation tests, 16 preparation tests and 712 server tes
 
 - [x] Activation verified trusted HTTPS, current gateway routing and the installed handler's valid-token missing-delivery response. A later invalid-token probe from the agent workspace was inconclusive due to a connection error, not counted as a passed negative-authentication test.
 - [x] Prepare the support request below to replace the existing destination while retaining the current token; do not create a duplicate subscription. The user previously configured the address through Hands support.
-- [ ] Owner sends the prepared request, unless separately authorizing a supported sending channel.
+- [x] Owner reported replacement at 17:25. Their follow-up asks about a new token; clarify whether this is a webhook token or Hands API key before changing any credential. The deployed webhook still uses the retained original token.
 - [ ] Confirm a genuine new incoming event is stored and visible in RU. Confirm repeat delivery does not create a duplicate and that new events no longer land in the old source. Do not close the old source prematurely.
 
 Support request (owner sends through their existing Hands support conversation):
@@ -96,6 +96,8 @@ Support request (owner sends through their existing Hands support conversation):
 > Здравствуйте! Мы перенесли приложение на новый сервер. Просьба изменить адрес нашей действующей webhook-подписки на `https://139.100.237.167/functions/v1/hands-api`, сохранив текущий параметр `?token=...` и его значение из существующей настройки. События и заголовки доставки оставить прежними. Замените адрес в текущей подписке, не создавая вторую. Подтвердите, пожалуйста, переключение и время изменения.
 
 The screenshot field `WEBHOOK_TOKEN_SHA256` is a fingerprint, not the webhook credential. The actual token is not included in this request or public documentation. Provider support already holds the existing subscription value; there is no need to paste it into this chat.
+
+17:29 checkpoint: old source receipt count 150, latest `2026-10-08T13:33:10.657642Z`, none after the owner's replacement report. New RU intake remains unverified. The corrected read-only diagnostic must recognize canonical `hands:<id>` as well as legacy numeric IDs; do not use the earlier zero match as a recovery authorization or proof of absence.
 
 ## Task 4: Reconcile missing orders safely
 

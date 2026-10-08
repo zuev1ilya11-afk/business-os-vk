@@ -124,7 +124,7 @@ The owner can execute scoped scripts through the RU server console; direct SSH f
 
 - Active release: `bos-release-to2wblxf`. A separate legacy database also exists, so database selection must use the actual REST connection and shared Docker network.
 - Read-only target inspection confirmed 116 orders, 107 from Hands, uniqueness on `(external_source, external_id)`, 147 webhook receipts and 4 active cron jobs at that checkpoint. Active cron count does not establish successful job execution.
-- The privately identified post-cutover source order was absent from RU. The last target receipt at inspection was `2026-10-08T09:11:07.689461Z`; a complete cutover-window reconciliation is still required.
+- The initial RU diagnostic returned zero for the privately identified order, but its lookup compared a bare numeric ID and omitted the canonical `hands:` prefix. That result does not establish absence and is superseded by the corrected lookup below. The last target receipt at that inspection was `2026-10-08T09:11:07.689461Z`; a complete cutover-window reconciliation is still required.
 - Target private Hands sync matched the reviewed v11 fixture. Private source/bundle backups were created on the server and a patched bundle was built successfully. No production source/bundle was replaced.
 - Isolated candidate API exited with status 1, without an OOM indication. Diagnostics exposed five absent candidate gateway settings: BOS Auth/REST/Storage origins, JWT secret and VK app secret. Complete dummy settings have been added; successful boot and the full exit cause are not yet confirmed.
 - The preparation script now reports live routing metadata and the REST database container match in one run. These are metadata checks, not service connectivity, database health or logical database identity proof.
@@ -152,3 +152,11 @@ The latest owner console screenshot supersedes the pending activation/boot check
 No recovery import or provider setting change was performed by the activation script. A separate invalid-token probe from the agent workspace hit a connection error and is inconclusive; it is not recorded as a passed negative-authentication test. Genuine Hands delivery into RU and reconciliation are still pending. The owner has a support request in the runbook to replace the existing webhook destination while preserving its token and delivery settings.
 
 The earlier console field `WEBHOOK_TOKEN_SHA256` showed the token's SHA-256 fingerprint, not the token itself. The actual value is excluded from public reports and the support-request draft.
+
+### 17:25–17:29 Moscow — provider report and diagnostic correction
+
+The owner reported that the provider replaced the setting, then asked where to insert a new token. This needs clarification: the deployed handler still retains the original webhook token, and no token rotation has been performed. Provider configuration and a genuine RU receipt are not independently confirmed.
+
+Read-only inspection of the old source at 17:27 found 118 orders, 110 from Hands; all 110 Hands external IDs use the canonical `hands:` prefix. This exposed a diagnostic defect: the earlier RU incident lookup only matched the unprefixed numeric value. `scripts/ru-check.py` now matches the exact canonical and legacy representations, retains strict numeric input validation and reports Hands-specific creation time. Five regression tests exercise the actual predicate against records, including unrelated sources, partial IDs and two-format duplicates. The unchanged preparation/activation scripts still use their original pinned read-only helper for routing; those immutable assets were not rewritten.
+
+At 17:29 the old source had 150 delivery receipts, latest `2026-10-08T13:33:10.657642Z`, with none since the owner's switch report at `14:25:43Z`. This is a checkpoint, not proof of working RU delivery. No reconciliation writes have occurred; the corrected RU lookup must be run before declaring any particular order absent.

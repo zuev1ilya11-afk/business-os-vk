@@ -85,6 +85,14 @@ def columns(db, dbname, table):
                "FROM information_schema.columns WHERE table_schema='public' AND table_name='" + table + "'")
 
 
+def incident_predicate(incident):
+    if not re.fullmatch(r"[0-9]{1,20}", incident):
+        raise CheckError("numeric external order ID required")
+    # Private v11 imports use hands:<id>; retain compatibility with legacy bare IDs.
+    return ("external_source='hands' AND CAST(external_id AS TEXT) IN ('" + incident +
+            "','hands:" + incident + "')")
+
+
 def sources(edge):
     root = None
     for mount in edge.get("Mounts", []):
@@ -145,10 +153,11 @@ def main():
         raise CheckError("orders schema differs; no application rows queried")
     emit("orders", sql(db, dbname, "SELECT json_build_object('total',count(*),"
          "'hands',count(*) FILTER(WHERE external_source='hands'),"
-         "'latest_created_at',max(created_at)) FROM public.orders"))
+         "'latest_created_at',max(created_at),'latest_hands_created_at',"
+         "max(created_at) FILTER(WHERE external_source='hands'),'checked_at',now()) FROM public.orders"))
     if incident is not None:
         emit("incident_matches", sql(db, dbname, "SELECT to_json(count(*)) FROM public.orders "
-             "WHERE external_source='hands' AND external_id::text='" + incident + "'"))
+             "WHERE " + incident_predicate(incident)))
     emit("orders_unique_keys", sql(db, dbname, "SELECT coalesce(json_agg(keys),'[]'::json) FROM ("
          "SELECT array_agg(a.attname ORDER BY k.n) AS keys FROM pg_index i "
          "CROSS JOIN LATERAL unnest(i.indkey) WITH ORDINALITY k(attnum,n) "
