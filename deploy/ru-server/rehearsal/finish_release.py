@@ -34,7 +34,7 @@ from vault_rekey_trial import PREPARE, COPY, CHECK_METADATA, REKEY, CHECK_VALUES
 from verify_trial_data import parse_data, digest_rows, SETTINGS
 from edge_trial_files import read_verified_secrets
 from edge_trial import new_fixture, with_fixture
-from release_files import MAIN, SOURCE, origin_host, validate_trial, rewrite_frontend, render_caddy, transform_attachment
+from release_files import MAIN, SOURCE, origin_host, validate_trial, rewrite_frontend, render_caddy, transform_attachment, copy_frontend_assets
 from release_source import Source, SourceStateError, durable_json, durable_text, flags_sql, recover_before_activation, RUNTIMES
 
 FOLDER=Path(__file__).resolve().parent
@@ -187,10 +187,7 @@ def build_frontend(r,repo,node_image):
     r.create(name,args);r.command(['docker','start','--attach',name],timeout=120)
     if r.inspect(name)['State']['ExitCode']!=0:raise RuntimeError('Frontend build failed')
     web=r.stage/'web';web.mkdir(mode=0o700)
-    for path in out.iterdir():
-        if path.is_file() and re.fullmatch(r'[A-Za-z0-9_-]+\.(?:html|js|css|svg|webmanifest|png|jpg|jpeg|webp|ico|woff2?)',path.name):
-            if path.name=='netlify-deploy-helper.html':continue
-            shutil.copyfile(path,web/path.name)
+    copy_frontend_assets(out,web)
     return hashlib.sha256((web/'build-version.js').read_bytes()).hexdigest()
 
 def copy_edge(r,trial,routes,values,jwt,anon,service):
