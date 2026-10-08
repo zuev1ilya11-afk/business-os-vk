@@ -155,6 +155,35 @@ def probe(paths, token, stage, label, *, pid):
     return json.loads(command(args, stage, label, input_data=data, timeout=20))
 
 
+def report_candidate_failure(cid, stage, gateway_text):
+    """Keep a runtime log tail private; print only fixed signals and env names."""
+    try:
+        info = json.loads(command(['docker', 'inspect', cid], stage, 'candidate-failed-metadata'))[0]
+        command(['docker', 'logs', '--tail', '120', cid], stage, 'candidate-runtime')
+        log = (stage / 'candidate-runtime.log').read_text(errors='replace').lower()
+        patterns = {
+            'dependency_network': r'network is unreachable|failed to lookup address|dns error|error sending request|connection refused|failed to fetch|import .*failed',
+            'missing_environment': r'environment variable|missing.*(?:secret|key|env)|required.*(?:secret|key|env)|(?:secret|key|env).*required',
+            'permission_denied': r'permission denied|operation not permitted',
+            'file_missing': r'no such file|module not found|cannot find module',
+            'invalid_bundle': r'invalid eszip|invalid.*bundle|failed to deserialize|unsupported.*eszip',
+            'syntax_or_type_error': r'syntaxerror|typeerror|referenceerror',
+            'memory_limit': r'out of memory|memory limit|cannot allocate memory',
+            'invalid_cli_option': r'unexpected argument|unrecognized option|invalid.*argument',
+        }
+        env = {item.partition('=')[0] for item in info.get('Config', {}).get('Env', [])}
+        needed = set(re.findall(r'Deno\.env\.get\(\s*[\'"]([A-Z][A-Z0-9_]{0,79})[\'"]\s*\)', gateway_text))
+        state = info['State']
+        report = {'running': bool(state.get('Running')), 'exit_code': int(state.get('ExitCode', -1)),
+                  'oom_killed': bool(state.get('OOMKilled')),
+                  'log_signals': [name for name, pattern in patterns.items() if re.search(pattern, log)],
+                  'gateway_env_not_set': sorted(needed - env)}
+        print('CANDIDATE_DIAGNOSTIC=' + json.dumps(report), flush=True)
+    except Exception:
+        # Diagnostics must not replace the original failure or bypass cleanup.
+        print('CANDIDATE_DIAGNOSTIC_UNAVAILABLE', flush=True)
+
+
 def main():
     if len(sys.argv) != 1 or os.geteuid() != 0 or not BASE.is_dir():
         raise Stop('run without arguments as root on the RU Docker host')
@@ -212,6 +241,7 @@ def main():
     label = 'bos.hands.stage=' + nonce
     image = edge['Image']  # Exact local image, never a mutable tag or pull.
     print('BACKUP_OK; building separate bundle', flush=True)
+    candidate_name = None
     try:
         build = ['docker', 'run', '--rm', '--pull=never', '--name', 'bos-hands-build-' + nonce,
                  '--label', label, *RESOURCE_LIMITS, '--entrypoint', 'edge-runtime',
@@ -226,8 +256,10 @@ def main():
         shutil.copyfile(built, stage / 'bundles/hands-api.eszip')
         print('BUNDLE_OK; checking isolated API', flush=True)
         require_memory(pathlib.Path('/proc/meminfo').read_text())
-        candidate = ['docker', 'run', '-d', '--rm', '--pull=never', '--network', 'none',
-                     '--name', 'bos-hands-candidate-' + nonce, '--label', label, *RESOURCE_LIMITS,
+        # Retain exited candidates until their private logs have been collected.
+        candidate_name = 'bos-hands-candidate-' + nonce
+        candidate = ['docker', 'run', '-d', '--pull=never', '--network', 'none',
+                     '--name', candidate_name, '--label', label, *RESOURCE_LIMITS,
                      '-e', 'SUPABASE_URL=http://127.0.0.1:1',
                      '-e', 'SUPABASE_SERVICE_ROLE_KEY=candidate-no-database-access']
         for folder, destination in (('sources', '/bos-src'), ('bundles', '/bos-bundles'), ('main', '/bos-main')):
@@ -239,12 +271,12 @@ def main():
             candidate += ['--entrypoint', entry[0]]
         candidate += [image, *(edge['Config'].get('Cmd') or [])]
         cid = command(candidate, stage, 'candidate-start').decode().strip()
-        info = json.loads(command(['docker', 'inspect', cid], stage, 'candidate-metadata'))[0]
-        pid = info['State']['Pid']
-        if not info['State']['Running'] or pid <= 0:
-            raise Stop('isolated API did not start')
         result = []
         for attempt in range(6):
+            info = json.loads(command(['docker', 'inspect', cid], stage, 'candidate-metadata'))[0]
+            pid = info['State']['Pid']
+            if not info['State']['Running'] or pid <= 0:
+                raise Stop('isolated API exited before validation')
             result = probe(['/hands-api', '/functions/v1/hands-api'],
                            token, stage, 'candidate-probe-' + str(attempt), pid=pid)
             if any(item['ok'] for item in result):
@@ -264,6 +296,10 @@ def main():
         print('WEBHOOK_TOKEN_SHA256=' + sha(token.encode()), flush=True)
         print('BOS_HANDS_PREPARED=' + str(stage), flush=True)
         print('No production files replaced or production DB operations issued; not activated.', flush=True)
+    except Exception:
+        if candidate_name:
+            report_candidate_failure(candidate_name, stage, gateway_text)
+        raise
     finally:
         # Remove only containers marked with this unpredictable per-run label.
         try:

@@ -1,4 +1,6 @@
 import importlib.util
+import contextlib
+import io
 import json
 import pathlib
 import tempfile
@@ -60,6 +62,35 @@ class StageTests(unittest.TestCase):
         for pid in (None, 0, -1):
             with self.subTest(pid=pid), self.assertRaises(stage.Stop):
                 stage.probe(['/hands-api'], token, pathlib.Path('/private'), 'probe', pid=pid)
+
+    def test_failed_container_diagnostic_preserves_private_log_without_printing_it(self):
+        secret = 'private-webhook-token-DO-NOT-PRINT'
+        metadata = [{'State': {'Running': False, 'ExitCode': 1, 'OOMKilled': False,
+                                'Error': secret},
+                     'Config': {'Env': ['SUPABASE_URL=http://127.0.0.1:1', 'PRIVATE=' + secret]}}]
+        log = ('error: Import failed; Network is unreachable\nconst WEBHOOK_TOKEN="' + secret + '";').encode()
+        gateway = 'const jwt=Deno.env.get("JWT_SECRET"); Deno.env.get("SUPABASE_URL");'
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = pathlib.Path(tmp)
+            def run(args, target, label, **kwargs):
+                content = json.dumps(metadata).encode() if args[1] == 'inspect' else log
+                (target / (label + '.log')).write_bytes(content)
+                return content
+            captured = io.StringIO()
+            with patch.object(stage, 'command', side_effect=run), contextlib.redirect_stdout(captured):
+                stage.report_candidate_failure('candidate', folder, gateway)
+            report = captured.getvalue()
+            self.assertNotIn(secret, report)
+            self.assertIn('dependency_network', report)
+            self.assertIn('JWT_SECRET', report)
+            self.assertIn('"exit_code": 1', report)
+            self.assertEqual((folder / 'candidate-runtime.log').read_bytes(), log)
+
+    def test_diagnostic_failure_does_not_mask_original_error_or_print_details(self):
+        captured = io.StringIO()
+        with patch.object(stage, 'command', side_effect=stage.Stop('private-detail')), contextlib.redirect_stdout(captured):
+            stage.report_candidate_failure('candidate', pathlib.Path('/private'), '')
+        self.assertEqual(captured.getvalue(), 'CANDIDATE_DIAGNOSTIC_UNAVAILABLE\n')
 
 
 if __name__ == '__main__':
