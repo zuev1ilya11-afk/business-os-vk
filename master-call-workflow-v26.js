@@ -33,7 +33,7 @@ async function authHeaders(){const h=window.BOS_AUTH_HEADERS?await window.BOS_AU
 async function stageCall(id,stage){const m=masterUser(),phone=String(m?.phone||'').trim();if(!phone)throw new Error('У мастера не указан телефон в профиле');const r=await fetch(PROFILE_URL,{method:'POST',headers:await authHeaders(),body:JSON.stringify({phone,district:`@@BOS_WF1@@|${id}|${stage}`}),keepalive:true}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось изменить этап');if(!d.order)throw new Error('Обновите заявку для проверки сохранённого этапа');return{ok:true,order:d.order}}
 function mergeOrder(id,data){const i=(state.orders||[]).findIndex(o=>String(o.id)===String(id));if(i>=0)state.orders[i]={...state.orders[i],...(data||{})}}
 function setMsg(id,text){const modal=modalFor(id);const el=modal?.querySelector('.bosMasterWorkflow .bosMwMsg');if(el)el.textContent=text||''}
-function refreshMasterUi(id){if(id)renderPanel(id);patchLegacyLabels()}
+function refreshMasterUi(id){if(id)renderPanel(id);patchLegacyLabels();window.BOS_MASTER_DAILY_HOME_V127_API?.refresh()}
 
 window.masterWorkflowSetStage=async function(id,stage){if(!liveMaster()||sending)return;const o=findOrder(id);if(!o)return;const current=effectiveStage(o),expected=current==='assigned'?'departed':current==='departed'?'started':'';if(stage!==expected){setMsg(id,'Этапы нужно отмечать по порядку');return}sending=true;setMsg(id,'Сохраняем этап…');try{const d=await stageCall(id,stage);mergeOrder(id,d.order);setMsg(id,'');refreshMasterUi(id)}catch(e){setMsg(id,e?.message||String(e))}finally{sending=false}};
 // A phone tap records an attempt with the exact dialed number. Successful contact is
@@ -117,6 +117,12 @@ function openContactResult(pending){
   const label=resultOptions().find(x=>x[0]===result)?.[1];
   form.querySelector('.bosContactSelection').textContent=label?'Выбрано: '+label:'Выберите итог звонка';
  }
+ if(pending.prefill){
+  const prior=pending.prefill;
+  const radio=[...form.querySelectorAll('input[name=result]')].find(x=>x.value===prior.result);if(radio)radio.checked=true;
+  form.elements.comment.value=String(prior.comment||'');
+  if(prior.callback_at){const d=new Date(prior.callback_at);if(!Number.isNaN(d.getTime())){const local=new Date(d.getTime()-d.getTimezoneOffset()*60000);form.elements.callback_at.value=local.toISOString().slice(0,16);}}
+ }
  form.addEventListener('change',refreshForm);refreshForm();
  form.querySelector('.bosContactLater').onclick=()=>{if(saving)return;clearPendingCall(attemptId);closeModal();window.openOrder?.(id)};
  form.onsubmit=async event=>{
@@ -138,9 +144,17 @@ function openContactResult(pending){
 }
 window.openMasterContactResultForOrder=function(id){
  const o=findOrder(id),items=window.BOS_CONTACT_STATUS?.history?.(o)||[];
- const event=[...items].reverse().find(x=>String(x?.result||'')==='pending');
- if(!event)return;
- openContactResult({id:String(id),phone:event.phone,attempt_id:event.id,started_at:Date.now()-1000});
+ if(!o||!liveMaster()||['Выполнена','Отменена'].includes(String(o.status)))return;
+ const latest=items[items.length-1],event=latest?.result==='pending'?latest:null;
+ if(event){openContactResult({id:String(id),phone:event.phone,attempt_id:event.id,started_at:Date.now()-1000});return}
+ const phones=window.BOS_MASTER_CLIENT_PHONES?.(o.phone||o.client_phone)||[];
+ const prefill=latest||{result:o.master_contact_status,comment:o.master_contact_comment,callback_at:o.master_contact_callback_at};
+ const start=phone=>openContactResult({id:String(id),phone,attempt_id:newAttemptId(),started_at:Date.now()-1000,prefill});
+ const prior=normalizeClientPhone(latest?.phone||o.master_contact_phone);
+ if(phones.some(p=>p.tel===prior)){start(prior);return}
+ if(phones.length===1){start(phones[0].tel);return}
+ openModal(`<h2>Итог связи</h2><p class="muted">${phones.length?'Выберите номер, по которому общались с клиентом.':'Телефон не указан. Уточните его у диспетчера.'}</p><div class="masterV127Phones">${phones.map(p=>`<button type="button" class="secondary wide" data-contact-phone="${escv(p.tel)}">${escv(p.tel)}</button>`).join('')}</div><button type="button" class="secondary wide" onclick="closeModal()">Отмена</button>`);
+ document.querySelectorAll('[data-contact-phone]').forEach(button=>button.onclick=()=>start(button.dataset.contactPhone));
 };
 function callOrderId(link){
   const host=link?.closest?.('[data-master-order-id],[data-order-id]');

@@ -26,9 +26,9 @@ test('master final cabinet keeps upcoming compact, workflow, schedule summary an
   await expect(card).toContainText('№ 11');
   await expect(card).toContainText('10:00');
   await expect(card).toContainText('Невский');
-  await expect(card).not.toContainText('Монтаж');
+  await expect(card).toContainText('Монтаж');
 
-  await card.click();
+  await card.getByRole('button',{name:/^Открыть заявку №/}).click();
   const workflow=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(workflow).toBeVisible();
   await expect(workflow).toContainText('Прогресс выполнения заявки');

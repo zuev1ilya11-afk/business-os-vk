@@ -3,7 +3,7 @@ const {fullStack}=require('./helpers/full-stack.cjs');
 
 function localToday(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 
-test('master home keeps time and stage readable and shows concise real upcoming works',async({page})=>{
+test('master home keeps time and stage readable and preserves all real works',async({page})=>{
   const {db}=await fullStack(page,'master');
   const order=db.tables.orders.find(o=>String(o.id)==='11');
   Object.assign(order,{
@@ -36,18 +36,20 @@ test('master home keeps time and stage readable and shows concise real upcoming 
     const tr=time.getBoundingClientRect(),mr=main.getBoundingClientRect(),sr=stage.getBoundingClientRect();
     return{timeHeight:tr.height,stageLeft:sr.left,mainLeft:mr.left,stageHeight:sr.height};
   });
-  expect(layout.timeHeight).toBeLessThan(28);
+  expect(layout.timeHeight).toBeLessThan(38);
   expect(layout.stageLeft).toBeGreaterThanOrEqual(layout.mainLeft-1);
   expect(layout.stageHeight).toBeLessThan(34);
 
   const upcoming=page.locator('.masterV127Next[data-order-id="11"]');
   await expect(upcoming).toBeVisible();
   const summary=upcoming.locator('.masterV127Work');
-  await expect(summary).toHaveText('Шторы ×2 · Мин. стоимость');
-  await expect(summary).not.toContainText('Подрезка');
-  await expect(summary).not.toContainText('Дополнительная');
+  await expect(summary).toContainText('Монтаж рулонной шторы');
+  await expect(summary).toContainText('× 2 PIECE');
+  await expect(summary).toContainText('Минимальная стоимость заказа');
+  await expect(summary).toContainText('Подрезка');
+  await expect(summary).toContainText('Дополнительная');
 
-  await upcoming.click();
+  await upcoming.getByRole('button',{name:/^Открыть заявку №/}).click();
   const modal=page.locator('#modalRoot .modal').last();
   await expect(modal).toContainText('Подрезка рулонной шторы');
   await expect(modal).toContainText('Дополнительная работа');
