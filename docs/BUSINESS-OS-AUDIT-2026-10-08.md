@@ -117,3 +117,18 @@ Automatic approval review rejected the feature-branch push twice. Read-only foll
 Follow-up: the user explicitly authorized publication of this branch and creation of a PR on 2026-10-08. That authorization removes the publication blocker; the associated PR is authoritative for current CI status. RU runtime access and production reconciliation remain blocked.
 
 Final targeted browser verification on reviewed code: `hands-manual-submit`, `hands-report-delivery`, `hands-unassigned-filter-v163`, `order-lifecycle-v106`: 24 passed, zero failures.
+
+## RU console follow-up — 2026-10-08
+
+The owner can execute scoped scripts through the RU server console; direct SSH from the agent remains unavailable. This supersedes earlier statements that no fresh target inspection was possible.
+
+- Active release: `bos-release-to2wblxf`. A separate legacy database also exists, so database selection must use the actual REST connection and shared Docker network.
+- Read-only target inspection confirmed 116 orders, 107 from Hands, uniqueness on `(external_source, external_id)`, 147 webhook receipts and 4 active cron jobs at that checkpoint. Active cron count does not establish successful job execution.
+- The privately identified post-cutover source order was absent from RU. The last target receipt at inspection was `2026-10-08T09:11:07.689461Z`; a complete cutover-window reconciliation is still required.
+- Target private Hands sync matched the reviewed v11 fixture. Private source/bundle backups were created on the server and a patched bundle was built successfully. No production source/bundle was replaced.
+- Isolated candidate API exited with status 1, without an OOM indication. Diagnostics exposed five absent candidate gateway settings: BOS Auth/REST/Storage origins, JWT secret and VK app secret. Complete dummy settings have been added; successful boot and the full exit cause are not yet confirmed.
+- The preparation script now reports live routing metadata and the REST database container match in one run. These are metadata checks, not service connectivity, database health or logical database identity proof.
+- Fresh public checks returned 200 for `/` and 405 for GET `/functions/v1/hands-api`. `/__bos_ready` is not exposed publicly (404) and is not an activation gate.
+- Initial published patch and read-only diagnostic commits passed CI. Run `37780918442` on commit `a6a1eb51b1bd1f5dc50568c67b19e76905f2b886` subsequently failed only at the full browser step: 587 passed, 1 skipped, and `gas-bridge-health` timed out at 30 seconds on both attempts against the old Supabase origin. Build, TypeScript, frozen dependencies, SQL and server checks passed. The bridge's current RU configuration and test target need review; the failure is not bypassed or declared fixed. Ten preparation tests passed locally and the changes were independently reviewed.
+
+No webhook destination switch, recovery insert, activation or production restart was performed by the preparation scripts. The consolidated next steps and remaining application checks are in [the RU recovery runbook](superpowers/plans/2026-10-08-ru-hands-recovery-runbook.md).

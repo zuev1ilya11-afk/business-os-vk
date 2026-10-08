@@ -92,6 +92,27 @@ class StageTests(unittest.TestCase):
             stage.report_candidate_failure('candidate', pathlib.Path('/private'), '')
         self.assertEqual(captured.getvalue(), 'CANDIDATE_DIAGNOSTIC_UNAVAILABLE\n')
 
+    def test_candidate_receives_all_gateway_settings_with_isolated_dummy_values(self):
+        names = ['BOS_AUTH_ORIGIN', 'BOS_REST_ORIGIN', 'BOS_STORAGE_ORIGIN',
+                 'JWT_SECRET', 'VK_APP_SECRET']
+        gateway = '\n'.join('Deno.env.get("' + name + '")' for name in names)
+        values = stage.candidate_environment(gateway)
+        self.assertTrue(set(names).issubset(values))
+        for name in names[:3]:
+            self.assertEqual(values[name], 'http://127.0.0.1:1')
+        self.assertGreaterEqual(len(values['JWT_SECRET']), 32)
+        with self.assertRaises(stage.Stop):
+            stage.candidate_environment('Deno.env.get("UNREVIEWED_NEW_SETTING")')
+
+    def test_route_match_requires_shared_network_not_just_alias(self):
+        edge = {'NetworkSettings': {'Networks': {'release-net': {}}}}
+        rest = {'Name': '/release-rest', 'NetworkSettings': {'Networks': {
+            'release-net': {'Aliases': ['rest'], 'IPAddress': '172.30.0.3'}}}}
+        self.assertTrue(stage.route_matches(edge, rest, 'http://rest:3000'))
+        self.assertFalse(stage.route_matches(edge, rest, 'https://old-source.example'))
+        rest['NetworkSettings']['Networks'] = {'legacy-net': {'Aliases': ['rest']}}
+        self.assertFalse(stage.route_matches(edge, rest, 'http://rest:3000'))
+
 
 if __name__ == '__main__':
     unittest.main()

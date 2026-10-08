@@ -74,6 +74,66 @@ def check_gateway(source):
         raise Stop('gateway has background/process code requiring review')
 
 
+def gateway_env_names(source):
+    return set(re.findall(r'Deno\.env\.get\(\s*[\'"]([A-Z][A-Z0-9_]{0,79})[\'"]\s*\)', source))
+
+
+def candidate_environment(gateway_text):
+    # Boot the existing gateway with structurally valid, isolated test settings.
+    # Production environment values are never copied into the candidate.
+    values = {
+        'SUPABASE_URL': 'http://127.0.0.1:1',
+        'SUPABASE_ANON_KEY': 'candidate-no-database-access',
+        'SUPABASE_SERVICE_ROLE_KEY': 'candidate-no-database-access',
+        'BOS_AUTH_ORIGIN': 'http://127.0.0.1:1',
+        'BOS_REST_ORIGIN': 'http://127.0.0.1:1',
+        'BOS_STORAGE_ORIGIN': 'http://127.0.0.1:1',
+        'JWT_SECRET': 'candidate-only-signing-key-with-no-production-validity',
+        'VK_APP_SECRET': 'candidate-only-vk-key-with-no-production-validity',
+    }
+    missing = gateway_env_names(gateway_text) - values.keys()
+    if missing:
+        raise Stop('unreviewed gateway environment names: ' + ','.join(sorted(missing)))
+    return values
+
+
+def route_matches(edge, target, origin):
+    try:
+        parsed = urllib.parse.urlsplit(origin)
+        if parsed.scheme not in ('http', 'https') or not parsed.hostname:
+            return False
+        networks = target['NetworkSettings']['Networks']
+        for network in set(edge['NetworkSettings']['Networks']) & set(networks):
+            details = networks[network]
+            names = [target['Name'].lstrip('/'), details.get('IPAddress'),
+                     *(details.get('Aliases') or []), *(details.get('DNSNames') or [])]
+            if parsed.hostname in names:
+                return True
+    except (KeyError, TypeError, ValueError):
+        pass
+    return False
+
+
+def production_preflight(diag, edge, containers, gateway_text):
+    """Compare current routing metadata, without issuing service/DB requests."""
+    prefix = diag.name(edge)[:-len('-edge')]
+    env = diag.env(edge)
+    checks = {'gateway_env_missing_or_empty': sorted(name for name in gateway_env_names(gateway_text)
+                                                   if not env.get(name)),
+              'route_hosts_match_release': {}, 'database_container_matches_release': None}
+    for service in ('auth', 'rest', 'storage'):
+        matches = [item for item in containers if diag.name(item) == prefix + '-' + service]
+        checks['route_hosts_match_release'][service] = (len(matches) == 1 and
+            route_matches(edge, matches[0], env.get('BOS_' + service.upper() + '_ORIGIN', '')))
+        if service == 'rest' and len(matches) == 1:
+            try:
+                db, _ = diag.find_db(matches[0], containers)
+                checks['database_container_matches_release'] = diag.name(db) == prefix + '-db'
+            except diag.CheckError:
+                pass
+    return checks
+
+
 def require_memory(meminfo):
     available = re.search(r'^MemAvailable:\s+(\d+)\s+kB$', meminfo, re.MULTILINE)
     if not available or int(available[1]) < 1024 * 1024:
@@ -172,7 +232,7 @@ def report_candidate_failure(cid, stage, gateway_text):
             'invalid_cli_option': r'unexpected argument|unrecognized option|invalid.*argument',
         }
         env = {item.partition('=')[0] for item in info.get('Config', {}).get('Env', [])}
-        needed = set(re.findall(r'Deno\.env\.get\(\s*[\'"]([A-Z][A-Z0-9_]{0,79})[\'"]\s*\)', gateway_text))
+        needed = gateway_env_names(gateway_text)
         state = info['State']
         report = {'running': bool(state.get('Running')), 'exit_code': int(state.get('ExitCode', -1)),
                   'oom_killed': bool(state.get('OOMKilled')),
@@ -219,6 +279,9 @@ def main():
         raise Stop('deployment too large or free space insufficient')
     gateway_text = '\n'.join(p.read_text() for p in gateway.rglob('*.ts'))
     check_gateway(gateway_text)
+    candidate_env = candidate_environment(gateway_text)
+    preflight = production_preflight(diag, edge, all_containers, gateway_text)
+    print('PRODUCTION_PREFLIGHT=' + json.dumps(preflight), flush=True)
     original_source, original_bundle = source_file.read_bytes(), bundle_file.read_bytes()
     expected = download('tests/fixtures/hands-v11-sync.ts').rstrip(b'\n')
     patched = patch_source(original_source, expected)
@@ -259,9 +322,9 @@ def main():
         # Retain exited candidates until their private logs have been collected.
         candidate_name = 'bos-hands-candidate-' + nonce
         candidate = ['docker', 'run', '-d', '--pull=never', '--network', 'none',
-                     '--name', candidate_name, '--label', label, *RESOURCE_LIMITS,
-                     '-e', 'SUPABASE_URL=http://127.0.0.1:1',
-                     '-e', 'SUPABASE_SERVICE_ROLE_KEY=candidate-no-database-access']
+                     '--name', candidate_name, '--label', label, *RESOURCE_LIMITS]
+        for name, value in candidate_env.items():
+            candidate += ['-e', name + '=' + value]
         for folder, destination in (('sources', '/bos-src'), ('bundles', '/bos-bundles'), ('main', '/bos-main')):
             candidate += ['--mount', 'type=bind,src=' + str(stage / folder) + ',dst=' + destination + ',readonly']
         if edge['Config'].get('Entrypoint'):
@@ -291,6 +354,7 @@ def main():
                     'source_before': sha(original_source), 'bundle_before': sha(original_bundle),
                     'source_after': sha(patched), 'bundle_after': sha(built.read_bytes()),
                     'helper_after': sha(staged_helper.read_bytes()), 'patch_commit': PIN,
+                    'production_preflight': preflight,
                     'live_webhook_validation': False, 'isolated_webhook_validation': True}
         (stage / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
         print('WEBHOOK_TOKEN_SHA256=' + sha(token.encode()), flush=True)
