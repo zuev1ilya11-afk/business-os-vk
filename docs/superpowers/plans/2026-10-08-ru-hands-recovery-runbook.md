@@ -36,7 +36,7 @@
 | Public readiness URL | `/__bos_ready` returned 404 | Do not use this unexposed path as an activation gate |
 | Active release | `bos-release-to2wblxf`; bind-mounted sources/main/bundles | Fresh mount/config checks at each run |
 | RU DB | Earlier read-only inspection found the active release DB, order uniqueness and 4 active cron jobs | Actual edge-to-service routing, current snapshots, job success and backup restore |
-| Missing intake | Post-cutover orders exist in the old source. The initial RU incident lookup omitted the canonical `hands:` prefix, so its zero result does not prove absence | Corrected RU lookup, complete comparison and live provider destination |
+| Missing intake | The corrected RU lookup in the owner's 18:08 screenshot reports zero exact canonical/legacy matches for the incident; absence is now confirmed | Complete comparison and genuine provider delivery |
 | Hands patch | Pagination/error regressions tested; exact private sync matches; bundle creation, isolated validation and guarded activation succeeded | Actual provider intake and reconciliation |
 | Candidate startup | Owner's 16:41 screenshot confirms `BOS_HANDS_PREPARED`; all routing/container metadata checks passed; no production activation | Recheck the same release at activation |
 | Application regression | CI run `37795943851` on token rotation commit `8c2e137d3b85606867c7496879df21496aa5374c` completed successfully | Legacy GAS test origin and actual RU roles/devices |
@@ -114,6 +114,8 @@ Only the source and Hands bundle are atomically replaced. The exact active edge 
 - [ ] Verify genuine provider delivery and the corrected target incident lookup before recovering any order.
 
 At 18:00 Moscow, a fresh read-only old-source check still found 118 orders, 110 from Hands and 150 receipts, latest `2026-10-08T13:33:10.657642Z`; none arrived after the owner's switch report. This does not establish RU receipt. Next, run the published corrected `scripts/ru-check.py` on the RU host and inspect the target counts, latest receipt and exact incident match before reconciliation.
+
+18:08 screenshot checkpoint: the corrected RU diagnostic completed with `incident_matches=0`, 147 webhook receipts, latest `2026-10-08T09:11:07.689461Z`, and four active cron jobs. The order totals are cropped and are not re-inferred. The incident is now confirmed absent, but this proves neither that Hands attempted a delivery after token rotation nor that a request failed. A fresh old-source check at 18:10 still found 118 orders, 110 Hands orders and 150 receipts, with no receipt since the reported destination switch. Ask provider support to confirm the current single subscription and any post-17:57 delivery attempts, timestamps and redacted HTTP results; an absence of new events must be distinguished from a failed delivery. Do not request bulk replay or run a full sync. Backup, restore verification and reconciliation gates below still apply.
 
 ## Task 4: Reconcile missing orders safely
 
