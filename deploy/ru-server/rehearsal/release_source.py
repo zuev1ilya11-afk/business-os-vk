@@ -38,7 +38,7 @@ def validate_state(state):
 
 def flags_sql(state):
     validate_state(state)
-    return '\n'.join([f"UPDATE cron.job SET active={'true' if j['active'] else 'false'} WHERE jobid={j['id']};" for j in state['cron']]+
+    return '\n'.join([f"SELECT cron.alter_job(job_id:={j['id']},active:={'true' if j['active'] else 'false'});" for j in state['cron']]+
                      [f"UPDATE {s}.runtime SET enabled={'true' if active else 'false'};" for s,active in state['runtime'].items()])
 
 def thaw_sql(state):
@@ -75,8 +75,9 @@ class Source:
         # Persist intent BEFORE sending the first source mutation, including lost responses.
         durable_json(self.stage/'source-freeze-attempted.json',{'attempted':True})
         self.attempted=True
-        sql='BEGIN; SET LOCAL lock_timeout=\'10s\';\nUPDATE cron.job SET active=false;\n'
-        sql+='\n'.join(f'UPDATE {s}.runtime SET enabled=false;' for s in self.state['runtime'])
+        disabled={**self.state,'cron':[{'id':j['id'],'active':False} for j in self.state['cron']],
+                  'runtime':{s:False for s in self.state['runtime']}}
+        sql='BEGIN; SET LOCAL lock_timeout=\'10s\';\n'+flags_sql(disabled)
         sql+='\nCOMMIT;'
         self.sql(sql)
         # Let already-started external Hands uploads acknowledge their outcome before readonly.
@@ -105,7 +106,10 @@ class Source:
             raise RuntimeError('Source write-pause lost')
 
     def thaw(self):
-        self.sql(thaw_sql(self.state))
+        # A rejected first transaction leaves the source unchanged: verify it instead
+        # of repeating the failed mutation and falsely reporting an unrecovered source.
+        if json.loads(self.sql(STATE_SQL))!=self.state:
+            self.sql(thaw_sql(self.state))
         if json.loads(self.sql(STATE_SQL))!=self.state:raise RuntimeError('Source state restoration mismatch')
         try:durable_json(self.stage/'source-thawed.json',{'restored':True})
         except OSError:pass  # The source state was already verified; a full disk cannot undo thaw.
