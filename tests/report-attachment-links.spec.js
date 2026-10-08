@@ -14,7 +14,7 @@ test('review modal keeps valid document links and omits executable URL schemes',
  await modal.locator('.reportPhotoThumb').click();
  await expect(page.locator('#reportPhotoViewer')).toBeVisible();
  await expect(page.locator('#reportPhotoViewer img')).toHaveAttribute('src','https://example.test/photo.jpg');
- await page.locator('#reportPhotoViewer button[aria-label="Закрыть фото"]').click();
+ await page.locator('#reportPhotoViewer .reportPhotoViewerPanel button').click();
  await expect(page.locator('#reportPhotoViewer')).toHaveCount(0);
  await expect(modal.locator('a[href^="javascript:"],a[href^="data:"],a[href^="file:"]')).toHaveCount(0);
 });
