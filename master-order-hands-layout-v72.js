@@ -49,6 +49,7 @@ function phoneList72(v){
  });
  return out;
 }
+window.BOS_MASTER_CLIENT_PHONES=phoneList72;
 window.copyMasterPhone72=async function(phone,button){
  const value=String(phone||'').trim();if(!value)return;
  try{

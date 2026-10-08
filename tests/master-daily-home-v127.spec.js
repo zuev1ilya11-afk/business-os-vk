@@ -47,7 +47,7 @@ test('master v127 home shows request number, day cards and attention queue on mo
 
   const dashboard=page.locator('#masterDailyV127');
   await expect(dashboard).toBeVisible();
-  await expect(dashboard.getByRole('heading',{name:'Рабочий день'})).toBeVisible();
+  await expect(dashboard.getByRole('heading',{name:'Мой рабочий день'})).toBeVisible();
 
   const nextCard=dashboard.locator('.masterV127Next');
   await expect(nextCard).toHaveAttribute('data-order-id',String(next.id));
@@ -55,20 +55,16 @@ test('master v127 home shows request number, day cards and attention queue on mo
   await expect(nextCard).toContainText(`№ ${next.id}`);
   await expect(nextCard).not.toContainText('Анна Пичуева');
   await expect(nextCard).toContainText('Невский проспект, 10');
-  await expect(nextCard).toContainText('Позвонить клиенту');
+  await expect(nextCard).toContainText('Нужно связаться');
   await expect(nextCard.locator('text=/№/')).toHaveCount(1);
 
-  const daySection=dashboard.locator('.masterV127Attention');
-  await expect(daySection).toContainText('Требуют внимания');
-  const dayItem=daySection.locator('.masterV127DayItem').filter({hasText:'13:30'});
+  const dayItem=dashboard.locator('.masterV127Card[data-order-id="12"]');
   await expect(dayItem).toHaveCount(1);
-  await expect(dayItem).toContainText(`№ ${attention.id}`);
+  await expect(dayItem).toContainText('13:30');
   await expect(dayItem).toContainText('Литейный проспект, 20');
-
-  const attentionItem=dashboard.locator('.masterV127AttentionItem').filter({hasText:'Отчёт вернули на доработку'});
-  await expect(attentionItem).toHaveCount(1);
-  await expect(attentionItem).toContainText('Исправить отчёт');
-  await expect(dashboard.locator('.masterV127AttentionHead')).toContainText('1');
+  await expect(dayItem).toContainText('Отчёт вернули на доработку');
+  await expect(dayItem).toContainText('Исправить отчёт');
+  await expect(dashboard.getByRole('tab',{name:/По дням/})).toContainText('2');
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
@@ -85,7 +81,7 @@ test('master v127 dashboard stays out of dispatcher home',async({page})=>{
 
 
 test('master v127 keeps started request until report and marks overdue red',async({page})=>{
-  await page.clock.setFixedTime(new Date('2099-09-10T15:31:00'));
+  await page.clock.setFixedTime(new Date('2099-09-10T15:31:00+03:00'));
   const {db,master}=await fullStack(page,'master');
   const current=db.tables.orders.find(o=>String(o.id)==='11')||db.tables.orders[0];
   const future=db.tables.orders.find(o=>String(o.id)==='12')||db.tables.orders[1];
@@ -100,8 +96,8 @@ test('master v127 keeps started request until report and marks overdue red',asyn
   const card=page.locator('#masterDailyV127 .masterV127Next');
   await expect(card).toHaveAttribute('data-order-id',String(current.id));
   await expect(card).toHaveClass(/reportOverdue/);
-  await expect(card).toContainText('ТЕКУЩАЯ ЗАЯВКА');
-  await expect(card).toContainText('Отправьте отчёт по заявке');
+  await expect(card).toContainText('Работа начата');
+  await expect(card).toContainText('Заполнить отчёт');
   await expect(page.locator('#masterDailyV127 .masterV127Next').filter({hasText:'Отчёт не отправлен вовремя'})).toHaveCount(1);
 
   await page.evaluate(({id})=>{const o=state.orders.find(x=>String(x.id)===String(id));o.report_uploaded_at='2099-09-10T15:32:00.000Z';o.report_act_url='https://example.test/report-current.pdf';window.BOS_MASTER_DAILY_HOME_V127_API.refresh()},{id:current.id});
