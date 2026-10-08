@@ -37,10 +37,10 @@
 | Active release | `bos-release-to2wblxf`; bind-mounted sources/main/bundles | Fresh mount/config checks at each run |
 | RU DB | Earlier read-only inspection found the active release DB, order uniqueness and 4 active cron jobs | Actual edge-to-service routing, current snapshots, job success and backup restore |
 | Missing intake | One privately identified post-cutover order existed in source and was absent from RU | Full cutover-window comparison and live provider destination |
-| Hands patch | Pagination/error regressions tested; exact private sync matches; server bundle creation succeeded | Successful isolated API boot and deployment |
-| Candidate startup | Saved log reports `invalid private upstream`; fake loopback BOS origins conflict with gateway validation. Live settings are populated and all routing/container metadata checks matched | Retry with verified credential-free live service origins while keeping network disabled and keys dummy; boot still unconfirmed |
-| Application regression | CI run `37782750947` on `885dbdf2b3199e61d76147e2c1f22facda18b604` completed successfully | Prior GAS timeout did not recur in that run; the legacy test origin and RU role/device checks still need review |
-| Activation | None performed by these scripts | Activation and rollback tooling still to implement and verify |
+| Hands patch | Pagination/error regressions tested; exact private sync matches; bundle creation and isolated API validation succeeded | Guarded deployment and actual intake |
+| Candidate startup | Owner's 16:41 screenshot confirms `BOS_HANDS_PREPARED`; all routing/container metadata checks passed; no production activation | Recheck the same release at activation |
+| Application regression | CI run `37786062185` on `1d98b733bfa8dcec2890b8f598a9499c255a3594` completed successfully | Legacy GAS test origin, RU roles/devices and CI for new activation tooling |
+| Activation | Guarded tooling implemented; no production activation has been run | Reproducible dependency gate and actual server result |
 
 ## Task 1: One consolidated preparation run
 
@@ -52,11 +52,11 @@
 - [x] Supply verified credential-free BOS Auth/REST/Storage origins, dummy JWT/VK keys and dummy Supabase settings; keep `--network none`, resource caps and read-only mounts. The origins pass the existing gateway validator but remain unreachable in the candidate.
 - [x] Compare live routing metadata and REST's database container target; report every result without exposing values or applying speculative fixes. This does not prove logical database identity, connectivity or health.
 - [x] Preserve the failed candidate log tail privately before cleanup; emit fixed diagnostic categories only.
-- [x] Run `PYTHONDONTWRITEBYTECODE=1 python3 tests/ru-hands-stage.test.py`: 10 passed; independent review completed.
-- [ ] Publish and verify the pinned download.
-- [ ] Owner runs the pinned script once. Expected success: `BOS_HANDS_PREPARED=...` and manifest `activated: false`. Any false/unknown production preflight result remains a release blocker until explained.
+- [x] Run `PYTHONDONTWRITEBYTECODE=1 python3 tests/ru-hands-stage.test.py`: 16 passed; independent review completed.
+- [x] Publish and verify the pinned download.
+- [x] Owner runs the pinned script once. Success confirmed: `BOS_HANDS_PREPARED=...`; all production preflight metadata checks passed and production remained untouched.
 - [x] Read the saved error with `--diagnose`: it reports `invalid private upstream`. Correct the candidate origin configuration, without changing the gateway or its validation rules. Later failures automatically print the sanitized saved log before cleanup.
-- [ ] Confirm staged API loading/validation. This test proves neither live DB writes nor complete dependency equivalence.
+- [x] Confirm staged API loading/validation. This test proves neither live DB writes nor complete dependency equivalence.
 
 ## Task 2: Guarded activation and rollback
 
@@ -64,12 +64,21 @@
 
 **Interfaces:** input is one private prepared-stage path; consume its exact edge ID, paths and before/after SHA-256 values. Produce a private activation receipt only after verification.
 
-- [ ] Before implementation, verify source/bundle dependency provenance and whether lifecycle's separate live handler needs its own patch. Never overwrite the full private lifecycle handler from the repository without comparison.
-- [ ] Add failure tests for stale manifests, changed production files, wrong release paths, failed restart/probe and rollback failure; all must preserve data and retain recoverable files.
-- [ ] Recheck target image, mounts, original file hashes, free space and backup readability. Capture original ownership/mode and restore them on rollback.
-- [ ] Replace only the reviewed Hands source/helper/bundle using same-filesystem atomic file replacement; restart only the active edge container during a coordinated short API interruption.
-- [ ] Check existing frontend and API routes plus the reviewed deployed webhook validation branch. A failed gate restores previous files and restarts the same edge; never restore an old DB snapshot over new work.
+- [x] Fresh source export still contains private v11 and its local `hands-details.ts` dependency; activation matches both full-source hashes. The runtime image is immutable. The floating npm dependency needs the runtime reproducibility gate below; source preservation alone is not dependency equivalence. The separate lifecycle handler remains unchanged and is still a target-review follow-up, not part of this Hands-only activation.
+- [x] Add failure tests for changed production files, unreviewed staged changes, failed restart/probe, interrupted/partial swap, concurrent change during rollback and rollback failure; all preserve data and retain recoverable files.
+- [x] Implement checks for image, mounts, original hashes, free space, routing, backups, ownership and modes. Lock before selection; persist and fsync backups/journal before replacement. Reject ambiguous prepared stages and unrelated recovery paths.
+- [x] Implement same-filesystem atomic replacement in helper → source → bundle order; restart only the exact edge after verifying it has not been superseded. Bundle replacement itself can affect a newly loaded worker before the restart.
+- [x] Implement trusted public HTTPS GET checks and the reviewed, installed handler's token-authenticated missing-delivery branch (empty body, no delivery header; returns before DB access). Failed verification restores previous files and restarts the same edge. No DB snapshot restoration or imports.
 - [ ] Publish reviewed activation tooling and provide the exact command only after the preparation result is known.
+- [ ] Owner runs activation once; expected success is `BOS_HANDS_ACTIVATED=...`. A prepared marker alone is never reported as a deployment.
+
+### Dependency and recovery gates
+
+Before replacing live files, the activation command rebuilds the original source with the exact image, path and options and requires its bundle to match the original byte for byte. It then disconnects that compiler container's only network, verifies that only loopback remains, and builds the patch using the same resolver cache. This second bundle must match the already tested prepared artifact. `DEPENDENCY_PROOF_UNKNOWN` stops before production changes; a mismatch can mean nondeterminism or different original build options, not necessarily a dependency upgrade. The official runtime's managed-NPM unbundle output is insufficient to prove npm equality and is not used as a false success gate.
+
+The private `activation.json` records `installing`, `verifying`, `activated`, `rolling_back`, `rolled_back` or `rollback_failed`. A rerun detects an interrupted attempt and performs guarded rollback rather than starting a new replacement. It refuses to overwrite unrelated changes or restart a superseded release. A rollback failure retains originals and the journal for diagnosis. No script can automatically recover during host power loss; recovery runs on the next invocation.
+
+Local verification at this checkpoint: 24 activation tests and 16 preparation tests passed. Server execution and dependency reproducibility are still pending.
 
 ## Task 3: Switch the existing Hands webhook
 
