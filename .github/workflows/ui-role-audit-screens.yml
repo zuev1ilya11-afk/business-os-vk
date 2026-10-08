@@ -1,6 +1,8 @@
 name: UI role screenshot audit
 on:
   workflow_dispatch:
+  push:
+    branches: [audit/ui-role-screens-20261008]
 
 jobs:
   screenshots:
