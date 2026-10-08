@@ -166,3 +166,9 @@ At 17:29 the old source had 150 delivery receipts, latest `2026-10-08T13:33:10.6
 The owner clarified that Hands issued a new webhook token, not an API key. The existing activated handler still has the previous token. `scripts/ru-hands-token.py` prepares a token-only change from the exact successful activation, obtains the value through hidden terminal input, reproduces the original bundle and builds the changed literal offline with the same dependency cache. It validates new-token acceptance and old-token rejection in an isolated candidate before replacing only the Hands source and bundle; postchecks and file rollback reuse the immutable reviewed activation helper. The API key, DB data and provider settings are outside this command's scope.
 
 New-token installation and genuine provider delivery remain pending the owner's server run. A rollback can restore the previous local token but cannot itself reverse the provider's token change. No secret values are included in the repository or supplied through this chat.
+
+### 17:57–18:00 Moscow — new webhook token installed
+
+The owner's 17:57 console screenshot supersedes the token-installation checkpoint above: `BOS_HANDS_WEBHOOK_TOKEN_UPDATED` is visible, followed by confirmation that the new token is accepted and the previous token rejected. The command performed no order import or provider configuration change. The secret was entered privately on the RU server. CI run `37795943851` for the published rotation commit `8c2e137d3b85606867c7496879df21496aa5374c` completed successfully.
+
+At 18:00, a fresh read-only old-source check still found 118 orders, 110 Hands orders and 150 delivery receipts, latest `2026-10-08T13:33:10.657642Z`, with none after the owner's switch report. Genuine delivery into RU and the corrected target incident lookup remain unverified. No recovery inserts have occurred. The next server action is the corrected read-only diagnostic, not another activation or token change.

@@ -39,8 +39,9 @@
 | Missing intake | Post-cutover orders exist in the old source. The initial RU incident lookup omitted the canonical `hands:` prefix, so its zero result does not prove absence | Corrected RU lookup, complete comparison and live provider destination |
 | Hands patch | Pagination/error regressions tested; exact private sync matches; bundle creation, isolated validation and guarded activation succeeded | Actual provider intake and reconciliation |
 | Candidate startup | Owner's 16:41 screenshot confirms `BOS_HANDS_PREPARED`; all routing/container metadata checks passed; no production activation | Recheck the same release at activation |
-| Application regression | CI run `37789617299` on activation commit `c8cc5b94a366a3f3e4fe8818d664f2165e90740f` completed successfully | Legacy GAS test origin and actual RU roles/devices |
-| Activation | Owner's 17:11 screenshot confirms `BOS_HANDS_ACTIVATED` and successful HTTPS/webhook validation | Provider subscription change, genuine delivery and reconciliation |
+| Application regression | CI run `37795943851` on token rotation commit `8c2e137d3b85606867c7496879df21496aa5374c` completed successfully | Legacy GAS test origin and actual RU roles/devices |
+| Activation | Owner's 17:11 screenshot confirms `BOS_HANDS_ACTIVATED` and successful HTTPS/webhook validation | Genuine delivery and reconciliation |
+| Webhook token | Owner's 17:57 screenshot confirms `BOS_HANDS_WEBHOOK_TOKEN_UPDATED`, new-token acceptance and old-token rejection | Genuine provider event stored in RU |
 
 ## Task 1: One consolidated preparation run
 
@@ -84,11 +85,11 @@ Local verification: 24 activation tests, 16 preparation tests and 712 server tes
 
 **Files:** record non-secret outcome in this runbook; no provider mutation in staging scripts.
 
-**Interfaces:** approved RU webhook origin/path, existing token retained privately, provider support confirmation of a single subscription.
+**Interfaces:** approved RU webhook origin/path, replacement token entered privately on the server, provider support confirmation of a single subscription.
 
 - [x] Activation verified trusted HTTPS, current gateway routing and the installed handler's valid-token missing-delivery response. A later invalid-token probe from the agent workspace was inconclusive due to a connection error, not counted as a passed negative-authentication test.
 - [x] Prepare the support request below to replace the existing destination while retaining the current token; do not create a duplicate subscription. The user previously configured the address through Hands support.
-- [x] Owner reported replacement at 17:25 and confirmed at 17:32 that Hands issued a new **webhook** token. The deployed handler currently retains the original token; the new value must be installed locally before provider delivery can be considered restored.
+- [x] Owner reported replacement at 17:25 and confirmed at 17:32 that Hands issued a new **webhook** token. The 17:57 console screenshot confirms installation of the new token and rejection of the old token. Genuine provider delivery is a separate pending check.
 - [ ] Confirm a genuine new incoming event is stored and visible in RU. Confirm repeat delivery does not create a duplicate and that new events no longer land in the old source. Do not close the old source prematurely.
 
 Support request (owner sends through their existing Hands support conversation):
@@ -108,9 +109,11 @@ The command takes the same activation lock, checks the successful deployment rec
 Only the source and Hands bundle are atomically replaced. The exact active edge is restarted, then public HTTPS checks verify the new token and rejection of the previous token. Rollback restores only previous local files/token; it does not restore provider delivery if Hands already uses the new value. Private recovery state is retained under the original stage's `webhook-token-rotation` directory. A rerun recovers interrupted replacement before requesting any token, or verifies an already successful rotation. Another future rotation requires a fresh reviewed baseline; this command is deliberately tied to this activation.
 
 - [x] Implement token-only rotation and regression coverage, including hidden-input failure, token scope, URL encoding, tested-artifact preservation and recovery allowlist.
-- [ ] Publish reviewed rotation command and verify its download.
-- [ ] Owner enters the new webhook token privately in the server console. Expected marker: `BOS_HANDS_WEBHOOK_TOKEN_UPDATED`.
+- [x] Publish reviewed rotation command at `8c2e137d3b85606867c7496879df21496aa5374c` and verify its download byte for byte. CI run `37795943851` completed successfully.
+- [x] Owner enters the new webhook token privately in the server console. The 17:57 screenshot shows `BOS_HANDS_WEBHOOK_TOKEN_UPDATED` and confirms new-token acceptance and old-token rejection. The command imported no orders and changed no provider settings.
 - [ ] Verify genuine provider delivery and the corrected target incident lookup before recovering any order.
+
+At 18:00 Moscow, a fresh read-only old-source check still found 118 orders, 110 from Hands and 150 receipts, latest `2026-10-08T13:33:10.657642Z`; none arrived after the owner's switch report. This does not establish RU receipt. Next, run the published corrected `scripts/ru-check.py` on the RU host and inspect the target counts, latest receipt and exact incident match before reconciliation.
 
 ## Task 4: Reconcile missing orders safely
 
