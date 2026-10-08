@@ -28,9 +28,9 @@ async function compactFilePayload(file,photo=false){
   if(!file)throw new Error('Файл не выбран');
   const maxRaw=photo?12*1024*1024:7*1024*1024;if(file.size>maxRaw)throw new Error(`Файл ${file.name} слишком большой`);
   if(file.type.startsWith('image/')){
-    const img=await loadImageFile(file),max=photo?1024:1200,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+    const img=await loadImageFile(file),max=photo?1920:1600,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
     const c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-    const data=c.toDataURL('image/jpeg',photo?.55:.62);return{name:file.name.replace(/\.[^.]+$/,'.jpg'),mime:'image/jpeg',data:data.split(',')[1]};
+    const data=c.toDataURL('image/jpeg',photo?.82:.78);return{name:file.name.replace(/\.[^.]+$/,'.jpg'),mime:'image/jpeg',data:data.split(',')[1]};
   }
   const data=await readDataUrl(file);return{name:file.name,mime:file.type||'application/octet-stream',data:data.split(',')[1]};
 }

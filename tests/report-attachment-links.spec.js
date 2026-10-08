@@ -10,7 +10,12 @@ test('review modal keeps valid document links and omits executable URL schemes',
  });
  const modal=page.locator('#modalRoot');
  await expect(modal.getByRole('heading',{name:/Проверка отчёта/})).toBeVisible();
- await expect(modal.locator('a[href="https://example.test/photo.jpg"]')).toHaveCount(1);
+ await expect(modal.locator('.reportPhotoThumb img[src="https://example.test/photo.jpg"]')).toHaveCount(1);
+ await modal.locator('.reportPhotoThumb').click();
+ await expect(page.locator('#reportPhotoViewer')).toBeVisible();
+ await expect(page.locator('#reportPhotoViewer img')).toHaveAttribute('src','https://example.test/photo.jpg');
+ await page.locator('#reportPhotoViewer .reportPhotoViewerPanel button').click();
+ await expect(page.locator('#reportPhotoViewer')).toHaveCount(0);
  await expect(modal.locator('a[href^="javascript:"],a[href^="data:"],a[href^="file:"]')).toHaveCount(0);
 });
 
@@ -20,7 +25,7 @@ test('master document view refuses unsafe schemes and retains valid links',async
  const result=await page.evaluate(()=>{
   const html=reportLinksHtml({report_act_url:'https://example.test/act.pdf',report_type:'measurement',report_measurement_url:'javascript:alert(1)',report_photo_urls:JSON.stringify(['data:text/html,bad','https://example.test/photo.jpg'])});
   const root=document.createElement('div');root.innerHTML=html;
-  return {links:[...root.querySelectorAll('a')].map(a=>a.href),invalid:reportLinksHtml({report_act_url:'javascript:alert(1)'})};
+  return {links:[...root.querySelectorAll('a')].map(a=>a.href),photos:[...root.querySelectorAll('.reportPhotoThumb img')].map(img=>img.src),invalid:reportLinksHtml({report_act_url:'javascript:alert(1)'})};
  });
- expect(result.links).toEqual(['https://example.test/act.pdf','https://example.test/photo.jpg']);expect(result.invalid).toBe('');
+ expect(result.links).toEqual(['https://example.test/act.pdf']);expect(result.photos).toEqual(['https://example.test/photo.jpg']);expect(result.invalid).toBe('');
 });
