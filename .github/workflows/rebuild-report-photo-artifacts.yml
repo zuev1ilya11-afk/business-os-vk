@@ -1,0 +1,39 @@
+name: Rebuild report photo artifacts
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'fix/report-photo-preview-quality-v280'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Rebuild generated startup assets
+        run: npm run build
+      - name: Verify photo quality policy
+        run: node --test tests/report-photo-quality.test.cjs
+      - name: Commit generated assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add startup-shell.bundle.js startup-eager.bundle.js index.html sw.js build-version.js
+          if git diff --cached --quiet; then
+            echo "Generated assets already current"
+            exit 0
+          fi
+          git commit -m "Regenerate build artifacts for report photo fix"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
