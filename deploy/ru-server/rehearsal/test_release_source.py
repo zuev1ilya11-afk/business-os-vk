@@ -3,14 +3,77 @@ import os
 import stat
 import tempfile
 import json
+import re
+import subprocess
 from pathlib import Path
 from unittest.mock import patch, Mock
 import release_source as r
+
+class PooledRunner:
+    def __init__(self,state,mode,expected_mode,stuck=False):
+        self.state=state;self.mode=mode;self.expected_mode=expected_mode;self.stuck=stuck
+        self.pid=1234;self.retired=[];self.queries=[]
+
+    def command(self,args,input,timeout,required=True):
+        query=input.decode();self.queries.append(query)
+        if 'pg_terminate_backend' in query:
+            self.assert_retirement(query,required)
+            self.retired.append(self.pid);self.pid+=1
+            if not self.stuck:self.mode=self.expected_mode
+            return subprocess.CompletedProcess(args,2,b'',b'connection lost after terminating own pooled backend')
+        result=dict(self.state)
+        if "current_setting('default_transaction_read_only')" in query:
+            result.update(session_readonly=self.mode,backend_pid=self.pid)
+        return subprocess.CompletedProcess(args,0,json.dumps(result).encode(),b'')
+
+    def assert_retirement(self,query,required):
+        assert not required
+        assert f'a.pid={self.pid}' in query
+        assert 'a.usename=current_user' in query
+        assert 'a.datname=current_database()' in query
 
 class SourceTests(unittest.TestCase):
     def state(self):
         return {'readonly':None,'cron':[{'id':i,'active':i!=2} for i in range(1,5)],
                 'runtime':{'bos_push_private':True,'bos_hands_private':True,'bos_avito_private':False}}
+
+    def frozen(self):
+        state=self.state();state['readonly']='on'
+        for job in state['cron']:job['active']=False
+        state['runtime']={s:False for s in state['runtime']}
+        return state
+
+    def test_stale_pooled_backend_is_retired_and_fresh_mode_verified(self):
+        runner=PooledRunner(self.frozen(),'off','on')
+        source=r.Source(runner,'client',Path('/unused'));source.state=self.state()
+        source.assert_frozen()
+        self.assertEqual(runner.retired,[1234])
+        self.assertFalse(any('SET default_transaction_read_only' in sql for sql in runner.queries))
+
+    def test_real_pause_loss_is_never_repaired_as_a_session_cache_problem(self):
+        for field in ('readonly','cron','runtime'):
+            state=self.frozen()
+            if field=='readonly':state[field]=None
+            elif field=='cron':state[field][0]['active']=True
+            else:state[field]['bos_hands_private']=True
+            runner=PooledRunner(state,'off','on')
+            source=r.Source(runner,'client',Path('/unused'));source.state=self.state()
+            with self.subTest(field=field),self.assertRaises(RuntimeError):source.assert_frozen()
+            self.assertEqual(runner.retired,[])
+
+    def test_stuck_pool_stops_with_actual_safe_state_details(self):
+        runner=PooledRunner(self.frozen(),'off','on',stuck=True)
+        source=r.Source(runner,'client',Path('/unused'));source.state=self.state()
+        with self.assertRaisesRegex(RuntimeError,'session_readonly.*off'):source.assert_frozen()
+        self.assertLessEqual(len(runner.retired),3)
+
+    def test_recovery_also_retires_stale_readonly_backend(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            runner=PooledRunner(self.state(),'on','off')
+            source=r.Source(runner,'client',Path(tmp));source.state=self.state()
+            source.thaw()
+            self.assertEqual(runner.retired,[1234])
+            self.assertTrue((Path(tmp)/'source-thawed.json').exists())
 
     def test_freeze_uses_cron_api_and_disables_every_saved_runtime(self):
         source=r.Source(None,'client',Path('/unused'))
@@ -33,8 +96,11 @@ class SourceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             source=r.Source(None,'client',Path(tmp));source.state=self.state()
             def sql(value):
-                if value!=r.STATE_SQL:raise AssertionError('Unnecessary mutation on unchanged source')
-                return json.dumps(source.state).encode()
+                if not value.startswith('SELECT jsonb_build_object('):raise AssertionError('Unnecessary mutation on unchanged source')
+                state=dict(source.state)
+                if "current_setting('default_transaction_read_only')" in value:
+                    state.update(session_readonly='off',backend_pid=1234)
+                return json.dumps(state).encode()
             source.sql=Mock(side_effect=sql)
             source.thaw()
             self.assertEqual(json.loads((Path(tmp)/'source-thawed.json').read_text()),{'restored':True})

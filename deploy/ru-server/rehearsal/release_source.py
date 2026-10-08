@@ -14,6 +14,12 @@ STATE_SQL="""SELECT jsonb_build_object(
  AND s.setrole=0 AND v LIKE 'default_transaction_read_only=%'),
  'cron',(SELECT jsonb_agg(jsonb_build_object('id',jobid,'active',active) ORDER BY jobid) FROM cron.job),
  'runtime',jsonb_build_object("""+', '.join("'%s',(SELECT enabled FROM %s.runtime)"%(s,s) for s in RUNTIMES)+'));'
+OBSERVE_SQL=STATE_SQL.replace('SELECT jsonb_build_object(',
+    "SELECT jsonb_build_object('session_readonly',current_setting('default_transaction_read_only'),"
+    "'backend_pid',pg_backend_pid(),",1)
+
+class SourceStateError(RuntimeError):
+    """Contains only non-secret source settings, safe for the final terminal summary."""
 
 def durable_text(path,value,mode=0o600):
     fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,mode)
@@ -57,9 +63,9 @@ class Source:
         self.runner,self.client,self.stage=runner,client,stage
         self.attempted=False;self.state=None
 
-    def sql(self,sql,timeout=60):
+    def sql(self,sql,timeout=60,required=True):
         return self.runner.command(['docker','exec','-i',self.client,'psql','-X','-w','-qAt',
-            '-v','ON_ERROR_STOP=1','-v','VERBOSITY=terse'],input=sql.encode(),timeout=timeout).stdout
+            '-v','ON_ERROR_STOP=1','-v','VERBOSITY=terse'],input=sql.encode(),timeout=timeout,required=required).stdout
 
     def preflight(self):
         info=json.loads(self.sql("SELECT jsonb_build_object('database',current_database(),'user',current_user,"
@@ -99,18 +105,38 @@ class Source:
         raise RuntimeError('Source outgoing queue did not drain')
 
     def assert_frozen(self):
-        value=json.loads(self.sql("SELECT jsonb_build_object('readonly',current_setting('default_transaction_read_only'),"
-            "'cron',(SELECT count(*) FROM cron.job WHERE active));"))
-        state=json.loads(self.sql(STATE_SQL))
-        if value!={'readonly':'on','cron':0} or state['readonly']!='on' or any(state['runtime'].values()):
-            raise RuntimeError('Source write-pause lost')
+        expected={**self.state,'readonly':'on',
+                  'cron':[{'id':j['id'],'active':False} for j in self.state['cron']],
+                  'runtime':{s:False for s in self.state['runtime']}}
+        self.verify_session(expected,'on','Source write-pause lost')
+
+    def verify_session(self,expected,mode,message):
+        for attempt in range(4):
+            observed=json.loads(self.sql(OBSERVE_SQL))
+            session=observed.pop('session_readonly',None)
+            pid=observed.pop('backend_pid',None)
+            details=json.dumps({'session_readonly':session,'database_state':observed},sort_keys=True)
+            # Never explain a changed database setting/job/runtime away as pooling.
+            if observed!=expected:raise SourceStateError(message+': '+details)
+            if session==mode:return
+            if attempt==3:raise SourceStateError(message+': '+details)
+            if type(pid) is not int or pid<=0:raise SourceStateError('Invalid source backend identity')
+            # A session-pool client disconnect does not close its Postgres backend.
+            # RECONNECT intentionally spared this backend; it may retain the old default.
+            # Retire the observed connection, then prove the mode on a new observation.
+            # If this statement receives the same pooled backend it terminates itself;
+            # a lost reply is expected, but is never treated as proof of success.
+            self.sql("SELECT pg_terminate_backend(a.pid) FROM pg_stat_activity a "
+                f"WHERE a.pid={pid} AND a.datname=current_database() AND a.usename=current_user "
+                "AND a.backend_type='client backend';",required=False)
+            time.sleep(0.25)
 
     def thaw(self):
         # A rejected first transaction leaves the source unchanged: verify it instead
         # of repeating the failed mutation and falsely reporting an unrecovered source.
         if json.loads(self.sql(STATE_SQL))!=self.state:
             self.sql(thaw_sql(self.state))
-        if json.loads(self.sql(STATE_SQL))!=self.state:raise RuntimeError('Source state restoration mismatch')
+        self.verify_session(self.state,'off','Source state restoration mismatch')
         try:durable_json(self.stage/'source-thawed.json',{'restored':True})
         except OSError:pass  # The source state was already verified; a full disk cannot undo thaw.
 

@@ -35,7 +35,7 @@ from verify_trial_data import parse_data, digest_rows, SETTINGS
 from edge_trial_files import read_verified_secrets
 from edge_trial import new_fixture, with_fixture
 from release_files import MAIN, SOURCE, origin_host, validate_trial, rewrite_frontend, render_caddy, transform_attachment
-from release_source import Source, durable_json, durable_text, flags_sql, recover_before_activation, RUNTIMES
+from release_source import Source, SourceStateError, durable_json, durable_text, flags_sql, recover_before_activation, RUNTIMES
 
 FOLDER=Path(__file__).resolve().parent
 ROOT=Path('/opt/business-os')
@@ -503,6 +503,7 @@ esac
         details=traceback.format_exc()
         thawed=failure_recovery(r,source,activation,details)
         print('BOS_RELEASE_FAILED phase='+phase+' category='+type(error).__name__,flush=True)
+        if isinstance(error,SourceStateError):print('BOS_SOURCE_STATE '+str(error),flush=True)
         if not source or not source.attempted:print('Этот запуск не изменял исходную БД.',flush=True)
         elif thawed:print('Запись в исходной БД восстановлена.',flush=True)
         else:
