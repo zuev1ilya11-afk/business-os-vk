@@ -88,7 +88,7 @@ Local verification: 24 activation tests, 16 preparation tests and 712 server tes
 
 - [x] Activation verified trusted HTTPS, current gateway routing and the installed handler's valid-token missing-delivery response. A later invalid-token probe from the agent workspace was inconclusive due to a connection error, not counted as a passed negative-authentication test.
 - [x] Prepare the support request below to replace the existing destination while retaining the current token; do not create a duplicate subscription. The user previously configured the address through Hands support.
-- [x] Owner reported replacement at 17:25. Their follow-up asks about a new token; clarify whether this is a webhook token or Hands API key before changing any credential. The deployed webhook still uses the retained original token.
+- [x] Owner reported replacement at 17:25 and confirmed at 17:32 that Hands issued a new **webhook** token. The deployed handler currently retains the original token; the new value must be installed locally before provider delivery can be considered restored.
 - [ ] Confirm a genuine new incoming event is stored and visible in RU. Confirm repeat delivery does not create a duplicate and that new events no longer land in the old source. Do not close the old source prematurely.
 
 Support request (owner sends through their existing Hands support conversation):
@@ -98,6 +98,19 @@ Support request (owner sends through their existing Hands support conversation):
 The screenshot field `WEBHOOK_TOKEN_SHA256` is a fingerprint, not the webhook credential. The actual token is not included in this request or public documentation. Provider support already holds the existing subscription value; there is no need to paste it into this chat.
 
 17:29 checkpoint: old source receipt count 150, latest `2026-10-08T13:33:10.657642Z`, none after the owner's replacement report. New RU intake remains unverified. The corrected read-only diagnostic must recognize canonical `hands:<id>` as well as legacy numeric IDs; do not use the earlier zero match as a recovery authorization or proof of absence.
+
+### New provider-issued webhook token
+
+`scripts/ru-hands-token.py` requests the new token via hidden terminal input only; do not put the value in chat, shell commands, command arguments or environment variables. It changes only the `WEBHOOK_TOKEN` literal in the exact activated private handler and its rebuilt bundle. `HANDS_API_KEY`, other credentials, DB records and provider configuration are not changed.
+
+The command takes the same activation lock, checks the successful deployment receipt, verifies all other source/helper/gateway/bundle files, and privately backs up the current source/bundle. It reproduces the current bundle first, then compiles the token change offline using the same resolver cache. Before activation an isolated candidate must return `400 MISSING_DELIVERY` for the new token and `404 NOT_FOUND` for the old token on the same route. Source and bundle hashes are checked before and after testing and against the transaction journal.
+
+Only the source and Hands bundle are atomically replaced. The exact active edge is restarted, then public HTTPS checks verify the new token and rejection of the previous token. Rollback restores only previous local files/token; it does not restore provider delivery if Hands already uses the new value. Private recovery state is retained under the original stage's `webhook-token-rotation` directory. A rerun recovers interrupted replacement before requesting any token, or verifies an already successful rotation. Another future rotation requires a fresh reviewed baseline; this command is deliberately tied to this activation.
+
+- [x] Implement token-only rotation and regression coverage, including hidden-input failure, token scope, URL encoding, tested-artifact preservation and recovery allowlist.
+- [ ] Publish reviewed rotation command and verify its download.
+- [ ] Owner enters the new webhook token privately in the server console. Expected marker: `BOS_HANDS_WEBHOOK_TOKEN_UPDATED`.
+- [ ] Verify genuine provider delivery and the corrected target incident lookup before recovering any order.
 
 ## Task 4: Reconcile missing orders safely
 

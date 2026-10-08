@@ -88,6 +88,7 @@ jobs:
           python3 tests/ru-check.test.py
           python3 tests/ru-hands-stage.test.py
           python3 tests/ru-hands-activate.test.py
+          python3 tests/ru-hands-token.test.py
 
       - name: Complete Playwright suite
         run: npm run test:ui -- --workers=2
