@@ -19,13 +19,14 @@ test('desktop displays and moves an off-grid appointment without changing durati
  const card=page.locator('.dh190Card[data-order-id="11"]');await expect(card.locator('.du187When')).toHaveText('10:45–12:20');expect(await card.evaluate(e=>e.style.getPropertyValue('--dh190-offset'))).toBe('75%');
  expect(await page.evaluate(m=>BOS_UNIFIED_DISPATCH_SCHEDULE_V187.move('11',m,'12:05'),master.external_id)).toBe(true);expect(db.tables.orders[0].time_slot).toBe('12:05–13:40');
 });
-for(const timezoneId of ['UTC','Europe/Moscow'])test.describe(timezoneId,()=>{
+for(const timezoneId of ['UTC','Europe/Moscow','America/Los_Angeles'])test.describe(timezoneId,()=>{
  test.use({timezoneId});
- test('master deadline includes 24:00 and the exact +90 boundary',async({page})=>{
+ test('master deadline uses Moscow time, includes 24:00 and the exact +90 boundary',async({page})=>{
   await page.clock.install({time:new Date('2026-10-01T08:00:00Z')});await fullStack(page,'master');await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.waitForFunction(()=>window.BOS_MASTER_DAILY_HOME_V127_API);
   const r=await page.evaluate(()=>{
-   const api=BOS_MASTER_DAILY_HOME_V127_API,o={status:'В работе',scheduled_date:'2026-10-01',time_slot:'23:00–24:00'};const end=new Date('2026-10-02T00:00:00').getTime();
-   return {end:api.scheduleEndTs(o)===end,boundaries:[89,90,91].map(n=>api.reportOverdue(o,end+n*60000)),single:api.scheduleEndTs({...o,time_slot:'9:00–10:00'})===new Date('2026-10-01T10:00:00').getTime()};
+   // Date-only visits belong to the business timezone, including in a UTC or US browser.
+   const api=BOS_MASTER_DAILY_HOME_V127_API,o={status:'В работе',scheduled_date:'2026-10-01',time_slot:'23:00–24:00'};const end=new Date('2026-10-02T00:00:00+03:00').getTime();
+   return {end:api.scheduleEndTs(o)===end,boundaries:[89,90,91].map(n=>api.reportOverdue(o,end+n*60000)),single:api.scheduleEndTs({...o,time_slot:'9:00–10:00'})===new Date('2026-10-01T10:00:00+03:00').getTime()};
   });expect(r).toEqual({end:true,boundaries:[false,true,true],single:true});
  });
 });
