@@ -37,10 +37,10 @@
 | Active release | `bos-release-to2wblxf`; bind-mounted sources/main/bundles | Fresh mount/config checks at each run |
 | RU DB | Earlier read-only inspection found the active release DB, order uniqueness and 4 active cron jobs | Actual edge-to-service routing, current snapshots, job success and backup restore |
 | Missing intake | One privately identified post-cutover order existed in source and was absent from RU | Full cutover-window comparison and live provider destination |
-| Hands patch | Pagination/error regressions tested; exact private sync matches; bundle creation and isolated API validation succeeded | Guarded deployment and actual intake |
+| Hands patch | Pagination/error regressions tested; exact private sync matches; bundle creation, isolated validation and guarded activation succeeded | Actual provider intake and reconciliation |
 | Candidate startup | Owner's 16:41 screenshot confirms `BOS_HANDS_PREPARED`; all routing/container metadata checks passed; no production activation | Recheck the same release at activation |
-| Application regression | CI run `37786062185` on `1d98b733bfa8dcec2890b8f598a9499c255a3594` completed successfully | Legacy GAS test origin, RU roles/devices and CI for new activation tooling |
-| Activation | Guarded tooling implemented; no production activation has been run | Reproducible dependency gate and actual server result |
+| Application regression | CI run `37789617299` on activation commit `c8cc5b94a366a3f3e4fe8818d664f2165e90740f` completed successfully | Legacy GAS test origin and actual RU roles/devices |
+| Activation | Owner's 17:11 screenshot confirms `BOS_HANDS_ACTIVATED` and successful HTTPS/webhook validation | Provider subscription change, genuine delivery and reconciliation |
 
 ## Task 1: One consolidated preparation run
 
@@ -69,8 +69,8 @@
 - [x] Implement checks for image, mounts, original hashes, free space, routing, backups, ownership and modes. Lock before selection; persist and fsync backups/journal before replacement. Reject ambiguous prepared stages and unrelated recovery paths.
 - [x] Implement same-filesystem atomic replacement in helper → source → bundle order; restart only the exact edge after verifying it has not been superseded. Bundle replacement itself can affect a newly loaded worker before the restart.
 - [x] Implement trusted public HTTPS GET checks and the reviewed, installed handler's token-authenticated missing-delivery branch (empty body, no delivery header; returns before DB access). Failed verification restores previous files and restarts the same edge. No DB snapshot restoration or imports.
-- [ ] Publish reviewed activation tooling and provide the exact command only after the preparation result is known.
-- [ ] Owner runs activation once; expected success is `BOS_HANDS_ACTIVATED=...`. A prepared marker alone is never reported as a deployment.
+- [x] Publish reviewed activation tooling and verify its download byte for byte.
+- [x] Owner runs activation: 17:11 screenshot confirms `BOS_HANDS_ACTIVATED=...` and successful HTTPS/webhook validation. The script reached this marker only after the dependency gate, guarded swaps, restart and postchecks.
 
 ### Dependency and recovery gates
 
@@ -78,7 +78,7 @@ Before replacing live files, the activation command rebuilds the original source
 
 The private `activation.json` records `installing`, `verifying`, `activated`, `rolling_back`, `rolled_back` or `rollback_failed`. A rerun detects an interrupted attempt and performs guarded rollback rather than starting a new replacement. It refuses to overwrite unrelated changes or restart a superseded release. A rollback failure retains originals and the journal for diagnosis. No script can automatically recover during host power loss; recovery runs on the next invocation.
 
-Local verification at this checkpoint: 24 activation tests and 16 preparation tests passed. Server execution and dependency reproducibility are still pending.
+Local verification: 24 activation tests, 16 preparation tests and 712 server tests passed. Exact activation commit CI passed. The owner's success marker confirms that the server passed the activation gates; no recovery import or provider change was performed by the script.
 
 ## Task 3: Switch the existing Hands webhook
 
@@ -86,10 +86,16 @@ Local verification at this checkpoint: 24 activation tests and 16 preparation te
 
 **Interfaces:** approved RU webhook origin/path, existing token retained privately, provider support confirmation of a single subscription.
 
-- [ ] Verify trusted HTTPS, current gateway routing, webhook authentication and expected response behavior on the installed handler.
-- [ ] Prepare one support request to replace the existing destination with the RU endpoint while retaining the current token; do not create a duplicate subscription. The user previously configured the address through Hands support.
+- [x] Activation verified trusted HTTPS, current gateway routing and the installed handler's valid-token missing-delivery response. A later invalid-token probe from the agent workspace was inconclusive due to a connection error, not counted as a passed negative-authentication test.
+- [x] Prepare the support request below to replace the existing destination while retaining the current token; do not create a duplicate subscription. The user previously configured the address through Hands support.
 - [ ] Owner sends the prepared request, unless separately authorizing a supported sending channel.
 - [ ] Confirm a genuine new incoming event is stored and visible in RU. Confirm repeat delivery does not create a duplicate and that new events no longer land in the old source. Do not close the old source prematurely.
+
+Support request (owner sends through their existing Hands support conversation):
+
+> Здравствуйте! Мы перенесли приложение на новый сервер. Просьба изменить адрес нашей действующей webhook-подписки на `https://139.100.237.167/functions/v1/hands-api`, сохранив текущий параметр `?token=...` и его значение из существующей настройки. События и заголовки доставки оставить прежними. Замените адрес в текущей подписке, не создавая вторую. Подтвердите, пожалуйста, переключение и время изменения.
+
+The screenshot field `WEBHOOK_TOKEN_SHA256` is a fingerprint, not the webhook credential. The actual token is not included in this request or public documentation. Provider support already holds the existing subscription value; there is no need to paste it into this chat.
 
 ## Task 4: Reconcile missing orders safely
 
@@ -109,7 +115,7 @@ Local verification at this checkpoint: 24 activation tests and 16 preparation te
 
 **Interfaces:** exact deployed revision, role-specific test accounts and disposable test order/files; no real report or payment changes.
 
-- [ ] Check exact-commit CI once: build, server tests, Deno/TypeScript, SQL contract and browser suite. Investigate only concrete failures; do not repeat the full audit on every console result.
+- [x] Check exact activation commit CI: run `37789617299` completed successfully. Actual RU/device checks below remain separate from repository CI.
 - [ ] Resolve CI run `37780918442` for commit `a6a1eb51b1bd1f5dc50568c67b19e76905f2b886`: `tests/gas-bridge-health.spec.js` still calls the old Supabase origin and timed out at 30 seconds on both attempts. Inspect the RU bridge and archive configuration before changing its test target. Do not skip this failure or assume Hands changes caused it. The health handler issues a synthetic signed archive request; do not substitute a real order/report.
 - [ ] Owner/manager/dispatcher/master: verify login, role boundaries, list visibility, profile return and editing permissions.
 - [ ] On a disposable order, verify contact/date/time, assignment, workflow progress, attachments, report save/review and retry behavior. Keep the protected real report/order untouched.
