@@ -10,6 +10,34 @@ from unittest.mock import Mock, patch
 import finish_release as f
 
 class FinishTests(unittest.TestCase):
+    def gateway_runner(self,ports):
+        runner=Mock(prefix='bos-release-test',stage=Path('/release'))
+        runner.inspect.return_value={'NetworkSettings':{'Ports':ports}}
+        return runner
+
+    def test_gateway_gets_publishable_network_and_private_upstreams_before_start(self):
+        runner=self.gateway_runner({'9000/tcp':[{'HostIp':'127.0.0.1','HostPort':'19000'}]})
+        with patch.object(f,'localhost',return_value=Mock(read=lambda:b'{"ready":true}')) as request:
+            f.start_edge_gateway(runner,{'edge':'edge-image'})
+        name,args=runner.create.call_args.args
+        self.assertEqual(args[args.index('--network')+1],'bos-release-test-outbound')
+        self.assertIn('127.0.0.1:19000:9000',args)
+        runner.command.assert_any_call(['docker','network','connect','bos-release-test-internal',name])
+        calls=runner.mock_calls
+        connect=next(i for i,c in enumerate(calls) if c[0]=='command' and c.args[0][:3]==['docker','network','connect'])
+        start=next(i for i,c in enumerate(calls) if c[0]=='start')
+        self.assertLess(connect,start)
+        request.assert_called_with('/__bos_ready')
+        runner.target_sql.assert_not_called()
+
+    def test_unpublished_or_public_gateway_binding_fails_before_http_wait(self):
+        for ports in ({},{'9000/tcp':None},{'9000/tcp':[{'HostIp':'0.0.0.0','HostPort':'19000'}]}):
+            runner=self.gateway_runner(ports)
+            with self.subTest(ports=ports),patch.object(f,'localhost') as request:
+                with self.assertRaisesRegex(RuntimeError,'loopback port'):
+                    f.start_edge_gateway(runner,{'edge':'edge-image'})
+                request.assert_not_called()
+
     def test_custom_configuration_uses_populated_persistent_volume(self):
         args=f.database_args('bos-release-test-db','image','/release','private')
         self.assertIn('type=volume,source=bos-release-test-db-config,target=/etc/postgresql-custom',args)

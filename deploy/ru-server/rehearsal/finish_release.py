@@ -285,6 +285,23 @@ def sync_files(r,rows,key):
     durable_json(raw/'manifest.json',snapshot)
     return snapshot
 
+def start_edge_gateway(r,images):
+    # Docker omits host port mappings for a container attached only to internal networks.
+    # The gateway needs a normal bridge; SQL stays on its separate internal network.
+    r.command(['docker','network','create','--label','bos.release='+r.prefix,r.prefix+'-outbound'])
+    name=r.prefix+'-edge';args=docker_base(r,name,r.prefix+'-outbound',r.stage/'edge/runtime.env')
+    args+=['--publish','127.0.0.1:19000:9000','--read-only','--user','0','--tmpfs','/tmp:rw,nosuid,size=512m','--env','DENO_DIR=/tmp/deno','--entrypoint','/usr/local/bin/edge-runtime']
+    for sub,dest in [('sources','/bos-src'),('bundles','/bos-bundles'),('main','/bos-main')]:
+        args+=['--mount',f'type=bind,source={r.stage/"edge"/sub},target={dest},readonly']
+    r.create(name,args+[images['edge'],'start','--main-service','/bos-main','--ip','0.0.0.0','--port','9000'])
+    r.command(['docker','network','connect',r.prefix+'-internal',name])
+    r.start(name)
+    ports=r.inspect(name).get('NetworkSettings',{}).get('Ports',{}).get('9000/tcp')
+    if ports!=[{'HostIp':'127.0.0.1','HostPort':'19000'}]:
+        raise RuntimeError('Edge loopback port was not published correctly')
+    # This route starts no user worker and makes no upstream/API/database request.
+    ready(r,lambda:localhost('/__bos_ready').read()==b'{"ready":true}')
+
 def start_services(r,images,values,password,jwt,anon,service):
     r.target_sql("BEGIN; SET LOCAL log_statement='none'; SET LOCAL log_min_error_statement='panic'; SET LOCAL pgaudit.log='none';\n"+
         ''.join(f"ALTER ROLE {role} PASSWORD '{password}';\n" for role in ('authenticator','supabase_auth_admin','supabase_storage_admin'))+'COMMIT;')
@@ -294,11 +311,6 @@ def start_services(r,images,values,password,jwt,anon,service):
         if role=='storage':args+=['--mount',f'type=bind,source={r.stage/"storage"},target=/var/lib/storage',
             '--mount',f'type=bind,source={r.stage/"probes"},target=/bos-probes,readonly']
         r.create(name,args+[images[role]]);r.start(name)
-    name=r.prefix+'-edge';args=docker_base(r,name,r.prefix+'-internal',r.stage/'edge/runtime.env')
-    args+=['--publish','127.0.0.1:19000:9000','--read-only','--user','0','--tmpfs','/tmp:rw,nosuid,size=512m','--env','DENO_DIR=/tmp/deno','--entrypoint','/usr/local/bin/edge-runtime']
-    for sub,dest in [('sources','/bos-src'),('bundles','/bos-bundles'),('main','/bos-main')]:
-        args+=['--mount',f'type=bind,source={r.stage/"edge"/sub},target={dest},readonly']
-    r.create(name,args+[images['edge'],'start','--main-service','/bos-main','--ip','0.0.0.0','--port','9000']);r.start(name)
     ready(r,lambda:localhost('/__bos_ready').read()==b'{"ready":true}')
     ready(r,lambda:json.load(localhost('/auth/v1/admin/users',service)).get('users') is not None)
     ready(r,lambda:isinstance(json.load(localhost('/storage/v1/bucket',service)),list))
@@ -420,7 +432,9 @@ def main():
         ready(r,https_ready,120)
         phase='target_database_preparation'
         initialize_target(r,images['db'],password)
-        print('HTTPS готов. Введите два исходных секрета; они останутся на сервере.',flush=True)
+        phase='edge_gateway_preparation'
+        start_edge_gateway(r,images)
+        print('HTTPS и Edge-шлюз готовы. Введите два исходных секрета; они останутся на сервере.',flush=True)
         warnings.simplefilter('error',getpass.GetPassWarning)
         source_password=getpass.getpass('Пароль исходной БД Supabase: ')
         storage_key=getpass.getpass('Серверный API-ключ исходного Supabase: ').strip()
@@ -469,10 +483,9 @@ esac
         if counts['storage_objects']!=len(rows) or counts['cron_enabled']!='off':raise ValueError('Final target counts mismatch')
         phase='attachment_links';links=resign_links(r,rows,service)
         if r.target_sql('SELECT count(*) FROM net.http_request_queue;').stdout.strip()!=b'0':raise ValueError('Unexpected pending target HTTP requests')
-        # Enable egress only after source-derived worker URLs and signed file links are local.
-        r.command(['docker','network','create','--label','bos.release='+prefix,prefix+'-outbound'])
+        # Give SQL/pg_net egress only after its source-derived worker URLs are local.
+        # Gateway egress was prepared before freeze; its public API is still gated by Caddy.
         r.command(['docker','network','connect',prefix+'-outbound',prefix+'-db'])
-        r.command(['docker','network','connect',prefix+'-outbound',prefix+'-edge'])
         phase='final_login';login=app_probe(r,values,counts)
         source.assert_frozen()
         phase='activate'
