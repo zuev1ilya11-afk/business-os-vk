@@ -38,7 +38,7 @@
 | RU DB | Earlier read-only inspection found the active release DB, order uniqueness and 4 active cron jobs | Actual edge-to-service routing, current snapshots, job success and backup restore |
 | Missing intake | One privately identified post-cutover order existed in source and was absent from RU | Full cutover-window comparison and live provider destination |
 | Hands patch | Pagination/error regressions tested; exact private sync matches; server bundle creation succeeded | Successful isolated API boot and deployment |
-| Candidate startup | Exit 1, OOM false persists after all five candidate settings were supplied; live settings are populated and all routing/container metadata checks matched | Read the retained startup log with `--diagnose`; full root cause is not yet confirmed |
+| Candidate startup | Saved log reports `invalid private upstream`; fake loopback BOS origins conflict with gateway validation. Live settings are populated and all routing/container metadata checks matched | Retry with verified credential-free live service origins while keeping network disabled and keys dummy; boot still unconfirmed |
 | Application regression | CI run `37782750947` on `885dbdf2b3199e61d76147e2c1f22facda18b604` completed successfully | Prior GAS timeout did not recur in that run; the legacy test origin and RU role/device checks still need review |
 | Activation | None performed by these scripts | Activation and rollback tooling still to implement and verify |
 
@@ -46,16 +46,16 @@
 
 **Files:** `scripts/ru-hands-stage.py`, `tests/ru-hands-stage.test.py`; pinned dependency `scripts/ru-check.py`.
 
-**Interfaces:** `candidate_environment(gateway_text) -> dict[str,str]`; `production_preflight(diag, edge, containers, gateway_text) -> dict`; prepared stage produces private `manifest.json`, source and bundle backups, staged source/helper/bundle.
+**Interfaces:** `candidate_environment(gateway_text, origins) -> dict[str,str]`; `production_preflight(diag, edge, containers, gateway_text) -> dict`; prepared stage produces private `manifest.json`, source and bundle backups, staged source/helper/bundle.
 
 - [x] Reproduce missing candidate environment and wrong-network alias behavior in tests.
-- [x] Supply dummy BOS Auth/REST/Storage origins, JWT/VK keys and Supabase settings; keep `--network none`, resource caps and read-only mounts.
+- [x] Supply verified credential-free BOS Auth/REST/Storage origins, dummy JWT/VK keys and dummy Supabase settings; keep `--network none`, resource caps and read-only mounts. The origins pass the existing gateway validator but remain unreachable in the candidate.
 - [x] Compare live routing metadata and REST's database container target; report every result without exposing values or applying speculative fixes. This does not prove logical database identity, connectivity or health.
 - [x] Preserve the failed candidate log tail privately before cleanup; emit fixed diagnostic categories only.
 - [x] Run `PYTHONDONTWRITEBYTECODE=1 python3 tests/ru-hands-stage.test.py`: 10 passed; independent review completed.
 - [ ] Publish and verify the pinned download.
 - [ ] Owner runs the pinned script once. Expected success: `BOS_HANDS_PREPARED=...` and manifest `activated: false`. Any false/unknown production preflight result remains a release blocker until explained.
-- [ ] Current stop: candidate still exits 1. Run the updated script with `--diagnose` to read and redact its already saved log; this mode does not build, start containers, make network requests or write to the database. Do not repeat full preparation until that error is understood.
+- [x] Read the saved error with `--diagnose`: it reports `invalid private upstream`. Correct the candidate origin configuration, without changing the gateway or its validation rules. Later failures automatically print the sanitized saved log before cleanup.
 - [ ] Confirm staged API loading/validation. This test proves neither live DB writes nor complete dependency equivalence.
 
 ## Task 2: Guarded activation and rollback

@@ -78,19 +78,28 @@ def gateway_env_names(source):
     return set(re.findall(r'Deno\.env\.get\(\s*[\'"]([A-Z][A-Z0-9_]{0,79})[\'"]\s*\)', source))
 
 
-def candidate_environment(gateway_text):
-    # Boot the existing gateway with structurally valid, isolated test settings.
-    # Production environment values are never copied into the candidate.
+def candidate_environment(gateway_text, origins):
+    # Reuse only credential-free origins already matched to release services.
+    # Real DB/auth/VK credentials are not copied; Docker network remains none.
     values = {
         'SUPABASE_URL': 'http://127.0.0.1:1',
         'SUPABASE_ANON_KEY': 'candidate-no-database-access',
         'SUPABASE_SERVICE_ROLE_KEY': 'candidate-no-database-access',
-        'BOS_AUTH_ORIGIN': 'http://127.0.0.1:1',
-        'BOS_REST_ORIGIN': 'http://127.0.0.1:1',
-        'BOS_STORAGE_ORIGIN': 'http://127.0.0.1:1',
         'JWT_SECRET': 'candidate-only-signing-key-with-no-production-validity',
         'VK_APP_SECRET': 'candidate-only-vk-key-with-no-production-validity',
     }
+    for name in ('BOS_AUTH_ORIGIN', 'BOS_REST_ORIGIN', 'BOS_STORAGE_ORIGIN'):
+        value = origins.get(name, '')
+        try:
+            url = urllib.parse.urlsplit(value)
+            if (not value or any(c.isspace() for c in value) or url.scheme not in ('http', 'https')
+                    or not url.hostname or url.username is not None or url.password is not None
+                    or url.path not in ('', '/') or url.query or url.fragment
+                    or (url.port is not None and not 1 <= url.port <= 65535)):
+                raise ValueError()
+        except (TypeError, ValueError):
+            raise Stop('service origin must be a credential-free base URL: ' + name) from None
+        values[name] = value
     missing = gateway_env_names(gateway_text) - values.keys()
     if missing:
         raise Stop('unreviewed gateway environment names: ' + ','.join(sorted(missing)))
@@ -280,6 +289,10 @@ def diagnose_last_failure():
     if not stages:
         raise Stop('no saved candidate runtime log found')
     stage = max(stages, key=lambda p: (p / 'candidate-runtime.log').stat().st_mtime)
+    diagnose_stage(stage)
+
+
+def diagnose_stage(stage):
     def read(path):
         if path.is_symlink() or not path.resolve().is_relative_to(stage.resolve()) or path.stat().st_size > 8 * 1024 * 1024:
             raise Stop('unexpected diagnostic file')
@@ -292,7 +305,7 @@ def diagnose_last_failure():
     safe = redact_runtime_log(read(stage / 'candidate-runtime.log'), source, metadata)
     print('DIAGNOSIS_READ_ONLY=' + str(stage), flush=True)
     print(safe[-6000:] or '[empty runtime log]', flush=True)
-    print('DIAGNOSIS_DONE; no builds, restarts or database operations', flush=True)
+    print('DIAGNOSIS_DONE; saved log read only', flush=True)
 
 
 def main():
@@ -330,9 +343,11 @@ def main():
         raise Stop('deployment too large or free space insufficient')
     gateway_text = '\n'.join(p.read_text() for p in gateway.rglob('*.ts'))
     check_gateway(gateway_text)
-    candidate_env = candidate_environment(gateway_text)
     preflight = production_preflight(diag, edge, all_containers, gateway_text)
     print('PRODUCTION_PREFLIGHT=' + json.dumps(preflight), flush=True)
+    if not all(preflight['route_hosts_match_release'].values()):
+        raise Stop('service origins must match the active release network before candidate launch')
+    candidate_env = candidate_environment(gateway_text, diag.env(edge))
     original_source, original_bundle = source_file.read_bytes(), bundle_file.read_bytes()
     expected = download('tests/fixtures/hands-v11-sync.ts').rstrip(b'\n')
     patched = patch_source(original_source, expected)
@@ -414,6 +429,10 @@ def main():
     except Exception:
         if candidate_name:
             report_candidate_failure(candidate_name, stage, gateway_text)
+            try:
+                diagnose_stage(stage)
+            except Exception:
+                print('SANITIZED_RUNTIME_LOG_UNAVAILABLE', flush=True)
         raise
     finally:
         # Remove only containers marked with this unpredictable per-run label.

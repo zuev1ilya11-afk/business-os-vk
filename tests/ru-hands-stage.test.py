@@ -92,17 +92,33 @@ class StageTests(unittest.TestCase):
             stage.report_candidate_failure('candidate', pathlib.Path('/private'), '')
         self.assertEqual(captured.getvalue(), 'CANDIDATE_DIAGNOSTIC_UNAVAILABLE\n')
 
-    def test_candidate_receives_all_gateway_settings_with_isolated_dummy_values(self):
+    def test_candidate_uses_known_service_origins_but_keeps_dummy_credentials(self):
         names = ['BOS_AUTH_ORIGIN', 'BOS_REST_ORIGIN', 'BOS_STORAGE_ORIGIN',
                  'JWT_SECRET', 'VK_APP_SECRET']
         gateway = '\n'.join('Deno.env.get("' + name + '")' for name in names)
-        values = stage.candidate_environment(gateway)
+        origins = {name: 'http://bos-release-test-' + service + ':3000'
+                   for name, service in zip(names[:3], ('auth', 'rest', 'storage'))}
+        origins['JWT_SECRET'] = 'production-secret-must-not-copy'
+        values = stage.candidate_environment(gateway, origins)
         self.assertTrue(set(names).issubset(values))
         for name in names[:3]:
-            self.assertEqual(values[name], 'http://127.0.0.1:1')
+            self.assertEqual(values[name], origins[name])
+        self.assertNotEqual(values['JWT_SECRET'], origins['JWT_SECRET'])
+        self.assertEqual(values['SUPABASE_URL'], 'http://127.0.0.1:1')
         self.assertGreaterEqual(len(values['JWT_SECRET']), 32)
         with self.assertRaises(stage.Stop):
-            stage.candidate_environment('Deno.env.get("UNREVIEWED_NEW_SETTING")')
+            stage.candidate_environment('Deno.env.get("UNREVIEWED_NEW_SETTING")', origins)
+
+    def test_service_origins_cannot_carry_credentials_or_parameters(self):
+        origins = {name: 'http://bos-release-test-rest:3000' for name in
+                   ('BOS_AUTH_ORIGIN', 'BOS_REST_ORIGIN', 'BOS_STORAGE_ORIGIN')}
+        for invalid in ('http://user:password@bos-release-test-rest:3000',
+                        'http://bos-release-test-rest:3000?key=private',
+                        'http://bos-release-test-rest:3000/#private',
+                        'http://bos-release-test-rest:3000/path',
+                        'http://bos-release-test-rest:3000\n', ''):
+            with self.subTest(invalid=invalid), self.assertRaises(stage.Stop):
+                stage.candidate_environment('', {**origins, 'BOS_REST_ORIGIN': invalid})
 
     def test_route_match_requires_shared_network_not_just_alias(self):
         edge = {'NetworkSettings': {'Networks': {'release-net': {}}}}
