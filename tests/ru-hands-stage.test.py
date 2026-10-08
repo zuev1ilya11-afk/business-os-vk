@@ -113,6 +113,42 @@ class StageTests(unittest.TestCase):
         rest['NetworkSettings']['Networks'] = {'legacy-net': {'Aliases': ['rest']}}
         self.assertFalse(stage.route_matches(edge, rest, 'http://rest:3000'))
 
+    def test_runtime_log_redaction_preserves_error_but_removes_credentials(self):
+        secret = 'private-webhook-credential-123'
+        password = 'private password with spaces'
+        source = 'const WEBHOOK_TOKEN="' + secret + '"; const API_KEY="' + password + '";'
+        metadata = [{'Config': {'Env': ['PRIVATE_KEY=private-env-credential-456']}}]
+        log = ('worker startup error: invalid startup setting\n' + secret + '\n' + password +
+               '\nprivate-env-credential-456\nhttps://example.invalid/?token=' + secret)
+        result = stage.redact_runtime_log(log, source, metadata)
+        self.assertIn('worker startup error: invalid startup setting', result)
+        for value in (secret, password, 'private-env-credential-456'):
+            self.assertNotIn(value, result)
+
+    def test_runtime_log_redaction_removes_opaque_tokens_and_terminal_controls(self):
+        opaque = 'a' * 44
+        result = stage.redact_runtime_log('\x1b[31mError: ' + opaque + '\x1b[0m\n', '', [])
+        self.assertNotIn(opaque, result)
+        self.assertNotIn('\x1b', result)
+        self.assertIn('Error:', result)
+
+    def test_runtime_log_redacts_short_environment_password(self):
+        result = stage.redact_runtime_log('password=p4sswd', '', [{'Config': {'Env': ['PASSWORD=p4sswd']}}])
+        self.assertNotIn('p4sswd', result)
+
+    def test_runtime_log_redacts_json_escaped_password(self):
+        secret = 'pass"word\\private'
+        log = json.dumps({'password': secret})
+        result = stage.redact_runtime_log(log, '', [{'Config': {'Env': ['PASSWORD=' + secret]}}])
+        self.assertNotIn(json.dumps(secret)[1:-1], result)
+        self.assertNotIn(secret, result)
+
+    def test_runtime_log_normalizes_ansi_before_hiding_secret(self):
+        secret = 'shortSecret123'
+        log = 'short\x1b[31mSecret123\x1b[0m'
+        result = stage.redact_runtime_log(log, '', [{'Config': {'Env': ['TOKEN=' + secret]}}])
+        self.assertNotIn(secret, result)
+
 
 if __name__ == '__main__':
     unittest.main()

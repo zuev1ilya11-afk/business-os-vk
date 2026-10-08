@@ -38,8 +38,8 @@
 | RU DB | Earlier read-only inspection found the active release DB, order uniqueness and 4 active cron jobs | Actual edge-to-service routing, current snapshots, job success and backup restore |
 | Missing intake | One privately identified post-cutover order existed in source and was absent from RU | Full cutover-window comparison and live provider destination |
 | Hands patch | Pagination/error regressions tested; exact private sync matches; server bundle creation succeeded | Successful isolated API boot and deployment |
-| Candidate startup | Exit 1, OOM false; five gateway settings absent in candidate | Retry with complete dummy settings; full root cause is not yet confirmed |
-| Application regression | Latest completed CI passed build, TypeScript, SQL and server checks; 587 browser tests passed, 1 skipped | `gas-bridge-health` timed out twice against the old Supabase URL; CI is red; RU role/device tests remain |
+| Candidate startup | Exit 1, OOM false persists after all five candidate settings were supplied; live settings are populated and all routing/container metadata checks matched | Read the retained startup log with `--diagnose`; full root cause is not yet confirmed |
+| Application regression | CI run `37782750947` on `885dbdf2b3199e61d76147e2c1f22facda18b604` completed successfully | Prior GAS timeout did not recur in that run; the legacy test origin and RU role/device checks still need review |
 | Activation | None performed by these scripts | Activation and rollback tooling still to implement and verify |
 
 ## Task 1: One consolidated preparation run
@@ -55,6 +55,7 @@
 - [x] Run `PYTHONDONTWRITEBYTECODE=1 python3 tests/ru-hands-stage.test.py`: 10 passed; independent review completed.
 - [ ] Publish and verify the pinned download.
 - [ ] Owner runs the pinned script once. Expected success: `BOS_HANDS_PREPARED=...` and manifest `activated: false`. Any false/unknown production preflight result remains a release blocker until explained.
+- [ ] Current stop: candidate still exits 1. Run the updated script with `--diagnose` to read and redact its already saved log; this mode does not build, start containers, make network requests or write to the database. Do not repeat full preparation until that error is understood.
 - [ ] Confirm staged API loading/validation. This test proves neither live DB writes nor complete dependency equivalence.
 
 ## Task 2: Guarded activation and rollback

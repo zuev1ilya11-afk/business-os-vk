@@ -244,6 +244,57 @@ def report_candidate_failure(cid, stage, gateway_text):
         print('CANDIDATE_DIAGNOSTIC_UNAVAILABLE', flush=True)
 
 
+def redact_runtime_log(log, source, metadata):
+    log = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', log)
+    log = ''.join(c for c in log if c in '\n\t' or ord(c) >= 32)
+    values = set()
+    for item in metadata:
+        for entry in item.get('Config', {}).get('Env', []) or []:
+            value = entry.partition('=')[2]
+            if value:
+                values.add(value)
+    assignments = r'\b[\w$]*(?:token|secret|password|api_key|service_key)[\w$]*\s*(?::\s*[^=;\n]+)?=\s*([\'\"])(.*?)\1'
+    values.update(match[1] for match in re.findall(assignments, source, re.IGNORECASE) if match[1])
+    # Also hide opaque string literals, including credentials with other names.
+    for _, value in re.findall(r'([\'\"])([^\'\"\r\n]{16,})\1', source):
+        if not re.search(r'\s', value):
+            values.add(value)
+    representations = set()
+    for value in values:
+        representations.update((value, urllib.parse.quote(value, safe=''), urllib.parse.quote_plus(value),
+                                json.dumps(value)[1:-1], json.dumps(value, ensure_ascii=False)[1:-1]))
+    if representations:
+        # Replace simultaneously, so short values cannot expand existing masks.
+        pattern = '|'.join(re.escape(value) for value in sorted(representations, key=len, reverse=True))
+        log = re.sub(pattern, '[REDACTED]', log)
+    log = re.sub(r'[A-Za-z0-9_+/.=-]{32,}', '[OPAQUE_VALUE]', log)
+    return log
+
+
+def diagnose_last_failure():
+    """Read a saved candidate log only; no Docker runs, network or writes."""
+    if os.geteuid() != 0 or not BASE.is_dir():
+        raise Stop('run diagnosis as root on the RU Docker host')
+    stages = [p for p in BASE.glob('hands-stage-*') if p.is_dir() and not p.is_symlink()
+              and (p / 'candidate-runtime.log').is_file()]
+    if not stages:
+        raise Stop('no saved candidate runtime log found')
+    stage = max(stages, key=lambda p: (p / 'candidate-runtime.log').stat().st_mtime)
+    def read(path):
+        if path.is_symlink() or not path.resolve().is_relative_to(stage.resolve()) or path.stat().st_size > 8 * 1024 * 1024:
+            raise Stop('unexpected diagnostic file')
+        return path.read_text(errors='replace')
+    metadata = []
+    for name in ('container-metadata.log', 'candidate-failed-metadata.log'):
+        metadata.extend(json.loads(read(stage / name)))
+    paths = [stage / 'sources/hands-api/index.ts', *sorted((stage / 'main').rglob('*.ts'))]
+    source = '\n'.join(read(path) for path in paths)
+    safe = redact_runtime_log(read(stage / 'candidate-runtime.log'), source, metadata)
+    print('DIAGNOSIS_READ_ONLY=' + str(stage), flush=True)
+    print(safe[-6000:] or '[empty runtime log]', flush=True)
+    print('DIAGNOSIS_DONE; no builds, restarts or database operations', flush=True)
+
+
 def main():
     if len(sys.argv) != 1 or os.geteuid() != 0 or not BASE.is_dir():
         raise Stop('run without arguments as root on the RU Docker host')
@@ -376,7 +427,10 @@ def main():
 
 if __name__ == '__main__':
     try:
-        main()
+        if sys.argv[1:] == ['--diagnose']:
+            diagnose_last_failure()
+        else:
+            main()
     except Stop as error:
         print('PREPARE_STOPPED: ' + str(error), flush=True)
         sys.exit(1)
