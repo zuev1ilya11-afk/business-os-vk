@@ -1,10 +1,12 @@
-const BUILD_ID='f52e5e8758a6453b4f81';
+const BUILD_ID='1a2d9d1ea372f70dd54c';
 importScripts('./build-version.js?build='+BUILD_ID);
 if(self.BOS_BUILD.id!==BUILD_ID)throw new Error('Mixed deployment: build manifest mismatch');
 const PREFIX='business-os-build-';
 const CACHE=PREFIX+BUILD_ID;
 const assets=self.BOS_BUILD.assets;
 const scope=new URL('./',self.location.href);
+// The Cloud database is read-only after cutover. Retire only its old Pages entry.
+const movedOrigin=scope.origin==='https://zuev1ilya11-afk.github.io'&&scope.pathname==='/business-os-vk/'?'https://139.100.237.167/':'';
 const assetURL=name=>new URL(name+'?build='+BUILD_ID,scope).href;
 async function matchesDigest(response,expected){
  if(!response.ok)return false;
@@ -17,6 +19,7 @@ async function verifiedAsset(name){
  return response;
 }
 self.addEventListener('install',event=>event.waitUntil((async()=>{
+ if(movedOrigin){await self.skipWaiting();return}
  const cache=await caches.open(CACHE);
  const names=Object.keys(assets);
  // Bound concurrency; activate only when the entire shell and role assets are available.
@@ -34,6 +37,8 @@ self.addEventListener('message',event=>{
  if(event.data?.type==='BOS_GET_BUILD')event.ports?.[0]?.postMessage({build:BUILD_ID});
 });
 self.addEventListener('activate',event=>event.waitUntil((async()=>{
+ // Preserve drafts/caches in open tabs; their existing update banner offers reload.
+ if(movedOrigin){await self.clients.claim();return}
  const keys=await caches.keys();
  // Keep the previous build for tabs which have not accepted the update yet.
  const complete=[];
@@ -44,6 +49,7 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
  await self.clients.claim();
 })()));
 async function navigation(request){
+ if(movedOrigin){const url=new URL(request.url);return Response.redirect(movedOrigin+url.search+url.hash,302)}
  // The installed shell is digest-verified and matches this worker's assets.
  // Worker update checks still discover new builds without delaying navigation.
  const cache=await caches.open(CACHE);
