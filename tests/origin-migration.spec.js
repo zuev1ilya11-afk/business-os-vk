@@ -17,7 +17,7 @@ test('an installed old PWA preserves an open draft then redirects reload with VK
   if(version==='B')code=code.replace('https://zuev1ilya11-afk.github.io',origin).replace('https://139.100.237.167/',target);
   const files={'/':html,'/index.html':html,'/sw.js':code,'/build-version.js':manifest,'/app-build-runtime.js':runtime};
   res.setHeader('Cache-Control','no-store');
-  res.setHeader('Content-Type',path.endsWith('.js')?'application/javascript':'text/html');
+  res.setHeader('Content-Type',path.endsWith('.js')?'application/javascript; charset=utf-8':'text/html; charset=utf-8');
   res.writeHead(files[path]===undefined?404:200);res.end(files[path]??'Missing');
  });
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
