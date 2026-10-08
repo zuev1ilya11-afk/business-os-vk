@@ -1,0 +1,26 @@
+name: UI role screenshot audit
+on:
+  workflow_dispatch:
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Install Chromium
+        run: npx playwright install chromium
+      - name: Capture role screens
+        run: npx playwright test tests/ui-role-audit-screens.spec.js --workers=1
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-role-audit-screens
+          path: audit-screenshots/
+          if-no-files-found: error
