@@ -75,7 +75,7 @@ function scheduleHtml(t){
 function metric(label,value,cls=''){return `<div class="masterV129Metric ${cls}"><span>${escv(label)}</span><strong>${escv(value)}</strong></div>`}
 function profileHtml(t){
  const u=liveUser(),m=masterRow(),today=localIso(new Date()),todayRows=t.done.filter(o=>completedDay(o)===today),name=u.full_name||m.full_name||u.name||m.name||'Мастер';
- return `<section id="masterProfileSummaryV129" class="masterV129Panel"><div class="bosProfileIdentity"><span class="bosNavAvatar">${escv(name.split(/\s+/).slice(0,2).map(x=>x[0]).join(''))}</span><div><h2>${escv(name)}</h2><p>Мастер${u.city||m.city?' · '+escv(u.city||m.city):''}</p></div></div><section class="bosProfileAccrual"><h3>Мои начисления</h3><div class="masterV129Metrics">${metric('Сегодня',moneyv(todayRows.reduce((a,o)=>a+salary(o),0)))}${metric('Неделя',moneyv(t.weekSalary))}${metric('Месяц',moneyv(t.monthSalary))}</div><div class="bosTaskRow"><span>Фактически выплачено</span><span>—</span></div><p class="muted">Начисления и переведённые выплаты — разные показатели.</p><button type="button" class="bosTextAction" onclick="document.getElementById('masterMoneyV130')?.scrollIntoView({behavior:'smooth'})">Подробнее →</button></section><div class="masterV129Metrics masterV129Workload">${metric('В работе сейчас',String(t.active.length))}${metric('Выполнено за всё время',String(t.done.length))}</div></section>`;
+ return `<section id="masterProfileSummaryV129" class="masterV129Panel"><div class="bosProfileIdentity"><span class="bosNavAvatar">${escv(name.split(/\s+/).slice(0,2).map(x=>x[0]).join(''))}</span><div><h2>${escv(name)}</h2><p>Мастер${u.city||m.city?' · '+escv(u.city||m.city):''}</p></div></div><section class="bosProfileAccrual"><h3>Мои начисления</h3><div class="masterV129Metrics">${metric('Сегодня',moneyv(todayRows.reduce((a,o)=>a+salary(o),0)))}${metric('Неделя',moneyv(t.weekSalary))}${metric('Месяц',moneyv(t.monthSalary))}</div><div class="bosTaskRow"><span>Фактически выплачено</span><span>—</span></div><p class="muted">Начисления и переведённые выплаты — разные показатели.</p><button type="button" class="bosTextAction" onclick="document.getElementById('masterMoneyV130')?.scrollIntoView({behavior:'smooth'})">Подробнее →</button></section><section class="bosProfileDetails"><h3>Личные данные</h3></section><div class="masterV129Metrics masterV129Workload">${metric('В работе сейчас',String(t.active.length))}${metric('Выполнено за всё время',String(t.done.length))}</div></section>`;
 }
 function removeByHeading(root,names){
   [...root.querySelectorAll('h2,h3')].forEach(h=>{
@@ -100,9 +100,12 @@ function render(){
   if(page==='home'){document.getElementById('masterProfileSummaryV129')?.remove();cleanupHome(root);return}
   if(page!=='team'){document.getElementById('masterProfileSummaryV129')?.remove();return}
   cleanupProfile(root);
+  const title=root.querySelector('.bosMasterCabinetProfileTitle');if(title&&title.textContent!=='Мой профиль')title.textContent='Мой профиль';
   const t=totals(),sig=signature(t),old=document.getElementById('masterProfileSummaryV129');if(old?.dataset.sig===sig)return;
   const wrap=document.createElement('div');wrap.innerHTML=profileHtml(t);const panel=wrap.firstElementChild;panel.dataset.sig=sig;
-  if(old)old.replaceWith(panel);else{const info=root.querySelector('.masterInfoCompact');if(info)info.insertAdjacentElement('afterend',panel);else{const title=root.querySelector('.bosMasterCabinetProfileTitle');if(title)title.insertAdjacentElement('afterend',panel);else root.prepend(panel)}}
+  const info=root.querySelector('.masterInfoCompact');if(info)info.remove();
+  if(old)old.replaceWith(panel);else if(title)title.insertAdjacentElement('afterend',panel);else root.prepend(panel);
+  if(info)panel.querySelector('.bosProfileDetails').appendChild(info);
 }
 function schedule(){if(!masterMode()||queued)return;queued=true;requestAnimationFrame(render)}
 window.openMasterProfileDayV129=function(date){

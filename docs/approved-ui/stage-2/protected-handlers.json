@@ -4,48 +4,62 @@
     "from": "async function api(",
     "until": "function mergeOrder",
     "unchanged": true,
-    "sha256": "b2d7e65ce24384fe895ee74a23a8586e478208ab41e029ed305afe41042f29f3"
+    "sha256": "d10deacec69688645a7e8687b1446978ec51c1da536b9aa5ad0ba02f205d5535"
   },
   {
     "file": "master-order-actions-v179.js",
     "from": "const workConfirmed=",
     "until": "function actualTime",
     "unchanged": true,
-    "sha256": "ae112536ede0d55952d7f658f2e0cce40b91a466c50d21922a6823fdb80e981e"
+    "sha256": "aaa378c9e189f0aa66c8de988eacd410ae5cf898bf802c2dddb7751f2f546a70"
   },
   {
     "file": "master-order-actions-v179.js",
     "from": "async function saveAction(",
     "until": "window.masterOrderAgree179=",
     "unchanged": true,
-    "sha256": "edcd0c4c98860313fb6297a52e28162317ca813a2fa291541b16f03f6dc8c74e"
+    "sha256": "6f14a04f9626d63a6f809ad84d34f4669b6fb0df99893973080fedb382d7601f"
   },
   {
     "file": "unified-schedule-v102.js",
     "from": "window.saveUnifiedScheduleMonth=",
     "until": "const previous=",
     "unchanged": true,
-    "sha256": "f62334cce82395b99e7e0a124185a4e2d70a814e908eac6e5ef769e5c58fd5cc"
+    "sha256": "9f6c0616969279f8fc1e5ea7b6cb30e08c4df3e9453415857c9fe10618edfdb7"
   },
   {
     "file": "master-report-ui-v12.js",
     "from": "async function compactFilePayload",
     "until": "const style=",
     "unchanged": true,
-    "sha256": "01a9847df313a8679bbb52fb18c4a47077b4bf772991b0e86e2252eee114ab33"
+    "sha256": "d51ca8dad3740133ecec06d8b592e67239ec38edb5465b815b4afc2e89f7f86d"
   },
   {
     "file": "report-uncompleted-ui.js",
     "from": "  function payload()",
     "until": "  function open()",
     "unchanged": true,
-    "sha256": "98c73863b600907c61a64061c05cdc70eb50545559aec6068bb58a0ed6001c2e"
+    "sha256": "a6f208b3b18e958910b41dffa8b61989c2844d089717d828e5f1cb878f48f0b3"
   },
   {
     "file": "master-reschedule-call-v87.js",
     "from": "  markRescheduleModal();",
     "until": "const style=",
     "unchanged": true,
-    "sha256": "27d8fe19992c333e89db1e3b6e3785e26421d574c0b805ced0a9a33b40c709b0"
+    "sha256": "e6af7d5bb4648fe3140e594468469d38e0c91c4538699511d48533a7201ca5dc"
+  },
+  {
+    "file": "master-money-v130.js",
+    "from": "function mine()",
+    "until": "function summaryHtml(",
+    "unchanged": true,
+    "sha256": "a01522aced999bcbbee8a71d013e161fc5b495cded67908754e133651b660bd0"
+  },
+  {
+    "file": "master-profile-summary-v129.js",
+    "from": "function mine()",
+    "until": "function scheduleHtml(",
+    "unchanged": true,
+    "sha256": "2a5eb4f0287ddad34a36fd56ed3827f56ca100a43b8b0ef23e535f4f8b5b4d68"
   }
 ]

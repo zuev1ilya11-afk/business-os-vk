@@ -36,7 +36,7 @@ test('master v129 shows compact profile money metrics without duplicate schedule
   const panel=page.locator('#masterProfileSummaryV129');
   await expect(panel).toBeVisible();
   await expect(panel.locator('.masterV129Schedule')).toHaveCount(0);
-  await expect(panel.locator('.masterV129Metric')).toHaveCount(2);
+  await expect(panel.locator('.masterV129Workload .masterV129Metric')).toHaveCount(2);
   await expect(panel.getByText('В работе сейчас',{exact:true}).locator('..')).toContainText('1');
   await expect(panel.getByText('Выполнено за всё время',{exact:true}).locator('..')).toContainText('3');
   const hero=panel.locator('.salaryHero');

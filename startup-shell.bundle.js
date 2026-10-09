@@ -5060,7 +5060,8 @@ function injectReportAction(id){
   btn.textContent='Нужно перенести';
   btn.onclick=()=>window.openMasterRescheduleForm(id);
   const submit=form.querySelector('button[type="submit"]');
-  if(submit)submit.insertAdjacentElement('afterend',btn);else form.appendChild(btn);
+  const footer=submit?.closest('.bosTaskFooter');
+  if(footer)footer.insertAdjacentElement('beforebegin',btn);else if(submit)submit.insertAdjacentElement('afterend',btn);else form.appendChild(btn);
   const o=getOrder(id);
   if(o?.reschedule_requested){
     const p=document.createElement('p');

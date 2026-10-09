@@ -136,3 +136,33 @@ body.bos-approved-ui[data-bos-ui-role="master"] {--master-muted:var(--bos-ui-mut
 .bos-approved-ui[data-bos-ui-role="master"] .masterMemoGrid p{font-size:13px;margin:0;}
 .bos-approved-ui[data-bos-ui-role="master"] .masterMemoGrid span{font-size:13px;color:var(--bos-ui-link);}
 .bos-approved-ui[data-bos-ui-role="master"] .memoMaterial{background:none;border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;padding:16px 0;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127When b{white-space:nowrap;overflow-wrap:normal;word-break:normal;font-size:22px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosMasterSearch input[type=search]{font-size:14px!important;}
+@media(max-width:600px){
+.bos-approved-ui[data-bos-ui-role="master"] #modalRoot .modal:has(:is(.bosCompactMasterCard,.bosStageTask,.bosReportReceipt,.bosContactResult,#masterAgreementForm,#masterOrderAgree179Form,#masterReportForm,#masterRescheduleForm)){position:fixed!important;left:0!important;right:0!important;top:60px!important;bottom:calc(74px + env(safe-area-inset-bottom))!important;transform:none!important;width:100vw!important;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosTaskFooter>.secondary{flex:1;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosTaskFooter>:is(.primary,.moa179Action){flex:2;}
+}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV125Stage{white-space:nowrap;}
+
+.bos-approved-ui[data-bos-ui-role="master"] .bosMasterCabinetProfileTitle{font-size:30px;line-height:1.18;letter-spacing:-.5px;text-transform:none;color:var(--bos-ui-text);font-weight:700;margin:20px 0 8px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosProfileDetails{border-top:1px solid var(--bos-ui-line);padding:20px 0;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosProfileDetails h3{font-size:20px;margin:0 0 15px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosProfileDetails .masterInfoCompact{background:none;border:0;border-radius:0;padding:0;margin:0;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosProfileDetails .masterInfoCompact h2{display:none;}
+.bos-approved-ui[data-bos-ui-role="master"] :is(.bosStageTask,.bosReportReceipt,.bosReportUncertain)>h2,.bos-approved-ui[data-bos-ui-role="master"] .bosStageTask h2{font-size:30px;line-height:1.18;letter-spacing:-.5px;}
+.bos-approved-ui[data-bos-ui-role="master"] #masterReportForm>.bosRescheduleAction{background:none;border:0;color:var(--bos-ui-link);text-align:left;}
+
+.bos-approved-ui[data-bos-ui-role="master"] .bosCompactMasterCard :is(.bosCompactAddress,.bosCompactClient){display:block;}
+.bos-approved-ui[data-bos-ui-role="master"] .modal:has(.bosReportUncertain)>:is(h2,.bosReportContext){display:none;}
+.bos-approved-ui[data-bos-ui-role="master"] #masterMoneyV130.salaryPeriods{background:none;border:0;border-radius:0;padding:0;}
+.bos-approved-ui[data-bos-ui-role="master"] #masterMoneyV130.salaryPeriods>h3{font-size:28px;}
+.bos-approved-ui[data-bos-ui-role="master"] #masterMoneyV130 :is(.salaryOrders,.salaryHistory){background:none;border:0;border-top:1px solid var(--bos-ui-line);border-radius:0;padding:20px 0;}
+.bos-approved-ui[data-bos-ui-role="master"] #masterMoneyV130 :is(.salaryBreakdown button,.salaryOrder){border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;background:none;padding:15px 0;}
+.bos-approved-ui[data-bos-ui-role="master"] #masterMoneyV130 .salaryTabs{background:none;border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;}
+.bos-approved-ui[data-bos-ui-role="master"] #masterMoneyV130 .salaryTabs button{background:none;border:0;}
+.bos-approved-ui[data-bos-ui-role="master"] #masterMoneyV130 .salaryTabs button[aria-pressed=true]{background:none;color:var(--bos-ui-text);border-bottom:2px solid var(--bos-ui-primary);}
+
+.bos-approved-ui[data-bos-ui-role="master"] #content:has(:is(.bosMasterTimeline,.bosWorkMonth,.bosScheduleEditorTask)){display:flex;flex-direction:column;}
+.bos-approved-ui[data-bos-ui-role="master"] #content :is(.bosMasterTimeline,.bosWorkMonth,.bosScheduleEditorTask){order:1;}
+.bos-approved-ui[data-bos-ui-role="master"] #content:has(:is(.bosMasterTimeline,.bosWorkMonth,.bosScheduleEditorTask))>.bosMasterSavedSchedule{order:2;margin-top:24px;}

@@ -26,7 +26,7 @@ for(const width of [360,390,430,1280])test(`three tabs are legible, complete and
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   if(width===390)await page.screenshot({path:path.resolve('../screenshots',`master-home-${group}.png`),fullPage:true});
  }
- await home.getByRole('tab',{name:/По дням/}).click();await expect(home).toContainText('Сегодня · 8 октября');await expect(home).toContainText('Завтра · 9 октября');await expect(home).toContainText('Время уточняется');await expect(home).toContainText('Подрезка карниза ×2');
+ await home.getByRole('tab',{name:/По дням/}).click();await expect(home).toContainText('Сегодня · 8 октября');await expect(home).toContainText('Завтра · 9 октября');await expect(home.locator('[aria-label="Время уточняется"]')).toHaveText('—');await expect(home).toContainText('Подрезка карниза ×2');
  await expect(home.locator('[data-order-id="12"]')).toContainText('Нужно связаться');
  await home.getByRole('button',{name:'Перезвонить сегодня · 1'}).click();await expect(home.locator('.masterV127Card:visible')).toHaveCount(1);await expect(home.locator('.masterV127Card:visible')).toHaveAttribute('data-order-id','16');
  await home.getByRole('button',{name:'Показать все заявки'}).click();await home.getByRole('tab',{name:/Новые/}).click();await home.locator('[data-order-id="14"]').getByRole('button',{name:/^Открыть заявку №/}).click();await expect(page.locator('#modalRoot .modal')).toBeVisible();
@@ -57,7 +57,7 @@ test('an extra callback preserves departure and legacy timestamps advance throug
  const card=page.locator('.masterV127Card[data-order-id="11"]');await expect(card).toContainText('Перезвонить');await expect(card.getByRole('button',{name:'Подтвердить выезд',exact:true})).toBeEnabled();
  Object.assign(order,{master_departed_at:'2026-10-08T14:00:00Z'});
  await page.evaluate(o=>{Object.assign(state.orders.find(x=>x.id===o.id),o);window.BOS_MASTER_DAILY_HOME_V127_API.refresh();},order);
- await card.getByRole('button',{name:'Начать работу',exact:true}).click();await expect(page.locator('.moa179Steps')).toContainText('Отправить отчёт');expect(order.master_started_at).toBeTruthy();
+ await card.getByRole('button',{name:'Начать работу',exact:true}).click();await page.locator('.bosStageTask').getByRole('button',{name:'Подтвердить: начал работу',exact:true}).click();await expect(page.locator('.moa179Steps')).toContainText('Отправить отчёт');expect(order.master_started_at).toBeTruthy();
 });
 test('home result and agreement move an undated order to its saved day without reload',async({page})=>{
  const {db}=await fixture(page);const home=page.locator('#masterDailyV127');await home.getByRole('tab',{name:/Новые/}).click();
