@@ -81,6 +81,15 @@ jobs:
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server
 
+      - name: RU Hands preparation, activation and rollback guards
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 tests/ru-check.test.py
+          python3 tests/ru-hands-stage.test.py
+          python3 tests/ru-hands-activate.test.py
+          python3 tests/ru-hands-token.test.py
+
       - name: Complete Playwright suite
         run: npm run test:ui -- --workers=2
 
