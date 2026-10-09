@@ -28,8 +28,8 @@ function phoneList(v){
  return out;
 }
 const phoneHref=v=>phoneList(v)[0]?.tel||'';
-const routeAddress=o=>{const address=String(o?.address||'').trim();if(!address)return'';const city=String(o?.city||'').trim();return city&&!address.toLowerCase().includes(city.toLowerCase())?`${city}, ${address}`:address};
-const yandexRouteHref=o=>{const destination=routeAddress(o);return destination?`https://yandex.ru/maps/?text=${encodeURIComponent(destination)}`:''};
+const routeAddress=o=>{let address=String(o?.address||'').replace(/\s+/g,' ').trim();if(!address)return'';address=address.replace(/\s*(?:,|;)?\s*(?:кв(?:артира)?\.?|подъезд|этаж|офис|апарт(?:аменты?)?|домофон)\s*[:№#-]?\s*[^,;]*(?:[,;].*)?$/iu,'').replace(/[,\s]+$/g,'').trim();const city=String(o?.city||'').trim();return city&&!address.toLowerCase().includes(city.toLowerCase())?`${address}, ${city}`:address};
+const yandexRouteHref=o=>{const destination=routeAddress(o);return destination?`https://yandex.ru/maps/?mode=search&text=${encodeURIComponent(destination)}`:''};
 const receivedDate=v=>{const raw=String(v||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:(raw||'—')};
 function nextStep(o){
   if(String(o?.status||'')==='Отменена')return{tone:'muted',title:'Заявка отменена',hint:'Дополнительных действий не требуется.'};
