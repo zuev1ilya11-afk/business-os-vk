@@ -2,7 +2,7 @@
 'use strict';
 if(window.BOS_MASTER_DAILY_HOME_V127)return;
 window.BOS_MASTER_DAILY_HOME_V127=true;
-let queued=false,selected='days',callbacksOnly=false,identity='',search='',selectedDate='';
+let queued=false,selected='days',callbacksOnly=false,identity='',search='',selectedDate='',dayScope='all';
 const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const masterMode=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
 const active=o=>o&&!['Выполнена','Отменена'].includes(String(o.status||''))&&o.report_review_status!=='approved';
@@ -117,7 +117,7 @@ function claimsFor(orders){
  for(const c of api?.openClaims()||[]){const o=api.linkedOrder(c);if(o&&activeIds.has(String(o.id))){const list=map.get(String(o.id))||[];list.push(c);map.set(String(o.id),list)}else other.push(c)}return{map,other};
 }
 function contentHtml(model,now,claims){
- const items=(callbacksOnly?model.callbacks:model[selected]).filter(x=>(!selectedDate||x.date===selectedDate)&&(!search||[x.order.id,x.order.external_id,x.order.address,x.order.work,x.order.client,x.label,x.comment].join(' ').toLowerCase().includes(search.toLowerCase()))),next=nextOrder(model.days.map(x=>x.order),now);
+ const items=(callbacksOnly?model.callbacks:model[selected]).filter(x=>(!selectedDate||x.date===selectedDate)&&(selected!=='days'||callbacksOnly||dayScope==='all'||dayScope==='overdue'&&x.overdue||dayScope==='today'&&x.date===dayKey(now)||dayScope==='tomorrow'&&x.date===dayKey(now+86400000))&&(!search||[x.order.id,x.order.external_id,x.order.address,x.order.work,x.order.client,x.label,x.comment].join(' ').toLowerCase().includes(search.toLowerCase()))),next=nextOrder(model.days.map(x=>x.order),now);
  if(!items.length&&(search||selectedDate))return '<div class="masterV127Empty"><b>По вашему запросу заявок нет</b><span>Измените поиск или дату визита.</span></div>';
  if(!items.length)return `<div class="masterV127Empty"><b>${callbacksOnly?'На сегодня звонков нет':selected==='days'?'Выезды пока не назначены':selected==='new'?'Новых заявок нет':'Нет заявок в ожидании'}</b><span>Назначения и изменения появятся здесь автоматически.</span></div>`;
  let last='',out='';
@@ -135,13 +135,14 @@ function render(){
  if(!Array.isArray(state.orders)||root.querySelector('h2')?.textContent==='Не удалось загрузить данные')return;
  removeLegacyUpcoming(root);
  const orders=mine(),now=Date.now(),model=groupOrders(orders,now),claims=claimsFor(orders),error=String(window.BOS_LAST_REFRESH_ERROR||'');
- const sig=JSON.stringify([model,claims.other,Array.from(claims.map),selected,callbacksOnly,search,selectedDate,dayKey(now),error,who]);
+ const sig=JSON.stringify([model,claims.other,Array.from(claims.map),selected,callbacksOnly,search,selectedDate,dayScope,dayKey(now),error,who]);
  let box=document.getElementById('masterDailyV127');if(box?.dataset.sig===sig)return;
  if(!box){box=document.createElement('section');box.id='masterDailyV127';box.className='masterV127';root.prepend(box);box.addEventListener('click',handleClick);box.addEventListener('keydown',handleTabs);box.addEventListener('input',e=>{if(e.target.id==='masterHomeSearch'){search=e.target.value;render()}if(e.target.id==='masterHomeDate'){selectedDate=e.target.value;render()}})}
  const focused=document.activeElement?.id,caret=document.activeElement?.selectionStart;box.dataset.sig=sig;
  const html=`<div class="masterV127Head"><div><h2>Мой рабочий день</h2><p>${escv(new Intl.DateTimeFormat('ru-RU',{timeZone:'Europe/Moscow',weekday:'long',day:'numeric',month:'long'}).format(new Date(now)))}</p></div><button class="masterV127Profile" type="button" data-home-action="profile" aria-label="Профиль мастера">${icon('person')}</button></div>
- <div class="bosMasterRefresh"><span>Время Москвы</span><button type="button" class="bosTextAction" data-home-action="refresh">↻ Обновить</button></div><div class="bosMasterSearch"><input id="masterHomeSearch" type="search" aria-label="Поиск заявок" placeholder="Номер или адрес" value="${escv(search)}"><input id="masterHomeDate" type="date" aria-label="Дата визита" value="${escv(selectedDate)}"></div>
+ <div class="bosMasterRefresh"><span>Время Москвы</span><button type="button" class="bosTextAction" data-home-action="refresh">↻ Обновить</button></div><div class="bosMasterSearch"><input id="masterHomeSearch" type="search" aria-label="Поиск заявок" placeholder="Поиск" value="${escv(search)}"><input id="masterHomeDate" type="date" aria-label="Дата визита" value="${escv(selectedDate)}"></div>
  <div class="masterV127Tabs" role="tablist" aria-label="Заявки мастера">${[['days','По дням'],['new','Новые'],['waiting','Ожидание']].map(([key,label])=>`<button type="button" role="tab" id="masterHomeTab-${key}" aria-controls="masterHomePanel" aria-selected="${selected===key}" tabindex="${selected===key?0:-1}" data-home-tab="${key}">${label}<span>${model[key].length}</span></button>`).join('')}</div>
+ ${selected==='days'&&!callbacksOnly?`<div class="bosHomeDayScopes" role="group" aria-label="Дни визитов">${[['today','Сегодня',model.days.filter(x=>x.date===dayKey(now)).length],['tomorrow','Завтра',model.days.filter(x=>x.date===dayKey(now+86400000)).length],['overdue','Просрочено',model.days.filter(x=>x.overdue).length],['all','Все дни',null]].map(([key,label,n])=>`<button type="button" class="secondary" data-home-scope="${key}" aria-pressed="${dayScope===key}">${label}${n==null?'':' · '+n}</button>`).join('')}</div>`:''}
  ${model.callbacks.length?`<button type="button" class="masterV127Callbacks" data-home-action="callbacks">${icon('phone')}<span>Перезвонить сегодня · ${model.callbacks.length}</span><span aria-hidden="true">›</span></button>`:''}
  ${error?'<div class="masterV127Error" role="status">Не удалось обновить данные. Показаны последние загруженные заявки.<button type="button" class="secondary" data-home-action="refresh">Повторить</button></div>':''}
  ${callbacksOnly?'<div class="masterV127Filter"><b>Звонки на сегодня</b><button type="button" class="secondary" data-home-action="all">Показать все заявки</button></div>':''}
@@ -156,7 +157,7 @@ function openPhones(id){
  openModal(`<h2>Позвонить клиенту</h2><div class="masterV127Phones" data-master-order-id="${escv(id)}">${phones.length?phones.map(p=>`<div><a class="primary" href="tel:${escv(p.tel)}">${escv(p.label)}</a><button type="button" class="secondary" data-copy-phone="${escv(p.tel)}">Копировать</button></div>`).join(''):'<p>Телефон не указан. Уточните его у диспетчера.</p>'}</div><button class="secondary wide" type="button" onclick="closeModal()">Закрыть</button>`);
  document.querySelectorAll('[data-copy-phone]').forEach(b=>b.onclick=()=>window.copyMasterPhone72?.(b.dataset.copyPhone,b));
 }
-function handleClick(e){
+function handleClick(e){const scope=e.target.closest('[data-home-scope]');if(scope){dayScope=scope.dataset.homeScope;selectedDate='';callbacksOnly=false;render();return}
  const tab=e.target.closest('[data-home-tab]');if(tab){selected=tab.dataset.homeTab;callbacksOnly=false;render();return}
  const control=e.target.closest('[data-home-action]');if(!control)return;const action=control.dataset.homeAction,id=control.dataset.id;
  if(action==='profile'){document.getElementById('profileBtn')?.click();return}

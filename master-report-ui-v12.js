@@ -11,8 +11,8 @@ function reportToggleState(){
 window.openMasterReportForm=function(id){
   const o=state.orders.find(x=>String(x.id)===String(id));if(!o)return;
   openModal(`<h2>${o.report_review_status==='rejected'?'Доработать отчёт':'Отчёт по заявке '+esc(o.id)}</h2>${o.report_review_status==='rejected'?`<div class="bosReportCorrection bosTaskNotice error"><b>Отчёт возвращён</b><p>${esc(o.report_review_comment||'Уточните причину у диспетчера')}</p><p>Повторно отмечать выезд и начало работы не нужно.</p></div><section class="bosSavedDocuments"><h3>Сохранённые документы</h3>${typeof reportLinksHtml==='function'?reportLinksHtml(o):''}</section>`:''}<p class="muted bosReportContext">${esc(o.address||'')} · ${esc(o.work||'')}</p><form id="masterReportForm" data-order-id="${esc(o.id)}" class="form reportCompactForm"><h3>1. Документы</h3><p class="muted">Акт и минимум одна фотография обязательны.</p>
-    <label>Акт выполненных работ *</label><input id="mrAct" type="file" accept="image/*,.pdf,application/pdf" required>
-    <label>Фото выполненной работы *</label><input id="mrPhotos" type="file" accept="image/*" multiple required><p class="muted reportHint">Выберите до 5 фото из файлов или галереи.</p>
+    <label for="mrAct">Акт выполненных работ *</label><input id="mrAct" type="file" accept="image/*,.pdf,application/pdf" required>
+    <label for="mrPhotos">Фото выполненной работы *</label><input id="mrPhotos" type="file" accept="image/*" multiple required><p class="muted reportHint">Выберите до 5 фото из файлов или галереи.</p>
     <h3>2. Результат работы</h3><div class="reportQuestion"><b>Были ли допработы?</b><div class="reportChoices">${reportRadio('mrExtra','false','Нет',true)}${reportRadio('mrExtra','true','Да',false)}</div></div>
     <div id="mrExtraBox" class="reportConditional" style="display:none"><input id="mrExtraDesc" placeholder="Какие допработы"><input id="mrExtraAmount" type="number" min="0" step="0.01" placeholder="Сумма допработ"></div>
     <div class="reportQuestion reportOutcome"><b>Все ли на заявке выполнено?</b><div class="reportChoices">${reportRadio('mrAllDone','true','Всё выполнено',true)}${reportRadio('mrAllDone','false','Сделано не всё',false)}</div></div>
@@ -103,5 +103,24 @@ function presentUncertainReport(){
  form.before(panel);form.classList.add('bosUncertainForm');const next=panel.querySelector('.bosTaskNext');next.append(refresh,msg);refresh.classList.add('primary');refresh.classList.remove('secondary');modal.scrollTop=0;
 }
 new MutationObserver(presentUncertainReport).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['data-report-locked']});
+// Observe the original uploader's status text; never alter transport or claim byte progress.
+const reportFileViews=new WeakMap();
+function presentReportFilePhases(){
+ const form=document.getElementById('masterReportForm'),msg=document.getElementById('mrMsg');if(!form||!msg||form.dataset.reportLocked==='true')return;
+ const act=document.getElementById('mrAct')?.files?.[0],photos=[...(document.getElementById('mrPhotos')?.files||[])].slice(0,5),files=[...(act?[{key:'act',file:act,label:'Акт выполненных работ',index:0}]:[]),...photos.map((file,i)=>({key:'photo-'+(i+1),file,label:'Фото выполненной работы',index:i+1}))];
+ let view=reportFileViews.get(form);if(!view){view={phase:null,files:''};reportFileViews.set(form,view)}
+ const text=msg.textContent||'',match=text.match(/^(Подготавливаем|Загружаем) (акт|фото (\d+) из \d+)/),saving=text==='Сохраняем отчёт…';
+ const fileSig=files.map(x=>[x.file.name,x.file.size,x.file.lastModified].join(':')).join('|');if(view.files!==fileSig){view.files=fileSig;view.phase=null}
+ if(match)view.phase={index:match[2]==='акт'?0:Number(match[3]),upload:match[1]==='Загружаем'};
+ if(saving)view.phase={index:files.length,save:true};
+ const busy=!!state.busy&&!!view.phase,error=!busy&&!!view.phase&&!!text&&!/Отчёт отправлен|Отчёт сохранён/.test(text),phase=view.phase;
+ const signature=JSON.stringify([fileSig,phase,busy,error,text]);let panel=form.querySelector('.bosReportTransfer');if(panel?.dataset.sig===signature)return;
+ if(!files.length){panel?.remove();return}
+ if(!panel){panel=document.createElement('section');panel.className='bosReportTransfer';const heading=[...form.querySelectorAll('h3')].find(x=>x.textContent.startsWith('2.'));heading.before(panel)}panel.dataset.sig=signature;
+ panel.innerHTML=`${error?'<div class="bosTaskNotice error"><b>'+(phase.save?'Не удалось сохранить отчёт':'Не удалось завершить передачу файла')+'</b><p>Файлы остаются в форме. Повторная отправка использует существующий обработчик отчёта.</p></div>':''}<div class="bosReportFileRows">${files.map(x=>{const acknowledged=!!phase&&(phase.save||x.index<phase.index),current=!!phase&&!phase.save&&x.index===phase.index,label=acknowledged?'Загружен':current?error?'Ошибка':phase.upload?'Загружается…':'Подготавливается…':'Выбран',kind=acknowledged?'success':error&&current?'error':current?'current':'';return `<div class="bosReportFileRow ${kind}" data-report-file="${x.key}"><div><b>${esc(x.label)}</b><small>${esc(x.file.name)} · ${Math.max(1,Math.ceil(x.file.size/1024))} КБ</small></div><span>${label}</span></div>`}).join('')}</div>${busy?'<progress aria-label="Передача файла"></progress><p class="muted">'+esc(text)+'</p><p class="muted bosFileSignalNote">Численный прогресс передачи недоступен. Файл отмечается загруженным только после ответа сервера и перехода к следующему этапу.</p>':''}`;
+ form.classList.toggle('bosReportSending',busy);form.classList.toggle('bosReportFileError',error);
+}
+new MutationObserver(presentReportFilePhases).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled','data-report-locked']});
+document.addEventListener('change',e=>{if(e.target.matches?.('#mrAct,#mrPhotos'))presentReportFilePhases()});
 const style=document.createElement('style');style.textContent=`.reportCompactForm{gap:10px}.reportCompactForm>label{margin-top:2px}.reportHint{margin:-4px 0 2px;font-size:12px}.reportQuestion{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.07)}.reportQuestion b{font-size:14px}.reportChoices{display:flex;gap:6px}.reportChoice{cursor:pointer}.reportChoice input{position:absolute;opacity:0;pointer-events:none}.reportChoice span{display:block;min-width:52px;padding:7px 11px;text-align:center;border:1px solid #315271;border-radius:10px;font-size:13px}.reportChoice input:checked+span{background:#1f5f99;border-color:#4f91cf;color:#fff}.reportConditional{grid-template-columns:1fr 130px;gap:8px;margin:-2px 0 4px}.reportConditional input{min-height:40px;padding:9px 10px}.reportCompactForm input[type=file]{min-height:42px}@media(max-width:520px){.reportConditional{grid-template-columns:1fr}.reportQuestion{align-items:flex-start;flex-direction:column;gap:7px}.reportChoices{width:100%}.reportChoice{flex:1}.reportChoice span{width:100%;box-sizing:border-box}}`;document.head.appendChild(style);
 })();

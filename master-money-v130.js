@@ -155,6 +155,10 @@ function openDetails(kind){
   if(typeof openModal==='function')openModal(html);
 }
 window.openMasterMoneyV130=openDetails;
+window.openMasterAccrualsV130=function(){
+ if(!masterMode())return;render();const box=document.getElementById('masterMoneyV130');if(!box)return;
+ openModal('<section class="bosPayoutTask"><button type="button" class="bosTextAction" onclick="closeModal()" aria-label="К профилю">← К профилю</button><div class="bosPayoutContents"></div></section>');document.querySelector('.bosPayoutContents').append(box);window.scrollTo(0,0);
+};
 function render(){
   queued=false;if(!masterMode()||String(state?.page||'')!=='team')return;
   const panel=document.getElementById('masterProfileSummaryV129');if(!panel)return;
