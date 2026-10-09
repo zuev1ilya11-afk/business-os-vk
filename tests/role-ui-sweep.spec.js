@@ -51,7 +51,7 @@ test('manager role is labeled correctly without owner-only creation controls',as
 test('dispatcher role gets dispatcher navigation without owner tools',async({page})=>{
   await bootAs(page,'dispatcher');
   await expect(page.locator('#ownerToolsBtn')).toBeHidden();
-  await expect(page.locator('nav button[data-page="team"]')).toHaveText('Мастера');
+  await expect(page.locator('nav button[data-page="team"]')).toHaveText('Команда');
   await expect(page.locator('#content')).toContainText('Заявки за месяц');
   await expect(page.locator('#content')).toContainText('Требуют внимания');
   await expect(page.getByRole('button',{name:'+ Сотрудник'})).toHaveCount(0);

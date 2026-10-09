@@ -33,6 +33,13 @@ async function fits(page) {
   }).toPass({timeout: 3000});
 }
 
+async function navigate(page,screen,role,width){
+  if(screen==='team'&&role!=='master'&&width<=600){
+    await page.locator('nav [data-page="more"]').click();
+    await page.locator('[data-bos-destination="team"]').click();
+  }else await page.locator(`nav [data-page="${screen}"]`).click();
+}
+
 for (const role of ['owner', 'manager', 'dispatcher', 'master']) {
   for (const width of [360, 390, 430, 1440]) {
     test(`polished forms and profiles: ${role} ${width}px`, async ({page}, testInfo) => {
@@ -41,7 +48,7 @@ for (const role of ['owner', 'manager', 'dispatcher', 'master']) {
       await page.goto('/');
       await expect(page.locator('#authGate')).toBeHidden();
       for (const screen of ['home', 'orders', 'dispatch', 'team']) {
-        await page.locator(`nav [data-page="${screen}"]`).click();
+        await navigate(page,screen,role,width);
         await expect(page.locator(`nav [data-page="${screen}"]`)).toHaveClass(/active/);
         if (role === 'master' && screen === 'dispatch')
           await expect(page.locator('.usScheduleCard')).toBeVisible();
@@ -72,7 +79,7 @@ for (const role of ['owner', 'manager', 'dispatcher', 'master']) {
         await expect(page.locator('#modalRoot .modal')).toBeVisible();
         await fits(page);
         await page.locator('.modalClose').click();
-        await page.locator('nav [data-page="team"]').click();
+        await navigate(page,'team',role,width);
         await page.getByRole('button', {name: '+ Сотрудник', exact: true}).click();
         await expect(page.locator('#empForm')).toBeVisible();
         await fits(page);

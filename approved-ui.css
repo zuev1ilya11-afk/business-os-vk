@@ -1,0 +1,132 @@
+/* Approved shared foundation. Business renderers and authorization remain authoritative. */
+html:root {
+  --bos-ui-bg:#0e141c; --bos-ui-surface:#151d28; --bos-ui-raised:#1b2634;
+  --bos-ui-line:#2a3543; --bos-ui-text:#edf2f8; --bos-ui-muted:#a3b1c3;
+  --bos-ui-link:#91bfff; --bos-ui-primary:#a8ceff; --bos-ui-primary-ink:#10223b;
+  --bos-ui-success:#88d1b1; --bos-ui-warning:#efc282; --bos-ui-error:#f4a5ac;
+  --bos-ui-radius:16px; --bos-ui-button-radius:10px; --bos-ui-input-radius:9px;
+  --bos-ui-space-1:8px; --bos-ui-space-2:16px; --bos-ui-space-3:24px; --bos-ui-space-4:32px;
+  --bos-bg:var(--bos-ui-bg); --bos-surface:var(--bos-ui-surface); --bos-surface-2:var(--bos-ui-raised);
+  --bos-line:var(--bos-ui-line); --bos-text:var(--bos-ui-text); --bos-muted:var(--bos-ui-muted);
+  --bos-accent:var(--bos-ui-primary); --bos-accent-strong:var(--bos-ui-primary); --bos-accent-hover:#bddeff;
+  --bos-accent-text:var(--bos-ui-link); --bos-success:var(--bos-ui-success); --bos-warning:var(--bos-ui-warning);
+  --bos-danger:var(--bos-ui-error); --bos-danger-text:var(--bos-ui-error); --bos-radius:var(--bos-ui-radius);
+  --bos-accent-soft:#24364e; --bos-success-soft:#203a32; --bos-warning-soft:#392f23; --bos-danger-soft:#3c262f;
+  --bos-shadow:none; --bos-sidebar:222px;
+}
+html body.bos-approved-ui { margin:0; background:var(--bos-ui-bg); color:var(--bos-ui-text); font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:1.45; }
+.bos-approved-ui :is(button,input,select,textarea) { font-family:inherit; }
+.bos-approved-ui :is(button,a,input,select,textarea):focus-visible { outline:3px solid var(--bos-ui-link); outline-offset:3px; }
+.bos-approved-ui :is(.card,.hero,.modal,.authGateCard) { border-color:var(--bos-ui-line); border-radius:var(--bos-ui-radius); background:var(--bos-ui-surface); box-shadow:none; }
+.bos-approved-ui :is(.primary,.secondary,.ghost,.linkBtn,button.wide) { min-height:44px; border-radius:var(--bos-ui-button-radius); font-weight:500; }
+.bos-approved-ui .primary { background:var(--bos-ui-primary)!important; border-color:var(--bos-ui-primary)!important; color:var(--bos-ui-primary-ink)!important; box-shadow:none!important; }
+.bos-approved-ui :is(.secondary,.ghost,.linkBtn) { background:var(--bos-ui-raised); border:1px solid var(--bos-ui-line); color:var(--bos-ui-text); }
+.bos-approved-ui :is(.ghost,.linkBtn) { color:var(--bos-ui-link); }
+.bos-approved-ui :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea) { min-height:46px; border:1px solid #3d4c5f; border-radius:var(--bos-ui-input-radius); background:#121b26; color:var(--bos-ui-text); padding:13px 14px; max-width:100%; }
+.bos-approved-ui :is(input,select,textarea)[aria-invalid="true"] { border-color:var(--bos-ui-error); }
+.bos-approved-ui :is(.status,.softChip) { border-radius:5px; font-weight:600; }
+.bos-approved-ui .status.info { color:var(--bos-ui-link); background:#213044; }
+.bos-approved-ui :is(.status.good,.status.ok) { color:var(--bos-ui-success); background:#203a32; }
+.bos-approved-ui :is(.status.warn,.status.new) { color:var(--bos-ui-warning); background:#392f23; }
+.bos-approved-ui :is(.status.bad,.authError,.finError,.finExpenseError) { color:var(--bos-ui-error); background:#3c262f; }
+.bos-approved-ui :is(.empty,.emptyState) { padding:55px 20px; text-align:center; color:var(--bos-ui-muted); }
+.bos-approved-ui :is(.loading,.loadingState,[aria-busy="true"]) { color:var(--bos-ui-muted); }
+.bos-approved-ui .modalClose { min-width:44px; min-height:44px; }
+.bos-approved-ui #app > nav { background:#111922!important; border-color:var(--bos-ui-line)!important; box-shadow:none!important; }
+.bos-approved-ui #app > nav :is(button,a) { box-sizing:border-box; min-width:44px; min-height:44px; border:0!important; border-radius:9px; background:transparent!important; color:var(--bos-ui-muted)!important; text-decoration:none; font-family:inherit; font-weight:400!important; box-shadow:none!important; }
+.bos-approved-ui #app > nav :is(button,a).active { color:var(--bos-ui-text)!important; background:#24364e!important; }
+.bos-approved-ui #app > nav [data-page="more"]::before { content:'…'; font-size:24px; background:none; mask:none; -webkit-mask:none; line-height:21px; }
+.bos-approved-ui #app > nav [data-action="owner-tools"]::before { content:'⚙'; background:none; font-size:19px; }
+.bos-approved-ui #app > nav #bosAvitoNav::before { content:'A'; width:21px; height:21px; background:none!important; font-size:19px; font-weight:400; }
+.bos-approved-ui #app > nav a::before { width:21px; height:21px; display:block; }
+.bos-approved-ui #app > nav [data-action="profile"]::before { content:'○'; font-size:21px; background:none; mask:none; -webkit-mask:none; }
+.bos-approved-ui #app > nav [hidden] { display:none!important; }
+.bosMore { max-width:780px; }
+.bosMoreHeading { margin-bottom:25px; }
+.bosMoreHeading h1 { margin:0; font-size:30px; font-weight:600; line-height:1.15; letter-spacing:-.7px; }
+.bosMoreHeading p { margin:9px 0 0; font-size:14px; }
+.bosMoreMenu { border-top:1px solid var(--bos-ui-line); }
+.bosMoreMenu button { display:flex; align-items:center; width:100%; gap:15px; min-height:78px; padding:20px 0; border:0; border-bottom:1px solid var(--bos-ui-line); border-radius:0; color:var(--bos-ui-text); background:transparent; text-align:left; font:inherit; }
+.bosMoreSymbol { width:38px; height:38px; border-radius:10px; background:var(--bos-ui-raised); color:var(--bos-ui-link); font-size:20px; display:grid; place-content:center; flex-shrink:0; }
+.bosMoreText { display:flex; flex-direction:column; gap:4px; font-size:15px; }
+.bosMoreText small { font-size:13px; color:var(--bos-ui-muted); }
+.bosMoreChevron { color:var(--bos-ui-muted); margin-left:auto; }
+.bos-approved-ui #app > header :is(.brandLogo,.brandText > h1,.brandSub) { display:none!important; }
+.bos-approved-ui #app > header .roleBadge { margin:0; padding:0; border:0; border-radius:0; background:transparent; color:var(--bos-ui-text); font-size:14px; font-weight:400; }
+.bos-approved-ui #app > header .brandText { display:flex; flex-direction:row!important; align-items:center; min-height:0; }
+.bosNavBrand { display:flex; align-items:center; gap:10px; order:0; padding:0 10px 30px; white-space:nowrap; font-size:18px; font-weight:600; letter-spacing:-.5px; }
+.bosNavBrandMark { display:grid; place-content:center; width:27px; height:27px; border-radius:8px; background:var(--bos-ui-primary); color:var(--bos-ui-primary-ink); font-size:17px; }
+.bosNavIdentity { order:9; margin-top:auto; padding:20px 10px 0; color:var(--bos-ui-text); font-size:12px; }
+.bosNavPerson { display:flex; align-items:center; gap:10px; }
+.bosNavAvatar { display:grid; place-content:center; flex-shrink:0; width:38px; height:38px; border-radius:50%; background:#2b3b51; color:#c5dcfc; font-size:13px; font-weight:600; }
+.bosNavName { overflow-wrap:anywhere; }
+.bosNavRole,.bosNavCity { color:var(--bos-ui-muted); }
+.bosNavCity { margin-top:20px; }
+@media(min-width:601px) {
+  body.bos-approved-ui #app { max-width:none; padding:0 38px 32px 260px; }
+  .bos-approved-ui #app > nav { position:fixed; inset:0 auto 0 0; width:222px; height:100dvh; max-width:none; display:flex!important; flex-direction:column; margin:0; padding:28px 18px; gap:5px; border:0; border-right:1px solid var(--bos-ui-line); border-radius:0; overflow-y:auto; }
+  .bos-approved-ui #app > nav::before { display:none; }
+  /* Hidden secondary nodes still match legacy :has navigation rules. */
+  .bos-approved-ui #app > nav:has(> #bosAvitoNav):has(> [data-page="finance"]) { padding-inline:18px; gap:5px; }
+  .bos-approved-ui #app > nav :is(button,a),
+  .bos-approved-ui #app > nav #bosAvitoNav { flex:0 0 auto; display:flex; flex-direction:row; justify-content:flex-start; align-items:center; gap:13px; min-height:44px; padding:12px 14px; width:100%; font-size:14px; line-height:20px; }
+  .bos-approved-ui #app > nav [data-page="home"] { order:1; }
+  .bos-approved-ui #app > nav [data-page="orders"] { order:2; }
+  .bos-approved-ui #app > nav [data-page="dispatch"] { order:3; }
+  .bos-approved-ui #app > nav [data-page="team"] { order:4; }
+  .bos-approved-ui #app > nav #bosAvitoNav { order:5; }
+  .bos-approved-ui #app > nav [data-page="finance"] { order:6; }
+  .bos-approved-ui #app > nav [data-action="profile"] { order:7; margin-top:0; }
+  .bos-approved-ui #app > nav:has(> #bosAvitoNav) > button[data-action="profile"] { display:flex!important; }
+  .bos-approved-ui #app > nav [data-action="owner-tools"] { order:8; }
+  .bos-approved-ui #app > nav [data-page="more"] { display:none!important; }
+  .bos-approved-ui[data-bos-ui-role="master"] #app > nav [data-action] { display:none!important; }
+  .bos-approved-ui #app > header { min-height:74px; padding:12px 0; }
+  .bos-approved-ui #app > #content { padding-top:32px; }
+}
+@media(min-width:601px) and (max-width:1190px) {
+  html:root { --bos-sidebar:190px; }
+  body.bos-approved-ui #app { padding:0 25px 32px 215px; }
+  .bos-approved-ui #app > nav { width:190px; padding-inline:12px; }
+  .bos-approved-ui #app > nav:has(> #bosAvitoNav):has(> [data-page="finance"]) { padding-inline:12px; }
+  .bos-approved-ui #app > #content { padding-top:28px; }
+}
+@media(min-width:601px) and (max-width:850px) {
+  html:root { --bos-sidebar:76px; }
+  body.bos-approved-ui #app { padding:0 26px 32px 102px; }
+  .bos-approved-ui #app > nav { width:76px; padding:28px 11px; }
+  .bos-approved-ui #app > nav:has(> #bosAvitoNav):has(> [data-page="finance"]) { padding-inline:11px; }
+  .bos-approved-ui #app > nav :is(button,a),
+  .bos-approved-ui #app > nav #bosAvitoNav { padding:13px; justify-content:center!important; gap:0!important; font-size:0!important; }
+  .bosNavBrand { padding:0 12px 30px; }
+  .bosNavBrandMark { flex-shrink:0; }
+  .bosNavBrand > span:last-child,.bosNavIdentity { display:none; }
+  .bos-approved-ui #app > #content { padding-top:26px; }
+}
+@media(max-width:600px) {
+  html body.bos-approved-ui { font-size:14px; }
+  body.bos-approved-ui #app { max-width:none; padding:0 19px calc(110px + env(safe-area-inset-bottom)); }
+  .bos-approved-ui #app > nav { position:fixed; inset:auto 0 0; width:100%; max-width:none; height:calc(74px + env(safe-area-inset-bottom)); display:grid!important; grid-template-columns:repeat(4,minmax(0,1fr))!important; padding:8px 7px calc(10px + env(safe-area-inset-bottom)); gap:0!important; border-radius:0!important; border-top:1px solid var(--bos-ui-line); background:#121b27!important; }
+  .bos-approved-ui #app > nav:has(> #bosAvitoNav),
+  .bos-approved-ui #app > nav:has(> #bosAvitoNav):has(> [data-page="finance"]) { grid-template-columns:repeat(4,minmax(0,1fr))!important; padding-inline:7px; gap:0!important; }
+  .bos-approved-ui #app > nav :is(button,a) { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:5px; padding:0 2px; font-size:10px; line-height:14px; }
+  .bos-approved-ui #app > nav :is(button,a).active { color:#bddeff!important; background:transparent!important; }
+  .bos-approved-ui #app > nav :is(button,a).active::before { outline:none; }
+  .bos-approved-ui #app > nav [data-page="more"]::before { width:47px; height:22px; line-height:22px; border-radius:9px; }
+  .bos-approved-ui #app > nav [data-page="more"].active::before { background:#2b425e; }
+  .bos-approved-ui #app > nav :is(#bosAvitoNav,[data-page="finance"],[data-action]) { display:none!important; }
+  .bos-approved-ui #app > nav :is(.bosNavBrand,.bosNavIdentity) { display:none; }
+  .bos-approved-ui:not([data-bos-ui-role="master"]) #app > nav [data-page="team"] { display:none!important; }
+  .bos-approved-ui[data-bos-ui-role="master"] #app > nav [data-page="more"] { display:none!important; }
+  .bos-approved-ui #app > header { min-height:60px; padding:8px 19px!important; margin:0 -19px!important; width:calc(100% + 38px); display:flex; flex-wrap:nowrap; gap:6px; }
+  .bos-approved-ui #app > header .brandWrap { flex:1 1 auto; min-width:0; }
+  .bos-approved-ui #app > header > button { flex:0 0 44px; width:44px; height:44px; min-height:44px; margin:0!important; padding:8px; }
+  .bos-approved-ui #app > header .roleBadge { min-width:0; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bos-approved-ui #app > header:has(#dispatcherPreviewReturn) { flex-wrap:wrap; }
+  .bos-approved-ui #app > header:has(#dispatcherPreviewReturn) .brandWrap { flex-basis:100%; }
+  .bos-approved-ui #app > #content { padding:25px 0 0; }
+  .bos-approved-ui :is(input,select,textarea) { font-size:16px!important; }
+  .bosMoreHeading h1 { font-size:28px; }
+  .bosMoreHeading p { font-size:13px; }
+  .bosMoreMenu button { padding:18px 0; }
+}
