@@ -1,6 +1,24 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
+for(const [role,ext] of [['owner','jpg'],['manager','png'],['dispatcher','jpg']])test(`${role}: signed ${ext} act opens in the existing viewer and can be reopened`,async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ const {db}=await fullStack(page,role);
+ const url=`https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/11/report/act.${ext}?token=signed-fixture`;
+ Object.assign(db.tables.orders[0],{report_uploaded_at:'2026-10-09T10:00:00Z',report_review_status:'pending',report_act_url:url});
+ await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
+ await page.evaluate(()=>openReportReview('11'));
+ for(let i=0;i<2;i++){
+  await page.getByRole('link',{name:'📄 Открыть акт',exact:true}).click();
+  const viewer=page.locator('#reportPhotoViewer');await expect(viewer).toBeVisible();
+  await expect(viewer.locator('img')).toHaveAttribute('src',url);
+  await expect(viewer.getByRole('link',{name:'Открыть оригинал'})).toHaveAttribute('href',url);
+  await viewer.getByRole('button',{name:'Закрыть',exact:true}).click();
+  await expect(viewer).toHaveCount(0);
+ }
+ expect(db.calls.filter(c=>c.table==='orders'&&c.mode!=='select')).toEqual([]);
+});
+
 test('review modal keeps valid document links and omits executable URL schemes',async({page})=>{
  await fullStack(page,'dispatcher');
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();

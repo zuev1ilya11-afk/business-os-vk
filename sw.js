@@ -1,4 +1,4 @@
-const BUILD_ID='5f8150e2e23969b4f34e';
+const BUILD_ID='1eb63a464c7d58510a5c';
 importScripts('./build-version.js?build='+BUILD_ID);
 if(self.BOS_BUILD.id!==BUILD_ID)throw new Error('Mixed deployment: build manifest mismatch');
 const PREFIX='business-os-build-';
@@ -76,7 +76,11 @@ self.addEventListener('fetch',event=>{
  const request=event.request;if(request.method!=='GET')return;
  const url=new URL(request.url);if(url.origin!==scope.origin||!url.pathname.startsWith(scope.pathname))return;
  const name=url.pathname.slice(scope.pathname.length);
- if(request.mode==='navigate'){event.respondWith(navigation(request));return}
+ if(request.mode==='navigate'){
+  // Signed documents and API responses must reach the server, never the app shell.
+  if(name!==''&&name!=='index.html')return;
+  event.respondWith(navigation(request));return;
+ }
  // Bundled source URLs still belong to older tabs; serve their exact previous cache.
  if(Object.hasOwn(assets,name)||Object.hasOwn(self.BOS_BUILD.assetBundles||{},name)||name==='build-version.js')event.respondWith(staticAsset(request,url,name));
 });
