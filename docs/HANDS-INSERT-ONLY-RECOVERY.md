@@ -62,7 +62,9 @@ restart the previous API. It does not import orders or change the provider URL.
 --recover requires the installed patch and matching configuration, fully reads
 the bounded ACTIVE feed with retries, rechecks canonical/legacy IDs, validates
 all dates before importing, and sends only missing real payloads through the
-existing webhook/importer. Repeated sends use stable delivery IDs. No fabricated
+existing webhook/importer. Repeated sends use stable delivery IDs. Each recovered
+payload is immediately replayed once and must receive a duplicate acknowledgement.
+No fabricated
 clients or direct SQL inserts are used. Payloads remain in memory. Each attempt
 has a separate mode-0600 journal under a mode-0700 directory.
 

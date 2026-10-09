@@ -89,6 +89,35 @@ class RecoveryTests(unittest.TestCase):
             m.current({'intake':intake,'stage':object(),'act':act})
         act.public_check.assert_not_called()
 
+    def test_recovery_verifies_real_replay_and_reports_post_timeout_presence(self):
+        spec2 = importlib.util.spec_from_file_location('intake', ROOT / 'scripts/ru-hands-intake-check.py')
+        intake = importlib.util.module_from_spec(spec2)
+        spec2.loader.exec_module(intake)
+        diag = SimpleNamespace(env=lambda _: {'HANDS_API_KEY':'synthetic-key'})
+        rows = [{'id':9,'creation_time':'2026-10-08 10:00:00'},
+                {'id':123,'creation_time':'2026-10-09 09:39:42'}]
+        snapshots = [{'hands_ids':['hands:9'],'last_receipt_at':None},
+                     {'hands_ids':['hands:9'],'last_receipt_at':None},
+                     {'hands_ids':['hands:9','hands:123'],'last_receipt_at':'2026-10-09T10:00:00Z'}]
+        read = lambda p: b'{"state":"activated"}' if p.name=='activation.json' else b'{}'
+        act = SimpleNamespace(read=read, write_json=Mock())
+        duplicate = {'created':False,'skipped':False,'duplicate':True}
+        # Simulate a lost first acknowledgement recovered by send_recovery's retry.
+        with patch.object(m,'verify_saved',return_value=(diag,{},None,None,None,'synthetic-token')), \
+             patch.object(intake,'target_snapshot',side_effect=snapshots), \
+             patch.object(intake,'fetch_json',return_value={'orders':rows,'page':1,'pages':1,'per_page':100,'total':2}), \
+             patch.object(m,'send_recovery',return_value=duplicate) as send, \
+             contextlib.redirect_stdout(io.StringIO()) as output:
+            m.recover_orders({'act':act,'intake':intake},pathlib.Path('/synthetic'),'Europe/Moscow')
+        self.assertEqual(send.call_count,2)
+        self.assertEqual(send.call_args_list[0],send.call_args_list[1])
+        report = json.loads(output.getvalue().splitlines()[0].split('=',1)[1])
+        self.assertEqual(report['acknowledged_created'],0)
+        self.assertEqual(report['confirmed_present'],1)
+        self.assertEqual(report['duplicate_deliveries_verified'],1)
+        self.assertEqual(report['remaining_missing'],0)
+        self.assertTrue(any(call.args[0].name=='health.json' for call in act.write_json.call_args_list))
+
 
 if __name__ == '__main__':
     unittest.main()

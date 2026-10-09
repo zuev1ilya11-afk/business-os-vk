@@ -374,6 +374,12 @@ def recover_orders(deps, root, zone_name):
         result = send_recovery(intake, token, payloads[identifier], created)
         record['results'].append({'external_id':identifier, **result})
         act.write_json(journal, record)
+        # Verify real duplicate delivery without inventing any client/order.
+        replay = send_recovery(intake, token, payloads[identifier], created)
+        if replay['duplicate'] is not True:
+            raise Stop('REPEATED_DELIVERY_NOT_ACKNOWLEDGED')
+        record['results'][-1]['duplicate_verified'] = True
+        act.write_json(journal, record)
     after = intake.target_snapshot(diag, db, dbname)
     final = intake.compare_ids(rows, after['hands_ids'])
     record.update(finished_at=datetime.now(timezone.utc).isoformat(),
@@ -381,13 +387,15 @@ def recover_orders(deps, root, zone_name):
                   confirmed_present=sum(identifier in {intake.canonical(x) for x in after['hands_ids']} for identifier,_ in batch),
                   acknowledged_created=sum(x['created'] for x in record['results']),
                   acknowledged_skipped_or_duplicate=sum(x['skipped'] or x['duplicate'] for x in record['results']),
+                  duplicate_deliveries_verified=sum(x.get('duplicate_verified', False) for x in record['results']),
                   remaining_missing=len(final['missing']), duplicate_groups=final['target_duplicate_groups'],
                   last_receipt_at=after['last_receipt_at'])
     act.write_json(journal, record)
     act.write_json(root / 'recovery-last.json', {'journal':str(journal), **record})
     print('BOS_HANDS_RECOVERY=' + json.dumps({k:record[k] for k in (
         'scope', 'candidate_count', 'confirmed_present', 'acknowledged_created',
-        'acknowledged_skipped_or_duplicate', 'remaining_missing', 'duplicate_groups', 'last_receipt_at')}), flush=True)
+        'acknowledged_skipped_or_duplicate', 'duplicate_deliveries_verified',
+        'remaining_missing', 'duplicate_groups', 'last_receipt_at')}), flush=True)
     if final['missing'] or final['target_duplicate_groups']:
         raise Stop('RECOVERY_RECONCILIATION_FAILED')
     act.write_json(root / 'health.json', {'last_successful_active_reconciliation':record['finished_at'],
