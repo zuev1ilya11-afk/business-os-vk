@@ -220,3 +220,9 @@ body.bos-approved-ui[data-bos-ui-role="master"] {--master-muted:var(--bos-ui-mut
 .bos-approved-ui[data-bos-ui-role="master"] .bosWorkMonth .usDay b{font-size:14px;font-weight:500;}
 .bos-approved-ui[data-bos-ui-role="master"] .bosCompactMasterCard .moa179Step b{font-size:12px;line-height:1.3;}
 .bos-approved-ui[data-bos-ui-role="master"] .bosCompactMasterCard .moa179Step small{font-size:10px;line-height:1.3;}
+
+@media(max-width:430px){
+ .bos-approved-ui[data-bos-ui-role="master"] .reportFixedV27 .reportOutcome{grid-template-columns:minmax(0,1fr);gap:10px;}
+ .bos-approved-ui[data-bos-ui-role="master"] .reportFixedV27 .reportOutcome .reportChoices{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+ .bos-approved-ui[data-bos-ui-role="master"] .reportFixedV27 .reportOutcome .reportChoice span{max-width:none;}
+}
