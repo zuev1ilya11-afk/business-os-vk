@@ -74,7 +74,8 @@ function scheduleHtml(t){
 }
 function metric(label,value,cls=''){return `<div class="masterV129Metric ${cls}"><span>${escv(label)}</span><strong>${escv(value)}</strong></div>`}
 function profileHtml(t){
-  return `<section id="masterProfileSummaryV129" class="masterV129Panel"><div class="masterV129Metrics masterV129Workload">${metric('В работе сейчас',String(t.active.length))}${metric('Выполнено за всё время',String(t.done.length))}</div></section>`;
+ const u=liveUser(),m=masterRow(),today=localIso(new Date()),todayRows=t.done.filter(o=>completedDay(o)===today),name=u.full_name||m.full_name||u.name||m.name||'Мастер';
+ return `<section id="masterProfileSummaryV129" class="masterV129Panel"><div class="bosProfileIdentity"><span class="bosNavAvatar">${escv(name.split(/\s+/).slice(0,2).map(x=>x[0]).join(''))}</span><div><h2>${escv(name)}</h2><p>Мастер${u.city||m.city?' · '+escv(u.city||m.city):''}</p></div></div><section class="bosProfileAccrual"><h3>Мои начисления</h3><div class="masterV129Metrics">${metric('Сегодня',moneyv(todayRows.reduce((a,o)=>a+salary(o),0)))}${metric('Неделя',moneyv(t.weekSalary))}${metric('Месяц',moneyv(t.monthSalary))}</div><div class="bosTaskRow"><span>Фактически выплачено</span><span>—</span></div><p class="muted">Начисления и переведённые выплаты — разные показатели.</p><button type="button" class="bosTextAction" onclick="document.getElementById('masterMoneyV130')?.scrollIntoView({behavior:'smooth'})">Подробнее →</button></section><div class="masterV129Metrics masterV129Workload">${metric('В работе сейчас',String(t.active.length))}${metric('Выполнено за всё время',String(t.done.length))}</div></section>`;
 }
 function removeByHeading(root,names){
   [...root.querySelectorAll('h2,h3')].forEach(h=>{
@@ -85,13 +86,13 @@ function removeByHeading(root,names){
 }
 function cleanupHome(root){
   root.querySelectorAll('.masterSalarySummary').forEach(el=>el.remove());
-  root.querySelectorAll('.masterKpis').forEach(el=>el.remove());
+  root.querySelectorAll('.masterKpis,.masterHomeGrid').forEach(el=>el.remove());
   removeByHeading(root,['Мой график','Расчёт зарплаты','Зарплата','График работы']);
 }
 function cleanupProfile(root){
   removeByHeading(root,['Зарплата','Расчёт зарплаты','График этой недели','График работы']);
 }
-function signature(t){return JSON.stringify({orders:t.orders.map(o=>[o.id,o.status,o.report_review_status,o.completed_at,o.report_reviewed_at,o.scheduled_date,o.amount,o.master_payout,o.extra_work_amount,o.uncompleted_work_amount]),schedule:(state?.masterSchedule||[]).filter(scheduleMine).map(r=>[r.work_date||r.date,r.is_working,r.work_start,r.work_end]),user:[liveUser()?.city,liveUser()?.district,liveUser()?.phone]})}
+function signature(t){return JSON.stringify({orders:t.orders.map(o=>[o.id,o.status,o.report_review_status,o.completed_at,o.report_reviewed_at,o.scheduled_date,o.amount,o.master_payout,o.extra_work_amount,o.uncompleted_work_amount]),schedule:(state?.masterSchedule||[]).filter(scheduleMine).map(r=>[r.work_date||r.date,r.is_working,r.work_start,r.work_end]),user:[liveUser()?.full_name,liveUser()?.city,liveUser()?.district,liveUser()?.phone,localIso(new Date())]})}
 function render(){
   queued=false;
   const root=document.getElementById('content');if(!root||!masterMode())return;
@@ -105,8 +106,9 @@ function render(){
 }
 function schedule(){if(!masterMode()||queued)return;queued=true;requestAnimationFrame(render)}
 window.openMasterProfileDayV129=function(date){
-  if(typeof window.setMasterOrderDay==='function'){window.setMasterOrderDay(date);return}
-  window.show?.('orders');
+ if(!masterMode()||!/^\d{4}-\d{2}-\d{2}$/.test(date))return;
+ const row=scheduleRow(date),orders=dayOrders(date),finished=orders.filter(completed),time=row?truthy(row.is_working)?`${String(row.work_start||'').slice(0,5)}–${String(row.work_end||'').slice(0,5)}`:'Выходной':'Не задан';
+ openModal(`<section class="bosOwnDayTask"><h2>${escv(new Date(date+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',weekday:'long'}))}</h2><div class="bosDayStats bosTaskRow"><div>Рабочее время<small>${escv(time)}</small></div><div>Визиты<small>${orders.length} · завершено ${finished.length}</small></div></div><h3>Назначенные визиты</h3>${orders.length?orders.map(o=>`<button type="button" class="bosTimelineVisit bosDayVisit" onclick="openOrder('${escv(o.id)}')"><b>${escv(String(o.scheduled_time||o.time_slot||'').slice(0,5)||'Время не указано')} · № ${escv(o.id)}</b><span>${escv(o.address||'Адрес не указан')}</span><small>${escv(o.work||'')}</small></button>`).join(''):'<p class="muted">Визитов нет</p>'}<p class="muted">Обратные звонки показаны на главной отдельно от визитов.</p><button type="button" class="secondary wide" onclick="closeModal()">Назад</button></section>`);
 };
 new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
 setTimeout(schedule,0);

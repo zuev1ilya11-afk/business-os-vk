@@ -91,7 +91,7 @@ function decorate(){
   if(!masterMode())return;
   decorateCards();
   const modal=document.querySelector('#modalRoot .modal');
-  if(!modal||modal.querySelector('#masterReportForm,#masterAgreementForm,#masterRescheduleForm'))return;
+  if(!modal||modal.querySelector('.bosStageTask,.bosReportReceipt,#masterReportForm,#masterAgreementForm,#masterRescheduleForm'))return;
   const compact=modal.querySelector('.bosCompactMasterCard');
   if(compact){
     const id=String(modal.dataset?.bosMasterOrderId||window.__bosLastMasterOrderId||''),o=orderById(id);

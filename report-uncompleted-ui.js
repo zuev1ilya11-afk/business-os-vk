@@ -19,7 +19,7 @@ window.BOS_INIT_REPORT_DEDUCTION=function(form,order){
     <div id="mrDeductionRows"></div><p id="mrDeductionEmpty" class="muted">Пока нет выбранных работ</p>
     <div class="deductionTotals" aria-live="polite"><div><span>Сумма вычета</span><b id="mrDeductionTotal"></b></div>${visibleCost?'<div><span>После вычета</span><b id="mrAfterDeduction"></b></div>':'<p class="muted">Полная стоимость заявки скрыта. Допустимый вычет проверяется при отправке отчёта.</p>'}</div>
     <label for="mrDeductionComment">Причина</label><textarea id="mrDeductionComment" maxlength="4000" placeholder="Почему работы не выполнены"></textarea>
-    <p id="mrDeductionError" role="alert"></p><div class="row"><button type="button" class="secondary" onclick="this.closest('dialog').close()">Отмена</button><button type="button" class="primary" id="mrDeductionContinue">Добавить в отчёт</button></div>`;
+    <p id="mrDeductionError" role="alert"></p><div class="bosTaskFooter"><button type="button" class="secondary" onclick="this.closest('dialog').close()">Отмена</button><button type="button" class="primary" id="mrDeductionContinue">Добавить в отчёт</button></div>`;
   form.append(dialog);
   const $=id=>form.querySelector('#'+id);
   $('mrDeductionComment').value=order.uncompleted_work_description||'';

@@ -10,14 +10,14 @@ function reportToggleState(){
 }
 window.openMasterReportForm=function(id){
   const o=state.orders.find(x=>String(x.id)===String(id));if(!o)return;
-  openModal(`<h2>Отчёт по заявке ${esc(o.id)}</h2><form id="masterReportForm" class="form reportCompactForm">
+  openModal(`<h2>${o.report_review_status==='rejected'?'Доработать отчёт':'Отчёт по заявке '+esc(o.id)}</h2>${o.report_review_status==='rejected'?`<div class="bosReportCorrection bosTaskNotice error"><b>Отчёт возвращён</b><p>${esc(o.report_review_comment||'Уточните причину у диспетчера')}</p><p>Повторно отмечать выезд и начало работы не нужно.</p></div><section class="bosSavedDocuments"><h3>Сохранённые документы</h3>${typeof reportLinksHtml==='function'?reportLinksHtml(o):''}</section>`:''}<p class="muted bosReportContext">${esc(o.address||'')} · ${esc(o.work||'')}</p><form id="masterReportForm" data-order-id="${esc(o.id)}" class="form reportCompactForm"><h3>1. Документы</h3><p class="muted">Акт и минимум одна фотография обязательны.</p>
     <label>Акт выполненных работ *</label><input id="mrAct" type="file" accept="image/*,.pdf,application/pdf" required>
     <label>Фото выполненной работы *</label><input id="mrPhotos" type="file" accept="image/*" multiple required><p class="muted reportHint">Выберите до 5 фото из файлов или галереи.</p>
-    <div class="reportQuestion"><b>Были ли допработы?</b><div class="reportChoices">${reportRadio('mrExtra','false','Нет',true)}${reportRadio('mrExtra','true','Да',false)}</div></div>
+    <h3>2. Результат работы</h3><div class="reportQuestion"><b>Были ли допработы?</b><div class="reportChoices">${reportRadio('mrExtra','false','Нет',true)}${reportRadio('mrExtra','true','Да',false)}</div></div>
     <div id="mrExtraBox" class="reportConditional" style="display:none"><input id="mrExtraDesc" placeholder="Какие допработы"><input id="mrExtraAmount" type="number" min="0" step="0.01" placeholder="Сумма допработ"></div>
     <div class="reportQuestion reportOutcome"><b>Все ли на заявке выполнено?</b><div class="reportChoices">${reportRadio('mrAllDone','true','Всё выполнено',true)}${reportRadio('mrAllDone','false','Сделано не всё',false)}</div></div>
     <div id="mrUnfinishedBox" class="reportConditional" style="display:none"><input id="mrUnfinishedDesc" placeholder="Что не выполнено"><input id="mrUnfinishedAmount" type="number" min="0" step="0.01" placeholder="Стоимость невыполненного"></div>
-    <button class="primary wide" type="submit">Отправить отчёт и завершить</button><p id="mrMsg" class="muted"></p>
+    <h3>3. Перед отправкой</h3><p class="muted">Проверьте читаемость акта, фотографии результата и состав выполненных работ.</p><div class="bosTaskFooter"><button type="button" class="secondary" onclick="openOrder('${esc(o.id)}')">Отмена</button><button class="primary wide" type="submit">Отправить отчёт и завершить</button></div><p id="mrMsg" class="muted"></p>
   </form>`);
   document.querySelectorAll('input[name="mrExtra"],input[name="mrAllDone"]').forEach(el=>el.addEventListener('change',reportToggleState));
   window.BOS_INIT_REPORT_DEDUCTION($('#masterReportForm'),o);
@@ -85,5 +85,23 @@ async function submitMasterReportV12(e,id){
     state.busy=false;closeModal();show('orders');
   }catch(err){msg.textContent=err.message||String(err);setBusy(form,false);state.busy=false}
 }
+// Presentation only: keep the locked form and the existing reconciliation button/closure intact.
+function presentUncertainReport(){
+ const form=document.getElementById('masterReportForm');if(!form)return;
+ const modal=form.closest('.modal'),msg=document.getElementById('mrMsg'),existing=modal?.querySelector('.bosReportUncertain');
+ if(existing){
+  if(form.dataset.reportLocked!=='true'){form.appendChild(msg);existing.remove();form.classList.remove('bosUncertainForm');modal.scrollTop=0;return}
+  const checking=[...existing.querySelectorAll('button')].some(b=>b.textContent==='Проверить состояние');
+  if(!checking&&existing.querySelector('h2').textContent!=='Состояние отчёта подтверждено')existing.querySelector('h2').textContent='Состояние отчёта подтверждено';
+  return;
+ }
+ const refresh=msg?.nextElementSibling;
+ if(form.dataset.reportLocked!=='true'||!refresh||refresh.tagName!=='BUTTON'||refresh.textContent!=='Проверить состояние')return;
+ const panel=document.createElement('section');panel.className='bosReportUncertain';
+ const files=[document.getElementById('mrAct')?.files?.[0],...(document.getElementById('mrPhotos')?.files||[])].filter(Boolean);
+ panel.innerHTML=`<h2>Проверяем состояние отчёта</h2><p class="muted">№ ${esc(form.dataset.orderId||'')} · результат отправки пока неизвестен</p><div class="bosTaskNotice warning"><b>Подтверждение отправки не получено</b><p>Сначала проверьте, был ли отчёт сохранён. Повторная отправка сейчас заблокирована.</p></div><div class="bosUncertainDocuments">${files.map(f=>`<div class="bosTaskRow"><div>${esc(f.name)}<small>Файл выбран и сохранён в форме</small></div></div>`).join('')}</div><h3>Следующий шаг</h3><div class="bosTaskNext"></div>`;
+ form.before(panel);form.classList.add('bosUncertainForm');const next=panel.querySelector('.bosTaskNext');next.append(refresh,msg);refresh.classList.add('primary');refresh.classList.remove('secondary');modal.scrollTop=0;
+}
+new MutationObserver(presentUncertainReport).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['data-report-locked']});
 const style=document.createElement('style');style.textContent=`.reportCompactForm{gap:10px}.reportCompactForm>label{margin-top:2px}.reportHint{margin:-4px 0 2px;font-size:12px}.reportQuestion{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.07)}.reportQuestion b{font-size:14px}.reportChoices{display:flex;gap:6px}.reportChoice{cursor:pointer}.reportChoice input{position:absolute;opacity:0;pointer-events:none}.reportChoice span{display:block;min-width:52px;padding:7px 11px;text-align:center;border:1px solid #315271;border-radius:10px;font-size:13px}.reportChoice input:checked+span{background:#1f5f99;border-color:#4f91cf;color:#fff}.reportConditional{grid-template-columns:1fr 130px;gap:8px;margin:-2px 0 4px}.reportConditional input{min-height:40px;padding:9px 10px}.reportCompactForm input[type=file]{min-height:42px}@media(max-width:520px){.reportConditional{grid-template-columns:1fr}.reportQuestion{align-items:flex-start;flex-direction:column;gap:7px}.reportChoices{width:100%}.reportChoice{flex:1}.reportChoice span{width:100%;box-sizing:border-box}}`;document.head.appendChild(style);
 })();

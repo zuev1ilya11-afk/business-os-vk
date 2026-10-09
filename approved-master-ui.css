@@ -1,0 +1,138 @@
+/* Approved master presentation. Existing state, authorization and handlers remain authoritative. */
+body.bos-approved-ui[data-bos-ui-role="master"] {--master-muted:var(--bos-ui-muted);}
+.bos-approved-ui[data-bos-ui-role="master"] :is(.masterV127,.masterOrdersV125){max-width:960px;margin:0;color:var(--bos-ui-text);}
+.bos-approved-ui[data-bos-ui-role="master"] :is(.masterV127Head h2,.masterV125Header h2){font-size:30px;line-height:1.18;letter-spacing:-.5px;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Head p{font-size:13px;color:var(--bos-ui-muted);}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Profile{display:none;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosMasterRefresh{display:flex;align-items:center;justify-content:space-between;color:var(--bos-ui-muted);font-size:12px;margin:20px 0 10px;}
+.bos-approved-ui .bosTextAction{background:transparent;border:0;color:var(--bos-ui-link);padding:8px 0;min-height:44px;font:inherit;text-align:left;cursor:pointer;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosMasterSearch{display:grid;grid-template-columns:minmax(0,1fr) 145px;gap:8px;margin:0 0 14px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosMasterSearch input{min-width:0;width:100%;box-sizing:border-box;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Tabs{display:flex;gap:20px;padding:0;margin:0 0 22px;border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;background:none;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Tabs button{border-radius:0;background:none;color:var(--bos-ui-muted);padding:12px 0;min-height:48px;font-size:13px;border-bottom:2px solid transparent;box-shadow:none;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Tabs button[aria-selected="true"]{color:var(--bos-ui-text);background:none;border-bottom-color:var(--bos-ui-primary);box-shadow:none;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Tabs button span{background:none;font-size:11px;font-weight:400;padding:0;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Callbacks{border:0;border-left:3px solid var(--bos-ui-warning);border-radius:0 10px 10px 0;background:#302a22;color:var(--bos-ui-text);font-size:14px;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127DayHeading{font-size:19px;margin:26px 0 0;padding-bottom:13px;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Card{display:grid;grid-template-columns:58px minmax(0,1fr);grid-template-areas:"when top" "when main" ". actions";gap:4px 10px;background:transparent;border:0;border-top:1px solid var(--bos-ui-line);border-radius:0;padding:18px 0 20px;margin:0;box-shadow:none;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127CardTop{grid-area:top;gap:6px;margin:0;flex-wrap:wrap;align-items:center;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Number{font-size:11px;color:var(--bos-ui-link);min-height:30px;padding:0;font-weight:400;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Number>span{display:none;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Badge{border:0;border-radius:4px;padding:4px 6px;font-size:10px;max-width:100%;font-weight:600;color:var(--bos-ui-warning);background:#392f23;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Badge.agreed{color:var(--bos-ui-success);background:#203a32;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Badge.new{color:var(--bos-ui-link);background:#213044;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127When{grid-area:when;display:block;margin:5px 0 0;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127When svg{display:none;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127When b{font-size:23px;font-weight:400;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127When span{font-size:11px;color:var(--bos-ui-muted);overflow-wrap:anywhere;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Card[data-group] .masterV127When b[hidden]{display:none;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Main{grid-area:main;}
+.bos-approved-ui[data-bos-ui-role="master"] :is(.masterV127Address,.masterV127Work){display:block;margin:3px 0 7px;font-size:14px;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Address{font-size:17px;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Address span{font-weight:400;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Main svg{display:none;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Agreement{display:block;background:none;border:0;padding:0;margin:8px 0;color:var(--bos-ui-muted);}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Agreement b{font-size:12px;font-weight:400;color:var(--bos-ui-muted);}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Agreement p{font-size:12px;margin:3px 0;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Step{font-size:12px;margin-top:8px;color:var(--bos-ui-muted);}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Step strong{font-weight:400;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Actions{grid-area:actions;display:grid;grid-template-columns:1fr;gap:6px;margin:5px 0 0;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Actions :is(.primary,.secondary){font-size:13px;min-height:44px;font-weight:400;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Actions .secondary{background:none;border:0;color:var(--bos-ui-link);padding:4px;}
+.bos-approved-ui[data-bos-ui-role="master"] :is(.masterV127Callback,.masterV127Error){background:#302a22;border:0;border-left:3px solid var(--bos-ui-warning);color:var(--bos-ui-warning);border-radius:0;padding:10px;margin:8px 0;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Empty{border:0;text-align:center;padding:45px 10px;color:var(--bos-ui-muted);}
+.bos-approved-ui[data-bos-ui-role="master"] :is(.masterV125Card,.masterV125Card.bosHandsMiniCard){display:grid;gap:8px;background:none!important;border:0!important;border-top:1px solid var(--bos-ui-line)!important;border-radius:0!important;box-shadow:none;padding:18px 0;margin:0;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV125Stage{border-radius:4px;background:#213044;color:var(--bos-ui-link);font-weight:600;white-space:normal;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV125Card.done .masterV125Stage{background:#203a32;color:var(--bos-ui-success);}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV125Card.danger .masterV125Stage{background:#3c262f;color:var(--bos-ui-error);}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV125Actions{grid-template-columns:1fr auto;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV125Title>strong{font-size:16px;font-weight:400;}
+.bos-approved-ui[data-bos-ui-role="master"] :is(.masterV125StatusFilters,.masterV125DayFilters) button{background:none;color:var(--bos-ui-muted);border:1px solid var(--bos-ui-line);}
+.bos-approved-ui[data-bos-ui-role="master"] :is(.masterV125StatusFilters,.masterV125DayFilters) button.primary{background:#24364e!important;color:var(--bos-ui-text)!important;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosApprovedSection{border-top:1px solid var(--bos-ui-line);padding:20px 0;margin:0;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosApprovedSection h3{font-size:19px;margin:0 0 14px;color:var(--bos-ui-text);font-weight:600;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosCompactMasterCard .bosHandsHead{display:flex;align-items:flex-start;gap:10px;border:0;padding-bottom:12px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosMasterTitle{flex:1;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosCompactMasterCard .bosMasterTitle>b{font-size:27px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosCompactMasterCard .bosCompactAddress{font-size:17px;padding:5px 0 20px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosCompactMasterCard .bosCompactMoney{display:flex;flex-wrap:wrap;gap:12px;text-align:left;font-size:13px;margin-top:12px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosCompactClient{padding:0!important;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosCompactClient>div{width:100%;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV126PhoneRow{border-bottom:1px solid var(--bos-ui-line);padding:10px 0;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosCompactMasterCard .bosCompactDate{display:flex;justify-content:space-between;flex-wrap:wrap;font-size:14px;}
+.bos-approved-ui[data-bos-ui-role="master"] :is(.bosMasterContactSummary,.bosOrderComment,.moa179StageCard,.moa179Reschedule){background:none!important;border:0!important;border-radius:0!important;padding:12px 0!important;}
+.bos-approved-ui[data-bos-ui-role="master"] .moa179StageCard{border-top:1px solid var(--bos-ui-line)!important;}
+.bos-approved-ui[data-bos-ui-role="master"] .moa179Step.current{background:var(--bos-ui-raised);border-color:var(--bos-ui-line);}
+.bos-approved-ui[data-bos-ui-role="master"] .moa179Progress i{background:var(--bos-ui-primary);}
+.bos-approved-ui[data-bos-ui-role="master"] .moa179Action{background:var(--bos-ui-primary);color:var(--bos-ui-primary-ink);font-weight:500;}
+.bos-approved-ui .bosTaskRow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 0;border-bottom:1px solid var(--bos-ui-line);overflow-wrap:anywhere;}
+.bos-approved-ui .bosTaskRow>div{min-width:0;}
+.bos-approved-ui .bosTaskRow small{display:block;color:var(--bos-ui-muted);font-size:12px;margin-top:4px;}
+.bos-approved-ui .bosTaskNotice{background:var(--bos-ui-raised);border-left:3px solid var(--bos-ui-link);border-radius:0 10px 10px 0;padding:15px;margin:20px 0;}
+.bos-approved-ui .bosTaskNotice p{font-size:13px;margin:6px 0;color:var(--bos-ui-muted);}
+.bos-approved-ui .bosTaskNotice.warning{background:#302a22;border-color:var(--bos-ui-warning);}
+.bos-approved-ui .bosTaskNotice.error{background:#3c262f;border-color:var(--bos-ui-error);}
+.bos-approved-ui .bosTaskNotice.success{background:#203a32;border-color:var(--bos-ui-success);}
+.bos-approved-ui .bosVisitContext{padding:22px 18px;background:var(--bos-ui-surface);border:1px solid var(--bos-ui-line);border-radius:16px;margin:24px 0;}
+.bos-approved-ui .bosVisitContext small{font-size:11px;color:var(--bos-ui-muted);letter-spacing:.07em;}
+.bos-approved-ui .bosVisitContext h3{font-size:22px;margin:12px 0;}
+.bos-approved-ui .bosTaskContext{font-size:13px;}
+.bos-approved-ui .bosTaskFooter{display:flex;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid var(--bos-ui-line);}
+.bos-approved-ui .bosTaskFooter>*{flex:1;min-width:0;white-space:normal;min-height:46px;}
+.bos-approved-ui[data-bos-ui-role="master"] :is(#masterContactResultForm,#masterAgreementForm,#masterOrderAgree179Form,.reportCompactForm){padding-bottom:100px;gap:14px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosContactResultChoices{display:grid;gap:0;border-top:1px solid var(--bos-ui-line);}
+.bos-approved-ui[data-bos-ui-role="master"] .bosContactResultChoice{border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;background:none;padding:16px 4px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosContactResultChoice.is-selected{background:var(--bos-ui-raised);}
+.bos-approved-ui[data-bos-ui-role="master"] .reportCompactForm h3{font-size:20px;padding-top:18px;margin:10px 0 0;border-top:1px solid var(--bos-ui-line);}
+.bos-approved-ui[data-bos-ui-role="master"] .reportCompactForm h3:first-child{border:0;padding-top:0;}
+.bos-approved-ui[data-bos-ui-role="master"] .reportChoice input:checked+span{background:#24364e;border-color:var(--bos-ui-link);color:var(--bos-ui-text);}
+.bos-approved-ui[data-bos-ui-role="master"] .reportDeductionDialog{background:var(--bos-ui-bg);color:var(--bos-ui-text);border-color:var(--bos-ui-line);}
+.bos-approved-ui .bosUncertainForm{display:none!important;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosTimelineNav{display:grid;grid-template-columns:44px 1fr 44px;gap:8px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosTimelineWeek{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:20px 0;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosTimelineWeek button{display:grid;gap:5px;padding:10px 3px;background:none;border:1px solid var(--bos-ui-line);border-radius:8px;color:var(--bos-ui-muted);}
+.bos-approved-ui[data-bos-ui-role="master"] .bosTimelineWeek button[aria-pressed="true"]{background:#24364e;color:var(--bos-ui-text);border-color:var(--bos-ui-link);}
+.bos-approved-ui[data-bos-ui-role="master"] .bosTimelineHour{display:grid;grid-template-columns:50px 1fr;gap:14px;border-top:1px solid var(--bos-ui-line);min-height:60px;padding:8px 0;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosTimelineHour time{color:var(--bos-ui-muted);font-size:12px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosTimelineVisit{display:grid;width:100%;gap:5px;padding:14px;background:#213044;border:1px solid var(--bos-ui-line);border-left:3px solid var(--bos-ui-link);border-radius:8px;color:var(--bos-ui-text);text-align:left;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosTimelineVisit :is(span,small){color:var(--bos-ui-muted);font-size:12px;}
+.bos-approved-ui[data-bos-ui-role="master"] :is(.bosWorkMonth,.bosScheduleEditorTask){max-width:850px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosScheduleDate{display:grid;gap:8px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosWorkMonth .usScheduleCard{margin-top:24px;}
+.bos-approved-ui[data-bos-ui-role="master"] .usDay{background:var(--bos-ui-surface);border-color:var(--bos-ui-line);border-radius:8px;min-height:78px;}
+.bos-approved-ui[data-bos-ui-role="master"] .usDay.full{background:#182820;border-color:#365447;}
+.bos-approved-ui[data-bos-ui-role="master"] .usDay.partial{background:#2d261c;border-color:#665238;}
+.bos-approved-ui[data-bos-ui-role="master"] .usDay :is(small,span){font-size:9px;white-space:normal;overflow-wrap:anywhere;}
+.bos-approved-ui[data-bos-ui-role="master"] :is(.usEditor,.usQuick,.masterV129Metric,.masterMoneyV130){background:none;border:0;border-radius:0;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosProfileIdentity{display:flex;align-items:center;gap:15px;margin:20px 0 28px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosProfileIdentity h2{font-size:22px;margin:0;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosProfileIdentity p{font-size:13px;margin:5px 0;color:var(--bos-ui-muted);}
+.bos-approved-ui[data-bos-ui-role="master"] .bosProfileAccrual{border-top:1px solid var(--bos-ui-line);padding:22px 0;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosProfileAccrual h3{font-size:20px;margin:0 0 20px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosProfileAccrual .masterV129Metrics{grid-template-columns:repeat(3,minmax(0,1fr));}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV129Metric{padding:6px 0;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV129Metric span{color:var(--bos-ui-muted);font-size:12px;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV129Metric strong{font-size:19px;}
+.bos-approved-ui[data-bos-ui-role="master"] .salaryHero{background:transparent;border:0;}
+.bos-approved-ui[data-bos-ui-role="master"] :is(.salaryBreakdown,.salaryPayments,.salaryOrderList,.salaryHistory){background:none;border:0;}
+.bos-approved-ui[data-bos-ui-role="master"] .salaryTabs button[aria-pressed="true"]{background:#24364e;color:var(--bos-ui-text);}
+@media(max-width:600px){
+.bos-approved-ui[data-bos-ui-role="master"] .modal:has(:is(.bosCompactMasterCard,.bosStageTask,.bosReportReceipt,.bosContactResult,#masterAgreementForm,#masterOrderAgree179Form,#masterReportForm,#masterRescheduleForm)){position:fixed;inset:60px 0 calc(74px + env(safe-area-inset-bottom));max-width:none!important;max-height:none!important;width:100%;height:auto;margin:0;padding:24px 19px 100px!important;border:0;border-radius:0!important;background:var(--bos-ui-bg);box-sizing:border-box;overflow-y:auto;}
+.bos-approved-ui[data-bos-ui-role="master"] #modalRoot:has(.modal){z-index:80;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosTaskFooter{position:fixed;bottom:calc(74px + env(safe-area-inset-bottom));left:0;right:0;background:var(--bos-ui-bg);padding:12px 19px;margin:0;z-index:90;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosStageTask .bosMasterWorkflow{padding:0!important;border:0;background:none;margin:0;}
+.bos-approved-ui[data-bos-ui-role="master"] .reportDeductionDialog{position:fixed;inset:60px 0 calc(74px + env(safe-area-inset-bottom));width:100vw;max-width:none;max-height:none;margin:0;height:auto;border:0;border-radius:0;padding:22px 19px 110px;box-sizing:border-box;}
+.bos-approved-ui[data-bos-ui-role="master"] .reportDeductionDialog::backdrop{background:var(--bos-ui-bg);}
+.bos-approved-ui[data-bos-ui-role="master"] .bosScheduleEditorTask{padding-bottom:100px;}
+}
+@media(max-width:600px){
+.bos-approved-ui[data-bos-ui-role="master"] .modal:has(.bosStageTask){padding-bottom:180px!important;scroll-padding-bottom:160px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosTaskFooter .moa179Action{display:flex;justify-content:center;gap:6px;min-height:46px;height:auto;padding:10px;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosTaskFooter .moa179Icon,.bos-approved-ui[data-bos-ui-role="master"] .bosTaskFooter .moa179Action>b{display:none;}
+}
+.bos-approved-ui[data-bos-ui-role="master"] .masterMemoGrid{display:grid;grid-template-columns:1fr;gap:0;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterMemoGrid .masterMemoCard{display:flex;align-items:center;justify-content:space-between;gap:16px;background:none;border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;padding:20px 0;text-align:left;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterMemoGrid h3{font-size:16px;margin:0 0 5px;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterMemoGrid p{font-size:13px;margin:0;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterMemoGrid span{font-size:13px;color:var(--bos-ui-link);}
+.bos-approved-ui[data-bos-ui-role="master"] .memoMaterial{background:none;border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;padding:16px 0;}

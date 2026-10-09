@@ -1,0 +1,51 @@
+[
+  {
+    "file": "master-order-actions-v179.js",
+    "from": "async function api(",
+    "until": "function mergeOrder",
+    "unchanged": true,
+    "sha256": "b2d7e65ce24384fe895ee74a23a8586e478208ab41e029ed305afe41042f29f3"
+  },
+  {
+    "file": "master-order-actions-v179.js",
+    "from": "const workConfirmed=",
+    "until": "function actualTime",
+    "unchanged": true,
+    "sha256": "ae112536ede0d55952d7f658f2e0cce40b91a466c50d21922a6823fdb80e981e"
+  },
+  {
+    "file": "master-order-actions-v179.js",
+    "from": "async function saveAction(",
+    "until": "window.masterOrderAgree179=",
+    "unchanged": true,
+    "sha256": "edcd0c4c98860313fb6297a52e28162317ca813a2fa291541b16f03f6dc8c74e"
+  },
+  {
+    "file": "unified-schedule-v102.js",
+    "from": "window.saveUnifiedScheduleMonth=",
+    "until": "const previous=",
+    "unchanged": true,
+    "sha256": "f62334cce82395b99e7e0a124185a4e2d70a814e908eac6e5ef769e5c58fd5cc"
+  },
+  {
+    "file": "master-report-ui-v12.js",
+    "from": "async function compactFilePayload",
+    "until": "const style=",
+    "unchanged": true,
+    "sha256": "01a9847df313a8679bbb52fb18c4a47077b4bf772991b0e86e2252eee114ab33"
+  },
+  {
+    "file": "report-uncompleted-ui.js",
+    "from": "  function payload()",
+    "until": "  function open()",
+    "unchanged": true,
+    "sha256": "98c73863b600907c61a64061c05cdc70eb50545559aec6068bb58a0ed6001c2e"
+  },
+  {
+    "file": "master-reschedule-call-v87.js",
+    "from": "  markRescheduleModal();",
+    "until": "const style=",
+    "unchanged": true,
+    "sha256": "27d8fe19992c333e89db1e3b6e3785e26421d574c0b805ced0a9a33b40c709b0"
+  }
+]

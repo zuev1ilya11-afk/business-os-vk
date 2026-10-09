@@ -4,6 +4,7 @@ if(window.BOS_MASTER_ORDERS_V125)return;
 window.BOS_MASTER_ORDERS_V125=true;
 
 const masterMode=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
+let search='';
 const liveMaster=()=>String(state?.user?.role||'')==='master';
 const own=()=>typeof ownOrders==='function'?(ownOrders()||[]):(state?.orders||[]);
 const status=o=>String(o?.status||'');
@@ -69,11 +70,12 @@ function emptyText(){return({current:'Текущих заявок нет',new:'�
 const previousOrders=pages.orders;
 pages.orders=function(){
  if(!masterMode())return previousOrders();
- const all=own().slice(),list=sortOrders(all.filter(o=>matches(o))),c=counts(all);
- return `<div class="masterSimple masterOrdersDense masterOrdersV125"><div class="masterV125Header"><div><h2>Мои заявки</h2><div class="muted">Текущие: ${c.current} · Всего: ${all.length}</div></div></div>${filters(all)}${dayFilters(list)}${list.length?grouped(list):`<div class="masterEmpty">${emptyText()}</div>`}</div>`;
+ const all=own().slice(),filtered=sortOrders(all.filter(o=>matches(o))),list=filtered.filter(o=>!search||[o.id,o.external_id,o.address,o.client,o.work,workflowLabel(o)].join(' ').toLowerCase().includes(search.toLowerCase())),c=counts(all);
+ return `<div class="masterSimple masterOrdersDense masterOrdersV125"><div class="masterV125Header"><div><h2>Мои заявки</h2><div class="muted">Текущие: ${c.current} · Всего: ${all.length}</div></div></div>${filters(all)}<input type="search" id="masterOrdersSearch" aria-label="Поиск в моих заявках" placeholder="Номер, адрес или работа" value="${escv(search)}">${dayFilters(filtered)}${list.length?grouped(list):`<div class="masterEmpty">${search?'По вашему запросу заявок нет':emptyText()}</div>`}</div>`;
 };
 
 function rerender(){const root=document.getElementById('content');if(!root||!masterMode()||String(state?.page||'')!=='orders')return false;root.innerHTML=pages.orders();return true}
+document.addEventListener('input',e=>{if(e.target.id!=='masterOrdersSearch'||!masterMode())return;search=e.target.value;const caret=e.target.selectionStart;rerender();const input=document.getElementById('masterOrdersSearch');input?.focus();if(caret!=null)input?.setSelectionRange(caret,caret)});
 const baseSetFilter=window.setMasterOrdersFilter;
 window.setMasterOrdersFilter=function(v){window.__bosMasterOrderStatus=String(v||'current');window.__bosMasterOrderDay='all';if(!rerender()&&typeof baseSetFilter==='function')return baseSetFilter(v)};
 const baseSetDay=window.setMasterOrderDay;
