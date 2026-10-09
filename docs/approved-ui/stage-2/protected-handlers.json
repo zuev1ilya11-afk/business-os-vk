@@ -30,7 +30,7 @@
   {
     "file": "master-report-ui-v12.js",
     "from": "async function compactFilePayload",
-    "until": "const style=",
+    "until": "// Presentation only:",
     "unchanged": true,
     "sha256": "d51ca8dad3740133ecec06d8b592e67239ec38edb5465b815b4afc2e89f7f86d"
   },

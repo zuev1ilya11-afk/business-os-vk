@@ -1,11 +1,11 @@
 {
   "base": "1a38667e662c426e688918785bbe249fd165fb57",
-  "sourceCheckpoint": "a7a1f26",
-  "build": "cc5aa327bfc25b249a7f",
+  "sourceCheckpoint": "1d8713f53f7090988f49b73d37ba983c724dac2b",
+  "build": "e7781dcd092dd7aa0078",
   "counts": {
-    "restored": 32,
-    "partial": 5,
-    "pending": 14
+    "restored": 37,
+    "pending": 14,
+    "partial": 0
   },
   "rows": [
     {
@@ -26,9 +26,13 @@
         "docs/approved-ui/stage-2/master/home-days-fixture-430.png"
       ],
       "states": [
-        "home-days"
+        "real-tab"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -48,9 +52,13 @@
         "docs/approved-ui/stage-2/master/home-new-fixture-430.png"
       ],
       "states": [
-        "home-new"
+        "real-tab"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -70,9 +78,13 @@
         "docs/approved-ui/stage-2/master/home-waiting-fixture-430.png"
       ],
       "states": [
-        "home-waiting"
+        "real-tab"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -92,15 +104,19 @@
         "docs/approved-ui/stage-2/master/home-callback-fixture-430.png"
       ],
       "states": [
-        "home-callback"
+        "actual-callback"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
       "screen": "home-overdue",
       "title": "Главная · Просроченные",
-      "status": "partial",
+      "status": "restored",
       "renderer": "master-daily-home-v127.js / original saved-progress classifier",
       "verification": "master-home-tabs; master-daily-home; approved-ui-master exact-day/search",
       "widths": [
@@ -114,9 +130,13 @@
         "docs/approved-ui/stage-2/master/home-overdue-fixture-430.png"
       ],
       "states": [
-        "home-overdue"
+        "overdue-only"
       ],
-      "reason": "Overdue group/hierarchy restored using original classifier; an exclusive overdue-only filter is not implemented. Existing grouped Days view remains."
+      "reason": "Explicit Today/Tomorrow/Overdue/All filters use the original real day/overdue classifier. Search is16px and visit time remains one line.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -136,9 +156,13 @@
         "docs/approved-ui/stage-2/master/home-empty-fixture-430.png"
       ],
       "states": [
-        "empty-selected-day"
+        "empty-date"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -160,7 +184,9 @@
       "states": [
         "home-refresh-error"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -182,7 +208,9 @@
       "states": [
         "current"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -204,7 +232,9 @@
       "states": [
         "new"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -226,7 +256,9 @@
       "states": [
         "current"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -248,7 +280,9 @@
       "states": [
         "current"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -270,7 +304,9 @@
       "states": [
         "done"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -290,9 +326,13 @@
         "docs/approved-ui/stage-2/master/order-detail-fixture-430.png"
       ],
       "states": [
-        "full-width-sections"
+        "progress-header-fixed-actions"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Accurate saved progress precedes Client. Saved visit appears near address; truthful next-step labels and actual primary/contact action hooks in reachable fixed footer. Original full works/visit/edit data preserved.",
+      "observedBuilds": [
+        "6227b932f4cca00ced89"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -312,9 +352,13 @@
         "docs/approved-ui/stage-2/master/order-hands-fixture-430.png"
       ],
       "states": [
-        "full-width-sections"
+        "progress-header-fixed-actions"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Accurate saved progress precedes Client. Saved visit appears near address; truthful next-step labels and actual primary/contact action hooks in reachable fixed footer. Original full works/visit/edit data preserved.",
+      "observedBuilds": [
+        "6227b932f4cca00ced89"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -336,7 +380,9 @@
       "states": [
         "outcomes"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -358,7 +404,9 @@
       "states": [
         "visit-agreement"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -380,7 +428,9 @@
       "states": [
         "callback-draft"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -402,7 +452,9 @@
       "states": [
         "confirmation-no-save"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -424,7 +476,9 @@
       "states": [
         "confirmation-no-save"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -444,15 +498,19 @@
         "docs/approved-ui/stage-2/master/report-form-fixture-430.png"
       ],
       "states": [
-        "original-files-controls"
+        "current-form"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "e7781dcd092dd7aa0078"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
       "screen": "report-uploading",
       "title": "Отчёт · Загрузка файлов",
-      "status": "partial",
+      "status": "restored",
       "renderer": "master-report-ui-v12.js / reportLinksHtml / original uploader and reconcile",
       "verification": "report-deduction; report-submit-receipt; correction-cycle; attachment-links; submit-regression; node replay/photo guards",
       "widths": [
@@ -466,15 +524,19 @@
         "docs/approved-ui/stage-2/master/report-uploading-fixture-430.png"
       ],
       "states": [
-        "actual-request-held"
+        "acknowledged-act-current-photo"
       ],
-      "reason": "Original request-held loading state captured. Approved per-file progress composition is pending; no fabricated percentage or uploaded state is supplied."
+      "reason": "Per-file rows derive only original prepare/upload/save phase text. A previous file is acknowledged only after its server response advances to next phase; active file uses indeterminate progress. Transport exposes no byte count or numeric percentage.",
+      "observedBuilds": [
+        "e7781dcd092dd7aa0078"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
       "screen": "report-error",
       "title": "Отчёт · Ошибка файла",
-      "status": "partial",
+      "status": "restored",
       "renderer": "master-report-ui-v12.js / reportLinksHtml / original uploader and reconcile",
       "verification": "report-deduction; report-submit-receipt; correction-cycle; attachment-links; submit-regression; node replay/photo guards",
       "widths": [
@@ -488,9 +550,13 @@
         "docs/approved-ui/stage-2/master/report-error-fixture-430.png"
       ],
       "states": [
-        "actual-network-error"
+        "actual-photo-error"
       ],
-      "reason": "Original upload failure and retained files captured. Approved per-file error/retry rows remain pending; existing original retry submission is retained."
+      "reason": "Original failed current-file phase shown as Error; previously acknowledged files remain Uploaded. Selected inputs retained; retry uses original submit handler. No per-file retry API or byte-progress signal exists; no extra transport invented.",
+      "observedBuilds": [
+        "e7781dcd092dd7aa0078"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -512,7 +578,9 @@
       "states": [
         "original-files-controls"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -532,9 +600,13 @@
         "docs/approved-ui/stage-2/master/report-rejected-fixture-430.png"
       ],
       "states": [
-        "original-files-controls"
+        "current-form"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "e7781dcd092dd7aa0078"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -556,13 +628,15 @@
       "states": [
         "own-visits-first"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
       "screen": "profile",
       "title": "Мой профиль",
-      "status": "partial",
+      "status": "restored",
       "renderer": "master-profile-summary-v129.js / actual identity and original personal block",
       "verification": "approved-ui-master single identity/unique-data; profile-summary; payout regression",
       "widths": [
@@ -576,15 +650,19 @@
         "docs/approved-ui/stage-2/master/profile-fixture-430.png"
       ],
       "states": [
-        "single-identity"
+        "single-identity-real-destinations"
       ],
-      "reason": "Single identity, actual today/week/month accrual, personal city/phone/district/edit fields restored. Full approved profile menu including shared help/about/settings destinations remains pending."
+      "reason": "One identity, original personal fields, and real personal/schedule/memo/own-claims/login/device destinations. Shared help/about content remains later-stage dependency; no absent actions invented.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
       "screen": "payouts",
       "title": "Мои начисления",
-      "status": "partial",
+      "status": "restored",
       "renderer": "master-money-v130.js / original period, pay and payment rules",
       "verification": "master-money-v130; profile payout regression",
       "widths": [
@@ -598,9 +676,13 @@
         "docs/approved-ui/stage-2/master/payouts-fixture-430.png"
       ],
       "states": [
-        "period-panel-top"
+        "standalone-real-period"
       ],
-      "reason": "Actual period controls and complete original breakdown/paid-data boundary restyled. Approved standalone payouts page composition remains pending; current panel is reachable in profile."
+      "reason": "Standalone full original accrual panel, period controls and order breakdown. Original financial rules and unavailable-paid-data boundary preserved.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -622,7 +704,9 @@
       "states": [
         "categories"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -656,7 +740,9 @@
       "states": [
         "existing-shared"
       ],
-      "reason": "Existing profile edit action and fields retained and captured; full approved personal-data form composition not reconstructed."
+      "reason": "Existing profile edit action and fields retained and captured; full approved personal-data form composition not reconstructed.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -700,9 +786,13 @@
         "docs/approved-ui/stage-2/master/schedule-month-fixture-430.png"
       ],
       "states": [
-        "own-month-first"
+        "flat-own-month"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Canonical flat grid/header/legend, original saved hours/visit counts, and real selected-day summary. Original monthly save and month constraints preserved.",
+      "observedBuilds": [
+        "da56f22c36c3ef2b02bb"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -724,7 +814,9 @@
       "states": [
         "selected-day-first"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -746,7 +838,9 @@
       "states": [
         "reason-only"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -768,7 +862,9 @@
       "states": [
         "deduction-selected"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -836,9 +932,13 @@
         "docs/approved-ui/stage-2/master/report-extras-fixture-430.png"
       ],
       "states": [
-        "original-files-controls"
+        "current-form"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "e7781dcd092dd7aa0078"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -860,7 +960,11 @@
       "states": [
         "form-deduction-summary"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "e7781dcd092dd7aa0078"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -882,7 +986,9 @@
       "states": [
         "search"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     },
     {
       "role": "master",
@@ -904,7 +1010,11 @@
       "states": [
         "failed-fresh-read"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
     },
     {
       "role": "master",
@@ -998,7 +1108,11 @@
       "states": [
         "own-day"
       ],
-      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state."
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
     }
-  ]
+  ],
+  "reviewBase": "5f09d048db08ee6ce9b178761be4cf32dc4bfcdc",
+  "captureVersionPolicy": "Each R1 capture records observedBuild from window.BOS_BUILD.id. Legacy captures retain an explicit unrecorded-version status; no global final-build attribution."
 }
