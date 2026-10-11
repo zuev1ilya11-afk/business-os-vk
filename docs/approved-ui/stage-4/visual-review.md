@@ -23,3 +23,16 @@ All seven manager finance tabs were opened and inspected at 390 and 1440 against
 272 captures; widths 360/390/430/768/1440 for manager/owner essential surfaces and all seven tabs; complete task forms at 390/1440; dispatcher review/control at 390/1440. No document/body overflow greater than 1px, page errors or capture gaps. Every manifest row uses a valid role/screen contract pair and records its real runtime/source. No comparison asserts identical specimen business values; specimen data never enters application runtime.
 
 Intentional differences: all original registry columns, calculation notes, original staff/history/payroll metrics, original archived/report actions and native modal/dialog behavior remain available. Screens are long when those existing data fields require it. Native overlay styling retains its existing narrow outer inset in some management modals. These are not invented actions/data. Separate dispatcher-only Home workspace is not exposed by existing manager/owner role guards: their Home remains the management dashboard, with shared Orders/Schedule/Detail verified separately. Task 5 owns shared system/file/auth/integration/notification/help/personal states. The controller's parked dispatcher desktop unused space / dense visit truncation item remains outside this stage.
+
+
+## Fix round 1 inspection
+
+The preceding source/runtime paragraph describes the original Task 4 capture pass. The manifest now preserves per-image provenance: 87 affected captures at `565e0956c8583e266533` (10 source `4907b14`, 77 source `ddbeaca`), 246 unchanged shots retaining original `4f3606fd602885cd223f`.
+
+| Finding | Fresh actual inspection | Result |
+|---|---|---|
+| I1 secondary dashboard aggregates | Manager/owner disclosure; manager 360/390/430/768/1440 and owner 390/1440 captures | Four primary KPIs retained. Original active master ratio, correction count, available company share, base-only average accessible under secondary disclosure. |
+| I2 report review | Manager 360/390/430/768/1440; owner/dispatcher 390/1440 initial/middle/end short and long captures | Docs/result left, existing decision/archive right on desktop; mobile decisions visible at initial and every scroll. Actual long fixture shows 15 photo buttons and 14 saved deductions. Existing empty reason validation and keyboard actions verified. Native overlay retained. |
+| I3 finance-master | Both actual manager and owner 390/1440 images individually inspected against all four matching approved PNGs | Heading, original close button and four joined KPIs visible; accrued figure separate from explicit actual paid —. Restored inherited KPI padding/dividers. Original chart/detail order table below retained. |
+
+Old finance-master images did not show the detail metrics and are superseded. Coverage now requires explicit viewport evidence for master detail; mere layout visibility no longer qualifies. Semantic long-capture readiness respects the original modal refresh guard. No invented bank transfers, file metadata or saved work quantities; synthetic media remains visibly unavailable.

@@ -79,7 +79,7 @@ Each row is a role/screen contract, not a PNG count. Finance fields retain the e
 | manager | claim-detail | deferred-to-task-5 | existing renderer retained; Task 5 integration/shared-state work | Task 5 |
 | manager | claim-create | deferred-to-task-5 | existing renderer retained; Task 5 integration/shared-state work | Task 5 |
 | manager | review | implemented | report-review-patch.js; report-review-runtime-v30.js | 360, 390, 430, 768, 1440 |
-| manager | review-reject | implemented | report-review-patch.js; report-review-runtime-v30.js | 390, 1440 |
+| manager | review-reject | implemented | report-review-patch.js; report-review-runtime-v30.js | 360, 390, 430, 768, 1440 |
 | manager | avito | deferred-to-task-5 | existing renderer retained; Task 5 integration/shared-state work | Task 5 |
 | manager | avito-thread | deferred-to-task-5 | existing renderer retained; Task 5 integration/shared-state work | Task 5 |
 | manager | avito-lead | deferred-to-task-5 | existing renderer retained; Task 5 integration/shared-state work | Task 5 |

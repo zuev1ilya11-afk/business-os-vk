@@ -21,15 +21,85 @@
         {
           "width": 390,
           "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-390.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-390-scrolled-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-390-scrolled-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-390-long-initial.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-390-long-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-390-long-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         },
         {
           "width": 1440,
           "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-1440.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-1440-scrolled-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-1440-scrolled-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-1440-long-initial.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-1440-long-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-1440-long-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         }
       ],
@@ -54,16 +124,30 @@
       "captures": [
         {
           "width": 390,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-reject-fixture-390-long-reason.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
           "path": "docs/approved-ui/stage-4/dispatcher/review-reject-fixture-390.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-reject-fixture-1440-long-reason.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         },
         {
           "width": 1440,
           "path": "docs/approved-ui/stage-4/dispatcher/review-reject-fixture-1440.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         }
       ],
@@ -89,36 +173,71 @@
         {
           "width": 360,
           "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-360.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "4907b14ce52a4c1947a971bdbcd59a69b4600d55",
+          "synthetic": true
+        },
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-360-secondary.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "4907b14ce52a4c1947a971bdbcd59a69b4600d55",
           "synthetic": true
         },
         {
           "width": 390,
           "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-390.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "4907b14ce52a4c1947a971bdbcd59a69b4600d55",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-390-secondary.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "4907b14ce52a4c1947a971bdbcd59a69b4600d55",
           "synthetic": true
         },
         {
           "width": 430,
           "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-430.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "4907b14ce52a4c1947a971bdbcd59a69b4600d55",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-430-secondary.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "4907b14ce52a4c1947a971bdbcd59a69b4600d55",
           "synthetic": true
         },
         {
           "width": 768,
           "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-768.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "4907b14ce52a4c1947a971bdbcd59a69b4600d55",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-768-secondary.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "4907b14ce52a4c1947a971bdbcd59a69b4600d55",
           "synthetic": true
         },
         {
           "width": 1440,
           "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-1440.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "4907b14ce52a4c1947a971bdbcd59a69b4600d55",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-1440-secondary.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "4907b14ce52a4c1947a971bdbcd59a69b4600d55",
           "synthetic": true
         }
       ],
@@ -820,15 +939,15 @@
         {
           "width": 390,
           "path": "docs/approved-ui/stage-4/manager/finance-master-fixture-390.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         },
         {
           "width": 1440,
           "path": "docs/approved-ui/stage-4/manager/finance-master-fixture-1440.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         }
       ],
@@ -837,6 +956,7 @@
         "role-scoped suites in task-4-report.md"
       ],
       "dependencies": [
+        "Evidence requires heading, existing close action and detail KPIs all inside the viewport; a layout-visible off-screen marker is insufficient.",
         "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
       ]
     },
@@ -944,13 +1064,6 @@
           "synthetic": true
         },
         {
-          "width": 390,
-          "path": "docs/approved-ui/stage-4/owner/dashboard-fixture-390.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
-          "synthetic": true
-        },
-        {
           "width": 430,
           "path": "docs/approved-ui/stage-4/owner/dashboard-fixture-430.png",
           "runtimeBuild": "4f3606fd602885cd223f",
@@ -965,10 +1078,31 @@
           "synthetic": true
         },
         {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/dashboard-fixture-390.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/dashboard-fixture-390-secondary.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
           "width": 1440,
           "path": "docs/approved-ui/stage-4/owner/dashboard-fixture-1440.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/dashboard-fixture-1440-secondary.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         }
       ],
@@ -2508,36 +2642,211 @@
         {
           "width": 360,
           "path": "docs/approved-ui/stage-4/manager/review-fixture-360.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-360-scrolled-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-360-scrolled-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-360-long-initial.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-360-long-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-360-long-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         },
         {
           "width": 390,
           "path": "docs/approved-ui/stage-4/manager/review-fixture-390.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-390-scrolled-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-390-scrolled-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-390-long-initial.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-390-long-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-390-long-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         },
         {
           "width": 430,
           "path": "docs/approved-ui/stage-4/manager/review-fixture-430.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-430-scrolled-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-430-scrolled-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-430-long-initial.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-430-long-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-430-long-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         },
         {
           "width": 768,
           "path": "docs/approved-ui/stage-4/manager/review-fixture-768.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-768-scrolled-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-768-scrolled-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-768-long-initial.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-768-long-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-768-long-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         },
         {
           "width": 1440,
           "path": "docs/approved-ui/stage-4/manager/review-fixture-1440.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-1440-scrolled-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-1440-scrolled-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-1440-long-initial.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-1440-long-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-1440-long-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         }
       ],
@@ -2561,17 +2870,52 @@
       "stage": 4,
       "captures": [
         {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/review-reject-fixture-360-long-reason.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/review-reject-fixture-390-long-reason.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
           "width": 390,
           "path": "docs/approved-ui/stage-4/manager/review-reject-fixture-390.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/review-reject-fixture-430-long-reason.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/review-reject-fixture-768-long-reason.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/review-reject-fixture-1440-long-reason.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         },
         {
           "width": 1440,
           "path": "docs/approved-ui/stage-4/manager/review-reject-fixture-1440.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         }
       ],
@@ -3597,13 +3941,6 @@
           "synthetic": true
         },
         {
-          "width": 390,
-          "path": "docs/approved-ui/stage-4/owner/review-fixture-390.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
-          "synthetic": true
-        },
-        {
           "width": 430,
           "path": "docs/approved-ui/stage-4/owner/review-fixture-430.png",
           "runtimeBuild": "4f3606fd602885cd223f",
@@ -3618,10 +3955,87 @@
           "synthetic": true
         },
         {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-390.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-390-scrolled-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-390-scrolled-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-390-long-initial.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-390-long-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-390-long-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
           "width": 1440,
           "path": "docs/approved-ui/stage-4/owner/review-fixture-1440.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-1440-scrolled-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-1440-scrolled-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-1440-long-initial.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-1440-long-middle.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-1440-long-end.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         }
       ],
@@ -3646,16 +4060,30 @@
       "captures": [
         {
           "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/review-reject-fixture-390-long-reason.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 390,
           "path": "docs/approved-ui/stage-4/owner/review-reject-fixture-390.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/review-reject-fixture-1440-long-reason.png",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         },
         {
           "width": 1440,
           "path": "docs/approved-ui/stage-4/owner/review-reject-fixture-1440.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         }
       ],
@@ -4524,15 +4952,15 @@
         {
           "width": 390,
           "path": "docs/approved-ui/stage-4/owner/finance-master-fixture-390.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         },
         {
           "width": 1440,
           "path": "docs/approved-ui/stage-4/owner/finance-master-fixture-1440.png",
-          "runtimeBuild": "4f3606fd602885cd223f",
-          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "runtimeBuild": "565e0956c8583e266533",
+          "commit": "ddbeaca2e83bbfeae6a4c6960049285ba8928210",
           "synthetic": true
         }
       ],
@@ -4541,6 +4969,7 @@
         "role-scoped suites in task-4-report.md"
       ],
       "dependencies": [
+        "Evidence requires heading, existing close action and detail KPIs all inside the viewport; a layout-visible off-screen marker is insufficient.",
         "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
       ]
     },
