@@ -1,0 +1,33 @@
+{
+  "reportPath": "/workspace/scratch/73e5936a7e6d/recovery/task6-memo-after-results.json",
+  "reportSha256": "e1f5e4989cee9c213d0d8fffe02584f534a52bbb7372fa2e6e95c643648b17d3",
+  "stats": {
+    "startTime": "2026-10-11T14:21:21.442Z",
+    "duration": 4386.974,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "cases": 1,
+  "outcomes": {
+    "expected": 1
+  },
+  "globalErrors": [],
+  "failures": [],
+  "skipped": [],
+  "allCases": [
+    {
+      "file": "approved-master-memo.spec.js",
+      "line": 2,
+      "title": "master profile memo destination exposes four original material handlers",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 2602
+    }
+  ]
+}
