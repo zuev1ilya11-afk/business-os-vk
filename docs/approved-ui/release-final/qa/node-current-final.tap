@@ -1,0 +1,4461 @@
+TAP version 13
+# Subtest: staff-admin-api/listStaff reaches direct after explicit denials and stalled reserve
+ok 1 - staff-admin-api/listStaff reaches direct after explicit denials and stalled reserve
+  ---
+  duration_ms: 18.158773
+  type: 'test'
+  ...
+# Subtest: integration-api/listIntegrations reaches direct after explicit denials and stalled reserve
+ok 2 - integration-api/listIntegrations reaches direct after explicit denials and stalled reserve
+  ---
+  duration_ms: 3.782749
+  type: 'test'
+  ...
+# Subtest: integration-api/testMapping reaches direct after explicit denials and stalled reserve
+ok 3 - integration-api/testMapping reaches direct after explicit denials and stalled reserve
+  ---
+  duration_ms: 6.38724
+  type: 'test'
+  ...
+# Subtest: integration-api/listOrders reaches direct after explicit denials and stalled reserve
+ok 4 - integration-api/listOrders reaches direct after explicit denials and stalled reserve
+  ---
+  duration_ms: 2.594726
+  type: 'test'
+  ...
+# Subtest: integration-api/getOrder reaches direct after explicit denials and stalled reserve
+ok 5 - integration-api/getOrder reaches direct after explicit denials and stalled reserve
+  ---
+  duration_ms: 2.700676
+  type: 'test'
+  ...
+# Subtest: setCredentials never replays an uncertain reserve write
+ok 6 - setCredentials never replays an uncertain reserve write
+  ---
+  duration_ms: 5.742085
+  type: 'test'
+  ...
+# Subtest: createIntegration never replays an uncertain reserve write
+ok 7 - createIntegration never replays an uncertain reserve write
+  ---
+  duration_ms: 3.459103
+  type: 'test'
+  ...
+# Subtest: upsertOrder never replays an uncertain reserve write
+ok 8 - upsertOrder never replays an uncertain reserve write
+  ---
+  duration_ms: 3.397793
+  type: 'test'
+  ...
+# Subtest: unknownWrite never replays an uncertain reserve write
+ok 9 - unknownWrite never replays an uncertain reserve write
+  ---
+  duration_ms: 4.150532
+  type: 'test'
+  ...
+# (node:13) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Drive archive uses jpg for image/jpeg act, measurement and photo without changing bytes
+ok 10 - Drive archive uses jpg for image/jpeg act, measurement and photo without changing bytes
+  ---
+  duration_ms: 178.898346
+  type: 'test'
+  ...
+# Subtest: Drive archive uses png for image/png act, measurement and photo without changing bytes
+ok 11 - Drive archive uses png for image/png act, measurement and photo without changing bytes
+  ---
+  duration_ms: 19.211808
+  type: 'test'
+  ...
+# Subtest: Drive archive uses webp for image/webp act, measurement and photo without changing bytes
+ok 12 - Drive archive uses webp for image/webp act, measurement and photo without changing bytes
+  ---
+  duration_ms: 17.219829
+  type: 'test'
+  ...
+# Subtest: Drive archive uses pdf for application/pdf act, measurement and photo without changing bytes
+ok 13 - Drive archive uses pdf for application/pdf act, measurement and photo without changing bytes
+  ---
+  duration_ms: 16.837355
+  type: 'test'
+  ...
+# Subtest: Drive archive uses jpg for IMAGE/JPEG act, measurement and photo without changing bytes
+ok 14 - Drive archive uses jpg for IMAGE/JPEG act, measurement and photo without changing bytes
+  ---
+  duration_ms: 13.192869
+  type: 'test'
+  ...
+# (node:14) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: incomplete or unusable Drive receipt never marks an archive complete: {"ok":true}
+ok 15 - incomplete or unusable Drive receipt never marks an archive complete: {"ok":true}
+  ---
+  duration_ms: 457.616599
+  type: 'test'
+  ...
+# Subtest: incomplete or unusable Drive receipt never marks an archive complete: {"ok":true,"drive_folder_url":""}
+ok 16 - incomplete or unusable Drive receipt never marks an archive complete: {"ok":true,"drive_folder_url":""}
+  ---
+  duration_ms: 28.843092
+  type: 'test'
+  ...
+# Subtest: incomplete or unusable Drive receipt never marks an archive complete: {"ok":true,"drive_folder_url":"javascript:alert(1)"}
+ok 17 - incomplete or unusable Drive receipt never marks an archive complete: {"ok":true,"drive_folder_url":"javascript:alert(1)"}
+  ---
+  duration_ms: 61.331531
+  type: 'test'
+  ...
+# Subtest: Drive headers timeout aborts once and preserves the pending report
+ok 18 - Drive headers timeout aborts once and preserves the pending report
+  ---
+  duration_ms: 21.229408
+  type: 'test'
+  ...
+# Subtest: Drive body timeout aborts once and preserves the pending report
+ok 19 - Drive body timeout aborts once and preserves the pending report
+  ---
+  duration_ms: 17.220761
+  type: 'test'
+  ...
+# Subtest: attachment time consumes one shared archive budget; expired work never reaches Drive
+ok 20 - attachment time consumes one shared archive budget; expired work never reaches Drive
+  ---
+  duration_ms: 7.227381
+  type: 'test'
+  ...
+# Subtest: approval headers timeout cannot complete or replay the report
+ok 21 - approval headers timeout cannot complete or replay the report
+  ---
+  duration_ms: 24.654088
+  type: 'test'
+  ...
+# Subtest: approval body timeout cannot complete or replay the report
+ok 22 - approval body timeout cannot complete or replay the report
+  ---
+  duration_ms: 15.984064
+  type: 'test'
+  ...
+# Subtest: rejection and archived approval do not start archive requests or deadline timers
+ok 23 - rejection and archived approval do not start archive requests or deadline timers
+  ---
+  duration_ms: 23.959569
+  type: 'test'
+  ...
+# Subtest: archive timeout response reaches approval without a second send or a completion write
+ok 24 - archive timeout response reaches approval without a second send or a completion write
+  ---
+  duration_ms: 11.627908
+  type: 'test'
+  ...
+# Subtest: mandatory VK onboarding uses staff invites, not phone linking
+ok 25 - mandatory VK onboarding uses staff invites, not phone linking
+  ---
+  duration_ms: 1.571698
+  type: 'test'
+  ...
+# Subtest: database migration guards direct VK linking and keeps redeem atomic
+ok 26 - database migration guards direct VK linking and keeps redeem atomic
+  ---
+  duration_ms: 0.388656
+  type: 'test'
+  ...
+# Subtest: mini-app API rejects legacy registerByPhone instead of linking staff
+ok 27 - mini-app API rejects legacy registerByPhone instead of linking staff
+  ---
+  duration_ms: 0.286672
+  type: 'test'
+  ...
+# (node:43) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Avito role/session gate precedes every provider request; status never exposes credentials
+ok 28 - Avito role/session gate precedes every provider request; status never exposes credentials
+  ---
+  duration_ms: 170.987155
+  type: 'test'
+  ...
+# Subtest: chat normalization, pagination and token reuse
+ok 29 - chat normalization, pagination and token reuse
+  ---
+  duration_ms: 40.930606
+  type: 'test'
+  ...
+# Subtest: 401 on GET renews once; no unbounded retry
+ok 30 - 401 on GET renews once; no unbounded retry
+  ---
+  duration_ms: 101.086321
+  type: 'test'
+  ...
+# Subtest: missing server credentials cannot be supplied by frontend
+ok 31 - missing server credentials cannot be supplied by frontend
+  ---
+  duration_ms: 8.647605
+  type: 'test'
+  ...
+# Subtest: provider failures are sanitized; rate limit preserved; send never retries
+ok 32 - provider failures are sanitized; rate limit preserved; send never retries
+  ---
+  duration_ms: 107.622248
+  type: 'test'
+  ...
+# Subtest: timeout aborts request and returns a readable error
+ok 33 - timeout aborts request and returns a readable error
+  ---
+  duration_ms: 5008.110013
+  type: 'test'
+  ...
+# Subtest: send payload and message direction; invalid input causes no send
+ok 34 - send payload and message direction; invalid input causes no send
+  ---
+  duration_ms: 35.190118
+  type: 'test'
+  ...
+# Subtest: sync only updates metadata on linked orders, never creates or overwrites business data
+ok 35 - sync only updates metadata on linked orders, never creates or overwrites business data
+  ---
+  duration_ms: 26.798775
+  type: 'test'
+  ...
+# Subtest: failed read does not clear local unread
+ok 36 - failed read does not clear local unread
+  ---
+  duration_ms: 16.450328
+  type: 'test'
+  ...
+# Subtest: Avito createOrder is linked and idempotent across dispatchers, payroll unchanged
+ok 37 - Avito createOrder is linked and idempotent across dispatchers, payroll unchanged
+  ---
+  duration_ms: 27.700788
+  type: 'test'
+  ...
+# Subtest: connect validates provider access, stores no secrets, disconnect revokes local access
+ok 38 - connect validates provider access, stores no secrets, disconnect revokes local access
+  ---
+  duration_ms: 34.348622
+  type: 'test'
+  ...
+# Subtest: expired token is renewed and simultaneous order creates converge
+ok 39 - expired token is renewed and simultaneous order creates converge
+  ---
+  duration_ms: 59.539857
+  type: 'test'
+  ...
+# Subtest: Avito gateway failures never replay a send through direct fallback
+ok 40 - Avito gateway failures never replay a send through direct fallback
+  ---
+  duration_ms: 15.756945
+  type: 'test'
+  ...
+# Subtest: opaque Avito IDs survive history/read/send URLs and linked order deduplication
+ok 41 - opaque Avito IDs survive history/read/send URLs and linked order deduplication
+  ---
+  duration_ms: 178.469748
+  type: 'test'
+  ...
+# Subtest: invalid opaque IDs still fail before provider traffic and order writes
+ok 42 - invalid opaque IDs still fail before provider traffic and order writes
+  ---
+  duration_ms: 59.260057
+  type: 'test'
+  ...
+# Subtest: Messenger image variants retain captions and select a safe preview and original
+ok 43 - Messenger image variants retain captions and select a safe preview and original
+  ---
+  duration_ms: 7.850111
+  type: 'test'
+  ...
+# Subtest: invalid, empty and non-provider image URLs never reach the browser
+ok 44 - invalid, empty and non-provider image URLs never reach the browser
+  ---
+  duration_ms: 9.126191
+  type: 'test'
+  ...
+# Subtest: photo-only last messages get a readable dialog preview
+ok 45 - photo-only last messages get a readable dialog preview
+  ---
+  duration_ms: 7.522361
+  type: 'test'
+  ...
+# (node:51) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: provided Avito tariffs stay starting prices and do not inherit the shop minimum
+ok 46 - provided Avito tariffs stay starting prices and do not inherit the shop minimum
+  ---
+  duration_ms: 3.12352
+  type: 'test'
+  ...
+# Subtest: greeting, missing facts, malformed phone and unpriced ambiguity cannot become an agreed request
+ok 47 - greeting, missing facts, malformed phone and unpriced ambiguity cannot become an agreed request
+  ---
+  duration_ms: 27.081096
+  type: 'test'
+  ...
+# Subtest: summary preserves starting price without promising a total or an available master
+ok 48 - summary preserves starting price without promising a total or an available master
+  ---
+  duration_ms: 0.686342
+  type: 'test'
+  ...
+# Subtest: only a fresh standalone confirmation of the last actual summary can create an order
+ok 49 - only a fresh standalone confirmation of the last actual summary can create an order
+  ---
+  duration_ms: 0.800971
+  type: 'test'
+  ...
+# Subtest: operator messages pause the assistant while its own delivered messages do not
+ok 50 - operator messages pause the assistant while its own delivered messages do not
+  ---
+  duration_ms: 0.876566
+  type: 'test'
+  ...
+# Subtest: extracted facts must cite actual incoming text; model cannot insert new customer data
+ok 51 - extracted facts must cite actual incoming text; model cannot insert new customer data
+  ---
+  duration_ms: 2.492534
+  type: 'test'
+  ...
+# Subtest: model has structured fact output and no sending, money or order tools
+ok 52 - model has structured fact output and no sending, money or order tools
+  ---
+  duration_ms: 1.212529
+  type: 'test'
+  ...
+# Subtest: worker rejects unauthenticated callers and probe never exposes secrets
+ok 53 - worker rejects unauthenticated callers and probe never exposes secrets
+  ---
+  duration_ms: 71.694172
+  type: 'test'
+  ...
+# Subtest: disabled runtime and missing model credential perform no provider requests
+ok 54 - disabled runtime and missing model credential perform no provider requests
+  ---
+  duration_ms: 20.958071
+  type: 'test'
+  ...
+# Subtest: durable sent input is not answered again on the next poll
+ok 55 - durable sent input is not answered again on the next poll
+  ---
+  duration_ms: 83.765199
+  type: 'test'
+  ...
+# Subtest: uncertain Avito send is recorded and never automatically replayed
+ok 56 - uncertain Avito send is recorded and never automatically replayed
+  ---
+  duration_ms: 19.370747
+  type: 'test'
+  ...
+# Subtest: old chats are not contacted and human replies suppress automatic sending
+ok 57 - old chats are not contacted and human replies suppress automatic sending
+  ---
+  duration_ms: 20.490589
+  type: 'test'
+  ...
+# Subtest: new input received during generation invalidates the pending reply
+ok 58 - new input received during generation invalidates the pending reply
+  ---
+  duration_ms: 30.787218
+  type: 'test'
+  ...
+# Subtest: complete request, explicit client confirmation and repeated polls create one order
+ok 59 - complete request, explicit client confirmation and repeated polls create one order
+  ---
+  duration_ms: 56.275106
+  type: 'test'
+  ...
+# Subtest: geography cannot be silently mapped from Moscow or an unspecified town into the service area
+ok 60 - geography cannot be silently mapped from Moscow or an unspecified town into the service area
+  ---
+  duration_ms: 0.822703
+  type: 'test'
+  ...
+# Subtest: Avito chats: explicit platform rejection reaches one business handler
+ok 61 - Avito chats: explicit platform rejection reaches one business handler
+  ---
+  duration_ms: 22.255696
+  type: 'test'
+  ...
+# Subtest: Avito sendMessage: explicit platform rejection reaches one business handler
+ok 62 - Avito sendMessage: explicit platform rejection reaches one business handler
+  ---
+  duration_ms: 3.816635
+  type: 'test'
+  ...
+# Subtest: Avito provider 402 is returned unchanged without replay
+ok 63 - Avito provider 402 is returned unchanged without replay
+  ---
+  duration_ms: 1.952007
+  type: 'test'
+  ...
+# Subtest: Avito provider 429 is returned unchanged without replay
+ok 64 - Avito provider 429 is returned unchanged without replay
+  ---
+  duration_ms: 1.202271
+  type: 'test'
+  ...
+# Subtest: Avito provider 502 is returned unchanged without replay
+ok 65 - Avito provider 502 is returned unchanged without replay
+  ---
+  duration_ms: 2.777034
+  type: 'test'
+  ...
+# Subtest: Avito provider 503 is returned unchanged without replay
+ok 66 - Avito provider 503 is returned unchanged without replay
+  ---
+  duration_ms: 1.217145
+  type: 'test'
+  ...
+# Subtest: Avito provider 504 is returned unchanged without replay
+ok 67 - Avito provider 504 is returned unchanged without replay
+  ---
+  duration_ms: 1.483144
+  type: 'test'
+  ...
+# Subtest: Avito uncertain transport failure after platform denial never sends again
+ok 68 - Avito uncertain transport failure after platform denial never sends again
+  ---
+  duration_ms: 1.973451
+  type: 'test'
+  ...
+# Subtest: Avito preserves Request body, headers and caller abort across safe fallback
+ok 69 - Avito preserves Request body, headers and caller abort across safe fallback
+  ---
+  duration_ms: 17.365988
+  type: 'test'
+  ...
+# Subtest: drift gate accepts exact snapshot and rejects omitted, changed and unexpected deployment data
+ok 70 - drift gate accepts exact snapshot and rejects omitted, changed and unexpected deployment data
+  ---
+  duration_ms: 1.850087
+  type: 'test'
+  ...
+# Subtest: drift gate rejects rollback of either captured administration handler in the repository
+ok 71 - drift gate rejects rollback of either captured administration handler in the repository
+  ---
+  duration_ms: 3.536166
+  type: 'test'
+  ...
+# Subtest: build is deterministic, discovers new assets and rejects stale generated files
+ok 72 - build is deterministic, discovers new assets and rejects stale generated files
+  ---
+  duration_ms: 983.68162
+  type: 'test'
+  ...
+# Subtest: published shell, worker and every asset share the generated build
+ok 73 - published shell, worker and every asset share the generated build
+  ---
+  duration_ms: 23.235562
+  type: 'test'
+  ...
+# (node:116) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: control deadlines are Moscow wall time independently of device timezone
+ok 74 - control deadlines are Moscow wall time independently of device timezone
+  ---
+  duration_ms: 1.538162
+  type: 'test'
+  ...
+# Subtest: control rejects impossible calendars, hours and unspecified dates
+ok 75 - control rejects impossible calendars, hours and unspecified dates
+  ---
+  duration_ms: 0.389997
+  type: 'test'
+  ...
+# Subtest: control list accepts existing owner session without reading push secrets
+ok 76 - control list accepts existing owner session without reading push secrets
+  ---
+  duration_ms: 95.620898
+  type: 'test'
+  ...
+# Subtest: control list accepts existing manager session without reading push secrets
+ok 77 - control list accepts existing manager session without reading push secrets
+  ---
+  duration_ms: 7.550738
+  type: 'test'
+  ...
+# Subtest: control list accepts existing dispatcher session without reading push secrets
+ok 78 - control list accepts existing dispatcher session without reading push secrets
+  ---
+  duration_ms: 9.836621
+  type: 'test'
+  ...
+# Subtest: control list accepts existing master session without reading push secrets
+ok 79 - control list accepts existing master session without reading push secrets
+  ---
+  duration_ms: 8.02229
+  type: 'test'
+  ...
+# Subtest: control rejects forged and missing sessions before task access
+ok 80 - control rejects forged and missing sessions before task access
+  ---
+  duration_ms: 18.140273
+  type: 'test'
+  ...
+# Subtest: control actor and action come from verified server state, not client identity
+ok 81 - control actor and action come from verified server state, not client identity
+  ---
+  duration_ms: 5.692215
+  type: 'test'
+  ...
+# Subtest: master cannot assign or clear tasks
+ok 82 - master cannot assign or clear tasks
+  ---
+  duration_ms: 16.399654
+  type: 'test'
+  ...
+# Subtest: task conflicts retain explicit 409 rather than reporting false success
+ok 83 - task conflicts retain explicit 409 rather than reporting false success
+  ---
+  duration_ms: 7.304119
+  type: 'test'
+  ...
+# Subtest: Dispatch Board v2.1 loads and is syntactically valid
+ok 84 - Dispatch Board v2.1 loads and is syntactically valid
+  ---
+  duration_ms: 1.762563
+  type: 'test'
+  ...
+# Subtest: Dispatch Board v2.1 contains daily operations without payroll changes
+ok 85 - Dispatch Board v2.1 contains daily operations without payroll changes
+  ---
+  duration_ms: 0.598132
+  type: 'test'
+  ...
+# Subtest: dispatcher board v2.3 is syntactically valid and loaded after v2.2
+ok 86 - dispatcher board v2.3 is syntactically valid and loaded after v2.2
+  ---
+  duration_ms: 2.24527
+  type: 'test'
+  ...
+# Subtest: v2.3 keeps assignment on the existing safe dispatch move path
+ok 87 - v2.3 keeps assignment on the existing safe dispatch move path
+  ---
+  duration_ms: 0.580341
+  type: 'test'
+  ...
+# Subtest: v2.3 is desktop-only and preserves legacy views
+ok 88 - v2.3 is desktop-only and preserves legacy views
+  ---
+  duration_ms: 0.462257
+  type: 'test'
+  ...
+# Subtest: Dispatch Board v2 is loaded and syntactically valid
+ok 89 - Dispatch Board v2 is loaded and syntactically valid
+  ---
+  duration_ms: 2.651299
+  type: 'test'
+  ...
+# Subtest: Dispatch Board keeps audited order selectors and desktop fallback
+ok 90 - Dispatch Board keeps audited order selectors and desktop fallback
+  ---
+  duration_ms: 0.811874
+  type: 'test'
+  ...
+# Subtest: Dispatch Board reuses existing APIs and protects requested reschedules
+ok 91 - Dispatch Board reuses existing APIs and protects requested reschedules
+  ---
+  duration_ms: 0.543883
+  type: 'test'
+  ...
+# Subtest: Hands payout remains 85% then 65%; direct source uses the approved 60%
+ok 92 - Hands payout remains 85% then 65%; direct source uses the approved 60%
+  ---
+  duration_ms: 2.824643
+  type: 'test'
+  ...
+# Subtest: completed dispatcher orders remain visible in horizontal schedule
+ok 93 - completed dispatcher orders remain visible in horizontal schedule
+  ---
+  duration_ms: 1.920839
+  type: 'test'
+  ...
+# Subtest: PWA loads horizontal schedule through unified BUILD_ID assets
+ok 94 - PWA loads horizontal schedule through unified BUILD_ID assets
+  ---
+  duration_ms: 0.558852
+  type: 'test'
+  ...
+# Subtest: dispatch control v2.4 is syntactically valid and loaded after day plan
+ok 95 - dispatch control v2.4 is syntactically valid and loaded after day plan
+  ---
+  duration_ms: 1.687184
+  type: 'test'
+  ...
+# Subtest: v2.4 classifies operational problems without changing orders
+ok 96 - v2.4 classifies operational problems without changing orders
+  ---
+  duration_ms: 0.474893
+  type: 'test'
+  ...
+# Subtest: v2.4 stays dispatcher desktop-only and keeps legacy views
+ok 97 - v2.4 stays dispatcher desktop-only and keeps legacy views
+  ---
+  duration_ms: 0.2342
+  type: 'test'
+  ...
+# Subtest: desktop dispatcher runtime is loaded and syntactically valid
+ok 98 - desktop dispatcher runtime is loaded and syntactically valid
+  ---
+  duration_ms: 2.401783
+  type: 'test'
+  ...
+# Subtest: desktop dispatcher exposes the core operational queue
+ok 99 - desktop dispatcher exposes the core operational queue
+  ---
+  duration_ms: 1.060571
+  type: 'test'
+  ...
+# Subtest: desktop dispatcher keeps existing backend actions and mobile fallback
+ok 100 - desktop dispatcher keeps existing backend actions and mobile fallback
+  ---
+  duration_ms: 2.032271
+  type: 'test'
+  ...
+# Subtest: desktop dispatcher preserves legacy order selectors used by audited workflows
+ok 101 - desktop dispatcher preserves legacy order selectors used by audited workflows
+  ---
+  duration_ms: 0.792405
+  type: 'test'
+  ...
+# dispatcher horizontal schedule v190 source checks passed
+# Subtest: tests/dispatcher-horizontal-schedule-v190.test.cjs
+ok 18 - tests/dispatcher-horizontal-schedule-v190.test.cjs
+  ---
+  duration_ms: 104.721737
+  type: 'test'
+  ...
+# Subtest: dispatcher management order exposes editable date and time
+ok 103 - dispatcher management order exposes editable date and time
+  ---
+  duration_ms: 1.59304
+  type: 'test'
+  ...
+# Subtest: quick save persists scheduled date and time through updateOrder
+ok 104 - quick save persists scheduled date and time through updateOrder
+  ---
+  duration_ms: 0.35212
+  type: 'test'
+  ...
+# Subtest: dispatcher capability allows only supported roles, independently of preview flags
+ok 105 - dispatcher capability allows only supported roles, independently of preview flags
+  ---
+  duration_ms: 4.128071
+  type: 'test'
+  ...
+# (node:247) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: dispatcher reschedule runtime is loaded and syntactically valid
+ok 106 - dispatcher reschedule runtime is loaded and syntactically valid
+  ---
+  duration_ms: 1.598855
+  type: 'test'
+  ...
+# Subtest: dispatcher resolves reschedule without changing money or master
+ok 107 - dispatcher resolves reschedule without changing money or master
+  ---
+  duration_ms: 101.024918
+  type: 'test'
+  ...
+# Subtest: master cannot resolve a reschedule request
+ok 108 - master cannot resolve a reschedule request
+  ---
+  duration_ms: 10.980383
+  type: 'test'
+  ...
+# Subtest: smart dispatcher script is loaded and syntactically valid
+ok 109 - smart dispatcher script is loaded and syntactically valid
+  ---
+  duration_ms: 1.984234
+  type: 'test'
+  ...
+# Subtest: smart dispatcher ranks by availability, load and optional context
+ok 110 - smart dispatcher ranks by availability, load and optional context
+  ---
+  duration_ms: 0.36877
+  type: 'test'
+  ...
+# Subtest: smart dispatcher requires confirmation and delegates assignment to approved board move
+ok 111 - smart dispatcher requires confirmation and delegates assignment to approved board move
+  ---
+  duration_ms: 0.419599
+  type: 'test'
+  ...
+# Drive order number sync wiring ok
+# Subtest: tests/drive-order-number-sync-static.test.cjs
+ok 23 - tests/drive-order-number-sync-static.test.cjs
+  ---
+  duration_ms: 133.20602
+  type: 'test'
+  ...
+# (node:283) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Drive archive uses the same visible Hands order number as the app
+ok 113 - Drive archive uses the same visible Hands order number as the app
+  ---
+  duration_ms: 150.887628
+  type: 'test'
+  ...
+# Subtest: Drive bridge renames a legacy internal-id folder to the app order number
+ok 114 - Drive bridge renames a legacy internal-id folder to the app order number
+  ---
+  duration_ms: 2.923936
+  type: 'test'
+  ...
+# Subtest: refresh updates both employee modal and underlying team
+ok 115 - refresh updates both employee modal and underlying team
+  ---
+  duration_ms: 7.880422
+  type: 'test'
+  ...
+# Subtest: refresh replaces stale master preview employee
+ok 116 - refresh replaces stale master preview employee
+  ---
+  duration_ms: 3.07988
+  type: 'test'
+  ...
+# Subtest: refresh does not overwrite a mutation completed while bootstrap was in flight
+ok 117 - refresh does not overwrite a mutation completed while bootstrap was in flight
+  ---
+  duration_ms: 3.311483
+  type: 'test'
+  ...
+# Subtest: refresh preserves an unsaved inline dispatch date
+ok 118 - refresh preserves an unsaved inline dispatch date
+  ---
+  duration_ms: 1.967342
+  type: 'test'
+  ...
+# Subtest: a default select option does not prevent background refresh
+ok 119 - a default select option does not prevent background refresh
+  ---
+  duration_ms: 1.941
+  type: 'test'
+  ...
+# Subtest: employee creation stays owner-only across UI and API
+ok 120 - employee creation stays owner-only across UI and API
+  ---
+  duration_ms: 1.263865
+  type: 'test'
+  ...
+# Subtest: managers keep staff access administration without employee creation
+ok 121 - managers keep staff access administration without employee creation
+  ---
+  duration_ms: 0.330775
+  type: 'test'
+  ...
+# Subtest: financial page has a read model
+ok 122 - financial page has a read model
+  ---
+  duration_ms: 2.181028
+  type: 'test'
+  ...
+# Subtest: stored payouts including zero are never recalculated; extras counted once
+ok 123 - stored payouts including zero are never recalculated; extras counted once
+  ---
+  duration_ms: 4.329359
+  type: 'test'
+  ...
+# Subtest: Hands uses stored master pay and moves the remaining base amount to company share
+ok 124 - Hands uses stored master pay and moves the remaining base amount to company share
+  ---
+  duration_ms: 0.533704
+  type: 'test'
+  ...
+# Subtest: missing historical payout stays unknown and canceled approved orders are excluded
+ok 125 - missing historical payout stays unknown and canceled approved orders are excluded
+  ---
+  duration_ms: 0.636231
+  type: 'test'
+  ...
+# Subtest: calendar bounds use Moscow, handle leap year, quarter, custom and previous periods
+ok 126 - calendar bounds use Moscow, handle leap year, quarter, custom and previous periods
+  ---
+  duration_ms: 2.04231
+  type: 'test'
+  ...
+# Subtest: master identity uses staff IDs and preserves inactive or unassigned groups
+ok 127 - master identity uses staff IDs and preserves inactive or unassigned groups
+  ---
+  duration_ms: 1.832452
+  type: 'test'
+  ...
+# Subtest: work names match catalog exactly and multi-work money is not double counted
+ok 128 - work names match catalog exactly and multi-work money is not double counted
+  ---
+  duration_ms: 2.342485
+  type: 'test'
+  ...
+# Subtest: all time retains missing dates and period grouping sums to the same total
+ok 129 - all time retains missing dates and period grouping sums to the same total
+  ---
+  duration_ms: 3.047501
+  type: 'test'
+  ...
+# Subtest: work execution excludes stored deductions and does not assign unstructured extras to a catalog item
+ok 130 - work execution excludes stored deductions and does not assign unstructured extras to a catalog item
+  ---
+  duration_ms: 6.37501
+  type: 'test'
+  ...
+# Subtest: work execution subtracts each service deduction once across repeated work lines
+ok 131 - work execution subtracts each service deduction once across repeated work lines
+  ---
+  duration_ms: 1.074282
+  type: 'test'
+  ...
+# Subtest: period comparison uses the previous calendar bucket, never the previous nonempty year
+ok 132 - period comparison uses the previous calendar bucket, never the previous nonempty year
+  ---
+  duration_ms: 0.704947
+  type: 'test'
+  ...
+# (node:316) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: expense CRUD derives author, preserves creator on edit and never touches orders
+ok 133 - expense CRUD derives author, preserves creator on edit and never touches orders
+  ---
+  duration_ms: 192.792908
+  type: 'test'
+  ...
+# Subtest: master has no expense read/write access even with forged permission
+ok 134 - master has no expense read/write access even with forged permission
+  ---
+  duration_ms: 26.236845
+  type: 'test'
+  ...
+# Subtest: dispatcher has no expense read/write access even with forged permission
+ok 135 - dispatcher has no expense read/write access even with forged permission
+  ---
+  duration_ms: 15.798057
+  type: 'test'
+  ...
+# Subtest: expense validates amount, calendar date, category and comment before persistence
+ok 136 - expense validates amount, calendar date, category and comment before persistence
+  ---
+  duration_ms: 30.544428
+  type: 'test'
+  ...
+# Subtest: same request retry creates one expense; stale edits and deletes are rejected
+ok 137 - same request retry creates one expense; stale edits and deletes are rejected
+  ---
+  duration_ms: 20.135442
+  type: 'test'
+  ...
+# Subtest: expense selection, category sums and net profit do not invent unknown income
+ok 138 - expense selection, category sums and net profit do not invent unknown income
+  ---
+  duration_ms: 2.067582
+  type: 'test'
+  ...
+# (node:327) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: gateway forwards staff-admin-api with session and response
+ok 139 - gateway forwards staff-admin-api with session and response
+  ---
+  duration_ms: 105.717984
+  type: 'test'
+  ...
+# Subtest: gateway forwards staff-invite-api with session and response
+ok 140 - gateway forwards staff-invite-api with session and response
+  ---
+  duration_ms: 7.63531
+  type: 'test'
+  ...
+# Subtest: gateway forwards order-meta-api with session and response
+ok 141 - gateway forwards order-meta-api with session and response
+  ---
+  duration_ms: 4.97492
+  type: 'test'
+  ...
+# Subtest: gateway allows the public Business OS origin
+ok 142 - gateway allows the public Business OS origin
+  ---
+  duration_ms: 6.530533
+  type: 'test'
+  ...
+# Subtest: gateway preflight allows the public Business OS origin
+ok 143 - gateway preflight allows the public Business OS origin
+  ---
+  duration_ms: 3.873381
+  type: 'test'
+  ...
+# Subtest: gateway blocks unlisted services
+ok 144 - gateway blocks unlisted services
+  ---
+  duration_ms: 5.478042
+  type: 'test'
+  ...
+# (node:336) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: gateway forwards VK launch params for legacy direct endpoints
+ok 145 - gateway forwards VK launch params for legacy direct endpoints
+  ---
+  duration_ms: 101.557896
+  type: 'test'
+  ...
+# Subtest: gateway allows report archive endpoint and VK header in preflight
+ok 146 - gateway allows report archive endpoint and VK header in preflight
+  ---
+  duration_ms: 4.151263
+  type: 'test'
+  ...
+# (node:348) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: insert-only preserves every existing field: hands:123
+ok 147 - insert-only preserves every existing field: hands:123
+  ---
+  duration_ms: 160.888785
+  type: 'test'
+  ...
+# Subtest: insert-only preserves every existing field: 123
+ok 148 - insert-only preserves every existing field: 123
+  ---
+  duration_ms: 85.92423
+  type: 'test'
+  ...
+# Subtest: insert-only reuses original mapper and preserves the supplied original creation date
+ok 149 - insert-only reuses original mapper and preserves the supplied original creation date
+  ---
+  duration_ms: 103.835227
+  type: 'test'
+  ...
+# Subtest: concurrent insert conflict never updates the winner
+ok 150 - concurrent insert conflict never updates the winner
+  ---
+  duration_ms: 77.508385
+  type: 'test'
+  ...
+# Subtest: manual sync retains existing behavior unless insert-only was explicitly selected
+ok 151 - manual sync retains existing behavior unless insert-only was explicitly selected
+  ---
+  duration_ms: 89.341777
+  type: 'test'
+  ...
+# Subtest: CREATED with a different delivery ID still preserves a dispatcher-edited existing order
+ok 152 - CREATED with a different delivery ID still preserves a dispatcher-edited existing order
+  ---
+  duration_ms: 68.493998
+  type: 'test'
+  ...
+# Subtest: recovery webhook rejects an ambiguous creation timestamp before creating an order
+ok 153 - recovery webhook rejects an ambiguous creation timestamp before creating an order
+  ---
+  duration_ms: 115.995778
+  type: 'test'
+  ...
+# Subtest: repeat delivery is acknowledged without looking up or modifying an order
+ok 154 - repeat delivery is acknowledged without looking up or modifying an order
+  ---
+  duration_ms: 75.959893
+  type: 'test'
+  ...
+# Subtest: receipt failure is not acknowledged as success; retry preserves the already imported order
+ok 155 - receipt failure is not acknowledged as success; retry preserves the already imported order
+  ---
+  duration_ms: 115.353998
+  type: 'test'
+  ...
+# Subtest: public unauthenticated or no-delivery probe never queries the database
+ok 156 - public unauthenticated or no-delivery probe never queries the database
+  ---
+  duration_ms: 92.674787
+  type: 'test'
+  ...
+# (node:354) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: hands-api: explicit apartment in directions imports, refreshes and respects independent overrides
+ok 157 - hands-api: explicit apartment in directions imports, refreshes and respects independent overrides
+  ---
+  duration_ms: 141.249584
+  type: 'test'
+  ...
+# Subtest: hands-api: import and repeat update comment, keep one order, never guess apartment
+ok 158 - hands-api: import and repeat update comment, keep one order, never guess apartment
+  ---
+  duration_ms: 13.464006
+  type: 'test'
+  ...
+# Subtest: hands-api: apartment edit leaves comment syncing; comment edit and clear survive sync
+ok 159 - hands-api: apartment edit leaves comment syncing; comment edit and clear survive sync
+  ---
+  duration_ms: 46.214866
+  type: 'test'
+  ...
+# Subtest: hands-api: legacy unknown comment is preserved; empty legacy comment is backfilled
+ok 160 - hands-api: legacy unknown comment is preserved; empty legacy comment is backfilled
+  ---
+  duration_ms: 21.739902
+  type: 'test'
+  ...
+# Subtest: hands-api: accepted legacy report receives descriptive data without repricing or reopening
+ok 161 - hands-api: accepted legacy report receives descriptive data without repricing or reopening
+  ---
+  duration_ms: 12.838022
+  type: 'test'
+  ...
+# Subtest: hands-api: concurrent manual correction cannot be overwritten by import
+ok 162 - hands-api: concurrent manual correction cannot be overwritten by import
+  ---
+  duration_ms: 19.200116
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api: explicit apartment in directions imports, refreshes and respects independent overrides
+ok 163 - order-lifecycle-api: explicit apartment in directions imports, refreshes and respects independent overrides
+  ---
+  duration_ms: 62.002138
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api: import and repeat update comment, keep one order, never guess apartment
+ok 164 - order-lifecycle-api: import and repeat update comment, keep one order, never guess apartment
+  ---
+  duration_ms: 15.06868
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api: apartment edit leaves comment syncing; comment edit and clear survive sync
+ok 165 - order-lifecycle-api: apartment edit leaves comment syncing; comment edit and clear survive sync
+  ---
+  duration_ms: 37.463973
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api: legacy unknown comment is preserved; empty legacy comment is backfilled
+ok 166 - order-lifecycle-api: legacy unknown comment is preserved; empty legacy comment is backfilled
+  ---
+  duration_ms: 31.028436
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api: accepted legacy report receives descriptive data without repricing or reopening
+ok 167 - order-lifecycle-api: accepted legacy report receives descriptive data without repricing or reopening
+  ---
+  duration_ms: 12.842098
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api: concurrent manual correction cannot be overwritten by import
+ok 168 - order-lifecycle-api: concurrent manual correction cannot be overwritten by import
+  ---
+  duration_ms: 14.527071
+  type: 'test'
+  ...
+# Subtest: production-hands: explicit apartment in directions imports, refreshes and respects independent overrides
+ok 169 - production-hands: explicit apartment in directions imports, refreshes and respects independent overrides
+  ---
+  duration_ms: 19.403867
+  type: 'test'
+  ...
+# Subtest: production-hands: import and repeat update comment, keep one order, never guess apartment
+ok 170 - production-hands: import and repeat update comment, keep one order, never guess apartment
+  ---
+  duration_ms: 5.251418
+  type: 'test'
+  ...
+# Subtest: production-hands: apartment edit leaves comment syncing; comment edit and clear survive sync
+ok 171 - production-hands: apartment edit leaves comment syncing; comment edit and clear survive sync
+  ---
+  duration_ms: 19.046061
+  type: 'test'
+  ...
+# Subtest: production-hands: legacy unknown comment is preserved; empty legacy comment is backfilled
+ok 172 - production-hands: legacy unknown comment is preserved; empty legacy comment is backfilled
+  ---
+  duration_ms: 6.753644
+  type: 'test'
+  ...
+# Subtest: production-hands: accepted legacy report receives descriptive data without repricing or reopening
+ok 173 - production-hands: accepted legacy report receives descriptive data without repricing or reopening
+  ---
+  duration_ms: 3.361127
+  type: 'test'
+  ...
+# Subtest: production-hands: concurrent manual correction cannot be overwritten by import
+ok 174 - production-hands: concurrent manual correction cannot be overwritten by import
+  ---
+  duration_ms: 3.124634
+  type: 'test'
+  ...
+# Subtest: work parser prefers the exact operation over a generic category
+ok 175 - work parser prefers the exact operation over a generic category
+  ---
+  duration_ms: 1.830052
+  type: 'test'
+  ...
+# Subtest: work parser combines main and additional Hands collections without duplicates
+ok 176 - work parser combines main and additional Hands collections without duplicates
+  ---
+  duration_ms: 1.376908
+  type: 'test'
+  ...
+# Subtest: directions parser requires one explicit apartment, never a house/floor or ambiguous alternatives
+ok 177 - directions parser requires one explicit apartment, never a house/floor or ambiguous alternatives
+  ---
+  duration_ms: 1.709684
+  type: 'test'
+  ...
+# Subtest: saved source can backfill apartment without remote fields; ambiguous legacy local apartment survives
+ok 178 - saved source can backfill apartment without remote fields; ambiguous legacy local apartment survives
+  ---
+  duration_ms: 1.146345
+  type: 'test'
+  ...
+# Subtest: owner can save both fields without changing money or existing overrides
+ok 179 - owner can save both fields without changing money or existing overrides
+  ---
+  duration_ms: 15.771315
+  type: 'test'
+  ...
+# Subtest: manager can save both fields without changing money or existing overrides
+ok 180 - manager can save both fields without changing money or existing overrides
+  ---
+  duration_ms: 10.311966
+  type: 'test'
+  ...
+# Subtest: dispatcher can save both fields without changing money or existing overrides
+ok 181 - dispatcher can save both fields without changing money or existing overrides
+  ---
+  duration_ms: 8.12714
+  type: 'test'
+  ...
+# Subtest: master cannot edit own or foreign fields, but legitimate stage changes still work
+ok 182 - master cannot edit own or foreign fields, but legitimate stage changes still work
+  ---
+  duration_ms: 24.549321
+  type: 'test'
+  ...
+# Subtest: invalid values rejected; unchanged form submission does not freeze Hands updates
+ok 183 - invalid values rejected; unchanged form submission does not freeze Hands updates
+  ---
+  duration_ms: 25.016824
+  type: 'test'
+  ...
+# Subtest: private patch preserves every byte outside import and refuses drift
+ok 184 - private patch preserves every byte outside import and refuses drift
+  ---
+  duration_ms: 1.057262
+  type: 'test'
+  ...
+# (node:363) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: worker authorization, configuration and disabled mode never reach Hands
+ok 185 - worker authorization, configuration and disabled mode never reach Hands
+  ---
+  duration_ms: 161.450204
+  type: 'test'
+  ...
+# Subtest: approved files precede the completed report; receipt replay does not resend
+ok 186 - approved files precede the completed report; receipt replay does not resend
+  ---
+  duration_ms: 32.161175
+  type: 'test'
+  ...
+# Subtest: expired signed URLs are reauthorized only for exact current order objects
+ok 187 - expired signed URLs are reauthorized only for exact current order objects
+  ---
+  duration_ms: 48.773425
+  type: 'test'
+  ...
+# Subtest: unavailable storage and rejected rate limit retry only the unfinished step
+ok 188 - unavailable storage and rejected rate limit retry only the unfinished step
+  ---
+  duration_ms: 26.487296
+  type: 'test'
+  ...
+# Subtest: ambiguous POST results are held for review and never blindly retried
+ok 189 - ambiguous POST results are held for review and never blindly retried
+  ---
+  duration_ms: 18.364467
+  type: 'test'
+  ...
+# Subtest: a lost database acknowledgement after successful POST cannot duplicate it
+ok 190 - a lost database acknowledgement after successful POST cannot duplicate it
+  ---
+  duration_ms: 8.986133
+  type: 'test'
+  ...
+# Subtest: changed approval, bad content type and oversized storage body never send to Hands
+ok 191 - changed approval, bad content type and oversized storage body never send to Hands
+  ---
+  duration_ms: 20.820675
+  type: 'test'
+  ...
+# Subtest: measurement approval sends its own document before completion
+ok 192 - measurement approval sends its own document before completion
+  ---
+  duration_ms: 9.632214
+  type: 'test'
+  ...
+# Subtest: only active operations staff can inspect/retry a queue receipt and confirmation is explicit
+ok 193 - only active operations staff can inspect/retry a queue receipt and confirmation is explicit
+  ---
+  duration_ms: 62.094727
+  type: 'test'
+  ...
+# Subtest: authenticated connectivity probe is read-only and never returns order contents
+ok 194 - authenticated connectivity probe is read-only and never returns order contents
+  ---
+  duration_ms: 9.855976
+  type: 'test'
+  ...
+# (node:385) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: hands-api: ACTIVE preserves accepted report, archive and receipt
+ok 195 - hands-api: ACTIVE preserves accepted report, archive and receipt
+  ---
+  duration_ms: 152.665859
+  type: 'test'
+  ...
+# Subtest: hands-api: COMPLETED preserves accepted report, archive and receipt
+ok 196 - hands-api: COMPLETED preserves accepted report, archive and receipt
+  ---
+  duration_ms: 10.734015
+  type: 'test'
+  ...
+# Subtest: hands-api: CANCELLED preserves accepted report, archive and receipt
+ok 197 - hands-api: CANCELLED preserves accepted report, archive and receipt
+  ---
+  duration_ms: 18.675982
+  type: 'test'
+  ...
+# Subtest: hands-api: remote completion cannot complete an unreviewed or new order
+ok 198 - hands-api: remote completion cannot complete an unreviewed or new order
+  ---
+  duration_ms: 22.780589
+  type: 'test'
+  ...
+# Subtest: hands-api: concurrent approval makes the import compare-and-swap fail
+ok 199 - hands-api: concurrent approval makes the import compare-and-swap fail
+  ---
+  duration_ms: 14.914191
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api: ACTIVE preserves accepted report, archive and receipt
+ok 200 - order-lifecycle-api: ACTIVE preserves accepted report, archive and receipt
+  ---
+  duration_ms: 26.165372
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api: COMPLETED preserves accepted report, archive and receipt
+ok 201 - order-lifecycle-api: COMPLETED preserves accepted report, archive and receipt
+  ---
+  duration_ms: 13.615404
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api: CANCELLED preserves accepted report, archive and receipt
+ok 202 - order-lifecycle-api: CANCELLED preserves accepted report, archive and receipt
+  ---
+  duration_ms: 16.285562
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api: remote completion cannot complete an unreviewed or new order
+ok 203 - order-lifecycle-api: remote completion cannot complete an unreviewed or new order
+  ---
+  duration_ms: 29.473413
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api: concurrent approval makes the import compare-and-swap fail
+ok 204 - order-lifecycle-api: concurrent approval makes the import compare-and-swap fail
+  ---
+  duration_ms: 12.196372
+  type: 'test'
+  ...
+# Subtest: production-hands: ACTIVE preserves accepted report, archive and receipt
+ok 205 - production-hands: ACTIVE preserves accepted report, archive and receipt
+  ---
+  duration_ms: 5.306734
+  type: 'test'
+  ...
+# Subtest: production-hands: COMPLETED preserves accepted report, archive and receipt
+ok 206 - production-hands: COMPLETED preserves accepted report, archive and receipt
+  ---
+  duration_ms: 1.565984
+  type: 'test'
+  ...
+# Subtest: production-hands: CANCELLED preserves accepted report, archive and receipt
+ok 207 - production-hands: CANCELLED preserves accepted report, archive and receipt
+  ---
+  duration_ms: 2.006148
+  type: 'test'
+  ...
+# Subtest: production-hands: remote completion cannot complete an unreviewed or new order
+ok 208 - production-hands: remote completion cannot complete an unreviewed or new order
+  ---
+  duration_ms: 9.578617
+  type: 'test'
+  ...
+# Subtest: production-hands: concurrent approval makes the import compare-and-swap fail
+ok 209 - production-hands: concurrent approval makes the import compare-and-swap fail
+  ---
+  duration_ms: 1.852456
+  type: 'test'
+  ...
+# Subtest: external upsert preserves a completed receipt even if upstream reopens or cancels it
+ok 210 - external upsert preserves a completed receipt even if upstream reopens or cancels it
+  ---
+  duration_ms: 22.919218
+  type: 'test'
+  ...
+# Subtest: external upsert cannot insert or update completed status without local approval
+ok 211 - external upsert cannot insert or update completed status without local approval
+  ---
+  duration_ms: 12.480487
+  type: 'test'
+  ...
+# Subtest: external upsert retains ordinary active updates but cannot race an approval
+ok 212 - external upsert retains ordinary active updates but cannot race an approval
+  ---
+  duration_ms: 20.827458
+  type: 'test'
+  ...
+# Subtest: private production patch refuses an unknown or already patched import and preserves surrounding code
+ok 213 - private production patch refuses an unknown or already patched import and preserves surrounding code
+  ---
+  duration_ms: 0.922306
+  type: 'test'
+  ...
+# (node:396) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: external import rejects invalid amount=-1 before insert
+ok 214 - external import rejects invalid amount=-1 before insert
+  ---
+  duration_ms: 167.596585
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid amount=-1 before update
+ok 215 - external import rejects invalid amount=-1 before update
+  ---
+  duration_ms: 14.834673
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid amount=NaN before insert
+ok 216 - external import rejects invalid amount=NaN before insert
+  ---
+  duration_ms: 7.76232
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid amount=NaN before update
+ok 217 - external import rejects invalid amount=NaN before update
+  ---
+  duration_ms: 7.311996
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid amount=Infinity before insert
+ok 218 - external import rejects invalid amount=Infinity before insert
+  ---
+  duration_ms: 13.961658
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid amount=Infinity before update
+ok 219 - external import rejects invalid amount=Infinity before update
+  ---
+  duration_ms: 8.544505
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid amount=-Infinity before insert
+ok 220 - external import rejects invalid amount=-Infinity before insert
+  ---
+  duration_ms: 13.593224
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid amount=-Infinity before update
+ok 221 - external import rejects invalid amount=-Infinity before update
+  ---
+  duration_ms: 6.209428
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid amount=1e+308 before insert
+ok 222 - external import rejects invalid amount=1e+308 before insert
+  ---
+  duration_ms: 8.323836
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid amount=1e+308 before update
+ok 223 - external import rejects invalid amount=1e+308 before update
+  ---
+  duration_ms: 7.635672
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid original_amount=-1 before insert
+ok 224 - external import rejects invalid original_amount=-1 before insert
+  ---
+  duration_ms: 6.009301
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid original_amount=-1 before update
+ok 225 - external import rejects invalid original_amount=-1 before update
+  ---
+  duration_ms: 8.327243
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid original_amount=NaN before insert
+ok 226 - external import rejects invalid original_amount=NaN before insert
+  ---
+  duration_ms: 6.738556
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid original_amount=NaN before update
+ok 227 - external import rejects invalid original_amount=NaN before update
+  ---
+  duration_ms: 7.326214
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid original_amount=Infinity before insert
+ok 228 - external import rejects invalid original_amount=Infinity before insert
+  ---
+  duration_ms: 8.389242
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid original_amount=Infinity before update
+ok 229 - external import rejects invalid original_amount=Infinity before update
+  ---
+  duration_ms: 6.519276
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid original_amount=-Infinity before insert
+ok 230 - external import rejects invalid original_amount=-Infinity before insert
+  ---
+  duration_ms: 6.52272
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid original_amount=-Infinity before update
+ok 231 - external import rejects invalid original_amount=-Infinity before update
+  ---
+  duration_ms: 14.937111
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid original_amount=1e+308 before insert
+ok 232 - external import rejects invalid original_amount=1e+308 before insert
+  ---
+  duration_ms: 9.152398
+  type: 'test'
+  ...
+# Subtest: external import rejects invalid original_amount=1e+308 before update
+ok 233 - external import rejects invalid original_amount=1e+308 before update
+  ---
+  duration_ms: 11.979906
+  type: 'test'
+  ...
+# Subtest: external mapped money is validated after mapping
+ok 234 - external mapped money is validated after mapping
+  ---
+  duration_ms: 10.862237
+  type: 'test'
+  ...
+# Subtest: external import retains zero, omitted and numeric-string money semantics
+ok 235 - external import retains zero, omitted and numeric-string money semantics
+  ---
+  duration_ms: 31.045519
+  type: 'test'
+  ...
+# Subtest: external invalid price cannot change an already accepted receipt
+ok 236 - external invalid price cannot change an already accepted receipt
+  ---
+  duration_ms: 9.689788
+  type: 'test'
+  ...
+# (node:414) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: avito-api rejects old signed launch before data access
+ok 237 - avito-api rejects old signed launch before data access
+  ---
+  duration_ms: 196.7024
+  type: 'test'
+  ...
+# Subtest: avito-api rejects missing signed launch before data access
+ok 238 - avito-api rejects missing signed launch before data access
+  ---
+  duration_ms: 9.002684
+  type: 'test'
+  ...
+# Subtest: avito-api rejects zero signed launch before data access
+ok 239 - avito-api rejects zero signed launch before data access
+  ---
+  duration_ms: 7.033603
+  type: 'test'
+  ...
+# Subtest: avito-api rejects NaN signed launch before data access
+ok 240 - avito-api rejects NaN signed launch before data access
+  ---
+  duration_ms: 6.20534
+  type: 'test'
+  ...
+# Subtest: avito-api rejects infinite signed launch before data access
+ok 241 - avito-api rejects infinite signed launch before data access
+  ---
+  duration_ms: 6.144904
+  type: 'test'
+  ...
+# Subtest: avito-api rejects fractional signed launch before data access
+ok 242 - avito-api rejects fractional signed launch before data access
+  ---
+  duration_ms: 10.68422
+  type: 'test'
+  ...
+# Subtest: avito-api rejects far future signed launch before data access
+ok 243 - avito-api rejects far future signed launch before data access
+  ---
+  duration_ms: 11.394689
+  type: 'test'
+  ...
+# Subtest: avito-api preserves valid launch inside existing 24h window (0)
+ok 244 - avito-api preserves valid launch inside existing 24h window (0)
+  ---
+  duration_ms: 49.629953
+  type: 'test'
+  ...
+# Subtest: avito-api preserves valid launch inside existing 24h window (-86399)
+ok 245 - avito-api preserves valid launch inside existing 24h window (-86399)
+  ---
+  duration_ms: 10.493176
+  type: 'test'
+  ...
+# Subtest: avito-api preserves valid launch inside existing 24h window (86399)
+ok 246 - avito-api preserves valid launch inside existing 24h window (86399)
+  ---
+  duration_ms: 5.990301
+  type: 'test'
+  ...
+# Subtest: avito-api existing BOS session does not depend on stale launch timestamp
+ok 247 - avito-api existing BOS session does not depend on stale launch timestamp
+  ---
+  duration_ms: 10.203996
+  type: 'test'
+  ...
+# Subtest: avito-api rejects a fresh launch with a forged signature
+ok 248 - avito-api rejects a fresh launch with a forged signature
+  ---
+  duration_ms: 19.263326
+  type: 'test'
+  ...
+# Subtest: profile-self-api rejects old signed launch before data access
+ok 249 - profile-self-api rejects old signed launch before data access
+  ---
+  duration_ms: 6.770125
+  type: 'test'
+  ...
+# Subtest: profile-self-api rejects missing signed launch before data access
+ok 250 - profile-self-api rejects missing signed launch before data access
+  ---
+  duration_ms: 3.143954
+  type: 'test'
+  ...
+# Subtest: profile-self-api rejects zero signed launch before data access
+ok 251 - profile-self-api rejects zero signed launch before data access
+  ---
+  duration_ms: 4.709453
+  type: 'test'
+  ...
+# Subtest: profile-self-api rejects NaN signed launch before data access
+ok 252 - profile-self-api rejects NaN signed launch before data access
+  ---
+  duration_ms: 5.934291
+  type: 'test'
+  ...
+# Subtest: profile-self-api rejects infinite signed launch before data access
+ok 253 - profile-self-api rejects infinite signed launch before data access
+  ---
+  duration_ms: 3.811315
+  type: 'test'
+  ...
+# Subtest: profile-self-api rejects fractional signed launch before data access
+ok 254 - profile-self-api rejects fractional signed launch before data access
+  ---
+  duration_ms: 3.762694
+  type: 'test'
+  ...
+# Subtest: profile-self-api rejects far future signed launch before data access
+ok 255 - profile-self-api rejects far future signed launch before data access
+  ---
+  duration_ms: 3.72711
+  type: 'test'
+  ...
+# Subtest: profile-self-api preserves valid launch inside existing 24h window (0)
+ok 256 - profile-self-api preserves valid launch inside existing 24h window (0)
+  ---
+  duration_ms: 13.287665
+  type: 'test'
+  ...
+# Subtest: profile-self-api preserves valid launch inside existing 24h window (-86399)
+ok 257 - profile-self-api preserves valid launch inside existing 24h window (-86399)
+  ---
+  duration_ms: 11.217612
+  type: 'test'
+  ...
+# Subtest: profile-self-api preserves valid launch inside existing 24h window (86399)
+ok 258 - profile-self-api preserves valid launch inside existing 24h window (86399)
+  ---
+  duration_ms: 5.973536
+  type: 'test'
+  ...
+# Subtest: profile-self-api existing BOS session does not depend on stale launch timestamp
+ok 259 - profile-self-api existing BOS session does not depend on stale launch timestamp
+  ---
+  duration_ms: 12.810592
+  type: 'test'
+  ...
+# Subtest: profile-self-api rejects a fresh launch with a forged signature
+ok 260 - profile-self-api rejects a fresh launch with a forged signature
+  ---
+  duration_ms: 8.637782
+  type: 'test'
+  ...
+# Subtest: report-api rejects old signed launch before data access
+ok 261 - report-api rejects old signed launch before data access
+  ---
+  duration_ms: 8.700173
+  type: 'test'
+  ...
+# Subtest: report-api rejects missing signed launch before data access
+ok 262 - report-api rejects missing signed launch before data access
+  ---
+  duration_ms: 6.282281
+  type: 'test'
+  ...
+# Subtest: report-api rejects zero signed launch before data access
+ok 263 - report-api rejects zero signed launch before data access
+  ---
+  duration_ms: 5.867016
+  type: 'test'
+  ...
+# Subtest: report-api rejects NaN signed launch before data access
+ok 264 - report-api rejects NaN signed launch before data access
+  ---
+  duration_ms: 13.954367
+  type: 'test'
+  ...
+# Subtest: report-api rejects infinite signed launch before data access
+ok 265 - report-api rejects infinite signed launch before data access
+  ---
+  duration_ms: 5.385974
+  type: 'test'
+  ...
+# Subtest: report-api rejects fractional signed launch before data access
+ok 266 - report-api rejects fractional signed launch before data access
+  ---
+  duration_ms: 16.029531
+  type: 'test'
+  ...
+# Subtest: report-api rejects far future signed launch before data access
+ok 267 - report-api rejects far future signed launch before data access
+  ---
+  duration_ms: 6.770388
+  type: 'test'
+  ...
+# Subtest: report-api preserves valid launch inside existing 24h window (0)
+ok 268 - report-api preserves valid launch inside existing 24h window (0)
+  ---
+  duration_ms: 37.696311
+  type: 'test'
+  ...
+# Subtest: report-api preserves valid launch inside existing 24h window (-86399)
+ok 269 - report-api preserves valid launch inside existing 24h window (-86399)
+  ---
+  duration_ms: 41.886041
+  type: 'test'
+  ...
+# Subtest: report-api preserves valid launch inside existing 24h window (86399)
+ok 270 - report-api preserves valid launch inside existing 24h window (86399)
+  ---
+  duration_ms: 7.430674
+  type: 'test'
+  ...
+# Subtest: report-api existing BOS session does not depend on stale launch timestamp
+ok 271 - report-api existing BOS session does not depend on stale launch timestamp
+  ---
+  duration_ms: 7.514082
+  type: 'test'
+  ...
+# Subtest: report-api rejects a fresh launch with a forged signature
+ok 272 - report-api rejects a fresh launch with a forged signature
+  ---
+  duration_ms: 11.794283
+  type: 'test'
+  ...
+# Subtest: report-file-upload rejects old signed launch before data access
+ok 273 - report-file-upload rejects old signed launch before data access
+  ---
+  duration_ms: 7.88405
+  type: 'test'
+  ...
+# Subtest: report-file-upload rejects missing signed launch before data access
+ok 274 - report-file-upload rejects missing signed launch before data access
+  ---
+  duration_ms: 3.785976
+  type: 'test'
+  ...
+# Subtest: report-file-upload rejects zero signed launch before data access
+ok 275 - report-file-upload rejects zero signed launch before data access
+  ---
+  duration_ms: 8.162264
+  type: 'test'
+  ...
+# Subtest: report-file-upload rejects NaN signed launch before data access
+ok 276 - report-file-upload rejects NaN signed launch before data access
+  ---
+  duration_ms: 4.329927
+  type: 'test'
+  ...
+# Subtest: report-file-upload rejects infinite signed launch before data access
+ok 277 - report-file-upload rejects infinite signed launch before data access
+  ---
+  duration_ms: 3.768446
+  type: 'test'
+  ...
+# Subtest: report-file-upload rejects fractional signed launch before data access
+ok 278 - report-file-upload rejects fractional signed launch before data access
+  ---
+  duration_ms: 3.227891
+  type: 'test'
+  ...
+# Subtest: report-file-upload rejects far future signed launch before data access
+ok 279 - report-file-upload rejects far future signed launch before data access
+  ---
+  duration_ms: 4.252103
+  type: 'test'
+  ...
+# Subtest: report-file-upload preserves valid launch inside existing 24h window (0)
+ok 280 - report-file-upload preserves valid launch inside existing 24h window (0)
+  ---
+  duration_ms: 16.448414
+  type: 'test'
+  ...
+# Subtest: report-file-upload preserves valid launch inside existing 24h window (-86399)
+ok 281 - report-file-upload preserves valid launch inside existing 24h window (-86399)
+  ---
+  duration_ms: 6.069236
+  type: 'test'
+  ...
+# Subtest: report-file-upload preserves valid launch inside existing 24h window (86399)
+ok 282 - report-file-upload preserves valid launch inside existing 24h window (86399)
+  ---
+  duration_ms: 9.524174
+  type: 'test'
+  ...
+# Subtest: report-file-upload existing BOS session does not depend on stale launch timestamp
+ok 283 - report-file-upload existing BOS session does not depend on stale launch timestamp
+  ---
+  duration_ms: 8.993881
+  type: 'test'
+  ...
+# Subtest: report-file-upload rejects a fresh launch with a forged signature
+ok 284 - report-file-upload rejects a fresh launch with a forged signature
+  ---
+  duration_ms: 10.17181
+  type: 'test'
+  ...
+# Subtest: legacy Apps Script endpoint is health-only and cannot expose owner access
+ok 285 - legacy Apps Script endpoint is health-only and cannot expose owner access
+  ---
+  duration_ms: 3.487353
+  type: 'test'
+  ...
+# (node:430) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: integration administration accepts active owner sessions and rejects every other role
+ok 286 - integration administration accepts active owner sessions and rejects every other role
+  ---
+  duration_ms: 208.309614
+  type: 'test'
+  ...
+# Subtest: integration sessions reject invalid expiry, long lifetime, bad subject and forged signatures before DB access
+ok 287 - integration sessions reject invalid expiry, long lifetime, bad subject and forged signatures before DB access
+  ---
+  duration_ms: 19.860343
+  type: 'test'
+  ...
+# Subtest: a correctly signed VK launch string cannot substitute for an integration owner session
+ok 288 - a correctly signed VK launch string cannot substitute for an integration owner session
+  ---
+  duration_ms: 5.948216
+  type: 'test'
+  ...
+# Subtest: external integration API keys retain scoped reads and never grant owner administration
+ok 289 - external integration API keys retain scoped reads and never grant owner administration
+  ---
+  duration_ms: 23.31846
+  type: 'test'
+  ...
+# Subtest: staff list exposes login and password presence only to the owner
+ok 290 - staff list exposes login and password presence only to the owner
+  ---
+  duration_ms: 11.637851
+  type: 'test'
+  ...
+# Subtest: both staff restore branches preserve owner-only credential visibility
+ok 291 - both staff restore branches preserve owner-only credential visibility
+  ---
+  duration_ms: 104.135753
+  type: 'test'
+  ...
+# Subtest: manager cannot change credentials even for otherwise manageable employees
+ok 292 - manager cannot change credentials even for otherwise manageable employees
+  ---
+  duration_ms: 10.656682
+  type: 'test'
+  ...
+# Subtest: owner credential changes enforce existing live length limits and never serialize password hashes
+ok 293 - owner credential changes enforce existing live length limits and never serialize password hashes
+  ---
+  duration_ms: 24.49399
+  type: 'test'
+  ...
+# Subtest: integration-api masks database failure details in responses and logs
+ok 294 - integration-api masks database failure details in responses and logs
+  ---
+  duration_ms: 11.069832
+  type: 'test'
+  ...
+# Subtest: staff-admin-api masks database failure details in responses and logs
+ok 295 - staff-admin-api masks database failure details in responses and logs
+  ---
+  duration_ms: 16.47968
+  type: 'test'
+  ...
+# Subtest: management order mirrors master information blocks and stays editable
+ok 296 - management order mirrors master information blocks and stays editable
+  ---
+  duration_ms: 1.457589
+  type: 'test'
+  ...
+# Subtest: leadership editor supports multiple phones, works and a master comment
+ok 297 - leadership editor supports multiple phones, works and a master comment
+  ---
+  duration_ms: 0.594142
+  type: 'test'
+  ...
+# Subtest: master received date is shown inline with the order number
+ok 298 - master received date is shown inline with the order number
+  ---
+  duration_ms: 0.804724
+  type: 'test'
+  ...
+# (node:454) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: manual completion rejects unauthenticated, master, dispatcher and unknown roles before mutation
+ok 299 - manual completion rejects unauthenticated, master, dispatcher and unknown roles before mutation
+  ---
+  duration_ms: 317.838475
+  type: 'test'
+  ...
+# Subtest: manual completion requires a reason and the displayed order version
+ok 300 - manual completion requires a reason and the displayed order version
+  ---
+  duration_ms: 87.182476
+  type: 'test'
+  ...
+# Subtest: only existing leadership roles reach the transaction with authenticated identity
+ok 301 - only existing leadership roles reach the transaction with authenticated identity
+  ---
+  duration_ms: 43.651532
+  type: 'test'
+  ...
+# Subtest: transaction conflicts and authorization changes are surfaced without fallback writes
+ok 302 - transaction conflicts and authorization changes are surfaced without fallback writes
+  ---
+  duration_ms: 61.555685
+  type: 'test'
+  ...
+# Subtest: manually completed Hands master bootstrap preserves zero and custom saved payouts
+ok 303 - manually completed Hands master bootstrap preserves zero and custom saved payouts
+  ---
+  duration_ms: 80.182675
+  type: 'test'
+  ...
+# (node:462) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: claim closure returns only source-permitted cost: Hands
+ok 304 - claim closure returns only source-permitted cost: Hands
+  ---
+  duration_ms: 209.655235
+  type: 'test'
+  ...
+# Subtest: claim closure returns only source-permitted cost: Авито
+ok 305 - claim closure returns only source-permitted cost: Авито
+  ---
+  duration_ms: 39.358474
+  type: 'test'
+  ...
+# (node:469) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: workflow: agreement cannot skip departure; retries preserve initial times
+ok 306 - workflow: agreement cannot skip departure; retries preserve initial times
+  ---
+  duration_ms: 338.336078
+  type: 'test'
+  ...
+# Subtest: workflow: concurrent identical requests confirm once
+ok 307 - workflow: concurrent identical requests confirm once
+  ---
+  duration_ms: 23.946913
+  type: 'test'
+  ...
+# Subtest: workflow: races preserve {"master_staff_id":"other"}
+ok 308 - workflow: races preserve {"master_staff_id":"other"}
+  ---
+  duration_ms: 18.013378
+  type: 'test'
+  ...
+# Subtest: workflow: races preserve {"status":"Отменена"}
+ok 309 - workflow: races preserve {"status":"Отменена"}
+  ---
+  duration_ms: 13.303481
+  type: 'test'
+  ...
+# Subtest: workflow: races preserve {"master_workflow_stage":"started","master_started_at":"2026-01-01","master_departed_at":"2025-12-31"}
+ok 310 - workflow: races preserve {"master_workflow_stage":"started","master_started_at":"2026-01-01","master_departed_at":"2025-12-31"}
+  ---
+  duration_ms: 12.824385
+  type: 'test'
+  ...
+# Subtest: workflow: races preserve {"report_review_status":"pending","report_uploaded_at":"2026-01-01"}
+ok 311 - workflow: races preserve {"report_review_status":"pending","report_uploaded_at":"2026-01-01"}
+  ---
+  duration_ms: 8.997253
+  type: 'test'
+  ...
+# Subtest: workflow: cancelled and foreign rows reject without writes
+ok 312 - workflow: cancelled and foreign rows reject without writes
+  ---
+  duration_ms: 17.164846
+  type: 'test'
+  ...
+# Subtest: legacy bridge: agreement cannot skip departure; retries preserve initial times
+ok 313 - legacy bridge: agreement cannot skip departure; retries preserve initial times
+  ---
+  duration_ms: 41.501018
+  type: 'test'
+  ...
+# Subtest: legacy bridge: concurrent identical requests confirm once
+ok 314 - legacy bridge: concurrent identical requests confirm once
+  ---
+  duration_ms: 11.355527
+  type: 'test'
+  ...
+# Subtest: legacy bridge: races preserve {"master_staff_id":"other"}
+ok 315 - legacy bridge: races preserve {"master_staff_id":"other"}
+  ---
+  duration_ms: 10.078827
+  type: 'test'
+  ...
+# Subtest: legacy bridge: races preserve {"status":"Отменена"}
+ok 316 - legacy bridge: races preserve {"status":"Отменена"}
+  ---
+  duration_ms: 5.691881
+  type: 'test'
+  ...
+# Subtest: legacy bridge: races preserve {"master_workflow_stage":"started","master_started_at":"2026-01-01","master_departed_at":"2025-12-31"}
+ok 317 - legacy bridge: races preserve {"master_workflow_stage":"started","master_started_at":"2026-01-01","master_departed_at":"2025-12-31"}
+  ---
+  duration_ms: 7.963039
+  type: 'test'
+  ...
+# Subtest: legacy bridge: races preserve {"report_review_status":"pending","report_uploaded_at":"2026-01-01"}
+ok 318 - legacy bridge: races preserve {"report_review_status":"pending","report_uploaded_at":"2026-01-01"}
+  ---
+  duration_ms: 6.782313
+  type: 'test'
+  ...
+# Subtest: legacy bridge: cancelled and foreign rows reject without writes
+ok 319 - legacy bridge: cancelled and foreign rows reject without writes
+  ---
+  duration_ms: 11.58841
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: first report requires confirmed work, not agreement or attachments
+ok 320 - order-lifecycle-api/finalizeMasterReport: first report requires confirmed work, not agreement or attachments
+  ---
+  duration_ms: 65.491147
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: historical work and returned reports remain usable without invented timestamps
+ok 321 - order-lifecycle-api/finalizeMasterReport: historical work and returned reports remain usable without invented timestamps
+  ---
+  duration_ms: 52.910145
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: concurrent duplicate returns same report receipt; newer stage/reassignment cannot be overwritten
+ok 322 - order-lifecycle-api/finalizeMasterReport: concurrent duplicate returns same report receipt; newer stage/reassignment cannot be overwritten
+  ---
+  duration_ms: 50.757232
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: first report requires confirmed work, not agreement or attachments
+ok 323 - report-api/finalizeMasterReport: first report requires confirmed work, not agreement or attachments
+  ---
+  duration_ms: 51.091983
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: historical work and returned reports remain usable without invented timestamps
+ok 324 - report-api/finalizeMasterReport: historical work and returned reports remain usable without invented timestamps
+  ---
+  duration_ms: 49.196046
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: concurrent duplicate returns same report receipt; newer stage/reassignment cannot be overwritten
+ok 325 - report-api/finalizeMasterReport: concurrent duplicate returns same report receipt; newer stage/reassignment cannot be overwritten
+  ---
+  duration_ms: 52.296994
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: first report requires confirmed work, not agreement or attachments
+ok 326 - report-api/uploadMasterReport: first report requires confirmed work, not agreement or attachments
+  ---
+  duration_ms: 78.627019
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: historical work and returned reports remain usable without invented timestamps
+ok 327 - report-api/uploadMasterReport: historical work and returned reports remain usable without invented timestamps
+  ---
+  duration_ms: 52.211231
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: concurrent duplicate returns same report receipt; newer stage/reassignment cannot be overwritten
+ok 328 - report-api/uploadMasterReport: concurrent duplicate returns same report receipt; newer stage/reassignment cannot be overwritten
+  ---
+  duration_ms: 41.297382
+  type: 'test'
+  ...
+# (node:486) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: cached implicit call requests stay legacy and never acquire successful-contact provenance
+ok 329 - cached implicit call requests stay legacy and never acquire successful-contact provenance
+  ---
+  duration_ms: 412.126874
+  type: 'test'
+  ...
+# Subtest: explicit contact records server time and authenticated author snapshot, ignoring forged inputs
+ok 330 - explicit contact records server time and authenticated author snapshot, ignoring forged inputs
+  ---
+  duration_ms: 16.839876
+  type: 'test'
+  ...
+# Subtest: legacy call receives new provenance only after explicit confirmation, preserving later workflow
+ok 331 - legacy call receives new provenance only after explicit confirmation, preserving later workflow
+  ---
+  duration_ms: 18.524267
+  type: 'test'
+  ...
+# Subtest: duplicate and concurrent confirmations preserve first receipt after rename and reassignment
+ok 332 - duplicate and concurrent confirmations preserve first receipt after rename and reassignment
+  ---
+  duration_ms: 68.41322
+  type: 'test'
+  ...
+# Subtest: only the active assigned master may confirm; assignment/cancellation races never write
+ok 333 - only the active assigned master may confirm; assignment/cancellation races never write
+  ---
+  duration_ms: 75.661499
+  type: 'test'
+  ...
+# Subtest: ops cannot fabricate contact through general order update
+ok 334 - ops cannot fabricate contact through general order update
+  ---
+  duration_ms: 29.922635
+  type: 'test'
+  ...
+# Subtest: Hands synchronization preserves contact provenance and both manual detail overrides
+ok 335 - Hands synchronization preserves contact provenance and both manual detail overrides
+  ---
+  duration_ms: 63.908159
+  type: 'test'
+  ...
+# Subtest: Hands reactivation preserves first proven contact through the production restart guard
+ok 336 - Hands reactivation preserves first proven contact through the production restart guard
+  ---
+  duration_ms: 26.004416
+  type: 'test'
+  ...
+# Subtest: shared contact renderer distinguishes provenance from legacy timestamps and agreement, in Moscow
+ok 337 - shared contact renderer distinguishes provenance from legacy timestamps and agreement, in Moscow
+  ---
+  duration_ms: 20.682453
+  type: 'test'
+  ...
+# (node:497) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: attempt stores the exact number but is not a successful contact
+ok 338 - attempt stores the exact number but is not a successful contact
+  ---
+  duration_ms: 286.795818
+  type: 'test'
+  ...
+# Subtest: no answer remains unsuccessful; later client conversation creates first receipt
+ok 339 - no answer remains unsuccessful; later client conversation creates first receipt
+  ---
+  duration_ms: 27.8837
+  type: 'test'
+  ...
+# Subtest: journal rejects a number outside the order and requires comment for other
+ok 340 - journal rejects a number outside the order and requires comment for other
+  ---
+  duration_ms: 21.546801
+  type: 'test'
+  ...
+# Subtest: new journal blocks agreement until the result is agreed
+ok 341 - new journal blocks agreement until the result is agreed
+  ---
+  duration_ms: 26.153889
+  type: 'test'
+  ...
+# Subtest: a saved attempt cannot be moved to another phone
+ok 342 - a saved attempt cannot be moved to another phone
+  ---
+  duration_ms: 15.478928
+  type: 'test'
+  ...
+# Subtest: finishing an older pending call does not replace the latest attempt summary
+ok 343 - finishing an older pending call does not replace the latest attempt summary
+  ---
+  duration_ms: 39.69543
+  type: 'test'
+  ...
+# Subtest: thinking blocks both agreement endpoints
+ok 344 - thinking blocks both agreement endpoints
+  ---
+  duration_ms: 21.977907
+  type: 'test'
+  ...
+# Subtest: waiting_delivery blocks both agreement endpoints
+ok 345 - waiting_delivery blocks both agreement endpoints
+  ---
+  duration_ms: 27.238962
+  type: 'test'
+  ...
+# Subtest: call_later blocks both agreement endpoints
+ok 346 - call_later blocks both agreement endpoints
+  ---
+  duration_ms: 16.664358
+  type: 'test'
+  ...
+# Subtest: no_answer blocks both agreement endpoints
+ok 347 - no_answer blocks both agreement endpoints
+  ---
+  duration_ms: 19.545579
+  type: 'test'
+  ...
+# Subtest: other blocks both agreement endpoints
+ok 348 - other blocks both agreement endpoints
+  ---
+  duration_ms: 12.640192
+  type: 'test'
+  ...
+# Subtest: history stores and exposes the last 50 attempts and rejects other actors
+ok 349 - history stores and exposes the last 50 attempts and rejects other actors
+  ---
+  duration_ms: 181.41494
+  type: 'test'
+  ...
+# Subtest: recordContactAttempt: use the authenticated bootstrap route (edge), not a failing route
+ok 350 - recordContactAttempt: use the authenticated bootstrap route (edge), not a failing route
+  ---
+  duration_ms: 14.579423
+  type: 'test'
+  ...
+# Subtest: recordContactAttempt: use the authenticated bootstrap route (gateway), not a failing route
+ok 351 - recordContactAttempt: use the authenticated bootstrap route (gateway), not a failing route
+  ---
+  duration_ms: 2.828088
+  type: 'test'
+  ...
+# Subtest: recordContactResult: use the authenticated bootstrap route (edge), not a failing route
+ok 352 - recordContactResult: use the authenticated bootstrap route (edge), not a failing route
+  ---
+  duration_ms: 8.238713
+  type: 'test'
+  ...
+# Subtest: recordContactResult: use the authenticated bootstrap route (gateway), not a failing route
+ok 353 - recordContactResult: use the authenticated bootstrap route (gateway), not a failing route
+  ---
+  duration_ms: 2.382313
+  type: 'test'
+  ...
+# Subtest: confirmAgreement: use the authenticated bootstrap route (edge), not a failing route
+ok 354 - confirmAgreement: use the authenticated bootstrap route (edge), not a failing route
+  ---
+  duration_ms: 3.218057
+  type: 'test'
+  ...
+# Subtest: confirmAgreement: use the authenticated bootstrap route (gateway), not a failing route
+ok 355 - confirmAgreement: use the authenticated bootstrap route (gateway), not a failing route
+  ---
+  duration_ms: 2.993266
+  type: 'test'
+  ...
+# Subtest: setAgreementSchedule: use the authenticated bootstrap route (edge), not a failing route
+ok 356 - setAgreementSchedule: use the authenticated bootstrap route (edge), not a failing route
+  ---
+  duration_ms: 2.995838
+  type: 'test'
+  ...
+# Subtest: setAgreementSchedule: use the authenticated bootstrap route (gateway), not a failing route
+ok 357 - setAgreementSchedule: use the authenticated bootstrap route (gateway), not a failing route
+  ---
+  duration_ms: 1.878564
+  type: 'test'
+  ...
+# Subtest: recordContactAttempt: slow contact response is not cut off by the read deadline
+ok 358 - recordContactAttempt: slow contact response is not cut off by the read deadline
+  ---
+  duration_ms: 88.628287
+  type: 'test'
+  ...
+# Subtest: recordContactResult: slow contact response is not cut off by the read deadline
+ok 359 - recordContactResult: slow contact response is not cut off by the read deadline
+  ---
+  duration_ms: 98.88213
+  type: 'test'
+  ...
+# Subtest: confirmAgreement: slow contact response is not cut off by the read deadline
+ok 360 - confirmAgreement: slow contact response is not cut off by the read deadline
+  ---
+  duration_ms: 96.208785
+  type: 'test'
+  ...
+# Subtest: setAgreementSchedule: slow contact response is not cut off by the read deadline
+ok 361 - setAgreementSchedule: slow contact response is not cut off by the read deadline
+  ---
+  duration_ms: 94.059106
+  type: 'test'
+  ...
+# Subtest: contact result never replays an ambiguous network
+ok 362 - contact result never replays an ambiguous network
+  ---
+  duration_ms: 3.062507
+  type: 'test'
+  ...
+# Subtest: contact result never replays an ambiguous 503
+ok 363 - contact result never replays an ambiguous 503
+  ---
+  duration_ms: 11.574719
+  type: 'test'
+  ...
+# (node:522) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: master response visibility uses persisted source: {"source":"Hands"}
+ok 364 - master response visibility uses persisted source: {"source":"Hands"}
+  ---
+  duration_ms: 262.476523
+  type: 'test'
+  ...
+# Subtest: master response visibility uses persisted source: {"source":" Руки "}
+ok 365 - master response visibility uses persisted source: {"source":" Руки "}
+  ---
+  duration_ms: 54.918569
+  type: 'test'
+  ...
+# Subtest: master response visibility uses persisted source: {"source":"Авито","external_source":"HANDS"}
+ok 366 - master response visibility uses persisted source: {"source":"Авито","external_source":"HANDS"}
+  ---
+  duration_ms: 72.600309
+  type: 'test'
+  ...
+# Subtest: master response visibility uses persisted source: {"source":"Телефон","external_id":"hands:42"}
+ok 367 - master response visibility uses persisted source: {"source":"Телефон","external_id":"hands:42"}
+  ---
+  duration_ms: 32.95375
+  type: 'test'
+  ...
+# Subtest: master response visibility uses persisted source: {}
+ok 368 - master response visibility uses persisted source: {}
+  ---
+  duration_ms: 129.451468
+  type: 'test'
+  ...
+# Subtest: master response visibility uses persisted source: {"source":"Авито","external_source":"avito"}
+ok 369 - master response visibility uses persisted source: {"source":"Авито","external_source":"avito"}
+  ---
+  duration_ms: 106.378388
+  type: 'test'
+  ...
+# Subtest: master response visibility uses persisted source: {"source":"Телефон","external_source":"mini_app"}
+ok 370 - master response visibility uses persisted source: {"source":"Телефон","external_source":"mini_app"}
+  ---
+  duration_ms: 134.125925
+  type: 'test'
+  ...
+# Subtest: master response visibility uses persisted source: {"source":"VK"}
+ok 371 - master response visibility uses persisted source: {"source":"VK"}
+  ---
+  duration_ms: 87.813841
+  type: 'test'
+  ...
+# Subtest: master response visibility uses persisted source: {"source":"Рекомендация"}
+ok 372 - master response visibility uses persisted source: {"source":"Рекомендация"}
+  ---
+  duration_ms: 73.104497
+  type: 'test'
+  ...
+# Subtest: master response visibility uses persisted source: {"external_source":"api:site"}
+ok 373 - master response visibility uses persisted source: {"external_source":"api:site"}
+  ---
+  duration_ms: 39.918466
+  type: 'test'
+  ...
+# Subtest: workflow actions retain cost visibility through writes and receipts: {"source":"Авито","external_source":"HANDS"}
+ok 374 - workflow actions retain cost visibility through writes and receipts: {"source":"Авито","external_source":"HANDS"}
+  ---
+  duration_ms: 48.005964
+  type: 'test'
+  ...
+# Subtest: workflow actions retain cost visibility through writes and receipts: {"source":"Авито","external_source":"avito"}
+ok 375 - workflow actions retain cost visibility through writes and receipts: {"source":"Авито","external_source":"avito"}
+  ---
+  duration_ms: 27.310087
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api report response and retry preserve source-specific visibility: {"source":"Авито","external_source":"HANDS"}
+ok 376 - order-lifecycle-api report response and retry preserve source-specific visibility: {"source":"Авито","external_source":"HANDS"}
+  ---
+  duration_ms: 25.117666
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api report response and retry preserve source-specific visibility: {"source":"Авито","external_source":"avito"}
+ok 377 - order-lifecycle-api report response and retry preserve source-specific visibility: {"source":"Авито","external_source":"avito"}
+  ---
+  duration_ms: 47.627117
+  type: 'test'
+  ...
+# Subtest: report-api report response and retry preserve source-specific visibility: {"source":"Авито","external_source":"HANDS"}
+ok 378 - report-api report response and retry preserve source-specific visibility: {"source":"Авито","external_source":"HANDS"}
+  ---
+  duration_ms: 32.947619
+  type: 'test'
+  ...
+# Subtest: report-api report response and retry preserve source-specific visibility: {"source":"Авито","external_source":"avito"}
+ok 379 - report-api report response and retry preserve source-specific visibility: {"source":"Авито","external_source":"avito"}
+  ---
+  duration_ms: 10.19173
+  type: 'test'
+  ...
+# Subtest: cost breakdown conserves current 60/40 plus separate extras and never reprices stored history
+ok 380 - cost breakdown conserves current 60/40 plus separate extras and never reprices stored history
+  ---
+  duration_ms: 11.492922
+  type: 'test'
+  ...
+# Subtest: server redaction copies rather than mutating source data
+ok 381 - server redaction copies rather than mutating source data
+  ---
+  duration_ms: 0.322654
+  type: 'test'
+  ...
+# Subtest: new requires explicitly loaded empty contact data; old and partial records remain visible for clarification
+ok 382 - new requires explicitly loaded empty contact data; old and partial records remain visible for clarification
+  ---
+  duration_ms: 4.66151
+  type: 'test'
+  ...
+# Subtest: scheduled untouched order stays in its day without claiming agreement
+ok 383 - scheduled untouched order stays in its day without claiming agreement
+  ---
+  duration_ms: 25.829321
+  type: 'test'
+  ...
+# Subtest: call attempt alone is pending, never successful contact
+ok 384 - call attempt alone is pending, never successful contact
+  ---
+  duration_ms: 0.348185
+  type: 'test'
+  ...
+# Subtest: no_answer without visit waits
+ok 385 - no_answer without visit waits
+  ---
+  duration_ms: 0.313454
+  type: 'test'
+  ...
+# Subtest: thinking without visit waits
+ok 386 - thinking without visit waits
+  ---
+  duration_ms: 0.225614
+  type: 'test'
+  ...
+# Subtest: waiting_delivery without visit waits
+ok 387 - waiting_delivery without visit waits
+  ---
+  duration_ms: 0.178021
+  type: 'test'
+  ...
+# Subtest: call_later without visit waits
+ok 388 - call_later without visit waits
+  ---
+  duration_ms: 0.373262
+  type: 'test'
+  ...
+# Subtest: request for reschedule supersedes old visit but not a later confirmed agreement
+ok 389 - request for reschedule supersedes old visit but not a later confirmed agreement
+  ---
+  duration_ms: 2.244305
+  type: 'test'
+  ...
+# Subtest: callback does not become a visit and an extra call never duplicates a scheduled order
+ok 390 - callback does not become a visit and an extra call never duplicates a scheduled order
+  ---
+  duration_ms: 1.123958
+  type: 'test'
+  ...
+# Subtest: closed orders stay out; progressed records never become new
+ok 391 - closed orders stay out; progressed records never become new
+  ---
+  duration_ms: 0.521735
+  type: 'test'
+  ...
+# Subtest: Moscow midnight and overdue classification do not depend on browser timezone
+ok 392 - Moscow midnight and overdue classification do not depend on browser timezone
+  ---
+  duration_ms: 1.037002
+  type: 'test'
+  ...
+# Subtest: one snapshot deduplicates IDs, preserves same-address records, sorts appointments and matches counts
+ok 393 - one snapshot deduplicates IDs, preserves same-address records, sorts appointments and matches counts
+  ---
+  duration_ms: 10.607787
+  type: 'test'
+  ...
+# Subtest: submitted reports on earlier dates are not overdue master visits
+ok 394 - submitted reports on earlier dates are not overdue master visits
+  ---
+  duration_ms: 0.281914
+  type: 'test'
+  ...
+# Subtest: legacy departure timestamps retain the next existing workflow action
+ok 395 - legacy departure timestamps retain the next existing workflow action
+  ---
+  duration_ms: 1.084528
+  type: 'test'
+  ...
+# Subtest: SQL defaults on legacy records are not proof of a new assignment
+ok 396 - SQL defaults on legacy records are not proof of a new assignment
+  ---
+  duration_ms: 0.345365
+  type: 'test'
+  ...
+# Subtest: attachment or inconsistent completion receipt alone never invents travel
+ok 397 - attachment or inconsistent completion receipt alone never invents travel
+  ---
+  duration_ms: 0.373832
+  type: 'test'
+  ...
+# Subtest: manager-memo-editor-v45.js supports selecting and uploading multiple memo files
+ok 398 - manager-memo-editor-v45.js supports selecting and uploading multiple memo files
+  ---
+  duration_ms: 9.022547
+  type: 'test'
+  ...
+# Subtest: master-memo-runtime-v21.js supports selecting and uploading multiple memo files
+ok 399 - master-memo-runtime-v21.js supports selecting and uploading multiple memo files
+  ---
+  duration_ms: 0.682079
+  type: 'test'
+  ...
+# Subtest: tests/master-price-memo-v131.test.cjs
+ok 49 - tests/master-price-memo-v131.test.cjs
+  ---
+  duration_ms: 143.644289
+  type: 'test'
+  ...
+# Subtest: master report exposes a reschedule flow and client call action
+ok 401 - master report exposes a reschedule flow and client call action
+  ---
+  duration_ms: 58.820016
+  type: 'test'
+  ...
+# Subtest: master reschedule UI keeps the call action next to the phone and uses a mobile bottom sheet
+ok 402 - master reschedule UI keeps the call action next to the phone and uses a mobile bottom sheet
+  ---
+  duration_ms: 0.559938
+  type: 'test'
+  ...
+# Subtest: reschedule persistence is scoped to the assigned active master order
+ok 403 - reschedule persistence is scoped to the assigned active master order
+  ---
+  duration_ms: 0.470192
+  type: 'test'
+  ...
+# Subtest: setStage uses the working bootstrap route without a write to failed gateways
+ok 404 - setStage uses the working bootstrap route without a write to failed gateways
+  ---
+  duration_ms: 22.748955
+  type: 'test'
+  ...
+# Subtest: setStage never replays an uncertain network on the bootstrap route
+ok 405 - setStage never replays an uncertain network on the bootstrap route
+  ---
+  duration_ms: 5.888416
+  type: 'test'
+  ...
+# Subtest: setStage never replays an uncertain 503 on the bootstrap route
+ok 406 - setStage never replays an uncertain 503 on the bootstrap route
+  ---
+  duration_ms: 6.094362
+  type: 'test'
+  ...
+# Subtest: master workflow writes are failover-safe and schedule replay is idempotent
+ok 407 - master workflow writes are failover-safe and schedule replay is idempotent
+  ---
+  duration_ms: 3.177985
+  type: 'test'
+  ...
+# (node:580) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: master workflow keeps phone calls separate from manual stage changes
+ok 408 - master workflow keeps phone calls separate from manual stage changes
+  ---
+  duration_ms: 5.670129
+  type: 'test'
+  ...
+# Subtest: profile bridge persists master workflow stages without touching money
+ok 409 - profile bridge persists master workflow stages without touching money
+  ---
+  duration_ms: 4.645488
+  type: 'test'
+  ...
+# Subtest: workflow migration remains backward-compatible and does not touch payouts
+ok 410 - workflow migration remains backward-compatible and does not touch payouts
+  ---
+  duration_ms: 1.071219
+  type: 'test'
+  ...
+# Subtest: master workflow API supports manual v26 flow and legacy arrived clients without changing money
+ok 411 - master workflow API supports manual v26 flow and legacy arrived clients without changing money
+  ---
+  duration_ms: 372.562661
+  type: 'test'
+  ...
+# (node:594) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: mini-app manager bootstrap omits staff credential metadata in every projection
+ok 412 - mini-app manager bootstrap omits staff credential metadata in every projection
+  ---
+  duration_ms: 168.382343
+  type: 'test'
+  ...
+# Subtest: mini-app dispatcher bootstrap omits staff credential metadata in every projection
+ok 413 - mini-app dispatcher bootstrap omits staff credential metadata in every projection
+  ---
+  duration_ms: 30.283995
+  type: 'test'
+  ...
+# Subtest: mini-app master bootstrap omits staff credential metadata in every projection
+ok 414 - mini-app master bootstrap omits staff credential metadata in every projection
+  ---
+  duration_ms: 18.396207
+  type: 'test'
+  ...
+# Subtest: mini-app manager staff update response omits credential metadata
+ok 415 - mini-app manager staff update response omits credential metadata
+  ---
+  duration_ms: 14.716761
+  type: 'test'
+  ...
+# Subtest: mini-app dispatcher staff update response omits credential metadata
+ok 416 - mini-app dispatcher staff update response omits credential metadata
+  ---
+  duration_ms: 29.543514
+  type: 'test'
+  ...
+# Subtest: mini-app owner retains existing login metadata without password material
+ok 417 - mini-app owner retains existing login metadata without password material
+  ---
+  duration_ms: 29.15052
+  type: 'test'
+  ...
+# Subtest: Android back navigation keeps an in-app history stack
+ok 418 - Android back navigation keeps an in-app history stack
+  ---
+  duration_ms: 3.212219
+  type: 'test'
+  ...
+# Subtest: authorized sessions are persistent and silently renewed
+ok 419 - authorized sessions are persistent and silently renewed
+  ---
+  duration_ms: 0.397541
+  type: 'test'
+  ...
+# Subtest: notification center v2.6 is loaded and parses
+ok 420 - notification center v2.6 is loaded and parses
+  ---
+  duration_ms: 7.275014
+  type: 'test'
+  ...
+# Subtest: notification center covers dispatcher and master signals without a second backend
+ok 421 - notification center covers dispatcher and master signals without a second backend
+  ---
+  duration_ms: 0.644839
+  type: 'test'
+  ...
+# Subtest: manager and dispatcher get the reschedule orders filter
+ok 422 - manager and dispatcher get the reschedule orders filter
+  ---
+  duration_ms: 3.66065
+  type: 'test'
+  ...
+# Subtest: reschedule filter is not granted to owner by the base role check
+ok 423 - reschedule filter is not granted to owner by the base role check
+  ---
+  duration_ms: 0.406103
+  type: 'test'
+  ...
+# Subtest: business date uses Moscow rather than UTC or device timezone
+ok 424 - business date uses Moscow rather than UTC or device timezone
+  ---
+  duration_ms: 1.75635
+  type: 'test'
+  ...
+# Subtest: calendar validation rejects impossible dates
+ok 425 - calendar validation rejects impossible dates
+  ---
+  duration_ms: 0.750398
+  type: 'test'
+  ...
+# Subtest: ready upcoming order is not a problem
+ok 426 - ready upcoming order is not a problem
+  ---
+  duration_ms: 1.513171
+  type: 'test'
+  ...
+# Subtest: closed and cancelled historical orders never produce tasks
+ok 427 - closed and cancelled historical orders never produce tasks
+  ---
+  duration_ms: 0.255009
+  type: 'test'
+  ...
+# Subtest: multiple reasons are grouped under one unique order
+ok 428 - multiple reasons are grouped under one unique order
+  ---
+  duration_ms: 1.503403
+  type: 'test'
+  ...
+# Subtest: nearest unassigned orders come before remote work
+ok 429 - nearest unassigned orders come before remote work
+  ---
+  duration_ms: 0.464615
+  type: 'test'
+  ...
+# Subtest: late visit is a request to check rather than proof of missing work
+ok 430 - late visit is a request to check rather than proof of missing work
+  ---
+  duration_ms: 0.400182
+  type: 'test'
+  ...
+# Subtest: call and agreement are different facts; only nearby visits require a check
+ok 431 - call and agreement are different facts; only nearby visits require a check
+  ---
+  duration_ms: 0.508406
+  type: 'test'
+  ...
+# Subtest: workflow already in progress suppresses stale agreement warnings
+ok 432 - workflow already in progress suppresses stale agreement warnings
+  ---
+  duration_ms: 0.285707
+  type: 'test'
+  ...
+# Subtest: pending report belongs to reviewer, not overdue master queue
+ok 433 - pending report belongs to reviewer, not overdue master queue
+  ---
+  duration_ms: 0.444253
+  type: 'test'
+  ...
+# Subtest: pending without upload does not invent a submitted report
+ok 434 - pending without upload does not invent a submitted report
+  ---
+  duration_ms: 0.209906
+  type: 'test'
+  ...
+# Subtest: rejected report replaces obsolete visit tasks and preserves literal reason
+ok 435 - rejected report replaces obsolete visit tasks and preserves literal reason
+  ---
+  duration_ms: 1.227759
+  type: 'test'
+  ...
+# Subtest: missing assignee for correction is routed to dispatcher
+ok 436 - missing assignee for correction is routed to dispatcher
+  ---
+  duration_ms: 0.235429
+  type: 'test'
+  ...
+# Subtest: only explicit true reschedule flags raise a task
+ok 437 - only explicit true reschedule flags raise a task
+  ---
+  duration_ms: 0.261746
+  type: 'test'
+  ...
+# Subtest: missing/invalid visit time is not an invented hour
+ok 438 - missing/invalid visit time is not an invented hour
+  ---
+  duration_ms: 0.23389
+  type: 'test'
+  ...
+# Subtest: Hands public order number is preserved without changing internal identity
+ok 439 - Hands public order number is preserved without changing internal identity
+  ---
+  duration_ms: 0.192088
+  type: 'test'
+  ...
+# Subtest: classification never changes orders or payroll fields
+ok 440 - classification never changes orders or payroll fields
+  ---
+  duration_ms: 0.518492
+  type: 'test'
+  ...
+# Subtest: active unfinished work stays actionable when replacing the legacy problem list
+ok 441 - active unfinished work stays actionable when replacing the legacy problem list
+  ---
+  duration_ms: 0.426733
+  type: 'test'
+  ...
+# Subtest: old entry preserves exact VK query and fragment and never redirects other deployments
+ok 442 - old entry preserves exact VK query and fragment and never redirects other deployments
+  ---
+  duration_ms: 13.156728
+  type: 'test'
+  ...
+# Subtest: installed old worker switches future navigations without deleting caches or navigating open drafts
+ok 443 - installed old worker switches future navigations without deleting caches or navigating open drafts
+  ---
+  duration_ms: 11.14012
+  type: 'test'
+  ...
+# Subtest: rolling seven business days from 2026-10-04T09:00:00Z
+ok 444 - rolling seven business days from 2026-10-04T09:00:00Z
+  ---
+  duration_ms: 31.817344
+  type: 'test'
+  ...
+# Subtest: rolling seven business days from 2026-10-30T09:00:00Z
+ok 445 - rolling seven business days from 2026-10-30T09:00:00Z
+  ---
+  duration_ms: 2.896177
+  type: 'test'
+  ...
+# Subtest: rolling seven business days from 2026-12-30T09:00:00Z
+ok 446 - rolling seven business days from 2026-12-30T09:00:00Z
+  ---
+  duration_ms: 4.3278
+  type: 'test'
+  ...
+# Subtest: rolling seven business days from 2026-10-03T21:01:00Z
+ok 447 - rolling seven business days from 2026-10-03T21:01:00Z
+  ---
+  duration_ms: 5.825782
+  type: 'test'
+  ...
+# Subtest: all root JavaScript assets parse before they are included in the PWA cache
+ok 448 - all root JavaScript assets parse before they are included in the PWA cache
+  ---
+  duration_ms: 144.68639
+  type: 'test'
+  ...
+# Subtest: production classic scripts and generated bundles parse before release
+ok 449 - production classic scripts and generated bundles parse before release
+  ---
+  duration_ms: 41.693169
+  type: 'test'
+  ...
+# (node:660) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: push: rejects missing, forged, expired, excessive-lifetime and launch-only authentication
+ok 450 - push: rejects missing, forged, expired, excessive-lifetime and launch-only authentication
+  ---
+  duration_ms: 22.787629
+  type: 'test'
+  ...
+# Subtest: push: owner login and refresh tokens work for status, subscribe and test
+ok 451 - push: owner login and refresh tokens work for status, subscribe and test
+  ---
+  duration_ms: 86.497343
+  type: 'test'
+  ...
+# Subtest: push: manager login and refresh tokens work for status, subscribe and test
+ok 452 - push: manager login and refresh tokens work for status, subscribe and test
+  ---
+  duration_ms: 36.345682
+  type: 'test'
+  ...
+# Subtest: push: dispatcher login and refresh tokens work for status, subscribe and test
+ok 453 - push: dispatcher login and refresh tokens work for status, subscribe and test
+  ---
+  duration_ms: 22.349097
+  type: 'test'
+  ...
+# Subtest: push: master login and refresh tokens work for status, subscribe and test
+ok 454 - push: master login and refresh tokens work for status, subscribe and test
+  ---
+  duration_ms: 21.936111
+  type: 'test'
+  ...
+# Subtest: push: inactive or unknown staff rejected before accessing configuration
+ok 455 - push: inactive or unknown staff rejected before accessing configuration
+  ---
+  duration_ms: 3.733358
+  type: 'test'
+  ...
+# Subtest: push: subscribe takes actor solely from verified BOS session and hashes revocation capability
+ok 456 - push: subscribe takes actor solely from verified BOS session and hashes revocation capability
+  ---
+  duration_ms: 2.250711
+  type: 'test'
+  ...
+# Subtest: push: rejects SSRF, redirects, credentials, non-HTTPS, unsupported providers, query strings and malformed keys
+ok 457 - push: rejects SSRF, redirects, credentials, non-HTTPS, unsupported providers, query strings and malformed keys
+  ---
+  duration_ms: 27.490217
+  type: 'test'
+  ...
+# Subtest: push: accepts only known Chromium, Firefox and Apple endpoint shapes
+ok 458 - push: accepts only known Chromium, Firefox and Apple endpoint shapes
+  ---
+  duration_ms: 16.077679
+  type: 'test'
+  ...
+# Subtest: push: status scopes device to actor and never serializes signing material or endpoints
+ok 459 - push: status scopes device to actor and never serializes signing material or endpoints
+  ---
+  duration_ms: 4.924866
+  type: 'test'
+  ...
+# Subtest: push: capability revocation works after logout, cannot send or read
+ok 460 - push: capability revocation works after logout, cannot send or read
+  ---
+  duration_ms: 3.476143
+  type: 'test'
+  ...
+# Subtest: push: test rate limit, missing device, subscription limit and conflict are explicit
+ok 461 - push: test rate limit, missing device, subscription limit and conflict are explicit
+  ---
+  duration_ms: 38.599067
+  type: 'test'
+  ...
+# Subtest: push: disabled server does not allow subscription or test
+ok 462 - push: disabled server does not allow subscription or test
+  ---
+  duration_ms: 2.652807
+  type: 'test'
+  ...
+# Subtest: push: worker requires separate secret, neither BOS nor fake bearer suffices
+ok 463 - push: worker requires separate secret, neither BOS nor fake bearer suffices
+  ---
+  duration_ms: 4.199055
+  type: 'test'
+  ...
+# Subtest: push: worker rechecks authorization and binding before sending; stale rows discarded
+ok 464 - push: worker rechecks authorization and binding before sending; stale rows discarded
+  ---
+  duration_ms: 3.975001
+  type: 'test'
+  ...
+# Subtest: push: encryption boundary gets only minimal payload, bounded TTL, stable topic and no redirect following
+ok 465 - push: encryption boundary gets only minimal payload, bounded TTL, stable topic and no redirect following
+  ---
+  duration_ms: 1.869064
+  type: 'test'
+  ...
+# Subtest: push: invalid stored provider or expired payload is not sent
+ok 466 - push: invalid stored provider or expired payload is not sent
+  ---
+  duration_ms: 4.52097
+  type: 'test'
+  ...
+# Subtest: push: provider 410 invalidation, bounded transient retry and non-retryable 403 classification
+ok 467 - push: provider 410 invalidation, bounded transient retry and non-retryable 403 classification
+  ---
+  duration_ms: 7.988041
+  type: 'test'
+  ...
+# Subtest: push: network error retries without exposing endpoint or credentials
+ok 468 - push: network error retries without exposing endpoint or credentials
+  ---
+  duration_ms: 1.466666
+  type: 'test'
+  ...
+# Subtest: push: body limit and malformed JSON fail before any database access
+ok 469 - push: body limit and malformed JSON fail before any database access
+  ---
+  duration_ms: 6.921858
+  type: 'test'
+  ...
+# Subtest: push: internal errors masked; preflight exposes only intended headers
+ok 470 - push: internal errors masked; preflight exposes only intended headers
+  ---
+  duration_ms: 4.174232
+  type: 'test'
+  ...
+# Subtest: push status: existing gateway service-miss fallback reaches Edge once
+ok 471 - push status: existing gateway service-miss fallback reaches Edge once
+  ---
+  duration_ms: 55.594282
+  type: 'test'
+  ...
+# Subtest: push subscribe: existing gateway service-miss fallback reaches Edge once
+ok 472 - push subscribe: existing gateway service-miss fallback reaches Edge once
+  ---
+  duration_ms: 9.432598
+  type: 'test'
+  ...
+# Subtest: push revoke: existing gateway service-miss fallback reaches Edge once
+ok 473 - push revoke: existing gateway service-miss fallback reaches Edge once
+  ---
+  duration_ms: 3.702609
+  type: 'test'
+  ...
+# Subtest: push test: existing gateway service-miss fallback reaches Edge once
+ok 474 - push test: existing gateway service-miss fallback reaches Edge once
+  ---
+  duration_ms: 4.620422
+  type: 'test'
+  ...
+# Subtest: push test: uncertain provider-path failure never repeats a possibly queued test
+ok 475 - push test: uncertain provider-path failure never repeats a possibly queued test
+  ---
+  duration_ms: 2.902416
+  type: 'test'
+  ...
+# Subtest: push subscription: an authorization error does not try another service endpoint
+ok 476 - push subscription: an authorization error does not try another service endpoint
+  ---
+  duration_ms: 2.573088
+  type: 'test'
+  ...
+# Subtest: push worker: persistent binding survives a build-cache rotation, rejects invalid clients
+ok 477 - push worker: persistent binding survives a build-cache rotation, rejects invalid clients
+  ---
+  duration_ms: 16.980602
+  type: 'test'
+  ...
+# Subtest: push worker: malformed, expired and previous-account payloads do not display
+ok 478 - push worker: malformed, expired and previous-account payloads do not display
+  ---
+  duration_ms: 5.802855
+  type: 'test'
+  ...
+# Subtest: push worker: logout clears binding and existing notifications before later events
+ok 479 - push worker: logout clears binding and existing notifications before later events
+  ---
+  duration_ms: 3.088187
+  type: 'test'
+  ...
+# Subtest: push worker: queued bind followed by logout cannot restore a cleared binding
+ok 480 - push worker: queued bind followed by logout cannot restore a cleared binding
+  ---
+  duration_ms: 4.777558
+  type: 'test'
+  ...
+# Subtest: push worker: notification clicks never follow supplied URLs and require live binding
+ok 481 - push worker: notification clicks never follow supplied URLs and require live binding
+  ---
+  duration_ms: 2.894984
+  type: 'test'
+  ...
+# Subtest: push worker: focus existing own app and message it without navigating away from an unsaved form
+ok 482 - push worker: focus existing own app and message it without navigating away from an unsaved form
+  ---
+  duration_ms: 6.433574
+  type: 'test'
+  ...
+# Subtest: push worker: expired browser subscription clears binding and requests explicit reconnection
+ok 483 - push worker: expired browser subscription clears binding and requests explicit reconnection
+  ---
+  duration_ms: 1.936799
+  type: 'test'
+  ...
+# (node:684) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: order-lifecycle-api: attachment URLs are bound to the own signed order/token path
+ok 484 - order-lifecycle-api: attachment URLs are bound to the own signed order/token path
+  ---
+  duration_ms: 604.774646
+  type: 'test'
+  ...
+# Subtest: report-api: attachment URLs are bound to the own signed order/token path
+ok 485 - report-api: attachment URLs are bound to the own signed order/token path
+  ---
+  duration_ms: 201.642405
+  type: 'test'
+  ...
+# Subtest: archiver refuses unsafe URLs without attempting any network request
+ok 486 - archiver refuses unsafe URLs without attempting any network request
+  ---
+  duration_ms: 296.593741
+  type: 'test'
+  ...
+# Subtest: attachment redirects are refused, not followed
+ok 487 - attachment redirects are refused, not followed
+  ---
+  duration_ms: 10.208413
+  type: 'test'
+  ...
+# Subtest: declared oversized body is rejected and the request is aborted
+ok 488 - declared oversized body is rejected and the request is aborted
+  ---
+  duration_ms: 15.778872
+  type: 'test'
+  ...
+# Subtest: streaming byte limit works without content-length and cancels the stream
+ok 489 - streaming byte limit works without content-length and cancels the stream
+  ---
+  duration_ms: 15.093162
+  type: 'test'
+  ...
+# Subtest: aggregate report limit bounds a series of individually valid files
+ok 490 - aggregate report limit bounds a series of individually valid files
+  ---
+  duration_ms: 2986.018592
+  type: 'test'
+  ...
+# Subtest: attachment read deadline aborts the fetch and preserves pending report
+ok 491 - attachment read deadline aborts the fetch and preserves pending report
+  ---
+  duration_ms: 16.95477
+  type: 'test'
+  ...
+# Subtest: archive cannot attach stale metadata after report changes during-read
+ok 492 - archive cannot attach stale metadata after report changes during-read
+  ---
+  duration_ms: 17.004924
+  type: 'test'
+  ...
+# Subtest: archive cannot attach stale metadata after report changes during-bridge
+ok 493 - archive cannot attach stale metadata after report changes during-bridge
+  ---
+  duration_ms: 10.338001
+  type: 'test'
+  ...
+# Subtest: archived receipt causes no repeated external write
+ok 494 - archived receipt causes no repeated external write
+  ---
+  duration_ms: 6.278512
+  type: 'test'
+  ...
+# Subtest: multipart uploads are immutable and closed reports reject uploads
+ok 495 - multipart uploads are immutable and closed reports reject uploads
+  ---
+  duration_ms: 123.463538
+  type: 'test'
+  ...
+# Subtest: multipart upload fails closed when the signing secret is missing
+ok 496 - multipart upload fails closed when the signing secret is missing
+  ---
+  duration_ms: 5.66614
+  type: 'test'
+  ...
+# (node:698) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: 100: manual create/update cannot skip approval, even with files present
+ok 497 - 100: manual create/update cannot skip approval, even with files present
+  ---
+  duration_ms: 177.185095
+  type: 'test'
+  ...
+# Subtest: staff_d: manual create/update cannot skip approval, even with files present
+ok 498 - staff_d: manual create/update cannot skip approval, even with files present
+  ---
+  duration_ms: 64.900955
+  type: 'test'
+  ...
+# Subtest: staff_mgr: manual create/update cannot skip approval, even with files present
+ok 499 - staff_mgr: manual create/update cannot skip approval, even with files present
+  ---
+  duration_ms: 22.241836
+  type: 'test'
+  ...
+# Subtest: editing an already completed order preserves its completion date
+ok 500 - editing an already completed order preserves its completion date
+  ---
+  duration_ms: 31.013007
+  type: 'test'
+  ...
+# Subtest: reviewing a real report after manual closure preserves completion time, history and payroll
+ok 501 - reviewing a real report after manual closure preserves completion time, history and payroll
+  ---
+  duration_ms: 123.044611
+  type: 'test'
+  ...
+# Subtest: 100: legacy review archives through the real lifecycle and duplicate keeps receipt
+ok 502 - 100: legacy review archives through the real lifecycle and duplicate keeps receipt
+  ---
+  duration_ms: 86.024577
+  type: 'test'
+  ...
+# Subtest: staff_d: legacy review archives through the real lifecycle and duplicate keeps receipt
+ok 503 - staff_d: legacy review archives through the real lifecycle and duplicate keeps receipt
+  ---
+  duration_ms: 46.485318
+  type: 'test'
+  ...
+# Subtest: staff_mgr: legacy review archives through the real lifecycle and duplicate keeps receipt
+ok 504 - staff_mgr: legacy review archives through the real lifecycle and duplicate keeps receipt
+  ---
+  duration_ms: 107.55229
+  type: 'test'
+  ...
+# Subtest: archive failure or incomplete receipt cannot complete: {"ok":false,"error":"Drive unavailable"}
+ok 505 - archive failure or incomplete receipt cannot complete: {"ok":false,"error":"Drive unavailable"}
+  ---
+  duration_ms: 83.087713
+  type: 'test'
+  ...
+# Subtest: archive failure or incomplete receipt cannot complete: {"ok":true}
+ok 506 - archive failure or incomplete receipt cannot complete: {"ok":true}
+  ---
+  duration_ms: 84.395439
+  type: 'test'
+  ...
+# Subtest: archive failure or incomplete receipt cannot complete: {"ok":true,"order":{"drive_archive_status":"archived","drive_archive_url":null}}
+ok 507 - archive failure or incomplete receipt cannot complete: {"ok":true,"order":{"drive_archive_status":"archived","drive_archive_url":null}}
+  ---
+  duration_ms: 44.434559
+  type: 'test'
+  ...
+# Subtest: legacy review keeps master authorization and pending-only conflict response
+ok 508 - legacy review keeps master authorization and pending-only conflict response
+  ---
+  duration_ms: 61.959211
+  type: 'test'
+  ...
+# Subtest: lifecycle submission and receipt hide internal financial fields from master and owner preview
+ok 509 - lifecycle submission and receipt hide internal financial fields from master and owner preview
+  ---
+  duration_ms: 58.788334
+  type: 'test'
+  ...
+# Subtest: an edit read before reopening cannot restore completed status
+ok 510 - an edit read before reopening cannot restore completed status
+  ---
+  duration_ms: 11.050797
+  type: 'test'
+  ...
+# (node:710) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: order-lifecycle-api/finalizeMasterReport: Hands snapshot, original base, extras and receipt
+ok 511 - order-lifecycle-api/finalizeMasterReport: Hands snapshot, original base, extras and receipt
+  ---
+  duration_ms: 221.659742
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: Телефон snapshot, original base, extras and receipt
+ok 512 - order-lifecycle-api/finalizeMasterReport: Телефон snapshot, original base, extras and receipt
+  ---
+  duration_ms: 19.406579
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: everything done ignores cached selection and deduction
+ok 513 - order-lifecycle-api/finalizeMasterReport: everything done ignores cached selection and deduction
+  ---
+  duration_ms: 18.817662
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject empty without writes
+ok 514 - order-lifecycle-api/finalizeMasterReport: reject empty without writes
+  ---
+  duration_ms: 18.208968
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject unknown without writes
+ok 515 - order-lifecycle-api/finalizeMasterReport: reject unknown without writes
+  ---
+  duration_ms: 25.245756
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject duplicate without writes
+ok 516 - order-lifecycle-api/finalizeMasterReport: reject duplicate without writes
+  ---
+  duration_ms: 11.945457
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject negative without writes
+ok 517 - order-lifecycle-api/finalizeMasterReport: reject negative without writes
+  ---
+  duration_ms: 12.517735
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject zero without writes
+ok 518 - order-lifecycle-api/finalizeMasterReport: reject zero without writes
+  ---
+  duration_ms: 9.645798
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject fractionalPieces without writes
+ok 519 - order-lifecycle-api/finalizeMasterReport: reject fractionalPieces without writes
+  ---
+  duration_ms: 11.758025
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject precision without writes
+ok 520 - order-lifecycle-api/finalizeMasterReport: reject precision without writes
+  ---
+  duration_ms: 18.158879
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject priceTamper without writes
+ok 521 - order-lifecycle-api/finalizeMasterReport: reject priceTamper without writes
+  ---
+  duration_ms: 21.465612
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject totalTamper without writes
+ok 522 - order-lifecycle-api/finalizeMasterReport: reject totalTamper without writes
+  ---
+  duration_ms: 22.699255
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject lineTamper without writes
+ok 523 - order-lifecycle-api/finalizeMasterReport: reject lineTamper without writes
+  ---
+  duration_ms: 18.354239
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject overflow without writes
+ok 524 - order-lifecycle-api/finalizeMasterReport: reject overflow without writes
+  ---
+  duration_ms: 11.249459
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject fromNotAgreed without writes
+ok 525 - order-lifecycle-api/finalizeMasterReport: reject fromNotAgreed without writes
+  ---
+  duration_ms: 11.140344
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject negativePrice without writes
+ok 526 - order-lifecycle-api/finalizeMasterReport: reject negativePrice without writes
+  ---
+  duration_ms: 8.758185
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject invalidType without writes
+ok 527 - order-lifecycle-api/finalizeMasterReport: reject invalidType without writes
+  ---
+  duration_ms: 7.602741
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: reject tooMany without writes
+ok 528 - order-lifecycle-api/finalizeMasterReport: reject tooMany without writes
+  ---
+  duration_ms: 6.669915
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: explicitly agreed from-price is snapshotted
+ok 529 - order-lifecycle-api/finalizeMasterReport: explicitly agreed from-price is snapshotted
+  ---
+  duration_ms: 10.590304
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: Hands snapshot, original base, extras and receipt
+ok 530 - report-api/finalizeMasterReport: Hands snapshot, original base, extras and receipt
+  ---
+  duration_ms: 12.434001
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: Телефон snapshot, original base, extras and receipt
+ok 531 - report-api/finalizeMasterReport: Телефон snapshot, original base, extras and receipt
+  ---
+  duration_ms: 8.389267
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: everything done ignores cached selection and deduction
+ok 532 - report-api/finalizeMasterReport: everything done ignores cached selection and deduction
+  ---
+  duration_ms: 5.772554
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject empty without writes
+ok 533 - report-api/finalizeMasterReport: reject empty without writes
+  ---
+  duration_ms: 9.795347
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject unknown without writes
+ok 534 - report-api/finalizeMasterReport: reject unknown without writes
+  ---
+  duration_ms: 6.311964
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject duplicate without writes
+ok 535 - report-api/finalizeMasterReport: reject duplicate without writes
+  ---
+  duration_ms: 7.690365
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject negative without writes
+ok 536 - report-api/finalizeMasterReport: reject negative without writes
+  ---
+  duration_ms: 6.829571
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject zero without writes
+ok 537 - report-api/finalizeMasterReport: reject zero without writes
+  ---
+  duration_ms: 24.862095
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject fractionalPieces without writes
+ok 538 - report-api/finalizeMasterReport: reject fractionalPieces without writes
+  ---
+  duration_ms: 5.548501
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject precision without writes
+ok 539 - report-api/finalizeMasterReport: reject precision without writes
+  ---
+  duration_ms: 10.700981
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject priceTamper without writes
+ok 540 - report-api/finalizeMasterReport: reject priceTamper without writes
+  ---
+  duration_ms: 12.302105
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject totalTamper without writes
+ok 541 - report-api/finalizeMasterReport: reject totalTamper without writes
+  ---
+  duration_ms: 11.179702
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject lineTamper without writes
+ok 542 - report-api/finalizeMasterReport: reject lineTamper without writes
+  ---
+  duration_ms: 18.340468
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject overflow without writes
+ok 543 - report-api/finalizeMasterReport: reject overflow without writes
+  ---
+  duration_ms: 4.805368
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject fromNotAgreed without writes
+ok 544 - report-api/finalizeMasterReport: reject fromNotAgreed without writes
+  ---
+  duration_ms: 6.691896
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject negativePrice without writes
+ok 545 - report-api/finalizeMasterReport: reject negativePrice without writes
+  ---
+  duration_ms: 5.880643
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject invalidType without writes
+ok 546 - report-api/finalizeMasterReport: reject invalidType without writes
+  ---
+  duration_ms: 76.894354
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: reject tooMany without writes
+ok 547 - report-api/finalizeMasterReport: reject tooMany without writes
+  ---
+  duration_ms: 24.088144
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: explicitly agreed from-price is snapshotted
+ok 548 - report-api/finalizeMasterReport: explicitly agreed from-price is snapshotted
+  ---
+  duration_ms: 12.150219
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: Hands snapshot, original base, extras and receipt
+ok 549 - report-api/uploadMasterReport: Hands snapshot, original base, extras and receipt
+  ---
+  duration_ms: 13.476021
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: Телефон snapshot, original base, extras and receipt
+ok 550 - report-api/uploadMasterReport: Телефон snapshot, original base, extras and receipt
+  ---
+  duration_ms: 19.792738
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: everything done ignores cached selection and deduction
+ok 551 - report-api/uploadMasterReport: everything done ignores cached selection and deduction
+  ---
+  duration_ms: 11.988775
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject empty without writes
+ok 552 - report-api/uploadMasterReport: reject empty without writes
+  ---
+  duration_ms: 12.821229
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject unknown without writes
+ok 553 - report-api/uploadMasterReport: reject unknown without writes
+  ---
+  duration_ms: 33.108222
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject duplicate without writes
+ok 554 - report-api/uploadMasterReport: reject duplicate without writes
+  ---
+  duration_ms: 13.059659
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject negative without writes
+ok 555 - report-api/uploadMasterReport: reject negative without writes
+  ---
+  duration_ms: 24.030534
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject zero without writes
+ok 556 - report-api/uploadMasterReport: reject zero without writes
+  ---
+  duration_ms: 14.462257
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject fractionalPieces without writes
+ok 557 - report-api/uploadMasterReport: reject fractionalPieces without writes
+  ---
+  duration_ms: 22.725261
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject precision without writes
+ok 558 - report-api/uploadMasterReport: reject precision without writes
+  ---
+  duration_ms: 10.635798
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject priceTamper without writes
+ok 559 - report-api/uploadMasterReport: reject priceTamper without writes
+  ---
+  duration_ms: 10.848778
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject totalTamper without writes
+ok 560 - report-api/uploadMasterReport: reject totalTamper without writes
+  ---
+  duration_ms: 11.283775
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject lineTamper without writes
+ok 561 - report-api/uploadMasterReport: reject lineTamper without writes
+  ---
+  duration_ms: 15.358309
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject overflow without writes
+ok 562 - report-api/uploadMasterReport: reject overflow without writes
+  ---
+  duration_ms: 16.550362
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject fromNotAgreed without writes
+ok 563 - report-api/uploadMasterReport: reject fromNotAgreed without writes
+  ---
+  duration_ms: 10.200475
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject negativePrice without writes
+ok 564 - report-api/uploadMasterReport: reject negativePrice without writes
+  ---
+  duration_ms: 15.305566
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject invalidType without writes
+ok 565 - report-api/uploadMasterReport: reject invalidType without writes
+  ---
+  duration_ms: 17.091607
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: reject tooMany without writes
+ok 566 - report-api/uploadMasterReport: reject tooMany without writes
+  ---
+  duration_ms: 13.356443
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: explicitly agreed from-price is snapshotted
+ok 567 - report-api/uploadMasterReport: explicitly agreed from-price is snapshotted
+  ---
+  duration_ms: 19.416772
+  type: 'test'
+  ...
+# Subtest: catalog preserves actual Avito data and measurement rules
+ok 568 - catalog preserves actual Avito data and measurement rules
+  ---
+  duration_ms: 7.724187
+  type: 'test'
+  ...
+# Subtest: legacy original amount is recovered once
+ok 569 - legacy original amount is recovered once
+  ---
+  duration_ms: 2.230209
+  type: 'test'
+  ...
+# Subtest: signed old and new report files bypass the app shell and its offline cache
+ok 570 - signed old and new report files bypass the app shell and its offline cache
+  ---
+  duration_ms: 99.649452
+  type: 'test'
+  ...
+# Subtest: root and index navigation keep the verified offline shell, including query links
+ok 571 - root and index navigation keep the verified offline shell, including query links
+  ---
+  duration_ms: 258.08048
+  type: 'test'
+  ...
+# Subtest: report finalization keeps the proven upload route after lifecycle service rewrite
+ok 572 - report finalization keeps the proven upload route after lifecycle service rewrite
+  ---
+  duration_ms: 24.541354
+  type: 'test'
+  ...
+# Subtest: a network on the proven finalization route never replays a write
+ok 573 - a network on the proven finalization route never replays a write
+  ---
+  duration_ms: 3.948027
+  type: 'test'
+  ...
+# Subtest: a 503 on the proven finalization route never replays a write
+ok 574 - a 503 on the proven finalization route never replays a write
+  ---
+  duration_ms: 19.097458
+  type: 'test'
+  ...
+# (node:742) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: order-lifecycle-api/finalizeMasterReport: base without tax withholding, persisted and both role views agree
+ok 575 - order-lifecycle-api/finalizeMasterReport: base without tax withholding, persisted and both role views agree
+  ---
+  duration_ms: 336.474959
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: partial work and full extras, persisted and both role views agree
+ok 576 - order-lifecycle-api/finalizeMasterReport: partial work and full extras, persisted and both role views agree
+  ---
+  duration_ms: 217.893677
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: kopeck rounding, persisted and both role views agree
+ok 577 - order-lifecycle-api/finalizeMasterReport: kopeck rounding, persisted and both role views agree
+  ---
+  duration_ms: 231.489107
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: no base, extras only, persisted and both role views agree
+ok 578 - order-lifecycle-api/finalizeMasterReport: no base, extras only, persisted and both role views agree
+  ---
+  duration_ms: 55.555948
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: base without tax withholding, persisted and both role views agree
+ok 579 - report-api/finalizeMasterReport: base without tax withholding, persisted and both role views agree
+  ---
+  duration_ms: 45.802283
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: partial work and full extras, persisted and both role views agree
+ok 580 - report-api/finalizeMasterReport: partial work and full extras, persisted and both role views agree
+  ---
+  duration_ms: 86.671938
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: kopeck rounding, persisted and both role views agree
+ok 581 - report-api/finalizeMasterReport: kopeck rounding, persisted and both role views agree
+  ---
+  duration_ms: 56.505278
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: no base, extras only, persisted and both role views agree
+ok 582 - report-api/finalizeMasterReport: no base, extras only, persisted and both role views agree
+  ---
+  duration_ms: 39.846168
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: base without tax withholding, persisted and both role views agree
+ok 583 - report-api/uploadMasterReport: base without tax withholding, persisted and both role views agree
+  ---
+  duration_ms: 51.52101
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: partial work and full extras, persisted and both role views agree
+ok 584 - report-api/uploadMasterReport: partial work and full extras, persisted and both role views agree
+  ---
+  duration_ms: 89.776835
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: kopeck rounding, persisted and both role views agree
+ok 585 - report-api/uploadMasterReport: kopeck rounding, persisted and both role views agree
+  ---
+  duration_ms: 34.910368
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: no base, extras only, persisted and both role views agree
+ok 586 - report-api/uploadMasterReport: no base, extras only, persisted and both role views agree
+  ---
+  duration_ms: 40.891446
+  type: 'test'
+  ...
+# Subtest: reject, resubmit and approve retain one deduction and one extra payment
+ok 587 - reject, resubmit and approve retain one deduction and one extra payment
+  ---
+  duration_ms: 22.103376
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: invalid money and another master cannot change payouts
+ok 588 - order-lifecycle-api/finalizeMasterReport: invalid money and another master cannot change payouts
+  ---
+  duration_ms: 137.546349
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: invalid money and another master cannot change payouts
+ok 589 - report-api/finalizeMasterReport: invalid money and another master cannot change payouts
+  ---
+  duration_ms: 52.416809
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: invalid money and another master cannot change payouts
+ok 590 - report-api/uploadMasterReport: invalid money and another master cannot change payouts
+  ---
+  duration_ms: 54.800832
+  type: 'test'
+  ...
+# Subtest: report work photos keep inspection-friendly resolution and JPEG quality
+ok 591 - report work photos keep inspection-friendly resolution and JPEG quality
+  ---
+  duration_ms: 7.642286
+  type: 'test'
+  ...
+# (node:758) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: order-lifecycle-api/finalizeMasterReport: replay preserves submitted and approved receipts without writes
+ok 592 - order-lifecycle-api/finalizeMasterReport: replay preserves submitted and approved receipts without writes
+  ---
+  duration_ms: 212.380005
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: fresh token cannot replace pending, approved, completed or cancelled reports
+ok 593 - order-lifecycle-api/finalizeMasterReport: fresh token cannot replace pending, approved, completed or cancelled reports
+  ---
+  duration_ms: 103.04871
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: concurrent reassignment, completion and edit cannot be overwritten
+ok 594 - order-lifecycle-api/finalizeMasterReport: concurrent reassignment, completion and edit cannot be overwritten
+  ---
+  duration_ms: 84.010588
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport: only one concurrent token wins
+ok 595 - order-lifecycle-api/finalizeMasterReport: only one concurrent token wins
+  ---
+  duration_ms: 110.504838
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: replay preserves submitted and approved receipts without writes
+ok 596 - report-api/finalizeMasterReport: replay preserves submitted and approved receipts without writes
+  ---
+  duration_ms: 19.564979
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: fresh token cannot replace pending, approved, completed or cancelled reports
+ok 597 - report-api/finalizeMasterReport: fresh token cannot replace pending, approved, completed or cancelled reports
+  ---
+  duration_ms: 38.978608
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: concurrent reassignment, completion and edit cannot be overwritten
+ok 598 - report-api/finalizeMasterReport: concurrent reassignment, completion and edit cannot be overwritten
+  ---
+  duration_ms: 30.792282
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport: only one concurrent token wins
+ok 599 - report-api/finalizeMasterReport: only one concurrent token wins
+  ---
+  duration_ms: 28.46629
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: replay preserves submitted and approved receipts without writes
+ok 600 - report-api/uploadMasterReport: replay preserves submitted and approved receipts without writes
+  ---
+  duration_ms: 88.732365
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: fresh token cannot replace pending, approved, completed or cancelled reports
+ok 601 - report-api/uploadMasterReport: fresh token cannot replace pending, approved, completed or cancelled reports
+  ---
+  duration_ms: 34.953496
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: concurrent reassignment, completion and edit cannot be overwritten
+ok 602 - report-api/uploadMasterReport: concurrent reassignment, completion and edit cannot be overwritten
+  ---
+  duration_ms: 24.186936
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport: only one concurrent token wins
+ok 603 - report-api/uploadMasterReport: only one concurrent token wins
+  ---
+  duration_ms: 44.548076
+  type: 'test'
+  ...
+# Subtest: uploads cannot overwrite files and are refused after submission
+ok 604 - uploads cannot overwrite files and are refused after submission
+  ---
+  duration_ms: 17.458369
+  type: 'test'
+  ...
+# Subtest: repeated approval preserves completion time and never archives again
+ok 605 - repeated approval preserves completion time and never archives again
+  ---
+  duration_ms: 42.399587
+  type: 'test'
+  ...
+# Subtest: repeated rejection after the database trigger cleared pointers is a receipt
+ok 606 - repeated rejection after the database trigger cleared pointers is a receipt
+  ---
+  duration_ms: 35.402511
+  type: 'test'
+  ...
+# Subtest: review loses to a concurrent cancellation instead of reopening it
+ok 607 - review loses to a concurrent cancellation instead of reopening it
+  ---
+  duration_ms: 16.141327
+  type: 'test'
+  ...
+# Subtest: reviewReport keeps the authenticated bootstrap route and exact review snapshot
+ok 608 - reviewReport keeps the authenticated bootstrap route and exact review snapshot
+  ---
+  duration_ms: 26.81369
+  type: 'test'
+  ...
+# Subtest: reviewReport never replays an uncertain network on the bootstrap route
+ok 609 - reviewReport never replays an uncertain network on the bootstrap route
+  ---
+  duration_ms: 4.824451
+  type: 'test'
+  ...
+# Subtest: reviewReport never replays an uncertain 503 on the bootstrap route
+ok 610 - reviewReport never replays an uncertain 503 on the bootstrap route
+  ---
+  duration_ms: 6.142625
+  type: 'test'
+  ...
+# (node:782) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: approved: an old or missing displayed report version cannot decide a new submission
+ok 611 - approved: an old or missing displayed report version cannot decide a new submission
+  ---
+  duration_ms: 174.876146
+  type: 'test'
+  ...
+# Subtest: rejected: an old or missing displayed report version cannot decide a new submission
+ok 612 - rejected: an old or missing displayed report version cannot decide a new submission
+  ---
+  duration_ms: 60.364254
+  type: 'test'
+  ...
+# Subtest: approval sends the displayed version to the archiver and stale archive conflict stays 409
+ok 613 - approval sends the displayed version to the archiver and stale archive conflict stays 409
+  ---
+  duration_ms: 32.59143
+  type: 'test'
+  ...
+# Subtest: approved receipt also requires the displayed version and leaves completion time untouched
+ok 614 - approved receipt also requires the displayed version and leaves completion time untouched
+  ---
+  duration_ms: 54.728833
+  type: 'test'
+  ...
+# Subtest: archive rejects missing or stale displayed versions before reading any file, including archived receipts
+ok 615 - archive rejects missing or stale displayed versions before reading any file, including archived receipts
+  ---
+  duration_ms: 81.866028
+  type: 'test'
+  ...
+# Subtest: master report submit keeps the working chunked report-api uploader
+ok 616 - master report submit keeps the working chunked report-api uploader
+  ---
+  duration_ms: 1.727752
+  type: 'test'
+  ...
+# (node:802) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: reschedule preserves 10:00–10:30 duration
+ok 617 - reschedule preserves 10:00–10:30 duration
+  ---
+  duration_ms: 139.052272
+  type: 'test'
+  ...
+# Subtest: reschedule preserves 10:00–11:00 duration
+ok 618 - reschedule preserves 10:00–11:00 duration
+  ---
+  duration_ms: 16.502128
+  type: 'test'
+  ...
+# Subtest: reschedule preserves 10:00–13:00 duration
+ok 619 - reschedule preserves 10:00–13:00 duration
+  ---
+  duration_ms: 7.918738
+  type: 'test'
+  ...
+# Subtest: reschedule preserves 9:00–12:00 duration
+ok 620 - reschedule preserves 9:00–12:00 duration
+  ---
+  duration_ms: 6.112254
+  type: 'test'
+  ...
+# Subtest: explicit range is validated and a midnight end is represented as 24:00
+ok 621 - explicit range is validated and a midnight end is represented as 24:00
+  ---
+  duration_ms: 42.016626
+  type: 'test'
+  ...
+# Subtest: a move cannot silently shorten duration beyond midnight
+ok 622 - a move cannot silently shorten duration beyond midnight
+  ---
+  duration_ms: 4.208496
+  type: 'test'
+  ...
+# Subtest: a stale second request cannot overwrite a later edit
+ok 623 - a stale second request cannot overwrite a later edit
+  ---
+  duration_ms: 6.469491
+  type: 'test'
+  ...
+# Subtest: concurrent completion wins over a reschedule
+ok 624 - concurrent completion wins over a reschedule
+  ---
+  duration_ms: 9.2941
+  type: 'test'
+  ...
+# Subtest: reviewReport: network never replays a possibly committed write
+ok 625 - reviewReport: network never replays a possibly committed write
+  ---
+  duration_ms: 6.774103
+  type: 'test'
+  ...
+# Subtest: reviewReport: 503 never replays a possibly committed write
+ok 626 - reviewReport: 503 never replays a possibly committed write
+  ---
+  duration_ms: 14.739105
+  type: 'test'
+  ...
+# Subtest: reviewReport: timeout never replays a possibly committed write
+ok 627 - reviewReport: timeout never replays a possibly committed write
+  ---
+  duration_ms: 3.889905
+  type: 'test'
+  ...
+# Subtest: updateOrder: network never replays a possibly committed write
+ok 628 - updateOrder: network never replays a possibly committed write
+  ---
+  duration_ms: 8.465917
+  type: 'test'
+  ...
+# Subtest: updateOrder: 503 never replays a possibly committed write
+ok 629 - updateOrder: 503 never replays a possibly committed write
+  ---
+  duration_ms: 39.346476
+  type: 'test'
+  ...
+# Subtest: updateOrder: timeout never replays a possibly committed write
+ok 630 - updateOrder: timeout never replays a possibly committed write
+  ---
+  duration_ms: 1.934922
+  type: 'test'
+  ...
+# Subtest: deterministic pre-forward gateway denial still permits one working route
+ok 631 - deterministic pre-forward gateway denial still permits one working route
+  ---
+  duration_ms: 10.275603
+  type: 'test'
+  ...
+# Subtest: rejected: platform pre-forward denials reach one working backend and remember it
+ok 632 - rejected: platform pre-forward denials reach one working backend and remember it
+  ---
+  duration_ms: 6.238191
+  type: 'test'
+  ...
+# Subtest: approved: platform pre-forward denials reach one working backend and remember it
+ok 633 - approved: platform pre-forward denials reach one working backend and remember it
+  ---
+  duration_ms: 5.481108
+  type: 'test'
+  ...
+# Subtest: generic-402: an unproven 402 never replays a write
+ok 634 - generic-402: an unproven 402 never replays a write
+  ---
+  duration_ms: 2.503004
+  type: 'test'
+  ...
+# Subtest: missing-header: an unproven 402 never replays a write
+ok 635 - missing-header: an unproven 402 never replays a write
+  ---
+  duration_ms: 8.007425
+  type: 'test'
+  ...
+# Subtest: wrong-code: an unproven 402 never replays a write
+ok 636 - wrong-code: an unproven 402 never replays a write
+  ---
+  duration_ms: 1.821237
+  type: 'test'
+  ...
+# Subtest: edge: an unproven 402 never replays a write
+ok 637 - edge: an unproven 402 never replays a write
+  ---
+  duration_ms: 1.766181
+  type: 'test'
+  ...
+# Subtest: after a platform denial, network on the next route stops write failover
+ok 638 - after a platform denial, network on the next route stops write failover
+  ---
+  duration_ms: 2.67403
+  type: 'test'
+  ...
+# Subtest: after a platform denial, 503 on the next route stops write failover
+ok 639 - after a platform denial, 503 on the next route stops write failover
+  ---
+  duration_ms: 2.281524
+  type: 'test'
+  ...
+# Subtest: platform denials and an outdated reserve allow direct Supabase without replaying a backend write
+ok 640 - platform denials and an outdated reserve allow direct Supabase without replaying a backend write
+  ---
+  duration_ms: 4.235816
+  type: 'test'
+  ...
+# Subtest: setStage: explicit reconciliation stops hidden transport retries on network
+ok 641 - setStage: explicit reconciliation stops hidden transport retries on network
+  ---
+  duration_ms: 3.304471
+  type: 'test'
+  ...
+# Subtest: setStage: explicit reconciliation stops hidden transport retries on 503
+ok 642 - setStage: explicit reconciliation stops hidden transport retries on 503
+  ---
+  duration_ms: 1.574985
+  type: 'test'
+  ...
+# Subtest: setStage: explicit reconciliation stops hidden transport retries on timeout
+ok 643 - setStage: explicit reconciliation stops hidden transport retries on timeout
+  ---
+  duration_ms: 2.525037
+  type: 'test'
+  ...
+# Subtest: finalizeMasterReport: explicit reconciliation stops hidden transport retries on network
+ok 644 - finalizeMasterReport: explicit reconciliation stops hidden transport retries on network
+  ---
+  duration_ms: 1.821145
+  type: 'test'
+  ...
+# Subtest: finalizeMasterReport: explicit reconciliation stops hidden transport retries on 503
+ok 645 - finalizeMasterReport: explicit reconciliation stops hidden transport retries on 503
+  ---
+  duration_ms: 3.546698
+  type: 'test'
+  ...
+# Subtest: finalizeMasterReport: explicit reconciliation stops hidden transport retries on timeout
+ok 646 - finalizeMasterReport: explicit reconciliation stops hidden transport retries on timeout
+  ---
+  duration_ms: 2.417631
+  type: 'test'
+  ...
+# Subtest: finalizeMasterReport gets a 30s single-write window before reconciliation
+ok 647 - finalizeMasterReport gets a 30s single-write window before reconciliation
+  ---
+  duration_ms: 2.020811
+  type: 'test'
+  ...
+# Subtest: RU Hands insert-only deployment and recovery guards
+ok 648 - RU Hands insert-only deployment and recovery guards
+  ---
+  duration_ms: 3107.741442
+  type: 'test'
+  ...
+# Subtest: Hands read-only intake diagnosis fails closed and keeps recovery candidates private
+ok 649 - Hands read-only intake diagnosis fails closed and keeps recovery candidates private
+  ---
+  duration_ms: 244.676734
+  type: 'test'
+  ...
+# Subtest: RU static frontend release preserves live configuration and rolls back file-only failures
+ok 650 - RU static frontend release preserves live configuration and rolls back file-only failures
+  ---
+  duration_ms: 627.768709
+  type: 'test'
+  ...
+# Subtest: RU report-review release guards and rollback
+ok 651 - RU report-review release guards and rollback
+  ---
+  duration_ms: 177.105141
+  type: 'test'
+  ...
+# Subtest: salary weeks run Monday through Sunday across year and month boundaries
+ok 652 - salary weeks run Monday through Sunday across year and month boundaries
+  ---
+  duration_ms: 4.069496
+  type: 'test'
+  ...
+# Subtest: month navigation handles leap years and December without overflowing days
+ok 653 - month navigation handles leap years and December without overflowing days
+  ---
+  duration_ms: 0.340303
+  type: 'test'
+  ...
+# Subtest: completion belongs to the Moscow calendar day, with approved and scheduled fallbacks
+ok 654 - completion belongs to the Moscow calendar day, with approved and scheduled fallbacks
+  ---
+  duration_ms: 0.994051
+  type: 'test'
+  ...
+# Subtest: period filtering includes both boundary dates and excludes missing dates
+ok 655 - period filtering includes both boundary dates and excludes missing dates
+  ---
+  duration_ms: 0.637946
+  type: 'test'
+  ...
+# Subtest: schedule uses scheduled_time start and preserves slot duration without rounding
+ok 656 - schedule uses scheduled_time start and preserves slot duration without rounding
+  ---
+  duration_ms: 2.252283
+  type: 'test'
+  ...
+# Subtest: only 24:00 end is valid; bad and reversed slots fall back to sixty minutes
+ok 657 - only 24:00 end is valid; bad and reversed slots fall back to sixty minutes
+  ---
+  duration_ms: 0.760486
+  type: 'test'
+  ...
+# Subtest: master aliases join through staff directory, never through order external_id
+ok 658 - master aliases join through staff directory, never through order external_id
+  ---
+  duration_ms: 0.823203
+  type: 'test'
+  ...
+# (node:870) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: bootstrap and employee writes never serialize password hashes
+ok 659 - bootstrap and employee writes never serialize password hashes
+  ---
+  duration_ms: 167.892432
+  type: 'test'
+  ...
+# Subtest: password login accepts internal staff IDs and rejects inactive/wrong credentials
+ok 660 - password login accepts internal staff IDs and rejects inactive/wrong credentials
+  ---
+  duration_ms: 18.248612
+  type: 'test'
+  ...
+# Subtest: disabled old session fails; restore re-enables password login
+ok 661 - disabled old session fails; restore re-enables password login
+  ---
+  duration_ms: 36.051478
+  type: 'test'
+  ...
+# Subtest: manager cannot restore or set credentials for owner or manager; master cannot administer staff
+ok 662 - manager cannot restore or set credentials for owner or manager; master cannot administer staff
+  ---
+  duration_ms: 9.757307
+  type: 'test'
+  ...
+# Subtest: expired, malformed and tampered sessions are rejected
+ok 663 - expired, malformed and tampered sessions are rejected
+  ---
+  duration_ms: 20.517792
+  type: 'test'
+  ...
+# Subtest: master bootstrap and direct API cannot access others orders or escalate roles
+ok 664 - master bootstrap and direct API cannot access others orders or escalate roles
+  ---
+  duration_ms: 23.278146
+  type: 'test'
+  ...
+# Subtest: report finalization subtracts 15 percent and then 35 percent for master payout
+ok 665 - report finalization subtracts 15 percent and then 35 percent for master payout
+  ---
+  duration_ms: 14.651109
+  type: 'test'
+  ...
+# Subtest: editing comment preserves manually adjusted payouts
+ok 666 - editing comment preserves manually adjusted payouts
+  ---
+  duration_ms: 17.477494
+  type: 'test'
+  ...
+# Subtest: negative and non-finite money rejected before writes
+ok 667 - negative and non-finite money rejected before writes
+  ---
+  duration_ms: 29.743476
+  type: 'test'
+  ...
+# Subtest: concurrent retry returns same order and creates only one row
+ok 668 - concurrent retry returns same order and creates only one row
+  ---
+  duration_ms: 12.073184
+  type: 'test'
+  ...
+# Subtest: report rejects excessive deduction and negative extras
+ok 669 - report rejects excessive deduction and negative extras
+  ---
+  duration_ms: 11.32388
+  type: 'test'
+  ...
+# Subtest: empty optional order values are typed for Postgres
+ok 670 - empty optional order values are typed for Postgres
+  ---
+  duration_ms: 10.915673
+  type: 'test'
+  ...
+# Subtest: duplicate staff login returns actionable conflict
+ok 671 - duplicate staff login returns actionable conflict
+  ---
+  duration_ms: 5.471786
+  type: 'test'
+  ...
+# Subtest: claims creation/list/close enforce master ownership
+ok 672 - claims creation/list/close enforce master ownership
+  ---
+  duration_ms: 14.649599
+  type: 'test'
+  ...
+# Subtest: master profile saves district/phone but cannot modify someone else
+ok 673 - master profile saves district/phone but cannot modify someone else
+  ---
+  duration_ms: 15.647381
+  type: 'test'
+  ...
+# Subtest: memo text persists and role permissions are server enforced
+ok 674 - memo text persists and role permissions are server enforced
+  ---
+  duration_ms: 9.451967
+  type: 'test'
+  ...
+# Subtest: integration and Apps Script payroll agree with subtract-15-then-subtract-35 rule
+ok 675 - integration and Apps Script payroll agree with subtract-15-then-subtract-35 rule
+  ---
+  duration_ms: 7.298915
+  type: 'test'
+  ...
+# Subtest: bootstrap includes orders beyond the default PostgREST page limit
+ok 676 - bootstrap includes orders beyond the default PostgREST page limit
+  ---
+  duration_ms: 17.710022
+  type: 'test'
+  ...
+# Subtest: claims bootstrap includes all report orders and preserves master isolation
+ok 677 - claims bootstrap includes all report orders and preserves master isolation
+  ---
+  duration_ms: 21.398025
+  type: 'test'
+  ...
+# Subtest: GAS health signs with current sync key derivation and never sends report data
+ok 678 - GAS health signs with current sync key derivation and never sends report data
+  ---
+  duration_ms: 6.247744
+  type: 'test'
+  ...
+# Subtest: desktop dispatcher reaches archive validation and master cannot archive
+ok 679 - desktop dispatcher reaches archive validation and master cannot archive
+  ---
+  duration_ms: 19.036336
+  type: 'test'
+  ...
+# (node:878) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: real owner login and refresh retain integration authorization
+ok 680 - real owner login and refresh retain integration authorization
+  ---
+  duration_ms: 325.608192
+  type: 'test'
+  ...
+# Subtest: real manager login and refresh retain integration authorization
+ok 681 - real manager login and refresh retain integration authorization
+  ---
+  duration_ms: 61.381925
+  type: 'test'
+  ...
+# Subtest: real dispatcher login and refresh retain integration authorization
+ok 682 - real dispatcher login and refresh retain integration authorization
+  ---
+  duration_ms: 55.479092
+  type: 'test'
+  ...
+# Subtest: real master login and refresh retain integration authorization
+ok 683 - real master login and refresh retain integration authorization
+  ---
+  duration_ms: 82.043634
+  type: 'test'
+  ...
+# Subtest: refresh coalesces requests and renews the unchanged active session
+ok 684 - refresh coalesces requests and renews the unchanged active session
+  ---
+  duration_ms: 6.661933
+  type: 'test'
+  ...
+# Subtest: late refresh cannot restore a session cleared by logout, including another tab
+ok 685 - late refresh cannot restore a session cleared by logout, including another tab
+  ---
+  duration_ms: 1.851276
+  type: 'test'
+  ...
+# Subtest: a refresh reply cannot overwrite a newer login
+ok 686 - a refresh reply cannot overwrite a newer login
+  ---
+  duration_ms: 1.406067
+  type: 'test'
+  ...
+# Subtest: logout invalidation rejects the old reply even if login restores the same token
+ok 687 - logout invalidation rejects the old reply even if login restores the same token
+  ---
+  duration_ms: 3.393648
+  type: 'test'
+  ...
+# Subtest: six-hour refresh throttle does not transfer to another account
+ok 688 - six-hour refresh throttle does not transfer to another account
+  ---
+  duration_ms: 1.766647
+  type: 'test'
+  ...
+# (node:901) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: explicit edit never switches a completed direct order to Hands rates; reads alone preserve history
+ok 689 - explicit edit never switches a completed direct order to Hands rates; reads alone preserve history
+  ---
+  duration_ms: 188.908453
+  type: 'test'
+  ...
+# (node:917) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Hands marker always preserves rates: {"source":"Hands"}
+ok 690 - Hands marker always preserves rates: {"source":"Hands"}
+  ---
+  duration_ms: 4.257686
+  type: 'test'
+  ...
+# Subtest: Hands marker always preserves rates: {"source":" Руки "}
+ok 691 - Hands marker always preserves rates: {"source":" Руки "}
+  ---
+  duration_ms: 0.621966
+  type: 'test'
+  ...
+# Subtest: Hands marker always preserves rates: {"external_source":"HANDS","source":"Авито"}
+ok 692 - Hands marker always preserves rates: {"external_source":"HANDS","source":"Авито"}
+  ---
+  duration_ms: 0.271578
+  type: 'test'
+  ...
+# Subtest: Hands marker always preserves rates: {"external_id":"hands:123","source":"Телефон"}
+ok 693 - Hands marker always preserves rates: {"external_id":"hands:123","source":"Телефон"}
+  ---
+  duration_ms: 0.594479
+  type: 'test'
+  ...
+# Subtest: direct source has one 60/40 split: {"source":"Авито","external_source":"avito"}
+ok 694 - direct source has one 60/40 split: {"source":"Авито","external_source":"avito"}
+  ---
+  duration_ms: 0.44838
+  type: 'test'
+  ...
+# Subtest: direct source has one 60/40 split: {"source":"Телефон","external_source":"mini_app"}
+ok 695 - direct source has one 60/40 split: {"source":"Телефон","external_source":"mini_app"}
+  ---
+  duration_ms: 0.219715
+  type: 'test'
+  ...
+# Subtest: direct source has one 60/40 split: {"source":"VK"}
+ok 696 - direct source has one 60/40 split: {"source":"VK"}
+  ---
+  duration_ms: 0.204398
+  type: 'test'
+  ...
+# Subtest: direct source has one 60/40 split: {"source":"Рекомендация"}
+ok 697 - direct source has one 60/40 split: {"source":"Рекомендация"}
+  ---
+  duration_ms: 0.267921
+  type: 'test'
+  ...
+# Subtest: direct source has one 60/40 split: {"external_source":"api:website"}
+ok 698 - direct source has one 60/40 split: {"external_source":"api:website"}
+  ---
+  duration_ms: 0.238944
+  type: 'test'
+  ...
+# Subtest: direct source has one 60/40 split: {"source":"Другое"}
+ok 699 - direct source has one 60/40 split: {"source":"Другое"}
+  ---
+  duration_ms: 0.521876
+  type: 'test'
+  ...
+# Subtest: kopecks conserve the full base; no second subtraction of unfinished work
+ok 700 - kopecks conserve the full base; no second subtraction of unfinished work
+  ---
+  duration_ms: 0.583966
+  type: 'test'
+  ...
+# Subtest: source-less legacy records retain the master contract without management payroll and direct historical zero is not recomputed
+ok 701 - source-less legacy records retain the master contract without management payroll and direct historical zero is not recomputed
+  ---
+  duration_ms: 0.360584
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport source-aware stored payout and role reads: Авито
+ok 702 - order-lifecycle-api/finalizeMasterReport source-aware stored payout and role reads: Авито
+  ---
+  duration_ms: 195.190193
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport source-aware stored payout and role reads: Телефон
+ok 703 - order-lifecycle-api/finalizeMasterReport source-aware stored payout and role reads: Телефон
+  ---
+  duration_ms: 55.286776
+  type: 'test'
+  ...
+# Subtest: order-lifecycle-api/finalizeMasterReport source-aware stored payout and role reads: Hands
+ok 704 - order-lifecycle-api/finalizeMasterReport source-aware stored payout and role reads: Hands
+  ---
+  duration_ms: 53.358246
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport source-aware stored payout and role reads: Авито
+ok 705 - report-api/finalizeMasterReport source-aware stored payout and role reads: Авито
+  ---
+  duration_ms: 65.402873
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport source-aware stored payout and role reads: Телефон
+ok 706 - report-api/finalizeMasterReport source-aware stored payout and role reads: Телефон
+  ---
+  duration_ms: 56.284779
+  type: 'test'
+  ...
+# Subtest: report-api/finalizeMasterReport source-aware stored payout and role reads: Hands
+ok 707 - report-api/finalizeMasterReport source-aware stored payout and role reads: Hands
+  ---
+  duration_ms: 35.06788
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport source-aware stored payout and role reads: Авито
+ok 708 - report-api/uploadMasterReport source-aware stored payout and role reads: Авито
+  ---
+  duration_ms: 45.41957
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport source-aware stored payout and role reads: Телефон
+ok 709 - report-api/uploadMasterReport source-aware stored payout and role reads: Телефон
+  ---
+  duration_ms: 48.792186
+  type: 'test'
+  ...
+# Subtest: report-api/uploadMasterReport source-aware stored payout and role reads: Hands
+ok 710 - report-api/uploadMasterReport source-aware stored payout and role reads: Hands
+  ---
+  duration_ms: 37.404526
+  type: 'test'
+  ...
+# Subtest: create and later assignment use channel Авито
+ok 711 - create and later assignment use channel Авито
+  ---
+  duration_ms: 26.15302
+  type: 'test'
+  ...
+# Subtest: create and later assignment use channel Телефон
+ok 712 - create and later assignment use channel Телефон
+  ---
+  duration_ms: 38.670889
+  type: 'test'
+  ...
+# Subtest: create and later assignment use channel VK
+ok 713 - create and later assignment use channel VK
+  ---
+  duration_ms: 22.974797
+  type: 'test'
+  ...
+# Subtest: create and later assignment use channel Рекомендация
+ok 714 - create and later assignment use channel Рекомендация
+  ---
+  duration_ms: 29.245294
+  type: 'test'
+  ...
+# Subtest: create and later assignment use channel Другое
+ok 715 - create and later assignment use channel Другое
+  ---
+  duration_ms: 17.224508
+  type: 'test'
+  ...
+# Subtest: create and later assignment use channel Руки
+ok 716 - create and later assignment use channel Руки
+  ---
+  duration_ms: 18.107471
+  type: 'test'
+  ...
+# Subtest: source switching reprices drafts but refuses changing submitted report scheme
+ok 717 - source switching reprices drafts but refuses changing submitted report scheme
+  ---
+  duration_ms: 13.135963
+  type: 'test'
+  ...
+# Subtest: concurrent source edit fails the report comparison rather than storing wrong rate
+ok 718 - concurrent source edit fails the report comparison rather than storing wrong rate
+  ---
+  duration_ms: 20.455996
+  type: 'test'
+  ...
+# Subtest: integration imports use new scheme and protect accepted historical rows
+ok 719 - integration imports use new scheme and protect accepted historical rows
+  ---
+  duration_ms: 19.460449
+  type: 'test'
+  ...
+# Subtest: owner team page keeps staff credential controls visible
+ok 720 - owner team page keeps staff credential controls visible
+  ---
+  duration_ms: 1.888139
+  type: 'test'
+  ...
+# Subtest: staff credential forms match production password length policy
+ok 721 - staff credential forms match production password length policy
+  ---
+  duration_ms: 0.527796
+  type: 'test'
+  ...
+# Subtest: staff admin refuses sessions when VK app secret is missing
+ok 722 - staff admin refuses sessions when VK app secret is missing
+  ---
+  duration_ms: 1.96584
+  type: 'test'
+  ...
+# Subtest: staff admin validates token subject and expiry formats
+ok 723 - staff admin validates token subject and expiry formats
+  ---
+  duration_ms: 0.230738
+  type: 'test'
+  ...
+# Subtest: staff admin compares HMAC without direct string equality
+ok 724 - staff admin compares HMAC without direct string equality
+  ---
+  duration_ms: 0.407846
+  type: 'test'
+  ...
+# Subtest: staff invites are hashed, expiring and one-time
+ok 725 - staff invites are hashed, expiring and one-time
+  ---
+  duration_ms: 2.256041
+  type: 'test'
+  ...
+# Subtest: direct unverified VK linking is blocked at the database boundary
+ok 726 - direct unverified VK linking is blocked at the database boundary
+  ---
+  duration_ms: 0.434347
+  type: 'test'
+  ...
+# Subtest: VK onboarding uses owner invitation UI
+ok 727 - VK onboarding uses owner invitation UI
+  ---
+  duration_ms: 8.988588
+  type: 'test'
+  ...
+# Subtest: packaging preserves classic script order, excludes duplicates and invalidates changed sources
+ok 728 - packaging preserves classic script order, excludes duplicates and invalidates changed sources
+  ---
+  duration_ms: 1253.703253
+  type: 'test'
+  ...
+# ui dispatch/master v94-v95 static regressions ok
+# Subtest: tests/ui-dispatch-master-v94-static.test.cjs
+ok 93 - tests/ui-dispatch-master-v94-static.test.cjs
+  ---
+  duration_ms: 152.097324
+  type: 'test'
+  ...
+1..729
+# tests 729
+# suites 0
+# pass 729
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 18348.891138

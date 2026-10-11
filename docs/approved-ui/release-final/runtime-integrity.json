@@ -1,0 +1,76 @@
+{
+  "comparisonBase": "4e72142fa1bdb97898f2c566228adef70755c17e",
+  "runtimeSourceHead": "a9d1d154843911a8f8820def6cdb5984364c467f",
+  "runtimeBuild": "de5d80d2b0477d563548",
+  "unchangedCriticalFiles": [
+    {
+      "file": "finance-data.js",
+      "sha256": "5affa33b6d819ef08f6897c6d68724b90d04047b458dd135ead40af2d4206297",
+      "unchangedFromBase": true
+    },
+    {
+      "file": "order-payroll.js",
+      "sha256": "e1a9762fcf242dbb899d201f88528d5c8c9715e472d30f5aa60f8aa2d233ddd1",
+      "unchangedFromBase": true
+    },
+    {
+      "file": "salary-periods.js",
+      "sha256": "bf7cd774ae076340bdac1ac53a51885fd7bfb40352934ca4fcf18530689c41a2",
+      "unchangedFromBase": true
+    },
+    {
+      "file": "master-money-v130.js",
+      "sha256": "a230848349d427b5d0546c2088df24977967d68a4b16fb8dd8124fe4de90106d",
+      "unchangedFromBase": true
+    },
+    {
+      "file": "master-order-actions-v179.js",
+      "sha256": "59ded8ad8c60cebf43e13ce2f8599539f6ffd5b0f914a910b3ec7861bc3c3a2e",
+      "unchangedFromBase": true
+    },
+    {
+      "file": "order-lifecycle-v106.js",
+      "sha256": "afc9459be8e8f08c15bc6abbdbaa165abcce32dbf123f5f72a96211ada31e6bb",
+      "unchangedFromBase": true
+    },
+    {
+      "file": "master-report-patch.js",
+      "sha256": "9f0fc4beede4350ca80ea6ba6d7c93602f8a9439b5b6c8f12b3c9db5c37ae318",
+      "unchangedFromBase": true
+    },
+    {
+      "file": "master-report-ui-v12.js",
+      "sha256": "e7b89f3a0c88c948e9d18563e69e14392d9498e1596aa316e3241fad0b444d2e",
+      "unchangedFromBase": true
+    },
+    {
+      "file": "dispatcher-permissions.js",
+      "sha256": "e97c5708c4e5b1a95f3538f66ffcdf5890155b442c550b486b1a7eb38c393bd3",
+      "unchangedFromBase": true
+    },
+    {
+      "file": "simple-auth-v57.js",
+      "sha256": "34c835d8ba32587ad5ba771014c228a883853911fe51a8df049a10a703df0f98",
+      "unchangedFromBase": true
+    },
+    {
+      "file": "staff-permissions-calendar-v43.js",
+      "sha256": "63afa2cf9b571d926a22cb26e91922617006b5d6a79892a2e2f8fd6c05e3b567",
+      "unchangedFromBase": true
+    }
+  ],
+  "changedProtectedBackendPaths": [],
+  "presentationChangesRequiringDiffReview": {
+    "master-profile-summary-v129.js": "Displayed profile day/week/month use the existing BOS_SALARY_PERIODS calendar as native accrual detail. Payout/extra/deduction formulas and APIs unchanged.",
+    "master-day-summary-v128.js": "Displayed daily summary uses the same existing Moscow day/completedDay helper; original payout/extra formulas unchanged.",
+    "finance-page.js": "Only works explanatory paragraph wrapped in details/summary; F.workGroups/model/currency unchanged.",
+    "master-workflow-v25.js": "Delayed view injection stays with its original modal, yields to modern panel/forms. Native write handlers unchanged.",
+    "master-call-workflow-v26.js": "Legacy renderPanel yields to an existing v179 panel; contact/stage APIs, payloads and write handlers unchanged. Regression reproduces transient node deletion before fix.",
+    "master-workflow-v115.js": "UI decorator yields to modern panel/forms.",
+    "master-workflow-v116.js": "UI decorator guard and wrapper around existing agreement buttons; no form submission change.",
+    "employee-profile-patch.js": "Existing recent-order buttons, Back,4 core and6 expandable metrics; formulas unchanged.",
+    "master-orders-v125.js": "Separate UI undated date-filter, no change to isNew/current/status classifier.",
+    "master-cabinet-final-v81.js": "Delayed report button stays with original order modal and does not enter newer form."
+  },
+  "scope": "File hashes substantiate listed unchanged boundaries; they do not replace workflow tests or real-device/hosted QA. Production was not contacted or written."
+}

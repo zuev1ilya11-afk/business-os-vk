@@ -1,0 +1,27 @@
+{
+  "runtimeSourceHead": "a9d1d154843911a8f8820def6cdb5984364c467f",
+  "runtimeBuild": "de5d80d2b0477d563548",
+  "contractRows": 242,
+  "roleDesignEntries": 240,
+  "runtimeRoleStateMappings": 239,
+  "designConcepts": 1,
+  "captures": 641,
+  "responsiveCaptures": 132,
+  "captureBuildCounts": {
+    "de5d80d2b0477d563548": 773
+  },
+  "widths": [
+    360,
+    390,
+    430,
+    768,
+    1024,
+    1440,
+    1920
+  ],
+  "captureGaps": [],
+  "horizontalOverflow": [],
+  "pageErrors": [],
+  "hostedBrowserGate": "BLOCKED_AUTH_APPROVAL",
+  "productionChanged": false
+}

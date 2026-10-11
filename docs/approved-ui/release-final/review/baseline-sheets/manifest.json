@@ -1,0 +1,1954 @@
+[
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/master-00.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "home-days",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/home-days-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/home-days-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "home-new",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/home-new-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/home-new-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "home-waiting",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/home-waiting-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/home-waiting-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "home-callback",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/home-callback-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/home-callback-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/master-01.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "home-overdue",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/home-overdue-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/home-overdue-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "home-empty",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/home-empty-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/home-empty-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "home-refresh-error",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/home-refresh-error-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/home-refresh-error-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "orders-active",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/orders-active-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-active-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/master-02.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "orders-undated",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/orders-undated-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-undated-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "orders-today",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/orders-today-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-today-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "orders-future",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/orders-future-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-future-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "orders-done",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/orders-done-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-done-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/master-03.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "order-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/order-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/order-detail-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "order-hands",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/order-hands-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/order-hands-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "contact-outcomes",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/contact-outcomes-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/contact-outcomes-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "contact-agreed",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/contact-agreed-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/contact-agreed-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/master-04.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "contact-callback",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/contact-callback-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/contact-callback-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "departure",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/departure-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/departure-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "start-work",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/start-work-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/start-work-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "report-form",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/report-form-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-form-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/master-05.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "report-uploading",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/report-uploading-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-uploading-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "report-error",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/report-error-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-error-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "report-submitted",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/report-submitted-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-submitted-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "report-rejected",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/report-rejected-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-rejected-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/master-06.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "schedule",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/schedule-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/schedule-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "profile",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/profile-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/profile-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "payouts",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/payouts-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/payouts-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "memo",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/memo-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/memo-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/master-07.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "price",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/price-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/price-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "personal",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/personal-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/personal-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "help",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/help-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/help-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "about",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/about-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/about-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/master-08.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "schedule-month",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/schedule-month-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/schedule-month-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "schedule-edit",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/schedule-edit-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/schedule-edit-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "reschedule-request",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/reschedule-request-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/reschedule-request-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "report-deduction",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/report-deduction-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-deduction-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/master-09.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "claims",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/claims-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/claims-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "claim-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/claim-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/claim-detail-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "push",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/push-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/push-fixture-390-unsupported.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "login-settings",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/login-settings-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/login-settings-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/master-10.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "report-extras",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/report-extras-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-extras-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "report-uncompleted",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/report-uncompleted-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-uncompleted-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "master",
+        "screen": "filters",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/filters-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/filters-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "report-uncertain",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/report-uncertain-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-uncertain-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/master-11.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "photo-error",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/photo-error-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/photo-error-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "notifications",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/notifications-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/notifications-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "file-viewer",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/file-viewer-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/file-viewer-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "auth-login",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/auth-login-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/auth-login-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/master-12.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "auth-invite",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/auth-invite-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/auth-invite-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "auth-expired",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/auth-expired-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/auth-expired-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "master",
+        "screen": "day-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/day-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/day-detail-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/dispatcher-00.jpg",
+    "screens": [
+      {
+        "role": "dispatcher",
+        "screen": "workspace",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/workspace-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/workspace-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "attention",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/attention-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/attention-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "orders",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/orders-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/orders-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "order-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/order-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/order-detail-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/dispatcher-01.jpg",
+    "screens": [
+      {
+        "role": "dispatcher",
+        "screen": "order-create",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/order-create-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/order-create-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "order-edit",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/order-edit-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/order-edit-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "assign",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/assign-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/assign-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "reschedule",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/reschedule-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/reschedule-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/dispatcher-02.jpg",
+    "screens": [
+      {
+        "role": "dispatcher",
+        "screen": "schedule",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/schedule-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/schedule-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "team",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/team-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/team-fixture-390.png",
+        "runtimeBuild": "450d89745b2f499f091b"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "master-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/master-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/master-detail-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "reports",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/reports-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/reports-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/dispatcher-03.jpg",
+    "screens": [
+      {
+        "role": "dispatcher",
+        "screen": "avito",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/avito-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/avito-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "avito-thread",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/avito-thread-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/avito-thread-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "hands-sync",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/hands-sync-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/hands-sync-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "more",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/more-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/more-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/dispatcher-04.jpg",
+    "screens": [
+      {
+        "role": "dispatcher",
+        "screen": "profile",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/profile-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/profile-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "notifications",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/notifications-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/notifications-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "filters",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/filters-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/filters-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "free-slots",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/free-slots-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/free-slots-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/dispatcher-05.jpg",
+    "screens": [
+      {
+        "role": "dispatcher",
+        "screen": "order-cancel",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/order-cancel-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/order-cancel-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "claims",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/claims-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/claims-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "claim-create",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/claim-create-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/claim-create-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "schedule-month",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/schedule-month-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/schedule-month-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/dispatcher-06.jpg",
+    "screens": [
+      {
+        "role": "dispatcher",
+        "screen": "day-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/day-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/day-detail-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "avito-lead",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/avito-lead-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/avito-lead-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "avito-settings",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/avito-settings-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/avito-settings-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "hands-order",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/hands-order-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/hands-order-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/dispatcher-07.jpg",
+    "screens": [
+      {
+        "role": "dispatcher",
+        "screen": "master-report",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/master-report-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/master-report-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "slot-assign",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/slot-assign-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/slot-assign-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "claim-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/claim-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/claim-detail-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "personal",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/personal-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/personal-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/dispatcher-08.jpg",
+    "screens": [
+      {
+        "role": "dispatcher",
+        "screen": "help",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/help-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/help-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "about",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/about-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/about-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "push",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/push-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/push-fixture-390-unsupported.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "login-settings",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/login-settings-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/login-settings-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/dispatcher-09.jpg",
+    "screens": [
+      {
+        "role": "dispatcher",
+        "screen": "file-viewer",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/file-viewer-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/file-viewer-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "photo-error",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/photo-error-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/photo-error-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "auth-login",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/auth-login-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/auth-login-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "auth-invite",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/auth-invite-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/auth-invite-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/dispatcher-10.jpg",
+    "screens": [
+      {
+        "role": "dispatcher",
+        "screen": "auth-expired",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/auth-expired-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/auth-expired-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-00.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "dashboard",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/dashboard-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/dashboard-fixture-390-shell.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "orders",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/orders-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/orders-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "reports",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/reports-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/reports-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "team",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/team-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/team-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-01.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "team-member",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/team-member-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/team-member-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "finance-overview",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/finance-overview-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/finance-overview-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "finance-expenses",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/finance-expenses-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/finance-expenses-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "finance-masters",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/finance-masters-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/finance-masters-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-02.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "finance-orders",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/finance-orders-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/finance-orders-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "finance-sources",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/finance-sources-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/finance-sources-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "finance-works",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/finance-works-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/finance-works-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "finance-periods",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/finance-periods-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/finance-periods-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-03.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "finance-period",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/finance-period-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/finance-period-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "finance-filters",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/finance-filters-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/finance-filters-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "expense-new",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/expense-new-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/expense-new-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "expense-edit",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/expense-edit-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/expense-edit-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-04.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "finance-master",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/finance-master-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/finance-master-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "more",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/more-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/more-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "profile",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/profile-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/profile-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "staff-access",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/staff-access-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/staff-access-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-05.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "memo-edit",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/memo-edit-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/memo-edit-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "manual-complete",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/manual-complete-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/manual-complete-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "order-delete",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/order-delete-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/order-delete-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "finance-overview-unknown",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/finance-overview-unknown-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/finance-overview-unknown-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-06.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "expense-delete",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/expense-delete-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/expense-delete-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "workspace",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/workspace-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/workspace-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "attention",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/attention-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/attention-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "order-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/order-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/order-detail-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-07.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "order-create",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/order-create-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/order-create-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "order-edit",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/order-edit-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/order-edit-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "assign",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/assign-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/assign-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "reschedule",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/reschedule-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/reschedule-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-08.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "schedule",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/schedule-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/schedule-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "schedule-month",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/schedule-month-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/schedule-month-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "day-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/day-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/day-detail-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "control",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/control-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/control-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-09.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "control-task",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/control-task-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/control-task-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "free-slots",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/free-slots-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/free-slots-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "slot-assign",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/slot-assign-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/slot-assign-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "order-cancel",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/order-cancel-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/order-cancel-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-10.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "claims",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/claims-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/claims-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "claim-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/claim-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/claim-detail-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "claim-create",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/claim-create-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/claim-create-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "review",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/review-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/review-fixture-390-long-end.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-11.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "review-reject",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/review-reject-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/review-reject-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "avito",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/avito-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/avito-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "avito-thread",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/avito-thread-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/avito-thread-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "avito-lead",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/avito-lead-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/avito-lead-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-12.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "avito-settings",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/avito-settings-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/avito-settings-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "hands-sync",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/hands-sync-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/hands-sync-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "hands-order",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/hands-order-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/hands-order-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "hands-settings",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/hands-settings-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/hands-settings-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-13.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "notifications",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/notifications-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/notifications-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "filters",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/filters-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/filters-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "file-viewer",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/file-viewer-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/file-viewer-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "photo-error",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/photo-error-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/photo-error-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-14.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "push",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/push-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/push-fixture-390-unsupported.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "login-settings",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/login-settings-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/login-settings-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "personal",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/personal-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/personal-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "help",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/help-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/help-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/manager-15.jpg",
+    "screens": [
+      {
+        "role": "manager",
+        "screen": "about",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/about-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/about-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "auth-login",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/auth-login-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/auth-login-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "auth-invite",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/auth-invite-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/auth-invite-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "manager",
+        "screen": "auth-expired",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/manager/auth-expired-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/manager/auth-expired-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-00.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "dashboard",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/dashboard-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/dashboard-fixture-390-shell.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "orders-new",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/orders-new-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/orders-new-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "orders-active",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/orders-active-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/orders-active-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "orders-reports",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/orders-reports-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/orders-reports-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-01.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "orders-archive",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/orders-archive-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/orders-archive-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "team",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/team-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/team-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "invite",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/invite-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/invite-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "admin",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/admin-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/admin-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-02.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "memo-edit",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/memo-edit-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/memo-edit-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "finance-overview",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/finance-overview-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/finance-overview-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "profile",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/profile-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/profile-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "settings-proposal",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/settings-proposal-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/settings-proposal-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-03.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "loading",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/loading-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/loading-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "empty",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/empty-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/empty-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "error",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/error-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/error-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "offline",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/offline-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/offline-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-04.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "file-viewer",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/file-viewer-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/file-viewer-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "employee-edit",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/employee-edit-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/employee-edit-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "staff-invite",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/staff-invite-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/staff-invite-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "api-integrations",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/api-integrations-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/api-integrations-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-05.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "api-create",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/api-create-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/api-create-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "api-mapping",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/api-mapping-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/api-mapping-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "hands-settings",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/hands-settings-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/hands-settings-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "auth-login",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/auth-login-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/auth-login-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-06.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "auth-invite",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/auth-invite-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/auth-invite-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "auth-expired",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/auth-expired-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/auth-expired-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "role-preview",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/role-preview-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/role-preview-fixture-390-master-return.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "workspace",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/workspace-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/workspace-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-07.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "attention",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/attention-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/attention-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "order-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/order-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/order-detail-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "order-create",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/order-create-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/order-create-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "order-edit",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/order-edit-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/order-edit-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-08.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "assign",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/assign-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/assign-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "reschedule",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/reschedule-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/reschedule-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "schedule",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/schedule-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/schedule-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "schedule-month",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/schedule-month-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/schedule-month-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-09.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "day-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/day-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/day-detail-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "control",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/control-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/control-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "control-task",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/control-task-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/control-task-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "free-slots",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/free-slots-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/free-slots-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-10.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "slot-assign",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/slot-assign-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/slot-assign-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "order-cancel",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/order-cancel-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/order-cancel-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "order-delete",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/order-delete-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/order-delete-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "manual-complete",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/manual-complete-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/manual-complete-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-11.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "claims",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/claims-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/claims-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "claim-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/claim-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/claim-detail-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "claim-create",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/claim-create-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/claim-create-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "reports",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/reports-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/reports-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-12.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "review",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/review-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/review-fixture-390-long-end.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "review-reject",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/review-reject-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/review-reject-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "avito",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/avito-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/avito-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "avito-thread",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/avito-thread-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/avito-thread-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-13.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "avito-lead",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/avito-lead-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/avito-lead-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "avito-settings",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/avito-settings-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/avito-settings-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "hands-sync",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/hands-sync-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/hands-sync-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "hands-order",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/hands-order-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/hands-order-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-14.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "notifications",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/notifications-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/notifications-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "filters",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/filters-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/filters-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "photo-error",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/photo-error-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/photo-error-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "push",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/push-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/push-fixture-390-unsupported.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-15.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "login-settings",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/login-settings-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/login-settings-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "personal",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/personal-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/personal-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "help",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/help-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/help-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "about",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/about-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/about-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-16.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "more",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/more-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/more-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "staff-access",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/staff-access-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/staff-access-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "team-member",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/team-member-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/team-member-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "finance-expenses",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/finance-expenses-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/finance-expenses-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-17.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "finance-masters",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/finance-masters-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/finance-masters-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "finance-orders",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/finance-orders-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/finance-orders-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "finance-sources",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/finance-sources-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/finance-sources-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "finance-works",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/finance-works-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/finance-works-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-18.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "finance-periods",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/finance-periods-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/finance-periods-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "finance-period",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/finance-period-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/finance-period-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "finance-filters",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/finance-filters-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/finance-filters-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "expense-new",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/expense-new-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/expense-new-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/visual-review-sheets/owner-19.jpg",
+    "screens": [
+      {
+        "role": "owner",
+        "screen": "expense-edit",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/expense-edit-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/expense-edit-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "expense-delete",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/expense-delete-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/expense-delete-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "finance-master",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/finance-master-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/finance-master-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      },
+      {
+        "role": "owner",
+        "screen": "finance-overview-unknown",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/owner/finance-overview-unknown-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/finance-overview-unknown-fixture-390.png",
+        "runtimeBuild": "a110e3c512011d4dece5"
+      }
+    ]
+  }
+]

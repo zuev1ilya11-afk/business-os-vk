@@ -1,0 +1,42 @@
+{
+  "gate": "BLOCKED_AUTH_APPROVAL",
+  "releaseComplete": false,
+  "productionReady": false,
+  "runtimeSourceHead": "a9d1d154843911a8f8820def6cdb5984364c467f",
+  "runtimeBuild": "de5d80d2b0477d563548",
+  "buildCheck": "PASS",
+  "node": {
+    "passed": 729,
+    "total": 729,
+    "failed": 0,
+    "skipped": 0
+  },
+  "playwright": {
+    "passed": 774,
+    "total": 774,
+    "failed": 0,
+    "flaky": 0,
+    "skipped": 0,
+    "durationMs": 484907.776,
+    "excludedEnvironmentProbes": [
+      "gas-archive-health.spec.js",
+      "gas-bridge-health.spec.js"
+    ]
+  },
+  "defects": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 0
+  },
+  "defectScope": "No remaining confirmed defects in the inspected and isolated tested scope; documented native/design differences are recorded per screen, not asserted pixel-identical. Hosted authenticated QA remains blocked.",
+  "limits": [
+    "ChatGPT sign-in for hosted Preview was rejected by automatic approval review; explicit owner authorization required.",
+    "Real iPhone Safari, live push/PWA update, Hands/Avito/VK/GAS/storage transactions not certified.",
+    "All role catalogue entries reviewed during the pass; changed screens and desktop sample rechecked. Not every final screen-width combination visually inspected by a person.",
+    "Latest remote GitHub branch HEAD not reachable; continued from verified recovery bundle checkpoint.",
+    "239 runtime role-state mappings,1 design-only concept,2 system references. No new settings function claimed."
+  ],
+  "productionChanged": false,
+  "branchMerged": false
+}

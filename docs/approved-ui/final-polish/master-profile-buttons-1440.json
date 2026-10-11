@@ -16,7 +16,7 @@
   },
   {
     "text": "Настройки входаЛогин и пароль›",
-    "handler": "document.getElementById(\"profileBtn\")?.click()",
+    "handler": "window.BOS_OPEN_AUTH_SETTINGS?.()",
     "id": ""
   },
   {

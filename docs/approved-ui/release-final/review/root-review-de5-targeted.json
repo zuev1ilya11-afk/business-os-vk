@@ -1,0 +1,34 @@
+{
+  "runtimeBuild": "de5d80d2b0477d563548",
+  "runtimeCommit": "a9d1d154843911a8f8820def6cdb5984364c467f",
+  "scope": "Три текущих снимка лично открыты после полного capture. Проверка календарных сумм на границах суток/месяца выполнена отдельными action tests.",
+  "screens": [
+    {
+      "role": "master",
+      "screen": "profile",
+      "width": 390,
+      "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/profile-fixture-390.png",
+      "sha256": "c20814aee7e81c7575234938ff15d10d17c83eea8a3513d572d0c78db6ac0d87",
+      "inspected": true,
+      "finding": "Мой профиль, начисления, личные данные и памятки видны без разрыва layout."
+    },
+    {
+      "role": "master",
+      "screen": "home-days",
+      "width": 390,
+      "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/home-days-fixture-390.png",
+      "sha256": "6364a4222baa3f56eaabf2d6e62786c50cdc727a6efd7c1244238e4120839c06",
+      "inspected": true,
+      "finding": "Компактная временная колонка, вторичный поиск, следующий шаг и основной CTA видны."
+    },
+    {
+      "role": "owner",
+      "screen": "error",
+      "width": 390,
+      "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/owner/error-fixture-390.png",
+      "sha256": "a62727daf6cb5c443ea7e7da7183f9882e1031f1ee338504f2031df3c97e3887",
+      "inspected": true,
+      "finding": "Виден жёлтый refresh-error и сохранённые dashboard данные; документирован native variant."
+    }
+  ]
+}

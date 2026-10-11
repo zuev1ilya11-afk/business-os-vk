@@ -1,0 +1,27 @@
+{
+  "runtimeBuild": "f2e5943231221a2ee73e",
+  "runtimeHead": "fec17fedc557237f4f7e59a6ba3a7c7bcd3b566c",
+  "reviewer": "root",
+  "reviewedPairs": 10,
+  "screens": [
+    "master/home-days",
+    "master/home-new",
+    "master/order-detail",
+    "master/order-hands",
+    "master/report-extras",
+    "master/profile",
+    "dispatcher/workspace",
+    "dispatcher/orders",
+    "dispatcher/team",
+    "dispatcher/schedule"
+  ],
+  "findings": [
+    "New master queue populated; compact time-column/next action retained.",
+    "Master detail stage and footer visible; original phone controls are larger/two rows than reference but retained, no overlap.",
+    "Report extras screenshot is focused/scrolled within original upload form; footer visible and no horizontal clipping.",
+    "Profile has one identity and canonical personal-data/memo entry; work destinations moved to primary navigation.",
+    "Dispatcher creation CTA full width; schedule native controls, queue and team data kept.",
+    "Exact pixel parity not asserted: native controls, additional required information and synthetic data differ."
+  ],
+  "newConfirmedDefects": []
+}

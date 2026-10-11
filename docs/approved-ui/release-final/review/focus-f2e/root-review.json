@@ -1,0 +1,54 @@
+{
+  "runtimeBuild": "f2e5943231221a2ee73e",
+  "runtimeHead": "fec17fedc557237f4f7e59a6ba3a7c7bcd3b566c",
+  "reviewer": "root",
+  "reviewedPairs": 21,
+  "screens": [
+    "master/home-days",
+    "master/home-new",
+    "master/orders-active",
+    "master/orders-undated",
+    "master/order-detail",
+    "master/order-hands",
+    "master/contact-agreed",
+    "master/report-extras",
+    "master/memo",
+    "master/profile",
+    "dispatcher/workspace",
+    "dispatcher/attention",
+    "dispatcher/orders",
+    "dispatcher/team",
+    "dispatcher/master-detail",
+    "dispatcher/schedule",
+    "dispatcher/free-slots",
+    "dispatcher/review",
+    "dispatcher/review-reject",
+    "dispatcher/control",
+    "dispatcher/control-task"
+  ],
+  "findings": [
+    "Master new queue has an actual new order; undated filter is separate from native status filters.",
+    "Modern stage/detail and agreement footer remain visible. Native contact/date/upload controls and fields retained.",
+    "Original memo categories remain a modal, different from proposed new category taxonomy; no new content invented.",
+    "Report extras captured after field focus; original form scrolls, footer visible.",
+    "Dispatcher CTA uses full width, attention tabs wrap, control summary remains compact with native reminders.",
+    "Employee detail preserves original metrics/contact and recent-order actions.",
+    "Reject uses native reason/validation in report, captured from top with decision footer; a distinct proposed reject page is not claimed.",
+    "Native controls, required information and fixture data cause documented visual differences; exact pixel parity is not asserted."
+  ],
+  "newConfirmedDefects": [],
+  "desktopChecks": [
+    {
+      "screen": "dispatcher/workspace",
+      "width": 1920,
+      "path": "responsive/dispatcher/workspace-fixture-1920.png",
+      "finding": "KPI band and3 columns use available workspace width; action/context visible."
+    },
+    {
+      "screen": "dispatcher/orders",
+      "width": 1440,
+      "path": "visual/dispatcher/orders-fixture-1440.png",
+      "finding": "Compact rows use time/content/action columns, original status and workflow labels retained; actions separate."
+    }
+  ]
+}
