@@ -179,3 +179,10 @@ body.bos-approved-ui .bosNotifyFilters button{background:none;border:0;border-bo
 body.bos-approved-ui .bosNotifyFilters [aria-pressed=true]{color:#edf2f8;border-bottom-color:#91bfff}
 body.bos-approved-ui .bosNotifyItem[hidden]{display:none}
 @media(min-width:761px){body.bos-approved-ui #modalRoot .modal:is(.bosSharedScreen,.bosSharedIntegration,.bosSharedForm,.bosManagementTools){width:min(1000px,calc(100vw - 80px));max-width:1000px}}
+body.bos-approved-ui .bosPriceTabs{display:flex;gap:18px;border-bottom:1px solid #2a3543;margin:20px 0}
+body.bos-approved-ui .bosPriceTabs button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;min-height:44px;padding:12px 0;color:#a3b1c3;font-size:13px}
+body.bos-approved-ui .bosPriceTabs [aria-pressed=true]{border-bottom-color:#91bfff;color:#edf2f8}
+body.bos-approved-ui .bosSharedScreen :is(.bosSharedCatalog,.bosAvitoCatalog){background:none;border:0;padding:0;box-shadow:none}
+body.bos-approved-ui .bosSharedScreen :is(.bosSharedCatalog,.bosAvitoCatalog,.bosPriceMaterials)[hidden]{display:none!important}
+body.bos-approved-ui .bosPriceRow{padding:18px 0;border-color:#2a3543}
+body.bos-approved-ui .bosPriceRow b{color:#91bfff}
