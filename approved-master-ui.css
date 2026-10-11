@@ -270,3 +270,4 @@ body.bos-approved-ui[data-bos-ui-role="master"] {--master-muted:var(--bos-ui-mut
 .bos-approved-ui #masterReportForm .reportChoice input[type=radio]{position:absolute;width:1px!important;max-width:1px!important;min-width:0!important;height:1px!important;min-height:0!important;left:0;top:0;margin:0;padding:0;clip-path:inset(50%);overflow:hidden}
 
 .bos-approved-ui[data-bos-ui-role="master"] .masterV125Actions>:only-child{grid-column:1/-1}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV125Stage{white-space:nowrap}

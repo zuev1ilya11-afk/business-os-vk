@@ -249,3 +249,32 @@ body.bos-approved-ui .bosPushStates dd{margin:0;color:#edf2f8;text-align:right;f
 .bos-approved-ui #modalRoot .modal:has(.bosEmployeeQuality) .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border:1px solid var(--bos-ui-line);border-radius:12px;overflow:hidden;margin:16px 0}
 .bos-approved-ui #modalRoot .modal:has(.bosEmployeeQuality) .grid .metric{min-height:0;gap:10px;padding:14px 12px;margin:0;border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;box-shadow:none;background:transparent}
 .bos-approved-ui #modalRoot .modal:has(.bosEmployeeQuality) .grid .metric strong{font-size:24px}
+
+/* Verified grid containment: 100% buttons need a full-width grid track. */
+@media(max-width:760px){
+ .bos-approved-ui #app>#content:has(#bosOrderList)>.row,.bos-approved-ui .bosOpsDaySchedule .dmv2Header{grid-template-columns:minmax(0,1fr)!important;justify-content:stretch!important;justify-items:stretch!important}
+}
+.bos-approved-ui .bosOpsListRow:has(>.bosOpsListContact)>.bosOpsContact{display:none}
+.bos-approved-ui .bosManagementAccess button[onclick^="openStaffAdminCard"]{display:grid!important;gap:7px;justify-items:start;align-content:center}
+.bos-approved-ui .bosManagementAccess button[onclick^="openStaffAdminCard"]>br{display:none}
+.bos-approved-ui .bosSharedRow b{flex:0 1 60%}
+.bos-approved-ui #modalRoot .modal:has(.bosEmployeeQuality) .metric::before,.bos-approved-ui #modalRoot .modal:has(.bosEmployeeQuality) .metric::after{display:none}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]{display:grid;grid-template-columns:54px minmax(0,1fr);column-gap:16px;row-gap:6px;background:none!important;border:0!important;box-shadow:none;padding:18px 0!important;align-items:center}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]::before{content:attr(data-bos-avatar);grid-column:1;grid-row:1/4;display:grid;place-items:center;width:54px;height:54px;border-radius:50%;background:#26354b;color:#a8ccff;font-size:21px;font-weight:600}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>p{grid-column:2;margin:0!important;font-size:13px;color:var(--bos-ui-muted)}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>p:first-of-type{font-size:20px;font-weight:600;color:var(--bos-ui-text)}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>p:first-of-type>b{display:none}
+
+/* Control keeps its native filters, reminder status and task refresh in a compact header. */
+@media(max-width:760px){
+ .bos-approved-ui #bosOrderControl{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;align-items:start}
+ .bos-approved-ui #bosOrderControl>*{grid-column:1/-1;min-width:0}
+ .bos-approved-ui #bosOrderControl>.ocBack{grid-column:2;grid-row:1;margin:0;padding:8px 10px;font-size:12px;min-height:44px}
+ .bos-approved-ui #bosOrderControl>.ocHeading{grid-column:1;grid-row:1;gap:8px}
+ .bos-approved-ui #bosOrderControl .ocHeading h2{font-size:22px;line-height:1.2;margin:5px 0 8px}
+ .bos-approved-ui #bosOrderControl>.ctBar{display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,42%);gap:10px;align-items:center;padding:5px 0;font-size:11px;line-height:1.4}
+ .bos-approved-ui #bosOrderControl .ctBar button{min-height:44px;padding:8px;font-size:11px;white-space:normal}
+ .bos-approved-ui #bosOrderControl>.ocFilters{display:flex!important;flex-wrap:wrap;gap:6px;margin:8px 0}
+ .bos-approved-ui #bosOrderControl .ocFilters button{flex:0 1 auto;width:auto!important;min-height:44px;padding:8px 10px;font-size:11px;white-space:normal}
+ .bos-approved-ui #bosOrderControl>.ocList{width:100%;gap:0}
+}

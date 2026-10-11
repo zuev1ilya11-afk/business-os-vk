@@ -64,6 +64,7 @@ pages.team=function(){const html=profileTeamBase();return html.replace(/<section
   if(!menu&&role==='dispatcher'&&modal?.querySelector('h2')?.textContent==='Мой профиль'){
    menu=document.createElement('div');menu.className='bosManagementProfileMenu';modal.appendChild(menu);modal.classList.add('bosManagementProfile');
   }
+  if(modal?.classList.contains('bosManagementProfile')){const identity=modal.querySelector(':scope>section.card');if(identity){identity.classList.add('bosManagementIdentity');const u=current(),avatar=String(u.full_name||u.name||'БО').trim().split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();if(identity.dataset.bosAvatar!==avatar)identity.dataset.bosAvatar=avatar;}}
   for(const target of [menu,master].filter(Boolean)){
    if(target===menu)entry(target,'personal','Личные данные');
    entry(target,'help','Помощь');entry(target,'about','О приложении');
