@@ -186,3 +186,9 @@ body.bos-approved-ui .bosSharedScreen :is(.bosSharedCatalog,.bosAvitoCatalog){ba
 body.bos-approved-ui .bosSharedScreen :is(.bosSharedCatalog,.bosAvitoCatalog,.bosPriceMaterials)[hidden]{display:none!important}
 body.bos-approved-ui .bosPriceRow{padding:18px 0;border-color:#2a3543}
 body.bos-approved-ui .bosPriceRow b{color:#91bfff}
+
+/* Saved claim details: source-backed correction and revisit groups. */
+.bosSharedClaimWork,.bosSharedClaimVisit{padding:16px 0;border-bottom:1px solid var(--bos-approved-line,#2a3543)}
+.bosSharedClaimWork h3,.bosSharedClaimVisit h3{margin:0 0 12px;font-size:17px}
+.bosSharedClaimWork p,.bosSharedClaimVisit p{margin:8px 0;line-height:1.5}
+.bosSharedClaimVisit{margin-bottom:20px}
