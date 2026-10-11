@@ -146,8 +146,8 @@ body.bos-approved-ui .bosNotifyItem.unread .bosNotifyReadState{color:#91bfff}
 body.bos-approved-ui .bosNotifyText{font-size:13px;color:#a3b1c3}
 body.bos-approved-ui .bosNotifyClose{min-width:44px;min-height:44px}
 body.bos-approved-ui .bos-claim-compact{background:none!important;border:0!important;border-bottom:1px solid #2a3543!important;border-radius:0!important;padding:18px 0!important}
-body.bos-approved-ui #authGate{background:#0e141c}
-body.bos-approved-ui .authGateCard{background:#151d28;border-color:#2a3543;border-radius:16px;box-shadow:none;max-height:100%;overflow:auto}
+body.bos-approved-ui #authGate{background:#0e141c!important}
+body.bos-approved-ui .authGateCard{background:#151d28!important;border-color:#2a3543!important;border-radius:16px!important;box-shadow:none!important;max-height:100%;overflow:auto}
 body.bos-approved-ui .authGateCard :is(input,button){font-size:16px;min-height:44px}
 body.bos-approved-ui .authError{background:#30242c;color:#f4a5ac;border-radius:9px}
 body.bos-approved-ui .reportPhotoViewerBox{background:#151d28;border-color:#2a3543}
