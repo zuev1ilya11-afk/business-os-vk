@@ -13,7 +13,7 @@ for(const [role,ext] of [['owner','jpg'],['manager','png'],['dispatcher','jpg']]
   const viewer=page.locator('#reportPhotoViewer');await expect(viewer).toBeVisible();
   await expect(viewer.locator('img')).toHaveAttribute('src',url);
   await expect(viewer.getByRole('link',{name:'Открыть оригинал'})).toHaveAttribute('href',url);
-  await viewer.getByRole('button',{name:'Закрыть',exact:true}).click();
+  await viewer.locator('.reportPhotoViewerPanel button').first().click();
   await expect(viewer).toHaveCount(0);
  }
  expect(db.calls.filter(c=>c.table==='orders'&&c.mode!=='select')).toEqual([]);
@@ -68,7 +68,7 @@ test('master mobile order card displays saved report photos and closes the viewe
  await expect(viewer).toBeVisible();
  await expect(viewer.locator('img')).toHaveAttribute('src',photos[1]);
  await expect(viewer.getByRole('link',{name:'Открыть оригинал'})).toHaveAttribute('href',photos[1]);
- await viewer.getByRole('button',{name:'Закрыть',exact:true}).click();
+ await viewer.locator('.reportPhotoViewerPanel button').first().click();
  await expect(viewer).toHaveCount(0);
  await expect(modal.locator('.reportPhotoThumb')).toHaveCount(2);
  await expect(modal.locator('a[href^="javascript:"],a[href^="data:"],a[href^="file:"],img[src^="javascript:"],img[src^="data:"],img[src^="file:"]')).toHaveCount(0);

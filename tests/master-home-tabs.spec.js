@@ -57,15 +57,15 @@ test('an extra callback preserves departure and legacy timestamps advance throug
  const card=page.locator('.masterV127Card[data-order-id="11"]');await expect(card).toContainText('Перезвонить');await expect(card.getByRole('button',{name:'Подтвердить выезд',exact:true})).toBeEnabled();
  Object.assign(order,{master_departed_at:'2026-10-08T14:00:00Z'});
  await page.evaluate(o=>{Object.assign(state.orders.find(x=>x.id===o.id),o);window.BOS_MASTER_DAILY_HOME_V127_API.refresh();},order);
- await card.getByRole('button',{name:'Начать работу',exact:true}).click();await page.locator('.bosStageTask').getByRole('button',{name:'Подтвердить: начал работу',exact:true}).click();await expect(page.locator('.moa179Steps')).toContainText('Отправить отчёт');expect(order.master_started_at).toBeTruthy();
+ await card.getByRole('button',{name:'Начать работу',exact:true}).click();await page.locator('.bosStageTask').getByRole('button',{name:'Подтвердить: начал работу',exact:true}).click();await expect(page.locator('.moa179Steps')).toContainText('Отправка отчёта');expect(order.master_started_at).toBeTruthy();
 });
 test('home result and agreement move an undated order to its saved day without reload',async({page})=>{
  const {db}=await fixture(page);const home=page.locator('#masterDailyV127');await home.getByRole('tab',{name:/Новые/}).click();
  await home.locator('[data-order-id="14"]').getByRole('button',{name:'Указать итог связи',exact:true}).click();await page.getByRole('button',{name:'+79999876543',exact:true}).click();
  // Opening the form creates no attempt until the master records the result.
  expect(db.tables.orders.find(o=>o.id==='14').master_contact_history).toHaveLength(0);
- await page.locator('input[name=result][value=agreed]').check();await page.locator('#masterContactResultForm textarea').fill('Согласован монтаж 10 октября');await page.locator('#masterContactResultForm button[type=submit]').click();
- const form=page.locator('#masterOrderAgree179Form');await expect(form).toBeVisible();await form.locator('input[name=scheduled_date]').fill('2026-10-10');await form.locator('input[name=scheduled_time]').fill('12:00');await form.locator('button[type=submit]').click();await expect(form).toHaveCount(0);
- const saved=db.tables.orders.find(o=>o.id==='14');expect(saved.scheduled_date).toBe('2026-10-10');expect(saved.master_contact_phone).toBe('+79999876543');
+ await page.locator('input[name=result][value=agreed]').check();await page.locator('#masterContactResultForm textarea').fill('Согласован монтаж 10 сентября 2099 года');await page.locator('#masterContactResultForm button[type=submit]').click();
+ const form=page.locator('#masterOrderAgree179Form');await expect(form).toBeVisible();await form.locator('input[name=scheduled_date]').fill('2099-09-10');await form.locator('input[name=scheduled_time]').fill('12:00');await form.locator('button[type=submit]').click();await expect(form).toHaveCount(0);
+ const saved=db.tables.orders.find(o=>o.id==='14');expect(saved.scheduled_date).toBe('2099-09-10');expect(saved.master_contact_phone).toBe('+79999876543');
  await page.evaluate(()=>closeModal());await home.getByRole('tab',{name:/По дням/}).click();await expect(home.locator('[data-order-id="14"]')).toContainText('12:00');await expect(home.locator('[data-order-id="14"]')).toContainText('Согласовано');await expect(home.getByRole('tab',{name:/Новые/})).toContainText('1');
 });

@@ -52,8 +52,8 @@ for(const [role,width] of [['owner',390],['dispatcher',390],['owner',1280]]){
    await masterPage.locator('.bosMasterWorkflow[data-bos-v179="1"]').getByRole('button',{name:/Отправить отчёт/}).click();
    await upload();
    const firstToken=order.report_upload_token;
-   await page.evaluate(()=>BOS_REFRESH_NOW());
-   await page.locator('.reportReviewCard').filter({hasText:'Невский 1'}).first().click();
+   await page.evaluate(async()=>{await reloadData(true);window.BOS_MASTER_ORDER_ACTIONS_V179_REFRESH?.()});
+   if(role==='dispatcher'){await page.evaluate(()=>openBosOpsAttention('report'));await page.locator('[data-ops-attention-order="11"]').getByRole('button',{name:'Проверить отчёт',exact:true}).click();}else await page.locator('.reportReviewCard').filter({hasText:'Невский 1'}).first().click();
    await page.locator('#rejectReportBtn').click();
    await expect(page.locator('#reviewMsg')).toContainText('Укажите причину отклонения');
    expect(order.report_review_status).toBe('pending');
@@ -64,7 +64,7 @@ for(const [role,width] of [['owner',390],['dispatcher',390],['owner',1280]]){
    expect(order).toMatchObject({status:'В работе',report_review_status:'rejected',report_review_comment:reason,report_uploaded_at:null,report_upload_token:null,master_workflow_stage:'assigned'});
    expect(archiveCalls).toBe(0);
 
-   await masterPage.evaluate(()=>BOS_REFRESH_NOW());
+   await masterPage.evaluate(async()=>{await reloadData(true);window.BOS_MASTER_ORDER_ACTIONS_V179_REFRESH?.()});
    await masterPage.evaluate(()=>openOrder('11'));
    const panel=masterPage.locator('.bosMasterWorkflow[data-bos-v179="1"]');
    await expect(panel.locator('.moa179Review.rejected')).toContainText(reason);
@@ -76,18 +76,18 @@ for(const [role,width] of [['owner',390],['dispatcher',390],['owner',1280]]){
    expect(order.report_review_comment).toBe('');
    expect(uploads.map(x=>x.kind)).toEqual(['act','photo','act','photo']);
 
-   await page.evaluate(()=>BOS_REFRESH_NOW());
-   await page.locator('.reportReviewCard').filter({hasText:'Невский 1'}).first().click();
+   await page.evaluate(async()=>{await reloadData(true);window.BOS_MASTER_ORDER_ACTIONS_V179_REFRESH?.()});
+   if(role==='dispatcher'){await page.evaluate(()=>openBosOpsAttention('report'));await page.locator('[data-ops-attention-order="11"]').getByRole('button',{name:'Проверить отчёт',exact:true}).click();}else await page.locator('.reportReviewCard').filter({hasText:'Невский 1'}).first().click();
    await expect(page.locator('#reviewForm')).toHaveAttribute('data-report-token',order.report_upload_token);
    await page.locator('#approveReportBtn').click();
    await expect(page.locator('#reviewForm')).toHaveCount(0);
    expect(order).toMatchObject({status:'Выполнена',report_review_status:'approved',drive_archive_status:'archived',master_payout:552.5});
    expect(archiveCalls).toBe(1);
-   await masterPage.evaluate(()=>BOS_REFRESH_NOW());
+   await masterPage.evaluate(async()=>{await reloadData(true);window.BOS_MASTER_ORDER_ACTIONS_V179_REFRESH?.()});
    await masterPage.evaluate(()=>openOrder('11'));
    await expect(panel.locator('.moa179Review.approved')).toContainText('Отчёт принят');
    await expect(panel.locator('.moa179Head')).toContainText('ЗАЯВКА ВЫПОЛНЕНА');
-   await expect(panel.locator('button:enabled')).toHaveCount(0);
+   await expect(panel.locator('.moa179Action:enabled')).toHaveCount(0);
    await expect(panel.locator('.moa179Review.rejected')).toHaveCount(0);
    await masterPage.reload();
    await expect(masterPage.locator('#authGate')).toBeHidden();
@@ -110,6 +110,6 @@ for(const [status,reviewStatus,heading] of [['Выполнена','not_submitted
   await expect(panel.locator('.moa179Head')).not.toContainText('Требуется договориться');
   await expect(panel).not.toContainText('Согласуйте с клиентом');
   await expect(panel.locator('.moa179Review.approved')).toHaveCount(0);
-  await expect(panel.locator('button:enabled')).toHaveCount(0);
+  await expect(panel.locator('.moa179Action:enabled')).toHaveCount(0);
  });
 }

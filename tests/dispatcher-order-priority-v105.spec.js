@@ -1,3 +1,4 @@
+const {secondary}=require('./helpers/approved-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
@@ -29,8 +30,9 @@ test('dispatcher mobile order cards use the same simple operational priorities a
   await expect(card.locator('.dmFlagReschedule')).toHaveText('Перенос');
   await expect(card.locator('.dmAssignAction')).toHaveClass(/dmPriorityAction/);
 
+  await secondary(card);
   const touch=await card.locator('.dmCardActions').evaluate(node=>{
-    const buttons=[...node.querySelectorAll('button,a')];
+    const buttons=[...node.querySelectorAll('button,a')].filter(e=>e.getBoundingClientRect().height>0);
     const viewport=document.documentElement.clientWidth;
     return {
       safe:buttons.every(el=>el.getBoundingClientRect().height>=44),

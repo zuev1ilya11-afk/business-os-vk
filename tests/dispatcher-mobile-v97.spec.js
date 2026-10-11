@@ -1,3 +1,4 @@
+const {secondary}=require('./helpers/approved-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
@@ -17,7 +18,8 @@ test('mobile dispatcher layer preserves existing order workflow and stays mobile
   await expect(page.locator('.dmDateTimeAction')).toHaveCount(2);
   await expect(page.locator('.dmAssignAction')).toHaveCount(1);
 
-  await page.locator('.dmMetrics button').filter({hasText:'Без мастера'}).click();
+  await page.locator(".bosOrderFilters button[onclick=\"setBosOrderFilter('unassigned')\"]").click();
+  await secondary(page.locator('.opsCompactOrder'));
   await expect(page.locator('.opsCompactOrder')).toHaveCount(1);
   await expect(page.locator('.opsCompactOrder')).toContainText('Борис');
   await expect(page.getByRole('button',{name:'Назначить мастера'})).toBeVisible();

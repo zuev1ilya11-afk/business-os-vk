@@ -1,3 +1,4 @@
+const {secondary}=require('./helpers/approved-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const fs=require('fs');
 const path=require('path');
@@ -24,7 +25,8 @@ test('dispatcher keeps completed Hands order on dashboard and can open reclamati
     Object.assign(o,{status:'Выполнена',external_source:'hands',external_id:'hands:HANDS-90210',completed_at:new Date().toISOString(),report_review_status:'approved'});
     show('home');
   });
-  const done=page.locator('.lifecycleDoneCard').filter({hasText:'HANDS-90210'});
+  await page.getByRole('button',{name:'Все заявки →',exact:true}).click();await page.locator(".bosOrderFilters button[onclick=\"setBosOrderFilter('done')\"]").click();
+  const done=page.locator('.opsCompactOrder').filter({hasText:'HANDS-90210'});await secondary(done);
   await expect(done).toBeVisible();
   await expect(done).not.toContainText('№ 12');
   await done.getByRole('button',{name:'Открыть рекламацию'}).click();

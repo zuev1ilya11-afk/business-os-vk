@@ -1,3 +1,4 @@
+const {secondary}=require('./helpers/approved-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
@@ -28,7 +29,7 @@ test('desktop dispatcher exposes quick actions directly under list cards',async(
   await page.evaluate(()=>closeModal());
 
   await actions.getByRole('button',{name:'Подобрать'}).click();
-  await expect(page.getByRole('heading',{name:'Подобрать мастера'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Назначить мастера'})).toBeVisible();
   await expect(page.locator('#dsa119ModalList')).toContainText('Тестовый мастер');
 });
 
@@ -44,16 +45,17 @@ test('mobile dispatcher keeps manual assignment and adds smart master action wit
   await page.locator('nav [data-page=orders]').click();
 
   const card=page.locator('#bosOrderList .opsCompactOrder').filter({hasText:'Борис'});
+  await secondary(card);
   const actions=card.locator('.dmCardActions');
   await expect(actions).toBeVisible();
   await expect(actions.locator('.dmAssignAction')).toBeVisible();
   await expect(actions.locator('.dsa119CardAction')).toBeVisible();
   await expect(actions.getByRole('button',{name:'Назначить мастера'})).toBeVisible();
-  await expect(actions.getByRole('button',{name:'Подобрать мастера'})).toBeVisible();
+  await expect(actions.getByRole('button',{name:'Назначить мастера'})).toBeVisible();
   await expect(actions.locator('.dmDateTimeAction')).toBeVisible();
   await expect(actions.locator('.drv157QuickAction')).toBeVisible();
-  await expect(actions.locator('.dmOpenAction')).toBeVisible();
+  await expect(card.locator('.bosOpsListOpen')).toBeVisible();
 
   await actions.getByRole('button',{name:'Подобрать мастера'}).click();
-  await expect(page.getByRole('heading',{name:'Подобрать мастера'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Назначить мастера'})).toBeVisible();
 });

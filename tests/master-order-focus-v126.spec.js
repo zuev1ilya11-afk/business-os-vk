@@ -34,7 +34,7 @@ test('master order v126 highlights next step and keeps mobile actions usable',as
 
   const focus=page.locator('.masterV126Focus');
   await expect(focus).toHaveCount(0);
-  await expect(page.locator('.moa179Step.current')).toContainText('Отправить отчёт');
+  await expect(page.locator('.moa179Step.current')).toContainText('Отправка отчёта');
 
   const phone=page.locator('.masterV126Phone');
   await expect(phone).toHaveAttribute('href','tel:+79990000002');

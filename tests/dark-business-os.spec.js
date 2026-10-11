@@ -1,3 +1,4 @@
+const {navigate,confirmStage}=require('./helpers/approved-navigation.cjs');
 const {test, expect} = require('@playwright/test');
 const {fullStack} = require('./helpers/full-stack.cjs');
 
@@ -49,8 +50,8 @@ for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths
       await page.screenshot({path: testInfo.outputPath(`${role}-${width}-home.png`), fullPage: true});
     }
     for (const name of ['orders', 'dispatch', 'team']) {
-      await page.locator(`nav [data-page="${name}"]`).click();
-      await expect(page.locator(`nav [data-page="${name}"]`)).toHaveClass(/active/);
+      await navigate(page,name);
+      await expect.poll(()=>page.evaluate(()=>state.page)).toBe(name);
       await fitsViewport(page);
       if (name === 'orders' && process.env.BOS_UI_SCREENSHOTS && [390, 1440].includes(width)) {
         await page.screenshot({path: testInfo.outputPath(`${role}-${width}-orders.png`), fullPage: true});
@@ -69,21 +70,21 @@ for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths
       await expect.poll(async () => depart.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
       await expect(workflow.getByRole('button',{name:/Подтвердить: начал работу/})).toHaveCount(0);
       await expect(workflow.getByRole('button',{name:/Отправить отчёт/})).toHaveCount(0);
-      await expect(workflow.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
+      await expect(page.locator('.bosApprovedVisit').getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
       await expect(page.getByRole('button', {name: 'Я на месте', exact: true})).toHaveCount(0);
 
-      await depart.click();
+      await confirmStage(page,depart,'departed');
       await expect.poll(()=>targetOrder.master_workflow_stage).toBe('departed');
       await expect(workflow.getByRole('button',{name:/Подтвердить: начал работу/})).toBeEnabled();
 
-      await workflow.getByRole('button',{name:/Подтвердить: начал работу/}).click();
+      await confirmStage(page,workflow.getByRole('button',{name:/Подтвердить: начал работу/}),'started');
       await expect.poll(()=>targetOrder.master_workflow_stage).toBe('started');
       expect(targetOrder.master_payout).toBe(552.5);
       await expect(workflow.getByRole('button',{name:/Отправить отчёт/})).toBeEnabled();
       expect(targetOrder.status).toBe('В работе');
 
       if (width === 390) {
-        await workflow.getByRole('button',{name:'Запросить перенос',exact:true}).click();
+        await page.locator('.bosApprovedVisit').getByRole('button',{name:'Запросить перенос',exact:true}).click();
         const reason = page.getByLabel('Причина переноса *', {exact: true});
         await page.getByRole('button', {name: 'Отправить запрос на перенос'}).click();
         await expect(reason).toBeVisible();

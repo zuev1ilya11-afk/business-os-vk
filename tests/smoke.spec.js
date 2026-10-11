@@ -1,3 +1,4 @@
+const {navigate}=require('./helpers/approved-navigation.cjs');
 const { test, expect } = require('@playwright/test');
 test.setTimeout(60000);
 
@@ -58,10 +59,10 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
 
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#authGate')).toBeHidden();
-  await expect(page.getByRole('heading',{name:'Домашний мастер'}).first()).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Обзор бизнеса'}).first()).toBeVisible();
   await expect(page.getByText('VK MINI APP')).toHaveCount(0);
   await expect(page.getByText('Загруженность мастеров')).toBeVisible();
-  await expect(page.getByText('Отчёты на проверку')).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Отчёты на проверку'})).toBeVisible();
   const reportCard=page.locator('.reportReviewCard').filter({hasText:'REPORT-1 · Монтаж'});
   await expect(reportCard).toBeVisible();
 
@@ -71,7 +72,7 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   expect(layout.labelBottom).toBeLessThanOrEqual(layout.valueTop+1);
 
   await reportCard.click();
-  await expect(page.getByRole('heading',{name:'Проверка отчёта REPORT-1'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Проверка отчёта'})).toBeVisible();
   await expect(page.getByRole('link',{name:'📄 Открыть акт'})).toBeVisible();
   await page.getByRole('button',{name:'Принять'}).click();
   await expect(page.getByText('Новых отчётов на проверку нет.')).toBeVisible();
@@ -93,10 +94,10 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   await page.getByText('TEST-1').click();await expect(page.getByText('Комментарий тест',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Редактировать'}).click();
   await page.locator('#bosService').selectOption('5');
-  await page.getByRole('button',{name:'Сохранить'}).click();
+  await page.getByRole('button',{name:'Сохранить изменения',exact:true}).click();
   await expect(page.getByText('Установка декоративного карниза длиной до 3,5 метров')).toBeVisible();
 
-  await page.locator('nav button[data-page="team"]').click();
+  await navigate(page,'team');
   await page.getByRole('button',{name:'+ Сотрудник'}).click();
   await page.locator('input[name="full_name"]').fill('Новый мастер');
   await expect(page.locator('input[name="vk_user_id"]')).toHaveCount(0);

@@ -1,3 +1,4 @@
+const {secondary}=require('./helpers/approved-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
@@ -37,6 +38,7 @@ test('mobile dispatcher can open status and master quick edit from an order card
   await page.locator('nav [data-page=orders]').click();
 
   const card=page.locator('#bosOrderList .opsCompactOrder').filter({hasText:'Борис'});
+  await secondary(card);
   const quick=card.getByRole('button',{name:'Быстро изменить статус и мастера'});
   await expect(quick).toBeVisible();
   await quick.click();

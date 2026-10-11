@@ -1,3 +1,4 @@
+const {confirmStage}=require('./helpers/approved-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
@@ -22,16 +23,16 @@ test('master follows departed started report flow for a scheduled order',async({
   await page.evaluate(()=>window.openOrder('11'));
   const workflow=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(workflow).toBeVisible();
-  await expect(workflow.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
+  await expect(page.locator('.bosApprovedVisit').getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
   await expect(workflow.getByRole('button',{name:/Подтвердить: выехал/})).toBeEnabled();
   await expect(workflow.getByRole('button',{name:/Подтвердить: начал работу/})).toHaveCount(0);
   await expect(workflow.getByRole('button',{name:/Отправить отчёт/})).toHaveCount(0);
 
-  await workflow.getByRole('button',{name:/Подтвердить: выехал/}).click();
+  await confirmStage(page,workflow.getByRole('button',{name:/Подтвердить: выехал/}),'departed');
   await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('departed');
   await expect(workflow.getByRole('button',{name:/Подтвердить: начал работу/})).toBeEnabled();
 
-  await workflow.getByRole('button',{name:/Подтвердить: начал работу/}).click();
+  await confirmStage(page,workflow.getByRole('button',{name:/Подтвердить: начал работу/}),'started');
   await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('started');
   expect(order11(db)?.master_started_at).toBeTruthy();
   await expect(workflow.getByRole('button',{name:/Отправить отчёт/})).toBeEnabled();
@@ -59,7 +60,7 @@ test('legacy arrived stage maps to departed and can continue directly to work',a
   await expect(workflow).not.toContainText('На месте');
   await expect(workflow.getByRole('button',{name:/Подтвердить: выехал/})).toHaveCount(0);
   await expect(workflow.getByRole('button',{name:/Подтвердить: начал работу/})).toBeEnabled();
-  await workflow.getByRole('button',{name:/Подтвердить: начал работу/}).click();
+  await confirmStage(page,workflow.getByRole('button',{name:/Подтвердить: начал работу/}),'started');
   await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('started');
 });
 

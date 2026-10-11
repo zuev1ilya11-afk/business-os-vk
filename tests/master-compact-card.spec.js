@@ -1,3 +1,4 @@
+const {confirmStage}=require('./helpers/approved-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 const {edge,employee}=require('./helpers/edge.cjs');
@@ -9,12 +10,12 @@ async function open(page,width,role='master',source='Hands'){
 }
 for(const width of [360,390,430])test(`${width}: compact card, exact titles, expand/collapse, phone and sequential progress`,async({page},info)=>{
  const {db}=await open(page,width),card=page.locator('.bosCompactMasterCard'),modal=page.locator('.bosCompactOrderModal');
- await expect(card.locator('.bosApartment')).toHaveText('кв. 42');await expect(card.locator('.bosHandsAddressLink')).toHaveAttribute('href',/yandex.ru\/maps/);
+ await expect(card.locator('.bosCompactAddress .bosApartment')).toHaveText('кв. 42');await expect(card.locator('.bosHandsAddressLink')).toHaveAttribute('href',/yandex.ru\/maps/);
  await expect(card.locator('.bosCompactClient').getByRole('link',{name:'Позвонить клиенту',exact:true})).toHaveAttribute('href','tel:+79990000002');
  const payout=card.locator('.bosCompactMoney');await expect(payout).toBeVisible();await expect(payout.locator('span')).toHaveCSS('white-space','nowrap');expect(await payout.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
  await expect(modal.getByText('Связь с клиентом',{exact:true})).toHaveCount(0);await expect(modal.locator('.masterV126Focus,.masterV149Route,.masterV126ReceivedModal')).toHaveCount(0);
- await expect(card.locator('.bosHandsWorkRow:visible')).toHaveCount(2);await expect(card.getByText(work,{exact:true})).toBeVisible();await expect(card.getByText('1,5 м',{exact:true})).toBeVisible();
- await card.getByText('Ещё 2 работы',{exact:true}).click();await expect(card.locator('.bosHandsWorkRow:visible')).toHaveCount(4);await card.getByText('Свернуть работы',{exact:true}).click();await expect(card.locator('.bosHandsWorkRow:visible')).toHaveCount(2);
+ await expect(card.locator('.bosHandsWorkRow:visible')).toHaveCount(4);await expect(card.getByText(work,{exact:true})).toBeVisible();await expect(card.getByText('1,5 м',{exact:true})).toBeVisible();
+ await expect(card.getByText('Третья услуга без сокращений',{exact:true})).toBeVisible();await expect(card.getByText('Четвёртая услуга',{exact:true})).toBeVisible();
  await card.getByText('Показать полностью',{exact:true}).click();await expect(card.locator('.bosOrderComment p')).toHaveText(db.tables.orders[0].comment);await card.getByText('Свернуть комментарий',{exact:true}).click();
  expect((await modal.locator('.moa179StageCard').boundingBox()).height).toBeLessThan(400);
  await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','25');await expect(modal.locator('.moa179Action')).toHaveCount(1);await expect(modal.locator('.moa179Step.future button')).toHaveCount(0);
@@ -23,10 +24,10 @@ for(const width of [360,390,430])test(`${width}: compact card, exact titles, exp
  const client=card.locator('.bosMasterClientActions');await expect(client.getByRole('button',{name:'Связался с клиентом'})).toHaveCount(0);await expect(client.locator('.bosContactStatus')).toHaveCount(0);await expect(client.getByRole('button',{name:'Подтвердить договорённость'})).toBeDisabled();
  await card.locator('a[aria-label="Позвонить клиенту"]').dispatchEvent('click');const contactResult=page.locator('#masterContactResultForm');await expect(contactResult).toBeVisible();await contactResult.locator('input[value="agreed"]').check();await contactResult.getByRole('button',{name:'Сохранить итог',exact:true}).click();await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();
  const agreement=page.locator('#masterOrderAgree179Form');await expect(agreement).toBeVisible();await agreement.getByRole('button',{name:'Сохранить',exact:true}).click();await expect(agreement).toHaveCount(0);await expect.poll(()=>db.tables.orders[0].master_agreed_at).toBeTruthy();
- await modal.getByRole('button',{name:'Подтвердить: выехал',exact:true}).click();await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','50');
+ await confirmStage(page,modal.getByRole('button',{name:'Подтвердить: выехал',exact:true}),'departed');await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','50');
  await modal.evaluate(e=>e.scrollTop=0);
  await modal.screenshot({path:info.outputPath(`card-${width}.png`)});
- await modal.getByRole('button',{name:'Подтвердить: начал работу',exact:true}).click();await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','75');
+ await confirmStage(page,modal.getByRole('button',{name:'Подтвердить: начал работу',exact:true}),'started');await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','75');
  await modal.getByRole('button',{name:'Отправить отчёт',exact:true}).click();await expect(page.locator('#masterReportForm')).toBeVisible();await expect(page.getByText('Сделано не всё',{exact:true})).toBeVisible();
 });
 test('master has no edit controls; missing optional data and full unbroken titles fit',async({page})=>{
@@ -50,9 +51,9 @@ test('master sees apartment imported from Hands directions after reload, with no
  const sync=edge('hands-api',db,{env:{HANDS_API_KEY:'fixture'},fetch:async()=>Response.json({orders:[remote]})});
  expect((await sync({action:'syncOrders',per_page:2,max_pages:1})).status).toBe(200);
  await page.setViewportSize({width:390,height:1000});await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrder('11'));
- await expect(page.locator('.bosApartment')).toHaveText('кв. 42');await expect(page.locator('.bosOrderComment')).toHaveText('КомментарийСвязаться для установки.');await expect(page.locator('.bosOrderComment')).not.toContainText('Как добраться:');await expect(page.locator('.bosOrderComment')).not.toContainText('Магазин:');
+ await expect(page.locator('.bosCompactAddress .bosApartment')).toHaveText('кв. 42');await expect(page.locator('.bosOrderComment')).toHaveText('КомментарийСвязаться для установки.');await expect(page.locator('.bosOrderComment')).not.toContainText('Как добраться:');await expect(page.locator('.bosOrderComment')).not.toContainText('Магазин:');
  remote.directions='квартира 43';expect((await sync({action:'syncOrders',per_page:2,max_pages:1})).status).toBe(200);
- await page.reload();await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrder('11'));await expect(page.locator('.bosApartment')).toHaveText('кв. 43');await expect(page.locator('.bosCompactMasterCard input')).toHaveCount(0);
+ await page.reload();await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrder('11'));await expect(page.locator('.bosCompactAddress .bosApartment')).toHaveText('кв. 43');await expect(page.locator('.bosCompactMasterCard input')).toHaveCount(0);
 });
 
 
@@ -75,7 +76,7 @@ test('management full edit keeps separate phones, multiple works and a master co
  await expect(form.locator('.bosPhoneInput').nth(1)).toHaveValue('9214453890');
  await expect(form.locator('.bosWorkSelect')).toHaveCount(2);
  await expect(form.locator('#bosServiceInfo')).toBeHidden();
- await expect(form.getByText('Комментарий мастеру',{exact:true})).toBeVisible();
+ await expect(form.getByRole('heading',{name:'Комментарий',exact:true})).toBeVisible();
 
  await form.locator('#bosAddPhone').click();
  await expect(form.locator('.bosPhoneInput')).toHaveCount(3);
