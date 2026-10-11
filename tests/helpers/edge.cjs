@@ -18,6 +18,8 @@ function database(seed = {}) {
       if(tables.business_staff.some(x=>x.id!==p.p_staff_id&&x.login?.toLowerCase()===p.p_login.trim().toLowerCase()))return {data:null,error:{code:'23505',message:'duplicate key business_staff_login_unique'}};
       Object.assign(tables.business_staff.find(x=>x.id===p.p_staff_id),{login:p.p_login,password_hash:p.p_password});return {data:null,error:null};
     }
+    // SQL status RPC returns null when no delivery exists for the saved report token.
+    if(name==='bos_hands_report_status')return {data:(tables.hands_report_deliveries||[]).find(x=>String(x.order_id)===String(p.p_order))||null,error:null};
     throw new Error(`Unexpected RPC ${name}`);
   },from(table){
     let filters=[], mode='select', payload, columns='*', single=false, from=0, to=999;

@@ -88,7 +88,8 @@ function ensureNavigation(){
   nav.querySelector('[data-action="owner-tools"]').hidden=role!=='owner';
   nav.querySelectorAll('[data-page],[data-action]').forEach(entry=>{const label=entry.textContent.trim();if(entry.getAttribute('aria-label')!==label)entry.setAttribute('aria-label',label)});
   nav.querySelectorAll('[data-page]').forEach(entry=>{
-    const active=entry.dataset.page===current||(entry.dataset.page==='more'&&role!=='master'&&!['home','orders','dispatch'].includes(current));
+    const destination=['opsScheduleMonth','opsFreeSlots'].includes(current)?'dispatch':current;
+    const active=entry.dataset.page===destination||(entry.dataset.page==='more'&&role!=='master'&&!['home','orders','dispatch'].includes(destination));
     entry.classList.toggle('active',active);
     if(active){if(entry.getAttribute('aria-current')!=='page')entry.setAttribute('aria-current','page')}else if(entry.hasAttribute('aria-current'))entry.removeAttribute('aria-current');
   });
@@ -515,7 +516,7 @@ window.openDispatcherReschedule=function(id){
   const reason=String(o.reschedule_reason||'').trim();
   const date=String(o.scheduled_date||'').slice(0,10);
   const time=String(o.scheduled_time||'').slice(0,5)||String(o.time_slot||'').slice(0,5);
-  openModal(`<h2>Перенести заявку № ${esc(o.external_id?.startsWith('hands:')?o.external_id.slice(6):o.id)}</h2>${o.reschedule_requested?`<section class="card dispatcherRescheduleReason"><span class="muted">Причина мастера</span><b>${esc(reason||'Причина не указана')}</b></section>`:''}<form id="dispatcherRescheduleForm" class="form"><label>Новая дата *</label><input type="date" name="scheduled_date" required min="${localToday()}" value="${esc(date)}"><label>Новое время *</label><input type="time" name="scheduled_time" required step="900" value="${esc(time)}"><section class="card dispatcherRescheduleSummary"><div><span class="muted">Мастер</span><b>${esc(o.master_name||'Не назначен')}</b></div><div><span class="muted">Сейчас</span><b>${esc(date||'Без даты')}${time?` · ${esc(time)}`:''}</b></div></section><p class="muted">Перенос изменит только дату и время. Мастер, сумма и остальные данные заявки останутся без изменений.</p><button class="primary wide" type="submit">Подтвердить перенос</button><button class="secondary wide" type="button" onclick="closeModal()">Отмена</button><p id="dispatcherRescheduleMsg" class="muted"></p></form>`);
+  openModal(`<div class="bosOpsReschedule"><h2>Перенести визит</h2><p class="muted">№ ${esc(o.external_id?.startsWith('hands:')?o.external_id.slice(6):o.id)} · ${esc(o.work||'Работа')}</p><p>${esc(o.address||'Адрес не указан')}</p>${o.reschedule_requested?`<section class="card dispatcherRescheduleReason"><span class="muted">Причина мастера</span><b>${esc(reason||'Причина не указана')}</b></section>`:''}<form id="dispatcherRescheduleForm" class="form"><h3>Новое время</h3><label>Новая дата *</label><input type="date" name="scheduled_date" required min="${localToday()}" value="${esc(date)}"><label>Новое время *</label><input type="time" name="scheduled_time" required step="900" value="${esc(time)}"><section class="card dispatcherRescheduleSummary"><div><span class="muted">Мастер</span><b>${esc(o.master_name||'Не назначен')}</b></div><div><span class="muted">Сейчас</span><b>${esc(date||'Без даты')}${time?` · ${esc(time)}`:''}</b></div></section><p class="muted">Перенос изменит только дату и время. Мастер, сумма и остальные данные заявки останутся без изменений.</p><div class="bosOpsFormFooter"><button class="primary wide" type="submit">Подтвердить перенос</button><button class="secondary wide" type="button" onclick="closeModal()">Отмена</button></div><p id="dispatcherRescheduleMsg" class="muted"></p></form></div>`);
   const form=document.getElementById('dispatcherRescheduleForm');
   form.onsubmit=async e=>{
     e.preventDefault();if(state.busy)return;
@@ -1778,7 +1779,7 @@ function masterEditorHtml(){
  return `<section class="bosScheduleEditorTask"><h2>Изменить график</h2><p class="muted">Только ваш рабочий график</p><label class="bosScheduleDate">Выбранный день<input type="date" aria-label="Выбранный рабочий день" value="${date}" onchange="selectUnifiedScheduleDay(this.value)"></label><div class="bosTimelineWeek">${Array.from({length:7},(_,i)=>{const x=new Date(start);x.setDate(start.getDate()+i);const key=localIso(x);return `<button type="button" aria-pressed="${key===date}" ${monthDates().includes(key)?'':'disabled'} onclick="selectUnifiedScheduleDay('${key}')"><small>${x.toLocaleDateString('ru-RU',{weekday:'short'})}</small><b>${x.getDate()}</b></button>`}).join('')}</div><div class="bosTaskNotice"><b>Выбран 1 день</b><p>${esc(dateLabel(date))}</p></div>${editor()}${visits.length?`<div class="bosTaskNotice warning"><b>На этот день назначены визиты: ${visits.length}</b><p>Изменение рабочего графика не переносит заявки. Согласуйте изменения отдельно.</p></div>`:''}<details class="bosScheduleBulk"><summary>Применить ко всему месяцу</summary>${masterControls()}</details><p id="usSaveMsg" class="muted" role="status"></p><div class="bosTaskFooter"><button type="button" class="secondary" onclick="cancelMasterScheduleEdit()">Отмена</button><button type="button" class="primary usSave" onclick="saveUnifiedScheduleMonth()">Сохранить график</button></div></section>`;
 }
 
-function pageHtml(){if(!isMaster())return `${window.BOS_DISPATCHER_DAY_HTML?.()||''}<section class="card usScheduleCard usManagement"><div class="usCompactToolbar"><h2>График мастеров</h2><div class="usMonthHead"><button type="button" class="secondary" aria-label="Предыдущий месяц" onclick="shiftUnifiedScheduleMonth(-1)">←</button><h3>${title()}</h3><button type="button" class="secondary" aria-label="Следующий месяц" onclick="shiftUnifiedScheduleMonth(1)">→</button></div><button type="button" class="secondary usCurrentMonth" onclick="resetUnifiedScheduleMonth()">Этот месяц</button></div>${legend()}${calendarGrid()}</section>`;return masterView==='month'?masterMonthHtml():masterView==='edit'?masterEditorHtml():masterTimeline()}
+function pageHtml(){if(!isMaster()&&window.BOS_DISPATCHER_DAY_HTML?.())return window.BOS_DISPATCHER_DAY_HTML();if(!isMaster())return `<section class="card usScheduleCard usManagement"><div class="usCompactToolbar"><h2>График мастеров</h2><div class="usMonthHead"><button type="button" class="secondary" aria-label="Предыдущий месяц" onclick="shiftUnifiedScheduleMonth(-1)">←</button><h3>${title()}</h3><button type="button" class="secondary" aria-label="Следующий месяц" onclick="shiftUnifiedScheduleMonth(1)">→</button></div><button type="button" class="secondary usCurrentMonth" onclick="resetUnifiedScheduleMonth()">Этот месяц</button></div>${legend()}${calendarGrid()}</section>`;return masterView==='month'?masterMonthHtml():masterView==='edit'?masterEditorHtml():masterTimeline()}
 function render(background=false){const host=document.getElementById('content');if(state.page!=='dispatch'||!host)return;const html=pageHtml();if(background&&window.BOS_PATCH_CONTENT)window.BOS_PATCH_CONTENT(host,html);else if(window.BOS_RENDER_CONTENT)window.BOS_RENDER_CONTENT(host,html);else host.innerHTML=html;bindEditor();document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page==='dispatch'))}
 function bindEditor(){if(!isMaster()||!selected)return;const d=ownDraft(selected),w=document.getElementById('usWorking'),s=document.getElementById('usStart'),e=document.getElementById('usEnd');if(!w||!s||!e)return;w.onchange=()=>{d.is_working=w.checked;render()};s.onchange=()=>{d.work_start=s.value;if(d.work_end<=d.work_start)d.work_end=pad(Math.min(23,Number(d.work_start.slice(0,2))+1))+':00';render()};e.onchange=()=>{d.work_end=e.value>d.work_start?e.value:pad(Math.min(23,Number(d.work_start.slice(0,2))+1))+':00';render()}}
 window.selectUnifiedScheduleDay=function(date){if(isMaster()){if(!monthDates().includes(date)){render();return}masterView='edit'}selected=date;render();if(isMaster())window.scrollTo(0,0)};
@@ -1804,6 +1805,12 @@ window.openUnifiedScheduleMasterDay=function(date,key){
  if(isMaster())return;const m=allMasters().find(m=>masterKey(m)===key);if(!m)return;selectManagementDay(date);
  openModal(`<h2>Заявки мастера</h2><p class="muted">${esc(dateLabel(date))}</p><div class="usMasterList">${masterDetails(m,date,ordersFor(date))}</div>`);
 };
+let opsMonthMaster=null;
+function opsMonthHtml(){const masters=allMasters();if(opsMonthMaster===null)opsMonthMaster=masters.length?masterKey(masters[0]):'';const master=masters.find(m=>masterKey(m)===opsMonthMaster),days=monthDates(),lead=(new Date(days[0]+'T12:00:00').getDay()+6)%7;return `<section class="bosOpsMonthTask usManagement"><div class="bosOpsHeading"><div><h2>График команды</h2><p class="muted">Рабочие дни и сохранённые визиты</p></div></div><div class="bosOpsScheduleLinks"><button class="secondary" onclick="show('dispatch')">Расписание</button><button class="secondary" onclick="openBosOpsFreeSlots()">Свободные окна</button></div><div class="usMonthHead"><button class="secondary" onclick="shiftBosOpsMonth(-1)" aria-label="Предыдущий месяц">←</button><h3>${title()}</h3><button class="secondary" onclick="shiftBosOpsMonth(1)" aria-label="Следующий месяц">→</button></div><label class="bosOpsMonthMaster">Мастер<select aria-label="Мастер календаря" onchange="setBosOpsMonthMaster(this.value)"><option value="">Все мастера</option>${masters.map(m=>`<option value="${esc(masterKey(m))}" ${masterKey(m)===opsMonthMaster?'selected':''}>${esc(m.full_name||m.name)}</option>`).join('')}</select></label>${legend()}${master?`<div class="bosOpsMonthWeek">${['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(x=>`<span>${x}</span>`).join('')}</div><div class="bosOpsMonthGrid">${'<span></span>'.repeat(lead)}${days.map(date=>{const r=rowFor(master,date),os=ordersFor(date,master);return `<button type="button" class="${kind(r)}" data-date="${date}" onclick="openUnifiedScheduleMasterDay('${date}','${esc(masterKey(master))}')"><b>${Number(date.slice(8))}</b><small>${esc(compactTime(r))}</small>${os.length?`<span>${os.length} виз.</span>`:''}</button>`}).join('')}</div>`:calendarGrid()}</section>`}
+pages.opsScheduleMonth=opsMonthHtml;
+window.openBosOpsMonth=function(){if(isMaster())return;show('opsScheduleMonth')};
+window.setBosOpsMonthMaster=function(value){if(isMaster())return;opsMonthMaster=String(value);show('opsScheduleMonth')};
+window.shiftBosOpsMonth=function(delta){if(isMaster())return;month=new Date(month.getFullYear(),month.getMonth()+Number(delta||0),1,12);show('opsScheduleMonth')};
 document.addEventListener('click',event=>{
  const order=event.target.closest?.('[data-schedule-order]');if(order){window.closeModal?.();window.openOrder?.(order.dataset.scheduleOrder);return}
  const action=event.target.closest?.('[data-schedule-master],[data-schedule-day]'),day=action?.closest('.usTeamDay');if(!day)return;
@@ -1916,7 +1923,7 @@ function groupedField(group,label,wide=false){
   return wrapper;
 }
 
-function enhanceNewOrderForm(){
+function enhanceNewOrderForm(id){
   const form=document.getElementById('orderForm');
   if(!form||form.dataset.newOrderCard==='1')return;
   form.dataset.newOrderCard='1';
@@ -1934,17 +1941,19 @@ function enhanceNewOrderForm(){
   }
 
   const channels=form.querySelector('.newOrderChannels');
-  const client=makeSection('Клиент','');
+  const client=makeSection('1. Клиент','');
   const clientInput=form.elements.client;
   const phoneInput=form.querySelector('#bosPhone');
   const phoneGroup=phoneInput?.closest('.bosPhoneEditor,.two');
   const addressInput=form.elements.address;
-  [field(clientInput,'Имя клиента'),groupedField(phoneGroup,'Телефон'),field(addressInput,'Адрес',true)].filter(Boolean).forEach(node=>client.body.appendChild(node));
+  [field(clientInput,'Имя клиента'),groupedField(phoneGroup,'Телефоны')].filter(Boolean).forEach(node=>client.body.appendChild(node));
   if(phoneInput)phoneInput.setAttribute('aria-label','Телефон');
   const phonePrefix=phoneGroup?.querySelector('input[disabled]');
   if(phonePrefix)phonePrefix.setAttribute('aria-label','Код страны');
 
-  const work=makeSection('Услуги','');
+  const address=makeSection('2. Адрес','');
+  const addressField=field(addressInput,'Улица, дом, корпус',true);if(addressField)address.body.appendChild(addressField);
+  const work=makeSection('3. Работы','');
   const service=form.querySelector('#bosService');
   if(service){
     const workStack=form.querySelector('#bosWorkStack');
@@ -1961,7 +1970,7 @@ function enhanceNewOrderForm(){
     work.body.appendChild(conditions);
   }
 
-  const plan=makeSection('Дата и назначение','');
+  const plan=makeSection('4. Визит и исполнитель','');
   const dateInput=form.elements.scheduled_date;
   const dateGroup=dateInput?.closest('.two');
   const slot=form.elements.time_slot;
@@ -2002,7 +2011,7 @@ function enhanceNewOrderForm(){
   const msg=form.querySelector(':scope > #formMsg');
   const actions=document.createElement('div');
   actions.className='newOrderActions';
-  if(submit){submit.textContent='Создать заявку';actions.appendChild(submit)}
+  if(submit){submit.textContent=id?'Сохранить изменения':'Создать заявку';actions.appendChild(submit)}
   const cancel=document.createElement('button');
   cancel.type='button';
   cancel.className='secondary newOrderCancel';
@@ -2011,7 +2020,7 @@ function enhanceNewOrderForm(){
   actions.appendChild(cancel);
   if(msg)actions.appendChild(msg);
 
-  form.prepend(...[channels,client.section,work.section,plan.section].filter(Boolean));
+  form.prepend(...[channels,client.section,address.section,work.section,plan.section].filter(Boolean));
   const bottom=document.createElement('div');bottom.className='newOrderBottom';bottom.append(finance.section,note.section);form.appendChild(bottom);
   if(completionSection)form.appendChild(completionSection);
   form.appendChild(actions);
@@ -2035,7 +2044,7 @@ function enhanceNewOrderForm(){
 
 window.openOrderForm=function(id){
   const result=previousOpenOrderForm.apply(this,arguments);
-  if(id===undefined||id===null||id==='')requestAnimationFrame(enhanceNewOrderForm);
+  requestAnimationFrame(()=>enhanceNewOrderForm(id));
   return result;
 };
 

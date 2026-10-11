@@ -85,7 +85,7 @@ function bindPanel(panel){
   panel.querySelectorAll('.dfs120Slot').forEach(button=>button.addEventListener('click',()=>openAssign(button.dataset.master||'',button.dataset.time||'',selectedDate)));
 }
 function ensurePanel(){
-  if(!dispatcherMode()||String(state?.page||'')!=='dispatch')return null;
+  if(!dispatcherMode()||!['dispatch','opsFreeSlots'].includes(String(state?.page||'')))return null;
   const host=document.getElementById('content');if(!host)return null;
   let panel=host.querySelector('.dfs120Panel');
   if(panel)return panel;
@@ -119,6 +119,8 @@ async function assign(orderId,masterValue,time,date){
     closeModal();renderPanel();
   }catch(error){if(msg)msg.textContent=error?.message||String(error)}finally{state.busy=false}
 }
+pages.opsFreeSlots=function(){setTimeout(renderPanel,0);return `<div class="bosOpsFreeTask"><div class="bosOpsHeading"><div><h2>Свободные окна</h2><p class="muted">По сохранённому графику и назначенным заявкам</p></div></div><div class="bosOpsScheduleLinks"><button class="secondary" onclick="show('dispatch')">Расписание</button><button class="secondary" onclick="openBosOpsMonth()">График команды</button></div><section class="dfs120Panel"></section></div>`};
+window.openBosOpsFreeSlots=function(){if(!dispatcherMode())return;show('opsFreeSlots')};
 window.renderDispatcherFreeSlots120=renderPanel;
 window.openDispatcherFreeSlot120=openAssign;
 window.assignDispatcherFreeSlot120=assign;

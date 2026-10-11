@@ -146,14 +146,15 @@ function modalDraft(order,date){return {...order,scheduled_date:date,city:order?
 function renderMobileModal(orderId){
   const order=orderById(orderId),dateInput=document.getElementById('dsa119Date'),list=document.getElementById('dsa119ModalList');
   if(!order||!dateInput||!list)return;
-  const date=dateInput.value||localToday(),items=candidatesFor(modalDraft(order,date),date);
-  list.innerHTML=items.length?items.map((c,i)=>candidateHtml(c,i,'Назначить')).join(''):'<p class="muted">На выбранный день свободных мастеров не найдено.</p>';
+  const date=dateInput.value||localToday(),query=norm(document.getElementById('dsa119Search')?.value),items=candidatesFor(modalDraft(order,date),date).filter(c=>!query||norm(c.master?.full_name||c.master?.name).includes(query));
+  list.innerHTML=items.length?items.map((c,i)=>candidateHtml(c,i,'Назначить')).join(''):'<p class="muted">Подходящих мастеров с подтверждённым графиком не найдено. Доступность без графика неизвестна.</p>';
   list.querySelectorAll('.dsa119Pick').forEach(button=>button.addEventListener('click',()=>assignMobile(order.id,button.dataset.master||'',button.dataset.time||'',date)));
 }
 function openMobileSmart(orderId){
   const order=orderById(orderId);if(!order||!unassigned(order))return;
   const date=dateOf(order)||localToday();
-  openModal(`<h2>Подобрать мастера</h2><p class="muted">Заявка № ${safe(typeof window.BOS_ORDER_NO==='function'?window.BOS_ORDER_NO(order):order.id)} · ${safe(order.work||'Работа')}</p><label class="dsa119DateLabel"><span>Дата выполнения</span><input id="dsa119Date" type="date" value="${safe(date)}"></label><section id="dsa119ModalList" class="dsa119List"></section><p id="dsa119Msg" class="muted"></p>`);
+  openModal(`<div class="bosOpsAssign"><h2>Назначить мастера</h2><p class="bosOpsAssignContext">${safe(order.address||'Адрес не указан')}</p><p class="muted">Заявка № ${safe(typeof window.BOS_ORDER_NO==='function'?window.BOS_ORDER_NO(order):order.id)} · ${safe(order.work||'Работа')}</p><label class="dsa119DateLabel"><span>Дата выполнения</span><input id="dsa119Date" type="date" value="${safe(date)}"></label><label class="bosOpsAssignSearch">Найти мастера<input id="dsa119Search" type="search" aria-label="Найти мастера"></label><section id="dsa119ModalList" class="dsa119List"></section><p class="muted">Доступность по сохранённому графику не подтверждает согласие исполнителя. Без графика доступность неизвестна.</p><p id="dsa119Msg" class="muted"></p></div>`);
+  document.getElementById('dsa119Search')?.addEventListener('input',()=>renderMobileModal(order.id));
   document.getElementById('dsa119Date')?.addEventListener('change',()=>renderMobileModal(order.id));
   renderMobileModal(order.id);
 }

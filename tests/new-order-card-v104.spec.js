@@ -9,12 +9,12 @@ test('dispatcher new order card is grouped and touch friendly on mobile',async({
   await page.waitForFunction(()=>String(window.openOrderForm||'').includes('enhanceNewOrderForm'));
 
   await page.locator('nav button[data-page="orders"]').click();
-  await page.getByRole('button',{name:'+ Заявка',exact:true}).click();
+  await page.getByRole('button',{name:'+ Новая',exact:true}).click();
 
   const form=page.locator('#orderForm.newOrderForm');
   await expect(form).toBeVisible();
   await expect(page.locator('.newOrderTitle')).toHaveText('Новая заявка');
-  for(const heading of ['Клиент','Услуги','Дата и назначение','Стоимость','Комментарий']){
+  for(const heading of ['1. Клиент','2. Адрес','3. Работы','4. Визит и исполнитель','Стоимость','Комментарий']){
     await expect(form.getByRole('heading',{name:heading,exact:true})).toBeVisible();
   }
 
@@ -30,8 +30,8 @@ test('dispatcher new order card is grouped and touch friendly on mobile',async({
 
   const sections=form.locator('.newOrderSection');
   await expect(sections.filter({hasText:'Клиент'}).locator('#bosPhone')).toHaveCount(1);
-  await expect(sections.filter({hasText:'Услуги'}).locator('#bosService')).toHaveCount(1);
-  await expect(sections.filter({hasText:'Дата и назначение'}).locator('[name="scheduled_date"]')).toHaveCount(1);
+  await expect(sections.filter({hasText:'3. Работы'}).locator('#bosService')).toHaveCount(1);
+  await expect(sections.filter({hasText:'4. Визит и исполнитель'}).locator('[name="scheduled_date"]')).toHaveCount(1);
   await expect(sections.filter({hasText:'Стоимость'}).locator('[name="original_amount"]')).toHaveCount(1);
   await expect(sections.filter({hasText:'Комментарий'}).locator('[name="comment"]')).toHaveCount(1);
 

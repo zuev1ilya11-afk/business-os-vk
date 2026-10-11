@@ -18,20 +18,20 @@ test('dispatcher orders v3 adds tomorrow, city, status and quick status action',
   await page.waitForFunction(()=>window.BOS_DISPATCHER_ORDERS_V3===true);
 
   await page.locator('nav button[data-page="orders"]').click();
-  await expect(page.locator('#dmv3City')).toBeVisible();
-  await expect(page.locator('#dmv3Status')).toBeVisible();
+  await expect(page.locator('#dmv3City')).toBeAttached();
+  await expect(page.locator('#dmv3Status')).toBeAttached();
   await expect(page.locator('.dmv3TomorrowShortcut')).toBeVisible();
 
   await page.locator('.dmv3TomorrowShortcut').click();
   await expect(page.locator('#bosOrderList .opsCompactOrder:visible')).toHaveCount(1);
   await expect(page.locator('#bosOrderList .opsCompactOrder:visible')).toContainText('Анна');
 
-  await page.locator('#dmv3City').selectOption({label:'Санкт-Петербург'});
-  await page.locator('#dmv3Status').selectOption({label:'В работе'});
+  await page.getByRole('button',{name:'Фильтры',exact:true}).click();await page.locator('[data-original-id=dmv3City]').selectOption({label:'Санкт-Петербург'});await page.locator('[data-original-id=dmv3Status]').selectOption({label:'В работе'});await page.getByRole('button',{name:'Применить',exact:true}).click();
   await expect(page.locator('#bosOrderList .opsCompactOrder:visible')).toHaveCount(1);
   await expect(page.locator('#content h2 + .muted')).toHaveText('Найдено: 1');
 
   const card=page.locator('#bosOrderList .opsCompactOrder:visible').first();
+  await card.locator('.bosOpsSecondaryActions summary').click();
   await expect(card.getByRole('button',{name:'Изменить статус заявки'})).toBeVisible();
   await card.getByRole('button',{name:'Изменить статус заявки'}).click();
   const status=page.locator('#quickStatus');
@@ -50,6 +50,7 @@ test('mobile dispatcher reassigns an active order through existing quick editor'
   await expect(page.locator('#authGate')).toBeHidden();
   await page.locator('nav [data-page="orders"]').click();
   const card=page.locator('#bosOrderList .opsCompactOrder').filter({hasText:'Анна'});
+  await card.locator('.bosOpsSecondaryActions summary').click();
   const reassign=card.getByRole('button',{name:'Переназначить мастера',exact:true});
   await expect(reassign).toBeVisible();
   // Role-loader refresh may replace the card while scrolling. Reacquire the

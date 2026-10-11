@@ -1,0 +1,2417 @@
+[
+  {
+    "role": "dispatcher",
+    "screen": "workspace",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/workspace-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "workspace"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "attention",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/attention-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "attention"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-detail",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-detail-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-create",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-create-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-edit",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-edit-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "assign",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/assign-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "assign"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "reschedule",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/reschedule-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "reschedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "team",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/team-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "team"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "master-detail",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/master-detail-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "master-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "profile",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/profile-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "free-slots",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/free-slots-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "free-slots"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-cancel",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-cancel-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-cancel"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "schedule-month",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/schedule-month-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule-month"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "day-detail",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/day-detail-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "day-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "master-report",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/master-report-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "master-report"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "slot-assign",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/slot-assign-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "slot-assign"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-create-bottom",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-create-bottom-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create-bottom"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-edit-bottom",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-edit-bottom-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit-bottom"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "workspace",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/workspace-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "workspace"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "attention",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/attention-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "attention"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-detail",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-detail-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-create",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-create-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-edit",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-edit-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "assign",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/assign-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "assign"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "reschedule",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/reschedule-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "reschedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "team",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/team-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "team"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "master-detail",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/master-detail-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "master-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "profile",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/profile-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "free-slots",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/free-slots-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "free-slots"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-cancel",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-cancel-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-cancel"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "schedule-month",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/schedule-month-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule-month"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "day-detail",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/day-detail-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "day-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "master-report",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/master-report-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "master-report"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "slot-assign",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/slot-assign-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "slot-assign"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-create-bottom",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-create-bottom-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create-bottom"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-edit-bottom",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-edit-bottom-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit-bottom"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "workspace",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/workspace-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "workspace"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "attention",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/attention-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "attention"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-detail",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-detail-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-create",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-create-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-edit",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-edit-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "assign",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/assign-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "assign"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "reschedule",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/reschedule-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "reschedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "team",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/team-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "team"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "master-detail",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/master-detail-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "master-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "profile",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/profile-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "free-slots",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/free-slots-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "free-slots"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-cancel",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-cancel-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-cancel"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "schedule-month",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/schedule-month-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule-month"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "day-detail",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/day-detail-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "day-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "master-report",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/master-report-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "master-report"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "slot-assign",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/slot-assign-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "slot-assign"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-create-bottom",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-create-bottom-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create-bottom"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-edit-bottom",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-edit-bottom-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit-bottom"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "workspace",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/workspace-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "workspace"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "attention",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/attention-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "attention"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-detail",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-detail-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-create",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-create-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-edit",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-edit-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "assign",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/assign-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "assign"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "reschedule",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/reschedule-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "reschedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "team",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/team-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "team"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "master-detail",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/master-detail-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "master-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "profile",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/profile-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "free-slots",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/free-slots-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "free-slots"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-cancel",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-cancel-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-cancel"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "schedule-month",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/schedule-month-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule-month"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "day-detail",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/day-detail-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "day-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "master-report",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/master-report-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "master-report"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "slot-assign",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/slot-assign-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "slot-assign"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-create-bottom",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-create-bottom-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create-bottom"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-edit-bottom",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-edit-bottom-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit-bottom"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "workspace",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/workspace-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "workspace"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "attention",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/attention-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "attention"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-detail",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-detail-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-create",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-create-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-edit",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-edit-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "assign",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/assign-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "assign"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "reschedule",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/reschedule-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "reschedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "team",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/team-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "team"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "master-detail",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/master-detail-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "master-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "profile",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/profile-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "free-slots",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/free-slots-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "free-slots"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-cancel",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-cancel-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-cancel"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "schedule-month",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/schedule-month-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule-month"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "day-detail",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/day-detail-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "day-detail"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "master-report",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/master-report-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "master-report"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "slot-assign",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/slot-assign-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "slot-assign"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-create-bottom",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-create-bottom-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create-bottom"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-edit-bottom",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/order-edit-bottom-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "660688f3675c8c19f86f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit-bottom"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "orders",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/orders-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "8db21ea069ba79bda217",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "orders"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "orders",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/orders-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "8db21ea069ba79bda217",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "orders"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "orders",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/orders-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "8db21ea069ba79bda217",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "orders"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "orders",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/orders-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "8db21ea069ba79bda217",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "orders"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "orders",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/orders-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "8db21ea069ba79bda217",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "orders"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "filters",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/filters-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "0632423c7abd3fad3fae",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "filters"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "filters",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/filters-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "0632423c7abd3fad3fae",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "filters"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "filters",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/filters-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "0632423c7abd3fad3fae",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "filters"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "filters",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/filters-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "0632423c7abd3fad3fae",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "filters"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "filters",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/filters-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "0632423c7abd3fad3fae",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "filters"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "schedule",
+    "state": "synthetic-fixture",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/schedule-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "f3a76983375464e3cd16",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "schedule",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/schedule-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "f3a76983375464e3cd16",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "schedule",
+    "state": "synthetic-fixture",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/schedule-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "f3a76983375464e3cd16",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "schedule",
+    "state": "synthetic-fixture",
+    "width": 768,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/schedule-fixture-768.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "f3a76983375464e3cd16",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  },
+  {
+    "role": "dispatcher",
+    "screen": "schedule",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-3/dispatcher/schedule-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+    "buildId": "f3a76983375464e3cd16",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": []
+  }
+]

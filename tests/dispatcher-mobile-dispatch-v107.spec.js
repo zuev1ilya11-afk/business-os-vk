@@ -21,9 +21,9 @@ test('dispatcher mobile schedule shows day load, conflicts and quick actions',as
   await expect(page.locator('.dmv2Metrics')).toContainText('Заявок3');
   await expect(page.locator('.dmv2Metrics')).toContainText('Без мастера1');
   await expect(page.locator('.dmv2Metrics')).toContainText('Конфликтов2');
-  await expect(page.locator('.dmv2MasterCard').filter({hasText:'Тестовый мастер'})).toContainText('2 заяв.');
-  await expect(page.locator('.dmv2MasterCard').filter({hasText:'Тестовый мастер'})).toContainText('Конфликт');
-  await expect(page.locator('.usScheduleCard')).toBeVisible();
+  await expect(page.locator('.bosOpsMobileTimeline .bosOpsVisit')).toHaveCount(2);
+  await expect(page.locator('.bosOpsMobileTimeline .bosOpsVisit.conflict')).toHaveCount(2);
+  await expect(page.getByRole('button',{name:'График команды',exact:true})).toBeVisible();
 
   await page.locator('.dmv2DayNav').getByRole('button',{name:'→',exact:true}).click();
   await expect(page.locator('.dmv2Metrics')).toContainText('Заявок0');
@@ -43,6 +43,6 @@ test('dispatcher mobile schedule shows day load, conflicts and quick actions',as
   await page.evaluate(()=>closeModal());
 
   await page.setViewportSize({width:1024,height:768});
-  await expect(page.locator('.dmv2Dispatch')).toHaveCount(0);
-  await expect(page.getByRole('heading',{name:/График/}).first()).toBeVisible();
+  await expect(page.locator('.bosOpsMobileTimeline')).toBeHidden();await expect(page.locator('.bosOpsGridScroll')).toBeVisible();
+  await page.getByRole('button',{name:'График команды',exact:true}).click();await expect(page.getByRole('heading',{name:'График команды',exact:true})).toBeVisible();
 });

@@ -9,7 +9,7 @@ test('mobile dispatcher gets cancel, master profile and visible reschedule reaso
 
   await page.locator('nav button[data-page="orders"]').click();
   await expect(page.locator('.opsCompactOrder')).toHaveCount(2);
-  await expect(page.getByRole('button',{name:'Отменить заявку'})).toHaveCount(2);
+  await page.locator('.bosOpsSecondaryActions summary').first().click();await page.locator('.bosOpsSecondaryActions summary').last().click();await expect(page.getByRole('button',{name:'Отменить заявку'})).toHaveCount(2);
 
   const assigned=page.locator('.opsCompactOrder').filter({hasText:'Анна'});
   await expect(assigned.getByRole('button',{name:'Профиль назначенного мастера'})).toBeVisible();
@@ -24,7 +24,7 @@ test('mobile dispatcher gets cancel, master profile and visible reschedule reaso
   });
   await expect(page.locator('.opsCompactOrder').filter({hasText:'Анна'}).locator('.dwv114Reason')).toContainText('Клиент просит после 18:00');
 
-  const unassigned=page.locator('.opsCompactOrder').filter({hasText:'Борис'});
+  const unassigned=page.locator('.opsCompactOrder').filter({hasText:'Борис'});await unassigned.locator('.bosOpsSecondaryActions summary').click();
   await unassigned.getByRole('button',{name:'Отменить заявку'}).click();
   await expect(page.getByRole('heading',{name:/Отменить заявку № 12/})).toBeVisible();
   await expect(page.locator('.dwv114CancelWarning')).toContainText('Подтвердите отмену');

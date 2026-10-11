@@ -84,7 +84,8 @@ function ensureNavigation(){
   nav.querySelector('[data-action="owner-tools"]').hidden=role!=='owner';
   nav.querySelectorAll('[data-page],[data-action]').forEach(entry=>{const label=entry.textContent.trim();if(entry.getAttribute('aria-label')!==label)entry.setAttribute('aria-label',label)});
   nav.querySelectorAll('[data-page]').forEach(entry=>{
-    const active=entry.dataset.page===current||(entry.dataset.page==='more'&&role!=='master'&&!['home','orders','dispatch'].includes(current));
+    const destination=['opsScheduleMonth','opsFreeSlots'].includes(current)?'dispatch':current;
+    const active=entry.dataset.page===destination||(entry.dataset.page==='more'&&role!=='master'&&!['home','orders','dispatch'].includes(destination));
     entry.classList.toggle('active',active);
     if(active){if(entry.getAttribute('aria-current')!=='page')entry.setAttribute('aria-current','page')}else if(entry.hasAttribute('aria-current'))entry.removeAttribute('aria-current');
   });

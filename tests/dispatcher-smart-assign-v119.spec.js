@@ -15,7 +15,7 @@ test('new dispatcher order shows ranked masters, load and free windows before sa
   await expect(page.locator('#authGate')).toBeHidden();
   await page.waitForFunction(()=>window.BOS_DISPATCHER_SMART_ASSIGN_V119===true);
   await page.locator('nav [data-page=orders]').click();
-  await page.locator('.dmNewOrder').click();
+  await page.getByRole('button',{name:'+ Новая',exact:true}).click();
 
   await page.locator('input[name="scheduled_date"]').fill(today());
   await page.locator('select[name="time_slot"]').selectOption({label:'11:00–12:00'});
@@ -48,9 +48,9 @@ test('mobile dispatcher can confirm a recommended master for an unassigned order
   await page.locator('nav [data-page=orders]').click();
 
   const card=page.locator('#bosOrderList .opsCompactOrder').filter({hasText:'Борис'});
-  await expect(card.getByRole('button',{name:'Подобрать мастера'})).toBeVisible();
+  await card.locator('.bosOpsSecondaryActions summary').click();await expect(card.getByRole('button',{name:'Подобрать мастера'})).toBeVisible();
   await card.getByRole('button',{name:'Подобрать мастера'}).click();
-  await expect(page.getByRole('heading',{name:'Подобрать мастера'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Назначить мастера'})).toBeVisible();
   await expect(page.locator('#dsa119ModalList')).toContainText('Тестовый мастер');
 
   page.once('dialog',dialog=>dialog.accept());
