@@ -71,6 +71,8 @@ pages.team=function(){const html=profileTeamBase();return html.replace(/<section
    if(target===menu&&role==='owner')entry(target,'tools','Инструменты владельца',()=>openOwnerTools());
   }
   if(!modal)return;
+  const toolsHead=modal.querySelector('.ownerToolsHead');
+  if(toolsHead&&!modal.dataset.bosToolsOrdered){modal.dataset.bosToolsOrdered='1';const tools=[...modal.querySelectorAll(':scope>section.card')].find(s=>s.querySelector('h3')?.textContent==='Инструменты');if(tools)toolsHead.after(tools);}
   if(modal.querySelector('.bosSharedInfo,#bosPushMessage,#masterMemoItems'))modal.classList.add('bosSharedScreen');
   if(modal.classList.contains('bosManagementProfile')){
    // Keep existing financial adjustment values available, away from personal identity.

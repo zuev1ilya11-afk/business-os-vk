@@ -18,6 +18,7 @@ for(const role of ['owner','manager'])test(role+' gets a rolling dashboard and w
  for(const width of [320,390,768,1440]){
   await page.setViewportSize({width,height:1000});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  const disclosure=dashboard.locator('.odMoreLoad');if(!await disclosure.evaluate(e=>e.open))await disclosure.locator('summary').click();
   const table=dashboard.locator('.odTable');
   expect(await table.evaluate(el=>getComputedStyle(el).display)).toBe('table');
   if(width<600){
@@ -78,7 +79,7 @@ test('many masters, truthful schedule colors and report/correction lists stay us
  await page.evaluate(()=>{const o=state.orders.find(o=>o.id==='11');o.report_review_status='rejected';o.report_uploaded_at='2026-10-04T08:00:00Z';show('home')});
  await expect(root.locator('[data-owner-order="11"]')).toContainText('Отчёт отклонён');
  await root.locator('[data-owner-day="2026-10-04"]').first().click();await expect(page.locator('.modal')).toContainText('Тестовый мастер');await page.locator('.modalClose').click();
- await root.locator('[data-owner-list="reports"]').click();await expect(page.locator('.modal [data-owner-review="22"]')).toBeVisible();await page.locator('.modalClose').click();
+ await root.locator('[data-owner-list="reports"]').first().click();await expect(page.locator('.modal [data-owner-review="22"]')).toBeVisible();await page.locator('.modalClose').click();
  await root.locator('[data-owner-list="corrections"]').click();await expect(page.locator('.modal')).toContainText('Не выполнена установка штор');await page.locator('.modalClose').click();
  for(const width of [390,1440]){await page.setViewportSize({width,height:1000});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await page.screenshot({path:info.outputPath(`dashboard-populated-${width}.png`),fullPage:true})}
  db.tables.business_staff=db.tables.business_staff.filter(m=>m.role!=='master');db.tables.orders=[];db.tables.staff_schedule=[];

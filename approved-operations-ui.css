@@ -174,3 +174,8 @@ body.bos-approved-ui .bosSharedScreen>h2,body.bos-approved-ui .bosSharedForm>h2,
  body.bos-approved-ui #modalRoot:has(.modal:is(.bosSharedForm,.bosSharedScreen,.bosSharedClaim,.bosSharedIntegration)),body.bos-approved-ui #modalRoot .modalBackdrop:has(.modal:is(.bosSharedForm,.bosSharedScreen,.bosSharedClaim,.bosSharedIntegration)){padding:0}
  body.bos-approved-ui .bosSharedForm .form>.primary{bottom:-32px}
 }
+body.bos-approved-ui .bosNotifyFilters{display:flex;gap:20px;border-bottom:1px solid #2a3543}
+body.bos-approved-ui .bosNotifyFilters button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:12px 0;color:#a3b1c3;min-height:44px;font-size:13px}
+body.bos-approved-ui .bosNotifyFilters [aria-pressed=true]{color:#edf2f8;border-bottom-color:#91bfff}
+body.bos-approved-ui .bosNotifyItem[hidden]{display:none}
+@media(min-width:761px){body.bos-approved-ui #modalRoot .modal:is(.bosSharedScreen,.bosSharedIntegration,.bosSharedForm,.bosManagementTools){width:min(1000px,calc(100vw - 80px));max-width:1000px}}
