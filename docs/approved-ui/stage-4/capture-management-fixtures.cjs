@@ -132,7 +132,7 @@ async function management(c){const p=c.page;p.setDefaultTimeout(6000);
  await run('finance-overview-unknown',async()=>{await p.evaluate(()=>{state.orders.find(o=>o.id==='7381715').master_payout=null;show('finance')});await p.locator('[data-fin-tab=overview]').click()},'#finContent');
  await run('finance-filters',()=>p.locator('.finFilters summary').click(),'.finFilterGrid');
  await run('finance-period',async()=>{await p.locator('.finPeriodControl summary').click();await p.locator('[data-fin-period=custom]').click()},'#finPeriodForm');
- if(await p.locator('[data-fin-period=month]').count())await p.locator('[data-fin-period=month]').click();
+ if(!wanted||wanted.includes('finance-period')){await p.locator('.finPeriodControl').evaluate(e=>e.open=true);await p.locator('[data-fin-period=month]').click();}
  await run('expense-new',async()=>{await p.locator('[data-fin-tab=expenses]').click();await p.locator('[data-fin-expense-add]').click()},'#finExpenseForm');
  await run('expense-edit',async()=>{await p.locator('[data-fin-tab=expenses]').click();await p.locator('[data-fin-expense-edit]').first().click()},'#finExpenseForm');
  await run('expense-delete',async()=>{await p.locator('[data-fin-tab=expenses]').click();await p.locator('[data-fin-expense-delete]').first().click()},'#finExpenseDeleteForm');
