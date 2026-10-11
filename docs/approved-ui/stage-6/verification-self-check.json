@@ -1,0 +1,19 @@
+{
+  "contractRows": 242,
+  "uniqueRows": 242,
+  "completeRows": 242,
+  "exactFailureDispositions": 76,
+  "allNarrowCoveringResultsExpected": true,
+  "rawReportHashesChecked": 7,
+  "captureFileHashesChecked": 226,
+  "visualPairsHashesChecked": 78,
+  "releaseAllowlistHashesChecked": 48,
+  "protectedComparisons": 250,
+  "authorizedRuntimeDeltas": 4,
+  "unexpectedRuntimeDeltas": 0,
+  "originMain": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+  "freshFetchLog": "../recovery/task6-final-fetch.log",
+  "ancestryPass": true,
+  "diffCheckPass": true,
+  "scope": "Artifact integrity and recorded local evidence, not universal usability or hosted/production certification"
+}

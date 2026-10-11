@@ -8,7 +8,7 @@ const batches=[
  {stage:5,file:'capture-shared-fixtures.cjs',widths:'390,1440',roles:'master,dispatcher,manager,owner',screens:'profile,price,push,help,about',pushStates:'default,subscribed'},
  {stage:5,file:'capture-shared-fixtures.cjs',widths:'390,1440',roles:'master,dispatcher,manager,owner',screens:'auth-only',auth:'1'},
  {stage:4,file:'capture-management-fixtures.cjs',widths:'390,1440',roles:'dispatcher',screens:'more'},
- {stage:2,file:'capture-master-fixtures.cjs',mode:'final-memo',widths:'390,1440'},
+ {stage:2,file:'capture-master-fixtures.cjs',mode:'final-memo',widths:'360,390,430,1440'},
  {stage:4,file:'capture-management-fixtures.cjs',widths:'390,1440',roles:'owner',screens:'orders-active,orders-new,orders-archive'},
  {stage:2,file:'capture-master-fixtures.cjs',mode:'final-orders',widths:'390,1440'},
  {stage:2,file:'capture-master-fixtures.cjs',mode:'final-schedule',widths:'390'},

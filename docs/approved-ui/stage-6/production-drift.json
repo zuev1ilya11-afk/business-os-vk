@@ -3,7 +3,7 @@
   "inputSha256": "8672541961129af4f8c63964fa1a50f8b0b7d3c7c27a8ed8c238b5bb55fa13cd",
   "productionBuild": "4fc3f2c9077bbc8a64eb",
   "productionShellSha256": "44d53c36f724b3f31630eeb98eb478689949836c0499662dbbbf207fde88ba95",
-  "candidateBuild": "8db611d1fc9cd27917d7",
+  "candidateBuild": "cdd3ea4f917ba89765d0",
   "assetsCompared": 51,
   "statusCounts": {
     "same": 36,
@@ -211,7 +211,7 @@
     {
       "file": "master-profile-summary-v129.js",
       "productionSha256": "118e1ee024b58746d1255cf39e11232d90c519c4a18bc435eb42891bf307350c",
-      "candidateSha256": "f056448c440a1f5b11f98399a9ae8386b717f18f47b832b39d3c14858f88de36",
+      "candidateSha256": "3503177bab302fb1feee7ddb8373de84002b41a7263b70e50f17b51ebb61c0bd",
       "status": "differs"
     },
     {

@@ -2,6 +2,7 @@
   "baselineCount": 76,
   "resolvedExactTitles": 76,
   "runtimeChanges": 0,
+  "runtimeChangesScope": "Changes required to close these76 baseline cases only. Separate memo navigation fix cfd6740 is documented in verification.md, not a baseline-case runtime repair.",
   "semanticOrReadinessAdaptations": 72,
   "unchangedTransientPasses": 3,
   "dateFixtureRepairs": 1,

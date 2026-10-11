@@ -1,9 +1,9 @@
 {
   "roles": [
-    "dispatcher:",
-    "manager:",
-    "master:",
-    "owner:"
+    "dispatcher",
+    "manager",
+    "master",
+    "owner"
   ],
   "widths": [
     360,
@@ -18,5 +18,11 @@
   "documentOverflows": 0,
   "sourceCommit": "bd6d2ec",
   "runtimeBuild": "8db611d1fc9cd27917d7",
-  "limitation": "Navigation records independently cover errors/404/overflow. Separate inline assertions check native create submit and master footer hit/scroll reachability. Offscreen actions in ordinary pages are reported, not declared universally usable."
+  "limitation": "Navigation records independently cover errors/404/overflow. Separate inline assertions check native create submit and master footer hit/scroll reachability. Offscreen actions in ordinary pages are reported, not declared universally usable.",
+  "originalAttachmentTitleLabels": [
+    "dispatcher:",
+    "manager:",
+    "master:",
+    "owner:"
+  ]
 }

@@ -13619,86 +13619,6 @@
     "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
-    "role": "master",
-    "screen": "memo",
-    "state": "categories",
-    "width": 390,
-    "height": 844,
-    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/master/memo-fixture-390.png",
-    "source": "local-feature-fixture",
-    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
-    "synthetic": true,
-    "fixedClock": "2026-10-08T09:00:00Z",
-    "actions": [
-      "Original acts/measurement/price/tips categories; actual master desktop"
-    ],
-    "health": {
-      "documentOverflow": 0,
-      "bodyOverflow": 0,
-      "actions": [],
-      "visibleOccludedActions": [],
-      "offscreenActions": [],
-      "scope": "document",
-      "local404": [],
-      "pageErrors": [],
-      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
-    },
-    "overflow": {
-      "document": 0,
-      "body": 0
-    },
-    "consoleErrors": [],
-    "blockedExternalRequests": [],
-    "coverageGaps": [],
-    "relativePath": "master/memo-fixture-390.png",
-    "pageErrors": [],
-    "sourceCheckpoint": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
-    "captureBatch": "final-memo",
-    "runtimeBuild": "8db611d1fc9cd27917d7",
-    "observedBuild": "8db611d1fc9cd27917d7",
-    "provenance": "Actual runtime build captured from local working tree"
-  },
-  {
-    "role": "master",
-    "screen": "memo",
-    "state": "categories",
-    "width": 1440,
-    "height": 844,
-    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/master/memo-fixture-1440.png",
-    "source": "local-feature-fixture",
-    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
-    "synthetic": true,
-    "fixedClock": "2026-10-08T09:00:00Z",
-    "actions": [
-      "Original acts/measurement/price/tips categories; actual master desktop"
-    ],
-    "health": {
-      "documentOverflow": 0,
-      "bodyOverflow": 0,
-      "actions": [],
-      "visibleOccludedActions": [],
-      "offscreenActions": [],
-      "scope": "document",
-      "local404": [],
-      "pageErrors": [],
-      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
-    },
-    "overflow": {
-      "document": 0,
-      "body": 0
-    },
-    "consoleErrors": [],
-    "blockedExternalRequests": [],
-    "coverageGaps": [],
-    "relativePath": "master/memo-fixture-1440.png",
-    "pageErrors": [],
-    "sourceCheckpoint": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
-    "captureBatch": "final-memo",
-    "runtimeBuild": "8db611d1fc9cd27917d7",
-    "observedBuild": "8db611d1fc9cd27917d7",
-    "provenance": "Actual runtime build captured from local working tree"
-  },
-  {
     "role": "owner",
     "screen": "orders-new",
     "state": "synthetic-fixture",
@@ -14945,6 +14865,231 @@
     "captureBatch": "final-orders",
     "runtimeBuild": "8db611d1fc9cd27917d7",
     "observedBuild": "8db611d1fc9cd27917d7",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "schedule",
+    "state": "own-visits-first",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/master/schedule-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "39b7d5f54ebf8a5f8f7bed5b43c8722109327092",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original own visit timeline"
+    ],
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    },
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/schedule-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "39b7d5f54ebf8a5f8f7bed5b43c8722109327092",
+    "captureBatch": "final-schedule",
+    "runtimeBuild": "8db611d1fc9cd27917d7",
+    "observedBuild": "8db611d1fc9cd27917d7",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "dispatcher",
+    "screen": "master-report-action",
+    "state": "scrolled-original-export",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/dispatcher/master-report-action-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "buildId": "cdd3ea4f917ba89765d0",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "native PDF export reachable by trial click; no export triggered"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "versionStatus": "Legacy capture: loaded build was not recorded",
+    "runtimeBuild": "cdd3ea4f917ba89765d0"
+  },
+  {
+    "role": "master",
+    "screen": "memo",
+    "state": "original-categories-menu",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/master/memo-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original acts/measurement/price/tips categories; actual master desktop"
+    ],
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "native modal",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    },
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/memo-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "captureBatch": "final-memo",
+    "runtimeBuild": "cdd3ea4f917ba89765d0",
+    "observedBuild": "cdd3ea4f917ba89765d0",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "memo",
+    "state": "original-categories-menu",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/master/memo-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original acts/measurement/price/tips categories; actual master desktop"
+    ],
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "native modal",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    },
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/memo-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "captureBatch": "final-memo",
+    "runtimeBuild": "cdd3ea4f917ba89765d0",
+    "observedBuild": "cdd3ea4f917ba89765d0",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "memo",
+    "state": "original-categories-menu",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/master/memo-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original acts/measurement/price/tips categories; actual master desktop"
+    ],
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "native modal",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    },
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/memo-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "captureBatch": "final-memo",
+    "runtimeBuild": "cdd3ea4f917ba89765d0",
+    "observedBuild": "cdd3ea4f917ba89765d0",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "memo",
+    "state": "original-categories-menu",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/master/memo-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original acts/measurement/price/tips categories; actual master desktop"
+    ],
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "native modal",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    },
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/memo-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "captureBatch": "final-memo",
+    "runtimeBuild": "cdd3ea4f917ba89765d0",
+    "observedBuild": "cdd3ea4f917ba89765d0",
     "provenance": "Actual runtime build captured from local working tree"
   }
 ]

@@ -11,8 +11,8 @@
   "statuses": {
     "complete-accepted": 242
   },
-  "sourceCommit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
-  "runtimeBuild": "8db611d1fc9cd27917d7",
+  "sourceCommit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+  "runtimeBuild": "cdd3ea4f917ba89765d0",
   "rows": [
     {
       "role": "master",
@@ -5140,6 +5140,48 @@
           "provenance": "Actual runtime build captured from local working tree",
           "originalPath": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/master/schedule-fixture-1440.png",
           "versionStatus": "Recorded actual capture build"
+        },
+        {
+          "role": "master",
+          "screen": "schedule",
+          "state": "own-visits-first",
+          "width": 390,
+          "height": 844,
+          "path": "docs/approved-ui/stage-6/master/schedule-fixture-390.png",
+          "source": "local-feature-fixture",
+          "commit": "39b7d5f54ebf8a5f8f7bed5b43c8722109327092",
+          "synthetic": true,
+          "fixedClock": "2026-10-08T09:00:00Z",
+          "actions": [
+            "Original own visit timeline"
+          ],
+          "health": {
+            "documentOverflow": 0,
+            "bodyOverflow": 0,
+            "actions": [],
+            "visibleOccludedActions": [],
+            "offscreenActions": [],
+            "scope": "document",
+            "local404": [],
+            "pageErrors": [],
+            "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+          },
+          "overflow": {
+            "document": 0,
+            "body": 0
+          },
+          "consoleErrors": [],
+          "blockedExternalRequests": [],
+          "coverageGaps": [],
+          "relativePath": "master/schedule-fixture-390.png",
+          "pageErrors": [],
+          "sourceCheckpoint": "39b7d5f54ebf8a5f8f7bed5b43c8722109327092",
+          "captureBatch": "final-schedule",
+          "runtimeBuild": "8db611d1fc9cd27917d7",
+          "observedBuild": "8db611d1fc9cd27917d7",
+          "provenance": "Actual runtime build captured from local working tree",
+          "originalPath": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/master/schedule-fixture-390.png",
+          "versionStatus": "Recorded actual capture build"
         }
       ],
       "supportedNativeEquivalence": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
@@ -5821,109 +5863,22 @@
       ],
       "complete": true,
       "status": "complete-accepted",
-      "renderer": "master-memo-v20.js + master-memo-runtime-v21.js / four categories retained",
+      "renderer": "master-profile-summary-v129.js guarded memo menu + original master-memo-runtime-v21.js / master-price-memo-v131.js handlers",
       "acceptedStage": 2,
       "verifiedState": [
-        "categories"
+        "original-categories-menu"
       ],
-      "tests": "fixture category preservation capture (no changed save logic)",
+      "tests": "approved-master-memo.spec.js: four original callbacks, original catalog and Close/Back reachability",
       "evidence": [
         {
           "role": "master",
           "screen": "memo",
-          "state": "categories",
+          "state": "original-categories-menu",
           "width": 360,
           "height": 844,
-          "path": "docs/approved-ui/stage-2/master/memo-fixture-360.png",
+          "path": "docs/approved-ui/stage-6/master/memo-fixture-360.png",
           "source": "local-feature-fixture",
-          "synthetic": true,
-          "fixedClock": "2026-10-08T09:00:00Z",
-          "actions": [
-            "Existing acts/measurements/price/tips categories"
-          ],
-          "overflow": {
-            "document": 0,
-            "body": 0
-          },
-          "coverageGaps": [],
-          "sourceCheckpoint": "a7a1f26dcc86a297cd70fc4966f1b0c4a5bd6ad5",
-          "capturedFromWorkingTree": true,
-          "relativePath": "master/memo-fixture-360.png",
-          "pageErrors": [],
-          "errorCollection": "Playwright pageerror (uncaught JavaScript), not full console log",
-          "blockedExternalRequestCount": 1,
-          "coverageStatus": "restored",
-          "versionStatus": "Accepted historical capture; runtime not recorded",
-          "originalPath": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-2/master/memo-fixture-360.png",
-          "runtimeBuild": null
-        },
-        {
-          "role": "master",
-          "screen": "memo",
-          "state": "categories",
-          "width": 390,
-          "height": 844,
-          "path": "docs/approved-ui/stage-2/master/memo-fixture-390.png",
-          "source": "local-feature-fixture",
-          "synthetic": true,
-          "fixedClock": "2026-10-08T09:00:00Z",
-          "actions": [
-            "Existing acts/measurements/price/tips categories"
-          ],
-          "overflow": {
-            "document": 0,
-            "body": 0
-          },
-          "coverageGaps": [],
-          "sourceCheckpoint": "a7a1f26dcc86a297cd70fc4966f1b0c4a5bd6ad5",
-          "capturedFromWorkingTree": true,
-          "relativePath": "master/memo-fixture-390.png",
-          "pageErrors": [],
-          "errorCollection": "Playwright pageerror (uncaught JavaScript), not full console log",
-          "blockedExternalRequestCount": 1,
-          "coverageStatus": "restored",
-          "versionStatus": "Accepted historical capture; runtime not recorded",
-          "originalPath": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-2/master/memo-fixture-390.png",
-          "runtimeBuild": null
-        },
-        {
-          "role": "master",
-          "screen": "memo",
-          "state": "categories",
-          "width": 430,
-          "height": 844,
-          "path": "docs/approved-ui/stage-2/master/memo-fixture-430.png",
-          "source": "local-feature-fixture",
-          "synthetic": true,
-          "fixedClock": "2026-10-08T09:00:00Z",
-          "actions": [
-            "Existing acts/measurements/price/tips categories"
-          ],
-          "overflow": {
-            "document": 0,
-            "body": 0
-          },
-          "coverageGaps": [],
-          "sourceCheckpoint": "a7a1f26dcc86a297cd70fc4966f1b0c4a5bd6ad5",
-          "capturedFromWorkingTree": true,
-          "relativePath": "master/memo-fixture-430.png",
-          "pageErrors": [],
-          "errorCollection": "Playwright pageerror (uncaught JavaScript), not full console log",
-          "blockedExternalRequestCount": 1,
-          "coverageStatus": "restored",
-          "versionStatus": "Accepted historical capture; runtime not recorded",
-          "originalPath": "/workspace/scratch/59eaed6e4f64/business-os-vk/docs/approved-ui/stage-2/master/memo-fixture-430.png",
-          "runtimeBuild": null
-        },
-        {
-          "role": "master",
-          "screen": "memo",
-          "state": "categories",
-          "width": 390,
-          "height": 844,
-          "path": "docs/approved-ui/stage-6/master/memo-fixture-390.png",
-          "source": "local-feature-fixture",
-          "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+          "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
           "synthetic": true,
           "fixedClock": "2026-10-08T09:00:00Z",
           "actions": [
@@ -5935,7 +5890,49 @@
             "actions": [],
             "visibleOccludedActions": [],
             "offscreenActions": [],
-            "scope": "document",
+            "scope": "native modal",
+            "local404": [],
+            "pageErrors": [],
+            "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+          },
+          "overflow": {
+            "document": 0,
+            "body": 0
+          },
+          "consoleErrors": [],
+          "blockedExternalRequests": [],
+          "coverageGaps": [],
+          "relativePath": "master/memo-fixture-360.png",
+          "pageErrors": [],
+          "sourceCheckpoint": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+          "captureBatch": "final-memo",
+          "runtimeBuild": "cdd3ea4f917ba89765d0",
+          "observedBuild": "cdd3ea4f917ba89765d0",
+          "provenance": "Actual runtime build captured from local working tree",
+          "originalPath": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/master/memo-fixture-360.png",
+          "versionStatus": "Recorded actual capture build"
+        },
+        {
+          "role": "master",
+          "screen": "memo",
+          "state": "original-categories-menu",
+          "width": 390,
+          "height": 844,
+          "path": "docs/approved-ui/stage-6/master/memo-fixture-390.png",
+          "source": "local-feature-fixture",
+          "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+          "synthetic": true,
+          "fixedClock": "2026-10-08T09:00:00Z",
+          "actions": [
+            "Original acts/measurement/price/tips categories; actual master desktop"
+          ],
+          "health": {
+            "documentOverflow": 0,
+            "bodyOverflow": 0,
+            "actions": [],
+            "visibleOccludedActions": [],
+            "offscreenActions": [],
+            "scope": "native modal",
             "local404": [],
             "pageErrors": [],
             "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
@@ -5949,10 +5946,10 @@
           "coverageGaps": [],
           "relativePath": "master/memo-fixture-390.png",
           "pageErrors": [],
-          "sourceCheckpoint": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+          "sourceCheckpoint": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
           "captureBatch": "final-memo",
-          "runtimeBuild": "8db611d1fc9cd27917d7",
-          "observedBuild": "8db611d1fc9cd27917d7",
+          "runtimeBuild": "cdd3ea4f917ba89765d0",
+          "observedBuild": "cdd3ea4f917ba89765d0",
           "provenance": "Actual runtime build captured from local working tree",
           "originalPath": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/master/memo-fixture-390.png",
           "versionStatus": "Recorded actual capture build"
@@ -5960,12 +5957,12 @@
         {
           "role": "master",
           "screen": "memo",
-          "state": "categories",
-          "width": 1440,
+          "state": "original-categories-menu",
+          "width": 430,
           "height": 844,
-          "path": "docs/approved-ui/stage-6/master/memo-fixture-1440.png",
+          "path": "docs/approved-ui/stage-6/master/memo-fixture-430.png",
           "source": "local-feature-fixture",
-          "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+          "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
           "synthetic": true,
           "fixedClock": "2026-10-08T09:00:00Z",
           "actions": [
@@ -5977,7 +5974,49 @@
             "actions": [],
             "visibleOccludedActions": [],
             "offscreenActions": [],
-            "scope": "document",
+            "scope": "native modal",
+            "local404": [],
+            "pageErrors": [],
+            "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+          },
+          "overflow": {
+            "document": 0,
+            "body": 0
+          },
+          "consoleErrors": [],
+          "blockedExternalRequests": [],
+          "coverageGaps": [],
+          "relativePath": "master/memo-fixture-430.png",
+          "pageErrors": [],
+          "sourceCheckpoint": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+          "captureBatch": "final-memo",
+          "runtimeBuild": "cdd3ea4f917ba89765d0",
+          "observedBuild": "cdd3ea4f917ba89765d0",
+          "provenance": "Actual runtime build captured from local working tree",
+          "originalPath": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/master/memo-fixture-430.png",
+          "versionStatus": "Recorded actual capture build"
+        },
+        {
+          "role": "master",
+          "screen": "memo",
+          "state": "original-categories-menu",
+          "width": 1440,
+          "height": 844,
+          "path": "docs/approved-ui/stage-6/master/memo-fixture-1440.png",
+          "source": "local-feature-fixture",
+          "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+          "synthetic": true,
+          "fixedClock": "2026-10-08T09:00:00Z",
+          "actions": [
+            "Original acts/measurement/price/tips categories; actual master desktop"
+          ],
+          "health": {
+            "documentOverflow": 0,
+            "bodyOverflow": 0,
+            "actions": [],
+            "visibleOccludedActions": [],
+            "offscreenActions": [],
+            "scope": "native modal",
             "local404": [],
             "pageErrors": [],
             "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
@@ -5991,16 +6030,16 @@
           "coverageGaps": [],
           "relativePath": "master/memo-fixture-1440.png",
           "pageErrors": [],
-          "sourceCheckpoint": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+          "sourceCheckpoint": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
           "captureBatch": "final-memo",
-          "runtimeBuild": "8db611d1fc9cd27917d7",
-          "observedBuild": "8db611d1fc9cd27917d7",
+          "runtimeBuild": "cdd3ea4f917ba89765d0",
+          "observedBuild": "cdd3ea4f917ba89765d0",
           "provenance": "Actual runtime build captured from local working tree",
           "originalPath": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/master/memo-fixture-1440.png",
           "versionStatus": "Recorded actual capture build"
         }
       ],
-      "supportedNativeEquivalence": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "supportedNativeEquivalence": "Native modal category menu replaces unreachable redirected show(memo); original material API callbacks and role guard retained.",
       "roleDifferences": "Original master capabilities and supported actions; accepted row remains authoritative",
       "functionalGate": "Full baseline 622 pass/76 fail; exact per-case resolutions in stage-6/failure-dispositions.json. Composition completion is not a clean full-suite claim."
     },

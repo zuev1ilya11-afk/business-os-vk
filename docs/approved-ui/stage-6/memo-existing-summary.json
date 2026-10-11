@@ -1,0 +1,33 @@
+{
+  "reportPath": "/workspace/scratch/73e5936a7e6d/recovery/task6-memo-existing-results.json",
+  "reportSha256": "71374d3886ec03ae2ecf3020bfc3fa179e6b05d0c8d1c28c85ff623219198a82",
+  "stats": {
+    "startTime": "2026-10-11T14:22:19.763Z",
+    "duration": 2102.777,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "cases": 1,
+  "outcomes": {
+    "expected": 1
+  },
+  "globalErrors": [],
+  "failures": [],
+  "skipped": [],
+  "allCases": [
+    {
+      "file": "master-price-memo-v131.spec.js",
+      "line": 3,
+      "title": "master price memo patch is loaded and contains clear price layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 859
+    }
+  ]
+}

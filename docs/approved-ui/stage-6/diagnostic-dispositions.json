@@ -1,0 +1,389 @@
+{
+  "initialFlags": 13,
+  "financeFalsePositives": 12,
+  "actualInitialOverlaps": 1,
+  "rawObservationsPreserved": true,
+  "scrolledTrialClickPasses": 1,
+  "rows": [
+    {
+      "role": "dispatcher",
+      "screen": "master-report",
+      "width": 390,
+      "state": "synthetic-fixture",
+      "action": {
+        "id": "",
+        "text": "Сохранить PDF",
+        "disabled": false,
+        "inViewport": true,
+        "unoccluded": false,
+        "top": 755.828125,
+        "bottom": 799.828125,
+        "width": 352,
+        "hit": "NAV."
+      },
+      "disposition": "Initial native PDF export overlaps bottom nav; explicit scrollIntoViewIfNeeded then actual button trial-click succeeded. No export triggered.",
+      "scrolledCapture": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/stage-6/dispatcher/master-report-action-fixture-390.png",
+      "limit": "Initial overlap remains recorded; this is reachability after scrolling, not a claim of initial unobstructed usability."
+    },
+    {
+      "role": "manager",
+      "screen": "finance-overview",
+      "width": 390,
+      "state": "synthetic-fixture",
+      "action": {
+        "id": "",
+        "text": "",
+        "disabled": false,
+        "inViewport": true,
+        "unoccluded": false,
+        "top": 360.984375,
+        "bottom": 400.984375,
+        "width": 63.734375,
+        "hit": "SPAN.muted"
+      },
+      "disposition": "Harness false positive: nonzero rect of month button inside closed details; checkVisibility false",
+      "probe": {
+        "html": "<button type=\"button\" class=\"primary\" data-fin-period=\"month\" aria-pressed=\"true\">Месяц</button>",
+        "text": "",
+        "rect": {
+          "top": 360.984375,
+          "bottom": 400.984375,
+          "width": 63.734375,
+          "height": 40
+        },
+        "visible": false,
+        "hit": "<span class=\"muted\">Выручка</span>"
+      }
+    },
+    {
+      "role": "manager",
+      "screen": "finance-expenses",
+      "width": 390,
+      "state": "synthetic-fixture",
+      "action": {
+        "id": "",
+        "text": "",
+        "disabled": false,
+        "inViewport": true,
+        "unoccluded": false,
+        "top": 420.984375,
+        "bottom": 460.984375,
+        "width": 63.734375,
+        "hit": "SPAN.muted"
+      },
+      "disposition": "Harness false positive: nonzero rect of month button inside closed details; checkVisibility false",
+      "probe": {
+        "html": "<button type=\"button\" class=\"primary\" data-fin-period=\"month\" aria-pressed=\"true\">Месяц</button>",
+        "text": "",
+        "rect": {
+          "top": 420.984375,
+          "bottom": 460.984375,
+          "width": 63.734375,
+          "height": 40
+        },
+        "visible": false,
+        "hit": "<span class=\"muted\">Всего расходов</span>"
+      }
+    },
+    {
+      "role": "manager",
+      "screen": "finance-masters",
+      "width": 390,
+      "state": "synthetic-fixture",
+      "action": {
+        "id": "",
+        "text": "",
+        "disabled": false,
+        "inViewport": true,
+        "unoccluded": false,
+        "top": 360.984375,
+        "bottom": 400.984375,
+        "width": 63.734375,
+        "hit": "P.muted"
+      },
+      "disposition": "Harness false positive: nonzero rect of month button inside closed details; checkVisibility false",
+      "probe": {
+        "html": "<button type=\"button\" class=\"primary\" data-fin-period=\"month\" aria-pressed=\"true\">Месяц</button>",
+        "text": "",
+        "rect": {
+          "top": 360.984375,
+          "bottom": 400.984375,
+          "width": 63.734375,
+          "height": 40
+        },
+        "visible": false,
+        "hit": "<p class=\"muted\">Заявки, начисления и вклад каждого мастера</p>"
+      }
+    },
+    {
+      "role": "manager",
+      "screen": "finance-overview",
+      "width": 1440,
+      "state": "synthetic-fixture",
+      "action": {
+        "id": "",
+        "text": "",
+        "disabled": false,
+        "inViewport": true,
+        "unoccluded": false,
+        "top": 380.984375,
+        "bottom": 420.984375,
+        "width": 69.734375,
+        "hit": "STRONG."
+      },
+      "disposition": "Harness false positive: nonzero rect of month button inside closed details; checkVisibility false",
+      "probe": {
+        "html": "<button type=\"button\" class=\"primary\" data-fin-period=\"month\" aria-pressed=\"true\">Месяц</button>",
+        "text": "",
+        "rect": {
+          "top": 380.984375,
+          "bottom": 420.984375,
+          "width": 69.734375,
+          "height": 40
+        },
+        "visible": false,
+        "hit": "<strong>9&nbsp;500 ₽</strong>"
+      }
+    },
+    {
+      "role": "manager",
+      "screen": "finance-expenses",
+      "width": 1440,
+      "state": "synthetic-fixture",
+      "action": {
+        "id": "",
+        "text": "",
+        "disabled": false,
+        "inViewport": true,
+        "unoccluded": false,
+        "top": 380.984375,
+        "bottom": 420.984375,
+        "width": 69.734375,
+        "hit": "STRONG."
+      },
+      "disposition": "Harness false positive: nonzero rect of month button inside closed details; checkVisibility false",
+      "probe": {
+        "html": "<button type=\"button\" class=\"primary\" data-fin-period=\"month\" aria-pressed=\"true\">Месяц</button>",
+        "text": "",
+        "rect": {
+          "top": 380.984375,
+          "bottom": 420.984375,
+          "width": 69.734375,
+          "height": 40
+        },
+        "visible": false,
+        "hit": "<strong>3&nbsp;250 ₽</strong>"
+      }
+    },
+    {
+      "role": "manager",
+      "screen": "finance-masters",
+      "width": 1440,
+      "state": "synthetic-fixture",
+      "action": {
+        "id": "",
+        "text": "",
+        "disabled": false,
+        "inViewport": true,
+        "unoccluded": false,
+        "top": 380.984375,
+        "bottom": 420.984375,
+        "width": 69.734375,
+        "hit": "H2."
+      },
+      "disposition": "Harness false positive: nonzero rect of month button inside closed details; checkVisibility false",
+      "probe": {
+        "html": "<button type=\"button\" class=\"primary\" data-fin-period=\"month\" aria-pressed=\"true\">Месяц</button>",
+        "text": "",
+        "rect": {
+          "top": 380.984375,
+          "bottom": 420.984375,
+          "width": 69.734375,
+          "height": 40
+        },
+        "visible": false,
+        "hit": "<h2>Финансы по мастерам</h2>"
+      }
+    },
+    {
+      "role": "owner",
+      "screen": "finance-overview",
+      "width": 390,
+      "state": "synthetic-fixture",
+      "action": {
+        "id": "",
+        "text": "",
+        "disabled": false,
+        "inViewport": true,
+        "unoccluded": false,
+        "top": 360.984375,
+        "bottom": 400.984375,
+        "width": 63.734375,
+        "hit": "SPAN.muted"
+      },
+      "disposition": "Harness false positive: nonzero rect of month button inside closed details; checkVisibility false",
+      "probe": {
+        "html": "<button type=\"button\" class=\"primary\" data-fin-period=\"month\" aria-pressed=\"true\">Месяц</button>",
+        "text": "",
+        "rect": {
+          "top": 360.984375,
+          "bottom": 400.984375,
+          "width": 63.734375,
+          "height": 40
+        },
+        "visible": false,
+        "hit": "<span class=\"muted\">Выручка</span>"
+      }
+    },
+    {
+      "role": "owner",
+      "screen": "finance-expenses",
+      "width": 390,
+      "state": "synthetic-fixture",
+      "action": {
+        "id": "",
+        "text": "",
+        "disabled": false,
+        "inViewport": true,
+        "unoccluded": false,
+        "top": 420.984375,
+        "bottom": 460.984375,
+        "width": 63.734375,
+        "hit": "SPAN.muted"
+      },
+      "disposition": "Harness false positive: nonzero rect of month button inside closed details; checkVisibility false",
+      "probe": {
+        "html": "<button type=\"button\" class=\"primary\" data-fin-period=\"month\" aria-pressed=\"true\">Месяц</button>",
+        "text": "",
+        "rect": {
+          "top": 420.984375,
+          "bottom": 460.984375,
+          "width": 63.734375,
+          "height": 40
+        },
+        "visible": false,
+        "hit": "<span class=\"muted\">Всего расходов</span>"
+      }
+    },
+    {
+      "role": "owner",
+      "screen": "finance-masters",
+      "width": 390,
+      "state": "synthetic-fixture",
+      "action": {
+        "id": "",
+        "text": "",
+        "disabled": false,
+        "inViewport": true,
+        "unoccluded": false,
+        "top": 360.984375,
+        "bottom": 400.984375,
+        "width": 63.734375,
+        "hit": "P.muted"
+      },
+      "disposition": "Harness false positive: nonzero rect of month button inside closed details; checkVisibility false",
+      "probe": {
+        "html": "<button type=\"button\" class=\"primary\" data-fin-period=\"month\" aria-pressed=\"true\">Месяц</button>",
+        "text": "",
+        "rect": {
+          "top": 360.984375,
+          "bottom": 400.984375,
+          "width": 63.734375,
+          "height": 40
+        },
+        "visible": false,
+        "hit": "<p class=\"muted\">Заявки, начисления и вклад каждого мастера</p>"
+      }
+    },
+    {
+      "role": "owner",
+      "screen": "finance-overview",
+      "width": 1440,
+      "state": "synthetic-fixture",
+      "action": {
+        "id": "",
+        "text": "",
+        "disabled": false,
+        "inViewport": true,
+        "unoccluded": false,
+        "top": 380.984375,
+        "bottom": 420.984375,
+        "width": 69.734375,
+        "hit": "STRONG."
+      },
+      "disposition": "Harness false positive: nonzero rect of month button inside closed details; checkVisibility false",
+      "probe": {
+        "html": "<button type=\"button\" class=\"primary\" data-fin-period=\"month\" aria-pressed=\"true\">Месяц</button>",
+        "text": "",
+        "rect": {
+          "top": 380.984375,
+          "bottom": 420.984375,
+          "width": 69.734375,
+          "height": 40
+        },
+        "visible": false,
+        "hit": "<strong>9&nbsp;500 ₽</strong>"
+      }
+    },
+    {
+      "role": "owner",
+      "screen": "finance-expenses",
+      "width": 1440,
+      "state": "synthetic-fixture",
+      "action": {
+        "id": "",
+        "text": "",
+        "disabled": false,
+        "inViewport": true,
+        "unoccluded": false,
+        "top": 380.984375,
+        "bottom": 420.984375,
+        "width": 69.734375,
+        "hit": "STRONG."
+      },
+      "disposition": "Harness false positive: nonzero rect of month button inside closed details; checkVisibility false",
+      "probe": {
+        "html": "<button type=\"button\" class=\"primary\" data-fin-period=\"month\" aria-pressed=\"true\">Месяц</button>",
+        "text": "",
+        "rect": {
+          "top": 380.984375,
+          "bottom": 420.984375,
+          "width": 69.734375,
+          "height": 40
+        },
+        "visible": false,
+        "hit": "<strong>3&nbsp;250 ₽</strong>"
+      }
+    },
+    {
+      "role": "owner",
+      "screen": "finance-masters",
+      "width": 1440,
+      "state": "synthetic-fixture",
+      "action": {
+        "id": "",
+        "text": "",
+        "disabled": false,
+        "inViewport": true,
+        "unoccluded": false,
+        "top": 380.984375,
+        "bottom": 420.984375,
+        "width": 69.734375,
+        "hit": "H2."
+      },
+      "disposition": "Harness false positive: nonzero rect of month button inside closed details; checkVisibility false",
+      "probe": {
+        "html": "<button type=\"button\" class=\"primary\" data-fin-period=\"month\" aria-pressed=\"true\">Месяц</button>",
+        "text": "",
+        "rect": {
+          "top": 380.984375,
+          "bottom": 420.984375,
+          "width": 69.734375,
+          "height": 40
+        },
+        "visible": false,
+        "hit": "<h2>Финансы по мастерам</h2>"
+      }
+    }
+  ]
+}

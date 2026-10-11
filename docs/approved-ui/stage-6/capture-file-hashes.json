@@ -1,0 +1,2262 @@
+[
+  {
+    "path": "docs/approved-ui/stage-6/master/home-days-fixture-390.png",
+    "sha256": "8368990ba29bccdbe1b96f9c6354a431d4b5e52886bd66d159b122d4728f31f4",
+    "role": "master",
+    "screen": "home-days",
+    "width": 390,
+    "state": "real-tab",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/home-new-fixture-390.png",
+    "sha256": "7eca59c90c892daaaf288528d6ea06ce1be67bf512c79cd6920aa16dc5dc9a7a",
+    "role": "master",
+    "screen": "home-new",
+    "width": 390,
+    "state": "real-tab",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/home-waiting-fixture-390.png",
+    "sha256": "d7ca12537e3ee8ffe4e69f5761d04ff861d56695dd5d97b6c8ea48b63382081c",
+    "role": "master",
+    "screen": "home-waiting",
+    "width": 390,
+    "state": "real-tab",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/home-callback-fixture-390.png",
+    "sha256": "9dc0e3b81cfd41815d20e7f871d7b81f45fd48f0996ab4b5402fb407ad88df97",
+    "role": "master",
+    "screen": "home-callback",
+    "width": 390,
+    "state": "real-tab",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/home-overdue-fixture-390.png",
+    "sha256": "1b3e732f6949a35234e6b7dfeb943d171dc7f248392020c1363b0cd3db6f63f9",
+    "role": "master",
+    "screen": "home-overdue",
+    "width": 390,
+    "state": "overdue-only",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/home-empty-fixture-390.png",
+    "sha256": "1adf0e69467b63a333222100fa575cd54fe3f5078c01099d067d6baf506f5dfc",
+    "role": "master",
+    "screen": "home-empty",
+    "width": 390,
+    "state": "empty-date",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/order-detail-fixture-390.png",
+    "sha256": "c9288d080ac88e55d8bc7aac99f2b6ae630c1b4ffb3b747b9a61dab6ba6ef01e",
+    "role": "master",
+    "screen": "order-detail",
+    "width": 390,
+    "state": "full-width-sections",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/order-detail-bottom-fixture-390.png",
+    "sha256": "2496bb344b05963302e7f35004373ff794580748e3b46f3d2742398f86063114",
+    "role": "master",
+    "screen": "order-detail",
+    "width": 390,
+    "state": "visit-workflow-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/order-hands-fixture-390.png",
+    "sha256": "17b105265208feba12c8308d8a73faeb91637b682371d467af0e2049d53c4752",
+    "role": "master",
+    "screen": "order-hands",
+    "width": 390,
+    "state": "full-width-sections",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/order-hands-bottom-fixture-390.png",
+    "sha256": "24a6fd93152292580ae2304f4aa55855fdef8f7bb08d3bd1944fd0b4463d7f0b",
+    "role": "master",
+    "screen": "order-hands",
+    "width": 390,
+    "state": "visit-workflow-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-uncompleted-fixture-390.png",
+    "sha256": "511381188582f883b0beb1aed206055662dac5d7a10fc8ab53362d3fe4501b2b",
+    "role": "master",
+    "screen": "report-uncompleted",
+    "width": 390,
+    "state": "form-deduction-summary",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-uncertain-fixture-390.png",
+    "sha256": "30362f3aea1a6971a1e6c8b087754f8ef8a5e774b8ef584dacfe82198dd3a24b",
+    "role": "master",
+    "screen": "report-uncertain",
+    "width": 390,
+    "state": "failed-fresh-read",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/payouts-fixture-390.png",
+    "sha256": "0eb876bf5063b9ac66e0b2889857a95ad9db98254b0599e0fed4ccc90944a220",
+    "role": "master",
+    "screen": "payouts",
+    "width": 390,
+    "state": "standalone-real-period",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/profile-menu-fixture-390.png",
+    "sha256": "c049600d9598b7312f1a5ea36e434420a932981cda59233f262d6794d82ada2f",
+    "role": "master",
+    "screen": "profile",
+    "width": 390,
+    "state": "existing-destinations-profile-menu",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/profile-personal-data-fixture-390.png",
+    "sha256": "0cc93f493ad77b7126b03628f683d1bb4bac47c042bce4b92481fdc686ed5b25",
+    "role": "master",
+    "screen": "profile",
+    "width": 390,
+    "state": "preserved-data-profile-personal-data",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/schedule-month-fixture-390.png",
+    "sha256": "c36c59b07c449d22fc8922cbf686c1c2943839ddd181eea4a42675299af056a7",
+    "role": "master",
+    "screen": "schedule-month",
+    "width": 390,
+    "state": "flat-own-month",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-form-fixture-390.png",
+    "sha256": "b165f2886e18ef1893e725dd642b910c016207f17e6c292d67b620035d675533",
+    "role": "master",
+    "screen": "report-form",
+    "width": 390,
+    "state": "current-form",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-rejected-fixture-390.png",
+    "sha256": "eed9179d0720ad7b2da37247a3bd9afa8f9eca92fc4124307137841b24b2d1c7",
+    "role": "master",
+    "screen": "report-rejected",
+    "width": 390,
+    "state": "current-form",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-extras-fixture-390.png",
+    "sha256": "5c054b68516fe34b1850ceefaedffe7beae14297b3e9dd5e3115b7ac32cd0471",
+    "role": "master",
+    "screen": "report-extras",
+    "width": 390,
+    "state": "current-form",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-uploading-fixture-390.png",
+    "sha256": "b289e4ce9e12c809fc5279a27eef1da61fe70672f806fd194ad727b4a4602bd9",
+    "role": "master",
+    "screen": "report-uploading",
+    "width": 390,
+    "state": "acknowledged-act-current-photo",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-error-fixture-390.png",
+    "sha256": "9be746aed3f83ae3a1b80a14ffee5d7eb5c3cd14a83fc4b39330e1652cb45f45",
+    "role": "master",
+    "screen": "report-error",
+    "width": 390,
+    "state": "actual-photo-error",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/home-days-fixture-1440.png",
+    "sha256": "ccea6f6c11b601a5e000b06eeb86b7e0378ccb210b3d1a276b5a13ad86486a08",
+    "role": "master",
+    "screen": "home-days",
+    "width": 1440,
+    "state": "real-tab",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/home-new-fixture-1440.png",
+    "sha256": "70426824589398b92a4ca58d8431d11c253fe16f4a9f2f921c83ea9021b25304",
+    "role": "master",
+    "screen": "home-new",
+    "width": 1440,
+    "state": "real-tab",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/home-waiting-fixture-1440.png",
+    "sha256": "546cf88d42b711144b0ef4f2f146024c4f4abef5e1cbfcf7d28643ded1ff1188",
+    "role": "master",
+    "screen": "home-waiting",
+    "width": 1440,
+    "state": "real-tab",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/home-callback-fixture-1440.png",
+    "sha256": "2aacc7b041b7d7d357802cb89dfc5aab49446ccc1d888d7ecd58dec792f0146b",
+    "role": "master",
+    "screen": "home-callback",
+    "width": 1440,
+    "state": "real-tab",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/home-overdue-fixture-1440.png",
+    "sha256": "dfcc8f59821bb18335f6bfa92e5187a412b1dc65b774a16fca6414ac3639aa58",
+    "role": "master",
+    "screen": "home-overdue",
+    "width": 1440,
+    "state": "overdue-only",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/home-empty-fixture-1440.png",
+    "sha256": "8cd0406d8d5f4c5f40017d51324cc82fda4c56bf0aea61a38e6ec850b1aa0fb3",
+    "role": "master",
+    "screen": "home-empty",
+    "width": 1440,
+    "state": "empty-date",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/order-detail-fixture-1440.png",
+    "sha256": "32cc8895b2a9264c9b9122c925879c0c7bc4e068dfc1f073d34bceee4b2d354c",
+    "role": "master",
+    "screen": "order-detail",
+    "width": 1440,
+    "state": "full-width-sections",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/order-detail-bottom-fixture-1440.png",
+    "sha256": "cdaabf22bcc3edb8c430deda5992fc50014209cfff5774bd5946f2a0a1dba0ae",
+    "role": "master",
+    "screen": "order-detail",
+    "width": 1440,
+    "state": "visit-workflow-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/order-hands-fixture-1440.png",
+    "sha256": "f80396b34f1fe436a88f9f50c0976480fdf0ae140b1b1ab42e7ce0f6da35b515",
+    "role": "master",
+    "screen": "order-hands",
+    "width": 1440,
+    "state": "full-width-sections",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/order-hands-bottom-fixture-1440.png",
+    "sha256": "5af0bd60d0f11e8c810f35da75c264183543bbee61970ff83698048ccad42fb7",
+    "role": "master",
+    "screen": "order-hands",
+    "width": 1440,
+    "state": "visit-workflow-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-uncompleted-fixture-1440.png",
+    "sha256": "90c99ffeadba0f615fe26586bf59ae00aaaed82a4df1a4ff139cc4528afdba96",
+    "role": "master",
+    "screen": "report-uncompleted",
+    "width": 1440,
+    "state": "form-deduction-summary",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-uncertain-fixture-1440.png",
+    "sha256": "b8c6b3de8b05e3a5a5114bf842f4f4454efade4675faf3454bed97dbb10fcc44",
+    "role": "master",
+    "screen": "report-uncertain",
+    "width": 1440,
+    "state": "failed-fresh-read",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/profile-menu-fixture-1440.png",
+    "sha256": "6e80c92bb0f7e31fb8bd2cb825d99cc70cdd776120d7550da5d72f97c08cfbf1",
+    "role": "master",
+    "screen": "profile",
+    "width": 1440,
+    "state": "existing-destinations-profile-menu",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/profile-personal-data-fixture-1440.png",
+    "sha256": "123c7f89e2e5dc3caccb3daee3ed11dd2007e928f6e9195050737cfd93932a88",
+    "role": "master",
+    "screen": "profile",
+    "width": 1440,
+    "state": "preserved-data-profile-personal-data",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-form-fixture-1440.png",
+    "sha256": "9ada246d5ca0a1e5ad21f8836b115d3a3cedd9581c280d6c1829394ca4586951",
+    "role": "master",
+    "screen": "report-form",
+    "width": 1440,
+    "state": "current-form",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-rejected-fixture-1440.png",
+    "sha256": "03bfafc75425ce59da638ee28a88a3fc33a56a3d3c1e18296a87a0b0e745156d",
+    "role": "master",
+    "screen": "report-rejected",
+    "width": 1440,
+    "state": "current-form",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-extras-fixture-1440.png",
+    "sha256": "bcd46f529dc3f0ca2ee5707033f4fc1dc94710df18c114a2c5b01a736336cb8a",
+    "role": "master",
+    "screen": "report-extras",
+    "width": 1440,
+    "state": "current-form",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-uploading-fixture-1440.png",
+    "sha256": "2c25daf74528a65846b08842cbce296b6b812e8e3b763457e2ee53ad77331e5d",
+    "role": "master",
+    "screen": "report-uploading",
+    "width": 1440,
+    "state": "acknowledged-act-current-photo",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/report-error-fixture-1440.png",
+    "sha256": "825a1cf7426d1c1e87e3bcb3224bf9a286e70c5c4c40e1b3345c66c03e474a81",
+    "role": "master",
+    "screen": "report-error",
+    "width": 1440,
+    "state": "actual-photo-error",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/schedule-fixture-1440.png",
+    "sha256": "0c156bccc21cea9d690a1d406042bb4d59624cb15b9097fb9dffdafcc9ae8720",
+    "role": "master",
+    "screen": "schedule",
+    "width": 1440,
+    "state": "own-visits-first",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/schedule-month-fixture-1440.png",
+    "sha256": "0dff7c70506cd0c1be32c5fb3c6d6154d412cd18b8a76f36ba47db340b3dc2b3",
+    "role": "master",
+    "screen": "schedule-month",
+    "width": 1440,
+    "state": "own-month-first",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/schedule-edit-fixture-1440.png",
+    "sha256": "d118f0075a83deac02b4bf7868f784ae085ea1dd9faec53bac729e1c3a3a319f",
+    "role": "master",
+    "screen": "schedule-edit",
+    "width": 1440,
+    "state": "selected-day-first",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/payouts-fixture-1440.png",
+    "sha256": "1e51e85dd6f8dd94fe99b40fc7d92ec03aeb6453e102081b7c9e1ee4b6081ef7",
+    "role": "master",
+    "screen": "payouts",
+    "width": 1440,
+    "state": "period-panel-top",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/workspace-fixture-390.png",
+    "sha256": "70625751332377880a92cd87be63810b8343e9ab530b23de09a2a61d048d569d",
+    "role": "dispatcher",
+    "screen": "workspace",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/orders-fixture-390.png",
+    "sha256": "f39b267f5337e09dad244f66cab9436c3af37c2cbcb314f2ac8c9936dc14ef3f",
+    "role": "dispatcher",
+    "screen": "orders",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/order-detail-fixture-390.png",
+    "sha256": "6255d0525b48ebdcdd25fa029be80f879cb55e46f26692bf62bcfbafbb7873cd",
+    "role": "dispatcher",
+    "screen": "order-detail",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/order-create-fixture-390.png",
+    "sha256": "fa2e32e578a210b3033fc3a9e28472abc8e6540c4f70da32160964cee5277e1c",
+    "role": "dispatcher",
+    "screen": "order-create",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/order-create-bottom-fixture-390.png",
+    "sha256": "7108da469120baa06ff33489fc49743086be79fb9a6203da6d82cfc8e7d2cc0c",
+    "role": "dispatcher",
+    "screen": "order-create",
+    "width": 390,
+    "state": "long-end-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/order-edit-fixture-390.png",
+    "sha256": "85a3221bcaed09999ae9fa6f1a4690c102f69c4559731d13379dd11d7b4358a3",
+    "role": "dispatcher",
+    "screen": "order-edit",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/order-edit-bottom-fixture-390.png",
+    "sha256": "85a3221bcaed09999ae9fa6f1a4690c102f69c4559731d13379dd11d7b4358a3",
+    "role": "dispatcher",
+    "screen": "order-edit",
+    "width": 390,
+    "state": "long-end-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/schedule-fixture-390.png",
+    "sha256": "4eb410b8c300bb8991302a133f1d320945e91db7d73e9233702d72ba4d2c4134",
+    "role": "dispatcher",
+    "screen": "schedule",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/team-fixture-390.png",
+    "sha256": "18d48ca6891855d1955f1993054664a8d02d200d2ccfc1ebc3e763d409ebc185",
+    "role": "dispatcher",
+    "screen": "team",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/master-report-fixture-390.png",
+    "sha256": "b874555e357e6b9d79bb0ebcf2fe0fab6ecf43507e03052cfa069567b7799b7f",
+    "role": "dispatcher",
+    "screen": "master-report",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/workspace-fixture-1440.png",
+    "sha256": "15c3a5de28a4cbfae220995e5873ca7753898a721d5d5911cb1f50252dc46ed0",
+    "role": "dispatcher",
+    "screen": "workspace",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/orders-fixture-1440.png",
+    "sha256": "243947321fc49584f0c39fb30f7d45292e9dfbdd501a9f40b218f95e92ff96fa",
+    "role": "dispatcher",
+    "screen": "orders",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/order-detail-fixture-1440.png",
+    "sha256": "d180a92444412541c8aec972204cb41998c49a0fbaec443847f549121311c9b3",
+    "role": "dispatcher",
+    "screen": "order-detail",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/order-create-fixture-1440.png",
+    "sha256": "6796dc564920eca04a3538d5c725985342d42bc2b1f9b9e005ec860b630f3c81",
+    "role": "dispatcher",
+    "screen": "order-create",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/order-create-bottom-fixture-1440.png",
+    "sha256": "6796dc564920eca04a3538d5c725985342d42bc2b1f9b9e005ec860b630f3c81",
+    "role": "dispatcher",
+    "screen": "order-create",
+    "width": 1440,
+    "state": "long-end-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/order-edit-fixture-1440.png",
+    "sha256": "fc49e29bae7da274dc22f65ebb5020bc10e5996b5a1ce1eb3358ec20206c26df",
+    "role": "dispatcher",
+    "screen": "order-edit",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/order-edit-bottom-fixture-1440.png",
+    "sha256": "4aab351fa8ab801b1b9d60bcf8dd107b080c8ecc1918028007e27e6ac14668a1",
+    "role": "dispatcher",
+    "screen": "order-edit",
+    "width": 1440,
+    "state": "long-end-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/schedule-fixture-1440.png",
+    "sha256": "63b69f61e59a1ad12ba2ca7eecf846dd6b0447a6f13b11ee1825c3ef92c04200",
+    "role": "dispatcher",
+    "screen": "schedule",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/team-fixture-1440.png",
+    "sha256": "b46e0f3157bcc70f76d6721a3dd7cbc1bec9d641fc8a20adf93a2fd7197c3b4e",
+    "role": "dispatcher",
+    "screen": "team",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/master-report-fixture-1440.png",
+    "sha256": "13b43ccd8dd881331d19853480847f08e476de84c71b3fa4ed0088fc4a724689",
+    "role": "dispatcher",
+    "screen": "master-report",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/dashboard-fixture-390.png",
+    "sha256": "63f30f70301fab700d64d26f2533d20f2440f6e29cb2dbc67ef9ee3c21b7b9d8",
+    "role": "manager",
+    "screen": "dashboard",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/dashboard-fixture-390-secondary.png",
+    "sha256": "86454e9d034f8c51c7629de80b637826de4e8afb7111c96b607f110b3f14672c",
+    "role": "manager",
+    "screen": "dashboard",
+    "width": 390,
+    "state": "synthetic-fixture-secondary",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/team-fixture-390.png",
+    "sha256": "4ac9696553b5cbcb79cc4369513da8b6547d67be8c1246dcfd5ffc6a4398fc36",
+    "role": "manager",
+    "screen": "team",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-fixture-390.png",
+    "sha256": "63873a28e43141ea680f4c5f1210c13c65f3e667973bd266ec30f40470b21999",
+    "role": "manager",
+    "screen": "review",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-fixture-390-scrolled-middle.png",
+    "sha256": "1e6a1065d74763c7ca1953d2d523d2529070f32aaf47c777bb1b8ec7ee706239",
+    "role": "manager",
+    "screen": "review",
+    "width": 390,
+    "state": "synthetic-fixture-scrolled-middle",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-fixture-390-scrolled-end.png",
+    "sha256": "1e6a1065d74763c7ca1953d2d523d2529070f32aaf47c777bb1b8ec7ee706239",
+    "role": "manager",
+    "screen": "review",
+    "width": 390,
+    "state": "synthetic-fixture-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-fixture-390-long-initial.png",
+    "sha256": "7e16bfe27ab9329a330c57bb6d459ec9b8970d4622f82f6b7543fe850f29c278",
+    "role": "manager",
+    "screen": "review",
+    "width": 390,
+    "state": "synthetic-fixture-long-initial",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-fixture-390-long-middle.png",
+    "sha256": "2596012fbefe5a5282eda15d392578e9a8784558dcba5d1ef1aab0ff825ec0c4",
+    "role": "manager",
+    "screen": "review",
+    "width": 390,
+    "state": "synthetic-fixture-long-middle",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-fixture-390-long-end.png",
+    "sha256": "d5bf70217909a4612f7cc5502c37cd9381ebc5ad1391607218b1c39ebdbeec3e",
+    "role": "manager",
+    "screen": "review",
+    "width": 390,
+    "state": "synthetic-fixture-long-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-reject-fixture-390-long-reason.png",
+    "sha256": "a8dd367bdfa2af7e345ec554cb0929384b82f32621758e4575c3cee401626293",
+    "role": "manager",
+    "screen": "review-reject",
+    "width": 390,
+    "state": "synthetic-fixture-long-reason",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/orders-fixture-390.png",
+    "sha256": "c0ebb47eda10e318c85aad4f7aa4c09c328d897e378d39d1c9dbb8931c5b669f",
+    "role": "manager",
+    "screen": "orders",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/order-create-fixture-390.png",
+    "sha256": "0ca5fd083f3e4e269297f114fd9cc89b2373e3c38e6e960b320bef7f50695a78",
+    "role": "manager",
+    "screen": "order-create",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/order-create-bottom-fixture-390-long-end.png",
+    "sha256": "8ff3652abbfa052776e22d9b0b3c1e78bd1475b5fcda18dd595b5eaa8a39fca9",
+    "role": "manager",
+    "screen": "order-create",
+    "width": 390,
+    "state": "long-end-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/order-edit-fixture-390.png",
+    "sha256": "bfc70c68eca9247bca4fda78cb7cf4c6122e8c30e23f96f442dcb68449b0f94e",
+    "role": "manager",
+    "screen": "order-edit",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/order-edit-bottom-fixture-390-long-end.png",
+    "sha256": "bfc70c68eca9247bca4fda78cb7cf4c6122e8c30e23f96f442dcb68449b0f94e",
+    "role": "manager",
+    "screen": "order-edit",
+    "width": 390,
+    "state": "long-end-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/finance-overview-fixture-390.png",
+    "sha256": "bbf6ebbef5a7b135f25d09351e9309fbf0793be545054726153a8a7a8edd1d15",
+    "role": "manager",
+    "screen": "finance-overview",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/finance-expenses-fixture-390.png",
+    "sha256": "27319890b07526db18a27cccca2738b25be9d6554d55bf1b1a30a9a2f1d9d3ff",
+    "role": "manager",
+    "screen": "finance-expenses",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/finance-masters-fixture-390.png",
+    "sha256": "be8b633167b92f84858b9e558b2bfeb394288908666baa86193bdcf40cbc5068",
+    "role": "manager",
+    "screen": "finance-masters",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/dashboard-fixture-1440.png",
+    "sha256": "3dbb59b12ccec503d9dd7f11866705c6eca2e2886225d51ac7caa6d20335171d",
+    "role": "manager",
+    "screen": "dashboard",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/dashboard-fixture-1440-secondary.png",
+    "sha256": "3709ed3cedf294cccf777241c89366e03d654e4e7ee787b016c6c880e350793c",
+    "role": "manager",
+    "screen": "dashboard",
+    "width": 1440,
+    "state": "synthetic-fixture-secondary",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/team-fixture-1440.png",
+    "sha256": "9dc0d247310762d9bac2c7a6a6ee25c9babe17130955d9e0be41c76c87854f91",
+    "role": "manager",
+    "screen": "team",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-fixture-1440.png",
+    "sha256": "d530c8e718c04f4e0c1f981cc23615e2e7edb32ef2784f6abd036945752a88a8",
+    "role": "manager",
+    "screen": "review",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-fixture-1440-scrolled-middle.png",
+    "sha256": "d530c8e718c04f4e0c1f981cc23615e2e7edb32ef2784f6abd036945752a88a8",
+    "role": "manager",
+    "screen": "review",
+    "width": 1440,
+    "state": "synthetic-fixture-scrolled-middle",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-fixture-1440-scrolled-end.png",
+    "sha256": "d530c8e718c04f4e0c1f981cc23615e2e7edb32ef2784f6abd036945752a88a8",
+    "role": "manager",
+    "screen": "review",
+    "width": 1440,
+    "state": "synthetic-fixture-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-fixture-1440-long-initial.png",
+    "sha256": "14b6c3cd5c5e83b74199fd9716af66499c4ea59504a486e6a3ee9db3e40be24a",
+    "role": "manager",
+    "screen": "review",
+    "width": 1440,
+    "state": "synthetic-fixture-long-initial",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-fixture-1440-long-middle.png",
+    "sha256": "500ad1a40cd4239fad7faea3e54b831a6b4528a00bb2e68733103202a3b4ee6e",
+    "role": "manager",
+    "screen": "review",
+    "width": 1440,
+    "state": "synthetic-fixture-long-middle",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-fixture-1440-long-end.png",
+    "sha256": "02ffb6162fadd419a4055b25932b2425b5731e99056983a8ad3ab592acdc3979",
+    "role": "manager",
+    "screen": "review",
+    "width": 1440,
+    "state": "synthetic-fixture-long-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/review-reject-fixture-1440-long-reason.png",
+    "sha256": "28f4bd82b567a18550114427bb265dac77288ce6df580c66227b8de20e824f96",
+    "role": "manager",
+    "screen": "review-reject",
+    "width": 1440,
+    "state": "synthetic-fixture-long-reason",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/orders-fixture-1440.png",
+    "sha256": "dc6fcca48bb4b69e4df8f0d5f1ab2b98800be99a476e6d389f999c5080ae72b5",
+    "role": "manager",
+    "screen": "orders",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/order-create-fixture-1440.png",
+    "sha256": "8abfff317fdbcef3dcc5af91dfc82d43cae9e8077b2e612142ec6e335d045b3b",
+    "role": "manager",
+    "screen": "order-create",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/order-create-bottom-fixture-1440-long-end.png",
+    "sha256": "8abfff317fdbcef3dcc5af91dfc82d43cae9e8077b2e612142ec6e335d045b3b",
+    "role": "manager",
+    "screen": "order-create",
+    "width": 1440,
+    "state": "long-end-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/order-edit-fixture-1440.png",
+    "sha256": "e105b6a908e1281620ffb799608ac514f75765718996ba4245769ca4469b13ae",
+    "role": "manager",
+    "screen": "order-edit",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/order-edit-bottom-fixture-1440-long-end.png",
+    "sha256": "d0438c570872232bb0474daf34a31bb8dbf90c5cc41be43dc68c5be171cec404",
+    "role": "manager",
+    "screen": "order-edit",
+    "width": 1440,
+    "state": "long-end-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/finance-overview-fixture-1440.png",
+    "sha256": "6e8dacfcbf216129f7159fa14da19888807a62d3a435d0235a7ec1419014c342",
+    "role": "manager",
+    "screen": "finance-overview",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/finance-expenses-fixture-1440.png",
+    "sha256": "5b5eca922e36722d9f245d2d9d1069ee3a21991ef21a321b8df8c3c6ac9d57f1",
+    "role": "manager",
+    "screen": "finance-expenses",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/finance-masters-fixture-1440.png",
+    "sha256": "0e6533e2007b7480d1fc2d8c566ea9cd3f2c76b6fc814d7e491516d759290965",
+    "role": "manager",
+    "screen": "finance-masters",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/dashboard-fixture-390.png",
+    "sha256": "582682c5cfb39f584bf0161963282404f65bfee17a8c2499a8bda3f8cd89e32c",
+    "role": "owner",
+    "screen": "dashboard",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/dashboard-fixture-390-secondary.png",
+    "sha256": "86454e9d034f8c51c7629de80b637826de4e8afb7111c96b607f110b3f14672c",
+    "role": "owner",
+    "screen": "dashboard",
+    "width": 390,
+    "state": "synthetic-fixture-secondary",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/team-fixture-390.png",
+    "sha256": "3b3c12bb8589d1f18c62ef98f5ee107664f217ed5e2b441d4b2767304251537e",
+    "role": "owner",
+    "screen": "team",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-fixture-390.png",
+    "sha256": "63873a28e43141ea680f4c5f1210c13c65f3e667973bd266ec30f40470b21999",
+    "role": "owner",
+    "screen": "review",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-fixture-390-scrolled-middle.png",
+    "sha256": "1e6a1065d74763c7ca1953d2d523d2529070f32aaf47c777bb1b8ec7ee706239",
+    "role": "owner",
+    "screen": "review",
+    "width": 390,
+    "state": "synthetic-fixture-scrolled-middle",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-fixture-390-scrolled-end.png",
+    "sha256": "1e6a1065d74763c7ca1953d2d523d2529070f32aaf47c777bb1b8ec7ee706239",
+    "role": "owner",
+    "screen": "review",
+    "width": 390,
+    "state": "synthetic-fixture-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-fixture-390-long-initial.png",
+    "sha256": "d477ffca86b5106e97ad45e7e9288c432f5661e2563d154a23567be7716499ae",
+    "role": "owner",
+    "screen": "review",
+    "width": 390,
+    "state": "synthetic-fixture-long-initial",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-fixture-390-long-middle.png",
+    "sha256": "2596012fbefe5a5282eda15d392578e9a8784558dcba5d1ef1aab0ff825ec0c4",
+    "role": "owner",
+    "screen": "review",
+    "width": 390,
+    "state": "synthetic-fixture-long-middle",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-fixture-390-long-end.png",
+    "sha256": "d5bf70217909a4612f7cc5502c37cd9381ebc5ad1391607218b1c39ebdbeec3e",
+    "role": "owner",
+    "screen": "review",
+    "width": 390,
+    "state": "synthetic-fixture-long-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-reject-fixture-390-long-reason.png",
+    "sha256": "a8dd367bdfa2af7e345ec554cb0929384b82f32621758e4575c3cee401626293",
+    "role": "owner",
+    "screen": "review-reject",
+    "width": 390,
+    "state": "synthetic-fixture-long-reason",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/order-create-fixture-390.png",
+    "sha256": "39b618e1aa4ee83505105e978d2cf637802fd8f1862d82c1b002eb3a909074f2",
+    "role": "owner",
+    "screen": "order-create",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/order-create-bottom-fixture-390-long-end.png",
+    "sha256": "acd5850ca8257bf60436c521bea38ad1d63c7d611700fdf4980cc6c5c54311ae",
+    "role": "owner",
+    "screen": "order-create",
+    "width": 390,
+    "state": "long-end-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/order-edit-fixture-390.png",
+    "sha256": "c68fc509684556df401fcb69f05f1a8fb27baebbc201749812770b3a5c184a65",
+    "role": "owner",
+    "screen": "order-edit",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/order-edit-bottom-fixture-390-long-end.png",
+    "sha256": "c68fc509684556df401fcb69f05f1a8fb27baebbc201749812770b3a5c184a65",
+    "role": "owner",
+    "screen": "order-edit",
+    "width": 390,
+    "state": "long-end-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/finance-overview-fixture-390.png",
+    "sha256": "2a4dfc17e23f92ed79c92ae713e25b69329db07259677682ea2b7a9a29485a0e",
+    "role": "owner",
+    "screen": "finance-overview",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/finance-expenses-fixture-390.png",
+    "sha256": "afa9c5b5973b14b9ba5f5db39a3515c7b4b5d38d1296890a5fe6f314191aea7b",
+    "role": "owner",
+    "screen": "finance-expenses",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/finance-masters-fixture-390.png",
+    "sha256": "1555b4752533e5eae51975197827d7217a93fa40d58d5672b2e7f8186c333035",
+    "role": "owner",
+    "screen": "finance-masters",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/dashboard-fixture-1440.png",
+    "sha256": "ff8d62fa7bd5b2c9984d4ca459174fbd5f1d583ed7821352892b75316a02ba46",
+    "role": "owner",
+    "screen": "dashboard",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/dashboard-fixture-1440-secondary.png",
+    "sha256": "4cfe4b8718c34c8cc25e2799579a1eec1007c9e34dc833c6a6b0110dcf9ef31f",
+    "role": "owner",
+    "screen": "dashboard",
+    "width": 1440,
+    "state": "synthetic-fixture-secondary",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/team-fixture-1440.png",
+    "sha256": "254a24ff69ed49d622aa2d90ec0bfd196fce61f676eda72071687cba6917e896",
+    "role": "owner",
+    "screen": "team",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-fixture-1440.png",
+    "sha256": "03b4159c5c6b68dd844b9291c896ee5f754504ecdfa6f2e7e795b2b1d0eef8d2",
+    "role": "owner",
+    "screen": "review",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-fixture-1440-scrolled-middle.png",
+    "sha256": "393c91959220de8ef6909916f52cd6654c41df0713cc5b90c4c1d353a7b0dee1",
+    "role": "owner",
+    "screen": "review",
+    "width": 1440,
+    "state": "synthetic-fixture-scrolled-middle",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-fixture-1440-scrolled-end.png",
+    "sha256": "393c91959220de8ef6909916f52cd6654c41df0713cc5b90c4c1d353a7b0dee1",
+    "role": "owner",
+    "screen": "review",
+    "width": 1440,
+    "state": "synthetic-fixture-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-fixture-1440-long-initial.png",
+    "sha256": "20853f462aaca5181bae49f1a26b167dc9ba2320e43ff3bf53d52f83cc14f1a0",
+    "role": "owner",
+    "screen": "review",
+    "width": 1440,
+    "state": "synthetic-fixture-long-initial",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-fixture-1440-long-middle.png",
+    "sha256": "05236d99267f2a32d01cc4ef200379a19e9cfa86bb75f64d5c5b62f375113243",
+    "role": "owner",
+    "screen": "review",
+    "width": 1440,
+    "state": "synthetic-fixture-long-middle",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-fixture-1440-long-end.png",
+    "sha256": "4866b0afa0d82d2fafac0851983a1aeec19a16ca712825ade3558d026fd3ee41",
+    "role": "owner",
+    "screen": "review",
+    "width": 1440,
+    "state": "synthetic-fixture-long-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/review-reject-fixture-1440-long-reason.png",
+    "sha256": "a4c6f09308354f8997757340f8558f38e3b9d3f12a44165daa741586d4139b44",
+    "role": "owner",
+    "screen": "review-reject",
+    "width": 1440,
+    "state": "synthetic-fixture-long-reason",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/order-create-fixture-1440.png",
+    "sha256": "3ba2073c61483a3a22901b2f85e50d01aafdb7e466148bc08a564cb05ba810bb",
+    "role": "owner",
+    "screen": "order-create",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/order-create-bottom-fixture-1440-long-end.png",
+    "sha256": "3ba2073c61483a3a22901b2f85e50d01aafdb7e466148bc08a564cb05ba810bb",
+    "role": "owner",
+    "screen": "order-create",
+    "width": 1440,
+    "state": "long-end-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/order-edit-fixture-1440.png",
+    "sha256": "8d4b14892ee3eca24b952ef4107d9815b5de2e2b99e10c4eca88456d84825c58",
+    "role": "owner",
+    "screen": "order-edit",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/order-edit-bottom-fixture-1440-long-end.png",
+    "sha256": "bb61aa92c93a9ca2a73bddda36e9ab9f58181a7deed8326f804fecbafb9988b4",
+    "role": "owner",
+    "screen": "order-edit",
+    "width": 1440,
+    "state": "long-end-scrolled-end",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/finance-overview-fixture-1440.png",
+    "sha256": "f8c832912d669158d5eaf29ebed5624cd3f1cec36875011cbe363a965d102e2f",
+    "role": "owner",
+    "screen": "finance-overview",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/finance-expenses-fixture-1440.png",
+    "sha256": "f541d8be3c38dc3cc192ff76abe0216ce30c82e2aee7fc13153eca73edfe8dd4",
+    "role": "owner",
+    "screen": "finance-expenses",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/finance-masters-fixture-1440.png",
+    "sha256": "83b26446dc8f5b565e7a1277c1ef39b2320dc53a80ddd80d5f881807539fb290",
+    "role": "owner",
+    "screen": "finance-masters",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/profile-fixture-390.png",
+    "sha256": "ca5199b2e9eaf0db1907e9faf7d55e2ea6889a932ba249e56d0fe59012384e7d",
+    "role": "master",
+    "screen": "profile",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/profile-fixture-390-menu.png",
+    "sha256": "cc3db29dda5cefca991b3aa05367e296bc81c8bbc58edf91e1a9afee9349d485",
+    "role": "master",
+    "screen": "profile",
+    "width": 390,
+    "state": "synthetic-fixture-menu",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/help-fixture-390.png",
+    "sha256": "9ace9fc3cd9533dfc045cb31aaafd425e89d67b5a70f5f023e164873dc3bc57f",
+    "role": "master",
+    "screen": "help",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/about-fixture-390.png",
+    "sha256": "6f096c25181b01062f09555dc71f96afb8ab85b85da0eb74032e57a0377e08c4",
+    "role": "master",
+    "screen": "about",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/push-fixture-390-default.png",
+    "sha256": "882403d00309223bffb72e519fd490c0054b749320b339338688299dc9b3ec3d",
+    "role": "master",
+    "screen": "push",
+    "width": 390,
+    "state": "synthetic-fixture-default",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/push-fixture-390-subscribed.png",
+    "sha256": "4ab2318ebc9c2e171e4a772e835d1e1e31a39e148cdbd4795d6a158d299920f8",
+    "role": "master",
+    "screen": "push",
+    "width": 390,
+    "state": "synthetic-fixture-subscribed",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/price-fixture-390.png",
+    "sha256": "73068b65b422a9088ffc6adc0b8e762df6193cb6110fcd7307ea047df2fc0e58",
+    "role": "master",
+    "screen": "price",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/profile-fixture-1440.png",
+    "sha256": "c231ab4059283ce730df2dab50cafe3298ca0971229d0b2ae3081b895a57e743",
+    "role": "master",
+    "screen": "profile",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/profile-fixture-1440-menu.png",
+    "sha256": "b2c043b38cafb9a24e3d96364977afb7f77a231b0611baf3f3e31bc16c70df8e",
+    "role": "master",
+    "screen": "profile",
+    "width": 1440,
+    "state": "synthetic-fixture-menu",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/help-fixture-1440.png",
+    "sha256": "56d5559dc745bd029561f7f81fd53f894c486c40625caff89001e7b451d37154",
+    "role": "master",
+    "screen": "help",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/about-fixture-1440.png",
+    "sha256": "9f991138d76d091c0eddd185b70743efe8782226b6ddad4522e3511df68564f6",
+    "role": "master",
+    "screen": "about",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/push-fixture-1440-default.png",
+    "sha256": "7911633fab5ee095319f359a4cc6814bdd976672641d48ba91b607d0f6fd8e3c",
+    "role": "master",
+    "screen": "push",
+    "width": 1440,
+    "state": "synthetic-fixture-default",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/push-fixture-1440-subscribed.png",
+    "sha256": "718067dcfc811ba9e7e0125e0244217133e32c3a283bb15455e810f0d6808691",
+    "role": "master",
+    "screen": "push",
+    "width": 1440,
+    "state": "synthetic-fixture-subscribed",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/price-fixture-1440.png",
+    "sha256": "1958d06f4cfa5936904c13c410effd54a27350126caf961cc4ecdae10c28b216",
+    "role": "master",
+    "screen": "price",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/profile-fixture-390.png",
+    "sha256": "c6bb521125f7bfe5c86dab3c3eb34e200d44a419d9827a15d42736d914fb4ce2",
+    "role": "dispatcher",
+    "screen": "profile",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/profile-fixture-390-menu.png",
+    "sha256": "6b2d30509aa90a55e4b20bc7e57375cf2e2a4c7c2d413e7ac44654c69c9d2fdd",
+    "role": "dispatcher",
+    "screen": "profile",
+    "width": 390,
+    "state": "synthetic-fixture-menu",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/help-fixture-390.png",
+    "sha256": "bd77dfd11133fc01e6e4a284f3dcd9a377b95a3afc3bd5f92ffb5b2ef9131092",
+    "role": "dispatcher",
+    "screen": "help",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/about-fixture-390.png",
+    "sha256": "8441628ba090f32d6fb9308419e570acf4252f7b0c6fbb54db812f207e87b17d",
+    "role": "dispatcher",
+    "screen": "about",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/push-fixture-390-default.png",
+    "sha256": "fcdfeb32eea0874ceb8107da3bde05442db8ee04d42255805de1cb811e493633",
+    "role": "dispatcher",
+    "screen": "push",
+    "width": 390,
+    "state": "synthetic-fixture-default",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/push-fixture-390-subscribed.png",
+    "sha256": "4ab2318ebc9c2e171e4a772e835d1e1e31a39e148cdbd4795d6a158d299920f8",
+    "role": "dispatcher",
+    "screen": "push",
+    "width": 390,
+    "state": "synthetic-fixture-subscribed",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/profile-fixture-1440.png",
+    "sha256": "e0d96dcb971451a415908db1439f61e198e7b7b2dad55adb39a88fa53398f53a",
+    "role": "dispatcher",
+    "screen": "profile",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/profile-fixture-1440-menu.png",
+    "sha256": "36f271943a3b9658a73c3b05c78e91bb360c56f23ea839b3f91148cb7b1c04ef",
+    "role": "dispatcher",
+    "screen": "profile",
+    "width": 1440,
+    "state": "synthetic-fixture-menu",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/help-fixture-1440.png",
+    "sha256": "c1f75671e93f2f51c42f0c1fa8ea0c31f39c2a70584899e25720e3fc0590b97e",
+    "role": "dispatcher",
+    "screen": "help",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/about-fixture-1440.png",
+    "sha256": "48316691e25d5f5c99fb47be7069da2b4358a7a82bd096a449c6333205c3cd2b",
+    "role": "dispatcher",
+    "screen": "about",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/push-fixture-1440-default.png",
+    "sha256": "deda42893cca607895c8cec1aeb17fa6611ee628769310e00d489643d49f3a7f",
+    "role": "dispatcher",
+    "screen": "push",
+    "width": 1440,
+    "state": "synthetic-fixture-default",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/push-fixture-1440-subscribed.png",
+    "sha256": "5e82230e2dd14a79eb1d74641198a07465c64c2cda6f18d31cc45574dd7dbbec",
+    "role": "dispatcher",
+    "screen": "push",
+    "width": 1440,
+    "state": "synthetic-fixture-subscribed",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/profile-fixture-390.png",
+    "sha256": "f75ebf8a0c811b64141cd3a310e8c532e518e7ad94c91a46787d43ea50db93e9",
+    "role": "manager",
+    "screen": "profile",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/profile-fixture-390-menu.png",
+    "sha256": "f75ebf8a0c811b64141cd3a310e8c532e518e7ad94c91a46787d43ea50db93e9",
+    "role": "manager",
+    "screen": "profile",
+    "width": 390,
+    "state": "synthetic-fixture-menu",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/help-fixture-390.png",
+    "sha256": "bd77dfd11133fc01e6e4a284f3dcd9a377b95a3afc3bd5f92ffb5b2ef9131092",
+    "role": "manager",
+    "screen": "help",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/about-fixture-390.png",
+    "sha256": "8441628ba090f32d6fb9308419e570acf4252f7b0c6fbb54db812f207e87b17d",
+    "role": "manager",
+    "screen": "about",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/push-fixture-390-default.png",
+    "sha256": "882403d00309223bffb72e519fd490c0054b749320b339338688299dc9b3ec3d",
+    "role": "manager",
+    "screen": "push",
+    "width": 390,
+    "state": "synthetic-fixture-default",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/push-fixture-390-subscribed.png",
+    "sha256": "0759b0a867db1d66ba43ed155f12501b812f2941f1ed34223c0c2a114a5b6718",
+    "role": "manager",
+    "screen": "push",
+    "width": 390,
+    "state": "synthetic-fixture-subscribed",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/profile-fixture-1440.png",
+    "sha256": "2cdb6136abd42a6b3a7653888cadc9911490e4695c98bea91f587f9fb0ff41b6",
+    "role": "manager",
+    "screen": "profile",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/profile-fixture-1440-menu.png",
+    "sha256": "2cdb6136abd42a6b3a7653888cadc9911490e4695c98bea91f587f9fb0ff41b6",
+    "role": "manager",
+    "screen": "profile",
+    "width": 1440,
+    "state": "synthetic-fixture-menu",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/help-fixture-1440.png",
+    "sha256": "037e11ce581991336da5909d0090519cbb586d16eb70fae8cbd5c14f2636dfd3",
+    "role": "manager",
+    "screen": "help",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/about-fixture-1440.png",
+    "sha256": "028bcf15fa85e9830338f432861c7930e0d6b0a1e3c4b575d829c6ff30117e54",
+    "role": "manager",
+    "screen": "about",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/push-fixture-1440-default.png",
+    "sha256": "e80e92e6583f458c36631cdfa8c3655c9962822dcf50760c51dda92114a558ab",
+    "role": "manager",
+    "screen": "push",
+    "width": 1440,
+    "state": "synthetic-fixture-default",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/push-fixture-1440-subscribed.png",
+    "sha256": "b4a0407d1d3bc386413fd759680a5dc1982e39fe9e860f182b27aeef6f8a040f",
+    "role": "manager",
+    "screen": "push",
+    "width": 1440,
+    "state": "synthetic-fixture-subscribed",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/profile-fixture-390.png",
+    "sha256": "a98984f84ee78e10b069fceeecc4a65910e0b4a66ce2848761fb8f2c516d2bf2",
+    "role": "owner",
+    "screen": "profile",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/profile-fixture-390-menu.png",
+    "sha256": "a98984f84ee78e10b069fceeecc4a65910e0b4a66ce2848761fb8f2c516d2bf2",
+    "role": "owner",
+    "screen": "profile",
+    "width": 390,
+    "state": "synthetic-fixture-menu",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/help-fixture-390.png",
+    "sha256": "bd77dfd11133fc01e6e4a284f3dcd9a377b95a3afc3bd5f92ffb5b2ef9131092",
+    "role": "owner",
+    "screen": "help",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/about-fixture-390.png",
+    "sha256": "8441628ba090f32d6fb9308419e570acf4252f7b0c6fbb54db812f207e87b17d",
+    "role": "owner",
+    "screen": "about",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/push-fixture-390-default.png",
+    "sha256": "ee557ce6e5840dc5b426ab02bb6a888ab72b17a9978f804fc219b9c48e1bca04",
+    "role": "owner",
+    "screen": "push",
+    "width": 390,
+    "state": "synthetic-fixture-default",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/push-fixture-390-subscribed.png",
+    "sha256": "4ab2318ebc9c2e171e4a772e835d1e1e31a39e148cdbd4795d6a158d299920f8",
+    "role": "owner",
+    "screen": "push",
+    "width": 390,
+    "state": "synthetic-fixture-subscribed",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/profile-fixture-1440.png",
+    "sha256": "3395c88d9aa46906c02a28df3b441fdc99ed2b7f0ebdf9d27ee9049bc17339a6",
+    "role": "owner",
+    "screen": "profile",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/profile-fixture-1440-menu.png",
+    "sha256": "3395c88d9aa46906c02a28df3b441fdc99ed2b7f0ebdf9d27ee9049bc17339a6",
+    "role": "owner",
+    "screen": "profile",
+    "width": 1440,
+    "state": "synthetic-fixture-menu",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/help-fixture-1440.png",
+    "sha256": "68a2e0a128261ef49ce73c6599e0baa1a6ca5319095c38312151c22bbba6cd31",
+    "role": "owner",
+    "screen": "help",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/about-fixture-1440.png",
+    "sha256": "aa17aff2eb66bd854ffb4a160a8985da032866bfb050c2392b2dc3a5fdf6a0e7",
+    "role": "owner",
+    "screen": "about",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/push-fixture-1440-default.png",
+    "sha256": "c6f826570fbdc0bd31228a2c8461e140f7492b69d06e0a0d95de394586323292",
+    "role": "owner",
+    "screen": "push",
+    "width": 1440,
+    "state": "synthetic-fixture-default",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/push-fixture-1440-subscribed.png",
+    "sha256": "72941717a933d1430a9d04d3dbc04e1107047fdbeb61b7c07d61e285a5c323a8",
+    "role": "owner",
+    "screen": "push",
+    "width": 1440,
+    "state": "synthetic-fixture-subscribed",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/auth-login-fixture-390.png",
+    "sha256": "bbaa70793d46855c90fa179ce5d7979519d942f9ecd43583f430a8608cade9ec",
+    "role": "master",
+    "screen": "auth-login",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/auth-invite-fixture-390.png",
+    "sha256": "25d63d65e3dc3440d6ec45639cdc24e6c1cd81cf00773f4f59d35aa5b011f890",
+    "role": "master",
+    "screen": "auth-invite",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/auth-expired-fixture-390.png",
+    "sha256": "bbaa70793d46855c90fa179ce5d7979519d942f9ecd43583f430a8608cade9ec",
+    "role": "master",
+    "screen": "auth-expired",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/auth-login-fixture-1440.png",
+    "sha256": "cb9d9cb7162e1918219259c25588fc4637d491e7571ce1b93e826520578dec2d",
+    "role": "master",
+    "screen": "auth-login",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/auth-invite-fixture-1440.png",
+    "sha256": "38ca3280fb46147cfa01ed5fc01d0d250e880076eea1d63b889a42cb395299fd",
+    "role": "master",
+    "screen": "auth-invite",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/auth-expired-fixture-1440.png",
+    "sha256": "cb9d9cb7162e1918219259c25588fc4637d491e7571ce1b93e826520578dec2d",
+    "role": "master",
+    "screen": "auth-expired",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/auth-login-fixture-390.png",
+    "sha256": "bbaa70793d46855c90fa179ce5d7979519d942f9ecd43583f430a8608cade9ec",
+    "role": "dispatcher",
+    "screen": "auth-login",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/auth-invite-fixture-390.png",
+    "sha256": "25d63d65e3dc3440d6ec45639cdc24e6c1cd81cf00773f4f59d35aa5b011f890",
+    "role": "dispatcher",
+    "screen": "auth-invite",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/auth-expired-fixture-390.png",
+    "sha256": "bbaa70793d46855c90fa179ce5d7979519d942f9ecd43583f430a8608cade9ec",
+    "role": "dispatcher",
+    "screen": "auth-expired",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/auth-login-fixture-1440.png",
+    "sha256": "cb9d9cb7162e1918219259c25588fc4637d491e7571ce1b93e826520578dec2d",
+    "role": "dispatcher",
+    "screen": "auth-login",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/auth-invite-fixture-1440.png",
+    "sha256": "38ca3280fb46147cfa01ed5fc01d0d250e880076eea1d63b889a42cb395299fd",
+    "role": "dispatcher",
+    "screen": "auth-invite",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/auth-expired-fixture-1440.png",
+    "sha256": "cb9d9cb7162e1918219259c25588fc4637d491e7571ce1b93e826520578dec2d",
+    "role": "dispatcher",
+    "screen": "auth-expired",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/auth-login-fixture-390.png",
+    "sha256": "bbaa70793d46855c90fa179ce5d7979519d942f9ecd43583f430a8608cade9ec",
+    "role": "manager",
+    "screen": "auth-login",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/auth-invite-fixture-390.png",
+    "sha256": "25d63d65e3dc3440d6ec45639cdc24e6c1cd81cf00773f4f59d35aa5b011f890",
+    "role": "manager",
+    "screen": "auth-invite",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/auth-expired-fixture-390.png",
+    "sha256": "bbaa70793d46855c90fa179ce5d7979519d942f9ecd43583f430a8608cade9ec",
+    "role": "manager",
+    "screen": "auth-expired",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/auth-login-fixture-1440.png",
+    "sha256": "cb9d9cb7162e1918219259c25588fc4637d491e7571ce1b93e826520578dec2d",
+    "role": "manager",
+    "screen": "auth-login",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/auth-invite-fixture-1440.png",
+    "sha256": "38ca3280fb46147cfa01ed5fc01d0d250e880076eea1d63b889a42cb395299fd",
+    "role": "manager",
+    "screen": "auth-invite",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/manager/auth-expired-fixture-1440.png",
+    "sha256": "cb9d9cb7162e1918219259c25588fc4637d491e7571ce1b93e826520578dec2d",
+    "role": "manager",
+    "screen": "auth-expired",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/auth-login-fixture-390.png",
+    "sha256": "bbaa70793d46855c90fa179ce5d7979519d942f9ecd43583f430a8608cade9ec",
+    "role": "owner",
+    "screen": "auth-login",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/auth-invite-fixture-390.png",
+    "sha256": "25d63d65e3dc3440d6ec45639cdc24e6c1cd81cf00773f4f59d35aa5b011f890",
+    "role": "owner",
+    "screen": "auth-invite",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/auth-expired-fixture-390.png",
+    "sha256": "bbaa70793d46855c90fa179ce5d7979519d942f9ecd43583f430a8608cade9ec",
+    "role": "owner",
+    "screen": "auth-expired",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/loading-fixture-390.png",
+    "sha256": "1eb681e9af3cfd7a319634e4c00510439a902f1d833a183967372770ce38b469",
+    "role": "owner",
+    "screen": "loading",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/auth-login-fixture-1440.png",
+    "sha256": "cb9d9cb7162e1918219259c25588fc4637d491e7571ce1b93e826520578dec2d",
+    "role": "owner",
+    "screen": "auth-login",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/auth-invite-fixture-1440.png",
+    "sha256": "38ca3280fb46147cfa01ed5fc01d0d250e880076eea1d63b889a42cb395299fd",
+    "role": "owner",
+    "screen": "auth-invite",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/auth-expired-fixture-1440.png",
+    "sha256": "cb9d9cb7162e1918219259c25588fc4637d491e7571ce1b93e826520578dec2d",
+    "role": "owner",
+    "screen": "auth-expired",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/loading-fixture-1440.png",
+    "sha256": "ed6c5f769d2c3d99fe59928d16ea3062302c12539ca597e5fd4b3e9cfaf78b64",
+    "role": "owner",
+    "screen": "loading",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/more-fixture-390.png",
+    "sha256": "8f8724f209e32f6606a578c06656166b943ac311ee858644ec2944c4d667394d",
+    "role": "dispatcher",
+    "screen": "more",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/more-fixture-1440.png",
+    "sha256": "7726a5e483a49563c5eabaa51f10d543fefe2905cb3917e13786937153f99f76",
+    "role": "dispatcher",
+    "screen": "more",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/orders-new-fixture-390.png",
+    "sha256": "80336a493c67f4a166c49e5fc9487ad96000df1c4b68b769c0b1b1cc11611ef2",
+    "role": "owner",
+    "screen": "orders-new",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/orders-active-fixture-390.png",
+    "sha256": "f69810792ae3180a8897b4a9bad8316c70b6cf05a225b880ab131f6290ffcae1",
+    "role": "owner",
+    "screen": "orders-active",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/orders-archive-fixture-390.png",
+    "sha256": "03bafdc54a1f831d48eef3c68851e6b0f393152d8b2c03b0f918cf2401457c8f",
+    "role": "owner",
+    "screen": "orders-archive",
+    "width": 390,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/orders-new-fixture-1440.png",
+    "sha256": "e03da7dbdeff4e217f2e09bb6ca952600049cac0ba3823d2df9a884492a85f7c",
+    "role": "owner",
+    "screen": "orders-new",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/orders-active-fixture-1440.png",
+    "sha256": "362e101dc31b530a7461cc3f1394a80870fd3a16deab6dfa54ba05d001ab05c1",
+    "role": "owner",
+    "screen": "orders-active",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/owner/orders-archive-fixture-1440.png",
+    "sha256": "6ebbe811ac6c5bb47447502c71b4aceba1ec8c0eebe2a0f581def36cca72b256",
+    "role": "owner",
+    "screen": "orders-archive",
+    "width": 1440,
+    "state": "synthetic-fixture",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/orders-active-fixture-390.png",
+    "sha256": "15dc2383ae0723ad3c05e58b8a2522c87785f58cdbab37d4e559cfb6d72d2b10",
+    "role": "master",
+    "screen": "orders-active",
+    "width": 390,
+    "state": "current",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/orders-active-fixture-1440.png",
+    "sha256": "20e74208c77d06f76c63e4580ba07e66ed319041738cded5d8afb97a295b1d03",
+    "role": "master",
+    "screen": "orders-active",
+    "width": 1440,
+    "state": "current",
+    "commit": "87c123b363a7e7202fb8bd7bbad6b2318cb80a92",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/schedule-fixture-390.png",
+    "sha256": "07593931006f7c30b1da2526024fd2a9128279b7b6c891d4ab191b5c9720449c",
+    "role": "master",
+    "screen": "schedule",
+    "width": 390,
+    "state": "own-visits-first",
+    "commit": "39b7d5f54ebf8a5f8f7bed5b43c8722109327092",
+    "runtimeBuild": "8db611d1fc9cd27917d7"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/dispatcher/master-report-action-fixture-390.png",
+    "sha256": "fcaec4dc5bcb2f7d19c57af96cbd832bba3d346053feeff32aa509a09c6c493f",
+    "role": "dispatcher",
+    "screen": "master-report-action",
+    "width": 390,
+    "state": "scrolled-original-export",
+    "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "runtimeBuild": "cdd3ea4f917ba89765d0"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/memo-fixture-360.png",
+    "sha256": "408a11b0a70572476af91bed19bfa9cf22b4b2a27bc1d97c2a16613ed2ae1e74",
+    "role": "master",
+    "screen": "memo",
+    "width": 360,
+    "state": "original-categories-menu",
+    "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "runtimeBuild": "cdd3ea4f917ba89765d0"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/memo-fixture-390.png",
+    "sha256": "e96c6573daf6e3271fa883ff280212d6f689ff399e16fc27a91e6766d3117cc0",
+    "role": "master",
+    "screen": "memo",
+    "width": 390,
+    "state": "original-categories-menu",
+    "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "runtimeBuild": "cdd3ea4f917ba89765d0"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/memo-fixture-430.png",
+    "sha256": "42a22d5d06173ee6ab7d8fd89ddcf1c4491e1f54d2db2ca240a0d050fa46b47d",
+    "role": "master",
+    "screen": "memo",
+    "width": 430,
+    "state": "original-categories-menu",
+    "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "runtimeBuild": "cdd3ea4f917ba89765d0"
+  },
+  {
+    "path": "docs/approved-ui/stage-6/master/memo-fixture-1440.png",
+    "sha256": "7af21834a63ad73c970e8d6a441170a6edcfb97e8f329e2e1978147f8f8c250c",
+    "role": "master",
+    "screen": "memo",
+    "width": 1440,
+    "state": "original-categories-menu",
+    "commit": "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5",
+    "runtimeBuild": "cdd3ea4f917ba89765d0"
+  }
+]
