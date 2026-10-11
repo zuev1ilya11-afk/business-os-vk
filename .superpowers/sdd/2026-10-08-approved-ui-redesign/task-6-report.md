@@ -125,3 +125,19 @@ python3 docs/approved-ui/stage-6/verify-protected.py > ../recovery/task6-protect
 ```
 
 The initial schedule run overlapped the finance/PDF diagnostic wrapper as disclosed above; final PDF-only rerun repaired its manifest provenance. Memo was recaptured only at affected360/390/430/1440 after the fix; other accepted responsive evidence retained original bytes/builds. Final source-preservation checks compare cfd6740 runtime bytes directly; final evidence commit changes no runtime files.
+
+## Independent review fix round1 — I1 calendar month determinism
+
+Reviewer importantI1 identified the newly added31-cell assertion against a calendar initialized from new Date(). Fixed only tests/full-stack-audit.spec.js: freeze browser time before fixture/application boot to2026-04-08T09:00:00Z (April has30 days), then assert30 calendar cells after the existing real save and reload. Original All days click, checked working control, persisted working-row assertion (>27), reload, zero off-day assertion, month navigation and no-page-errors assertion are preserved. Test fix commit: `9831e9037c1fd83d2341897699e13933c55bf470`.
+
+Exact focused command (exit0):
+
+```sh
+BOS_QA_ROOT=$PWD BOS_QA_OUTPUT=$PWD/../recovery/task6-review-i1-calendar-30 PLAYWRIGHT_JSON_OUTPUT_NAME=$PWD/../recovery/task6-review-i1-calendar-30-results.json npx playwright test -c ../offline-playwright.config.cjs tests/full-stack-audit.spec.js --workers=2 --reporter=line,json -g 'master calendar presets save and reload through actual handler' > ../recovery/task6-review-i1-calendar-30.log 2>&1
+```
+
+Exact result:1 case,1 expected/pass,0 unexpected/fail,0 skipped/flaky;4088.04ms total (case1995ms), start2026-10-11T17:42:11.304Z. Raw JSON SHA256: `6f9da086814900eaa00d754d0ddcf26ac06a31c756c2a1c0c7245c10440e00f0`. Complete checked-in summary: docs/approved-ui/stage-6/review-i1-calendar-30-summary.json. Original failing-title identity remains unchanged; this is an additional30-day focused proof, not a rewritten baseline/narrow ledger.
+
+Selection attempt before this run used the same file/options with output task6-review-i1-calendar and `-g '^master calendar presets save and reload through actual handler$'`. That anchored full-title pattern selected0 tests, exit1 with global `No tests found`; no application case ran. Its original raw JSON/log and summary are retained: task6-review-i1-calendar-results.json SHA256ec4ff5354dcaf72a78c2c7c1f100293ebab714507ef6c80e256b3d9142468c28, duration976.413ms. The unanchored unique case pattern above selected exactly1 test and passed.
+
+Source/build invariance: compared189 root frontend runtime files byte-for-byte to review BASE2388b34bcf06dc8265d57eb9398f582c7f0cd798,0 changed; runtime remainscdd3ea4f917ba89765d0. Per-file SHA proof: docs/approved-ui/stage-6/review-i1-runtime-invariance.json. No runtime rebuild, complete suite, extra captures, backend/integration action or deferred-minor change. Existing deny-external harness,2workers and explicit line/json reporting retained. `git diff --check` passes. Final evidence-doc commit follows this test fix; worktree will be committed clean.

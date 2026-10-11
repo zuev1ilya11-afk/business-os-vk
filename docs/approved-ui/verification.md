@@ -77,3 +77,7 @@ Local Chromium fixture evidence does not certify hosted Preview, physical device
 - Check long detail/report/form actions, real filter destinations, corrected memo categories/Back and initial-versus-scrolled PDF evidence.
 - Inspect all76 failure dispositions and distinguish full baseline outcomes from narrow closures and final memo-only verification.
 - Review accepted density/saved-hours minors and private Preview separately. Production remains closed pending explicit future authorization and release guards.
+
+## Independent review I1 closure
+
+The calendar save/reload case now freezes browser time before boot to April8,2026 and expects30 cells after reload. Real save, persisted working rows, zero off-days and navigation assertions remain. Test fix commit `9831e9037c1fd83d2341897699e13933c55bf470` changes no app runtime bytes; build remainscdd3ea4f917ba89765d0. The exact focused case passed1/1,0fail/skip/flaky in4088.04ms using the existing offline harness,2workers and line/json reporters. [Raw-derived summary](stage-6/review-i1-calendar-30-summary.json) records raw JSON SHA256 `6f9da086814900eaa00d754d0ddcf26ac06a31c756c2a1c0c7245c10440e00f0`; [runtime invariance](stage-6/review-i1-runtime-invariance.json) records189 identical frontend files versus2388b34. The initial anchored selection attempt ran0 tests with No tests found and is retained in [selection summary](stage-6/review-i1-calendar-summary.json). Exact commands/logs are appended to the Task6 report. No full suite or capture was repeated; baseline and76-case ledger remain unchanged.

@@ -1,0 +1,23 @@
+{
+  "reportPath": "/workspace/scratch/73e5936a7e6d/recovery/task6-review-i1-calendar-results.json",
+  "reportSha256": "ec4ff5354dcaf72a78c2c7c1f100293ebab714507ef6c80e256b3d9142468c28",
+  "stats": {
+    "startTime": "2026-10-11T17:41:49.578Z",
+    "duration": 976.4129999999998,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "cases": 0,
+  "outcomes": {},
+  "globalErrors": [
+    {
+      "message": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments.",
+      "stack": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments."
+    }
+  ],
+  "failures": [],
+  "skipped": [],
+  "allCases": []
+}

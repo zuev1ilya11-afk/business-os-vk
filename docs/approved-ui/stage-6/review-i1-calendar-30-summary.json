@@ -1,0 +1,33 @@
+{
+  "reportPath": "/workspace/scratch/73e5936a7e6d/recovery/task6-review-i1-calendar-30-results.json",
+  "reportSha256": "6f9da086814900eaa00d754d0ddcf26ac06a31c756c2a1c0c7245c10440e00f0",
+  "stats": {
+    "startTime": "2026-10-11T17:42:11.304Z",
+    "duration": 4088.04,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "cases": 1,
+  "outcomes": {
+    "expected": 1
+  },
+  "globalErrors": [],
+  "failures": [],
+  "skipped": [],
+  "allCases": [
+    {
+      "file": "full-stack-audit.spec.js",
+      "line": 27,
+      "title": "master calendar presets save and reload through actual handler",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1995
+    }
+  ]
+}
