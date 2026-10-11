@@ -18404,7 +18404,8 @@
     "consoleErrors": [],
     "blockedExternalRequests": [],
     "coverageGaps": [],
-    "visibleEvidence": {}
+    "visibleEvidence": {},
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18429,7 +18430,8 @@
     "consoleErrors": [],
     "blockedExternalRequests": [],
     "coverageGaps": [],
-    "visibleEvidence": {}
+    "visibleEvidence": {},
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18454,7 +18456,8 @@
     "consoleErrors": [],
     "blockedExternalRequests": [],
     "coverageGaps": [],
-    "visibleEvidence": {}
+    "visibleEvidence": {},
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18501,7 +18504,8 @@
           }
         ]
       }
-    }
+    },
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18548,7 +18552,8 @@
           }
         ]
       }
-    }
+    },
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18595,7 +18600,8 @@
           }
         ]
       }
-    }
+    },
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18642,7 +18648,8 @@
           }
         ]
       }
-    }
+    },
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18689,7 +18696,8 @@
           }
         ]
       }
-    }
+    },
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18735,7 +18743,8 @@
           }
         ]
       }
-    }
+    },
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18760,7 +18769,8 @@
     "consoleErrors": [],
     "blockedExternalRequests": [],
     "coverageGaps": [],
-    "visibleEvidence": {}
+    "visibleEvidence": {},
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18785,7 +18795,8 @@
     "consoleErrors": [],
     "blockedExternalRequests": [],
     "coverageGaps": [],
-    "visibleEvidence": {}
+    "visibleEvidence": {},
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18810,7 +18821,8 @@
     "consoleErrors": [],
     "blockedExternalRequests": [],
     "coverageGaps": [],
-    "visibleEvidence": {}
+    "visibleEvidence": {},
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18835,7 +18847,8 @@
     "consoleErrors": [],
     "blockedExternalRequests": [],
     "coverageGaps": [],
-    "visibleEvidence": {}
+    "visibleEvidence": {},
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18882,7 +18895,8 @@
           }
         ]
       }
-    }
+    },
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18929,7 +18943,8 @@
           }
         ]
       }
-    }
+    },
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -18976,7 +18991,8 @@
           }
         ]
       }
-    }
+    },
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -19023,7 +19039,8 @@
           }
         ]
       }
-    }
+    },
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -19070,7 +19087,8 @@
           }
         ]
       }
-    }
+    },
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -19116,7 +19134,8 @@
           }
         ]
       }
-    }
+    },
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "dispatcher",
@@ -19141,7 +19160,8 @@
     "consoleErrors": [],
     "blockedExternalRequests": [],
     "coverageGaps": [],
-    "visibleEvidence": {}
+    "visibleEvidence": {},
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "owner",
@@ -19166,7 +19186,8 @@
     "consoleErrors": [],
     "blockedExternalRequests": [],
     "coverageGaps": [],
-    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nЕсть на этом устройстве"
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nЕсть на этом устройстве",
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "owner",
@@ -19191,7 +19212,8 @@
     "consoleErrors": [],
     "blockedExternalRequests": [],
     "coverageGaps": [],
-    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНе удалось проверить"
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНе удалось проверить",
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "owner",
@@ -19216,7 +19238,8 @@
     "consoleErrors": [],
     "blockedExternalRequests": [],
     "coverageGaps": [],
-    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nЕсть на этом устройстве"
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nЕсть на этом устройстве",
+    "versionStatus": "Legacy capture: loaded build was not recorded"
   },
   {
     "role": "owner",
@@ -19241,6 +19264,442 @@
     "consoleErrors": [],
     "blockedExternalRequests": [],
     "coverageGaps": [],
-    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНе удалось проверить"
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНе удалось проверить",
+    "versionStatus": "Legacy capture: loaded build was not recorded"
+  },
+  {
+    "role": "master",
+    "screen": "home-refresh-error",
+    "state": "home-refresh-error",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/home-refresh-error-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Existing home tab/filter, isolated synthetic state"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-refresh-error-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "orders-undated",
+    "state": "current",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-undated-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Existing order filter"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/orders-undated-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "orders-today",
+    "state": "current",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-today-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Existing order filter"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/orders-today-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "orders-future",
+    "state": "current",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-future-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Existing order filter"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/orders-future-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "orders-done",
+    "state": "done",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-done-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Existing order filter"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/orders-done-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "filters",
+    "state": "search",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/filters-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual search and preserved date/status chips"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/filters-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "departure",
+    "state": "confirmation-no-save",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/departure-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Open actual stage confirmation, no write"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/departure-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "start-work",
+    "state": "confirmation-no-save",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/start-work-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Open actual stage confirmation, no write"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/start-work-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "report-submitted",
+    "state": "pending-saved",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-submitted-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Existing saved attachment links and receipt"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/report-submitted-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "report-deduction",
+    "state": "deduction-selected",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-deduction-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original catalog selection; original price/quantity controls"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/report-deduction-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "day-detail",
+    "state": "own-day",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/day-detail-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual saved work time and own visits"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/day-detail-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "reschedule-request",
+    "state": "reason-only",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/reschedule-request-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual retained date/context and request reason"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/reschedule-request-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "contact-outcomes",
+    "state": "outcomes",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/contact-outcomes-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original contact result form"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/contact-outcomes-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "contact-callback",
+    "state": "callback-draft",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/contact-callback-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Callback date distinct from visit; no save"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/contact-callback-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
+  },
+  {
+    "role": "master",
+    "screen": "contact-agreed",
+    "state": "visit-agreement",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/contact-agreed-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original date/time form, no save"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/contact-agreed-fixture-1440.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "10eb247885242d9d733ef526ac0cbb1f262a0a6f",
+    "captureBatch": "main",
+    "observedBuild": "de5d80d2b0477d563548",
+    "provenance": "Actual runtime build captured from local working tree",
+    "runtimeBuild": "de5d80d2b0477d563548"
   }
 ]

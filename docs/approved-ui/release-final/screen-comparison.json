@@ -407,6 +407,12 @@
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/home-refresh-error-fixture-430.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "home-refresh-error"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/home-refresh-error-fixture-1440.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "home-refresh-error"
         }
       ]
     },
@@ -485,6 +491,12 @@
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-undated-fixture-430.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "current"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-undated-fixture-1440.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "current"
         }
       ]
     },
@@ -519,6 +531,12 @@
         {
           "width": 430,
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-today-fixture-430.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "current"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-today-fixture-1440.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "current"
         }
@@ -557,6 +575,12 @@
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-future-fixture-430.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "current"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-future-fixture-1440.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "current"
         }
       ]
     },
@@ -591,6 +615,12 @@
         {
           "width": 430,
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-done-fixture-430.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "done"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/orders-done-fixture-1440.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "done"
         }
@@ -809,6 +839,12 @@
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/contact-outcomes-fixture-430.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "outcomes"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/contact-outcomes-fixture-1440.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "outcomes"
         }
       ]
     },
@@ -843,6 +879,12 @@
         {
           "width": 430,
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/contact-agreed-fixture-430.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "visit-agreement"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/contact-agreed-fixture-1440.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "visit-agreement"
         }
@@ -881,6 +923,12 @@
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/contact-callback-fixture-430.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "callback-draft"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/contact-callback-fixture-1440.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "callback-draft"
         }
       ]
     },
@@ -917,6 +965,12 @@
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/departure-fixture-430.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "confirmation-no-save"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/departure-fixture-1440.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "confirmation-no-save"
         }
       ]
     },
@@ -951,6 +1005,12 @@
         {
           "width": 430,
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/start-work-fixture-430.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "confirmation-no-save"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/start-work-fixture-1440.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "confirmation-no-save"
         }
@@ -1143,6 +1203,12 @@
         {
           "width": 430,
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-submitted-fixture-430.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "pending-saved"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-submitted-fixture-1440.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "pending-saved"
         }
@@ -3975,6 +4041,12 @@
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/reschedule-request-fixture-430.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "reason-only"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/reschedule-request-fixture-1440.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "reason-only"
         }
       ]
     },
@@ -4009,6 +4081,12 @@
         {
           "width": 430,
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-deduction-fixture-430.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "deduction-selected"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-deduction-fixture-1440.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "deduction-selected"
         }
@@ -5103,6 +5181,12 @@
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/filters-fixture-430.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "search"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/filters-fixture-1440.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "search"
         }
       ]
     },
@@ -5467,6 +5551,12 @@
         {
           "width": 430,
           "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/day-detail-fixture-430.png",
+          "runtimeBuild": "de5d80d2b0477d563548",
+          "state": "own-day"
+        },
+        {
+          "width": 1440,
+          "path": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/day-detail-fixture-1440.png",
           "runtimeBuild": "de5d80d2b0477d563548",
           "state": "own-day"
         }

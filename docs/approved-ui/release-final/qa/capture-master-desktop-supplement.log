@@ -1,0 +1,15 @@
+(node:6) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+master home-refresh-error 1440
+master orders-undated 1440
+master orders-today 1440
+master orders-future 1440
+master orders-done 1440
+master filters 1440
+master departure 1440
+master start-work 1440
+master report-submitted 1440
+master report-deduction 1440
+master day-detail 1440
+master reschedule-request 1440
+master contact-outcomes 1440
