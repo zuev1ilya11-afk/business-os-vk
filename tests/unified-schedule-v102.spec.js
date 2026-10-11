@@ -25,7 +25,10 @@ test('dispatcher schedule day shows every master and distinguishes full partial 
   await expect(page.locator('#authGate')).toBeHidden();
   await page.waitForFunction(()=>window.BOS_UNIFIED_SCHEDULE_V102===true);
   await page.locator('nav [data-page="dispatch"]').click();
-  await expect(page.locator('.usScheduleCard')).toBeVisible();
+  await expect(page.locator('.bosOpsDaySchedule')).toBeVisible();
+  await page.getByRole('button',{name:'График команды',exact:true}).click();
+  await expect(page.locator('.bosOpsMonthTask')).toBeVisible();
+  await page.getByLabel('Мастер календаря',{exact:true}).selectOption('');
   await page.locator(`.usDay[data-date="${fullDate}"] .usDayHead`).click();
 
   const modal=page.locator('.modal');

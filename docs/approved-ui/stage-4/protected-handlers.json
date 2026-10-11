@@ -1,0 +1,623 @@
+{
+  "base": "12f4472962c342e64ada480b855e50bfe052cad5",
+  "checks": [
+    {
+      "file": "finance-page.js",
+      "label": "expense request/loading/actor guards",
+      "unchanged": true,
+      "sha256": "48b1489c1557baea559cc8df924740d3b7dec16d4086978d882316e40a88c9d2"
+    },
+    {
+      "file": "finance-page.js",
+      "label": "expense submit/delete payloads and validation",
+      "unchanged": true,
+      "sha256": "8b4c4823924402e8bbc36fe43fc0ab6f83eede9dcf5c717c8b273eabec28c8a5"
+    },
+    {
+      "file": "finance-page.js",
+      "label": "sorting calculations",
+      "unchanged": true,
+      "sha256": "bfc492bb0fd95734f2900e5d03db49bb790efdd45cef16eb3fe260daafa4d016"
+    },
+    {
+      "file": "finance-page.js",
+      "label": "all existing financial navigation/filter/form handlers",
+      "unchanged": true,
+      "sha256": "efbdd72fcac6a593ba299821fea9edf426e41ea3ed62a23e098ae06ef670889c"
+    },
+    {
+      "file": "owner-dashboard-v9.js",
+      "label": "role guards and dashboard financial/load snapshot",
+      "unchanged": true,
+      "sha256": "0e7dec324862e44a5a08f0001281f60400b140a5f13b1fbb83807e15b73140c7"
+    },
+    {
+      "file": "owner-dashboard-v9.js",
+      "label": "calendar calculations",
+      "unchanged": true,
+      "sha256": "92de9100de20927e025a6bbf538868559f6f73b6d442336f77bd40ed6e842ace"
+    },
+    {
+      "file": "owner-dashboard-v9.js",
+      "label": "refresh and data reconciliation",
+      "unchanged": true,
+      "sha256": "4504b9b875a54eaabc8769b3e1e9925feb9cc77221098455e79d865107597948"
+    },
+    {
+      "file": "order-control.js",
+      "label": "identity/permissions/filter classification",
+      "unchanged": true,
+      "sha256": "768d1ed2e9511f2866bd60749fff1e16f2e03a402c047e76652a722828566f9d"
+    },
+    {
+      "file": "order-control.js",
+      "label": "original action handlers and all collection algorithms",
+      "unchanged": true,
+      "sha256": "91c01ecc269705e6ec4780306856c8b380c3a67d3f3a83d625f5ea6ccd64bb70"
+    },
+    {
+      "file": "report-review-patch.js",
+      "label": "signed act viewer/intake header/snapshot and review guards",
+      "unchanged": true,
+      "sha256": "0996f316b7bf2546ce91c04d7e6201f42a9597fcc0fcba12891c7444f272089c"
+    },
+    {
+      "file": "report-review-patch.js",
+      "label": "original approve/reject validation/finalization payload",
+      "unchanged": true,
+      "sha256": "404a4338324a322953953a9de8392a250d701b0939ba947aa68fc3f3ab33b8dd"
+    },
+    {
+      "file": "report-review-runtime-v30.js",
+      "label": "review permissions and extra/uncompleted enrichment",
+      "unchanged": true,
+      "sha256": "720a998b1d37691b019de1345542b09a51908e3054b6048adfa3b86003ac444d"
+    },
+    {
+      "file": "report-review-runtime-v30.js",
+      "label": "original queue decorators",
+      "unchanged": true,
+      "sha256": "4cd699b706e521b51bb5c2cc5a7f0ab7a44480afc53b4ff45819102e6087c731"
+    },
+    {
+      "file": "staff-permissions-calendar-v43.js",
+      "label": "role capability guards and calendar functions",
+      "unchanged": true,
+      "sha256": "4694a29db227588cb0133e4d22f9c39ef51eef33bf05d83ec3babd588a5ee11c"
+    },
+    {
+      "file": "staff-permissions-calendar-v43.js",
+      "label": "employee admin actions/payload",
+      "unchanged": true,
+      "sha256": "ff766116144591b5b28528323f9bd8b4886316961a3c92d05b41023ad00022f7"
+    },
+    {
+      "file": "staff-permissions-calendar-v43.js",
+      "label": "disable profile and original team guards",
+      "unchanged": true,
+      "sha256": "3f3b042ef6bd3f41708a6f0239d1871f214b296e0b8fc926fb5bceef07a34806"
+    },
+    {
+      "file": "employee-profile-patch.js",
+      "label": "employee data/payroll helpers",
+      "unchanged": true,
+      "sha256": "f2aa712086a883db8402e65d81f074b907ab86f65199314b77ba71c8e7c4d56c"
+    },
+    {
+      "file": "team-roles-fix-v31.js",
+      "label": "role guards",
+      "unchanged": true,
+      "sha256": "123f20c9a4628f53c5ee03545eafc9cd92db779de4476ad11418cd3f03fd4584"
+    },
+    {
+      "file": "team-roles-fix-v31.js",
+      "label": "credential policy and preview handlers",
+      "unchanged": true,
+      "sha256": "2062eb8378796df5df5b90f064c02760e8d51b71dc08e36348a350c7026bd06b"
+    },
+    {
+      "file": "order-control-tasks.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "bde60b8fcc64cd400a556df83bc9e55c324fa7918dc347f574fefb3c54f27d9e"
+    },
+    {
+      "file": "schedule-contract.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "5776d2438586dd48adb4f8b755dea71f869eca8b3d8f887f094bbebd1d9ab92e"
+    },
+    {
+      "file": "dispatcher-permissions.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "e97c5708c4e5b1a95f3538f66ffcdf5890155b442c550b486b1a7eb38c393bd3"
+    },
+    {
+      "file": "order-payroll.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "e1a9762fcf242dbb899d201f88528d5c8c9715e472d30f5aa60f8aa2d233ddd1"
+    },
+    {
+      "file": "finance-data.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "5affa33b6d819ef08f6897c6d68724b90d04047b458dd135ead40af2d4206297"
+    },
+    {
+      "file": "finance-expenses.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "eaefd4bae1789c5048e342ff6ec3ce4f9072b4a44d018b81556918e0159ec997"
+    },
+    {
+      "file": "finance-patch.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "ce0484c258d09452bf93349617ae4b618a6bb6fff86cb4020cea2ea6e10665b2"
+    },
+    {
+      "file": "salary-periods.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "bf7cd774ae076340bdac1ac53a51885fd7bfb40352934ca4fcf18530689c41a2"
+    },
+    {
+      "file": "order-lifecycle-v106.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "afc9459be8e8f08c15bc6abbdbaa165abcce32dbf123f5f72a96211ada31e6bb"
+    },
+    {
+      "file": "management-order-delete-v100.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "4d686925e684b7a4a61f99c35a160eed08fa2d055cc192d4edcd066419cacdb3"
+    },
+    {
+      "file": "management-order-compact-v82.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "6feb752326c659cb0fb913997dfa1c0fdd04e75830742fce9f5fcda5c56b4b98"
+    },
+    {
+      "file": "owner-calendar-team-v10.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "03b5994741be1f5d4600563fbc43ef56f4d92a934a63034960517c234b636dc0"
+    },
+    {
+      "file": "dispatcher-mobile-dispatch-v107.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "a8446d44ec33a2165e41869f463740afc98d34f8dd592e1e81d604d9f6ed9635"
+    },
+    {
+      "file": "dispatcher-smart-assign-v119.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "3797d46b2069f768cc585b6fdc4f5e3897b83a45cc97205c2f9dc4545acfd1d8"
+    },
+    {
+      "file": "dispatcher-free-slots-v120.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "0526098f50254e5da73e13893f7c1dd64c4ddb99ffca64490e25f1c7174d6bea"
+    },
+    {
+      "file": "dispatcher-reschedule-v91.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "f0cdc424db1425872bd83bd0dd4d5b6ada4507904b9a60167c81ffe2b6fc47d9"
+    },
+    {
+      "file": "unified-schedule-v102.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "d6e747b127e33067849d3f2db9c48814ca85133c6c3a3e202b91b6b9a32344af"
+    },
+    {
+      "file": "report-supabase-patch.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "f045dec35908e1e1d070fcb17c2f22b12b57af8c882f81141e4920189c871d57"
+    },
+    {
+      "file": "report-chunk-upload-v23.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "39371e05ab2bfec29cef3fc102634416bfeb297b46856112c29e760255bb6a3e"
+    },
+    {
+      "file": "auth-api-session-v41.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "637e0c5ec9b581ad99f803c839eddfa9cb6c06bc3e0e752130f21a7551dc1923"
+    },
+    {
+      "file": "mandatory-auth-v29.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "87679a4e6945401b99c728186e1a3b458e24f22e63b081eaed045de25f4ed294"
+    },
+    {
+      "file": "auth-ui-patch.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "ae16e18447766c2871a047464f7d8e565ca03a59c6ba0ae9a1630a7fff831d59"
+    },
+    {
+      "file": "manager-preview-v28.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "aacc636fc399695a708e2cfd602b29bf05333e2446584650bd2f1c314afee580"
+    },
+    {
+      "file": "profile-logout-v96.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "1d05f025317417f695a8b6810277856557e981074e8b55a37a739e76efae280b"
+    },
+    {
+      "file": "staff-invite-ui-v66.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "2e1b0557e9309c692260f258741d2f642e7ed799893b6b736cd4f06d5a251f22"
+    },
+    {
+      "file": "hands-integration-v69.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "b5ff540cf70255d22a036a54e9ab9f255bf73ddd50cdbe93e88612dbeec202bf"
+    },
+    {
+      "file": "avito-messages-v25.js",
+      "label": "entire protected file",
+      "unchanged": true,
+      "sha256": "9c5212a4cf0cfd214643d6a51ca1a5bd2bed044e7817ccdb060732ac8d7ef946"
+    },
+    {
+      "file": "supabase/avito-assistant-activation.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "f1c29b63cf80a132820d4d7e2a6a4197b9d213ab5a1910228b21c1aac19391eb"
+    },
+    {
+      "file": "supabase/avito-assistant-setup.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "3a8ff330e2e35c1e0133dd06a8748e657851d70b31763ebc89f66a77c9d05f70"
+    },
+    {
+      "file": "supabase/functions/_shared/avito-price-catalog.json",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "f0e5785859a6733a9e4164697c231febb728d79300bda77d6ef3df91e830c0f7"
+    },
+    {
+      "file": "supabase/functions/_shared/hands-details.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "5e772f8e7c1eb4f8301d567246f3463fb036e7b03c216cbe5e1ba1384c1eb38f"
+    },
+    {
+      "file": "supabase/functions/avito-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "2cde2a0bcf1236d69f3e30db6a010680d766d90d058f9b199dc5d0195315bca0"
+    },
+    {
+      "file": "supabase/functions/avito-assistant-api/core.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "5e62c791acf65b1cc95ee7dfc1bea77d11c9e1baf943b396f3b5ae0bbcc69d7b"
+    },
+    {
+      "file": "supabase/functions/avito-assistant-api/deno.json",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "3ed4f298d51edc3371f0e09968c99cfe59b705e2fb04dd4ed6dc64f9d702aa5c"
+    },
+    {
+      "file": "supabase/functions/avito-assistant-api/deno.lock",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "5856c3dd463889de9d61a4dd0b88bb516513ac38f8cb1d480307db0c7971f093"
+    },
+    {
+      "file": "supabase/functions/avito-assistant-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "4503c4e8fb55bc7a3da88d3aa330be9acad894233bd9821d28b0891dbf1739b6"
+    },
+    {
+      "file": "supabase/functions/claims-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "469350c49e4b641d1ffd281e905b5aec1adc860d8237b89166abab38e568adb4"
+    },
+    {
+      "file": "supabase/functions/drive-archive-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "ad1b3eed4c1dd4b982ebfb2eb905fd9051b2c7bb71e86e43518461374c171a6e"
+    },
+    {
+      "file": "supabase/functions/employee-meta-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "8b6a6080f27fd954fd95b1f76df14d6fe9b1f3318b3f263d46953dbb963117d6"
+    },
+    {
+      "file": "supabase/functions/gas-bridge-health/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "9202b7321f816f428821ba532bb9865653bc9388b0835cb34b2ebb50ebaf229c"
+    },
+    {
+      "file": "supabase/functions/hands-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "690c98ba45a6a5f0d9b89545d617472420f8d52a685a209930b656297cf24583"
+    },
+    {
+      "file": "supabase/functions/hands-report-api/deno.json",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "3ed4f298d51edc3371f0e09968c99cfe59b705e2fb04dd4ed6dc64f9d702aa5c"
+    },
+    {
+      "file": "supabase/functions/hands-report-api/deno.lock",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "0c7f982863a4dad67b52805255b52180eb28d090c9ffb1126f97993a91bf3130"
+    },
+    {
+      "file": "supabase/functions/hands-report-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "a42138784c685b62e7429f8ba746e51c9879e67d31dbd483c5d4638110e34a41"
+    },
+    {
+      "file": "supabase/functions/integration-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "5bf02c14f638895ef1624b06bbf0e9d5a9092ed21838c0730586bab235c2524e"
+    },
+    {
+      "file": "supabase/functions/master-memo-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "0871ad305c9e245d4af7c0de70d67ef6c26140c9ad1a928a5a3165d17f36c4f4"
+    },
+    {
+      "file": "supabase/functions/master-workflow-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "e245ad0b1d001afc4a8d8e1191fbfd394d87e0faaaec03269a5946b8f5f73548"
+    },
+    {
+      "file": "supabase/functions/mini-app-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "78a3f32e85f128d815aed72184f5995fd9e243dbd75e33cf1602a206ca0c0af2"
+    },
+    {
+      "file": "supabase/functions/order-lifecycle-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "2b8f5dd41d2419512c76ad225d38f570d9c95dca8158b5c9e1acff71470a0520"
+    },
+    {
+      "file": "supabase/functions/order-meta-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "c276fc3770fc813047d6457ab4b1a6539e8a35c528d058879a77d79afb8c2c8f"
+    },
+    {
+      "file": "supabase/functions/password-session-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "0aa2f482a8df5ba12c5cd7c779363e2068c750273372e070e963de2b1f4d98d1"
+    },
+    {
+      "file": "supabase/functions/profile-self-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "bf6fc13da5dcdada425eed1b3b83fa39b3da61b0ef2bf8954c7a1befe8dd9bb1"
+    },
+    {
+      "file": "supabase/functions/push-api/deno.json",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "3ed4f298d51edc3371f0e09968c99cfe59b705e2fb04dd4ed6dc64f9d702aa5c"
+    },
+    {
+      "file": "supabase/functions/push-api/deno.lock",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "5856c3dd463889de9d61a4dd0b88bb516513ac38f8cb1d480307db0c7971f093"
+    },
+    {
+      "file": "supabase/functions/push-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "6bd9d08bf8615854f5e5ce8c475869f9e6bb11f5b9c3fa2adcaa1cad33cb7113"
+    },
+    {
+      "file": "supabase/functions/push-api/webpush-runtime.test.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "092e1e79eda29b35992b41efba90657ae1366d1c2a3a9a8db53e67b542ab5b4d"
+    },
+    {
+      "file": "supabase/functions/report-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "a41a571c246b72c5210e39832f4473d8dcb8babc1e5e8b0b6e857b73ffd61ad1"
+    },
+    {
+      "file": "supabase/functions/report-file-upload/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "78c823d62f7b3a2b1b9eb7d11582c24948bf8c9c77605712e04ebe0e1791fafe"
+    },
+    {
+      "file": "supabase/functions/staff-admin-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "ceeb8ad5eaa1c3a727c71872dd9b691d285614e694e95d5b198eedcf40cf3480"
+    },
+    {
+      "file": "supabase/functions/staff-invite-api/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "1a1f3460c4a1e69ba77c2ad1b9611643b3591940b9c38a962cbe003f76c4e6a9"
+    },
+    {
+      "file": "supabase/functions/vk-auth/index.ts",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "3c677b234e834392bece5e2b8f2ae603b9724ffb2cc3f70ce219c0dd0fae2af0"
+    },
+    {
+      "file": "supabase/hands-report-activation.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "255426e0bf9377b7029ece8a9e0015037e673754861721de374de9b3f2443c18"
+    },
+    {
+      "file": "supabase/migrations/20260913163500_staff_invites.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "2309503b9c64832f1491cc477c0be11e785950443f782d7e04de9b10ab50be1b"
+    },
+    {
+      "file": "supabase/migrations/20260914145500_fix_master_payout_formula.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "36a09283f1e9011f92e28f07ece50bc8fc5e57c30fdc5d5ab5eb1cebdbb46053"
+    },
+    {
+      "file": "supabase/migrations/20260919203032_add_order_reschedule_request_fields.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "15c7d2f16695e189d9b3aa2d220de481bfa2561590e833222d9e6cb023915995"
+    },
+    {
+      "file": "supabase/migrations/20260919203544_master_reschedule_profile_bridge.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "016da7d5dc564288e282f1cefbc75c760618b1678432cfeeac2f8605adab54f4"
+    },
+    {
+      "file": "supabase/migrations/20260919204023_add_order_reschedule_requester_index.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "a911998e73b7351595ec0367fff79cb7a89c795a8c80e0e8e687ef368862fd7e"
+    },
+    {
+      "file": "supabase/migrations/20260920133158_add_master_workflow_fields.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "4897c82d6b042f86637f2a9eb65df5161afa8c4ec5dac2b35cdfd87daf5d0d43"
+    },
+    {
+      "file": "supabase/migrations/20260922104500_master_workflow_profile_bridge.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "bb3fac658ea1807547ea2c0de00c3984b0ea7c2f500e42abfdd42052a09cc297"
+    },
+    {
+      "file": "supabase/migrations/20260923172733_master_workflow_v2_contact_events.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "3534e49e70e57501ad199226f10234c676a85dc6f8c62724db05c8ae43b58502"
+    },
+    {
+      "file": "supabase/migrations/20260924211948_harden_internal_table_grants.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "04711eed25424b56a5ed3daab1f3284f7aeb49e1a3b175d339b567fbe1df5a8b"
+    },
+    {
+      "file": "supabase/migrations/20260925121000_add_staff_last_seen_at.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "783009894de31922278810e5452f70edaf0e4a378b79b074ab4b70ba8ee2647e"
+    },
+    {
+      "file": "supabase/migrations/20260929160000_capture_live_order_guards.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "9f09306a2665b2dbad4c0a26dbe98c9c3a9d12df8aa9ca0a84a961f5c71b59af"
+    },
+    {
+      "file": "supabase/migrations/20260929163737_web_push_v211.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "6da0aae2fa47f85c834abe85c091fbeb70cc3fb41c978675ddefea2263b02d77"
+    },
+    {
+      "file": "supabase/migrations/20260930195125_hands_report_delivery.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "4075fe28e9288c89430d3b77e410abe258b428cbc6bde24395b60d1cf7bc63a7"
+    },
+    {
+      "file": "supabase/migrations/20261001074029_order_control_tasks_v2.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "c96e1c5331fb657c11e28569f6d994bfd6c9f1b1e0fccd41b9d21f22d962633d"
+    },
+    {
+      "file": "supabase/migrations/20261001174717_report_uncompleted_items.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "3ba41c87381c85e86b531e720004dcfc9a88793802faebf766c922565035a9af"
+    },
+    {
+      "file": "supabase/migrations/20261001193413_master_hands_details.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "f2b12c22da9557902914697e97a4ab590ec30cd92f2a57e588f4884b402d2c7d"
+    },
+    {
+      "file": "supabase/migrations/20261002101000_master_contact_confirmation.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "8e6a4e629b8db5eab22c25dc6fb0840585618de1093a822a3fcdfd72ed7d8942"
+    },
+    {
+      "file": "supabase/migrations/20261004100840_manual_order_completion.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "2b9c89552359174d4e40b3be0f71e45696d16c6199ce0ac71839a60fa5043eff"
+    },
+    {
+      "file": "supabase/migrations/20261004183000_master_contact_journal.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "c138879fbaaaf556def2948153a762123405b584ddc1c2489401037f642213e0"
+    },
+    {
+      "file": "supabase/migrations/20261004191357_finance_expenses.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "d2b29aefc0b8b33a3fb10035de79749d51b81fe099432cb2a87fb85211948fc6"
+    },
+    {
+      "file": "supabase/push-activation.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "9a0511147d7a7357016ffe8d808c30141f7b1dd093fead838e324962c89ad4d9"
+    },
+    {
+      "file": "supabase/setup.sql",
+      "label": "entire server/database file",
+      "unchanged": true,
+      "sha256": "6ca1eae0d2893c0b3c17375a9ce2d74b2f980dd08bc2ac71cb7f16daa441ec80"
+    }
+  ]
+}

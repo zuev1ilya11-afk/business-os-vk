@@ -71,11 +71,11 @@
       const management=s.page==='home'&&!!content.querySelector('#ownerDashboard');
       if(management)root.BOS_OWNER_DASHBOARD?.setLoadState(refreshError||root.BOS_LAST_REFRESH_ERROR?'error':loadState);
       if(entry&&entry.tagName!==(management?'DIV':'BUTTON')){entry.remove();entry=null;}
-      if(!entry){entry=document.createElement(management?'div':'button');entry.id=id;if(!management)entry.type='button';entry.className='secondary ocSummary'+(management?' odAttention':'');entry.dataset.ocEnter='';content.prepend(entry)}
+      if(!entry){entry=document.createElement(management?'div':'button');entry.id=id;if(!management)entry.type='button';entry.className='secondary ocSummary'+(management?' odAttention':'');entry.dataset.ocEnter='';(management?content.querySelector('.bosManagementAttention')||content:content).prepend(entry)}
       const text=`${s.page==='home'?'Контроль заявок':'Контроль'} · ${summary(all.length)}`;
       const counts=homeFilters.map(([key])=>loadState==='ready'?all.filter(item=>matches(item,key)).length:'—');
       const label=JSON.stringify([text,management,counts]);
-      if(entry.dataset.label!==label){entry.dataset.label=label;const html=management?`<div class="odAttentionTitle"><b>${escape(text)}</b><small>Проверьте заявки, чтобы не потерять клиентов</small></div><div class="odAttentionFilters">${homeFilters.map(([key,title],i)=>`<button type="button" class="secondary" data-oc-home-filter="${key}">${title} <b>${counts[i]}</b></button>`).join('')}</div><button type="button" class="linkBtn" data-oc-enter>Перейти к заявкам →</button>`:`<span>${escape(text)}</span><span aria-hidden="true">→</span>`;if(root.BOS_PATCH_CONTENT)root.BOS_PATCH_CONTENT(entry,html);else entry.innerHTML=html;}
+      if(entry.dataset.label!==label){entry.dataset.label=label;const html=management?`<div class="odAttentionTitle"><b>Контроль исполнения</b><small>${escape(text)}</small></div><div class="odAttentionFilters">${homeFilters.map(([key,title],i)=>`<button type="button" class="secondary" data-oc-home-filter="${key}">${title} <b>${counts[i]}</b></button>`).join('')}</div><button type="button" class="linkBtn" data-oc-enter>Перейти к заявкам →</button>`:`<span>${escape(text)}</span><span aria-hidden="true">→</span>`;if(root.BOS_PATCH_CONTENT)root.BOS_PATCH_CONTENT(entry,html);else entry.innerHTML=html;}
       // Remove the old large problem list; it is replaced by the compact entry.
       if(s.page==='home')content.querySelectorAll('.ownerProblemsCompact').forEach(n=>n.remove());
       return;

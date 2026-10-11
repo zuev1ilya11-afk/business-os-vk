@@ -149,6 +149,8 @@ window.BOS_SYNC_ROLE_CHROME=syncRoleChrome;
 const style=document.createElement('style');
 style.textContent='#app > header .brandText:has(#dispatcherPreviewReturn){display:grid!important;grid-template-columns:max-content 1fr;align-items:center;flex:1}#app > header .brandText:has(#dispatcherPreviewReturn) > h1,#app > header .brandText:has(#dispatcherPreviewReturn) > .brandSub{grid-column:1/-1}#app > header #dispatcherPreviewReturn{justify-self:start;display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-left:7px;padding:7px 10px;font-size:12px;vertical-align:middle;white-space:nowrap}';
 document.head.appendChild(style);
+// Management profile entry delegates to the existing role profile; login settings stay reachable inside it.
+window.addEventListener('click',event=>{if(effectiveRole()!=='manager')return;const target=event.target.closest?.('#profileBtn,[data-action=profile],[data-bos-destination=profile]');if(!target)return;event.preventDefault();event.stopImmediatePropagation();window.openOwnerProfile?.()},true);
 document.addEventListener('click',event=>{const button=event.target.closest?.('[data-bos-destination]');if(button)activateDestination(button.dataset.bosDestination)});
 // Later role scripts wrap show and relabel controls. Observe the real shell so
 // bundled boot, background renders and preview transitions keep approved labels.

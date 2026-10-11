@@ -39,7 +39,7 @@
     if(line)line.after(detail);else root.querySelector('.card')?.append(detail);
   }
   const openReview=window.openReportReview;
-  if(typeof openReview==='function')window.openReportReview=function(id){openReview(id);enrichExtraWork(id);enrichUncompletedWork(id)};
+  if(typeof openReview==='function')window.openReportReview=function(id){openReview(id);if(canReview())document.querySelector('#modalRoot .modal:has(#reviewForm)')?.classList.add('bosManagementReview');enrichExtraWork(id);enrichUncompletedWork(id)};
   const home=pages.home;
   pages.home=function(){
     const html=home();

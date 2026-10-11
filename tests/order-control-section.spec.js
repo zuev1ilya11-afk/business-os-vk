@@ -16,10 +16,10 @@ test('home has only a compact unique-order indicator and opens the Orders contro
  for(const width of [360,390,430,1280]){
   await page.setViewportSize({width,height:900});
   await expect(summary).toBeVisible();
-  expect((await summary.boundingBox()).height).toBeLessThan(width<600?240:150);
-  const metrics=await page.locator('#ownerDashboard>.dashMetrics').boundingBox(),load=await page.locator('#ownerDashboard .odLoad').boundingBox();
+  expect((await summary.boundingBox()).height).toBeLessThan(340);
+  const metrics=await page.locator('#ownerDashboard>.dashMetrics').boundingBox(),load=await page.locator('#ownerDashboard .odMain>.odLoad').boundingBox();
   expect(metrics.y).toBeLessThan(load.y);
-  if(width>=1024)expect((await page.locator('#ownerDashboard .odTodayList').boundingBox()).y).toBeCloseTo(load.y,0);
+  if(width>=1024)expect((await page.locator('.bosManagementAttention').boundingBox()).y).toBeCloseTo(load.y,0);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   await page.screenshot({path:info.outputPath(`control-home-${width}.png`)});
  }

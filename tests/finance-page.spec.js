@@ -11,7 +11,7 @@ async function ready(page,role='owner'){
 for(const role of ['owner','manager'])test(`${role} sees finances, filters and existing order details without writes`,async({page},info)=>{
  const {db}=await ready(page,role);
  await page.locator('nav [data-page="finance"]').click();
- const root=page.locator('#financePage');await expect(root).toBeVisible();
+ const root=page.locator('#financePage');await root.locator('.finFilters,.finPeriodControl,.finExtraMetrics,.finOverviewMasters').evaluateAll(es=>es.forEach(e=>e.open=true));await expect(root).toBeVisible();
  await expect(root.locator('[data-fin-kpi="revenue"] strong')).toContainText('1 100');
  await expect(root.locator('[data-fin-kpi="pay"] strong')).toContainText('700');
  await expect(root.locator('[data-fin-kpi="company"] strong')).toContainText('400');
@@ -32,7 +32,7 @@ for(const role of ['master','dispatcher'])test(`${role} cannot open finance thro
 });
 test('finance refresh retains selected filters, detail and nodes, and logout clears it',async({page})=>{
  const {db}=await ready(page);await page.locator('nav [data-page="finance"]').click();
- const root=page.locator('#financePage');await root.locator('[data-fin-filter="city"]').selectOption('СПб');
+ const root=page.locator('#financePage');await root.locator('.finFilters,.finPeriodControl,.finExtraMetrics,.finOverviewMasters').evaluateAll(es=>es.forEach(e=>e.open=true));await root.locator('[data-fin-filter="city"]').selectOption('СПб');
  await root.locator('[data-fin-master]').first().click();
  await page.evaluate(()=>window.__finMetric=document.querySelector('[data-fin-kpi="revenue"] strong'));
  db.tables.orders[0].amount=1500;
@@ -44,7 +44,7 @@ test('finance refresh retains selected filters, detail and nodes, and logout cle
  await page.evaluate(()=>document.body.classList.remove('bos-auth-ok'));await expect(root).toHaveCount(0);
 });
 test('all period controls, combined filters, custom validation and search use the same totals',async({page})=>{
- const {master}=await ready(page);await page.locator('nav [data-page="finance"]').click();const root=page.locator('#financePage');
+ const {master}=await ready(page);await page.locator('nav [data-page="finance"]').click();const root=page.locator('#financePage');await root.locator('.finFilters,.finPeriodControl,.finExtraMetrics,.finOverviewMasters').evaluateAll(es=>es.forEach(e=>e.open=true));
  for(const kind of ['today','week','month','quarter']){await root.locator(`[data-fin-period="${kind}"]`).click();await expect(root.locator('[data-fin-kpi="revenue"] strong')).toContainText('1 100')}
  await root.locator('[data-fin-period="yesterday"]').click();await expect(root.locator('[data-fin-kpi="completed"] strong')).toHaveText('0');
  await root.locator('[data-fin-period="all"]').click();await expect(root.locator('[data-fin-kpi="revenue"] strong')).toContainText('3 100');
@@ -72,6 +72,6 @@ for(const action of ['switch','logout'])test(`finance immediately clears stale d
  await page.evaluate(()=>show('finance'));await expect(page.locator('#financePage')).toHaveCount(0);
 });
 test('collapsed finance filters remain collapsed after background refresh',async({page})=>{
- await ready(page);await page.locator('nav [data-page="finance"]').click();await page.locator('.finFilters summary').click();
+ await ready(page);await page.locator('nav [data-page="finance"]').click();await page.locator('.finFilters summary').click();await page.locator('.finFilters summary').click();
  await page.evaluate(()=>BOS_REFRESH_NOW());expect(await page.locator('.finFilters').evaluate(n=>n.open)).toBe(false);
 });
