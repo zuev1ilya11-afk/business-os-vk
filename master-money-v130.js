@@ -156,12 +156,12 @@ function openDetails(kind){
 }
 window.openMasterMoneyV130=openDetails;
 window.openMasterAccrualsV130=function(){
- if(!masterMode())return;render();const box=document.getElementById('masterMoneyV130');if(!box)return;
- openModal('<section class="bosPayoutTask"><button type="button" class="bosTextAction" onclick="closeModal()" aria-label="К профилю">← К профилю</button><div class="bosPayoutContents"></div></section>');document.querySelector('.bosPayoutContents').append(box);window.scrollTo(0,0);
+ if(!masterMode())return;
+ openModal('<section class="bosPayoutTask"><button type="button" class="bosTextAction" onclick="closeModal()" aria-label="К профилю">← К профилю</button><div class="bosPayoutContents"></div></section>');render();window.scrollTo(0,0);
 };
 function render(){
   queued=false;if(!masterMode()||String(state?.page||'')!=='team')return;
-  const panel=document.getElementById('masterProfileSummaryV129');if(!panel)return;
+  const panel=document.querySelector('.bosPayoutContents');if(!panel)return;
   const s=snapshot(),sig=JSON.stringify({selection,owner:selectionOwner,today:s.today,error:periodError,orders:s.allDone.map(o=>[o.id,completedDay(o),o.amount,o.master_payout,o.extra_work_amount,o.uncompleted_work_amount,o.work,o.description,o.service_name,o.client,o.client_name,o.address,o.external_id,o.master_paid_amount,o.master_payment_amount,o.master_payout_paid_amount,o.master_paid,o.master_payment_status])});
   const box=document.getElementById('masterMoneyV130');if(box?.dataset.sig===sig)return;
   const active=document.activeElement,focused=box?.contains(active)?{...active.dataset}:null;

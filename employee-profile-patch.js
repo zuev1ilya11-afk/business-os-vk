@@ -25,10 +25,6 @@ pages.team=function(){const html=profileTeamBase();return html.replace(/<section
    if(identity?.matches('section.card'))identity.classList.add('bosManagementIdentity');
    if(!modal.querySelector('.bosManagementProfileMenu')){
     const menu=document.createElement('div');menu.className='bosManagementProfileMenu';
-    menu.innerHTML='<button type="button" class="secondary wide">Команда →</button>';
-    menu.firstElementChild.onclick=()=>{closeModal();show('team')};
-    if(window.BOS_FINANCE_PAGE?.allowed()){const b=document.createElement('button');b.type='button';b.className='secondary wide';b.textContent='Финансы →';b.onclick=()=>{closeModal();show('finance')};menu.appendChild(b)}
-    if(window.BOS_OPEN_AUTH_SETTINGS){const b=document.createElement('button');b.type='button';b.className='secondary wide';b.textContent='Настройки входа →';b.onclick=()=>window.BOS_OPEN_AUTH_SETTINGS();menu.appendChild(b)}
     identity?.after(menu);
     if(!modal.querySelector('#bosOwnerLogout')&&window.BOS_PROFILE_LOGOUT){const b=document.createElement('button');b.id='bosOwnerLogout';b.className='secondary wide';b.textContent='Выйти';b.onclick=()=>window.BOS_PROFILE_LOGOUT();modal.appendChild(b)}
    }
@@ -61,14 +57,20 @@ pages.team=function(){const html=profileTeamBase();return html.replace(/<section
   const role=document.body.dataset.bosUiRole;if(!role)return;
   const modal=document.querySelector('#modalRoot .modal'),master=document.querySelector('.bosProfileMenu');
   let menu=modal?.querySelector('.bosManagementProfileMenu');
-  if(!menu&&role==='dispatcher'&&modal?.querySelector(':scope>h2')?.textContent==='Мой профиль'){
+  if(!menu&&role==='dispatcher'&&modal?.querySelector('h2')?.textContent==='Мой профиль'){
    menu=document.createElement('div');menu.className='bosManagementProfileMenu';modal.appendChild(menu);modal.classList.add('bosManagementProfile');
   }
   for(const target of [menu,master].filter(Boolean)){
    if(target===menu)entry(target,'personal','Личные данные');
    entry(target,'help','Помощь');entry(target,'about','О приложении');
-   if(target===menu&&window.BOS_PUSH)entry(target,'push','Уведомления на устройстве',()=>BOS_PUSH.open());
-   if(target===menu&&role==='owner')entry(target,'tools','Инструменты владельца',()=>openOwnerTools());
+   if(target===menu&&window.BOS_OPEN_AUTH_SETTINGS)entry(target,'login','Настройки входа',()=>BOS_OPEN_AUTH_SETTINGS());
+   if(target===master&&window.BOS_PROFILE_LOGOUT)entry(target,'logout','Выйти из аккаунта',()=>BOS_PROFILE_LOGOUT());
+  }
+  if(menu){
+   const device=modal.querySelector('[data-bos-push-entry]');
+   if(device&&device.parentElement!==menu)menu.appendChild(device);
+   // Earlier extensions append the same login entry asynchronously.
+   if(menu.querySelector('[data-bos-shared=login]'))modal.querySelector('#authSettingsProfileSection')?.remove();
   }
   if(!modal)return;
   const catalog=modal.querySelector('.bosSharedCatalog'),avito=modal.querySelector('.bosAvitoCatalog'),materials=modal.querySelector('.bosPriceMaterials');

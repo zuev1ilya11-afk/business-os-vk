@@ -112,6 +112,8 @@
 .bos-approved-ui #content .bosManagementTeam .compactTeam{grid-template-columns:minmax(0,1fr)}
 .bos-approved-ui .bosManagementMember .metric::before,.bos-approved-ui .bosManagementMember .metric::after{display:none}
 .bos-approved-ui .bosManagementProfileMenu button{justify-content:flex-start}
+.bos-approved-ui .bosManagementProfileMenu [data-bos-push-entry]{border:0;background:none;margin:0;padding:0;}
+.bos-approved-ui .bosManagementProfileMenu [data-bos-push-entry]>h3{display:none;}
 @media(max-width:760px){.bos-approved-ui #modalRoot .modalBackdrop:has(.modal:is(.bosManagementProfile,.bosManagementMember,.bosManagementReview,.bosManagementForm,.bosManagementTools,.bosManagementAccess)),.bos-approved-ui #modalRoot .modalBackdrop:has([data-fin-expense-dialog]){padding:0}.bos-approved-ui #modalRoot .modal:has([data-fin-expense-dialog]){width:100%;height:100dvh;max-height:100dvh;max-width:100%;margin:0;border:0;border-radius:0;padding:76px 19px 32px;background:var(--bos-ui-bg)}}
 
 /* Task 4 review feedback: preserve secondary source indicators and original review controls. */

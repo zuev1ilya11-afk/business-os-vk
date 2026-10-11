@@ -1,0 +1,23 @@
+const {test,expect}=require('@playwright/test');
+const fs=require('node:fs'),path=require('node:path');
+const {fullStack}=require('./helpers/full-stack.cjs');
+const {navigate}=require('./helpers/approved-navigation.cjs');
+const out=path.resolve('docs/approved-ui/final-polish');
+for(const role of ['master','dispatcher','manager','owner'])test(`${role} profile has one settings entry and keeps operations in their canonical sections`,async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.clock.setFixedTime(new Date('2026-10-08T09:00:00Z'));
+ await page.route('**/*',r=>['127.0.0.1','localhost'].includes(new URL(r.request().url()).hostname)?r.continue():r.abort());
+ await fullStack(page,role);await page.goto('/');
+ await page.waitForFunction(()=>document.body.classList.contains('bos-auth-ok')&&window.BOS_SESSION_API_READY);
+ await page.evaluate(async role=>BOS_LOAD_ROLE_MODULES?.(role),role);
+ if(role==='master')await navigate(page,'team');else await page.locator('#profileBtn').click();
+ const profile=role==='master'?page.locator('#content'):page.locator('#modalRoot .modal');
+ await expect(profile).toContainText(/профиль/i);
+ await expect(profile.getByRole('button',{name:/О приложении/})).toBeVisible();
+ const buttons=await profile.locator('button').evaluateAll(es=>es.map(e=>({text:e.textContent,handler:e.getAttribute('onclick'),id:e.id})));fs.mkdirSync(out,{recursive:true});
+ fs.writeFileSync(path.join(out,role+'-profile-buttons-'+(process.env.BOS_POLISH_PHASE||'before')+'.json'),JSON.stringify(buttons,null,2));
+ await page.screenshot({path:path.join(out,role+'-profile-'+(process.env.BOS_POLISH_PHASE||'before')+'-390.png'),fullPage:true});
+ await expect.soft(profile.getByRole('button',{name:/Команда|Финансы|Инструменты|Мой рабочий график|Мои рекламации/})).toHaveCount(0);
+ await expect.soft(profile.getByRole('button',{name:/Настройки входа|Логин и пароль/})).toHaveCount(1);
+ await expect.soft(profile.getByRole('button',{name:/Уведомления на (?:устройстве|этом телефоне)|Push-уведомления/})).toHaveCount(1);
+});

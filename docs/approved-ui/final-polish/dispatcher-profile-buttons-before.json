@@ -1,0 +1,32 @@
+[
+  {
+    "text": "×",
+    "handler": "closeModal()",
+    "id": ""
+  },
+  {
+    "text": "Выйти",
+    "handler": null,
+    "id": "bosOwnerLogout"
+  },
+  {
+    "text": "Личные данные →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Помощь →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "О приложении →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Уведомления на устройстве →",
+    "handler": null,
+    "id": ""
+  }
+]

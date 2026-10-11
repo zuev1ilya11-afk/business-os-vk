@@ -1,0 +1,37 @@
+[
+  {
+    "text": "Подробнее →",
+    "handler": "openMasterAccrualsV130()",
+    "id": ""
+  },
+  {
+    "text": "Личные данныеТелефон и информация профиля›",
+    "handler": "openMasterProfileEdit()",
+    "id": ""
+  },
+  {
+    "text": "Памятки и прайсАкты, замеры, цены и подсказки›",
+    "handler": "openMasterMemoMenuV129()",
+    "id": ""
+  },
+  {
+    "text": "Настройки входаЛогин и пароль›",
+    "handler": "document.getElementById(\"profileBtn\")?.click()",
+    "id": ""
+  },
+  {
+    "text": "Помощь →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "О приложении →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Выйти из аккаунта →",
+    "handler": null,
+    "id": ""
+  }
+]
