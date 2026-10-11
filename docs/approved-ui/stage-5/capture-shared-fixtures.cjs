@@ -93,7 +93,17 @@ async function shared(c){const p=c.page;p.setDefaultTimeout(5000);
  if(!wanted){await p.evaluate(()=>show('home'));await cap(c,c.role==='master'?'home-days':c.role==='dispatcher'?'workspace':'dashboard','synthetic-fixture-shell',['real role shell']);}
  async function run(screen,fn,marker){if(!contractPairs.has(c.role+':'+screen)||(wanted&&!wanted.includes(screen)))return;await attempt(c,screen,async()=>{await close(c);await fn();if(marker)await p.locator(marker).first().waitFor({state:'visible'});if(screen==='hands-order')await p.locator('#handsOrderActions').scrollIntoViewIfNeeded();await cap(c,screen,'synthetic-fixture',[screen]);if(screen==='profile'){await p.locator('[data-bos-shared=about]').scrollIntoViewIfNeeded();await cap(c,screen,'synthetic-fixture-menu',['profile menu']);}});}
  await run('profile',()=>profile(c),c.role==='master'?'.bosProfileMenu':'.bosManagementProfile');
- for(const screen of ['personal','help','about','push','login-settings'])await run(screen,async()=>{await profile(c);if(screen==='personal'&&c.role==='master')await p.evaluate(()=>openMasterProfileEdit());else if(screen==='push')await p.evaluate(()=>BOS_PUSH.open());else if(screen==='login-settings')await p.evaluate(()=>BOS_OPEN_AUTH_SETTINGS());else await p.locator(`[data-bos-shared=${screen}]`).click();},'#modalRoot .modal');
+ for(const screen of ['personal','help','about','login-settings'])await run(screen,async()=>{await profile(c);if(screen==='personal'&&c.role==='master')await p.evaluate(()=>openMasterProfileEdit());else if(screen==='push')await p.evaluate(()=>BOS_PUSH.open());else if(screen==='login-settings')await p.evaluate(()=>BOS_OPEN_AUTH_SETTINGS());else await p.locator(`[data-bos-shared=${screen}]`).click();},'#modalRoot .modal');
+ if(!wanted||wanted.includes('push'))await attempt(c,'push',async()=>{
+  const {pushPresentation}=require(source+'/tests/helpers/push-presentation.cjs');
+  for(const state of (process.env.BOS_CAPTURE_PUSH_STATES||'default,denied,subscribed,unsupported,denied-with-subscription,unknown').split(',')){
+   await close(c);await pushPresentation(p,state);await p.evaluate(()=>BOS_PUSH.open());
+   await p.waitForFunction(()=>{const field=document.querySelector('[data-push-state=subscription]');return field&&field.textContent!=='Не проверена'});
+   if(state==='subscribed')await p.waitForFunction(()=>document.querySelector('#bosPushMessage')?.textContent.includes('Подключены на этом телефоне'));
+   c.visibleEvidence=await p.locator('.bosPushStates').innerText();
+   await cap(c,'push','synthetic-fixture-'+state,['read-only browser capability, permission and device subscription']);c.visibleEvidence={};
+  }
+ });
  await run('notifications',()=>p.evaluate(()=>openBosNotifications()),'.bosNotifyPanel');
  await run('claims',()=>p.evaluate(async role=>{await refreshClaims();if(role==='master')openMasterProfileClaimsV129();else showClaims();},c.role),c.role==='master'?'#modalRoot .modal':'.bos-claim-compact');
  await run('claim-detail',()=>p.evaluate(async()=>{await refreshClaims();openClaimDetails('fixture-claim')}),'#modalRoot .modal');

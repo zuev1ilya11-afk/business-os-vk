@@ -12,7 +12,7 @@ for r in contract:
 renderers={
  'profile':'owner-tools-v13.js; employee-profile-patch.js; role-chrome-v83.js; existing master/dispatcher profile renderers',
  'personal':'master-profile-edit-v15.js / employee-profile-patch.js', 'help':'employee-profile-patch.js','about':'employee-profile-patch.js',
- 'push':'web-push-v211.js','login-settings':'auth-ui-patch.js; presentation labels in employee-profile-patch.js',
+ 'push':'web-push-v211.js (unchanged); read-only state rows in employee-profile-patch.js','login-settings':'auth-ui-patch.js; presentation labels in employee-profile-patch.js',
  'notifications':'notification-center-v26.js','claims':'claims-patch.js; claims-runtime-patch.js; master-profile-summary-v129.js','claim-detail':'claims-patch.js','claim-create':'claims-patch.js; order-lifecycle-v106.js',
  'avito':'avito-messages-v25.js','avito-thread':'avito-messages-v25.js','avito-lead':'avito-messages-v25.js','avito-settings':'avito-messages-v25.js',
  'hands-settings':'hands-integration-v69.js','hands-sync':'hands-integration-v69.js','hands-order':'hands-integration-v69.js',
@@ -24,6 +24,7 @@ renderers={
  'loading':'mandatory-auth-v29.js original pending gate','empty':'order-filters-v22.js real zero-result filter','error':'employee-live-refresh-v27.js; owner-dashboard-v9.js preserved-data notice','offline':'same failed-refresh preserved-data notice',
  'design-system':'approved-ui.css; approved-master-ui.css; approved-operations-ui.css','navigation':'role-chrome-v83.js and original guarded destination handlers'}
 limits={
+ 'push':'Browser support, Notification.permission and device subscription are independently named. Subscription uses read-only getRegistration/getSubscription, with explicit unavailable/unknown state; it does not assert account binding from permission. Original connection message and enable/test/disable, transport and lifecycle remain unchanged. Six fixture states per role at390/1440; owner default/subscribed also at360/430/768.',
  'price':'Existing structured service catalogue, Avito from-price catalogue and materials are kept separate in accessible tabs. Original prices, categories, search handlers and original source data are unchanged.',
  'auth-expired':'The existing 401 path returns to the normal login gate. No new auth state/message or invitation fallback was added.',
  'settings-proposal':'Unimplemented backend settings in the concept have no save API. Existing owner tools expose only real team/access/material/integration actions; no fake save.',
@@ -48,6 +49,7 @@ for r in contract:
  if evidence:status='implemented' if r['screen'] in renderers else 'reused-and-role-verified'
  elif prev.get('status') in ['implemented','reused-and-role-verified','complete','covered'] and prev.get('captures'):evidence=prev['captures'];status='reused-accepted-stage-4'
  else:status='missing-visual-evidence'
+ if r['screen']=='push' and not {'synthetic-fixture-'+s for s in ['default','denied','subscribed','unsupported','denied-with-subscription','unknown']}.issubset({x.get('state') for x in evidence}):status='missing-push-state-evidence'
  rows.append({**r,'stage':5,'status':status,'renderer':renderers.get(r['screen'],prev.get('renderer','accepted prior-stage renderer')),'evidence':evidence,'tests':'approved-ui-owner + affected role/integration suites; see task-5-report.md','dependency':limits.get(r['screen'],'Original allowed actions, fields, role guards and data retained.')})
 counts=dict(collections.Counter(r['status'] for r in rows));(root/'stage-5/coverage.json').write_text(json.dumps({'stage':5,'baseCommit':'264e1727de95bbb119eecf9ba9dec41dc0f7f770','statuses':counts,'rows':rows},ensure_ascii=False,indent=2)+'\n')
 lines=['# Stage 5 owner and remaining shared contract coverage','','No PNG-count proxy: each row identifies renderer, evidence and supported equivalent. See visual-review.md and task-5-report.md for exact source/build/test provenance.','','| Role / screen | Status | Renderer | Evidence | Dependency / supported equivalent |','| --- | --- | --- | --- | --- |']

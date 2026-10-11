@@ -123,3 +123,46 @@ Self-review resolved the auth cascade, real price override discovery, notificati
 The proposal contains unsupported elements. Safe existing equivalents are explicit per coverage row: image viewer plus original file link instead of invented PDF controls/metadata; existing owner settings/tools without fake save APIs; existing Hands health/sync actions; existing generic expired-session login gate; original retained-data refresh error/offline notice; dispatcher report-attention queue; actual price catalogues; original desktop modal/panel/Avito workspace architecture. These are not pixel-identical route-page replicas. No timestamp, duration, availability, financial value, unsupported permission or success state is invented.
 
 Original diagnostic preview remains live, not a new sandbox; only fixture previews used. Dispatcher preview identity and original owner-home return are verified. Prior accepted Stage2 saved-hours summary/calendar draft minor and Stage3 dense schedule/unused desktop width minor are unchanged, left for final triage as instructed. Browser/PWA behavior is covered in isolated fixtures; no real device push installation or external integration tested. Final full-suite/consolidation review and separate user Preview remain controller responsibilities; no production approval inferred.
+
+## Review fix round 1 — Important I1
+
+Review input: `review-owner-shared.md`, I1, at HEAD `26a435e286bd56d32626e26f7e8cdaee5b5e2aee`. The finding was valid: the common push screen had a single message but lacked the contract's independent browser support, permission and device subscription fields. All four push rows required this fix.
+
+Implementation commit: `301a04df1f857c480079182ef2963d8bacd4e9e0`; runtime `8db611d1fc9cd27917d7`. A separate presentation adapter appended to `employee-profile-patch.js` adds three named rows. It reads the same capability conditions, `Notification.permission`, and read-only `navigator.serviceWorker.getRegistration()` / `pushManager.getSubscription()`. It never requests permission, subscribes, unsubscribes, writes binding data, or sends API calls. Device subscription presence is described only as presence on this device; the original connection message remains responsible for authenticated account binding. Unsupported and unavailable-inspection states are explicit, and denied permission does not imply subscription absence. Observing the existing message refreshes the display after original actions; there is no polling or idle mutation loop.
+
+The original `web-push-v211.js` is byte-identical to the accepted base, including all transport, binding, enable/test/disable callbacks, logout/account switching, PWA and auth lifecycle. No backend/auth source changed. Only shared adapter/CSS and generated build files changed in app source. Tests add `tests/helpers/push-presentation.cjs`, six cases in `tests/approved-ui-owner.spec.js`, and assertions on the original opt-in/disable sequence in `tests/web-push-v211.spec.js`. Existing push tests retain gesture, recipient, test/revoke payload and logout/race assertions.
+
+Exact commands (same repo cwd, local deny-external config,2 workers, no overlapping build/browser/capture runs):
+
+```sh
+BOS_QA_ROOT=$PWD BOS_QA_OUTPUT=/workspace/scratch/59eaed6e4f64/recovery/task5-push-red npx playwright test -c ../offline-playwright.config.cjs tests/approved-ui-owner.spec.js -g 'push breakdown' --workers=2 > ../recovery/task5-push-red.log 2>&1
+npm run build > ../recovery/task5-push-build.log 2>&1
+BOS_QA_ROOT=$PWD BOS_QA_OUTPUT=/workspace/scratch/59eaed6e4f64/recovery/task5-push-focused npx playwright test -c ../offline-playwright.config.cjs tests/approved-ui-owner.spec.js tests/web-push-v211.spec.js tests/performance-pwa-v169.spec.js tests/pwa-installability.spec.js --workers=2 > ../recovery/task5-push-focused.log 2>&1
+BOS_QA_ROOT=$PWD BOS_QA_OUTPUT=/workspace/scratch/59eaed6e4f64/recovery/task5-push-actions npx playwright test -c ../offline-playwright.config.cjs tests/approved-ui-owner.spec.js tests/web-push-v211.spec.js -g 'push breakdown|opt-in' --workers=2 > ../recovery/task5-push-actions.log 2>&1
+node --test tests/push-api-v211.test.cjs tests/build-version.test.cjs > ../recovery/task5-push-node.log 2>&1
+npm run build:check
+python docs/approved-ui/stage-5/verify-protected.py
+python docs/approved-ui/stage-5/make-coverage.py
+git diff --check
+```
+
+Results:
+
+- RED: **6 failed**, exit1, all missing the support-state locator before implementation. States: supported/default, denied, subscribed, unsupported, denied with an existing device subscription, and inspection unavailable.
+- Focused owner/push/PWA run: **38 cases**, exit0. All38 reached in stdout, no failed assertions; `task5-push-focused/.last-run.json` reports `{"status":"passed","failedTests":[]}`. The redirected line log lacks its final count footer, so no duration or nonexistent JSON summary is claimed. The actual completion-status file is copied to `docs/approved-ui/stage-5/push-focused-last-run.json`.
+- After adding real-action transition assertions and making the capture helper reusable across states: **7 passed (6.7s)**, exit0. Includes all six state cases and the original opt-in/test/disable test; subscription transitions absent→present→absent and permission becomes granted without replacing original callbacks.
+- Node: **22 tests,22 passed,0 failed/cancelled/skipped**,331.442727ms, exit0.
+- Build/check: `BUILD_ID=8db611d1fc9cd27917d7`, exit0. Protected comparison: **229 comparisons;0 changed**. Coverage: **138 rows**,90 implemented +1 reused-and-role-verified +47 reused-accepted-stage-4. Diff check exit0.
+
+Only affected push screens recaptured:
+
+```sh
+BOS_CAPTURE_SCREENS=push node docs/approved-ui/stage-5/capture-shared-fixtures.cjs > ../recovery/task5-push-capture.log 2>&1
+BOS_CAPTURE_ROLES=owner BOS_CAPTURE_WIDTHS=360,430,768 BOS_CAPTURE_SCREENS=push BOS_CAPTURE_PUSH_STATES=default,subscribed node docs/approved-ui/stage-5/capture-shared-fixtures.cjs > ../recovery/task5-push-widths.log 2>&1
+```
+
+Both exit0. **54 current push images**: six states across all four roles at390/1440, plus owner default/subscribed at360/430/768. Every replacement uses source301a04d/runtime8db611d1fc9cd27917d7. Eight prior incomplete push images removed from manifest and disk; total manifest now268. Zero recorded errors, gaps or horizontal overflow above1px. Capture visibleEvidence records the actual three-row text, and coverage generator now requires all six push state categories before certifying a push row. Other rows retain their prior source/build provenance.
+
+Inspected actual master default390, owner subscribed1440, dispatcher denied-with-subscription390, manager unsupported390, owner unknown390 and owner subscribed360 against canonical master/push390/specimen composition. Independent rows and status values are readable; the original single enable control and test/disable state remain. The360px test button wraps safely. Original raw inspection-error text remains below the explicit unknown row; no error handler was rewritten.
+
+I1 is resolved; no new runtime concern identified. Minor M1 remains a Task6 evidence-refresh item: old montage filenames are now explicitly labeled intermediate checkpoints in visual-review.md; current individual manifest images are authoritative. No full-suite repeat, real device push delivery, external integration action, publication or production operation occurred.
