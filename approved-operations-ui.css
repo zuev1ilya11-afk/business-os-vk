@@ -264,6 +264,23 @@ body.bos-approved-ui .bosPushStates dd{margin:0;color:#edf2f8;text-align:right;f
 .bos-approved-ui .bosManagementIdentity[data-bos-avatar]>p{grid-column:2;margin:0!important;font-size:13px;color:var(--bos-ui-muted)}
 .bos-approved-ui .bosManagementIdentity[data-bos-avatar]>p:first-of-type{font-size:20px;font-weight:600;color:var(--bos-ui-text)}
 .bos-approved-ui .bosManagementIdentity[data-bos-avatar]>p:first-of-type>b{display:none}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>*{grid-column:2;min-width:0}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]::before{grid-row:1/5}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>.ownerProfileLine{padding:0;border:0;font-size:13px;justify-content:flex-start;align-items:baseline}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>.ownerProfileLine:first-child>span{display:none}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>.ownerProfileLine:first-child>b{font-size:20px;font-weight:600}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>.ownerProfileLine>b{font-weight:500;overflow-wrap:anywhere}
+
+/* Wide operational screens occupy the full parent grid and use compact order rows. */
+@media(min-width:1024px){
+ .bos-approved-ui #content>.bosOpsWorkspace{grid-column:1/-1;width:100%}
+ .bos-approved-ui #content #bosOrderList .bosOpsListRow{grid-template-columns:64px minmax(0,1fr) 210px;column-gap:20px;row-gap:6px;min-height:0!important;padding:16px 0!important}
+ .bos-approved-ui #content #bosOrderList .bosOpsListRow>.bosOpsListOpen{grid-column:3;grid-row:1/3;justify-self:end;align-self:start}
+ .bos-approved-ui #content #bosOrderList .bosOpsListRow>.opsCompactMain{grid-column:3;grid-row:3/5;display:flex!important;flex-wrap:wrap;align-items:baseline;align-self:start}
+ .bos-approved-ui #content #bosOrderList .bosOpsListRow>.opsCompactBottom{display:flex!important;flex-direction:row!important;flex-wrap:wrap;align-items:center;align-self:start}
+ .bos-approved-ui #content #bosOrderList .bosOpsListRow>.bosOpsSecondaryActions{grid-column:3;grid-row:5/7;font-size:12px}
+ .bos-approved-ui #content #bosOrderList .bosOpsListRow>.dmCardActions{grid-column:2/4;grid-row:7}
+}
 
 /* Control keeps its native filters, reminder status and task refresh in a compact header. */
 @media(max-width:760px){
