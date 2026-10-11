@@ -100,6 +100,29 @@
       "passed": 1,
       "failed": 0,
       "failures": []
+    },
+    {
+      "log": "../recovery/dispatcher-axis-red.log",
+      "scheduled": 2,
+      "passed": 0,
+      "failed": 2,
+      "failures": [
+        {
+          "file": "tests/approved-ui-dispatcher.spec.js",
+          "title": "calendar hour axis and half-hour starts share geometry at 1440"
+        },
+        {
+          "file": "tests/approved-ui-dispatcher.spec.js",
+          "title": "calendar hour axis and half-hour starts share geometry at 768"
+        }
+      ]
+    },
+    {
+      "log": "../recovery/dispatcher-axis-green.log",
+      "scheduled": 6,
+      "passed": 6,
+      "failed": 0,
+      "failures": []
     }
   ],
   "latestObservedOutcomes": [
@@ -155,13 +178,13 @@
       "file": "tests/approved-ui-dispatcher.spec.js",
       "title": "mobile timeline shows points for unknown duration and completed read only context",
       "status": "passed",
-      "run": "dispatcher-schedule-readable-green"
+      "run": "dispatcher-axis-green"
     },
     {
       "file": "tests/approved-ui-dispatcher.spec.js",
       "title": "month and free slots wait for real history context then Back preserves day master",
       "status": "passed",
-      "run": "dispatcher-finish-narrow"
+      "run": "dispatcher-axis-green"
     },
     {
       "file": "tests/dispatcher-board-v23.spec.js",
@@ -221,7 +244,7 @@
       "file": "tests/approved-ui-dispatcher.spec.js",
       "title": "only explicit saved range occupies multiple calendar cells",
       "status": "passed",
-      "run": "dispatcher-schedule-readable-green"
+      "run": "dispatcher-axis-green"
     },
     {
       "file": "tests/dispatcher-horizontal-schedule-v190.spec.js",
@@ -617,7 +640,19 @@
       "file": "tests/approved-ui-dispatcher.spec.js",
       "title": "desktop calendar start points remain compact readable and open full order context",
       "status": "passed",
-      "run": "dispatcher-schedule-readable-final"
+      "run": "dispatcher-axis-green"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "calendar hour axis and half-hour starts share geometry at 768",
+      "status": "passed",
+      "run": "dispatcher-axis-green"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "calendar hour axis and half-hour starts share geometry at 1440",
+      "status": "passed",
+      "run": "dispatcher-axis-green"
     }
   ],
   "note": "Latest outcome per file/title from completed scoped runs; not a full suite and not a single final-build run."
