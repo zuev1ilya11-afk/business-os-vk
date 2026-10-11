@@ -35,6 +35,7 @@ async function setup(role,width=390){
  const context=await browser.newContext({viewport:{width,height:844},deviceScaleFactor:1,serviceWorkers:'block',locale:'ru-RU',timezoneId:'Europe/Moscow'}),page=await context.newPage();
  const errors=[],blocked=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',r=>{const host=new URL(r.request().url()).hostname;if(host==='127.0.0.1')return r.continue();blocked.push(r.request().url());return r.abort()});
+ await page.route('https://test.invalid/storage/**',r=>r.request().resourceType()==='image'?r.fulfill({status:200,contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320"><rect width="480" height="320" fill="#20354d"/><text x="240" y="160" fill="#edf2f8" text-anchor="middle" font-size="24">Тестовое фото</text></svg>'}):r.abort());
  await page.clock.setFixedTime(new Date('2026-10-08T09:00:00Z'));
  const ctx=await fullStack(page,role);await page.route('**/mini-app-api',async r=>{await new Promise(resolve=>setTimeout(resolve,350));await r.fallback()});seed(ctx.db,ctx.me,ctx.master,role);
  await page.goto('http://127.0.0.1:'+server.address().port+'/',{waitUntil:'domcontentloaded'});await page.locator('#authGate').waitFor({state:'hidden',timeout:25000});await page.evaluate(async role=>{await window.BOS_LOAD_ROLE_MODULES?.(role)},role);await page.waitForFunction(()=>window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190&&window.BOS_DISPATCHER_QUICK_ACTIONS_V159);await page.locator('.bosOpsWorkspace').waitFor({state:'visible'});

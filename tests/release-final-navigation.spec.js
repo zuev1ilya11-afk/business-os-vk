@@ -26,3 +26,10 @@ test('owner tools have one materials entry and a real manager preview with retur
  await page.getByRole('button',{name:/Вернуться к владельцу|Вернуться в профиль владельца|К владельцу/}).first().click();
  await expect(page.locator('body')).toHaveAttribute('data-bos-ui-role','owner');
 });
+for(const role of ['manager','owner'])test(`${role} browser Back closes finance and employee details without leaving their workspace`,async({page})=>{
+ await boot(page,role);await page.locator('nav [data-page=finance]').click();await page.locator('.finPeriodControl summary').click();await page.locator('[data-fin-period=all]').click();await page.locator('[data-fin-tab=orders]').click();
+ await page.locator('[data-fin-key="order:11"] [data-fin-order]').click();await expect(page.locator('#modalRoot .modal')).toBeVisible();
+ await expect.poll(()=>page.evaluate(()=>history.state?.kind)).toBe('modal');await page.goBack();await expect(page.locator('#modalRoot .modal')).toHaveCount(0);await expect(page.locator('#financePage')).toBeVisible();
+ await navigate(page,'team');await page.locator('.compactTeamCard').filter({hasText:'Тестовый мастер'}).click();await expect(page.locator('#modalRoot .modal')).toBeVisible();
+ await expect.poll(()=>page.evaluate(()=>history.state?.kind)).toBe('modal');await page.goBack();await expect(page.locator('#modalRoot .modal')).toHaveCount(0);await expect(page.locator('.compactTeamCard').first()).toBeVisible();
+});

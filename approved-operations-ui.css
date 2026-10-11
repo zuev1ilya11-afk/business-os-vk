@@ -200,3 +200,21 @@ body.bos-approved-ui .bosPushStates>div{display:flex;justify-content:space-betwe
 body.bos-approved-ui .bosPushStates dt{color:#a3b1c3}
 body.bos-approved-ui .bosPushStates dd{margin:0;color:#edf2f8;text-align:right;font-weight:600}
 @media(max-width:600px){body.bos-approved-ui .bosPushStates>div{display:block}body.bos-approved-ui .bosPushStates dd{text-align:left;margin-top:6px}}
+
+/* Final comparison: retain native controls with the approved mobile hierarchy. */
+@media(max-width:760px){
+ .bos-approved-ui #ownerDashboard .bosManagementHeading{margin-bottom:20px;}
+ .bos-approved-ui #ownerDashboard>.odMetrics{margin-bottom:12px;}
+ .bos-approved-ui #ownerDashboard .dashMetric{padding:16px 14px;gap:8px;}
+ .bos-approved-ui #ownerDashboard .odSecondaryIndicators{margin-bottom:12px;}
+ .bos-approved-ui #financePage .finHeading{align-items:stretch;}
+ .bos-approved-ui #financePage .finHeading>[data-fin-expense-add]{width:100%;}
+}
+@media(max-width:600px){
+ .bos-approved-ui .bosOpsWorkspace .bosOpsHeading{grid-template-columns:minmax(0,1fr);justify-content:stretch;}
+ .bos-approved-ui .bosOpsWorkspace .bosOpsHeading>.primary{width:100%;max-width:none;}
+ .bos-approved-ui .newOrderForm .newOrderActions{grid-template-columns:80px minmax(0,1fr);gap:8px;padding-bottom:calc(10px + env(safe-area-inset-bottom));}
+ .bos-approved-ui .newOrderForm .newOrderActions button{min-height:44px;margin:0;padding:10px 8px;font-size:13px;line-height:1.35;}
+ .bos-approved-ui .newOrderForm .newOrderActions button[type=submit]{grid-column:2;grid-row:1;}
+ .bos-approved-ui .newOrderForm .newOrderActions button[type=button]{grid-column:1;grid-row:1;}
+}

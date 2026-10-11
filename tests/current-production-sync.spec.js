@@ -52,7 +52,7 @@ test('master saving profile updates users, masters and opens current home withou
   const people=await page.evaluate(()=>[state.user,...state.users,...state.masters]);
   expect(people.every(x=>x.phone==='+79990000099'&&x.district==='Новый район')).toBe(true);
   await page.locator('nav [data-page=home]').click();
-  await expect(page.getByRole('heading',{name:'Рабочий день'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Мой день',exact:true})).toBeVisible();
 });
 test('credentials save synchronizes employee state without waiting for polling',async({page})=>{
   const {master}=await boot(page,'owner');
