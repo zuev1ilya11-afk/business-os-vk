@@ -5,8 +5,9 @@ for(const role of ['owner','manager','dispatcher','master'])fs.mkdirSync(path.jo
 const {fullStack}=require(source+'/tests/helpers/full-stack.cjs');
 const {employee,attachmentUrl}=require(source+'/tests/helpers/edge.cjs');
 
+const contractPairs=new Set(require(source+'/docs/approved-ui/screen-contract.json').map(x=>x.role+':'+x.screen));
 const sha=require('node:child_process').execFileSync('git',['rev-parse','HEAD'],{cwd:source,encoding:'utf8'}).trim();
-const manifestPath=out+'/capture-manifest.json';let manifest=fs.existsSync(manifestPath)?JSON.parse(fs.readFileSync(manifestPath)):[];
+const manifestPath=out+'/capture-manifest.json';let manifest=fs.existsSync(manifestPath)?JSON.parse(fs.readFileSync(manifestPath)).filter(x=>contractPairs.has(x.role+':'+x.screen)):[];
 const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json','.webmanifest':'application/manifest+json','.png':'image/png','.jpg':'image/jpeg'};
 const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);const p=path.resolve(source,'.'+(pathname==='/'?'/index.html':pathname));if(!p.startsWith(source+'/')){res.writeHead(403).end();return;}fs.readFile(p,(e,b)=>{if(e){res.writeHead(404).end();return;}res.writeHead(200,{'Content-Type':mime[path.extname(p)]||'application/octet-stream','Cache-Control':'no-store'});res.end(b)})});
 const write=()=>fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2));
@@ -46,7 +47,7 @@ async function setup(role,width=390){
   if(route.request().method()==='OPTIONS')return route.fulfill({status:204,headers:{'access-control-allow-origin':'*','access-control-allow-headers':'content-type,x-bos-session'},body:''});
   const body=route.request().postDataJSON();await route.fulfill({status:body.action==='issue'?200:403,headers:{'access-control-allow-origin':'*'},contentType:'application/json',body:JSON.stringify(body.action==='issue'?{ok:true,code:'DEMO-ONLY',expires_at:'2026-10-08T10:00:00Z'}:{ok:false,error:'Unsupported synthetic capture action'})});
  });
- await page.goto('http://127.0.0.1:' +server.address().port+'/',{waitUntil:'domcontentloaded'});await page.locator('#authGate').waitFor({state:'hidden',timeout:25000});await page.evaluate(async role=>{await window.BOS_LOAD_ROLE_MODULES?.(role)},role);await page.waitForFunction(()=>window.BOS_ORDER_CONTROL&&window.BOS_OWNER_DASHBOARD);await page.locator(role==='dispatcher'?'.bosOpsWorkspace':'#ownerDashboard').waitFor({state:'visible'});
+ await page.goto('http://127.0.0.1:' +server.address().port+'/',{waitUntil:'domcontentloaded'});await page.locator('#authGate').waitFor({state:'hidden',timeout:25000});await page.waitForFunction(()=>document.body.classList.contains('bos-auth-ok')&&window.BOS_SESSION_API_READY);await page.evaluate(async role=>{await window.BOS_LOAD_ROLE_MODULES?.(role)},role);await page.waitForFunction(()=>window.BOS_ORDER_CONTROL&&window.BOS_OWNER_DASHBOARD);await page.locator(role==='dispatcher'?'.bosOpsWorkspace':'#ownerDashboard').waitFor({state:'visible'});
  return {context,page,role,...ctx,errors,blocked};
 }
 async function cap(c,screen,state='populated',actions=[]){const {page,role}=c;await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));const width=page.viewportSize().width;const name=`${screen}-fixture-${width}.png`,p=`${out}/${role}/${name}`;await page.screenshot({path:p,fullPage:false});const overflow=await page.evaluate(()=>({document:document.documentElement.scrollWidth-innerWidth,body:document.body.scrollWidth-innerWidth}));manifest=manifest.filter(x=>x.path!==p&&!(x.role===role&&x.screen===screen&&x.state==='capture-gap'));manifest.push({role,screen,state,width,height:page.viewportSize().height,path:p,source:'local-feature-fixture',commit:sha,runtimeBuild:await page.evaluate(()=>BOS_BUILD.id),buildId:await page.evaluate(()=>BOS_BUILD.id),synthetic:true,fixedClock:'2026-10-08T09:00:00Z',actions,overflow,consoleErrors:[...c.errors],blockedExternalRequests:[...new Set(c.blocked)],coverageGaps:[]});write();console.log(`${role} ${screen} ${width}`)}
@@ -67,7 +68,7 @@ async function nav(c,target){
 async function attempt(c,name,fn){try{await fn()}catch(e){manifest.push({role:c.role,screen:name,source:'local-feature-fixture',commit:sha,state:'capture-gap',modalText:await c.page.locator('#modalRoot').innerText(),coverageGaps:[e.message.slice(0,800)]});write();console.log('GAP '+c.role+' '+name+' '+e.message.slice(0,220));await close(c).catch(()=>{})}}
 
 async function management(c){const p=c.page;p.setDefaultTimeout(6000);
- async function run(screen,fn,marker){await attempt(c,screen,async()=>{await close(c);await fn();if(marker)await p.locator(marker).first().waitFor({state:'visible'});await p.evaluate(()=>scrollTo(0,0));if(screen==='review-reject')await p.locator('#reviewComment').scrollIntoViewIfNeeded();if(screen==='staff-invite')await p.locator('[data-staff-invite-card]').scrollIntoViewIfNeeded();await cap(c,screen,'synthetic-fixture',[screen]);})}
+ async function run(screen,fn,marker){if(!contractPairs.has(c.role+':'+screen))return;await attempt(c,screen,async()=>{await close(c);await fn();if(marker)await p.locator(marker).first().waitFor({state:'visible'});await p.evaluate(()=>scrollTo(0,0));if(screen==='review-reject')await p.locator('#reviewComment').scrollIntoViewIfNeeded();if(screen==='staff-invite')await p.locator('[data-staff-invite-card]').scrollIntoViewIfNeeded();await cap(c,screen,'synthetic-fixture',[screen]);})}
  const wanted=process.env.BOS_CAPTURE_SCREENS?.split(',');
  const tasks=[
  ['dashboard',()=>nav(c,'home'),'.bosManagementHeading'],
