@@ -116,6 +116,24 @@
       "sha256": "2062eb8378796df5df5b90f064c02760e8d51b71dc08e36348a350c7026bd06b"
     },
     {
+      "file": "employee-profile-patch.js",
+      "label": "accrual calculations, with presentation label normalization",
+      "unchanged": true,
+      "sha256": "dd4e4205b1f2f349c33eec77cd3d1e1316baf629e9bb51b4ca43b7c09500de55"
+    },
+    {
+      "file": "team-roles-fix-v31.js",
+      "label": "accrual calculations, with presentation label normalization",
+      "unchanged": true,
+      "sha256": "2319646e6c6e5500e2b558f039980c16ec90d6f81251d4cdc1a90e1280c68bfe"
+    },
+    {
+      "file": "role-chrome-v83.js",
+      "label": "original role/navigation implementation excluding new guarded profile delegation",
+      "unchanged": true,
+      "sha256": "7930cde10f549b4a272e8b42df66d5c0c3abc06f1d64200ccfb2449a666dc420"
+    },
+    {
       "file": "order-control-tasks.js",
       "label": "entire protected file",
       "unchanged": true,

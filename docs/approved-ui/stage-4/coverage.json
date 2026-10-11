@@ -1,0 +1,4582 @@
+{
+  "stage": 4,
+  "baseCommit": "12f4472962c342e64ada480b855e50bfe052cad5",
+  "statuses": {
+    "deferred-to-task-5": 51,
+    "implemented": 64,
+    "reused-and-role-verified": 33
+  },
+  "rows": [
+    {
+      "role": "dispatcher",
+      "screen": "review",
+      "title": "Проверка отчёта",
+      "sourceSurfaceIds": [
+        "report_review"
+      ],
+      "status": "implemented",
+      "renderer": "report-review-patch.js; report-review-runtime-v30.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "Existing signed act/photo URLs and review snapshot remain. Fixture media is deliberately unavailable; no invented filenames/sizes or external file fetch. Reject uses original required comment validation."
+      ]
+    },
+    {
+      "role": "dispatcher",
+      "screen": "review-reject",
+      "title": "Отклонение отчёта",
+      "sourceSurfaceIds": [
+        "report_review"
+      ],
+      "status": "implemented",
+      "renderer": "report-review-patch.js; report-review-runtime-v30.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-reject-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/dispatcher/review-reject-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "Existing signed act/photo URLs and review snapshot remain. Fixture media is deliberately unavailable; no invented filenames/sizes or external file fetch. Reject uses original required comment validation."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "dashboard",
+      "title": "Обзор руководителя",
+      "sourceSurfaceIds": [
+        "owner_home"
+      ],
+      "status": "implemented",
+      "renderer": "owner-dashboard-v9.js; order-control.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/dashboard-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "orders",
+      "title": "Заявки · Исполнение",
+      "sourceSurfaceIds": [
+        "ops_orders"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/orders-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/orders-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "reports",
+      "title": "Отчёты · Контроль качества",
+      "sourceSurfaceIds": [
+        "report_queue"
+      ],
+      "status": "implemented",
+      "renderer": "owner-dashboard-v9.js; original report review queue",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/reports-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/reports-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "team",
+      "title": "Команда · Загрузка",
+      "sourceSurfaceIds": [
+        "team"
+      ],
+      "status": "implemented",
+      "renderer": "team-roles-fix-v31.js; employee-profile-patch.js; staff-permissions-calendar-v43.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/team-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/team-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/team-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/team-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/team-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "team-member",
+      "title": "Сотрудник · Работа и начисления",
+      "sourceSurfaceIds": [
+        "employee_profile"
+      ],
+      "status": "implemented",
+      "renderer": "team-roles-fix-v31.js; employee-profile-patch.js; staff-permissions-calendar-v43.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/team-member-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/team-member-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "finance-overview",
+      "title": "Финансы · Обзор",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_overview"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/finance-overview-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/finance-overview-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/finance-overview-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/finance-overview-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/finance-overview-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "finance-expenses",
+      "title": "Финансы · Расходы",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_expenses"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/finance-expenses-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/finance-expenses-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/finance-expenses-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/finance-expenses-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/finance-expenses-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative.",
+        "The selected period expenses are loaded; separate week spending is not inferred. Summary shows selected-period total and saved record count."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "finance-masters",
+      "title": "Финансы · Мастера",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_masters"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/finance-masters-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/finance-masters-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/finance-masters-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/finance-masters-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/finance-masters-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "finance-orders",
+      "title": "Финансы · Заявки",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_orders"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/finance-orders-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/finance-orders-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/finance-orders-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/finance-orders-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/finance-orders-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "finance-sources",
+      "title": "Финансы · Источники",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_sources"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/finance-sources-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/finance-sources-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/finance-sources-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/finance-sources-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/finance-sources-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "finance-works",
+      "title": "Финансы · Работы",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_works"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/finance-works-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/finance-works-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/finance-works-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/finance-works-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/finance-works-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "finance-periods",
+      "title": "Финансы · Периоды",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_periods"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/finance-periods-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/finance-periods-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/finance-periods-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/finance-periods-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/finance-periods-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "finance-period",
+      "title": "Выбор периода",
+      "sourceSurfaceIds": [
+        "finance"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/finance-period-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/finance-period-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "finance-filters",
+      "title": "Финансовые фильтры",
+      "sourceSurfaceIds": [
+        "ops_orders"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/finance-filters-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/finance-filters-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "expense-new",
+      "title": "Добавить расход",
+      "sourceSurfaceIds": [
+        "finance_expense_form"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/expense-new-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/expense-new-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "expense-edit",
+      "title": "Редактировать расход",
+      "sourceSurfaceIds": [
+        "finance_expense_form"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/expense-edit-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/expense-edit-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "finance-master",
+      "title": "Финансы мастера",
+      "sourceSurfaceIds": [
+        "finance_master_detail"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/finance-master-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/finance-master-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "more",
+      "title": "Ещё · Руководитель",
+      "sourceSurfaceIds": [
+        "chrome"
+      ],
+      "status": "implemented",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/more-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/more-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "profile",
+      "title": "Профиль руководителя",
+      "sourceSurfaceIds": [
+        "ops_profile"
+      ],
+      "status": "implemented",
+      "renderer": "existing employee/profile/access/memo renderers; employee-profile-patch.js; role-chrome-v83.js; scoped approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/profile-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/profile-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/profile-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/profile-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/profile-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "dashboard",
+      "title": "Обзор владельца",
+      "sourceSurfaceIds": [
+        "owner_home"
+      ],
+      "status": "implemented",
+      "renderer": "owner-dashboard-v9.js; order-control.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/owner/dashboard-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/dashboard-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/owner/dashboard-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/owner/dashboard-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/dashboard-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "orders-new",
+      "title": "Заявки · Новые",
+      "sourceSurfaceIds": [
+        "ops_orders"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/orders-new-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/orders-new-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "orders-active",
+      "title": "Заявки · В работе",
+      "sourceSurfaceIds": [
+        "ops_orders"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/orders-active-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/orders-active-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "orders-reports",
+      "title": "Заявки · Отчёты",
+      "sourceSurfaceIds": [
+        "report_queue"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "owner-dashboard-v9.js; original report review queue",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/orders-reports-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/orders-reports-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "orders-archive",
+      "title": "Заявки · Архив",
+      "sourceSurfaceIds": [
+        "ops_orders"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/orders-archive-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/orders-archive-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "team",
+      "title": "Команда · Управление",
+      "sourceSurfaceIds": [
+        "team"
+      ],
+      "status": "implemented",
+      "renderer": "team-roles-fix-v31.js; employee-profile-patch.js; staff-permissions-calendar-v43.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/owner/team-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/team-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/owner/team-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/owner/team-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/team-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "invite",
+      "title": "Создать сотрудника",
+      "sourceSurfaceIds": [
+        "employee_create"
+      ],
+      "status": "implemented",
+      "renderer": "existing employee/profile/access/memo renderers; employee-profile-patch.js; role-chrome-v83.js; scoped approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/invite-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/invite-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "admin",
+      "title": "Инструменты владельца",
+      "sourceSurfaceIds": [
+        "owner_tools"
+      ],
+      "status": "implemented",
+      "renderer": "existing employee/profile/access/memo renderers; employee-profile-patch.js; role-chrome-v83.js; scoped approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/admin-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/admin-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "memo-edit",
+      "title": "Материалы для команды",
+      "sourceSurfaceIds": [
+        "memo_management"
+      ],
+      "status": "implemented",
+      "renderer": "existing employee/profile/access/memo renderers; employee-profile-patch.js; role-chrome-v83.js; scoped approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/memo-edit-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/memo-edit-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "finance-overview",
+      "title": "Финансы владельца",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_overview"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/owner/finance-overview-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/finance-overview-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/owner/finance-overview-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/owner/finance-overview-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/finance-overview-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "profile",
+      "title": "Профиль владельца",
+      "sourceSurfaceIds": [
+        "ops_profile"
+      ],
+      "status": "implemented",
+      "renderer": "existing employee/profile/access/memo renderers; employee-profile-patch.js; role-chrome-v83.js; scoped approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/owner/profile-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/profile-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/owner/profile-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/owner/profile-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/profile-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "settings-proposal",
+      "title": "Настройки · Концепт",
+      "sourceSurfaceIds": [
+        "owner_tools"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "loading",
+      "title": "Загрузка",
+      "sourceSurfaceIds": [
+        "chrome"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "empty",
+      "title": "Нет результатов",
+      "sourceSurfaceIds": [
+        "chrome"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "error",
+      "title": "Ошибка загрузки",
+      "sourceSurfaceIds": [
+        "chrome"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "offline",
+      "title": "Нет соединения",
+      "sourceSurfaceIds": [
+        "chrome"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "file-viewer",
+      "title": "Просмотр документа",
+      "sourceSurfaceIds": [
+        "report_photo",
+        "report_review"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "dispatcher",
+      "screen": "control",
+      "title": "Контроль заявок",
+      "sourceSurfaceIds": [
+        "ops_order_control"
+      ],
+      "status": "implemented",
+      "renderer": "order-control.js; unchanged order-control-tasks.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/dispatcher/control-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/dispatcher/control-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "dispatcher",
+      "screen": "control-task",
+      "title": "Ответственный и срок",
+      "sourceSurfaceIds": [
+        "control_tasks"
+      ],
+      "status": "implemented",
+      "renderer": "order-control.js; unchanged order-control-tasks.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/dispatcher/control-task-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/dispatcher/control-task-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "staff-access",
+      "title": "Доступы сотрудников",
+      "sourceSurfaceIds": [
+        "staff_access"
+      ],
+      "status": "implemented",
+      "renderer": "existing employee/profile/access/memo renderers; employee-profile-patch.js; role-chrome-v83.js; scoped approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/staff-access-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/staff-access-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "memo-edit",
+      "title": "Памятки · Управление",
+      "sourceSurfaceIds": [
+        "memo_management"
+      ],
+      "status": "implemented",
+      "renderer": "existing employee/profile/access/memo renderers; employee-profile-patch.js; role-chrome-v83.js; scoped approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/memo-edit-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/memo-edit-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "manual-complete",
+      "title": "Завершить вручную",
+      "sourceSurfaceIds": [
+        "manual_complete"
+      ],
+      "status": "implemented",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/manual-complete-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/manual-complete-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "order-delete",
+      "title": "Удалить заявку",
+      "sourceSurfaceIds": [
+        "delete_order"
+      ],
+      "status": "implemented",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/order-delete-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/order-delete-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "Original native confirmation is retained. Capture shows existing leadership delete entry/context; no unsupported deletion-reason form is added."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "employee-edit",
+      "title": "Сотрудник · Управление доступом",
+      "sourceSurfaceIds": [
+        "employee_profile",
+        "staff_access"
+      ],
+      "status": "implemented",
+      "renderer": "existing employee/profile/access/memo renderers; employee-profile-patch.js; role-chrome-v83.js; scoped approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/employee-edit-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/employee-edit-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "staff-invite",
+      "title": "Приглашение VK",
+      "sourceSurfaceIds": [
+        "staff_invite"
+      ],
+      "status": "implemented",
+      "renderer": "existing employee/profile/access/memo renderers; employee-profile-patch.js; role-chrome-v83.js; scoped approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/staff-invite-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/staff-invite-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "Capture only uses synthetic read-only isolation and an explicitly DEMO-ONLY issue response; no real invitation issued."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "api-integrations",
+      "title": "API · Интеграции",
+      "sourceSurfaceIds": [
+        "api_integrations"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "api-create",
+      "title": "API · Создать интеграцию",
+      "sourceSurfaceIds": [
+        "api_integrations"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "api-mapping",
+      "title": "API · Сопоставление полей",
+      "sourceSurfaceIds": [
+        "api_integrations"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "hands-settings",
+      "title": "Hands · Состояние интеграции",
+      "sourceSurfaceIds": [
+        "hands_settings"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "auth-login",
+      "title": "Вход в Business OS",
+      "sourceSurfaceIds": [
+        "auth"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "auth-invite",
+      "title": "Вход по приглашению",
+      "sourceSurfaceIds": [
+        "auth"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "auth-expired",
+      "title": "Сессия истекла",
+      "sourceSurfaceIds": [
+        "auth"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "finance-overview-unknown",
+      "title": "Финансы · Неполные данные",
+      "sourceSurfaceIds": [
+        "finance"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/finance-overview-unknown-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/finance-overview-unknown-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "role-preview",
+      "title": "Просмотр интерфейсов ролей",
+      "sourceSurfaceIds": [
+        "owner_tools"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "expense-delete",
+      "title": "Удалить расход",
+      "sourceSurfaceIds": [
+        "finance_expense_form"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/expense-delete-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/expense-delete-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "workspace",
+      "title": "Рабочее место",
+      "sourceSurfaceIds": [
+        "dispatcher_home",
+        "ops_orders",
+        "ops_schedule_board"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "owner-dashboard-v9.js; order-control.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/workspace-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/workspace-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "Existing role guard routes manager/owner Home to management dashboard. No separate dispatcher-only workspace destination is invented; their Orders, Schedule and Detail are captured separately."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "attention",
+      "title": "Требуют внимания",
+      "sourceSurfaceIds": [
+        "ops_order_control",
+        "legacy_board_control"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/attention-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/attention-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "order-detail",
+      "title": "Заявка · Контроль выполнения",
+      "sourceSurfaceIds": [
+        "order_detail_ops"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/order-detail-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/order-detail-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "order-create",
+      "title": "Новая заявка",
+      "sourceSurfaceIds": [
+        "order_editor"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/order-create-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/order-create-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "order-edit",
+      "title": "Редактирование заявки",
+      "sourceSurfaceIds": [
+        "order_editor"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/order-edit-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/order-edit-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "assign",
+      "title": "Назначение мастера",
+      "sourceSurfaceIds": [
+        "smart_assign"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/assign-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/assign-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "reschedule",
+      "title": "Перенос визита",
+      "sourceSurfaceIds": [
+        "reschedule_ops"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/reschedule-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/reschedule-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "schedule",
+      "title": "Расписание команды",
+      "sourceSurfaceIds": [
+        "ops_schedule_board",
+        "management_schedule"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged unified-schedule-v102.js / dispatcher-mobile-dispatch-v107.js; Stage 3 composition",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/schedule-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/schedule-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/schedule-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/schedule-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/schedule-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "schedule-month",
+      "title": "График команды · Месяц",
+      "sourceSurfaceIds": [
+        "management_schedule"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged unified-schedule-v102.js / dispatcher-mobile-dispatch-v107.js; Stage 3 composition",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/schedule-month-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/schedule-month-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "day-detail",
+      "title": "День мастера",
+      "sourceSurfaceIds": [
+        "management_schedule"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged unified-schedule-v102.js / dispatcher-mobile-dispatch-v107.js; Stage 3 composition",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/day-detail-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/day-detail-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "control",
+      "title": "Контроль заявок",
+      "sourceSurfaceIds": [
+        "ops_order_control"
+      ],
+      "status": "implemented",
+      "renderer": "order-control.js; unchanged order-control-tasks.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/control-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/control-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/control-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/control-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/control-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "control-task",
+      "title": "Ответственный и срок",
+      "sourceSurfaceIds": [
+        "control_tasks"
+      ],
+      "status": "implemented",
+      "renderer": "order-control.js; unchanged order-control-tasks.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/control-task-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/control-task-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "free-slots",
+      "title": "Свободные окна",
+      "sourceSurfaceIds": [
+        "free_slots"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/free-slots-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/free-slots-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "slot-assign",
+      "title": "Назначить заявку на свободное окно",
+      "sourceSurfaceIds": [
+        "free_slots"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/slot-assign-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/slot-assign-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "order-cancel",
+      "title": "Отменить заявку",
+      "sourceSurfaceIds": [
+        "cancel_order"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/order-cancel-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/order-cancel-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "claims",
+      "title": "Рекламации",
+      "sourceSurfaceIds": [
+        "claims"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "claim-detail",
+      "title": "Рекламация · Повторный визит",
+      "sourceSurfaceIds": [
+        "claims"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "claim-create",
+      "title": "Создать рекламацию",
+      "sourceSurfaceIds": [
+        "claim_create"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "review",
+      "title": "Проверка отчёта",
+      "sourceSurfaceIds": [
+        "report_review"
+      ],
+      "status": "implemented",
+      "renderer": "report-review-patch.js; report-review-runtime-v30.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/review-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "Existing signed act/photo URLs and review snapshot remain. Fixture media is deliberately unavailable; no invented filenames/sizes or external file fetch. Reject uses original required comment validation."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "review-reject",
+      "title": "Отклонение отчёта",
+      "sourceSurfaceIds": [
+        "report_review"
+      ],
+      "status": "implemented",
+      "renderer": "report-review-patch.js; report-review-runtime-v30.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/review-reject-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/review-reject-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "Existing signed act/photo URLs and review snapshot remain. Fixture media is deliberately unavailable; no invented filenames/sizes or external file fetch. Reject uses original required comment validation."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "avito",
+      "title": "Авито · Диалоги",
+      "sourceSurfaceIds": [
+        "avito_workspace"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "avito-thread",
+      "title": "Авито · Диалог с заявкой",
+      "sourceSurfaceIds": [
+        "avito_workspace"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "avito-lead",
+      "title": "Авито → Новая заявка",
+      "sourceSurfaceIds": [
+        "avito_lead"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "avito-settings",
+      "title": "Авито · Подключение",
+      "sourceSurfaceIds": [
+        "avito_settings"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "hands-sync",
+      "title": "Hands · Синхронизация",
+      "sourceSurfaceIds": [
+        "hands_settings"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "hands-order",
+      "title": "Hands · Отправка данных",
+      "sourceSurfaceIds": [
+        "hands_order"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "hands-settings",
+      "title": "Hands · Состояние интеграции",
+      "sourceSurfaceIds": [
+        "hands_settings"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "notifications",
+      "title": "Уведомления",
+      "sourceSurfaceIds": [
+        "notifications"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "filters",
+      "title": "Фильтры заявок",
+      "sourceSurfaceIds": [
+        "ops_orders"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/manager/filters-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/manager/filters-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "manager",
+      "screen": "file-viewer",
+      "title": "Просмотр документа",
+      "sourceSurfaceIds": [
+        "report_photo",
+        "report_review"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "photo-error",
+      "title": "Просмотр фото · Ошибка",
+      "sourceSurfaceIds": [
+        "report_photo"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "push",
+      "title": "Уведомления на устройстве",
+      "sourceSurfaceIds": [
+        "push"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "login-settings",
+      "title": "Настройки входа",
+      "sourceSurfaceIds": [
+        "ops_profile"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "personal",
+      "title": "Личные данные",
+      "sourceSurfaceIds": [
+        "master_profile_edit"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "help",
+      "title": "Помощь",
+      "sourceSurfaceIds": [
+        "master_memo"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "about",
+      "title": "О приложении",
+      "sourceSurfaceIds": [
+        "chrome"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "auth-login",
+      "title": "Вход в Business OS",
+      "sourceSurfaceIds": [
+        "auth"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "auth-invite",
+      "title": "Вход по приглашению",
+      "sourceSurfaceIds": [
+        "auth"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "manager",
+      "screen": "auth-expired",
+      "title": "Сессия истекла",
+      "sourceSurfaceIds": [
+        "auth"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "workspace",
+      "title": "Рабочее место",
+      "sourceSurfaceIds": [
+        "dispatcher_home",
+        "ops_orders",
+        "ops_schedule_board"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "owner-dashboard-v9.js; order-control.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/workspace-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/workspace-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "Existing role guard routes manager/owner Home to management dashboard. No separate dispatcher-only workspace destination is invented; their Orders, Schedule and Detail are captured separately."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "attention",
+      "title": "Требуют внимания",
+      "sourceSurfaceIds": [
+        "ops_order_control",
+        "legacy_board_control"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/attention-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/attention-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "order-detail",
+      "title": "Заявка · Контроль выполнения",
+      "sourceSurfaceIds": [
+        "order_detail_ops"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/order-detail-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/order-detail-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "order-create",
+      "title": "Новая заявка",
+      "sourceSurfaceIds": [
+        "order_editor"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/order-create-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/order-create-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "order-edit",
+      "title": "Редактирование заявки",
+      "sourceSurfaceIds": [
+        "order_editor"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/order-edit-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/order-edit-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "assign",
+      "title": "Назначение мастера",
+      "sourceSurfaceIds": [
+        "smart_assign"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/assign-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/assign-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "reschedule",
+      "title": "Перенос визита",
+      "sourceSurfaceIds": [
+        "reschedule_ops"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/reschedule-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/reschedule-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "schedule",
+      "title": "Расписание команды",
+      "sourceSurfaceIds": [
+        "ops_schedule_board",
+        "management_schedule"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged unified-schedule-v102.js / dispatcher-mobile-dispatch-v107.js; Stage 3 composition",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/owner/schedule-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/schedule-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/owner/schedule-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/owner/schedule-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/schedule-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "schedule-month",
+      "title": "График команды · Месяц",
+      "sourceSurfaceIds": [
+        "management_schedule"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged unified-schedule-v102.js / dispatcher-mobile-dispatch-v107.js; Stage 3 composition",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/schedule-month-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/schedule-month-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "day-detail",
+      "title": "День мастера",
+      "sourceSurfaceIds": [
+        "management_schedule"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged unified-schedule-v102.js / dispatcher-mobile-dispatch-v107.js; Stage 3 composition",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/day-detail-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/day-detail-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "control",
+      "title": "Контроль заявок",
+      "sourceSurfaceIds": [
+        "ops_order_control"
+      ],
+      "status": "implemented",
+      "renderer": "order-control.js; unchanged order-control-tasks.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/owner/control-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/control-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/owner/control-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/owner/control-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/control-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "control-task",
+      "title": "Ответственный и срок",
+      "sourceSurfaceIds": [
+        "control_tasks"
+      ],
+      "status": "implemented",
+      "renderer": "order-control.js; unchanged order-control-tasks.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/control-task-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/control-task-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "free-slots",
+      "title": "Свободные окна",
+      "sourceSurfaceIds": [
+        "free_slots"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/free-slots-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/free-slots-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "slot-assign",
+      "title": "Назначить заявку на свободное окно",
+      "sourceSurfaceIds": [
+        "free_slots"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/slot-assign-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/slot-assign-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "order-cancel",
+      "title": "Отменить заявку",
+      "sourceSurfaceIds": [
+        "cancel_order"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/order-cancel-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/order-cancel-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "order-delete",
+      "title": "Удалить заявку",
+      "sourceSurfaceIds": [
+        "delete_order"
+      ],
+      "status": "implemented",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/order-delete-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/order-delete-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "Original native confirmation is retained. Capture shows existing leadership delete entry/context; no unsupported deletion-reason form is added."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "manual-complete",
+      "title": "Завершить вручную",
+      "sourceSurfaceIds": [
+        "manual_complete"
+      ],
+      "status": "implemented",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/manual-complete-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/manual-complete-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "claims",
+      "title": "Рекламации",
+      "sourceSurfaceIds": [
+        "claims"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "claim-detail",
+      "title": "Рекламация · Повторный визит",
+      "sourceSurfaceIds": [
+        "claims"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "claim-create",
+      "title": "Создать рекламацию",
+      "sourceSurfaceIds": [
+        "claim_create"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "reports",
+      "title": "Очередь отчётов",
+      "sourceSurfaceIds": [
+        "report_queue"
+      ],
+      "status": "implemented",
+      "renderer": "owner-dashboard-v9.js; original report review queue",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/reports-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/reports-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "review",
+      "title": "Проверка отчёта",
+      "sourceSurfaceIds": [
+        "report_review"
+      ],
+      "status": "implemented",
+      "renderer": "report-review-patch.js; report-review-runtime-v30.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/review-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "Existing signed act/photo URLs and review snapshot remain. Fixture media is deliberately unavailable; no invented filenames/sizes or external file fetch. Reject uses original required comment validation."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "review-reject",
+      "title": "Отклонение отчёта",
+      "sourceSurfaceIds": [
+        "report_review"
+      ],
+      "status": "implemented",
+      "renderer": "report-review-patch.js; report-review-runtime-v30.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/review-reject-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/review-reject-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "Existing signed act/photo URLs and review snapshot remain. Fixture media is deliberately unavailable; no invented filenames/sizes or external file fetch. Reject uses original required comment validation."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "avito",
+      "title": "Авито · Диалоги",
+      "sourceSurfaceIds": [
+        "avito_workspace"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "avito-thread",
+      "title": "Авито · Диалог с заявкой",
+      "sourceSurfaceIds": [
+        "avito_workspace"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "avito-lead",
+      "title": "Авито → Новая заявка",
+      "sourceSurfaceIds": [
+        "avito_lead"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "avito-settings",
+      "title": "Авито · Подключение",
+      "sourceSurfaceIds": [
+        "avito_settings"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "hands-sync",
+      "title": "Hands · Синхронизация",
+      "sourceSurfaceIds": [
+        "hands_settings"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "hands-order",
+      "title": "Hands · Отправка данных",
+      "sourceSurfaceIds": [
+        "hands_order"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "notifications",
+      "title": "Уведомления",
+      "sourceSurfaceIds": [
+        "notifications"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "filters",
+      "title": "Фильтры заявок",
+      "sourceSurfaceIds": [
+        "ops_orders"
+      ],
+      "status": "reused-and-role-verified",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/filters-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/filters-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "photo-error",
+      "title": "Просмотр фото · Ошибка",
+      "sourceSurfaceIds": [
+        "report_photo"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "push",
+      "title": "Уведомления на устройстве",
+      "sourceSurfaceIds": [
+        "push"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "login-settings",
+      "title": "Настройки входа",
+      "sourceSurfaceIds": [
+        "ops_profile"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "personal",
+      "title": "Личные данные",
+      "sourceSurfaceIds": [
+        "master_profile_edit"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "help",
+      "title": "Помощь",
+      "sourceSurfaceIds": [
+        "master_memo"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "about",
+      "title": "О приложении",
+      "sourceSurfaceIds": [
+        "chrome"
+      ],
+      "status": "deferred-to-task-5",
+      "renderer": "existing renderer retained; Task 5 integration/shared-state work",
+      "stage": 5,
+      "captures": [],
+      "tests": [],
+      "dependencies": [
+        "Shared auth, notifications, help/personal, integration/claims and system/file states are controller-owned Task 5. Entry points preserved."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "more",
+      "title": "Ещё",
+      "sourceSurfaceIds": [
+        "chrome"
+      ],
+      "status": "implemented",
+      "renderer": "unchanged Stage 3 shared operational renderer; approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/more-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/more-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "staff-access",
+      "title": "Доступы сотрудников",
+      "sourceSurfaceIds": [
+        "staff_access"
+      ],
+      "status": "implemented",
+      "renderer": "existing employee/profile/access/memo renderers; employee-profile-patch.js; role-chrome-v83.js; scoped approved-operations-ui.css",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/staff-access-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/staff-access-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "team-member",
+      "title": "Сотрудник · Работа и начисления",
+      "sourceSurfaceIds": [
+        "employee_profile"
+      ],
+      "status": "implemented",
+      "renderer": "team-roles-fix-v31.js; employee-profile-patch.js; staff-permissions-calendar-v43.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/team-member-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/team-member-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "role": "owner",
+      "screen": "finance-expenses",
+      "title": "Финансы · Расходы",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_expenses"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/owner/finance-expenses-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/finance-expenses-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/owner/finance-expenses-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/owner/finance-expenses-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/finance-expenses-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative.",
+        "The selected period expenses are loaded; separate week spending is not inferred. Summary shows selected-period total and saved record count."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "finance-masters",
+      "title": "Финансы · Мастера",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_masters"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/owner/finance-masters-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/finance-masters-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/owner/finance-masters-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/owner/finance-masters-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/finance-masters-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "finance-orders",
+      "title": "Финансы · Заявки",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_orders"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/owner/finance-orders-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/finance-orders-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/owner/finance-orders-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/owner/finance-orders-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/finance-orders-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "finance-sources",
+      "title": "Финансы · Источники",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_sources"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/owner/finance-sources-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/finance-sources-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/owner/finance-sources-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/owner/finance-sources-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/finance-sources-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "finance-works",
+      "title": "Финансы · Работы",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_works"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/owner/finance-works-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/finance-works-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/owner/finance-works-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/owner/finance-works-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/finance-works-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "finance-periods",
+      "title": "Финансы · Периоды",
+      "sourceSurfaceIds": [
+        "finance",
+        "finance_periods"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-4/owner/finance-periods-fixture-360.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/finance-periods-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-4/owner/finance-periods-fixture-430.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-4/owner/finance-periods-fixture-768.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/finance-periods-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "finance-period",
+      "title": "Выбор периода",
+      "sourceSurfaceIds": [
+        "finance"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/finance-period-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/finance-period-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "finance-filters",
+      "title": "Финансовые фильтры",
+      "sourceSurfaceIds": [
+        "ops_orders"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/finance-filters-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/finance-filters-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "expense-new",
+      "title": "Добавить расход",
+      "sourceSurfaceIds": [
+        "finance_expense_form"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/expense-new-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/expense-new-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "expense-edit",
+      "title": "Редактировать расход",
+      "sourceSurfaceIds": [
+        "finance_expense_form"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/expense-edit-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/expense-edit-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "expense-delete",
+      "title": "Удалить расход",
+      "sourceSurfaceIds": [
+        "finance_expense_form"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/expense-delete-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/expense-delete-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "finance-master",
+      "title": "Финансы мастера",
+      "sourceSurfaceIds": [
+        "finance_master_detail"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/finance-master-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/finance-master-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    },
+    {
+      "role": "owner",
+      "screen": "finance-overview-unknown",
+      "title": "Финансы · Неполные данные",
+      "sourceSurfaceIds": [
+        "finance"
+      ],
+      "status": "implemented",
+      "renderer": "finance-page.js; unchanged finance-data.js / finance-expenses.js",
+      "stage": 4,
+      "captures": [
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-4/owner/finance-overview-unknown-fixture-390.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-4/owner/finance-overview-unknown-fixture-1440.png",
+          "runtimeBuild": "4f3606fd602885cd223f",
+          "commit": "e0b0815566501d3ec46c767a48fbd0e9fd013932",
+          "synthetic": true
+        }
+      ],
+      "tests": [
+        "tests/approved-ui-management.spec.js",
+        "role-scoped suites in task-4-report.md"
+      ],
+      "dependencies": [
+        "No bank transfer ledger: actual paid remains —. Existing financial formulas, period scope and source semantics remain authoritative."
+      ]
+    }
+  ]
+}

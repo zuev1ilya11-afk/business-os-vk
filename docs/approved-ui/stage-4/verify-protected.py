@@ -31,6 +31,17 @@ for args in [
  ('team-roles-fix-v31.js','role guards',None,'function teamCard'),
  ('team-roles-fix-v31.js','credential policy and preview handlers','function syncCredentialPolicy',None),
 ]:check(*args)
+# Label-only prefixes retain original employee accrual algorithms exactly.
+for file,start,end,new_end in [
+ ('employee-profile-patch.js','function openEmployeeProfile','openModal(', 'openModal('),
+ ('team-roles-fix-v31.js','function teamCard','  return ', '  const visits='),
+]:
+ old=subprocess.check_output(['git','show',BASE+':'+file],text=True);new=(root/file).read_text()
+ a=part(old,start,end).replace('Выплата','Начислено');b=part(new,start,new_end)
+ checks.append(dict(file=file,label='accrual calculations, with presentation label normalization',unchanged=a==b,sha256=hashlib.sha256(b.encode()).hexdigest()))
+old=subprocess.check_output(['git','show',BASE+':role-chrome-v83.js'],text=True);new=(root/'role-chrome-v83.js').read_text()
+lines=new.splitlines(keepends=True);new=''.join(line for line in lines if not line.startswith('// Management profile entry') and not line.startswith("window.addEventListener('click',event=>{if(effectiveRole()!=="))
+checks.append(dict(file='role-chrome-v83.js',label='original role/navigation implementation excluding new guarded profile delegation',unchanged=old==new,sha256=hashlib.sha256(new.encode()).hexdigest()))
 # All other source files touched by previous stages and all server/database code stay byte identical.
 whole=['order-control-tasks.js','schedule-contract.js','dispatcher-permissions.js','order-payroll.js','finance-data.js','finance-expenses.js','finance-patch.js','salary-periods.js','order-lifecycle-v106.js','management-order-delete-v100.js','management-order-compact-v82.js','owner-calendar-team-v10.js','dispatcher-mobile-dispatch-v107.js','dispatcher-smart-assign-v119.js','dispatcher-free-slots-v120.js','dispatcher-reschedule-v91.js','unified-schedule-v102.js','report-supabase-patch.js','report-chunk-upload-v23.js','auth-api-session-v41.js','mandatory-auth-v29.js','auth-ui-patch.js','manager-preview-v28.js','profile-logout-v96.js','staff-invite-ui-v66.js','hands-integration-v69.js','avito-messages-v25.js']
 tracked=subprocess.check_output(['git','ls-files'],text=True).splitlines()
