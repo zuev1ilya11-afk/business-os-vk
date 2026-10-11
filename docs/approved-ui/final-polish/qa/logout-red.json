@@ -1,0 +1,229 @@
+{
+  "config": {
+    "configFile": "/workspace/scratch/73e5936a7e6d/business-os-vk/scripts/qa/offline-playwright.config.cjs",
+    "rootDir": "/workspace/scratch/73e5936a7e6d/business-os-vk/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "line"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/scratch/11adf7a4aaca/logout-red",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/scratch/73e5936a7e6d/business-os-vk/tests",
+        "testIgnore": [
+          "**/gas-archive-health.spec.js",
+          "**/gas-bridge-health.spec.js"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.1",
+    "workers": 2,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "profile-exit-navigation.spec.js",
+      "file": "profile-exit-navigation.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "dispatcher profile keeps the original logout after its settings",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5658,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/profile-exit-navigation.spec.js:10:2",
+                    "location": {
+                      "file": "/workspace/scratch/73e5936a7e6d/business-os-vk/tests/profile-exit-navigation.spec.js",
+                      "column": 2,
+                      "line": 10
+                    },
+                    "snippet": "   8 |  await expect(page.locator('.bosManagementProfileMenu [data-bos-shared=about]')).toBeVisible();\n   9 |  await expect(page.locator('#bosOwnerLogout')).toBeVisible();\n> 10 |  await expect.poll(()=>page.locator('#bosOwnerLogout').evaluate(e=>e.parentElement.lastElementChild===e)).toBe(true);\n     |  ^\n  11 | });\n  12 |\n  13 | test('owner master preview returns to owner without showing master account logout',async({page})=>{"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/scratch/73e5936a7e6d/business-os-vk/tests/profile-exit-navigation.spec.js",
+                        "column": 2,
+                        "line": 10
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate\n\n   8 |  await expect(page.locator('.bosManagementProfileMenu [data-bos-shared=about]')).toBeVisible();\n   9 |  await expect(page.locator('#bosOwnerLogout')).toBeVisible();\n> 10 |  await expect.poll(()=>page.locator('#bosOwnerLogout').evaluate(e=>e.parentElement.lastElementChild===e)).toBe(true);\n     |  ^\n  11 | });\n  12 |\n  13 | test('owner master preview returns to owner without showing master account logout',async({page})=>{\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/profile-exit-navigation.spec.js:10:2"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "text": "(node:43) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time\n"
+                    }
+                  ],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "Expect \"poll toBe\"",
+                      "duration": 4980,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/profile-exit-navigation.spec.js:10:2",
+                        "location": {
+                          "file": "/workspace/scratch/73e5936a7e6d/business-os-vk/tests/profile-exit-navigation.spec.js",
+                          "column": 2,
+                          "line": 10
+                        },
+                        "snippet": "   8 |  await expect(page.locator('.bosManagementProfileMenu [data-bos-shared=about]')).toBeVisible();\n   9 |  await expect(page.locator('#bosOwnerLogout')).toBeVisible();\n> 10 |  await expect.poll(()=>page.locator('#bosOwnerLogout').evaluate(e=>e.parentElement.lastElementChild===e)).toBe(true);\n     |  ^\n  11 | });\n  12 |\n  13 | test('owner master preview returns to owner without showing master account logout',async({page})=>{"
+                      }
+                    }
+                  ],
+                  "startTime": "2026-10-11T18:33:55.065Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/scratch/11adf7a4aaca/logout-red/profile-exit-navigation-di-c9660-l-logout-after-its-settings/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/scratch/73e5936a7e6d/business-os-vk/tests/profile-exit-navigation.spec.js",
+                    "column": 2,
+                    "line": 10
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "bc56d28aa29624a701f4-ff2969a838b49b5444f1",
+          "file": "profile-exit-navigation.spec.js",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "title": "owner master preview returns to owner without showing master account logout",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5990,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.bosProfileMenu [data-bos-shared=logout]')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.bosProfileMenu [data-bos-shared=logout]')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.bosProfileMenu [data-bos-shared=logout]')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.bosProfileMenu [data-bos-shared=logout]')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/profile-exit-navigation.spec.js:19:73",
+                    "location": {
+                      "file": "/workspace/scratch/73e5936a7e6d/business-os-vk/tests/profile-exit-navigation.spec.js",
+                      "column": 73,
+                      "line": 19
+                    },
+                    "snippet": "  17 |  await page.locator('nav [data-page=team]').click();\n  18 |  await expect(page.locator('.bosProfileMenu [data-bos-shared=about]')).toBeVisible();\n> 19 |  await expect(page.locator('.bosProfileMenu [data-bos-shared=logout]')).toHaveCount(0);\n     |                                                                         ^\n  20 |  await page.getByRole('button',{name:/Вернуться к владельцу/}).click();\n  21 |  await expect(page.locator('body')).toHaveAttribute('data-bos-ui-role','owner');\n  22 |  expect(await page.evaluate(()=>state.user.role)).toBe('owner');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/scratch/73e5936a7e6d/business-os-vk/tests/profile-exit-navigation.spec.js",
+                        "column": 73,
+                        "line": 19
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.bosProfileMenu [data-bos-shared=logout]')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.bosProfileMenu [data-bos-shared=logout]')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n\n\n  17 |  await page.locator('nav [data-page=team]').click();\n  18 |  await expect(page.locator('.bosProfileMenu [data-bos-shared=about]')).toBeVisible();\n> 19 |  await expect(page.locator('.bosProfileMenu [data-bos-shared=logout]')).toHaveCount(0);\n     |                                                                         ^\n  20 |  await page.getByRole('button',{name:/Вернуться к владельцу/}).click();\n  21 |  await expect(page.locator('body')).toHaveAttribute('data-bos-ui-role','owner');\n  22 |  expect(await page.evaluate(()=>state.user.role)).toBe('owner');\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/profile-exit-navigation.spec.js:19:73"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "text": "(node:222) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time\n"
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-10-11T18:34:01.586Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/scratch/11adf7a4aaca/logout-red/profile-exit-navigation-ow-3dd69-owing-master-account-logout/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/scratch/73e5936a7e6d/business-os-vk/tests/profile-exit-navigation.spec.js",
+                    "column": 73,
+                    "line": 19
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "bc56d28aa29624a701f4-36f025e26592be4a92a4",
+          "file": "profile-exit-navigation.spec.js",
+          "line": 13,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-11T18:33:53.897Z",
+    "duration": 13865.280999999999,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

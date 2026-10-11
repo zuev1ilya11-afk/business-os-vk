@@ -1,0 +1,2002 @@
+[
+  {
+    "role": "master",
+    "screen": "help",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/help-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "help"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "master",
+    "screen": "about",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/about-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "about"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "master",
+    "screen": "push",
+    "state": "synthetic-fixture-default",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/push-fixture-390-default.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "master",
+    "screen": "push",
+    "state": "synthetic-fixture-denied",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/push-fixture-390-denied.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "master",
+    "screen": "push",
+    "state": "synthetic-fixture-subscribed",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/push-fixture-390-subscribed.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nРазрешено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "master",
+    "screen": "push",
+    "state": "synthetic-fixture-unsupported",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/push-fixture-390-unsupported.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nНе поддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНедоступна в этом браузере"
+  },
+  {
+    "role": "master",
+    "screen": "push",
+    "state": "synthetic-fixture-denied-with-subscription",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/push-fixture-390-denied-with-subscription.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "master",
+    "screen": "push",
+    "state": "synthetic-fixture-unknown",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/push-fixture-390-unknown.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНе удалось проверить"
+  },
+  {
+    "role": "master",
+    "screen": "help",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/help-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "help"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "master",
+    "screen": "about",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/about-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "about"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "master",
+    "screen": "push",
+    "state": "synthetic-fixture-default",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/push-fixture-1440-default.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "master",
+    "screen": "push",
+    "state": "synthetic-fixture-denied",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/push-fixture-1440-denied.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "master",
+    "screen": "push",
+    "state": "synthetic-fixture-subscribed",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/push-fixture-1440-subscribed.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nРазрешено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "master",
+    "screen": "push",
+    "state": "synthetic-fixture-unsupported",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/push-fixture-1440-unsupported.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nНе поддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНедоступна в этом браузере"
+  },
+  {
+    "role": "master",
+    "screen": "push",
+    "state": "synthetic-fixture-denied-with-subscription",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/push-fixture-1440-denied-with-subscription.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "master",
+    "screen": "push",
+    "state": "synthetic-fixture-unknown",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/push-fixture-1440-unknown.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНе удалось проверить"
+  },
+  {
+    "role": "dispatcher",
+    "screen": "help",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/help-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "help"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "dispatcher",
+    "screen": "about",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/about-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "about"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "dispatcher",
+    "screen": "push",
+    "state": "synthetic-fixture-default",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/push-fixture-390-default.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "dispatcher",
+    "screen": "push",
+    "state": "synthetic-fixture-denied",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/push-fixture-390-denied.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "dispatcher",
+    "screen": "push",
+    "state": "synthetic-fixture-subscribed",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/push-fixture-390-subscribed.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nРазрешено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "dispatcher",
+    "screen": "push",
+    "state": "synthetic-fixture-unsupported",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/push-fixture-390-unsupported.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nНе поддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНедоступна в этом браузере"
+  },
+  {
+    "role": "dispatcher",
+    "screen": "push",
+    "state": "synthetic-fixture-denied-with-subscription",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/push-fixture-390-denied-with-subscription.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "dispatcher",
+    "screen": "push",
+    "state": "synthetic-fixture-unknown",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/push-fixture-390-unknown.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНе удалось проверить"
+  },
+  {
+    "role": "dispatcher",
+    "screen": "help",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/help-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "help"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "dispatcher",
+    "screen": "about",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/about-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "about"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "dispatcher",
+    "screen": "push",
+    "state": "synthetic-fixture-default",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/push-fixture-1440-default.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "dispatcher",
+    "screen": "push",
+    "state": "synthetic-fixture-denied",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/push-fixture-1440-denied.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "dispatcher",
+    "screen": "push",
+    "state": "synthetic-fixture-subscribed",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/push-fixture-1440-subscribed.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nРазрешено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "dispatcher",
+    "screen": "push",
+    "state": "synthetic-fixture-unsupported",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/push-fixture-1440-unsupported.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nНе поддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНедоступна в этом браузере"
+  },
+  {
+    "role": "dispatcher",
+    "screen": "push",
+    "state": "synthetic-fixture-denied-with-subscription",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/push-fixture-1440-denied-with-subscription.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "dispatcher",
+    "screen": "push",
+    "state": "synthetic-fixture-unknown",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/push-fixture-1440-unknown.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНе удалось проверить"
+  },
+  {
+    "role": "manager",
+    "screen": "help",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/help-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "help"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "about",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/about-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "about"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "push",
+    "state": "synthetic-fixture-default",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/push-fixture-390-default.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "manager",
+    "screen": "push",
+    "state": "synthetic-fixture-denied",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/push-fixture-390-denied.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "manager",
+    "screen": "push",
+    "state": "synthetic-fixture-subscribed",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/push-fixture-390-subscribed.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nРазрешено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "manager",
+    "screen": "push",
+    "state": "synthetic-fixture-unsupported",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/push-fixture-390-unsupported.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nНе поддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНедоступна в этом браузере"
+  },
+  {
+    "role": "manager",
+    "screen": "push",
+    "state": "synthetic-fixture-denied-with-subscription",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/push-fixture-390-denied-with-subscription.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "manager",
+    "screen": "push",
+    "state": "synthetic-fixture-unknown",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/push-fixture-390-unknown.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНе удалось проверить"
+  },
+  {
+    "role": "manager",
+    "screen": "help",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/help-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "help"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "about",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/about-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "about"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "push",
+    "state": "synthetic-fixture-default",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/push-fixture-1440-default.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "manager",
+    "screen": "push",
+    "state": "synthetic-fixture-denied",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/push-fixture-1440-denied.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "manager",
+    "screen": "push",
+    "state": "synthetic-fixture-subscribed",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/push-fixture-1440-subscribed.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nРазрешено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "manager",
+    "screen": "push",
+    "state": "synthetic-fixture-unsupported",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/push-fixture-1440-unsupported.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nНе поддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНедоступна в этом браузере"
+  },
+  {
+    "role": "manager",
+    "screen": "push",
+    "state": "synthetic-fixture-denied-with-subscription",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/push-fixture-1440-denied-with-subscription.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "manager",
+    "screen": "push",
+    "state": "synthetic-fixture-unknown",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/push-fixture-1440-unknown.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНе удалось проверить"
+  },
+  {
+    "role": "owner",
+    "screen": "help",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/help-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "help"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "about",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/about-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "about"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "push",
+    "state": "synthetic-fixture-default",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/push-fixture-390-default.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "owner",
+    "screen": "push",
+    "state": "synthetic-fixture-denied",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/push-fixture-390-denied.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "owner",
+    "screen": "push",
+    "state": "synthetic-fixture-subscribed",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/push-fixture-390-subscribed.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nРазрешено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "owner",
+    "screen": "push",
+    "state": "synthetic-fixture-unsupported",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/push-fixture-390-unsupported.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nНе поддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНедоступна в этом браузере"
+  },
+  {
+    "role": "owner",
+    "screen": "push",
+    "state": "synthetic-fixture-denied-with-subscription",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/push-fixture-390-denied-with-subscription.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "owner",
+    "screen": "push",
+    "state": "synthetic-fixture-unknown",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/push-fixture-390-unknown.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНе удалось проверить"
+  },
+  {
+    "role": "owner",
+    "screen": "help",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/help-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "help"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "about",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/about-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "about"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "push",
+    "state": "synthetic-fixture-default",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/push-fixture-1440-default.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "owner",
+    "screen": "push",
+    "state": "synthetic-fixture-denied",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/push-fixture-1440-denied.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nНет на этом устройстве"
+  },
+  {
+    "role": "owner",
+    "screen": "push",
+    "state": "synthetic-fixture-subscribed",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/push-fixture-1440-subscribed.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nРазрешено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "owner",
+    "screen": "push",
+    "state": "synthetic-fixture-unsupported",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/push-fixture-1440-unsupported.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nНе поддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНедоступна в этом браузере"
+  },
+  {
+    "role": "owner",
+    "screen": "push",
+    "state": "synthetic-fixture-denied-with-subscription",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/push-fixture-1440-denied-with-subscription.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nЗапрещено\nПодписка устройства\nЕсть на этом устройстве"
+  },
+  {
+    "role": "owner",
+    "screen": "push",
+    "state": "synthetic-fixture-unknown",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/push-fixture-1440-unknown.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "read-only browser capability, permission and device subscription"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": "Поддержка браузера\nПоддерживается\nРазрешение уведомлений\nНе запрошено\nПодписка устройства\nНе удалось проверить"
+  },
+  {
+    "role": "master",
+    "screen": "profile",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/profile-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "master",
+    "screen": "profile",
+    "state": "synthetic-fixture-menu",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/profile-fixture-390-menu.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile menu"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "master",
+    "screen": "profile",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/profile-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "master",
+    "screen": "profile",
+    "state": "synthetic-fixture-menu",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/master/profile-fixture-1440-menu.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile menu"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "dispatcher",
+    "screen": "profile",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/profile-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "dispatcher",
+    "screen": "profile",
+    "state": "synthetic-fixture-menu",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/profile-fixture-390-menu.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile menu"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "dispatcher",
+    "screen": "profile",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/profile-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "dispatcher",
+    "screen": "profile",
+    "state": "synthetic-fixture-menu",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/dispatcher/profile-fixture-1440-menu.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile menu"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "profile",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/profile-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "profile",
+    "state": "synthetic-fixture-menu",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/profile-fixture-390-menu.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile menu"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "profile",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/profile-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "profile",
+    "state": "synthetic-fixture-menu",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/manager/profile-fixture-1440-menu.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile menu"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "profile",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/profile-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "profile",
+    "state": "synthetic-fixture-menu",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/profile-fixture-390-menu.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile menu"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "profile",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/profile-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "profile",
+    "state": "synthetic-fixture-menu",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/shared/owner/profile-fixture-1440-menu.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "runtimeBuild": "1af4e38739a8df02c0db",
+    "buildId": "1af4e38739a8df02c0db",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "profile menu"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  }
+]

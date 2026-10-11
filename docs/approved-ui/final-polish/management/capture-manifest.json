@@ -1,0 +1,3018 @@
+[
+  {
+    "role": "manager",
+    "screen": "dashboard",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/dashboard-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "dashboard"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "dashboard",
+    "state": "synthetic-fixture-secondary",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/dashboard-fixture-390-secondary.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "dashboard",
+      "secondary indicators"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "team",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/team-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "team"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "more",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/more-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "more"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "review",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "review"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "review",
+    "state": "synthetic-fixture-scrolled-middle",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-fixture-390-scrolled-middle.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "original review",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 289,
+        "scrollHeight": 1133,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "manager",
+    "screen": "review",
+    "state": "synthetic-fixture-scrolled-end",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-fixture-390-scrolled-end.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "original review",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 289,
+        "scrollHeight": 1133,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "manager",
+    "screen": "review",
+    "state": "synthetic-fixture-long-initial",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-fixture-390-long-initial.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "long saved fixture",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 0,
+        "scrollHeight": 4713,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "manager",
+    "screen": "review",
+    "state": "synthetic-fixture-long-middle",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-fixture-390-long-middle.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "long saved fixture",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 2357,
+        "scrollHeight": 4713,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "manager",
+    "screen": "review",
+    "state": "synthetic-fixture-long-end",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-fixture-390-long-end.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "long saved fixture",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 3869,
+        "scrollHeight": 4713,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "manager",
+    "screen": "review-reject",
+    "state": "synthetic-fixture-long-reason",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-reject-fixture-390-long-reason.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "original required reason validation"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 3889,
+        "scrollHeight": 4733,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "manager",
+    "screen": "orders",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/orders-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "orders"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "order-create",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/order-create-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "order-edit",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/order-edit-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "schedule",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/schedule-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "finance-overview",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/finance-overview-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "finance-overview"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "finance-expenses",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/finance-expenses-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "finance-expenses"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "finance-masters",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/finance-masters-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "finance-masters"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "dashboard",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/dashboard-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "dashboard"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "dashboard",
+    "state": "synthetic-fixture-secondary",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/dashboard-fixture-1440-secondary.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "dashboard",
+      "secondary indicators"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "team",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/team-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "team"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "more",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/more-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "more"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "review",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "review"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "review",
+    "state": "synthetic-fixture-scrolled-middle",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-fixture-1440-scrolled-middle.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "original review",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 0,
+        "scrollHeight": 756,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 403.203125,
+            "bottom": 447.203125
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 403.203125,
+            "bottom": 447.203125
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "manager",
+    "screen": "review",
+    "state": "synthetic-fixture-scrolled-end",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-fixture-1440-scrolled-end.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "original review",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 0,
+        "scrollHeight": 756,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 403.203125,
+            "bottom": 447.203125
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 403.203125,
+            "bottom": 447.203125
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "manager",
+    "screen": "review",
+    "state": "synthetic-fixture-long-initial",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-fixture-1440-long-initial.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "long saved fixture",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 0,
+        "scrollHeight": 3542,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 384.109375,
+            "bottom": 428.109375
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 384.109375,
+            "bottom": 428.109375
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "manager",
+    "screen": "review",
+    "state": "synthetic-fixture-long-middle",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-fixture-1440-long-middle.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "long saved fixture",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 1771,
+        "scrollHeight": 3542,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 256.609375,
+            "bottom": 300.609375
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 256.609375,
+            "bottom": 300.609375
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "manager",
+    "screen": "review",
+    "state": "synthetic-fixture-long-end",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-fixture-1440-long-end.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "long saved fixture",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 2748,
+        "scrollHeight": 3542,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 256.609375,
+            "bottom": 300.609375
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 256.609375,
+            "bottom": 300.609375
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "manager",
+    "screen": "review-reject",
+    "state": "synthetic-fixture-long-reason",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/review-reject-fixture-1440-long-reason.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "original required reason validation"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 2748,
+        "scrollHeight": 3542,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 256.609375,
+            "bottom": 300.609375
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 256.609375,
+            "bottom": 300.609375
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "manager",
+    "screen": "orders",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/orders-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "orders"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "order-create",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/order-create-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "order-edit",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/order-edit-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "schedule",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/schedule-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "finance-overview",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/finance-overview-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "finance-overview"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "finance-expenses",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/finance-expenses-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "finance-expenses"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "manager",
+    "screen": "finance-masters",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/manager/finance-masters-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "finance-masters"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "dashboard",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/dashboard-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "dashboard"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "dashboard",
+    "state": "synthetic-fixture-secondary",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/dashboard-fixture-390-secondary.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "dashboard",
+      "secondary indicators"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "team",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/team-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "team"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "more",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/more-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "more"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "review",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "review"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "review",
+    "state": "synthetic-fixture-scrolled-middle",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-fixture-390-scrolled-middle.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "original review",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 289,
+        "scrollHeight": 1133,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "owner",
+    "screen": "review",
+    "state": "synthetic-fixture-scrolled-end",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-fixture-390-scrolled-end.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "original review",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 289,
+        "scrollHeight": 1133,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "owner",
+    "screen": "review",
+    "state": "synthetic-fixture-long-initial",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-fixture-390-long-initial.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "long saved fixture",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 0,
+        "scrollHeight": 4713,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "owner",
+    "screen": "review",
+    "state": "synthetic-fixture-long-middle",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-fixture-390-long-middle.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "long saved fixture",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 2357,
+        "scrollHeight": 4713,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "owner",
+    "screen": "review",
+    "state": "synthetic-fixture-long-end",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-fixture-390-long-end.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "long saved fixture",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 3869,
+        "scrollHeight": 4713,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "owner",
+    "screen": "review-reject",
+    "state": "synthetic-fixture-long-reason",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-reject-fixture-390-long-reason.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "original required reason validation"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 3889,
+        "scrollHeight": 4733,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 788,
+            "bottom": 832
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "owner",
+    "screen": "order-create",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/order-create-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "order-edit",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/order-edit-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "schedule",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/schedule-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "finance-overview",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/finance-overview-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "finance-overview"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "finance-expenses",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/finance-expenses-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "finance-expenses"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "finance-masters",
+    "state": "synthetic-fixture",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/finance-masters-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "finance-masters"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "dashboard",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/dashboard-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "dashboard"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "dashboard",
+    "state": "synthetic-fixture-secondary",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/dashboard-fixture-1440-secondary.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "dashboard",
+      "secondary indicators"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "team",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/team-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "team"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "more",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/more-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "more"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "review",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "review"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "review",
+    "state": "synthetic-fixture-scrolled-middle",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-fixture-1440-scrolled-middle.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "original review",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 0,
+        "scrollHeight": 756,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 403.203125,
+            "bottom": 447.203125
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 403.203125,
+            "bottom": 447.203125
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "owner",
+    "screen": "review",
+    "state": "synthetic-fixture-scrolled-end",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-fixture-1440-scrolled-end.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "original review",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 0,
+        "scrollHeight": 756,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 403.203125,
+            "bottom": 447.203125
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 403.203125,
+            "bottom": 447.203125
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "owner",
+    "screen": "review",
+    "state": "synthetic-fixture-long-initial",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-fixture-1440-long-initial.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "long saved fixture",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 0,
+        "scrollHeight": 3542,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 384.109375,
+            "bottom": 428.109375
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 384.109375,
+            "bottom": 428.109375
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "owner",
+    "screen": "review",
+    "state": "synthetic-fixture-long-middle",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-fixture-1440-long-middle.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "long saved fixture",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 1771,
+        "scrollHeight": 3542,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 256.609375,
+            "bottom": 300.609375
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 256.609375,
+            "bottom": 300.609375
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "owner",
+    "screen": "review",
+    "state": "synthetic-fixture-long-end",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-fixture-1440-long-end.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "long saved fixture",
+      "scroll"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 2748,
+        "scrollHeight": 3542,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 256.609375,
+            "bottom": 300.609375
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 256.609375,
+            "bottom": 300.609375
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "owner",
+    "screen": "review-reject",
+    "state": "synthetic-fixture-long-reason",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/review-reject-fixture-1440-long-reason.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "original required reason validation"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {
+      "review": {
+        "scrollTop": 2748,
+        "scrollHeight": 3542,
+        "actions": [
+          {
+            "id": "rejectReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 256.609375,
+            "bottom": 300.609375
+          },
+          {
+            "id": "approveReportBtn",
+            "visible": true,
+            "unoccluded": true,
+            "top": 256.609375,
+            "bottom": 300.609375
+          }
+        ]
+      }
+    }
+  },
+  {
+    "role": "owner",
+    "screen": "order-create",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/order-create-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-create"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "order-edit",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/order-edit-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "order-edit"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "schedule",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/schedule-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "schedule"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "finance-overview",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/finance-overview-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "finance-overview"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "finance-expenses",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/finance-expenses-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "finance-expenses"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  },
+  {
+    "role": "owner",
+    "screen": "finance-masters",
+    "state": "synthetic-fixture",
+    "width": 1440,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/management/owner/finance-masters-fixture-1440.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "runtimeBuild": "c3fd62aa534328f3a8f4",
+    "buildId": "c3fd62aa534328f3a8f4",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "finance-masters"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-0.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-1.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-2.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-3.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-4.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-5.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-6.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-7.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-8.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-9.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-10.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-11.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-12.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-13.jpg?token=test-signature",
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo-14.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "visibleEvidence": {}
+  }
+]
