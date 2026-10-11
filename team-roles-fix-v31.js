@@ -42,7 +42,7 @@ window.openOwnerTools=function(){
   setTimeout(()=>{
     if(!ownerMode())return;
     const modal=document.querySelector('#modalRoot .modal');if(!modal)return;
-    const testSection=[...modal.querySelectorAll('section.card')].find(s=>s.querySelector('h3')?.textContent.includes('Тестирование от лица сотрудника'));
+    const testSection=modal.querySelector('[data-owner-role-previews]');
     if(!testSection||testSection.querySelector('.managerPreviewTool'))return;
     const managers=(state.users||[]).filter(u=>u.role==='manager'&&String(u.is_active??u.active??true)!=='false');
     managers.forEach(u=>{

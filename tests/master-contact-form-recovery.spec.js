@@ -96,3 +96,15 @@ test('an unsaved result is not mistaken for a saved receipt and can be explicitl
  expect(writes).toBe(1);expect(db.tables.orders[0].master_contact_status).toBe('pending');await expect(page.locator('#masterOrderAgree179Form')).toHaveCount(0);await expect(form.locator('[name=comment]')).toHaveValue('Сохранить этот комментарий');
  await page.unroute('**/master-workflow-api',fail);await form.getByRole('button',{name:'Сохранить итог',exact:true}).click();await expect(page.locator('#masterOrderAgree179Form')).toBeVisible();expect(db.tables.orders[0].master_contact_history).toHaveLength(1);expect(db.tables.orders[0].master_contact_comment).toBe('Сохранить этот комментарий');
 });
+
+for(const result of ['call_later','other'])test(`${result}: saved contact outcome and callback survive reload without money changes`,async({page})=>{
+ const {db,form}=await setup(page);const original=Object.fromEntries(['amount','master_payout','manager_payout','dispatcher_payout'].map(k=>[k,db.tables.orders[0][k]]));
+ await form.locator(`input[value="${result}"]`).check();await form.locator('[name=comment]').fill('Клиент уточнит решение');
+ if(result==='call_later')await form.locator('[name=callback_at]').fill('2099-09-10T12:00');
+ await form.getByRole('button',{name:'Сохранить итог',exact:true}).click();await expect(form).toHaveCount(0);
+ expect(db.tables.orders[0].master_contact_status).toBe(result);expect(db.tables.orders[0].master_contact_comment).toBe('Клиент уточнит решение');
+ if(result==='call_later')expect(db.tables.orders[0].master_contact_callback_at).toBeTruthy();
+ await page.reload();await expect(page.locator('#authGate')).toBeHidden();
+ expect(await page.evaluate(()=>state.orders.find(o=>String(o.id)==='11').master_contact_status)).toBe(result);
+ expect(Object.fromEntries(Object.keys(original).map(k=>[k,db.tables.orders[0][k]]))).toEqual(original);
+});

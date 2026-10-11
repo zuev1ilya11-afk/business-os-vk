@@ -1,0 +1,144 @@
+{
+  "config": {
+    "configFile": "/workspace/scratch/de568ce658a8/business-os-vk/playwright.config.js",
+    "rootDir": "/workspace/scratch/de568ce658a8/business-os-vk/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/scratch/de568ce658a8/business-os-vk/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/scratch/de568ce658a8/business-os-vk/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.1",
+    "workers": 1,
+    "webServer": {
+      "command": "python3 -m http.server 4173 --bind 127.0.0.1",
+      "url": "http://127.0.0.1:4173",
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [
+    {
+      "title": "release-final-card-actions.spec.js",
+      "file": "release-final-card-actions.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "master home avatar reaches canonical profile instead of credentials",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5983,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('.bosProfileIdentity')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.bosProfileIdentity')\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('.bosProfileIdentity')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.bosProfileIdentity')\u001b[22m\n\n    at /workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js:15:52",
+                    "location": {
+                      "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                      "column": 52,
+                      "line": 15
+                    },
+                    "snippet": "  13 | test('master home avatar reaches canonical profile instead of credentials',async({page})=>{\n  14 |  await boot(page,'master');await page.locator('#profileBtn').click();\n> 15 |  await expect(page.locator('.bosProfileIdentity')).toBeVisible();await expect.poll(()=>page.evaluate(()=>state.page)).toBe('team');await expect(page.locator('#bosCredForm')).toHaveCount(0);\n     |                                                    ^\n  16 | });\n  17 | test('dispatcher attention card opens once and inner review preserves review route',async({page})=>{\n  18 |  await boot(page,'dispatcher',390,({db})=>Object.assign(db.tables.orders[0],{scheduled_date:'2026-10-07',report_uploaded_at:'2026-10-08T08:00:00Z',report_review_status:'pending'}));"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                        "column": 52,
+                        "line": 15
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('.bosProfileIdentity')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.bosProfileIdentity')\u001b[22m\n\n\n  13 | test('master home avatar reaches canonical profile instead of credentials',async({page})=>{\n  14 |  await boot(page,'master');await page.locator('#profileBtn').click();\n> 15 |  await expect(page.locator('.bosProfileIdentity')).toBeVisible();await expect.poll(()=>page.evaluate(()=>state.page)).toBe('team');await expect(page.locator('#bosCredForm')).toHaveCount(0);\n     |                                                    ^\n  16 | });\n  17 | test('dispatcher attention card opens once and inner review preserves review route',async({page})=>{\n  18 |  await boot(page,'dispatcher',390,({db})=>Object.assign(db.tables.orders[0],{scheduled_date:'2026-10-07',report_uploaded_at:'2026-10-08T08:00:00Z',report_review_status:'pending'}));\n    at /workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js:15:52"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "text": "(node:35) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time\n"
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-10-11T19:38:52.175Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/scratch/de568ce658a8/business-os-vk/test-results/release-final-card-actions-9e210-file-instead-of-credentials/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                    "column": 52,
+                    "line": 15
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "4f1febb7bd7b190013c2-4905b3154d7aa7a23802",
+          "file": "release-final-card-actions.spec.js",
+          "line": 13,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-11T19:38:51.042Z",
+    "duration": 7304.629999999999,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

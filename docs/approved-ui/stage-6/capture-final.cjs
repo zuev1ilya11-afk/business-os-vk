@@ -1,5 +1,5 @@
 // Target final major sections and concrete missing evidence; accepted stage workflows reused.
-const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process');const root=process.cwd(),out=path.join(root,'docs/approved-ui/stage-6');
+const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process');const root=process.cwd(),out=process.env.BOS_FINAL_CAPTURE_OUT||path.join(root,'docs/approved-ui/stage-6');
 const batches=[
  {stage:2,file:'capture-master-fixtures.cjs',mode:'r1',widths:'390,1440'},
  {stage:2,file:'capture-master-fixtures.cjs',mode:'ordered',widths:'1440'},

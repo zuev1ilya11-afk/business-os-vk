@@ -17,23 +17,23 @@ async function boot(page,role,width,options={}){
  return stack;
 }
 
-async function expectFourEqualMobileDestinations(nav){
+async function expectEqualMobileDestinations(nav,count=4){
  const geometry=await nav.evaluate(n=>{
   const s=getComputedStyle(n),r=n.getBoundingClientRect();
   const left=r.left+parseFloat(s.borderLeftWidth)+parseFloat(s.paddingLeft);
   const usable=n.clientWidth-parseFloat(s.paddingLeft)-parseFloat(s.paddingRight);
   const entries=[...n.children].filter(el=>el.matches('[data-page],[data-action]')&&getComputedStyle(el).display!=='none');
   return {tracks:s.gridTemplateColumns.split(/\s+/).length,padding:[s.paddingLeft,s.paddingRight],usable,left,
-   rects:entries.map(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,width:r.width}})};
+   rects:entries.map(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,width:r.width}}).sort((a,b)=>a.left-b.left)};
  });
- expect(geometry.tracks).toBe(4);
+ expect(geometry.tracks).toBe(count);
  expect(geometry.padding).toEqual(['7px','7px']);
- expect(geometry.rects).toHaveLength(4);
+ expect(geometry.rects).toHaveLength(count);
  for(const [index,r] of geometry.rects.entries()){
-  expect(Math.abs(r.width-geometry.usable/4)).toBeLessThanOrEqual(1);
-  expect(Math.abs(r.left-(geometry.left+index*geometry.usable/4))).toBeLessThanOrEqual(1);
+  expect(Math.abs(r.width-geometry.usable/count)).toBeLessThanOrEqual(1);
+  expect(Math.abs(r.left-(geometry.left+index*geometry.usable/count))).toBeLessThanOrEqual(1);
  }
- expect(Math.abs(geometry.rects[3].right-(geometry.left+geometry.usable))).toBeLessThanOrEqual(1);
+ expect(Math.abs(geometry.rects[count-1].right-(geometry.left+geometry.usable))).toBeLessThanOrEqual(1);
 }
 
 for(const role of ['dispatcher','manager','owner'])test(`approved mobile quarters ${role} with permitted finance visibility`,async({page})=>{
@@ -44,14 +44,14 @@ for(const role of ['dispatcher','manager','owner'])test(`approved mobile quarter
  for(const width of [360,390,430]){
   await page.setViewportSize({width,height:900});
   await nav.locator('[data-page="more"]').click();
-  await expect(page.locator('[data-bos-destination="finance"]')).toHaveCount(role==='dispatcher'?0:1);
-  await expectFourEqualMobileDestinations(nav);
+  await expect(page.locator('[data-bos-destination="finance"]')).toHaveCount(0);
+  await expectEqualMobileDestinations(nav,role==='dispatcher'?4:5);
  }
  if(role!=='dispatcher'){
   await page.evaluate(()=>{state.settings.permissions.can_view_finance=false;show('home')});
   await nav.locator('[data-page="more"]').click();
   await expect(page.locator('[data-bos-destination="finance"]')).toHaveCount(0);
-  await expectFourEqualMobileDestinations(nav);
+  await expectEqualMobileDestinations(nav);
  }
 });
 
@@ -66,8 +66,8 @@ for(const role of ['master','dispatcher','manager','owner'])for(const width of [
   expect(palette).toEqual({bg:'rgb(14, 20, 28)',text:'rgb(237, 242, 248)',primary:'#a8ceff',radius:'16px'});
   const nav=page.locator('#app > nav');
   if(width===1440&&role!=='master')await expect(nav.getByRole('button',{name:'Авито',exact:true})).toHaveCount(1);
-  const labels=await nav.locator(':scope > [data-page]:visible, :scope > [data-action]:visible').allTextContents();
-  if(width<=600)expect(labels).toEqual(['Главная',role==='master'?'Мои заявки':'Заявки','Расписание',role==='master'?'Профиль':'Ещё']);
+  const labels=await nav.locator(':scope > [data-page]:visible, :scope > [data-action]:visible').evaluateAll(es=>es.map(e=>({label:e.textContent,left:e.getBoundingClientRect().left})).sort((a,b)=>a.left-b.left).map(x=>x.label));
+  if(width<=600){const expected=['Главная',role==='master'?'Мои заявки':'Заявки','Расписание',...(['manager','owner'].includes(role)?['Финансы']:[]),role==='master'?'Профиль':'Ещё'];expect(labels).toEqual(expected);}
   else{
    expect(labels).toContain('Расписание');expect(labels).toContain(role==='master'?'Профиль':'Команда');
    if(role!=='master'){expect(labels).toContain('Авито');expect(labels).toContain('Профиль');}
@@ -81,14 +81,14 @@ for(const role of ['master','dispatcher','manager','owner'])for(const width of [
    return {overflow:document.documentElement.scrollWidth-vw,touch:rects.every(r=>r.height>=44&&r.width>=44),width:r.width,left:r.left,contentLeft:content.left};
   });
   expect(geometry.overflow).toBe(0);expect(geometry.touch).toBe(true);
-  if(width===390){await expectFourEqualMobileDestinations(nav);expect((await page.locator('#app > header').boundingBox()).height).toBeLessThanOrEqual(74);}
+  if(width===390){await expectEqualMobileDestinations(nav,['manager','owner'].includes(role)?5:4);expect((await page.locator('#app > header').boundingBox()).height).toBeLessThanOrEqual(74);}
   if(width===1440){expect(geometry.width).toBe(222);expect(geometry.left).toBe(0);expect(geometry.contentLeft).toBeGreaterThanOrEqual(260);}
   await page.screenshot({path:testInfo.outputPath(`${role}-${width}-shell.png`),fullPage:true});
   if(role!=='master'&&width===390){
    await nav.locator('[data-page="more"]').click();
    await expect(page.locator('#content h1')).toHaveText('Ещё');
    const menu=page.locator('.bosMore');
-   expect(await menu.locator('[data-bos-destination] .bosMoreText').allTextContents()).toEqual(['КомандаМастера и их загрузка','АвитоДиалоги клиентов',...(['owner','manager'].includes(role)?['ФинансыОбзор, расходы, начисления']:[]),'Мой профильЛичные данные и помощь',...(role==='owner'?['ИнструментыАдминистрирование']:[])]);
+   expect(await menu.locator('[data-bos-destination] .bosMoreText').allTextContents()).toEqual(['КомандаМастера и их загрузка','АвитоДиалоги клиентов','Мой профильЛичные данные и помощь',...(role==='owner'?['ИнструментыАдминистрирование']:[])]);
    await page.screenshot({path:testInfo.outputPath(`${role}-${width}-more.png`),fullPage:true});
    await menu.locator('[data-bos-destination="team"]').click();await expect.poll(()=>page.evaluate(()=>state.page)).toBe('team');
    await nav.locator('[data-page="more"]').click();
@@ -139,7 +139,7 @@ test('approved foundation preserves breakpoint geometry and keeps inputs legible
   await page.setViewportSize({width,height:900});
   await page.locator(`#app > nav [data-page="${width<=600?'more':'home'}"]`).click();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
-  if(width<=600)await expectFourEqualMobileDestinations(page.locator('#app > nav'));
+  if(width<=600)await expectEqualMobileDestinations(page.locator('#app > nav'));
   else{await expect(page.locator('#bosAvitoNav')).toBeVisible();expect((await page.locator('#app > nav').boundingBox()).width).toBe(width<=850?76:width<=1190?190:222);}
  }
  await page.setViewportSize({width:390,height:900});

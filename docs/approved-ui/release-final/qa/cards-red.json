@@ -1,0 +1,460 @@
+{
+  "config": {
+    "configFile": "/workspace/scratch/de568ce658a8/business-os-vk/playwright.config.js",
+    "rootDir": "/workspace/scratch/de568ce658a8/business-os-vk/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/scratch/de568ce658a8/business-os-vk/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/scratch/de568ce658a8/business-os-vk/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.1",
+    "workers": 1,
+    "webServer": {
+      "command": "python3 -m http.server 4173 --bind 127.0.0.1",
+      "url": "http://127.0.0.1:4173",
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [
+    {
+      "title": "release-final-card-actions.spec.js",
+      "file": "release-final-card-actions.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "master home avatar reaches canonical profile instead of credentials",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 30044,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                        "column": 69,
+                        "line": 14
+                      },
+                      "message": "Error: locator.click: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.masterV127Profile')\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"masterV127Profile\" data-home-action=\"profile\" aria-label=\"Профиль мастера\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    56 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n\n  12 | async function opens(page,name,id,count=1){await expect.poll(()=>page.evaluate(({name,id})=>window.__opens.filter(x=>x.name===name&&x.id===id).length,{name,id})).toBe(count)}\n  13 | test('master home avatar reaches canonical profile instead of credentials',async({page})=>{\n> 14 |  await boot(page,'master');await page.locator('.masterV127Profile').click();\n     |                                                                     ^\n  15 |  await expect(page.locator('.bosProfileIdentity')).toBeVisible();await expect.poll(()=>page.evaluate(()=>state.page)).toBe('team');await expect(page.locator('#bosCredForm')).toHaveCount(0);\n  16 | });\n  17 | test('dispatcher attention card opens once and inner review preserves review route',async({page})=>{\n    at /workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js:14:69"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "text": "(node:35) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time\n"
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-10-11T19:37:10.770Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/scratch/de568ce658a8/business-os-vk/test-results/release-final-card-actions-9e210-file-instead-of-credentials/error-context.md"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "4f1febb7bd7b190013c2-4905b3154d7aa7a23802",
+          "file": "release-final-card-actions.spec.js",
+          "line": 13,
+          "column": 1
+        },
+        {
+          "title": "dispatcher attention card opens once and inner review preserves review route",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 914,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "text": "(node:206) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time\n"
+                    }
+                  ],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "Expect \"poll toBe\"",
+                      "duration": 17
+                    },
+                    {
+                      "title": "Expect \"poll toBe\"",
+                      "duration": 4
+                    },
+                    {
+                      "title": "Expect \"poll toBe\"",
+                      "duration": 3
+                    }
+                  ],
+                  "startTime": "2026-10-11T19:37:41.856Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4f1febb7bd7b190013c2-7e92b7ad9bec7d04c9bf",
+          "file": "release-final-card-actions.spec.js",
+          "line": 17,
+          "column": 1
+        },
+        {
+          "title": "dispatcher unassigned whole card delegates exactly once",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 973,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "Expect \"poll toBe\"",
+                      "duration": 16
+                    }
+                  ],
+                  "startTime": "2026-10-11T19:37:42.870Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4f1febb7bd7b190013c2-6697f8d257d4112a6967",
+          "file": "release-final-card-actions.spec.js",
+          "line": 23,
+          "column": 44
+        },
+        {
+          "title": "dispatcher control whole card delegates exactly once",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5918,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.dbV24Control')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.dbV24Control')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.dbV24Control')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.dbV24Control')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n\n    at /workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js:29:47",
+                    "location": {
+                      "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                      "column": 47,
+                      "line": 29
+                    },
+                    "snippet": "  27 |  }else{\n  28 |   await page.locator('.dbV24Tab').filter({hasText:'Контроль'}).click();await page.locator('.dbV24Card[data-order-id=\"12\"] .dbV24CardTop').click();await opens(page,'dispatchControlV24Select','12');\n> 29 |   await expect(page.locator('.dbV24Control')).toHaveCount(0);\n     |                                               ^\n  30 |  }\n  31 | });\n  32 | test('pending control card delegates to report review, not order detail',async({page})=>{"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                        "column": 47,
+                        "line": 29
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.dbV24Control')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.dbV24Control')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n\n\n  27 |  }else{\n  28 |   await page.locator('.dbV24Tab').filter({hasText:'Контроль'}).click();await page.locator('.dbV24Card[data-order-id=\"12\"] .dbV24CardTop').click();await opens(page,'dispatchControlV24Select','12');\n> 29 |   await expect(page.locator('.dbV24Control')).toHaveCount(0);\n     |                                               ^\n  30 |  }\n  31 | });\n  32 | test('pending control card delegates to report review, not order detail',async({page})=>{\n    at /workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js:29:47"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "Expect \"poll toBe\"",
+                      "duration": 2
+                    }
+                  ],
+                  "startTime": "2026-10-11T19:37:43.858Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/scratch/de568ce658a8/business-os-vk/test-results/release-final-card-actions-3eb0e-card-delegates-exactly-once/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                    "column": 47,
+                    "line": 29
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "4f1febb7bd7b190013c2-c957cf3958bd40800984",
+          "file": "release-final-card-actions.spec.js",
+          "line": 23,
+          "column": 44
+        },
+        {
+          "title": "pending control card delegates to report review, not order detail",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 6008,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#modalRoot')\nExpected string: \u001b[32m\"Отчёт\"\u001b[39m\nReceived string: \u001b[31m\"×Проверка отчёта 11Заявка №11Дата поступления не указанаДокументыДокументы не найдены.РезультатМонтажТестовый мастер · Невский 1⏳ На проверке ☁️ Ожидает архивацииРешениеКомментарий проверяющегоОтклонитьПринятьАрхив Google Drive☁️ Повторить архивацию в Google DriveАрхив будет создан автоматически.\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#modalRoot')\u001b[22m\n\u001b[2m    9 × locator resolved to <div id=\"modalRoot\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"×Проверка отчёта 11Заявка №11Дата поступления не указанаДокументыДокументы не найдены.РезультатМонтажТестовый мастер · Невский 1⏳ На проверке ☁️ Ожидает архивацииРешениеКомментарий проверяющегоОтклонитьПринятьАрхив Google Drive☁️ Повторить архивацию в Google DriveАрхив будет создан автоматически.\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#modalRoot')\nExpected string: \u001b[32m\"Отчёт\"\u001b[39m\nReceived string: \u001b[31m\"×Проверка отчёта 11Заявка №11Дата поступления не указанаДокументыДокументы не найдены.РезультатМонтажТестовый мастер · Невский 1⏳ На проверке ☁️ Ожидает архивацииРешениеКомментарий проверяющегоОтклонитьПринятьАрхив Google Drive☁️ Повторить архивацию в Google DriveАрхив будет создан автоматически.\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#modalRoot')\u001b[22m\n\u001b[2m    9 × locator resolved to <div id=\"modalRoot\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"×Проверка отчёта 11Заявка №11Дата поступления не указанаДокументыДокументы не найдены.РезультатМонтажТестовый мастер · Невский 1⏳ На проверке ☁️ Ожидает архивацииРешениеКомментарий проверяющегоОтклонитьПринятьАрхив Google Drive☁️ Повторить архивацию в Google DriveАрхив будет создан автоматически.\"\u001b[22m\n\n    at /workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js:35:122",
+                    "location": {
+                      "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                      "column": 122,
+                      "line": 35
+                    },
+                    "snippet": "  33 |  await boot(page,'owner',390,({db})=>Object.assign(db.tables.orders[0],{report_uploaded_at:'2026-10-08T08:00:00Z',report_review_status:'pending'}));\n  34 |  await page.locator('#bosOrderControlSummary [data-oc-enter]').click();await page.locator('[data-oc-order=\"11\"] .ocClient').click();\n> 35 |  await opens(page,'openReportReview','11');await opens(page,'openOrder','11',0);await expect(page.locator('#modalRoot')).toContainText('Отчёт');\n     |                                                                                                                          ^\n  36 | });\n  37 | test('completed finance row preserves the native financial snapshot',async({page})=>{\n  38 |  await boot(page,'manager',390,({db})=>Object.assign(db.tables.orders[0],{status:'Выполнена',completed_at:'2026-10-08T08:00:00Z',report_review_status:'approved'}));"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                        "column": 122,
+                        "line": 35
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#modalRoot')\nExpected string: \u001b[32m\"Отчёт\"\u001b[39m\nReceived string: \u001b[31m\"×Проверка отчёта 11Заявка №11Дата поступления не указанаДокументыДокументы не найдены.РезультатМонтажТестовый мастер · Невский 1⏳ На проверке ☁️ Ожидает архивацииРешениеКомментарий проверяющегоОтклонитьПринятьАрхив Google Drive☁️ Повторить архивацию в Google DriveАрхив будет создан автоматически.\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#modalRoot')\u001b[22m\n\u001b[2m    9 × locator resolved to <div id=\"modalRoot\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"×Проверка отчёта 11Заявка №11Дата поступления не указанаДокументыДокументы не найдены.РезультатМонтажТестовый мастер · Невский 1⏳ На проверке ☁️ Ожидает архивацииРешениеКомментарий проверяющегоОтклонитьПринятьАрхив Google Drive☁️ Повторить архивацию в Google DriveАрхив будет создан автоматически.\"\u001b[22m\n\n\n  33 |  await boot(page,'owner',390,({db})=>Object.assign(db.tables.orders[0],{report_uploaded_at:'2026-10-08T08:00:00Z',report_review_status:'pending'}));\n  34 |  await page.locator('#bosOrderControlSummary [data-oc-enter]').click();await page.locator('[data-oc-order=\"11\"] .ocClient').click();\n> 35 |  await opens(page,'openReportReview','11');await opens(page,'openOrder','11',0);await expect(page.locator('#modalRoot')).toContainText('Отчёт');\n     |                                                                                                                          ^\n  36 | });\n  37 | test('completed finance row preserves the native financial snapshot',async({page})=>{\n  38 |  await boot(page,'manager',390,({db})=>Object.assign(db.tables.orders[0],{status:'Выполнена',completed_at:'2026-10-08T08:00:00Z',report_review_status:'approved'}));\n    at /workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js:35:122"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "text": "(node:614) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time\n"
+                    }
+                  ],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "Expect \"poll toBe\"",
+                      "duration": 8
+                    },
+                    {
+                      "title": "Expect \"poll toBe\"",
+                      "duration": 3
+                    }
+                  ],
+                  "startTime": "2026-10-11T19:37:50.525Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/scratch/de568ce658a8/business-os-vk/test-results/release-final-card-actions-a0b41-ort-review-not-order-detail/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                    "column": 122,
+                    "line": 35
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "4f1febb7bd7b190013c2-b9f27e119a1e2f38381a",
+          "file": "release-final-card-actions.spec.js",
+          "line": 32,
+          "column": 1
+        },
+        {
+          "title": "completed finance row preserves the native financial snapshot",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5951,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate\n    at opens (/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js:12:44)\n    at /workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js:40:144",
+                    "location": {
+                      "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                      "column": 44,
+                      "line": 12
+                    },
+                    "snippet": "  10 |  return ctx;\n  11 | }\n> 12 | async function opens(page,name,id,count=1){await expect.poll(()=>page.evaluate(({name,id})=>window.__opens.filter(x=>x.name===name&&x.id===id).length,{name,id})).toBe(count)}\n     |                                            ^\n  13 | test('master home avatar reaches canonical profile instead of credentials',async({page})=>{\n  14 |  await boot(page,'master');await page.locator('.masterV127Profile').click();\n  15 |  await expect(page.locator('.bosProfileIdentity')).toBeVisible();await expect.poll(()=>page.evaluate(()=>state.page)).toBe('team');await expect(page.locator('#bosCredForm')).toHaveCount(0);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                        "column": 44,
+                        "line": 12
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate\n\n  10 |  return ctx;\n  11 | }\n> 12 | async function opens(page,name,id,count=1){await expect.poll(()=>page.evaluate(({name,id})=>window.__opens.filter(x=>x.name===name&&x.id===id).length,{name,id})).toBe(count)}\n     |                                            ^\n  13 | test('master home avatar reaches canonical profile instead of credentials',async({page})=>{\n  14 |  await boot(page,'master');await page.locator('.masterV127Profile').click();\n  15 |  await expect(page.locator('.bosProfileIdentity')).toBeVisible();await expect.poll(()=>page.evaluate(()=>state.page)).toBe('team');await expect(page.locator('#bosCredForm')).toHaveCount(0);\n    at opens (/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js:12:44)\n    at /workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js:40:144"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "text": "(node:801) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time\n"
+                    }
+                  ],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "Expect \"poll toBe\"",
+                      "duration": 4892,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate\n    at opens (/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js:12:44)\n    at /workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js:40:144",
+                        "location": {
+                          "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                          "column": 44,
+                          "line": 12
+                        },
+                        "snippet": "  10 |  return ctx;\n  11 | }\n> 12 | async function opens(page,name,id,count=1){await expect.poll(()=>page.evaluate(({name,id})=>window.__opens.filter(x=>x.name===name&&x.id===id).length,{name,id})).toBe(count)}\n     |                                            ^\n  13 | test('master home avatar reaches canonical profile instead of credentials',async({page})=>{\n  14 |  await boot(page,'master');await page.locator('.masterV127Profile').click();\n  15 |  await expect(page.locator('.bosProfileIdentity')).toBeVisible();await expect.poll(()=>page.evaluate(()=>state.page)).toBe('team');await expect(page.locator('#bosCredForm')).toHaveCount(0);"
+                      }
+                    }
+                  ],
+                  "startTime": "2026-10-11T19:37:57.389Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/scratch/de568ce658a8/business-os-vk/test-results/release-final-card-actions-1f241-e-native-financial-snapshot/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-card-actions.spec.js",
+                    "column": 44,
+                    "line": 12
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "4f1febb7bd7b190013c2-32924ba89ba66f15b6a3",
+          "file": "release-final-card-actions.spec.js",
+          "line": 37,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-11T19:37:09.595Z",
+    "duration": 53891.311,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}

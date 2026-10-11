@@ -106,15 +106,16 @@ html body.bos-approved-ui { margin:0; background:var(--bos-ui-bg); color:var(--b
 @media(max-width:600px) {
   html body.bos-approved-ui { font-size:14px; }
   body.bos-approved-ui #app { max-width:none; padding:0 19px calc(110px + env(safe-area-inset-bottom)); }
-  .bos-approved-ui #app > nav { position:fixed; inset:auto 0 0; width:100%; max-width:none; height:calc(74px + env(safe-area-inset-bottom)); display:grid!important; grid-template-columns:repeat(4,minmax(0,1fr))!important; padding:8px 7px calc(10px + env(safe-area-inset-bottom)); gap:0!important; border-radius:0!important; border-top:1px solid var(--bos-ui-line); background:#121b27!important; }
+  .bos-approved-ui #app > nav { position:fixed; inset:auto 0 0; width:100%; max-width:none; height:calc(74px + env(safe-area-inset-bottom)); display:grid!important; grid-template-columns:repeat(var(--bos-mobile-nav-cols,4),minmax(0,1fr))!important; padding:8px 7px calc(10px + env(safe-area-inset-bottom)); gap:0!important; border-radius:0!important; border-top:1px solid var(--bos-ui-line); background:#121b27!important; }
   .bos-approved-ui #app > nav:has(> #bosAvitoNav),
-  .bos-approved-ui #app > nav:has(> #bosAvitoNav):has(> [data-page="finance"]) { grid-template-columns:repeat(4,minmax(0,1fr))!important; padding-inline:7px; gap:0!important; }
+  .bos-approved-ui #app > nav:has(> #bosAvitoNav):has(> [data-page="finance"]) { grid-template-columns:repeat(var(--bos-mobile-nav-cols,4),minmax(0,1fr))!important; padding-inline:7px; gap:0!important; }
   .bos-approved-ui #app > nav :is(button,a) { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:5px; padding:0 2px; font-size:10px; line-height:14px; }
   .bos-approved-ui #app > nav :is(button,a).active { color:#bddeff!important; background:transparent!important; }
   .bos-approved-ui #app > nav :is(button,a).active::before { outline:none; }
   .bos-approved-ui #app > nav [data-page="more"]::before { width:47px; height:22px; line-height:22px; border-radius:9px; }
   .bos-approved-ui #app > nav [data-page="more"].active::before { background:#2b425e; }
-  .bos-approved-ui #app > nav :is(#bosAvitoNav,[data-page="finance"],[data-action]) { display:none!important; }
+  .bos-approved-ui #app > nav :is(#bosAvitoNav,[data-action]) { display:none!important; }
+  .bos-approved-ui #app > nav [data-page="finance"] { display:none!important; }
   .bos-approved-ui #app > nav :is(.bosNavBrand,.bosNavIdentity) { display:none; }
   .bos-approved-ui:not([data-bos-ui-role="master"]) #app > nav [data-page="team"] { display:none!important; }
   .bos-approved-ui[data-bos-ui-role="master"] #app > nav [data-page="more"] { display:none!important; }
@@ -130,3 +131,11 @@ html body.bos-approved-ui { margin:0; background:var(--bos-ui-bg); color:var(--b
   .bosMoreHeading p { font-size:13px; }
   .bosMoreMenu button { padding:18px 0; }
 }
+
+@media(max-width:600px){
+ body.bos-approved-ui[data-bos-finance-nav="true"]{--bos-mobile-nav-cols:5;}
+ body.bos-approved-ui[data-bos-finance-nav="true"] #app > nav [data-page="finance"]{display:flex!important;order:4;}
+ body.bos-approved-ui[data-bos-finance-nav="true"] #app > nav [data-page="more"]{order:5;}
+}
+.bos-approved-ui [data-bos-open-card]{cursor:pointer;}
+.bos-approved-ui [data-bos-open-card]:focus-visible{outline:2px solid var(--bos-ui-link);outline-offset:3px;}

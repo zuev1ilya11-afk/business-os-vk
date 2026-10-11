@@ -2,7 +2,7 @@
 'use strict';
 if(window.BOS_MASTER_DAILY_HOME_V127)return;
 window.BOS_MASTER_DAILY_HOME_V127=true;
-let queued=false,selected='days',callbacksOnly=false,identity='',search='',selectedDate='',dayScope='all';
+let queued=false,selected='days',callbacksOnly=false,identity='',search='',selectedDate='',dayScope='all',filtersOpen=false;
 const escv=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const masterMode=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
 const active=o=>o&&!['Выполнена','Отменена'].includes(String(o.status||''))&&o.report_review_status!=='approved';
@@ -99,7 +99,7 @@ function cardHtml(item,now,nextId,claims=[]){
   else if(workDone(o)||reportUploaded(o)||reportRejected(o))action=button(step(o),'open',id,true);
   else if(item.contact.result==='agreed')action=button('Согласовать дату','agree',id,true);
   else action=call;
-  action+=button(group==='new'||label==='Нужно указать итог связи'?'Указать итог связи':'Изменить итог связи','result',id);
+  action+=button(group==='new'||label==='Нужно указать итог связи'?'Итог связи':'Изменить итог','result',id);
  }
  const callback=timestamp(item.contact.callback)?`<div class="masterV127Callback">${icon('phone')}<span>${item.callbackToday?'Перезвонить сегодня:':'Связаться:'} ${escv(window.BOS_CONTACT_STATUS?.time(item.contact.callback)||'')}</span></div>`:'';
  const reason=reportRejected(o)?'Отчёт вернули на доработку':item.overdue?attentionReason(o,now):'';
@@ -135,12 +135,12 @@ function render(){
  if(!Array.isArray(state.orders)||root.querySelector('h2')?.textContent==='Не удалось загрузить данные')return;
  removeLegacyUpcoming(root);
  const orders=mine(),now=Date.now(),model=groupOrders(orders,now),claims=claimsFor(orders),error=String(window.BOS_LAST_REFRESH_ERROR||'');
- const sig=JSON.stringify([model,claims.other,Array.from(claims.map),selected,callbacksOnly,search,selectedDate,dayScope,dayKey(now),error,who]);
+ const sig=JSON.stringify([model,claims.other,Array.from(claims.map),selected,callbacksOnly,search,selectedDate,dayScope,filtersOpen,dayKey(now),error,who]);
  let box=document.getElementById('masterDailyV127');if(box?.dataset.sig===sig)return;
  if(!box){box=document.createElement('section');box.id='masterDailyV127';box.className='masterV127';root.prepend(box);box.addEventListener('click',handleClick);box.addEventListener('keydown',handleTabs);box.addEventListener('input',e=>{if(e.target.id==='masterHomeSearch'){search=e.target.value;render()}if(e.target.id==='masterHomeDate'){selectedDate=e.target.value;render()}})}
  const focused=document.activeElement?.id,caret=document.activeElement?.selectionStart;box.dataset.sig=sig;
- const html=`<div class="masterV127Head"><div><h2>Мой рабочий день</h2><p>${escv(new Intl.DateTimeFormat('ru-RU',{timeZone:'Europe/Moscow',weekday:'long',day:'numeric',month:'long'}).format(new Date(now)))}</p></div><button class="masterV127Profile" type="button" data-home-action="profile" aria-label="Профиль мастера">${icon('person')}</button></div>
- <div class="bosMasterRefresh"><span>Время Москвы</span><button type="button" class="bosTextAction" data-home-action="refresh">↻ Обновить</button></div><div class="bosMasterSearch"><input id="masterHomeSearch" type="search" aria-label="Поиск заявок" placeholder="Поиск" value="${escv(search)}"><input id="masterHomeDate" type="date" aria-label="Дата визита" value="${escv(selectedDate)}"></div>
+ const html=`<div class="masterV127Head"><div><h2>Мой день</h2><p>${escv(new Intl.DateTimeFormat('ru-RU',{timeZone:'Europe/Moscow',weekday:'long',day:'numeric',month:'long'}).format(new Date(now)))}${user.city?' · '+escv(user.city):''}</p></div><button class="masterV127Profile" type="button" data-home-action="profile" aria-label="Профиль мастера">${icon('person')}</button></div>
+ <div class="bosMasterRefresh"><button type="button" class="bosTextAction" data-home-action="filters" aria-label="Поиск и дата" aria-expanded="${filtersOpen}" aria-controls="masterHomeFilters">Поиск и дата${search||selectedDate?' · ●':''}</button><button type="button" class="bosTextAction" data-home-action="refresh">↻ Обновить</button></div><div id="masterHomeFilters" class="bosMasterSearch" ${filtersOpen?'':'hidden'}><input id="masterHomeSearch" type="search" aria-label="Поиск заявок" placeholder="Поиск" value="${escv(search)}"><input id="masterHomeDate" type="date" aria-label="Дата визита" value="${escv(selectedDate)}"></div>
  <div class="masterV127Tabs" role="tablist" aria-label="Заявки мастера">${[['days','По дням'],['new','Новые'],['waiting','Ожидание']].map(([key,label])=>`<button type="button" role="tab" id="masterHomeTab-${key}" aria-controls="masterHomePanel" aria-selected="${selected===key}" tabindex="${selected===key?0:-1}" data-home-tab="${key}">${label}<span>${model[key].length}</span></button>`).join('')}</div>
  ${selected==='days'&&!callbacksOnly?`<div class="bosHomeDayScopes" role="group" aria-label="Дни визитов">${[['today','Сегодня',model.days.filter(x=>x.date===dayKey(now)).length],['tomorrow','Завтра',model.days.filter(x=>x.date===dayKey(now+86400000)).length],['overdue','Просрочено',model.days.filter(x=>x.overdue).length],['all','Все дни',null]].map(([key,label,n])=>`<button type="button" class="secondary" data-home-scope="${key}" aria-pressed="${dayScope===key}">${label}${n==null?'':' · '+n}</button>`).join('')}</div>`:''}
  ${model.callbacks.length?`<button type="button" class="masterV127Callbacks" data-home-action="callbacks">${icon('phone')}<span>Перезвонить сегодня · ${model.callbacks.length}</span><span aria-hidden="true">›</span></button>`:''}
@@ -160,8 +160,9 @@ function openPhones(id){
 function handleClick(e){const scope=e.target.closest('[data-home-scope]');if(scope){dayScope=scope.dataset.homeScope;selectedDate='';callbacksOnly=false;render();return}
  const tab=e.target.closest('[data-home-tab]');if(tab){selected=tab.dataset.homeTab;callbacksOnly=false;render();return}
  const control=e.target.closest('[data-home-action]');if(!control)return;const action=control.dataset.homeAction,id=control.dataset.id;
- if(action==='profile'){document.getElementById('profileBtn')?.click();return}
+ if(action==='profile'){window.show('team');return}
  if(action==='callbacks'||action==='all'){callbacksOnly=action==='callbacks';render();return}
+ if(action==='filters'){filtersOpen=!filtersOpen;render();document.querySelector('[data-home-action=filters]')?.focus();return}
  if(action==='refresh'){window.BOS_REFRESH_NOW?.();return}
  if(action==='claim'){window.openClaimDetails?.(id);return}
  const o=mine().find(x=>String(x.id)===String(id));if(!o)return;

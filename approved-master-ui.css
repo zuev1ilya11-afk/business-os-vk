@@ -234,3 +234,16 @@ body.bos-approved-ui[data-bos-ui-role="master"] {--master-muted:var(--bos-ui-mut
  .bos-approved-ui[data-bos-ui-role="master"] .reportFixedV27 .reportOutcome .reportChoices{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
  .bos-approved-ui[data-bos-ui-role="master"] .reportFixedV27 .reportOutcome .reportChoice span{max-width:none;}
 }
+
+/* Final day composition: compact tools and preserved native actions. */
+.bos-approved-ui[data-bos-ui-role="master"] .bosMasterSearch[hidden]{display:none;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosMasterRefresh{margin:8px 0 0;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosHomeDayScopes{flex-wrap:nowrap;overflow-x:auto;margin-bottom:16px;scrollbar-width:none;}
+.bos-approved-ui[data-bos-ui-role="master"] .bosHomeDayScopes button{flex:0 0 auto;white-space:nowrap;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Tabs{margin-bottom:18px;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Agreement b{display:none;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Agreement{margin:6px 0;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Actions{grid-template-columns:minmax(0,1fr) auto;gap:4px;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127Actions .secondary{font-size:11px;padding:4px 7px;max-width:78px;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127When span{display:block;overflow-wrap:normal;}
+.bos-approved-ui[data-bos-ui-role="master"] .masterV127DayHeading{margin-top:20px;}

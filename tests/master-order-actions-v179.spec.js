@@ -91,4 +91,13 @@ test('reschedule action keeps existing approval request form',async({page})=>{
   await page.evaluate(()=>window.openOrder('11'));
   await page.locator('.bosApprovedVisit button',{hasText:'Запросить перенос'}).click();
   await expect(page.locator('#masterRescheduleForm')).toBeVisible();
+  const original={date:order.scheduled_date,time:order.scheduled_time,amount:order.amount,payout:order.master_payout};
+  await page.getByLabel('Причина переноса *',{exact:true}).fill('Новая дата пока не определена');
+  await page.getByRole('button',{name:'Отправить запрос на перенос',exact:true}).click();
+  await expect(page.locator('#masterRescheduleForm')).toHaveCount(0);
+  await expect.poll(()=>order11(db).reschedule_requested).toBe(true);
+  expect(order11(db).reschedule_reason).toBe('Новая дата пока не определена');
+  await page.reload();await expect(page.locator('#authGate')).toBeHidden();
+  expect(await page.evaluate(()=>state.orders.find(o=>String(o.id)==='11').reschedule_requested)).toBe(true);
+  expect({date:order11(db).scheduled_date,time:order11(db).scheduled_time,amount:order11(db).amount,payout:order11(db).master_payout}).toEqual(original);
 });

@@ -47,7 +47,7 @@ test('master v127 home shows request number, day cards and attention queue on mo
 
   const dashboard=page.locator('#masterDailyV127');
   await expect(dashboard).toBeVisible();
-  await expect(dashboard.getByRole('heading',{name:'Мой рабочий день'})).toBeVisible();
+  await expect(dashboard.getByRole('heading',{name:'Мой день'})).toBeVisible();
 
   const nextCard=dashboard.locator('.masterV127Next');
   await expect(nextCard).toHaveAttribute('data-order-id',String(next.id));

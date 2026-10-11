@@ -19,7 +19,7 @@ async function fixture(page){
 }
 for(const width of [360,390,430,1280])test(`three tabs are legible, complete and scoped at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:940});await fixture(page);const home=page.locator('#masterDailyV127');
- await expect(home.getByRole('heading',{name:'Мой рабочий день',exact:true})).toBeVisible();
+ await expect(home.getByRole('heading',{name:'Мой день',exact:true})).toBeVisible();
  for(const [group,label,count] of [['days','По дням',3],['new','Новые',2],['waiting','Ожидание',3]]){
   await home.getByRole('tab',{name:new RegExp(label)}).click();await expect(home.locator('.masterV127Card:visible')).toHaveCount(count);
   await expect(home.getByRole('tab',{name:new RegExp(label)})).toHaveAttribute('aria-selected','true');
@@ -33,14 +33,14 @@ for(const width of [360,390,430,1280])test(`three tabs are legible, complete and
 });
 test('home result saves through existing backend, regrouping and surviving reload; failed write stays unsaved',async({page})=>{
  const {db}=await fixture(page);const home=page.locator('#masterDailyV127');await home.getByRole('tab',{name:/Новые/}).click();
- await home.locator('[data-order-id="14"]').getByRole('button',{name:'Указать итог связи',exact:true}).click();
+ await home.locator('[data-order-id="14"]').getByRole('button',{name:'Итог связи',exact:true}).click();
  await page.getByRole('button',{name:'+79991234567',exact:true}).click();
  await expect(page.locator('#masterContactResultForm')).toBeVisible();await page.locator('input[name=result][value=waiting_delivery]').check();await page.locator('#masterContactResultForm textarea').fill('Ждут доставку в пятницу');
  await page.locator('#masterContactResultForm button[type=submit]').click();await expect(page.locator('#masterContactResultForm')).toHaveCount(0);
  expect(db.tables.orders.find(o=>o.id==='14').master_contact_status).toBe('waiting_delivery');
  await page.evaluate(()=>closeModal());await home.getByRole('tab',{name:/Ожидание/}).click();await expect(home.locator('[data-order-id="14"]')).toContainText('Ждут доставку в пятницу');
  await page.reload();await expect(page.locator('#authGate')).toBeHidden();await home.getByRole('tab',{name:/Ожидание/}).click();await expect(home.locator('[data-order-id="14"]')).toContainText('Ждут доставку в пятницу');
- await home.locator('[data-order-id="14"]').getByRole('button',{name:'Изменить итог связи',exact:true}).click();
+ await home.locator('[data-order-id="14"]').getByRole('button',{name:'Изменить итог',exact:true}).click();
  await page.locator('input[name=result][value=thinking]').check();await page.route(/master-workflow-api(?:\?|$)/,r=>r.fulfill({status:403,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify({ok:false,error:'Тест: сохранение недоступно'})}));await page.locator('#masterContactResultForm button[type=submit]').click();
  await expect(page.locator('.bosContactResultMsg')).toContainText('Тест: сохранение недоступно');expect(db.tables.orders.find(o=>o.id==='14').master_contact_status).toBe('waiting_delivery');await expect(home.locator('[data-order-id="14"]')).toContainText('Ждут доставку в пятницу');
 });
@@ -61,7 +61,7 @@ test('an extra callback preserves departure and legacy timestamps advance throug
 });
 test('home result and agreement move an undated order to its saved day without reload',async({page})=>{
  const {db}=await fixture(page);const home=page.locator('#masterDailyV127');await home.getByRole('tab',{name:/Новые/}).click();
- await home.locator('[data-order-id="14"]').getByRole('button',{name:'Указать итог связи',exact:true}).click();await page.getByRole('button',{name:'+79999876543',exact:true}).click();
+ await home.locator('[data-order-id="14"]').getByRole('button',{name:'Итог связи',exact:true}).click();await page.getByRole('button',{name:'+79999876543',exact:true}).click();
  // Opening the form creates no attempt until the master records the result.
  expect(db.tables.orders.find(o=>o.id==='14').master_contact_history).toHaveLength(0);
  await page.locator('input[name=result][value=agreed]').check();await page.locator('#masterContactResultForm textarea').fill('Согласован монтаж 10 сентября 2099 года');await page.locator('#masterContactResultForm button[type=submit]').click();
