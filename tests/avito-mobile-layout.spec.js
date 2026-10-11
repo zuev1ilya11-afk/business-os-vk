@@ -26,7 +26,7 @@ async function setup(page,{width=390,height=844,role='owner',count=12}={}){
   await route.fulfill({headers:fixtureCors,status,contentType:'application/json',body:JSON.stringify(d)});
  });
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
- await page.locator('#bosAvitoNav').click();await expect(page.locator('.avitoChatRow')).toHaveCount(count);
+ if(page.viewportSize().width<=600){await page.locator('nav [data-page=more]').click();await page.locator('[data-bos-destination=avito]').click();}else await page.locator('#bosAvitoNav').click();await expect(page.locator('.avitoChatRow')).toHaveCount(count);
  return {...stack,calls,errors,chats,fail:()=>fail=true};
 }
 async function noOverflow(page){expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1)}

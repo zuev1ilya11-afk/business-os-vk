@@ -3,6 +3,7 @@ const {test,expect}=require('@playwright/test');
 test.use({serviceWorkers:'block'});
 const fixtureCors={'access-control-allow-origin':'*','access-control-allow-headers':'content-type,x-bos-session,x-vk-launch-params,authorization,apikey','access-control-allow-methods':'GET,POST,OPTIONS'};
 const {fullStack}=require('./helpers/full-stack.cjs');
+async function openInbox(page){if(page.viewportSize().width<=600){await page.locator('nav [data-page=more]').click();await page.locator('[data-bos-destination=avito]').click();}else await page.locator('#bosAvitoNav').click();}
 async function setup(page,width=1440){
  await page.setViewportSize({width,height:900});
  const x=await fullStack(page,'owner'),calls=[],errors=[];
@@ -17,7 +18,7 @@ async function setup(page,width=1440){
   if(b.action==='read'){const c=chats.find(c=>c.id===b.chat_id);if(c)c.unread_count=0}
   await route.fulfill({headers:fixtureCors,contentType:'application/json',body:JSON.stringify(d)});
  });
- await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.locator('#bosAvitoNav').click();await expect(page.locator('.avitoChatRow')).toHaveCount(2);
+ await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await openInbox(page);await expect(page.locator('.avitoChatRow')).toHaveCount(2);
  return {...x,chats,history,calls,errors,enableMore:()=>more=true};
 }
 for(const width of [320,390,900,1440])test('Avito workspace fits '+width+'px and uses inline panes',async({page})=>{
@@ -33,7 +34,7 @@ for(const width of [320,390,900,1440])test('Avito workspace fits '+width+'px and
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width+1);
  if(width<1260){await page.locator('.avitoBackChat').click();await expect(page.locator('#avitoSendForm')).toBeVisible()}
  if(width<768){await page.locator('.avitoBackList').click();await expect(page.locator('#avitoSearch')).toBeVisible();await page.locator('.avitoChatRow').first().click()}
- if(width<1024){const composer=await page.locator('#avitoSendForm').boundingBox(),nav=await page.locator('#app > nav').boundingBox();expect(composer.y+composer.height).toBeLessThanOrEqual(nav.y)}
+ if(width<=600){const composer=await page.locator('#avitoSendForm').boundingBox(),nav=await page.locator('#app > nav').boundingBox();expect(composer.y+composer.height).toBeLessThanOrEqual(nav.y)}
  await expect(page.locator('.avitoBubble')).toHaveCount(3);
  if(process.env.BOS_CAPTURE){await page.screenshot({path:'/workspace/scratch/5af1b07488a7/avito-workspace-'+width+'.png',fullPage:true})}
  expect(x.errors).toEqual([]);
@@ -45,7 +46,7 @@ test('filters, paginated refresh and navigation preserve separate message/order 
  await page.locator('.avitoChatRow').first().click();await page.locator('#avitoSendForm textarea').fill('Черновик Сергею');await page.locator('#avitoLeadForm [name=address]').fill('Адрес Сергея');
  await page.locator('.avitoChatRow').nth(1).click();await page.locator('#avitoSendForm textarea').fill('Черновик Анне');await page.locator('#avitoLeadForm [name=address]').fill('Адрес Анны');
  await page.locator('.avitoChatRow').first().click();await expect(page.locator('#avitoSendForm textarea')).toHaveValue('Черновик Сергею');await expect(page.locator('#avitoLeadForm [name=address]')).toHaveValue('Адрес Сергея');
- await page.locator('nav [data-page=orders]').click();await page.locator('#bosAvitoNav').click();await expect(page.locator('#avitoSendForm textarea')).toHaveValue('Черновик Сергею');
+ await page.locator('nav [data-page=orders]').click();await openInbox(page);await expect(page.locator('#avitoSendForm textarea')).toHaveValue('Черновик Сергею');
  await page.locator('#avitoRefresh').click();await expect(page.locator('#avitoLeadForm [name=address]')).toHaveValue('Адрес Сергея');
  await page.locator('[data-avito-filter=unread]').click();await expect(page.locator('.avitoChatRow')).toHaveCount(0);
  expect(x.errors).toEqual([]);

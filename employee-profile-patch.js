@@ -71,6 +71,7 @@ pages.team=function(){const html=profileTeamBase();return html.replace(/<section
    if(target===menu&&role==='owner')entry(target,'tools','Инструменты владельца',()=>openOwnerTools());
   }
   if(!modal)return;
+  if(modal.querySelector('.bosSharedInfo,#bosPushMessage,#masterMemoItems'))modal.classList.add('bosSharedScreen');
   if(modal.classList.contains('bosManagementProfile')){
    // Keep existing financial adjustment values available, away from personal identity.
    for(const section of modal.querySelectorAll(':scope>section.card')){
@@ -90,7 +91,7 @@ pages.team=function(){const html=profileTeamBase();return html.replace(/<section
     const label=document.createElement('label');if(!input.id)input.id='bosShared-'+form.id+'-'+input.name;label.htmlFor=input.id;label.textContent=labels[input.name]||input.placeholder||'Файл';input.before(label);
    }
   }
-  if(modal.querySelector('.apiState,.avitoSetupCard,#apiIntForm,#apiMapForm,#handsSyncMsg'))modal.classList.add('bosSharedIntegration');
+  if(modal.querySelector('.apiState,.avitoSetupCard,#avitoSyncBtn,#apiIntForm,#apiMapForm,#handsSyncMsg'))modal.classList.add('bosSharedIntegration');
   if(modal.querySelector('#claimForm')||/^Претензия$/.test(modal.querySelector('h2')?.textContent||''))modal.classList.add('bosSharedClaim');
  }
  let queued=false;function queue(){if(queued)return;queued=true;queueMicrotask(()=>{queued=false;decorate()});}
@@ -105,3 +106,12 @@ document.addEventListener('error',event=>{
  note.querySelector('button').onclick=()=>{note.remove();img.src=img.src;};img.after(note);
  img.addEventListener('load',()=>panel.querySelector('.bosSharedPhotoError')?.remove(),{once:true});
 },true);
+// Labels augment the existing authentication DOM; authentication code is untouched.
+(()=>{
+ const gate=document.getElementById('authGate');if(!gate)return;
+ const label=()=>{for(const input of gate.querySelectorAll('form input[name]')){
+  if(input.closest('label'))continue;if(input.id&&gate.querySelector(`label[for="${input.id}"]`))continue;
+  if(!input.id)input.id='bosGate-'+input.name;const el=document.createElement('label');el.htmlFor=input.id;el.textContent={login:'Логин',password:'Пароль',code:'Код приглашения'}[input.name]||input.placeholder;input.before(el);
+ }};
+ new MutationObserver(label).observe(gate,{childList:true,subtree:true});label();
+})();

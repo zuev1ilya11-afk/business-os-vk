@@ -159,3 +159,18 @@ body.bos-approved-ui .reportPhotoViewerBox{background:#151d28;border-color:#2a35
 body.bos-approved-ui .reportPhotoViewerPanel{background:#151d28;border-color:#2a3543}
 body.bos-approved-ui .reportPhotoViewerPanel:has(.bosSharedPhotoError)>img{display:none}
 body.bos-approved-ui .bosSharedPhotoError{text-align:center;padding:56px 24px;max-width:520px;margin:auto}
+body.bos-approved-ui .avitoChatRow{background:none;border:0;border-bottom:1px solid #2a3543;border-radius:0;margin:0;padding:18px 0;box-shadow:none}
+body.bos-approved-ui .avitoChatRow.selected{background:#1b2634;border-radius:9px;padding-left:12px;padding-right:12px}
+body.bos-approved-ui .avitoAvatar{background:#243447;color:#a8ceff}
+body.bos-approved-ui .avitoFilters button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;min-height:44px}
+body.bos-approved-ui .avitoFilters button.active{background:none;color:#a8ceff;border-bottom-color:#a8ceff}
+body.bos-approved-ui .avitoBubble{background:#1b2634;border-radius:10px;color:#edf2f8}
+body.bos-approved-ui .avitoBubble.out{background:#243d58;color:#edf2f8}
+body.bos-approved-ui .avitoConversation,body.bos-approved-ui .avitoLeadPane,body.bos-approved-ui .avitoQueue{background:transparent;border-color:#2a3543}
+body.bos-approved-ui .avitoSearch:before{display:none}
+body.bos-approved-ui .bosSharedScreen>h2,body.bos-approved-ui .bosSharedForm>h2,body.bos-approved-ui .bosSharedIntegration>h2,body.bos-approved-ui .bosSharedInfo>h2{font-size:28px;margin:0 0 14px}
+@media(max-width:760px){
+ body.bos-approved-ui #modalRoot .modal:is(.bosSharedForm,.bosSharedScreen,.bosSharedClaim,.bosSharedIntegration){width:100%;height:100dvh;max-height:100dvh;max-width:100%;margin:0;border:0;border-radius:0;padding:76px 19px 32px;background:#0e141c}
+ body.bos-approved-ui #modalRoot:has(.modal:is(.bosSharedForm,.bosSharedScreen,.bosSharedClaim,.bosSharedIntegration)),body.bos-approved-ui #modalRoot .modalBackdrop:has(.modal:is(.bosSharedForm,.bosSharedScreen,.bosSharedClaim,.bosSharedIntegration)){padding:0}
+ body.bos-approved-ui .bosSharedForm .form>.primary{bottom:-32px}
+}
