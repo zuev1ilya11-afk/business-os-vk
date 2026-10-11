@@ -34,17 +34,21 @@ test('master preview refresh uses current employee rather than captured profile 
   // Focus refresh respects the existing 2500 ms automatic-refresh throttle.
   await page.clock.fastForward(2600);
   await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
-  await expect(page.locator('#content')).toContainText('+79990000099');
+  await expect.poll(()=>page.evaluate(()=>liveMasterUser().phone)).toBe('+79990000099');
+  await page.getByRole('button',{name:/Личные данные/}).click();
+  await expect(page.locator('#masterProfileEditForm [name=phone]')).toHaveValue('+79990000099');
 });
 test('master saving profile updates users, masters and opens current home without reload',async({page})=>{
   await boot(page,'master');
   await page.locator('nav [data-page=team]').click();
-  await page.getByRole('button',{name:'Редактировать профиль'}).click();
+  await page.getByRole('button',{name:/Личные данные/}).click();
   await page.locator('#masterProfileEditForm [name=phone]').fill('+79990000099');
   await page.locator('#masterProfileEditForm [name=district]').fill('Новый район');
   await page.locator('#masterProfileEditForm button[type=submit]').click();
   await expect(page.locator('#masterProfileEditForm')).toHaveCount(0);
-  await expect(page.locator('#content')).toContainText('+79990000099');
+  await page.getByRole('button',{name:/Личные данные/}).click();
+  await expect(page.locator('#masterProfileEditForm [name=phone]')).toHaveValue('+79990000099');
+  await page.locator('.modalClose').click();
   const people=await page.evaluate(()=>[state.user,...state.users,...state.masters]);
   expect(people.every(x=>x.phone==='+79990000099'&&x.district==='Новый район')).toBe(true);
   await page.locator('nav [data-page=home]').click();

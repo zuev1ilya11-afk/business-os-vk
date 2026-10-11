@@ -972,13 +972,16 @@ pages.team=function(){const html=profileTeamBase();return html.replace(/<section
    if(target===menu)entry(target,'personal','Личные данные');
    entry(target,'help','Помощь');entry(target,'about','О приложении');
    if(target===menu&&window.BOS_OPEN_AUTH_SETTINGS)entry(target,'login','Настройки входа',()=>BOS_OPEN_AUTH_SETTINGS());
-   if(target===master&&window.BOS_PROFILE_LOGOUT)entry(target,'logout','Выйти из аккаунта',()=>BOS_PROFILE_LOGOUT());
+   if(target===master&&String(state.user?.role)==='master'&&window.BOS_PROFILE_LOGOUT)entry(target,'logout','Выйти из аккаунта',()=>BOS_PROFILE_LOGOUT());
+   else if(target===master)target.querySelector('[data-bos-shared=logout]')?.remove();
   }
   if(menu){
    const device=modal.querySelector('[data-bos-push-entry]');
    if(device&&device.parentElement!==menu)menu.appendChild(device);
    // Earlier extensions append the same login entry asynchronously.
    if(menu.querySelector('[data-bos-shared=login]'))modal.querySelector('#authSettingsProfileSection')?.remove();
+   const logout=modal.querySelector('#bosOwnerLogout');
+   if(logout&&(logout.parentElement!==modal||modal.lastElementChild!==logout))modal.appendChild(logout);
   }
   if(!modal)return;
   const catalog=modal.querySelector('.bosSharedCatalog'),avito=modal.querySelector('.bosAvitoCatalog'),materials=modal.querySelector('.bosPriceMaterials');

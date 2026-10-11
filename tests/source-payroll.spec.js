@@ -36,9 +36,12 @@ test('Direct source real report handlers feed one approved salary into day, week
   await expect(summary.getByText(label,{exact:true}).locator('..')).toContainText(value);
  }
  await page.locator('nav button[data-page="team"]').click();
- const panel=page.locator('#masterProfileSummaryV129');
+ await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
+  const panel=page.locator('.bosPayoutTask #masterMoneyV130');
  for(const label of ['День','Неделя','Месяц']){await panel.getByRole('button',{name:label,exact:true}).click();await expect(panel.locator('.salaryHero')).toContainText('780')}
- await page.evaluate(()=>window.BOS_REFRESH_NOW());
+ await page.getByRole('button',{name:'К профилю',exact:true}).click();
+  await page.evaluate(()=>window.BOS_REFRESH_NOW());
+  await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
  await expect(page.locator('.salaryOrder')).toHaveCount(1);
  await expect(page.locator('.salaryOrder')).toContainText('780');
 });

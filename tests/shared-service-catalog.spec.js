@@ -50,6 +50,7 @@ test('master browses the shared catalog and searches additional work on a narrow
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await page.locator('nav [data-page=team]').click();
+  await page.getByRole('button',{name:/Памятки и прайс/}).click();
   await page.getByRole('button',{name:/Прайс услуг/}).click();
   const rows=page.locator('.bosCatalogRow');
   const catalog=await page.evaluate(()=>window.BOS_SERVICE_CATALOG);
@@ -82,6 +83,7 @@ test('price materials show loading, safe error, retry and empty states while cat
     }
     return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,items:[]})});
   });
+  await page.getByRole('button',{name:/Памятки и прайс/}).click();
   await page.getByRole('button',{name:/Прайс услуг/}).click();
   await page.locator('[data-price-tab=materials]').click();
   await expect(page.locator('#bosMasterPrice')).toHaveAttribute('aria-busy','true');

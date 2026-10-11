@@ -13,7 +13,8 @@ test('master payment panel is rendered in owner master preview',async({page})=>{
     show('team');
     window.BOS_MASTER_PROFILE_SUMMARY_V129_API.refresh();
   });
-  const panel=page.locator('#masterProfileSummaryV129');
+  await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
+  const panel=page.locator('.bosPayoutTask #masterMoneyV130');
   await expect(panel).toBeVisible();
   await expect(panel.getByText('Допработы',{exact:true})).toBeVisible();
   await expect(panel.getByText('Вычеты',{exact:true})).toBeVisible();
