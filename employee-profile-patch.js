@@ -43,3 +43,65 @@ pages.team=function(){const html=profileTeamBase();return html.replace(/<section
  let queued=false;
  const root=document.getElementById('modalRoot');if(root)new MutationObserver(()=>{if(!queued){queued=true;queueMicrotask(()=>{queued=false;decorateManagementModal()})}}).observe(root,{childList:true,subtree:true});
 })();
+
+// Approved shared presentation. Existing forms, permissions and submitters are retained.
+(()=>{
+ const current=()=>typeof liveMasterUser==='function'&&typeof liveMasterMode==='function'&&liveMasterMode()?liveMasterUser():state.user||{};
+ function info(kind){
+  const u=current(),role=document.body.dataset.bosUiRole||u.role;
+  const row=(a,b)=>`<div class="bosSharedRow"><span>${esc(a)}</span><b>${esc(b||'—')}</b></div>`;
+  let body='';
+  if(kind==='personal')body='<h2>Личные данные</h2><p class="muted">Информация вашего рабочего профиля</p>'+row('Фамилия и имя',u.full_name||u.name)+row('Телефон',u.phone)+row('Город',u.city)+row('Роль',ROLE_NAMES[role]||role)+'<p class="bosSharedNotice">Для изменения данных обратитесь к владельцу.</p>';
+  if(kind==='help')body='<h2>Помощь</h2><p class="muted">Рабочие вопросы и инструкции</p>'+row('Вопрос по заявке','Свяжитесь с диспетчером или руководителем')+row('Отчёт о работе','Приложите читаемый акт и фотографии результата')+row('Перенос визита','Дата визита и обратного звонка задаются отдельно')+row('Проблема с доступом','Обратитесь к владельцу');
+  if(kind==='about')body='<h2>О приложении</h2><p class="muted">Business OS · Рабочая система команды</p>'+row('Версия интерфейса',window.BOS_BUILD?.id)+row('Часовой пояс заявок','Москва')+row('Соединение',navigator.onLine?'В сети':'Нет соединения');
+  openModal('<section class="bosSharedInfo">'+body+'</section>');
+ }
+ function entry(parent,kind,label,action){if(parent.querySelector(`[data-bos-shared="${kind}"]`))return;const b=document.createElement('button');b.type='button';b.className='secondary wide';b.dataset.bosShared=kind;b.textContent=label+' →';b.onclick=action||(()=>info(kind));parent.appendChild(b);}
+ function decorate(){
+  const role=document.body.dataset.bosUiRole;if(!role)return;
+  const modal=document.querySelector('#modalRoot .modal'),master=document.querySelector('.bosProfileMenu');
+  let menu=modal?.querySelector('.bosManagementProfileMenu');
+  if(!menu&&role==='dispatcher'&&modal?.querySelector(':scope>h2')?.textContent==='Мой профиль'){
+   menu=document.createElement('div');menu.className='bosManagementProfileMenu';modal.appendChild(menu);modal.classList.add('bosManagementProfile');
+  }
+  for(const target of [menu,master].filter(Boolean)){
+   if(target===menu)entry(target,'personal','Личные данные');
+   entry(target,'help','Помощь');entry(target,'about','О приложении');
+   if(target===menu&&window.BOS_PUSH)entry(target,'push','Уведомления на устройстве',()=>BOS_PUSH.open());
+   if(target===menu&&role==='owner')entry(target,'tools','Инструменты владельца',()=>openOwnerTools());
+  }
+  if(!modal)return;
+  if(modal.classList.contains('bosManagementProfile')){
+   // Keep existing financial adjustment values available, away from personal identity.
+   for(const section of modal.querySelectorAll(':scope>section.card')){
+    if(section.querySelector('h3')?.textContent==='Корректировки по выполненным заявкам'){
+     const d=document.createElement('details');d.className='bosSharedDisclosure';const s=document.createElement('summary');s.textContent='Корректировки по выполненным заявкам';d.appendChild(s);section.before(d);d.appendChild(section);
+    }
+   }
+  }
+  const form=modal.querySelector('#apiIntForm,#apiMapForm,#avitoConnectForm,#claimForm,#masterProfileEditForm,#bosCredForm,#handsAssignForm,#handsReportForm,#handsFileForm');
+  if(form){modal.classList.add('bosSharedForm');
+   for(const input of form.querySelectorAll('input:not([type=checkbox]):not([type=hidden]),textarea,select')){
+    if(input.closest('label'))continue;
+    if(input.id&&modal.querySelector(`label[for="${input.id}"]`))continue;
+    const previous=input.previousElementSibling;
+    if(previous?.tagName==='LABEL'&&!previous.querySelector('input')){if(!input.id)input.id='bosShared-'+form.id+'-'+input.name;previous.htmlFor=input.id;continue;}
+    const labels={scheduled_date:'Дата повторного визита',scheduled_time:'Время повторного визита',reason:'Причина',required_work:'Что нужно исправить',revisit_payment:'Сумма мастеру',payment_note:'Комментарий к оплате',client_id:'Client ID',client_secret:'Client Secret',specialist:'Мастер',relation:'Тип файла'};
+    const label=document.createElement('label');if(!input.id)input.id='bosShared-'+form.id+'-'+input.name;label.htmlFor=input.id;label.textContent=labels[input.name]||input.placeholder||'Файл';input.before(label);
+   }
+  }
+  if(modal.querySelector('.apiState,.avitoSetupCard,#apiIntForm,#apiMapForm,#handsSyncMsg'))modal.classList.add('bosSharedIntegration');
+  if(modal.querySelector('#claimForm')||/^Претензия$/.test(modal.querySelector('h2')?.textContent||''))modal.classList.add('bosSharedClaim');
+ }
+ let queued=false;function queue(){if(queued)return;queued=true;queueMicrotask(()=>{queued=false;decorate()});}
+ for(const id of ['content','modalRoot']){const root=document.getElementById(id);if(root)new MutationObserver(queue).observe(root,{childList:true,subtree:true});}
+})();
+// A failed existing photo remains recoverable without changing its signed URL.
+document.addEventListener('error',event=>{
+ const img=event.target;if(!img?.matches?.('#reportPhotoViewer img'))return;
+ const panel=img.closest('.reportPhotoViewerPanel');if(!panel||panel.querySelector('.bosSharedPhotoError'))return;
+ const note=document.createElement('div');note.className='bosSharedPhotoError';note.setAttribute('role','status');
+ note.innerHTML='<h3>Не удалось открыть фото</h3><p class="muted">Файл может быть временно недоступен. Повторите загрузку или откройте оригинал.</p><button type="button" class="primary">Повторить</button>';
+ note.querySelector('button').onclick=()=>{note.remove();img.src=img.src;};img.after(note);
+ img.addEventListener('load',()=>panel.querySelector('.bosSharedPhotoError')?.remove(),{once:true});
+},true);

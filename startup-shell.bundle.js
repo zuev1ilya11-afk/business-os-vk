@@ -948,6 +948,68 @@ pages.team=function(){const html=profileTeamBase();return html.replace(/<section
  const root=document.getElementById('modalRoot');if(root)new MutationObserver(()=>{if(!queued){queued=true;queueMicrotask(()=>{queued=false;decorateManagementModal()})}}).observe(root,{childList:true,subtree:true});
 })();
 
+// Approved shared presentation. Existing forms, permissions and submitters are retained.
+(()=>{
+ const current=()=>typeof liveMasterUser==='function'&&typeof liveMasterMode==='function'&&liveMasterMode()?liveMasterUser():state.user||{};
+ function info(kind){
+  const u=current(),role=document.body.dataset.bosUiRole||u.role;
+  const row=(a,b)=>`<div class="bosSharedRow"><span>${esc(a)}</span><b>${esc(b||'—')}</b></div>`;
+  let body='';
+  if(kind==='personal')body='<h2>Личные данные</h2><p class="muted">Информация вашего рабочего профиля</p>'+row('Фамилия и имя',u.full_name||u.name)+row('Телефон',u.phone)+row('Город',u.city)+row('Роль',ROLE_NAMES[role]||role)+'<p class="bosSharedNotice">Для изменения данных обратитесь к владельцу.</p>';
+  if(kind==='help')body='<h2>Помощь</h2><p class="muted">Рабочие вопросы и инструкции</p>'+row('Вопрос по заявке','Свяжитесь с диспетчером или руководителем')+row('Отчёт о работе','Приложите читаемый акт и фотографии результата')+row('Перенос визита','Дата визита и обратного звонка задаются отдельно')+row('Проблема с доступом','Обратитесь к владельцу');
+  if(kind==='about')body='<h2>О приложении</h2><p class="muted">Business OS · Рабочая система команды</p>'+row('Версия интерфейса',window.BOS_BUILD?.id)+row('Часовой пояс заявок','Москва')+row('Соединение',navigator.onLine?'В сети':'Нет соединения');
+  openModal('<section class="bosSharedInfo">'+body+'</section>');
+ }
+ function entry(parent,kind,label,action){if(parent.querySelector(`[data-bos-shared="${kind}"]`))return;const b=document.createElement('button');b.type='button';b.className='secondary wide';b.dataset.bosShared=kind;b.textContent=label+' →';b.onclick=action||(()=>info(kind));parent.appendChild(b);}
+ function decorate(){
+  const role=document.body.dataset.bosUiRole;if(!role)return;
+  const modal=document.querySelector('#modalRoot .modal'),master=document.querySelector('.bosProfileMenu');
+  let menu=modal?.querySelector('.bosManagementProfileMenu');
+  if(!menu&&role==='dispatcher'&&modal?.querySelector(':scope>h2')?.textContent==='Мой профиль'){
+   menu=document.createElement('div');menu.className='bosManagementProfileMenu';modal.appendChild(menu);modal.classList.add('bosManagementProfile');
+  }
+  for(const target of [menu,master].filter(Boolean)){
+   if(target===menu)entry(target,'personal','Личные данные');
+   entry(target,'help','Помощь');entry(target,'about','О приложении');
+   if(target===menu&&window.BOS_PUSH)entry(target,'push','Уведомления на устройстве',()=>BOS_PUSH.open());
+   if(target===menu&&role==='owner')entry(target,'tools','Инструменты владельца',()=>openOwnerTools());
+  }
+  if(!modal)return;
+  if(modal.classList.contains('bosManagementProfile')){
+   // Keep existing financial adjustment values available, away from personal identity.
+   for(const section of modal.querySelectorAll(':scope>section.card')){
+    if(section.querySelector('h3')?.textContent==='Корректировки по выполненным заявкам'){
+     const d=document.createElement('details');d.className='bosSharedDisclosure';const s=document.createElement('summary');s.textContent='Корректировки по выполненным заявкам';d.appendChild(s);section.before(d);d.appendChild(section);
+    }
+   }
+  }
+  const form=modal.querySelector('#apiIntForm,#apiMapForm,#avitoConnectForm,#claimForm,#masterProfileEditForm,#bosCredForm,#handsAssignForm,#handsReportForm,#handsFileForm');
+  if(form){modal.classList.add('bosSharedForm');
+   for(const input of form.querySelectorAll('input:not([type=checkbox]):not([type=hidden]),textarea,select')){
+    if(input.closest('label'))continue;
+    if(input.id&&modal.querySelector(`label[for="${input.id}"]`))continue;
+    const previous=input.previousElementSibling;
+    if(previous?.tagName==='LABEL'&&!previous.querySelector('input')){if(!input.id)input.id='bosShared-'+form.id+'-'+input.name;previous.htmlFor=input.id;continue;}
+    const labels={scheduled_date:'Дата повторного визита',scheduled_time:'Время повторного визита',reason:'Причина',required_work:'Что нужно исправить',revisit_payment:'Сумма мастеру',payment_note:'Комментарий к оплате',client_id:'Client ID',client_secret:'Client Secret',specialist:'Мастер',relation:'Тип файла'};
+    const label=document.createElement('label');if(!input.id)input.id='bosShared-'+form.id+'-'+input.name;label.htmlFor=input.id;label.textContent=labels[input.name]||input.placeholder||'Файл';input.before(label);
+   }
+  }
+  if(modal.querySelector('.apiState,.avitoSetupCard,#apiIntForm,#apiMapForm,#handsSyncMsg'))modal.classList.add('bosSharedIntegration');
+  if(modal.querySelector('#claimForm')||/^Претензия$/.test(modal.querySelector('h2')?.textContent||''))modal.classList.add('bosSharedClaim');
+ }
+ let queued=false;function queue(){if(queued)return;queued=true;queueMicrotask(()=>{queued=false;decorate()});}
+ for(const id of ['content','modalRoot']){const root=document.getElementById(id);if(root)new MutationObserver(queue).observe(root,{childList:true,subtree:true});}
+})();
+// A failed existing photo remains recoverable without changing its signed URL.
+document.addEventListener('error',event=>{
+ const img=event.target;if(!img?.matches?.('#reportPhotoViewer img'))return;
+ const panel=img.closest('.reportPhotoViewerPanel');if(!panel||panel.querySelector('.bosSharedPhotoError'))return;
+ const note=document.createElement('div');note.className='bosSharedPhotoError';note.setAttribute('role','status');
+ note.innerHTML='<h3>Не удалось открыть фото</h3><p class="muted">Файл может быть временно недоступен. Повторите загрузку или откройте оригинал.</p><button type="button" class="primary">Повторить</button>';
+ note.querySelector('button').onclick=()=>{note.remove();img.src=img.src;};img.after(note);
+ img.addEventListener('load',()=>panel.querySelector('.bosSharedPhotoError')?.remove(),{once:true});
+},true);
+
 
 ;
 // Source: role-preview-patch.js
@@ -2384,7 +2446,7 @@ async function disconnectAvito(){const msg=document.getElementById('avitoMsg'),b
 function ensureOwnerToolsButton(){const header=document.querySelector('header'),profile=document.querySelector('#profileBtn');if(!header||!profile)return;let btn=document.querySelector('#ownerToolsBtn');if(!btn){btn=document.createElement('button');btn.id='ownerToolsBtn';btn.className='ownerToolsBtn';btn.type='button';btn.setAttribute('aria-label','Инструменты владельца');btn.textContent='⚙';btn.onclick=openOwnerTools;header.insertBefore(btn,profile)}btn.style.display=ownerToolsMode()&&state.page==='home'?'grid':'none'}
 function personId(u){return String(u?.vk_user_id||u?.external_id||u?.id||'')}
 function previewButton(u){const id=esc(personId(u)),name=esc(u.full_name||'Сотрудник');if(u.role==='master'&&typeof enterMasterPreview==='function')return `<button class="secondary wide ownerPreviewBtn" onclick="enterMasterPreview('${id}')"><span><b>${name}</b><small>Мастер</small></span><b>Открыть ›</b></button>`;if(u.role==='dispatcher'&&typeof enterDispatcherPreview==='function')return `<button class="secondary wide ownerPreviewBtn" onclick="enterDispatcherPreview('${id}')"><span><b>${name}</b><small>Диспетчер</small></span><b>Открыть ›</b></button>`;return ''}
-window.openOwnerTools=function(){if(!ownerToolsMode())return;const people=(state.users||[]).filter(u=>u.role==='master'||u.role==='dispatcher'),avitoLabel=window.BUSINESS_OS_CONFIG?.AVITO_API_ENABLED===true?'Подключить ›':'Подготовка ›';openModal(`<div class="ownerToolsHead"><div><div class="eyebrow">ИНСТРУМЕНТЫ</div><h2 style="margin:3px 0 0">Настройки и тестирование</h2></div></div><section class="card"><h3 style="margin-top:0">Тестирование от лица сотрудника</h3><p class="muted">Откройте приложение так, как его видит выбранный сотрудник.</p>${people.map(previewButton).filter(Boolean).join('')||'<p class="muted">Нет мастеров или диспетчеров для тестирования.</p>'}</section><section class="card"><h3 style="margin-top:0">Интеграции</h3><button class="secondary wide ownerToolAction" onclick="openAvitoSettings()"><span>Авито</span><b>${avitoLabel}</b></button></section><section class="card"><h3 style="margin-top:0">Инструменты</h3><button class="secondary wide ownerToolAction" onclick="closeModal();show('team')"><span>Команда</span><b>›</b></button><button class="secondary wide ownerToolAction" onclick="closeModal();reloadData(true)"><span>Обновить данные</span><b>↻</b></button></section>`)};
+window.openOwnerTools=function(){if(!ownerToolsMode())return;const people=(state.users||[]).filter(u=>u.role==='master'||u.role==='dispatcher'),avitoLabel=window.BUSINESS_OS_CONFIG?.AVITO_API_ENABLED===true?'Подключить ›':'Подготовка ›';openModal(`<div class="ownerToolsHead"><div><div class="eyebrow">ИНСТРУМЕНТЫ</div><h2 style="margin:3px 0 0">Инструменты владельца</h2></div></div><section class="card"><h3 style="margin-top:0">Просмотр интерфейсов ролей</h3><p class="muted">Откройте приложение так, как его видит выбранный сотрудник.</p>${people.map(previewButton).filter(Boolean).join('')||'<p class="muted">Нет мастеров или диспетчеров для тестирования.</p>'}</section><section class="card"><h3 style="margin-top:0">Интеграции</h3><button class="secondary wide ownerToolAction" onclick="openAvitoSettings()"><span>Авито</span><b>${avitoLabel}</b></button></section><section class="card"><h3 style="margin-top:0">Инструменты</h3><button class="secondary wide ownerToolAction" onclick="closeModal();show('team')"><span>Команда</span><b>›</b></button><button class="secondary wide ownerToolAction" onclick="openOwnerMemoManager()"><span>Материалы для команды</span><b>›</b></button><button class="secondary wide ownerToolAction" onclick="openStaffAccess('all')"><span>Доступы сотрудников</span><b>›</b></button><button class="secondary wide ownerToolAction" onclick="closeModal();reloadData(true)"><span>Обновить данные</span><b>↻</b></button></section>`)};
 const baseOpenOwnerProfile=window.openOwnerProfile;
 window.openOwnerProfile=function(){if((typeof isMasterPreview==='function'&&isMasterPreview())||(typeof isDispatcherPreview==='function'&&isDispatcherPreview()))return baseOpenOwnerProfile();if(String(state.user?.role||'')!=='owner')return baseOpenOwnerProfile();const u=state.user||{},done=(state.orders||[]).filter(o=>String(o.status)==='Выполнена'),extras=done.reduce((s,o)=>s+Number(o.extra_work_amount||0),0),unfinished=done.reduce((s,o)=>s+Number(o.uncompleted_work_amount||0),0);openModal(`<h2>Профиль владельца</h2><section class="card"><div class="ownerProfileLine"><span>Имя</span><b>${esc(u.full_name||'—')}</b></div><div class="ownerProfileLine"><span>Роль</span><b>Владелец</b></div><div class="ownerProfileLine"><span>Город</span><b>${esc(u.city||'—')}</b></div>${u.phone?`<div class="ownerProfileLine"><span>Телефон</span><b>${esc(u.phone)}</b></div>`:''}</section><section class="card"><h3 style="margin-top:0">Корректировки по выполненным заявкам</h3><div class="grid"><div class="metric"><span class="muted">Допработы</span><strong>${money(extras)}</strong></div><div class="metric"><span class="muted">Невыполненные</span><strong>− ${money(unfinished)}</strong></div></div></section><button class="secondary wide" onclick="closeModal();reloadData(true)">Обновить данные</button>`)};
 const baseShowOwnerTools=window.show;window.show=function(name){baseShowOwnerTools(name);setTimeout(ensureOwnerToolsButton,0)};
@@ -3283,7 +3345,7 @@ const FIELDS=[['external_id','ID заявки во внешней системе
 async function call(action,p={}){const h=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};h['Content-Type']='application/json';const r=await fetch(URL,{method:'POST',headers:h,body:JSON.stringify({action,...p})}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Ошибка API интеграции');return d}
 const dt=v=>v?new Date(v).toLocaleString('ru-RU'):'Никогда';
 window.openApiIntegrations=async function(){openModal('<h2>Интеграции API</h2><section class="card"><p class="muted">Загружаем…</p></section>');try{const d=await call('listIntegrations'),m=document.querySelector('.modal');m.innerHTML=`<button class="modalClose" onclick="closeModal()">×</button><h2>Интеграции API</h2><p class="muted">Подключайте сайты, CRM, ботов, телефонию и другие сервисы к заявкам Business OS.</p><button class="primary wide" onclick="createApiIntegration()">+ Добавить интеграцию</button><div style="height:10px"></div>${(d.integrations||[]).map(x=>`<section class="card"><div class="row"><div><b>${esc(x.name)}</b><div class="muted">${esc(x.slug)}</div></div><span class="apiState ${x.is_active?'on':'off'}">${x.is_active?'Активна':'Отключена'}</span></div><div class="ownerProfileLine"><span>Последнее обращение</span><b>${esc(dt(x.last_used_at))}</b></div><div class="ownerProfileLine"><span>Сопоставление полей</span><b>${Object.keys(x.field_mapping||{}).length?Object.keys(x.field_mapping).length+' полей':'По умолчанию'}</b></div><div class="apiBtns"><button class="secondary" onclick="openApiMapping('${esc(x.id)}')">Настроить поля</button><button class="secondary" onclick="rotateApiKey('${esc(x.id)}','${esc(x.name)}')">Новый ключ</button><button class="secondary" onclick="toggleApiIntegration('${esc(x.id)}',${x.is_active?'false':'true'})">${x.is_active?'Отключить':'Включить'}</button></div></section>`).join('')||'<section class="card"><p class="muted">Интеграций пока нет.</p></section>'}`}catch(e){document.querySelector('.modal').innerHTML=`<button class="modalClose" onclick="closeModal()">×</button><h2>Интеграции API</h2><p class="muted">${esc(e.message)}</p>`}}
-window.createApiIntegration=function(){openModal(`<h2>Новая API-интеграция</h2><form id="apiIntForm" class="form"><input name="name" placeholder="Например: Сайт, Telegram, CRM" required><input name="slug" placeholder="Код, необязательно"><button class="primary wide">Создать и получить API-ключ</button><p id="apiIntMsg" class="muted"></p></form>`);document.getElementById('apiIntForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,msg=document.getElementById('apiIntMsg');msg.textContent='Создаём…';try{const d=await call('createIntegration',{name:f.elements.name.value.trim(),slug:f.elements.slug.value.trim()});showKey(d.api_key,d.integration)}catch(x){msg.textContent=x.message}}};
+window.createApiIntegration=function(){openModal(`<h2>Новая API-интеграция</h2><form id="apiIntForm" class="form"><label for="apiIntegrationName">Название интеграции</label><input id="apiIntegrationName" name="name" placeholder="Например: Сайт, Telegram, CRM" required><label for="apiIntegrationSlug">Код интеграции</label><input id="apiIntegrationSlug" name="slug" placeholder="Код, необязательно"><button class="primary wide">Создать и получить API-ключ</button><p id="apiIntMsg" class="muted"></p></form>`);document.getElementById('apiIntForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,msg=document.getElementById('apiIntMsg');msg.textContent='Создаём…';try{const d=await call('createIntegration',{name:f.elements.name.value.trim(),slug:f.elements.slug.value.trim()});showKey(d.api_key,d.integration)}catch(x){msg.textContent=x.message}}};
 function showKey(key,i){openModal(`<h2>API-ключ создан</h2><section class="card"><b>${esc(i?.name||'Интеграция')}</b><p class="muted">Скопируйте ключ сейчас. После закрытия он больше не показывается.</p><textarea id="apiKeyValue" rows="4" readonly>${esc(key)}</textarea><button class="primary wide" onclick="copyApiKey()">Скопировать ключ</button></section><section class="card"><h3>Подключение</h3><p class="muted">Endpoint</p><input readonly value="${URL}"><p class="muted">Передавайте ключ в заголовке X-API-Key. Для создания или обновления заявки используйте action: upsertOrder и уникальный external_id.</p></section><button class="secondary wide" onclick="openApiIntegrations()">Готово</button>`)}
 window.copyApiKey=async function(){const e=document.getElementById('apiKeyValue');try{await navigator.clipboard.writeText(e.value);alert('API-ключ скопирован')}catch(_){e.select();document.execCommand('copy');alert('API-ключ скопирован')}};
 window.rotateApiKey=async function(id,name){if(!confirm(`Создать новый API-ключ для «${name}»? Старый перестанет работать.`))return;try{const d=await call('rotateKey',{id});showKey(d.api_key,d.integration)}catch(e){alert(e.message)}};
@@ -3411,15 +3473,6 @@ window.openOwnerProfile=function(){
     if(!modal)return;
     const isOwner=String(state?.user?.role||'')==='owner';
     if(!isOwner)return;
-    if(!modal.querySelector('#handsProfileSection')){
-      const section=document.createElement('section');
-      section.className='card';
-      section.id='handsProfileSection';
-      section.innerHTML='<h3 style="margin-top:0">Интеграции</h3><button class="secondary wide" id="handsProfileBtn"><span>Hands.ru</span><b>Открыть ›</b></button>';
-      const refresh=[...modal.querySelectorAll('button')].find(b=>/обновить данные/i.test(b.textContent||''));
-      if(refresh)modal.insertBefore(section,refresh);else modal.appendChild(section);
-      const btn=document.getElementById('handsProfileBtn');if(btn)btn.onclick=()=>{if(typeof openHandsIntegration==='function')openHandsIntegration()};
-    }
     if(!modal.querySelector('#authSettingsProfileSection')){
       const section=document.createElement('section');
       section.className='card';

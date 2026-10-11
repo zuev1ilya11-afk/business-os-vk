@@ -122,3 +122,40 @@
 
 .bos-approved-ui #financePage #finContent #finMasterDetail .finKpi{padding:24px 22px;margin:0;border-right:1px solid var(--bos-ui-line)}.bos-approved-ui #financePage #finContent #finMasterDetail .finKpi:last-child{border-right:0}
 @media(max-width:760px){.bos-approved-ui #financePage #finContent #finMasterDetail .finKpi{padding:20px 15px;border-bottom:1px solid var(--bos-ui-line)}.bos-approved-ui #financePage #finContent #finMasterDetail .finKpi:nth-child(2n){border-right:0}}
+
+/* Stage 5: shared personal, administration, integration and system surfaces. */
+body.bos-approved-ui .bosSharedInfo{padding:0;background:none;border:0}
+body.bos-approved-ui .bosSharedRow{display:flex;justify-content:space-between;gap:20px;padding:18px 0;border-bottom:1px solid var(--bos-line,#2a3543);font-size:14px}
+body.bos-approved-ui .bosSharedRow span{color:#a3b1c3;flex:0 1 45%}
+body.bos-approved-ui .bosSharedRow b{font-weight:500;text-align:right;overflow-wrap:anywhere;min-width:0}
+body.bos-approved-ui .bosSharedNotice{padding:16px;background:#1b2634;border-left:3px solid #91bfff;font-size:14px;line-height:1.5}
+body.bos-approved-ui .bosSharedDisclosure{border-top:1px solid #2a3543;margin:20px 0;padding:14px 0}
+body.bos-approved-ui .bosSharedDisclosure summary{cursor:pointer;color:#a3b1c3;min-height:44px;align-content:center}
+body.bos-approved-ui .bosManagementTools .ownerToolsHead{margin-bottom:24px}
+body.bos-approved-ui .bosManagementTools .ownerToolAction,body.bos-approved-ui .bosManagementTools .ownerPreviewBtn,body.bos-approved-ui .bosManagementProfileMenu>button{border:0!important;border-bottom:1px solid #2a3543!important;border-radius:0!important;background:transparent!important;min-height:56px;text-align:left;justify-content:space-between;padding:14px 0!important;margin:0!important}
+body.bos-approved-ui .bosSharedIntegration>.card,body.bos-approved-ui .bosSharedClaim>.card{background:none;border:0;border-radius:0;padding:18px 0;border-bottom:1px solid #2a3543;box-shadow:none}
+body.bos-approved-ui .bosSharedForm label{font-size:14px;color:#a3b1c3;line-height:1.5;margin-bottom:5px}
+body.bos-approved-ui .bosSharedForm :is(input,textarea,select){font-size:16px;border-radius:9px;min-height:44px}
+body.bos-approved-ui .bosSharedForm .form>.primary{position:sticky;bottom:0;margin-top:18px;z-index:2}
+body.bos-approved-ui .bosSharedForm .apiMapForm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+body.bos-approved-ui .bosSharedForm .apiMapForm>button,body.bos-approved-ui .bosSharedForm .apiMapForm>p{grid-column:1/-1}
+body.bos-approved-ui .bosNotifyPanel{background:#151d28;color:#edf2f8;border-color:#2a3543;border-radius:16px;padding:24px}
+body.bos-approved-ui .bosNotifyItem,body.bos-approved-ui .bosNotifyItem.unread{border:0;border-bottom:1px solid #2a3543;border-radius:0;background:none;margin:0;padding:18px 0;box-shadow:none}
+body.bos-approved-ui .bosNotifyReadState{font-size:11px;color:#a3b1c3;display:block;margin-bottom:5px}
+body.bos-approved-ui .bosNotifyItem.unread .bosNotifyReadState{color:#91bfff}
+body.bos-approved-ui .bosNotifyText{font-size:13px;color:#a3b1c3}
+body.bos-approved-ui .bosNotifyClose{min-width:44px;min-height:44px}
+body.bos-approved-ui .bos-claim-compact{background:none!important;border:0!important;border-bottom:1px solid #2a3543!important;border-radius:0!important;padding:18px 0!important}
+body.bos-approved-ui #authGate{background:#0e141c}
+body.bos-approved-ui .authGateCard{background:#151d28;border-color:#2a3543;border-radius:16px;box-shadow:none;max-height:100%;overflow:auto}
+body.bos-approved-ui .authGateCard :is(input,button){font-size:16px;min-height:44px}
+body.bos-approved-ui .authError{background:#30242c;color:#f4a5ac;border-radius:9px}
+body.bos-approved-ui .reportPhotoViewerBox{background:#151d28;border-color:#2a3543}
+@media(max-width:767px){
+ body.bos-approved-ui .bosSharedForm .apiMapForm{grid-template-columns:minmax(0,1fr)}
+ body.bos-approved-ui .bosNotifyPanel{left:12px;right:12px;top:68px;width:auto;max-height:calc(100dvh - 160px);padding:20px}
+ body.bos-approved-ui .bosSharedRow{gap:12px}
+}
+body.bos-approved-ui .reportPhotoViewerPanel{background:#151d28;border-color:#2a3543}
+body.bos-approved-ui .reportPhotoViewerPanel:has(.bosSharedPhotoError)>img{display:none}
+body.bos-approved-ui .bosSharedPhotoError{text-align:center;padding:56px 24px;max-width:520px;margin:auto}
