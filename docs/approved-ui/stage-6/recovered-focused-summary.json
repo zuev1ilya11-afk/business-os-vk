@@ -1,0 +1,1051 @@
+{
+  "reportPath": "/workspace/scratch/73e5936a7e6d/recovery/task6-recovered-focused-results.json",
+  "reportSha256": "99e2c5046903f60235530f3911be70750610067d9c22760a38fcc0e72dac8fa3",
+  "stats": {
+    "startTime": "2026-10-11T14:02:03.902Z",
+    "duration": 127164.653,
+    "expected": 76,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  },
+  "cases": 80,
+  "outcomes": {
+    "expected": 76,
+    "unexpected": 4
+  },
+  "globalErrors": [],
+  "failures": [
+    {
+      "file": "orders-today-filter.spec.js",
+      "line": 37,
+      "title": "owner: today includes completed scheduled orders and preserves explicit status filters",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "timedOut"
+      ],
+      "errors": [
+        "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+        "Error: locator.selectOption: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-original-id=\"dmv3Status\"]')\u001b[22m\n\n\n   at helpers/approved-navigation.cjs:4\n\n  2 | async function navigate(page,destination){const e=page.locator(`#app > nav [data-page=\"${destination}\"]`);if(await e.isVisible())await e.click();else{await page.locator('#app > nav [data-page=more]').click();await page.locator(`[data-bos-destination=\"${destination}\"]`).click()}}\n  3 | async function secondary(card){const e=card.locator('.bosOpsSecondaryActions');if(await e.count()&&!await e.evaluate(e=>e.open)){await e.locator('summary').scrollIntoViewIfNeeded();await e.locator('summary').click()}}\n> 4 | async function filterSelect(page,id,value){await page.getByRole('button',{name:'Фильтры',exact:true}).click();await page.locator(`[data-original-id=\"${id}\"]`).selectOption(value);await page.getByRole('button',{name:'Применить',exact:true}).click()}\n    |                                                                                                                                                                ^\n  5 | async function confirmStage(page,button,stage){await button.click();await page.locator('.bosStageTask').getByRole('button',{name:stage==='departed'?'Подтвердить: выехал':'Подтвердить: начал работу',exact:true}).click()}\n  6 | module.exports={navigate,secondary,filterSelect,confirmStage};\n  7 |\n    at filterSelect (/workspace/scratch/73e5936a7e6d/business-os-vk/tests/helpers/approved-navigation.cjs:4:160)\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/orders-today-filter.spec.js:43:3"
+      ],
+      "durationMs": 30046
+    },
+    {
+      "file": "orders-today-filter.spec.js",
+      "line": 37,
+      "title": "dispatcher: today includes completed scheduled orders and preserves explicit status filters",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "timedOut"
+      ],
+      "errors": [
+        "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+        "Error: locator.selectOption: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-original-id=\"dmv3Status\"]')\u001b[22m\n\n\n   at helpers/approved-navigation.cjs:4\n\n  2 | async function navigate(page,destination){const e=page.locator(`#app > nav [data-page=\"${destination}\"]`);if(await e.isVisible())await e.click();else{await page.locator('#app > nav [data-page=more]').click();await page.locator(`[data-bos-destination=\"${destination}\"]`).click()}}\n  3 | async function secondary(card){const e=card.locator('.bosOpsSecondaryActions');if(await e.count()&&!await e.evaluate(e=>e.open)){await e.locator('summary').scrollIntoViewIfNeeded();await e.locator('summary').click()}}\n> 4 | async function filterSelect(page,id,value){await page.getByRole('button',{name:'Фильтры',exact:true}).click();await page.locator(`[data-original-id=\"${id}\"]`).selectOption(value);await page.getByRole('button',{name:'Применить',exact:true}).click()}\n    |                                                                                                                                                                ^\n  5 | async function confirmStage(page,button,stage){await button.click();await page.locator('.bosStageTask').getByRole('button',{name:stage==='departed'?'Подтвердить: выехал':'Подтвердить: начал работу',exact:true}).click()}\n  6 | module.exports={navigate,secondary,filterSelect,confirmStage};\n  7 |\n    at filterSelect (/workspace/scratch/73e5936a7e6d/business-os-vk/tests/helpers/approved-navigation.cjs:4:160)\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/orders-today-filter.spec.js:43:3"
+      ],
+      "durationMs": 30040
+    },
+    {
+      "file": "owner-dashboard.spec.js",
+      "line": 61,
+      "title": "many masters, truthful schedule colors and report/correction lists stay usable",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "failed"
+      ],
+      "errors": [
+        "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#ownerDashboard')\nExpected string: \u001b[32m\"Мастеров пока нет.\"\u001b[39m\nReceived string: \u001b[31m\"Обзор бизнеса4 окт · МСК · Санкт-ПетербургОтчёты · 1▤Заявок сегодня3Назначены на сегодня✓Выполнено сегодня1По дате завершения▤На проверке1Отчёты мастеров₽Выручка сегодня1 000 ₽Основные работы · без допработДругие показатели сегодня♟Активных мастеров20 / 25По графику или с заявками↩Корректировки1По выполненным заявкам▥Доля компании1 000 ₽Действующий расчёт источника◇Средний чек1 000 ₽По выполненным сегодня · без допработКонтроль исполненияКонтроль заявок · 3 требуют вниманияБез мастера 1Просрочено 0Не связались 1Перейти к заявкам →Загруженность мастеровКоманда →Тестовый мастер3 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 00 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 10 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 20 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 30 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 40 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 50 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 60 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 70 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 80 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 90 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 100 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 110 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 120 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 130 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 140 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 150 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 160 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 170 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 180 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 190 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 200 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 210 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 220 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 230 визитов сегодня · График не задан или выходнойОткрытьЗагрузка на 7 днейЗагрузка на 7 дней7 дней · первый день — сегодня · МСК25 маст.Есть заявкиРаботает без заявокНет рабочего графикаКонфликтМастерСегодня4 октПн5 октВт6 октСр7 октЧт8 октПт9 октСб10 октТмТестовый мастерКонфликт——————АКАлександр Константинопольский 0Свободен——————АКАлександр Константинопольский 1Свободен——————АКАлександр Константинопольский 2Свободен——————АКАлександр Константинопольский 3Свободен——————АКАлександр Константинопольский 4Свободен——————АКАлександр Константинопольский 5Свободен——————АКАлександр Константинопольский 6Свободен——————АКАлександр Константинопольский 7Свободен——————АКАлександр Константинопольский 8Свободен——————АКАлександр Константинопольский 9Свободен——————АКАлександр Константинопольский 10Свободен——————АКАлександр Константинопольский 11Свободен——————АКАлександр Константинопольский 12Свободен——————АКАлександр Константинопольский 13Свободен——————АКАлександр Константинопольский 14Свободен——————АКАлександр Константинопольский 15Свободен——————АКАлександр Константинопольский 16Свободен——————АКАлександр Константинопольский 17Свободен——————АКАлександр Константинопольский 18Свободен——————АКАлександр Константинопольский 19———————АКАлександр Константинопольский 20———————АКАлександр Константинопольский 21———————АКАлександр Константинопольский 22———————АКАлександр Константинопольский 23———————Работают без заявок сегодня: 19Открыть расписание →Сегодня в работе 3Все заявки →10:00Анна № 11Невский 1Тестовый мастерЗапланировано10:00Анна № 22Невский 1Тестовый мастерОтчёт на проверке10:00Анна № 21Невский 1Тестовый мастерВыполненаОтчёты на проверку→1Ожидают решенияПолучены сегодня1Ранее022 · МонтажТестовый мастер · Невский 1Проверить отчёт →Корректировки по выполненным заявкамВсе (1) →№ 21 · Тестовый мастерНе выполнена установка шторНевыполненные работыФинансыСегодняВыручка1 000 ₽Начислено мастерам0 ₽Доля компании1 000 ₽Основные работы по выполненным сегодня заявкам, без допработ.Быстрые действия+ Новая заявкаОткрыть расписаниеМастераВсе заявкиИтоги дняВыполнено 1 из 3 заявок (33%)Открыть финансы →\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#ownerDashboard')\u001b[22m\n\u001b[2m    - locator resolved to <div aria-busy=\"false\" id=\"ownerDashboard\" data-day=\"2026-10-04\">…</div>\u001b[22m\n\u001b[2m    - unexpected value \"Обзор бизнеса4 окт · МСК · Санкт-ПетербургОтчёты · 1▤Заявок сегодня3Назначены на сегодня✓Выполнено сегодня1По дате завершения▤На проверке1Отчёты мастеров₽Выручка сегодня1 000 ₽Основные работы · без допработДругие показатели сегодня♟Активных мастеров20 / 25По графику или с заявками↩Корректировки1По выполненным заявкам▥Доля компании1 000 ₽Действующий расчёт источника◇Средний чек1 000 ₽По выполненным сегодня · без допработКонтроль исполненияКонтроль заявок · 3 требуют вниманияБез мастера 1Просрочено 0Не связались 0Перейти к заявкам →Загруженность мастеровКоманда →Тестовый мастер3 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 00 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 10 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 20 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 30 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 40 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 50 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 60 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 70 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 80 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 90 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 100 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 110 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 120 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 130 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 140 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 150 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 160 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 170 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 180 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 190 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 200 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 210 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 220 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 230 визитов сегодня · График не задан или выходнойОткрытьЗагрузка на 7 днейЗагрузка на 7 дней7 дней · первый день — сегодня · МСК25 маст.Есть заявкиРаботает без заявокНет рабочего графикаКонфликтМастерСегодня4 октПн5 октВт6 октСр7 октЧт8 октПт9 октСб10 октТмТестовый мастерКонфликт——————АКАлександр Константинопольский 0Свободен——————АКАлександр Константинопольский 1Свободен——————АКАлександр Константинопольский 2Свободен——————АКАлександр Константинопольский 3Свободен——————АКАлександр Константинопольский 4Свободен——————АКАлександр Константинопольский 5Свободен——————АКАлександр Константинопольский 6Свободен——————АКАлександр Константинопольский 7Свободен——————АКАлександр Константинопольский 8Свободен——————АКАлександр Константинопольский 9Свободен——————АКАлександр Константинопольский 10Свободен——————АКАлександр Константинопольский 11Свободен——————АКАлександр Константинопольский 12Свободен——————АКАлександр Константинопольский 13Свободен——————АКАлександр Константинопольский 14Свободен——————АКАлександр Константинопольский 15Свободен——————АКАлександр Константинопольский 16Свободен——————АКАлександр Константинопольский 17Свободен——————АКАлександр Константинопольский 18Свободен——————АКАлександр Константинопольский 19———————АКАлександр Константинопольский 20———————АКАлександр Константинопольский 21———————АКАлександр Константинопольский 22———————АКАлександр Константинопольский 23———————Работают без заявок сегодня: 19Открыть расписание →Сегодня в работе 3Все заявки →10:00Анна № 11Невский 1Тестовый мастерЗапланировано10:00Анна № 22Невский 1Тестовый мастерОтчёт на проверке10:00Анна № 21Невский 1Тестовый мастерВыполненаОтчёты на проверку→1Ожидают решенияПолучены сегодня1Ранее022 · МонтажТестовый мастер · Невский 1Проверить отчёт →Корректировки по выполненным заявкамВсе (1) →№ 21 · Тестовый мастерНе выполнена установка шторНевыполненные работыФинансыСегодняВыручка1 000 ₽Начислено мастерам0 ₽Доля компании1 000 ₽Основные работы по выполненным сегодня заявкам, без допработ.Быстрые действия+ Новая заявкаОткрыть расписаниеМастераВсе заявкиИтоги дняВыполнено 1 из 3 заявок (33%)Открыть финансы →\"\u001b[22m\n\u001b[2m    8 × locator resolved to <div aria-busy=\"false\" id=\"ownerDashboard\" data-day=\"2026-10-04\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"Обзор бизнеса4 окт · МСК · Санкт-ПетербургОтчёты · 1▤Заявок сегодня3Назначены на сегодня✓Выполнено сегодня1По дате завершения▤На проверке1Отчёты мастеров₽Выручка сегодня1 000 ₽Основные работы · без допработДругие показатели сегодня♟Активных мастеров20 / 25По графику или с заявками↩Корректировки1По выполненным заявкам▥Доля компании1 000 ₽Действующий расчёт источника◇Средний чек1 000 ₽По выполненным сегодня · без допработКонтроль исполненияКонтроль заявок · 3 требуют вниманияБез мастера 1Просрочено 0Не связались 1Перейти к заявкам →Загруженность мастеровКоманда →Тестовый мастер3 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 00 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 10 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 20 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 30 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 40 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 50 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 60 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 70 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 80 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 90 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 100 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 110 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 120 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 130 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 140 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 150 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 160 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 170 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 180 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 190 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 200 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 210 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 220 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 230 визитов сегодня · График не задан или выходнойОткрытьЗагрузка на 7 днейЗагрузка на 7 дней7 дней · первый день — сегодня · МСК25 маст.Есть заявкиРаботает без заявокНет рабочего графикаКонфликтМастерСегодня4 октПн5 октВт6 октСр7 октЧт8 октПт9 октСб10 октТмТестовый мастерКонфликт——————АКАлександр Константинопольский 0Свободен——————АКАлександр Константинопольский 1Свободен——————АКАлександр Константинопольский 2Свободен——————АКАлександр Константинопольский 3Свободен——————АКАлександр Константинопольский 4Свободен——————АКАлександр Константинопольский 5Свободен——————АКАлександр Константинопольский 6Свободен——————АКАлександр Константинопольский 7Свободен——————АКАлександр Константинопольский 8Свободен——————АКАлександр Константинопольский 9Свободен——————АКАлександр Константинопольский 10Свободен——————АКАлександр Константинопольский 11Свободен——————АКАлександр Константинопольский 12Свободен——————АКАлександр Константинопольский 13Свободен——————АКАлександр Константинопольский 14Свободен——————АКАлександр Константинопольский 15Свободен——————АКАлександр Константинопольский 16Свободен——————АКАлександр Константинопольский 17Свободен——————АКАлександр Константинопольский 18Свободен——————АКАлександр Константинопольский 19———————АКАлександр Константинопольский 20———————АКАлександр Константинопольский 21———————АКАлександр Константинопольский 22———————АКАлександр Константинопольский 23———————Работают без заявок сегодня: 19Открыть расписание →Сегодня в работе 3Все заявки →10:00Анна № 11Невский 1Тестовый мастерЗапланировано10:00Анна № 22Невский 1Тестовый мастерОтчёт на проверке10:00Анна № 21Невский 1Тестовый мастерВыполненаОтчёты на проверку→1Ожидают решенияПолучены сегодня1Ранее022 · МонтажТестовый мастер · Невский 1Проверить отчёт →Корректировки по выполненным заявкамВсе (1) →№ 21 · Тестовый мастерНе выполнена установка шторНевыполненные работыФинансыСегодняВыручка1 000 ₽Начислено мастерам0 ₽Доля компании1 000 ₽Основные работы по выполненным сегодня заявкам, без допработ.Быстрые действия+ Новая заявкаОткрыть расписаниеМастераВсе заявкиИтоги дняВыполнено 1 из 3 заявок (33%)Открыть финансы →\"\u001b[22m\n\n\n  84 |  for(const width of [390,1440]){await page.setViewportSize({width,height:1000});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await page.screenshot({path:info.outputPath(`dashboard-populated-${width}.png`),fullPage:true})}\n  85 |  db.tables.business_staff=db.tables.business_staff.filter(m=>m.role!=='master');db.tables.orders=[];db.tables.staff_schedule=[];\n> 86 |  await page.evaluate(()=>BOS_REFRESH_NOW());await expect(root).toContainText('Мастеров пока нет.');\n     |                                                                ^\n  87 | });\n  88 |\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/owner-dashboard.spec.js:86:64"
+      ],
+      "durationMs": 6795
+    },
+    {
+      "file": "report-attachment-links.spec.js",
+      "line": 22,
+      "title": "review modal keeps valid document links and omits executable URL schemes",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "failed"
+      ],
+      "errors": [
+        "Error: locator.click: Error: strict mode violation: locator('#reportPhotoViewer .reportPhotoViewerPanel button') resolved to 2 elements:\n    1) <button type=\"button\" class=\"secondary\" onclick=\"BOS_CLOSE_REPORT_PHOTO()\">Закрыть</button> aka getByRole('button', { name: 'Закрыть', exact: true })\n    2) <button type=\"button\" class=\"primary\">Повторить</button> aka getByRole('button', { name: 'Повторить', exact: true })\n\nCall log:\n\u001b[2m  - waiting for locator('#reportPhotoViewer .reportPhotoViewerPanel button')\u001b[22m\n\n\n  33 |  await expect(page.locator('#reportPhotoViewer')).toBeVisible();\n  34 |  await expect(page.locator('#reportPhotoViewer img')).toHaveAttribute('src','https://example.test/photo.jpg');\n> 35 |  await page.locator('#reportPhotoViewer .reportPhotoViewerPanel button').click();\n     |                                                                          ^\n  36 |  await expect(page.locator('#reportPhotoViewer')).toHaveCount(0);\n  37 |  await expect(modal.locator('a[href^=\"javascript:\"],a[href^=\"data:\"],a[href^=\"file:\"]')).toHaveCount(0);\n  38 | });\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/report-attachment-links.spec.js:35:74"
+      ],
+      "durationMs": 784
+    }
+  ],
+  "skipped": [],
+  "allCases": [
+    {
+      "file": "approved-ui-final.spec.js",
+      "line": 2,
+      "title": "final role master: five-width navigation, local assets and native action reachability",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 7775
+    },
+    {
+      "file": "approved-ui-final.spec.js",
+      "line": 2,
+      "title": "final role dispatcher: five-width navigation, local assets and native action reachability",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 5597
+    },
+    {
+      "file": "approved-ui-final.spec.js",
+      "line": 2,
+      "title": "final role manager: five-width navigation, local assets and native action reachability",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 5719
+    },
+    {
+      "file": "approved-ui-final.spec.js",
+      "line": 2,
+      "title": "final role owner: five-width navigation, local assets and native action reachability",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 6070
+    },
+    {
+      "file": "calendar-master-details.spec.js",
+      "line": 29,
+      "title": "owner: monthly calendar shows every master, majority colors and correct order details",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 3150
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI owner at 320px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1464
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI owner at 360px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1158
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI owner at 375px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1084
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI owner at 390px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1103
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI owner at 430px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1132
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI dispatcher at 320px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 936
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI dispatcher at 360px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 943
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI dispatcher at 375px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1156
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI dispatcher at 390px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1119
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI dispatcher at 430px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1322
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI master at 320px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1634
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI master at 360px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1572
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI master at 375px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1552
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI master at 390px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 2060
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI master at 430px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 2471
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI master at 768px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 2056
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI master at 1024px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 2031
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI master at 1280px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1758
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI master at 1440px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 2614
+    },
+    {
+      "file": "dark-business-os.spec.js",
+      "line": 33,
+      "title": "dark UI master at 1920px keeps navigation, content and actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1792
+    },
+    {
+      "file": "dispatcher-mobile-v97.spec.js",
+      "line": 5,
+      "title": "mobile dispatcher layer preserves existing order workflow and stays mobile-only",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1389
+    },
+    {
+      "file": "dispatcher-order-priority-v105.spec.js",
+      "line": 7,
+      "title": "dispatcher mobile order cards use the same simple operational priorities as desktop",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 847
+    },
+    {
+      "file": "dispatcher-quick-actions-v159.spec.js",
+      "line": 7,
+      "title": "desktop dispatcher exposes quick actions directly under list cards",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 2185
+    },
+    {
+      "file": "dispatcher-quick-actions-v159.spec.js",
+      "line": 36,
+      "title": "mobile dispatcher keeps manual assignment and adds smart master action without duplicate mutation",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1014
+    },
+    {
+      "file": "dispatcher-responsive-workbench-v157.spec.js",
+      "line": 32,
+      "title": "mobile dispatcher can open status and master quick edit from an order card",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 918
+    },
+    {
+      "file": "finance-page.spec.js",
+      "line": 11,
+      "title": "manager sees finances, filters and existing order details without writes",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 3293
+    },
+    {
+      "file": "full-stack-audit.spec.js",
+      "line": 4,
+      "title": "order search and combined master/source filters affect rendered rows and reset",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 2601
+    },
+    {
+      "file": "full-stack-audit.spec.js",
+      "line": 12,
+      "title": "master real handler bootstrap fits 320px and hides admin",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 733
+    },
+    {
+      "file": "full-stack-audit.spec.js",
+      "line": 12,
+      "title": "master real handler bootstrap fits 375px and hides admin",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 636
+    },
+    {
+      "file": "full-stack-audit.spec.js",
+      "line": 12,
+      "title": "master real handler bootstrap fits 390px and hides admin",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 660
+    },
+    {
+      "file": "full-stack-audit.spec.js",
+      "line": 12,
+      "title": "master real handler bootstrap fits 1280px and hides admin",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 657
+    },
+    {
+      "file": "full-stack-audit.spec.js",
+      "line": 27,
+      "title": "master calendar presets save and reload through actual handler",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1702
+    },
+    {
+      "file": "master-agreement-v109.spec.js",
+      "line": 44,
+      "title": "scheduled order uses confirmed reschedule instead of direct date editing",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1023
+    },
+    {
+      "file": "master-cabinet-final.spec.js",
+      "line": 4,
+      "title": "master final cabinet keeps upcoming compact, workflow, schedule summary and no staff management",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 3275
+    },
+    {
+      "file": "master-compact-card.spec.js",
+      "line": 11,
+      "title": "360: compact card, exact titles, expand/collapse, phone and sequential progress",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 3590
+    },
+    {
+      "file": "master-compact-card.spec.js",
+      "line": 11,
+      "title": "390: compact card, exact titles, expand/collapse, phone and sequential progress",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 2885
+    },
+    {
+      "file": "master-compact-card.spec.js",
+      "line": 11,
+      "title": "430: compact card, exact titles, expand/collapse, phone and sequential progress",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 2397
+    },
+    {
+      "file": "master-compact-card.spec.js",
+      "line": 47,
+      "title": "master sees apartment imported from Hands directions after reload, with no duplicate label",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1342
+    },
+    {
+      "file": "master-compact-card.spec.js",
+      "line": 60,
+      "title": "management full edit keeps separate phones, multiple works and a master comment",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1434
+    },
+    {
+      "file": "master-cost-visibility.spec.js",
+      "line": 13,
+      "title": "master sees full cost and unchanged breakdown for Авито at 320px",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1087
+    },
+    {
+      "file": "master-cost-visibility.spec.js",
+      "line": 13,
+      "title": "master sees full cost and unchanged breakdown for Телефон at 390px",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 3172
+    },
+    {
+      "file": "master-cost-visibility.spec.js",
+      "line": 13,
+      "title": "master sees full cost and unchanged breakdown for VK at 1280px",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1190
+    },
+    {
+      "file": "master-cost-visibility.spec.js",
+      "line": 32,
+      "title": "Hands total stays absent in master API, list and detail: {\"source\":\"Hands\",\"external_source\":\"hands\"}",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 659
+    },
+    {
+      "file": "master-cost-visibility.spec.js",
+      "line": 32,
+      "title": "Hands total stays absent in master API, list and detail: {\"source\":\"Руки\",\"external_source\":\"mini_app\"}",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1039
+    },
+    {
+      "file": "master-cost-visibility.spec.js",
+      "line": 32,
+      "title": "Hands total stays absent in master API, list and detail: {\"source\":\"Авито\",\"external_source\":\"hands\"}",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 2068
+    },
+    {
+      "file": "master-cost-visibility.spec.js",
+      "line": 32,
+      "title": "Hands total stays absent in master API, list and detail: {\"source\":\"Телефон\",\"external_source\":\"mini_app\",\"external_id\":\"hands:90210\"}",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 878
+    },
+    {
+      "file": "master-home-simplification.spec.js",
+      "line": 49,
+      "title": "saving and uncertain outcome explain technical state without asking to call",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 832
+    },
+    {
+      "file": "master-home-tabs.spec.js",
+      "line": 53,
+      "title": "an extra callback preserves departure and legacy timestamps advance through the existing server action",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 2415
+    },
+    {
+      "file": "master-home-tabs.spec.js",
+      "line": 62,
+      "title": "home result and agreement move an undated order to its saved day without reload",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1413
+    },
+    {
+      "file": "master-mobile.spec.js",
+      "line": 5,
+      "title": "master UI is simple and fits small-ios",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1351
+    },
+    {
+      "file": "master-mobile.spec.js",
+      "line": 5,
+      "title": "master UI is simple and fits iphone",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1267
+    },
+    {
+      "file": "master-mobile.spec.js",
+      "line": 5,
+      "title": "master UI is simple and fits android",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1533
+    },
+    {
+      "file": "master-order-focus-v126.spec.js",
+      "line": 4,
+      "title": "master order v126 highlights next step and keeps mobile actions usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 984
+    },
+    {
+      "file": "master-workflow-loading.spec.js",
+      "line": 4,
+      "title": "master can open an order during slow workflow script delivery",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1191
+    },
+    {
+      "file": "master-workflow-v115.spec.js",
+      "line": 8,
+      "title": "master follows departed started report sequence for scheduled order",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1465
+    },
+    {
+      "file": "master-workflow-v25.spec.js",
+      "line": 8,
+      "title": "master follows departed started report flow for a scheduled order",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1299
+    },
+    {
+      "file": "master-workflow-v25.spec.js",
+      "line": 47,
+      "title": "legacy arrived stage maps to departed and can continue directly to work",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1744
+    },
+    {
+      "file": "order-lifecycle-v106.spec.js",
+      "line": 17,
+      "title": "dispatcher keeps completed Hands order on dashboard and can open reclamation",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 856
+    },
+    {
+      "file": "orders-today-filter.spec.js",
+      "line": 37,
+      "title": "owner: today includes completed scheduled orders and preserves explicit status filters",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "timedOut"
+      ],
+      "errors": [
+        "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+        "Error: locator.selectOption: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-original-id=\"dmv3Status\"]')\u001b[22m\n\n\n   at helpers/approved-navigation.cjs:4\n\n  2 | async function navigate(page,destination){const e=page.locator(`#app > nav [data-page=\"${destination}\"]`);if(await e.isVisible())await e.click();else{await page.locator('#app > nav [data-page=more]').click();await page.locator(`[data-bos-destination=\"${destination}\"]`).click()}}\n  3 | async function secondary(card){const e=card.locator('.bosOpsSecondaryActions');if(await e.count()&&!await e.evaluate(e=>e.open)){await e.locator('summary').scrollIntoViewIfNeeded();await e.locator('summary').click()}}\n> 4 | async function filterSelect(page,id,value){await page.getByRole('button',{name:'Фильтры',exact:true}).click();await page.locator(`[data-original-id=\"${id}\"]`).selectOption(value);await page.getByRole('button',{name:'Применить',exact:true}).click()}\n    |                                                                                                                                                                ^\n  5 | async function confirmStage(page,button,stage){await button.click();await page.locator('.bosStageTask').getByRole('button',{name:stage==='departed'?'Подтвердить: выехал':'Подтвердить: начал работу',exact:true}).click()}\n  6 | module.exports={navigate,secondary,filterSelect,confirmStage};\n  7 |\n    at filterSelect (/workspace/scratch/73e5936a7e6d/business-os-vk/tests/helpers/approved-navigation.cjs:4:160)\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/orders-today-filter.spec.js:43:3"
+      ],
+      "durationMs": 30046
+    },
+    {
+      "file": "orders-today-filter.spec.js",
+      "line": 37,
+      "title": "manager: today includes completed scheduled orders and preserves explicit status filters",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 3432
+    },
+    {
+      "file": "orders-today-filter.spec.js",
+      "line": 37,
+      "title": "dispatcher: today includes completed scheduled orders and preserves explicit status filters",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "timedOut"
+      ],
+      "errors": [
+        "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+        "Error: locator.selectOption: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-original-id=\"dmv3Status\"]')\u001b[22m\n\n\n   at helpers/approved-navigation.cjs:4\n\n  2 | async function navigate(page,destination){const e=page.locator(`#app > nav [data-page=\"${destination}\"]`);if(await e.isVisible())await e.click();else{await page.locator('#app > nav [data-page=more]').click();await page.locator(`[data-bos-destination=\"${destination}\"]`).click()}}\n  3 | async function secondary(card){const e=card.locator('.bosOpsSecondaryActions');if(await e.count()&&!await e.evaluate(e=>e.open)){await e.locator('summary').scrollIntoViewIfNeeded();await e.locator('summary').click()}}\n> 4 | async function filterSelect(page,id,value){await page.getByRole('button',{name:'Фильтры',exact:true}).click();await page.locator(`[data-original-id=\"${id}\"]`).selectOption(value);await page.getByRole('button',{name:'Применить',exact:true}).click()}\n    |                                                                                                                                                                ^\n  5 | async function confirmStage(page,button,stage){await button.click();await page.locator('.bosStageTask').getByRole('button',{name:stage==='departed'?'Подтвердить: выехал':'Подтвердить: начал работу',exact:true}).click()}\n  6 | module.exports={navigate,secondary,filterSelect,confirmStage};\n  7 |\n    at filterSelect (/workspace/scratch/73e5936a7e6d/business-os-vk/tests/helpers/approved-navigation.cjs:4:160)\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/orders-today-filter.spec.js:43:3"
+      ],
+      "durationMs": 30040
+    },
+    {
+      "file": "owner-dashboard.spec.js",
+      "line": 61,
+      "title": "many masters, truthful schedule colors and report/correction lists stay usable",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "failed"
+      ],
+      "errors": [
+        "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#ownerDashboard')\nExpected string: \u001b[32m\"Мастеров пока нет.\"\u001b[39m\nReceived string: \u001b[31m\"Обзор бизнеса4 окт · МСК · Санкт-ПетербургОтчёты · 1▤Заявок сегодня3Назначены на сегодня✓Выполнено сегодня1По дате завершения▤На проверке1Отчёты мастеров₽Выручка сегодня1 000 ₽Основные работы · без допработДругие показатели сегодня♟Активных мастеров20 / 25По графику или с заявками↩Корректировки1По выполненным заявкам▥Доля компании1 000 ₽Действующий расчёт источника◇Средний чек1 000 ₽По выполненным сегодня · без допработКонтроль исполненияКонтроль заявок · 3 требуют вниманияБез мастера 1Просрочено 0Не связались 1Перейти к заявкам →Загруженность мастеровКоманда →Тестовый мастер3 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 00 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 10 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 20 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 30 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 40 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 50 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 60 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 70 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 80 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 90 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 100 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 110 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 120 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 130 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 140 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 150 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 160 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 170 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 180 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 190 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 200 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 210 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 220 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 230 визитов сегодня · График не задан или выходнойОткрытьЗагрузка на 7 днейЗагрузка на 7 дней7 дней · первый день — сегодня · МСК25 маст.Есть заявкиРаботает без заявокНет рабочего графикаКонфликтМастерСегодня4 октПн5 октВт6 октСр7 октЧт8 октПт9 октСб10 октТмТестовый мастерКонфликт——————АКАлександр Константинопольский 0Свободен——————АКАлександр Константинопольский 1Свободен——————АКАлександр Константинопольский 2Свободен——————АКАлександр Константинопольский 3Свободен——————АКАлександр Константинопольский 4Свободен——————АКАлександр Константинопольский 5Свободен——————АКАлександр Константинопольский 6Свободен——————АКАлександр Константинопольский 7Свободен——————АКАлександр Константинопольский 8Свободен——————АКАлександр Константинопольский 9Свободен——————АКАлександр Константинопольский 10Свободен——————АКАлександр Константинопольский 11Свободен——————АКАлександр Константинопольский 12Свободен——————АКАлександр Константинопольский 13Свободен——————АКАлександр Константинопольский 14Свободен——————АКАлександр Константинопольский 15Свободен——————АКАлександр Константинопольский 16Свободен——————АКАлександр Константинопольский 17Свободен——————АКАлександр Константинопольский 18Свободен——————АКАлександр Константинопольский 19———————АКАлександр Константинопольский 20———————АКАлександр Константинопольский 21———————АКАлександр Константинопольский 22———————АКАлександр Константинопольский 23———————Работают без заявок сегодня: 19Открыть расписание →Сегодня в работе 3Все заявки →10:00Анна № 11Невский 1Тестовый мастерЗапланировано10:00Анна № 22Невский 1Тестовый мастерОтчёт на проверке10:00Анна № 21Невский 1Тестовый мастерВыполненаОтчёты на проверку→1Ожидают решенияПолучены сегодня1Ранее022 · МонтажТестовый мастер · Невский 1Проверить отчёт →Корректировки по выполненным заявкамВсе (1) →№ 21 · Тестовый мастерНе выполнена установка шторНевыполненные работыФинансыСегодняВыручка1 000 ₽Начислено мастерам0 ₽Доля компании1 000 ₽Основные работы по выполненным сегодня заявкам, без допработ.Быстрые действия+ Новая заявкаОткрыть расписаниеМастераВсе заявкиИтоги дняВыполнено 1 из 3 заявок (33%)Открыть финансы →\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#ownerDashboard')\u001b[22m\n\u001b[2m    - locator resolved to <div aria-busy=\"false\" id=\"ownerDashboard\" data-day=\"2026-10-04\">…</div>\u001b[22m\n\u001b[2m    - unexpected value \"Обзор бизнеса4 окт · МСК · Санкт-ПетербургОтчёты · 1▤Заявок сегодня3Назначены на сегодня✓Выполнено сегодня1По дате завершения▤На проверке1Отчёты мастеров₽Выручка сегодня1 000 ₽Основные работы · без допработДругие показатели сегодня♟Активных мастеров20 / 25По графику или с заявками↩Корректировки1По выполненным заявкам▥Доля компании1 000 ₽Действующий расчёт источника◇Средний чек1 000 ₽По выполненным сегодня · без допработКонтроль исполненияКонтроль заявок · 3 требуют вниманияБез мастера 1Просрочено 0Не связались 0Перейти к заявкам →Загруженность мастеровКоманда →Тестовый мастер3 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 00 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 10 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 20 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 30 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 40 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 50 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 60 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 70 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 80 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 90 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 100 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 110 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 120 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 130 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 140 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 150 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 160 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 170 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 180 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 190 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 200 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 210 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 220 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 230 визитов сегодня · График не задан или выходнойОткрытьЗагрузка на 7 днейЗагрузка на 7 дней7 дней · первый день — сегодня · МСК25 маст.Есть заявкиРаботает без заявокНет рабочего графикаКонфликтМастерСегодня4 октПн5 октВт6 октСр7 октЧт8 октПт9 октСб10 октТмТестовый мастерКонфликт——————АКАлександр Константинопольский 0Свободен——————АКАлександр Константинопольский 1Свободен——————АКАлександр Константинопольский 2Свободен——————АКАлександр Константинопольский 3Свободен——————АКАлександр Константинопольский 4Свободен——————АКАлександр Константинопольский 5Свободен——————АКАлександр Константинопольский 6Свободен——————АКАлександр Константинопольский 7Свободен——————АКАлександр Константинопольский 8Свободен——————АКАлександр Константинопольский 9Свободен——————АКАлександр Константинопольский 10Свободен——————АКАлександр Константинопольский 11Свободен——————АКАлександр Константинопольский 12Свободен——————АКАлександр Константинопольский 13Свободен——————АКАлександр Константинопольский 14Свободен——————АКАлександр Константинопольский 15Свободен——————АКАлександр Константинопольский 16Свободен——————АКАлександр Константинопольский 17Свободен——————АКАлександр Константинопольский 18Свободен——————АКАлександр Константинопольский 19———————АКАлександр Константинопольский 20———————АКАлександр Константинопольский 21———————АКАлександр Константинопольский 22———————АКАлександр Константинопольский 23———————Работают без заявок сегодня: 19Открыть расписание →Сегодня в работе 3Все заявки →10:00Анна № 11Невский 1Тестовый мастерЗапланировано10:00Анна № 22Невский 1Тестовый мастерОтчёт на проверке10:00Анна № 21Невский 1Тестовый мастерВыполненаОтчёты на проверку→1Ожидают решенияПолучены сегодня1Ранее022 · МонтажТестовый мастер · Невский 1Проверить отчёт →Корректировки по выполненным заявкамВсе (1) →№ 21 · Тестовый мастерНе выполнена установка шторНевыполненные работыФинансыСегодняВыручка1 000 ₽Начислено мастерам0 ₽Доля компании1 000 ₽Основные работы по выполненным сегодня заявкам, без допработ.Быстрые действия+ Новая заявкаОткрыть расписаниеМастераВсе заявкиИтоги дняВыполнено 1 из 3 заявок (33%)Открыть финансы →\"\u001b[22m\n\u001b[2m    8 × locator resolved to <div aria-busy=\"false\" id=\"ownerDashboard\" data-day=\"2026-10-04\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"Обзор бизнеса4 окт · МСК · Санкт-ПетербургОтчёты · 1▤Заявок сегодня3Назначены на сегодня✓Выполнено сегодня1По дате завершения▤На проверке1Отчёты мастеров₽Выручка сегодня1 000 ₽Основные работы · без допработДругие показатели сегодня♟Активных мастеров20 / 25По графику или с заявками↩Корректировки1По выполненным заявкам▥Доля компании1 000 ₽Действующий расчёт источника◇Средний чек1 000 ₽По выполненным сегодня · без допработКонтроль исполненияКонтроль заявок · 3 требуют вниманияБез мастера 1Просрочено 0Не связались 1Перейти к заявкам →Загруженность мастеровКоманда →Тестовый мастер3 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 00 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 10 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 20 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 30 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 40 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 50 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 60 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 70 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 80 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 90 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 100 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 110 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 120 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 130 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 140 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 150 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 160 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 170 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 180 визитов сегодня · Рабочий деньОткрытьАлександр Константинопольский 190 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 200 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 210 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 220 визитов сегодня · График не задан или выходнойОткрытьАлександр Константинопольский 230 визитов сегодня · График не задан или выходнойОткрытьЗагрузка на 7 днейЗагрузка на 7 дней7 дней · первый день — сегодня · МСК25 маст.Есть заявкиРаботает без заявокНет рабочего графикаКонфликтМастерСегодня4 октПн5 октВт6 октСр7 октЧт8 октПт9 октСб10 октТмТестовый мастерКонфликт——————АКАлександр Константинопольский 0Свободен——————АКАлександр Константинопольский 1Свободен——————АКАлександр Константинопольский 2Свободен——————АКАлександр Константинопольский 3Свободен——————АКАлександр Константинопольский 4Свободен——————АКАлександр Константинопольский 5Свободен——————АКАлександр Константинопольский 6Свободен——————АКАлександр Константинопольский 7Свободен——————АКАлександр Константинопольский 8Свободен——————АКАлександр Константинопольский 9Свободен——————АКАлександр Константинопольский 10Свободен——————АКАлександр Константинопольский 11Свободен——————АКАлександр Константинопольский 12Свободен——————АКАлександр Константинопольский 13Свободен——————АКАлександр Константинопольский 14Свободен——————АКАлександр Константинопольский 15Свободен——————АКАлександр Константинопольский 16Свободен——————АКАлександр Константинопольский 17Свободен——————АКАлександр Константинопольский 18Свободен——————АКАлександр Константинопольский 19———————АКАлександр Константинопольский 20———————АКАлександр Константинопольский 21———————АКАлександр Константинопольский 22———————АКАлександр Константинопольский 23———————Работают без заявок сегодня: 19Открыть расписание →Сегодня в работе 3Все заявки →10:00Анна № 11Невский 1Тестовый мастерЗапланировано10:00Анна № 22Невский 1Тестовый мастерОтчёт на проверке10:00Анна № 21Невский 1Тестовый мастерВыполненаОтчёты на проверку→1Ожидают решенияПолучены сегодня1Ранее022 · МонтажТестовый мастер · Невский 1Проверить отчёт →Корректировки по выполненным заявкамВсе (1) →№ 21 · Тестовый мастерНе выполнена установка шторНевыполненные работыФинансыСегодняВыручка1 000 ₽Начислено мастерам0 ₽Доля компании1 000 ₽Основные работы по выполненным сегодня заявкам, без допработ.Быстрые действия+ Новая заявкаОткрыть расписаниеМастераВсе заявкиИтоги дняВыполнено 1 из 3 заявок (33%)Открыть финансы →\"\u001b[22m\n\n\n  84 |  for(const width of [390,1440]){await page.setViewportSize({width,height:1000});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await page.screenshot({path:info.outputPath(`dashboard-populated-${width}.png`),fullPage:true})}\n  85 |  db.tables.business_staff=db.tables.business_staff.filter(m=>m.role!=='master');db.tables.orders=[];db.tables.staff_schedule=[];\n> 86 |  await page.evaluate(()=>BOS_REFRESH_NOW());await expect(root).toContainText('Мастеров пока нет.');\n     |                                                                ^\n  87 | });\n  88 |\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/owner-dashboard.spec.js:86:64"
+      ],
+      "durationMs": 6795
+    },
+    {
+      "file": "report-attachment-links.spec.js",
+      "line": 22,
+      "title": "review modal keeps valid document links and omits executable URL schemes",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "failed"
+      ],
+      "errors": [
+        "Error: locator.click: Error: strict mode violation: locator('#reportPhotoViewer .reportPhotoViewerPanel button') resolved to 2 elements:\n    1) <button type=\"button\" class=\"secondary\" onclick=\"BOS_CLOSE_REPORT_PHOTO()\">Закрыть</button> aka getByRole('button', { name: 'Закрыть', exact: true })\n    2) <button type=\"button\" class=\"primary\">Повторить</button> aka getByRole('button', { name: 'Повторить', exact: true })\n\nCall log:\n\u001b[2m  - waiting for locator('#reportPhotoViewer .reportPhotoViewerPanel button')\u001b[22m\n\n\n  33 |  await expect(page.locator('#reportPhotoViewer')).toBeVisible();\n  34 |  await expect(page.locator('#reportPhotoViewer img')).toHaveAttribute('src','https://example.test/photo.jpg');\n> 35 |  await page.locator('#reportPhotoViewer .reportPhotoViewerPanel button').click();\n     |                                                                          ^\n  36 |  await expect(page.locator('#reportPhotoViewer')).toHaveCount(0);\n  37 |  await expect(modal.locator('a[href^=\"javascript:\"],a[href^=\"data:\"],a[href^=\"file:\"]')).toHaveCount(0);\n  38 | });\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/report-attachment-links.spec.js:35:74"
+      ],
+      "durationMs": 784
+    },
+    {
+      "file": "report-correction-cycle.spec.js",
+      "line": 8,
+      "title": "owner 390: reject with reason, correct in master UI, and approve once",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 5031
+    },
+    {
+      "file": "report-correction-cycle.spec.js",
+      "line": 8,
+      "title": "dispatcher 390: reject with reason, correct in master UI, and approve once",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 3294
+    },
+    {
+      "file": "report-correction-cycle.spec.js",
+      "line": 8,
+      "title": "owner 1280: reject with reason, correct in master UI, and approve once",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 3757
+    },
+    {
+      "file": "role-ui-sweep.spec.js",
+      "line": 51,
+      "title": "dispatcher role gets dispatcher navigation without owner tools",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 565
+    },
+    {
+      "file": "schedule-contract.spec.js",
+      "line": 34,
+      "title": "smart assignment fits the whole three-hour job between bookings and shift end",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1222
+    },
+    {
+      "file": "shared-service-catalog.spec.js",
+      "line": 30,
+      "title": "editing a legacy order preserves work outside the catalog and its amount",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1546
+    },
+    {
+      "file": "shared-service-catalog.spec.js",
+      "line": 69,
+      "title": "price materials show loading, safe error, retry and empty states while catalog stays usable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1475
+    },
+    {
+      "file": "smoke.spec.js",
+      "line": 5,
+      "title": "launch smoke: Mini App loads, data renders, actions and report review work",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 2275
+    },
+    {
+      "file": "ui-polish.spec.js",
+      "line": 45,
+      "title": "polished forms and profiles: master 360px",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1144
+    },
+    {
+      "file": "ui-polish.spec.js",
+      "line": 45,
+      "title": "polished forms and profiles: master 390px",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1179
+    },
+    {
+      "file": "ui-polish.spec.js",
+      "line": 45,
+      "title": "polished forms and profiles: master 430px",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1159
+    },
+    {
+      "file": "ui-polish.spec.js",
+      "line": 45,
+      "title": "polished forms and profiles: master 1440px",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "passed"
+      ],
+      "errors": [],
+      "durationMs": 1108
+    }
+  ]
+}

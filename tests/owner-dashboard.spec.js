@@ -83,5 +83,5 @@ test('many masters, truthful schedule colors and report/correction lists stay us
  await root.locator('[data-owner-list="corrections"]').click();await expect(page.locator('.modal')).toContainText('Не выполнена установка штор');await page.locator('.modalClose').click();
  for(const width of [390,1440]){await page.setViewportSize({width,height:1000});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await page.screenshot({path:info.outputPath(`dashboard-populated-${width}.png`),fullPage:true})}
  db.tables.business_staff=db.tables.business_staff.filter(m=>m.role!=='master');db.tables.orders=[];db.tables.staff_schedule=[];
- await page.evaluate(()=>BOS_REFRESH_NOW());await expect(root).toContainText('Мастеров пока нет.');
+ await expect(page.locator('#bosManualRefresh')).toBeEnabled();await page.locator('#bosManualRefresh').click();await expect(root).toContainText('Мастеров пока нет.');
 });
