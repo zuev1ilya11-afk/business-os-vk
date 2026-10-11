@@ -36,26 +36,28 @@ test('master v129 shows compact profile money metrics without duplicate schedule
   const panel=page.locator('#masterProfileSummaryV129');
   await expect(panel).toBeVisible();
   await expect(panel.locator('.masterV129Schedule')).toHaveCount(0);
-  await expect(panel.locator('.masterV129Workload .masterV129Metric')).toHaveCount(2);
-  await expect(panel.getByText('В работе сейчас',{exact:true}).locator('..')).toContainText('1');
-  await expect(panel.getByText('Выполнено за всё время',{exact:true}).locator('..')).toContainText('3');
-  const hero=panel.locator('.salaryHero');
+  const totals=await page.evaluate(()=>BOS_MASTER_PROFILE_SUMMARY_V129_API.totals());
+  expect(totals.active).toHaveLength(1);expect(totals.done).toHaveLength(3);
+  await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
+  const accruals=page.locator('.bosPayoutTask');
+  const hero=accruals.locator('.salaryHero');
   const weekExpected=priorInMonth>=weekStart?1757.5:652.5;
   // Periods crossing a month can exceed 1,000; ignore currency grouping, not the amount.
   await expect.poll(async()=>{
     const amount=await hero.locator('strong').innerText();
     return Number(amount.replace(/\s/g,'').replace('₽','').replace(',','.'));
   }).toBe(weekExpected);
-  await panel.getByRole('button',{name:'Месяц',exact:true}).click();
+  await accruals.getByRole('button',{name:'Месяц',exact:true}).click();
   await expect(hero).toContainText(/1[\s ]?757[,.]5/);
-  await panel.getByRole('button',{name:'Свои даты',exact:true}).click();
-  await panel.locator('[name="start"]').fill(previousMonth);
-  await panel.locator('[name="end"]').fill(today);
-  await panel.getByRole('button',{name:'Показать',exact:true}).click();
+  await accruals.getByRole('button',{name:'Свои даты',exact:true}).click();
+  await accruals.locator('[name="start"]').fill(previousMonth);
+  await accruals.locator('[name="end"]').fill(today);
+  await accruals.getByRole('button',{name:'Показать',exact:true}).click();
   await expect(hero).toContainText(/2[\s ]?360/);
-  await expect(panel.getByText('Допработы',{exact:true}).locator('..')).toContainText(/150/);
-  await expect(panel.getByText('Вычеты',{exact:true}).locator('..')).toContainText(/200/);
+  await expect(accruals.getByText('Допработы',{exact:true}).locator('..')).toContainText(/150/);
+  await expect(accruals.getByText('Вычеты',{exact:true}).locator('..')).toContainText(/200/);
 
+  await page.getByRole('button',{name:'К профилю',exact:true}).click();
   await page.evaluate(()=>show('home'));
   await expect(page.locator('#masterProfileSummaryV129')).toHaveCount(0);
   await expect(page.locator('#content').getByRole('heading',{name:'Мой график'})).toHaveCount(0);

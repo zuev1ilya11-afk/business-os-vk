@@ -25,11 +25,6 @@
     "id": ""
   },
   {
-    "text": "Уведомления на этом телефоне",
-    "handler": null,
-    "id": ""
-  },
-  {
     "text": "Выйти",
     "handler": null,
     "id": "bosOwnerLogout"

@@ -23,7 +23,8 @@ test('master v130 shows money summary and drilldown by order',async({page})=>{
   await page.waitForFunction(()=>window.BOS_MASTER_MONEY_V130===true&&window.BOS_MASTER_PROFILE_SUMMARY_V129===true);
   await page.evaluate(()=>{show('team');window.BOS_MASTER_PROFILE_SUMMARY_V129_API.refresh();window.BOS_MASTER_MONEY_V130_API.refresh()});
 
-  const panel=page.locator('#masterProfileSummaryV129');
+  await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
+  const panel=page.locator('.bosPayoutTask');
   const money=page.locator('#masterMoneyV130');
   await expect(panel).toBeVisible();
   await expect(money).toBeVisible();
@@ -38,13 +39,13 @@ test('master v130 shows money summary and drilldown by order',async({page})=>{
   await expect(page.locator('#modalRoot')).toContainText(/100/);
   await expect(page.locator('#modalRoot')).not.toContainText('Сумма для расчёта');
   await expect(page.locator('#modalRoot')).not.toContainText('До вычета');
-  await page.evaluate(()=>closeModal());
+  await page.evaluate(()=>closeModal());await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
 
   await panel.getByText('Вычеты',{exact:true}).locator('..').click();
   await expect(page.locator('#modalRoot')).toContainText('Не установлен один держатель');
   await expect(page.locator('#modalRoot')).toContainText('повторно из зарплаты не вычитается');
   await expect(page.locator('#modalRoot')).not.toContainText('Сумма для расчёта');
-  await page.evaluate(()=>closeModal());
+  await page.evaluate(()=>closeModal());await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
 
   await panel.locator('.salaryHero').click();
   await expect(page.locator('#modalRoot')).toContainText('№ 11');
@@ -52,11 +53,11 @@ test('master v130 shows money summary and drilldown by order',async({page})=>{
   await expect(page.locator('#modalRoot')).toContainText('Итого начислено');
   await expect(page.locator('#modalRoot')).toContainText('Начисления за период');
   await expect(page.locator('#modalRoot')).not.toContainText('Сумма для расчёта');
-  await page.evaluate(()=>closeModal());
+  await page.evaluate(()=>closeModal());await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
 
   await money.getByText('Выплачено',{exact:true}).locator('..').click();
   await expect(page.locator('#modalRoot')).toContainText('Business OS не подставляет выдуманное значение');
-  await page.evaluate(()=>closeModal());
+  await page.evaluate(()=>closeModal());await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);

@@ -42,7 +42,11 @@ pages.team=function(){const html=profileTeamBase();return html.replace(/<section
 
 // Approved shared presentation. Existing forms, permissions and submitters are retained.
 (()=>{
- const current=()=>typeof liveMasterUser==='function'&&typeof liveMasterMode==='function'&&liveMasterMode()?liveMasterUser():state.user||{};
+ const current=()=>{
+  if(window.BOS_IS_MANAGER_PREVIEW?.())return window.BOS_MANAGER_PREVIEW_USER?.()||{};
+  if(typeof isDispatcherPreview==='function'&&isDispatcherPreview()&&typeof dispatcherPreviewUser!=='undefined')return dispatcherPreviewUser||{};
+  return typeof liveMasterUser==='function'&&typeof liveMasterMode==='function'&&liveMasterMode()?liveMasterUser():state.user||{};
+ };
  function info(kind){
   const u=current(),role=document.body.dataset.bosUiRole||u.role;
   const row=(a,b)=>`<div class="bosSharedRow"><span>${esc(a)}</span><b>${esc(b||'—')}</b></div>`;

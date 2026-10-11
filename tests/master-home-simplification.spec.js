@@ -20,7 +20,7 @@ test('today totals start collapsed and salary is removed only from home',async({
  await home(page);await setOrders(page,[{id:'11',status:'Выполнена',completed_at:new Date().toISOString(),amount:1000,extra_work_amount:100,uncompleted_work_amount:200}]);
  const summary=page.locator('#masterDaySummaryV128');await expect(summary.locator('summary')).toContainText(/Выполнено 1 · Начислено 652[,.]5 ₽/);await expect(summary.locator('.masterV128Metrics')).toBeHidden();await summary.locator('summary').click();await expect(summary.locator('.masterV128Metrics')).toBeVisible();await expect(summary).toContainText('Вычеты (уже учтены)');
  await expect(page.locator('#content .masterSalarySummary')).toHaveCount(0);
- await page.evaluate(()=>show('team'));await expect(page.locator('#masterMoneyV130 .salaryHero')).toContainText(/652[,.]5/);
+ await page.evaluate(()=>show('team'));await page.getByRole('button',{name:'Подробнее →',exact:true}).click();await expect(page.locator('#masterMoneyV130 .salaryHero')).toContainText(/652[,.]5/);
 });
 test('agreement hint updates with contact status while preserving legacy allowed states',async({page})=>{
  await home(page);await setOrders(page,[{id:'11',master_called_at:'2099-09-09T10:00:00Z',master_contact_status:'waiting_delivery'}]);await page.evaluate(()=>openOrder('11'));

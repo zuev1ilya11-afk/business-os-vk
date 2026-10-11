@@ -18,6 +18,7 @@ test('master preview recalculates payout from current order amount instead of st
 
   await page.waitForFunction(()=>window.BOS_MASTER_MONEY_V130_API?.periodSnapshot);
   await page.locator('nav button[data-page="team"]').click();
+  await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
   const payoutCard=page.locator('#masterMoneyV130').getByText('По заявкам',{exact:true}).locator('..');
   const salaryCard=page.locator('.salaryHero');
   await expect(payoutCard).toContainText('552,5');
