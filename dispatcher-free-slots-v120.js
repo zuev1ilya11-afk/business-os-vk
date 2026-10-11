@@ -91,7 +91,7 @@ function ensurePanel(){
   if(panel)return panel;
   const anchor=host.querySelector('.usScheduleCard');if(!anchor)return null;
   panel=document.createElement('section');panel.className='card dfs120Panel';
-  anchor.parentElement.insertBefore(panel,anchor);
+  anchor.insertAdjacentElement('afterend',panel);
   return panel;
 }
 function renderPanel(){

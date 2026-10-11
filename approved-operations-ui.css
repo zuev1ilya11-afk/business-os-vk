@@ -218,3 +218,34 @@ body.bos-approved-ui .bosPushStates dd{margin:0;color:#edf2f8;text-align:right;f
  .bos-approved-ui .newOrderForm .newOrderActions button[type=submit]{grid-column:2;grid-row:1;}
  .bos-approved-ui .newOrderForm .newOrderActions button[type=button]{grid-column:1;grid-row:1;}
 }
+
+/* Release review: primary actions and secondary explanations at mobile widths. */
+.bos-approved-ui .bosOpsTabs{flex-wrap:wrap;overflow:visible}
+.bos-approved-ui .bosOpsTabs button{flex:0 0 auto}
+.bos-approved-ui .bosOpsAttention h1{font-size:30px;line-height:1.2}
+.bos-approved-ui .bosOpsFreeTask .dfs120Head>div:first-child{display:none}
+.bos-approved-ui .bosOpsFreeTask .dfs120Date{width:100%}
+.bos-approved-ui .bosTeamMemo,.bos-approved-ui .finMethodNote{padding:14px 0;border-top:1px solid var(--bos-ui-line)}
+.bos-approved-ui :is(.bosTeamMemo,.finMethodNote)>summary{min-height:44px;align-content:center;cursor:pointer;color:var(--bos-ui-muted);font-size:13px}
+.bos-approved-ui .compactTeamCard>.row>div{display:grid;gap:7px;min-width:0}
+.bos-approved-ui .bosEmployeeRecentOrder .row>strong{flex:0 0 auto;white-space:nowrap}
+.bos-approved-ui .bosEmployeeRecentOrder .row>span{min-width:0;overflow-wrap:anywhere}
+@media(max-width:760px){
+ .bos-approved-ui #app>#content:has(#bosOrderList)>.row>button.primary,.bos-approved-ui .bosManagementTeam>.row>button.primary{width:100%!important;max-width:none!important;flex-basis:100%}
+ .bos-approved-ui .bosManagementTeam>.row{display:flex;flex-wrap:wrap}
+ .bos-approved-ui .bosOpsDaySchedule .dmv2Header>button.primary{width:100%!important}
+ .bos-approved-ui[data-bos-ui-role="dispatcher"] .compactTeamCard{background:none;border:0;border-top:1px solid var(--bos-ui-line);border-radius:0;padding:18px 0;box-shadow:none}
+ .bos-approved-ui #bosOrderControl .ocNote{font-size:11px;margin:6px 0}
+ .bos-approved-ui #bosOrderControl .ocFilters{gap:6px;margin:10px 0}
+ .bos-approved-ui #bosOrderControl .ocFilters button{padding:8px 10px;font-size:11px}
+}
+
+.bos-approved-ui .bosEmployeeRecentOrder>b{flex:0 0 auto;white-space:nowrap}
+.bos-approved-ui .bosEmployeeRecentOrder>span{min-width:0}
+
+.bos-approved-ui .bosEmployeeQuality>summary{min-height:44px;align-content:center;color:var(--bos-ui-muted);cursor:pointer;font-size:13px}
+.bos-approved-ui .bosEmployeeQuality .grid{margin:8px 0}
+
+.bos-approved-ui #modalRoot .modal:has(.bosEmployeeQuality) .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border:1px solid var(--bos-ui-line);border-radius:12px;overflow:hidden;margin:16px 0}
+.bos-approved-ui #modalRoot .modal:has(.bosEmployeeQuality) .grid .metric{min-height:0;gap:10px;padding:14px 12px;margin:0;border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;box-shadow:none;background:transparent}
+.bos-approved-ui #modalRoot .modal:has(.bosEmployeeQuality) .grid .metric strong{font-size:24px}
