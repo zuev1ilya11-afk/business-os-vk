@@ -192,3 +192,9 @@ body.bos-approved-ui .bosPriceRow b{color:#91bfff}
 .bosSharedClaimWork h3,.bosSharedClaimVisit h3{margin:0 0 12px;font-size:17px}
 .bosSharedClaimWork p,.bosSharedClaimVisit p{margin:8px 0;line-height:1.5}
 .bosSharedClaimVisit{margin-bottom:20px}
+/* Browser capability, consent and device subscription are independent states. */
+body.bos-approved-ui .bosPushStates{margin:0 0 20px}
+body.bos-approved-ui .bosPushStates>div{display:flex;justify-content:space-between;align-items:baseline;gap:20px;padding:16px 0;border-bottom:1px solid #2a3543}
+body.bos-approved-ui .bosPushStates dt{color:#a3b1c3}
+body.bos-approved-ui .bosPushStates dd{margin:0;color:#edf2f8;text-align:right;font-weight:600}
+@media(max-width:600px){body.bos-approved-ui .bosPushStates>div{display:block}body.bos-approved-ui .bosPushStates dd{text-align:left;margin-top:6px}}

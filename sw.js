@@ -1,4 +1,4 @@
-const BUILD_ID='84c31f4e463e5100a659';
+const BUILD_ID='8db611d1fc9cd27917d7';
 importScripts('./build-version.js?build='+BUILD_ID);
 if(self.BOS_BUILD.id!==BUILD_ID)throw new Error('Mixed deployment: build manifest mismatch');
 const PREFIX='business-os-build-';

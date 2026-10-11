@@ -124,3 +124,33 @@ document.addEventListener('error',event=>{
  }};
  new MutationObserver(label).observe(gate,{childList:true,subtree:true});label();
 })();
+// Push presentation reads browser/device state only; original connection actions own account binding.
+(()=>{
+ const root=document.getElementById('modalRoot');if(!root)return;
+ let current=null,observeMessage=null,revision=0;
+ function mount(){
+  const message=root.querySelector('#bosPushMessage');if(message===current)return;
+  observeMessage?.disconnect();current=message;revision++;if(!message)return;
+  const rows=document.createElement('dl');rows.className='bosPushStates';
+  rows.innerHTML='<div><dt>Поддержка браузера</dt><dd data-push-state="support"></dd></div><div><dt>Разрешение уведомлений</dt><dd data-push-state="permission"></dd></div><div><dt>Подписка устройства</dt><dd data-push-state="subscription"></dd></div>';
+  message.before(rows);
+  async function update(){
+   const run=++revision;
+   const set=(key,text)=>{const field=rows.querySelector(`[data-push-state="${key}"]`);if(field.textContent!==text)field.textContent=text;};
+   const supported=isSecureContext&&'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+   set('support',supported?'Поддерживается':'Не поддерживается');
+   set('permission','Notification' in window?({default:'Не запрошено',granted:'Разрешено',denied:'Запрещено'}[Notification.permission]||'Не удалось проверить'):'Недоступно в этом браузере');
+   set('subscription',supported?'Не проверена':'Недоступна в этом браузере');
+   if(!supported)return;
+   try{
+    if(typeof navigator.serviceWorker.getRegistration!=='function')throw new Error('Inspection unavailable');
+    const reg=await navigator.serviceWorker.getRegistration();
+    const subscription=reg?await reg.pushManager.getSubscription():null;
+    if(run===revision&&current===message&&rows.isConnected)set('subscription',subscription?'Есть на этом устройстве':'Нет на этом устройстве');
+   }catch{if(run===revision&&current===message&&rows.isConnected)set('subscription','Не удалось проверить');}
+  }
+  observeMessage=new MutationObserver(update);observeMessage.observe(message,{childList:true,subtree:true,characterData:true});
+  void update();
+ }
+ new MutationObserver(mount).observe(root,{childList:true,subtree:true});mount();
+})();

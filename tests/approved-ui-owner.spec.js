@@ -13,3 +13,21 @@ test('master price separates real catalogues and preserves each search when swit
 test('login uses the approved flat background and card radius',async({page})=>{await page.goto('/');await expect(page.locator('#simplePassForm')).toBeVisible();expect(await page.locator('#authGate').evaluate(e=>getComputedStyle(e).backgroundImage)).toBe('none');expect(await page.locator('.authGateCard').evaluate(e=>getComputedStyle(e).borderRadius)).toBe('16px');});
 test('dispatcher preview retains selected identity and the original return action',async({page})=>{const {employee}=require('./helpers/edge.cjs');await page.setViewportSize({width:390,height:844});const ctx=await fullStack(page,'owner');ctx.db.tables.business_staff.push(employee('preview-d','dispatcher',{full_name:'Диспетчер просмотра',phone:'+79995550000'}));await page.goto('/');await page.waitForFunction(()=>document.body.classList.contains('bos-auth-ok')&&window.BOS_SESSION_API_READY);await page.evaluate(()=>{const u=state.users.find(u=>u.role==='dispatcher');enterDispatcherPreview(u.vk_user_id||u.external_id||u.id);openOwnerProfile()});await expect(page.locator('.bosOpsProfile')).toContainText('Диспетчер просмотра');await page.getByRole('button',{name:'← Вернуться в профиль владельца',exact:true}).click();await expect(page.locator('body')).toHaveAttribute('data-bos-ui-role','owner');await expect(page.locator('#ownerDashboard')).toBeVisible();await page.locator('#profileBtn').click();await expect(page.locator('.bosManagementProfile')).toBeVisible();});
 test('claim detail groups correction and saved repeat visit without inventing a time',async({page})=>{await boot(page);await page.evaluate(()=>{state.claims=[{id:'fixture',order_id:'11',reason:'Кронштейн ослаб',required_work:'Закрепить кронштейн',master_id:state.masters[0].id,status:'open',scheduled_date:'2026-10-09',scheduled_time:null,pay_revisit:false}];openClaimDetails('fixture')});await expect(page.locator('.bosSharedClaimWork')).toContainText('Закрепить кронштейн');await expect(page.locator('.bosSharedClaimVisit')).toContainText('2026-10-09');await expect(page.locator('.bosSharedClaimVisit')).toContainText('Время не указано');await page.getByRole('button',{name:'Открыть заявку',exact:true}).click();await expect(page.locator('#modalRoot')).toContainText('Анна');});
+const {pushPresentation}=require('./helpers/push-presentation.cjs');
+for(const [state,support,permission,subscription] of [
+ ['default','Поддерживается','Не запрошено','Нет на этом устройстве'],
+ ['denied','Поддерживается','Запрещено','Нет на этом устройстве'],
+ ['subscribed','Поддерживается','Разрешено','Есть на этом устройстве'],
+ ['unsupported','Не поддерживается','Не запрошено','Недоступна в этом браузере'],
+ ['denied-with-subscription','Поддерживается','Запрещено','Есть на этом устройстве'],
+ ['unknown','Поддерживается','Не запрошено','Не удалось проверить']
+])test(`push breakdown uses independent real states: ${state}`,async({page})=>{
+ await boot(page);await pushPresentation(page,state);await page.evaluate(()=>BOS_PUSH.open());
+ await expect(page.locator('[data-push-state=support]')).toHaveText(support);
+ await expect(page.locator('[data-push-state=permission]')).toHaveText(permission);
+ await expect(page.locator('[data-push-state=subscription]')).toHaveText(subscription);
+ await expect(page.locator('.bosPushStates')).toContainText('Поддержка браузера');
+ await expect(page.locator('.bosPushStates')).toContainText('Разрешение уведомлений');
+ await expect(page.locator('.bosPushStates')).toContainText('Подписка устройства');
+ if(state==='subscribed')await expect(page.locator('#bosPushMessage')).toContainText('Подключены на этом телефоне');
+});

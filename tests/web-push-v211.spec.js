@@ -19,7 +19,7 @@ async function setup(page,role='owner',options={}){
    else if(data.type==='BOS_PUSH_BIND'||data.type==='BOS_PUSH_CLEAR')ports?.[0]?.postMessage({ok:true});
   }};
   const reg={scope:location.origin+'/',active:worker,installing:null,waiting:null,addEventListener(){},update:async()=>reg,pushManager:{getSubscription:async()=>p.subscription,subscribe:async config=>{p.calls.push('subscribe');p.subscribeConfig={userVisibleOnly:config.userVisibleOnly,keyBytes:config.applicationServerKey.length};p.subscription=sub;return sub}}};
-  Object.defineProperty(navigator,'serviceWorker',{value:{ready:Promise.resolve(reg),controller:worker,register:async()=>reg,addEventListener:(name,fn)=>{if(name==='message')p.listeners.push(fn)}}});
+  Object.defineProperty(navigator,'serviceWorker',{value:{ready:Promise.resolve(reg),getRegistration:async()=>reg,controller:worker,register:async()=>reg,addEventListener:(name,fn)=>{if(name==='message')p.listeners.push(fn)}}});
   p.emit=data=>p.listeners.forEach(fn=>fn({data}));
  },{endpoint,binding,permission:options.permission,ios:options.ios});
  await page.route(/\/push-api(?:\?|$)/,async route=>{
@@ -40,11 +40,11 @@ async function settings(page){await page.evaluate(()=>BOS_PUSH.open());await exp
 async function connect(page){await settings(page);await page.locator('#bosPushEnable').click();await expect(page.locator('#bosPushTest')).toBeVisible()}
 test('push v211: opt-in, real gesture, server subscription, test queue and disable',async({page})=>{
  const f=await setup(page);expect(await page.evaluate(()=>__push.permissionGestures)).toEqual([]);expect(f.requests.some(x=>x.data.action==='subscribe')).toBe(false);
- await connect(page);expect(await page.evaluate(()=>__push.permissionGestures)).toEqual([true]);expect(await page.evaluate(()=>__push.subscribeConfig)).toEqual({userVisibleOnly:true,keyBytes:65});
+ await settings(page);await expect(page.locator('[data-push-state=subscription]')).toHaveText('Нет на этом устройстве');await page.locator('#bosPushEnable').click();await expect(page.locator('#bosPushTest')).toBeVisible();await expect(page.locator('[data-push-state=permission]')).toHaveText('Разрешено');await expect(page.locator('[data-push-state=subscription]')).toHaveText('Есть на этом устройстве');expect(await page.evaluate(()=>__push.permissionGestures)).toEqual([true]);expect(await page.evaluate(()=>__push.subscribeConfig)).toEqual({userVisibleOnly:true,keyBytes:65});
  expect(f.requests.find(x=>x.data.action==='subscribe').account).toBe('100');
  await page.locator('#bosPushTest').click();await expect(page.locator('#bosPushMessage')).toContainText('Тест поставлен в очередь');expect(f.requests.some(x=>x.data.action==='test')).toBe(true);
  await page.locator('#bosPushDisable').click();await expect(page.locator('#bosPushEnable')).toBeVisible();expect(f.requests.some(x=>x.data.action==='revoke')).toBe(true);
- expect(await page.evaluate(()=>localStorage.getItem('bos_push_device_v1'))).toBeNull();expect(await page.evaluate(()=>__push.calls)).toContain('unsubscribe');
+ await expect(page.locator('[data-push-state=subscription]')).toHaveText('Нет на этом устройстве');expect(await page.evaluate(()=>localStorage.getItem('bos_push_device_v1'))).toBeNull();expect(await page.evaluate(()=>__push.calls)).toContain('unsubscribe');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
 test('push v211: denied permission has no subscription or fake success',async({page})=>{
