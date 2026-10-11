@@ -57,9 +57,11 @@ function payout(o){
 const extra=o=>num(o?.extra_work_amount);
 const deduction=o=>num(o?.uncompleted_work_amount);
 const salary=o=>payout(o)+extra(o);
-function periodOrders(done,start,end){return done.filter(o=>{const d=completedDay(o);return d&&d>=start&&d<=end})}
+// Profile summaries use the same Moscow periods and completion dates as the existing accruals screen.
+// Keep completedDay exported below for legacy day-summary consumers.
+function periodOrders(done,start,end){return done.filter(o=>window.BOS_SALARY_PERIODS.contains({start,end},window.BOS_SALARY_PERIODS.completedDay(o)))}
 function totals(){
-  const orders=mine(),done=orders.filter(completed),now=new Date(),weekStart=mondayOf(now),weekEnd=addDays(weekStart,6),monthStart=`${now.getFullYear()}-${pad(now.getMonth()+1)}-01`,monthEnd=localIso(new Date(now.getFullYear(),now.getMonth()+1,0,12));
+  const orders=mine(),done=orders.filter(completed),calendar=window.BOS_SALARY_PERIODS,today=calendar.day(),weekPeriod=calendar.bounds('week',today),monthPeriod=calendar.bounds('month',today),weekStart=weekPeriod.start,weekEnd=weekPeriod.end,monthStart=monthPeriod.start,monthEnd=monthPeriod.end;
   const week=periodOrders(done,weekStart,weekEnd),month=periodOrders(done,monthStart,monthEnd);
   const base=done.reduce((a,o)=>a+payout(o),0),extras=done.reduce((a,o)=>a+extra(o),0),deductions=done.reduce((a,o)=>a+deduction(o),0);
   return{orders,done,active:orders.filter(active),base,extras,deductions,total:base+extras,weekSalary:week.reduce((a,o)=>a+salary(o),0),monthSalary:month.reduce((a,o)=>a+salary(o),0),weekStart,weekEnd,monthStart,monthEnd};
@@ -80,7 +82,7 @@ window.openMasterProfileClaimsV129=function(){
  openModal(`<section><button type="button" class="bosTextAction" onclick="closeModal()">‹ К профилю</button><h2>Мои рекламации</h2>${rows.length?rows.map(claimCardHtml).join(''):'<p class="muted">Назначенных открытых рекламаций нет.</p>'}</section>`);
 };
 function profileHtml(t){
- const u=liveUser(),m=masterRow(),today=localIso(new Date()),todayRows=t.done.filter(o=>completedDay(o)===today),name=u.full_name||m.full_name||u.name||m.name||'Мастер';
+ const u=liveUser(),m=masterRow(),today=window.BOS_SALARY_PERIODS.day(),todayRows=t.done.filter(o=>window.BOS_SALARY_PERIODS.completedDay(o)===today),name=u.full_name||m.full_name||u.name||m.name||'Мастер';
  return `<section id="masterProfileSummaryV129" class="masterV129Panel"><div class="bosProfileIdentity"><span class="bosNavAvatar">${escv(name.split(/\s+/).slice(0,2).map(x=>x[0]).join(''))}</span><div><h2>${escv(name)}</h2><p>Мастер${u.city||m.city?' · '+escv(u.city||m.city):''}</p></div></div><section class="bosProfileAccrual"><div class="bosAccrualHeading"><h3>Мои начисления</h3><button type="button" class="bosTextAction" onclick="openMasterAccrualsV130()">Подробнее →</button></div><div class="masterV129Metrics">${metric('Сегодня',moneyv(todayRows.reduce((a,o)=>a+salary(o),0)))}${metric('Неделя',moneyv(t.weekSalary))}${metric('Месяц',moneyv(t.monthSalary))}</div><div class="bosTaskRow"><span>Фактически выплачено</span><span>—</span></div><p class="muted">Начисления и переведённые выплаты — разные показатели.</p></section><div role="navigation" class="bosProfileMenu" aria-label="Рабочий профиль"><button type="button" class="secondary" onclick="openMasterProfileEdit()"><span>Личные данные<small>Телефон и информация профиля</small></span><b>›</b></button><button type="button" class="secondary" onclick="openMasterMemoMenuV129()"><span>Памятки и прайс<small>Акты, замеры, цены и подсказки</small></span><b>›</b></button>${String(state.user?.role)==='master'?'<button type="button" class="secondary" onclick="window.BOS_OPEN_AUTH_SETTINGS?.()"><span>Настройки входа<small>Логин и пароль</small></span><b>›</b></button>':''}<div class="bosProfileDeviceEntry"></div></div></section>`;
 }
 function removeByHeading(root,names){
@@ -98,7 +100,7 @@ function cleanupHome(root){
 function cleanupProfile(root){
   removeByHeading(root,['Зарплата','Расчёт зарплаты','График этой недели','График работы','Мой график','Памятка']);
 }
-function signature(t){return JSON.stringify({orders:t.orders.map(o=>[o.id,o.status,o.report_review_status,o.completed_at,o.report_reviewed_at,o.scheduled_date,o.amount,o.master_payout,o.extra_work_amount,o.uncompleted_work_amount]),schedule:(state?.masterSchedule||[]).filter(scheduleMine).map(r=>[r.work_date||r.date,r.is_working,r.work_start,r.work_end]),user:[liveUser()?.full_name,liveUser()?.city,liveUser()?.district,liveUser()?.phone,localIso(new Date())]})}
+function signature(t){return JSON.stringify({orders:t.orders.map(o=>[o.id,o.status,o.report_review_status,o.completed_at,o.report_reviewed_at,o.scheduled_date,o.amount,o.master_payout,o.extra_work_amount,o.uncompleted_work_amount]),schedule:(state?.masterSchedule||[]).filter(scheduleMine).map(r=>[r.work_date||r.date,r.is_working,r.work_start,r.work_end]),user:[liveUser()?.full_name,liveUser()?.city,liveUser()?.district,liveUser()?.phone,window.BOS_SALARY_PERIODS.day()]})}
 function render(){
   queued=false;
   const root=document.getElementById('content');if(!root||!masterMode())return;

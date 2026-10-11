@@ -1,11 +1,11 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
-const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 
 test('master v128 shows today totals with current payout formula and no legacy duplicate',async({page})=>{
   const {db}=await fullStack(page,'master');
-  const today=localDate(),done=db.tables.orders.find(o=>String(o.id)==='11')||db.tables.orders[0];
+  await page.clock.setFixedTime(new Date('2026-10-11T21:10:00Z'));
+  const today='2026-10-12',done=db.tables.orders.find(o=>String(o.id)==='11')||db.tables.orders[0];
   for(const o of db.tables.orders){o.status='В работе';o.report_review_status=null;o.completed_at=null;o.scheduled_date='2099-09-10';o.extra_work_amount=0}
   Object.assign(done,{
     status:'Выполнена',
