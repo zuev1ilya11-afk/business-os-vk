@@ -76,7 +76,11 @@ function renderCard(card,order){
     }
   }else{
     box.classList.add('dsd121BoardList');
-    if(box.previousElementSibling!==card)card.insertAdjacentElement('afterend',box);
+    // The quick-action bar owns the first slot after the card. Keep both
+    // observers in the same order so a pending click is never moved away.
+    const next=card.nextElementSibling;
+    const anchor=next?.matches('.dq159DesktopActions')&&String(next.dataset.orderId)===String(order.id)?next:card;
+    if(box.previousElementSibling!==anchor)anchor.insertAdjacentElement('afterend',box);
   }
   const signature=candidateSignature(items,date);
   if(box.dataset.signature===signature)return;

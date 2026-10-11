@@ -15,7 +15,7 @@ async function fits(page) {
         const rect = el.getBoundingClientRect();
         // Date/filter strips and the desktop month grid intentionally scroll internally.
         // calendar-master-details.spec.js verifies access to the grid's last column.
-        const strip = el.closest('.bosOrderFilters, .masterDayFilters, .masterWeekDays, .masterV129Week, .masterStatusFilters, .dmShortcuts, .usManagement .usMonthScroll, #ownerDashboard .odTableScroll');
+        const strip = el.closest('.bosOrderFilters, .bosHomeDayScopes, .masterDayFilters, .masterWeekDays, .masterV129Week, .masterStatusFilters, .dmShortcuts, .usManagement .usMonthScroll, #ownerDashboard .odTableScroll');
         return !strip && (rect.left < -1 || rect.right > width + 1);
       }).map(el => el.id || el.className),
       small: controls.filter(el => el.matches('.primary, .secondary, .wide, .modalClose') &&
@@ -53,12 +53,25 @@ for (const role of ['owner', 'manager', 'dispatcher', 'master']) {
         if (role === 'master' && screen === 'dispatch')
           await expect(page.locator('.bosMasterTimeline')).toBeVisible();
         await fits(page);
+        if(role==='master'&&screen==='home'){
+          const scopes=page.locator('.bosHomeDayScopes');
+          for(const key of ['today','tomorrow','overdue','all']){
+            const chip=scopes.locator(`[data-home-scope="${key}"]`);
+            await chip.scrollIntoViewIfNeeded();await chip.click();
+            await expect(chip).toHaveAttribute('aria-pressed','true');
+            expect(await chip.evaluate(e=>{const r=e.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return r.left>=0&&r.right<=innerWidth&&(hit===e||e.contains(hit))})).toBe(true);
+          }
+        }
         if (role === 'owner' && width === 1440 && screen === 'home')
           await page.screenshot({path: testInfo.outputPath('desktop-home.png')});
         if (role === 'owner' && width === 390 && screen === 'orders')
           await page.screenshot({path: testInfo.outputPath('mobile-orders.png')});
       }
       await page.locator('#profileBtn').click();
+      if(role==='master'){
+        await expect(page.locator('.bosProfileIdentity')).toBeVisible();await fits(page);
+        await page.getByRole('button',{name:/Настройки входа/}).click();
+      }
       await expect(page.locator('#modalRoot .modal')).toBeVisible();
       await fits(page);
       await page.locator('.modalClose').click();

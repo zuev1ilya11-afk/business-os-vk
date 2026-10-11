@@ -32,6 +32,18 @@ test('unassigned order shows ranked inline options and one-action assignment pre
   await expect(best).toContainText('Тестовый мастер');
   await expect(best).toContainText('город совпадает');
 
+  // After enhancement settles, order controls must stop moving between siblings.
+  const layout=await smart.evaluate(async box=>{
+    for(let i=0;i<3;i++)await new Promise(requestAnimationFrame);
+    const host=box.parentElement;let moves=0;
+    const observer=new MutationObserver(records=>{moves+=records.filter(r=>[...r.addedNodes,...r.removedNodes].some(n=>n===box||n.matches?.('.dq159DesktopActions'))).length});
+    observer.observe(host,{childList:true});
+    for(let i=0;i<12;i++)await new Promise(requestAnimationFrame);observer.disconnect();
+    const previous=box.previousElementSibling;
+    return {moves,paired:previous?.matches('.dq159DesktopActions')&&previous.dataset.orderId===box.dataset.orderId};
+  });
+  expect(layout).toEqual({moves:0,paired:true});
+
   const expectedTime=await best.getAttribute('data-time');
   expect(expectedTime).toMatch(/^\d{2}:\d{2}$/);
   const assign=best.locator('button.dsd121Assign');

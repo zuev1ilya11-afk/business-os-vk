@@ -15,3 +15,10 @@ Ruling: implementation is continuation of explicitly approved design and user-su
 Hosted QA: cloud browser reached the existing private HTTPS Preview sign-in wall. Automatic approval review denied continuing to auth.openai.com without explicit sign-in permission. No bypass or audience change attempted. Finish all unaffected work; hosted interactive gate remains blocked pending authorization.
 
 Core block: 40/40 original focused tests; after reviewer-requested header fix and stronger exact-click/ordered-nav/save-reload assertions, 34/34 final focused tests plus 37/38 earlier (one locator wording corrected). Node 729/729; final full rerun still pending. Production untouched.
+
+
+## Race fixes after the first complete release regression
+
+The first completed final regression was 739 passed / 8 failed (747 total). It is not a release PASS. A deterministic delayed-enhancement browser regression reproduced a newer finance route being replaced by home. The callback now rechecks the current route and role before refreshing. Independent review also identified competing sibling placement between the smart recommendations and quick-action bar. Both now use card → quick actions → recommendations. The original assignment handler and financial values are unchanged.
+
+The master profile test is updated to follow the canonical profile then open the original login settings. Horizontally scrolled day chips are checked by scrolling, clicking every chip and hit-testing, in addition to page overflow checks. Full regression must run again on build 450d89745b2f499f091b. Hosted browser QA remains blocked by sign-in approval; it has not passed.
