@@ -69,12 +69,6 @@
     },
     {
       "file": "report-review-runtime-v30.js",
-      "label": "review permissions and extra/uncompleted enrichment",
-      "unchanged": true,
-      "sha256": "720a998b1d37691b019de1345542b09a51908e3054b6048adfa3b86003ac444d"
-    },
-    {
-      "file": "report-review-runtime-v30.js",
       "label": "original queue decorators",
       "unchanged": true,
       "sha256": "4cd699b706e521b51bb5c2cc5a7f0ab7a44480afc53b4ff45819102e6087c731"
@@ -114,6 +108,17 @@
       "label": "credential policy and preview handlers",
       "unchanged": true,
       "sha256": "2062eb8378796df5df5b90f064c02760e8d51b71dc08e36348a350c7026bd06b"
+    },
+    {
+      "file": "report-review-runtime-v30.js",
+      "label": "review permissions and extra/uncompleted enrichment",
+      "unchanged": true,
+      "sha256": "720a998b1d37691b019de1345542b09a51908e3054b6048adfa3b86003ac444d"
+    },
+    {
+      "file": "report-review-patch.js",
+      "label": "entire original review nodes, bindings and payloads from Task 4",
+      "unchanged": true
     },
     {
       "file": "employee-profile-patch.js",

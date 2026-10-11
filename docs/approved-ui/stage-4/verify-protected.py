@@ -22,7 +22,6 @@ for args in [
  ('order-control.js','original action handlers and all collection algorithms','  function refresh',None),
  ('report-review-patch.js','signed act viewer/intake header/snapshot and review guards',None,'  window.openReportReview='),
  ('report-review-patch.js','original approve/reject validation/finalization payload','  window.submitReportReview=',None),
- ('report-review-runtime-v30.js','review permissions and extra/uncompleted enrichment',None,'  const openReview='),
  ('report-review-runtime-v30.js','original queue decorators','  const home=',None),
  ('staff-permissions-calendar-v43.js','role capability guards and calendar functions',None,'// Presentation-only'),
  ('staff-permissions-calendar-v43.js','employee admin actions/payload','const box=document.createElement','window.disableStaffProfile='),
@@ -31,6 +30,12 @@ for args in [
  ('team-roles-fix-v31.js','role guards',None,'function teamCard'),
  ('team-roles-fix-v31.js','credential policy and preview handlers','function syncCredentialPolicy',None),
 ]:check(*args)
+old=subprocess.check_output(['git','show',BASE+':report-review-runtime-v30.js'],text=True);new=(root/'report-review-runtime-v30.js').read_text()
+a=part(old,None,'  const openReview=');b=part(new,None,'  // Reparent the existing review nodes')
+checks.append(dict(file='report-review-runtime-v30.js',label='review permissions and extra/uncompleted enrichment',unchanged=a==b,sha256=hashlib.sha256(b.encode()).hexdigest()))
+# Fix round 1 changes only the runtime composition, not the original review form or submitters.
+original=subprocess.check_output(['git','show','294f0e22ba8e4c2843345516692e309b0af2b498:report-review-patch.js'],text=True)
+checks.append(dict(file='report-review-patch.js',label='entire original review nodes, bindings and payloads from Task 4',unchanged=original==(root/'report-review-patch.js').read_text()))
 # Label-only prefixes retain original employee accrual algorithms exactly.
 for file,start,end,new_end in [
  ('employee-profile-patch.js','function openEmployeeProfile','openModal(', 'openModal('),

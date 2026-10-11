@@ -3,6 +3,7 @@ const {chromium}=require('playwright');
 const source=process.env.BOS_QA_ROOT||process.cwd(),out=process.env.BOS_CAPTURE_OUT||path.join(source,'docs/approved-ui/stage-4');
 for(const role of ['owner','manager','dispatcher','master'])fs.mkdirSync(path.join(out,role),{recursive:true});
 const {fullStack}=require(source+'/tests/helpers/full-stack.cjs');
+const {revealFinanceMaster}=require('./management-capture-readiness.cjs');
 const {employee,attachmentUrl}=require(source+'/tests/helpers/edge.cjs');
 
 const contractPairs=new Set(require(source+'/docs/approved-ui/screen-contract.json').map(x=>x.role+':'+x.screen));
@@ -50,7 +51,7 @@ async function setup(role,width=390){
  await page.goto('http://127.0.0.1:' +server.address().port+'/',{waitUntil:'domcontentloaded'});await page.locator('#authGate').waitFor({state:'hidden',timeout:25000});await page.waitForFunction(()=>document.body.classList.contains('bos-auth-ok')&&window.BOS_SESSION_API_READY);await page.evaluate(async role=>{await window.BOS_LOAD_ROLE_MODULES?.(role)},role);await page.waitForFunction(()=>window.BOS_ORDER_CONTROL&&window.BOS_OWNER_DASHBOARD);await page.locator(role==='dispatcher'?'.bosOpsWorkspace':'#ownerDashboard').waitFor({state:'visible'});
  return {context,page,role,...ctx,errors,blocked};
 }
-async function cap(c,screen,state='populated',actions=[]){const {page,role}=c;await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));const width=page.viewportSize().width;const name=`${screen}-fixture-${width}.png`,p=`${out}/${role}/${name}`;await page.screenshot({path:p,fullPage:false});const overflow=await page.evaluate(()=>({document:document.documentElement.scrollWidth-innerWidth,body:document.body.scrollWidth-innerWidth}));manifest=manifest.filter(x=>x.path!==p&&!(x.role===role&&x.screen===screen&&x.state==='capture-gap'));manifest.push({role,screen,state,width,height:page.viewportSize().height,path:p,source:'local-feature-fixture',commit:sha,runtimeBuild:await page.evaluate(()=>BOS_BUILD.id),buildId:await page.evaluate(()=>BOS_BUILD.id),synthetic:true,fixedClock:'2026-10-08T09:00:00Z',actions,overflow,consoleErrors:[...c.errors],blockedExternalRequests:[...new Set(c.blocked)],coverageGaps:[]});write();console.log(`${role} ${screen} ${width}`)}
+async function cap(c,screen,state='populated',actions=[]){const {page,role}=c;await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));const width=page.viewportSize().width;const name=`${screen}-fixture-${width}${state==='synthetic-fixture'?'':'-'+state.replace('synthetic-fixture-','')}.png`,p=`${out}/${role}/${name}`;await page.screenshot({path:p,fullPage:false});const overflow=await page.evaluate(()=>({document:document.documentElement.scrollWidth-innerWidth,body:document.body.scrollWidth-innerWidth}));manifest=manifest.filter(x=>x.path!==p&&!(x.role===role&&x.screen===screen&&x.state==='capture-gap'));manifest.push({role,screen,state,width,height:page.viewportSize().height,path:p,source:'local-feature-fixture',commit:sha,runtimeBuild:await page.evaluate(()=>BOS_BUILD.id),buildId:await page.evaluate(()=>BOS_BUILD.id),synthetic:true,fixedClock:'2026-10-08T09:00:00Z',actions,overflow,consoleErrors:[...c.errors],blockedExternalRequests:[...new Set(c.blocked)],coverageGaps:[],visibleEvidence:c.visibleEvidence||{}});write();console.log(`${role} ${screen} ${width}`)}
 async function close(c){await c.page.evaluate(()=>{document.querySelector('dialog.ctDialog')?.close();document.querySelector('dialog.ctDialog')?.remove();if(typeof closeModal==='function')closeModal()});await c.page.evaluate(()=>scrollTo(0,0))}
 async function nav(c,target){
  await close(c);
@@ -67,8 +68,20 @@ async function nav(c,target){
 }
 async function attempt(c,name,fn){try{await fn()}catch(e){manifest.push({role:c.role,screen:name,source:'local-feature-fixture',commit:sha,state:'capture-gap',modalText:await c.page.locator('#modalRoot').innerText(),coverageGaps:[e.message.slice(0,800)]});write();console.log('GAP '+c.role+' '+name+' '+e.message.slice(0,220));await close(c).catch(()=>{})}}
 
+async function reviewEvidence(c){
+ return c.page.locator('.bosManagementReview').evaluate(modal=>({scrollTop:modal.scrollTop,scrollHeight:modal.scrollHeight,actions:[...modal.querySelectorAll('.bosReviewActions button')].map(e=>{const r=e.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return {id:e.id,visible:r.top>=0&&r.bottom<=innerHeight,unoccluded:hit===e||e.contains(hit),top:r.top,bottom:r.bottom}})}));
+}
+async function reviewStates(c){
+ const p=c.page,modal=p.locator('.bosManagementReview');
+ for(const state of ['scrolled-middle','scrolled-end']){await modal.evaluate((e,end)=>e.scrollTop=end?e.scrollHeight:e.scrollHeight/2,state==='scrolled-end');c.visibleEvidence={review:await reviewEvidence(c)};await cap(c,'review','synthetic-fixture-'+state,['original review','scroll']);}
+ const order=c.db.tables.orders.find(o=>o.id==='7381716');Object.assign(order,{extra_work_amount:400,extra_work_description:'Сохранённое описание допработ. '.repeat(20),report_photo_urls:JSON.stringify(Array.from({length:15},(_,i)=>attachmentUrl(order.id,'fixture-report',`photo-${i}.jpg`))),uncompleted_work_amount:140,uncompleted_work_items:Array.from({length:14},(_,i)=>({name:`Сохранённая позиция ${i+1}`,quantity:1,unit:'шт.',unit_price:10,amount:10,price_confirmed:true})),uncompleted_work_description:'Сохранённый комментарий к вычету. '.repeat(15)});
+ await p.evaluate(()=>BOS_REFRESH_NOW());await p.evaluate(()=>openReportReview('7381716'));
+ for(const state of ['long-initial','long-middle','long-end']){await modal.evaluate((e,state)=>e.scrollTop=state==='long-initial'?0:state==='long-middle'?e.scrollHeight/2:e.scrollHeight,state);c.visibleEvidence={review:await reviewEvidence(c)};if(!c.visibleEvidence.review.actions.every(x=>x.visible&&x.unoccluded))throw Error('Review decisions not visible/unoccluded: '+state);await cap(c,'review','synthetic-fixture-'+state,['long saved fixture','scroll']);}
+ await p.locator('#rejectReportBtn').click();c.visibleEvidence={review:await reviewEvidence(c)};await cap(c,'review-reject','synthetic-fixture-long-reason',['original required reason validation']);
+}
+
 async function management(c){const p=c.page;p.setDefaultTimeout(6000);
- async function run(screen,fn,marker){if(!contractPairs.has(c.role+':'+screen))return;await attempt(c,screen,async()=>{await close(c);await fn();if(marker)await p.locator(marker).first().waitFor({state:'visible'});await p.evaluate(()=>scrollTo(0,0));if(screen==='review-reject')await p.locator('#reviewComment').scrollIntoViewIfNeeded();if(screen==='staff-invite')await p.locator('[data-staff-invite-card]').scrollIntoViewIfNeeded();await cap(c,screen,'synthetic-fixture',[screen]);})}
+ async function run(screen,fn,marker){if(!contractPairs.has(c.role+':'+screen)||(wanted&&!wanted.includes(screen)))return;await attempt(c,screen,async()=>{await close(c);await fn();if(marker)await p.locator(marker).first().waitFor({state:'visible'});await p.evaluate(()=>scrollTo(0,0));if(screen==='review-reject')await p.locator('#reviewComment').scrollIntoViewIfNeeded();if(screen==='staff-invite')await p.locator('[data-staff-invite-card]').scrollIntoViewIfNeeded();c.visibleEvidence={};if(screen==='finance-master')c.visibleEvidence.financeMaster=await revealFinanceMaster(p);await cap(c,screen,'synthetic-fixture',[screen]);if(screen==='dashboard'){await p.locator('.odSecondaryIndicators summary').click();await p.locator('.odSecondaryIndicators').scrollIntoViewIfNeeded();await cap(c,screen,'synthetic-fixture-secondary',[screen,'secondary indicators']);}if(screen==='review')await reviewStates(c);})}
  const wanted=process.env.BOS_CAPTURE_SCREENS?.split(',');
  const tasks=[
  ['dashboard',()=>nav(c,'home'),'.bosManagementHeading'],
@@ -119,10 +132,10 @@ async function management(c){const p=c.page;p.setDefaultTimeout(6000);
  await run('finance-overview-unknown',async()=>{await p.evaluate(()=>{state.orders.find(o=>o.id==='7381715').master_payout=null;show('finance')});await p.locator('[data-fin-tab=overview]').click()},'#finContent');
  await run('finance-filters',()=>p.locator('.finFilters summary').click(),'.finFilterGrid');
  await run('finance-period',async()=>{await p.locator('.finPeriodControl summary').click();await p.locator('[data-fin-period=custom]').click()},'#finPeriodForm');
- await p.locator('[data-fin-period=month]').click();
+ if(await p.locator('[data-fin-period=month]').count())await p.locator('[data-fin-period=month]').click();
  await run('expense-new',async()=>{await p.locator('[data-fin-tab=expenses]').click();await p.locator('[data-fin-expense-add]').click()},'#finExpenseForm');
- await run('expense-edit',()=>p.locator('[data-fin-expense-edit]').first().click(),'#finExpenseForm');
- await run('expense-delete',()=>p.locator('[data-fin-expense-delete]').first().click(),'#finExpenseDeleteForm');
+ await run('expense-edit',async()=>{await p.locator('[data-fin-tab=expenses]').click();await p.locator('[data-fin-expense-edit]').first().click()},'#finExpenseForm');
+ await run('expense-delete',async()=>{await p.locator('[data-fin-tab=expenses]').click();await p.locator('[data-fin-expense-delete]').first().click()},'#finExpenseDeleteForm');
  await run('finance-master',async()=>{await p.locator('[data-fin-tab=masters]').click();await p.locator('[data-fin-master]').first().click()},'#finMasterDetail');
  }
 }
