@@ -332,7 +332,7 @@ body.bos-approved-ui .bosPushStates dd{margin:0;color:#edf2f8;text-align:right;f
 .bos-approved-ui #ownerDashboard.odOwnerOverview .odReportDetails summary{cursor:pointer;min-height:32px;align-content:center;color:var(--bos-ui-link);font-size:12px}
 .bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementAttention .odAttentionTitle{gap:4px;padding-bottom:8px}
 .bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementAttention .odAttentionTitle b{font-size:17px}
-.bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementAttention .odAttentionFilters button{min-height:36px;padding:8px 0;font-size:12px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementAttention .odAttentionFilters button{min-height:44px;padding:8px 0;font-size:12px}
 .bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementAttention .odAttentionFilters b{font-size:14px}
 .bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementAttention .linkBtn{margin-top:10px}
 .bos-approved-ui #ownerDashboard.odOwnerOverview .odLoad .odHeading{margin-bottom:8px}

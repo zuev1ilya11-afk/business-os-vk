@@ -39,7 +39,7 @@ test('owner can set employee credentials and restore disabled employee',async({p
   });
 
   await page.goto('/',{waitUntil:'domcontentloaded'});
-  await expect(page.getByText('Загруженность мастеров')).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Обзор бизнеса',exact:true})).toBeVisible();
   await page.locator('nav button[data-page="team"]').click();
   await page.getByRole('button',{name:'Логины и пароли'}).click();
   const modal=page.locator('#modalRoot');

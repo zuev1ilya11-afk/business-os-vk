@@ -25,5 +25,5 @@ test('desktop password login creates BOS session and opens app',async({page})=>{
   await expect.poll(()=>loginCalls).toBe(1);
   await expect.poll(()=>authenticatedBootstrapCalls).toBeGreaterThan(0);
   await expect(page.locator('#app')).toBeVisible();
-  await expect(page.getByText('Загруженность мастеров')).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Обзор бизнеса',exact:true})).toBeVisible();
 });

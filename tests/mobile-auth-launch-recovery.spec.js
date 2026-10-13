@@ -35,5 +35,5 @@ test('mobile VK auth can read signed launch params from VK Bridge once',async({p
   await expect.poll(()=>bootstrap,{timeout:15000}).toBeTruthy();
   expect(sessionRequestBody.launch_params).toContain('vk_user_id=123456789');
   expect(sessionRequestBody.access_token).toBeUndefined();
-  await expect(page.getByText('Загруженность мастеров')).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Обзор бизнеса',exact:true})).toBeVisible();
 });

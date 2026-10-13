@@ -53,7 +53,7 @@ for(const [role,width] of [['owner',390],['dispatcher',390],['owner',1280]]){
    await upload();
    const firstToken=order.report_upload_token;
    await page.evaluate(async()=>{await reloadData(true);window.BOS_MASTER_ORDER_ACTIONS_V179_REFRESH?.()});
-   if(role==='dispatcher'){await page.evaluate(()=>openBosOpsAttention('report'));await page.locator('[data-ops-attention-order="11"]').getByRole('button',{name:'Проверить отчёт',exact:true}).click();}else await page.locator('.reportReviewCard').filter({hasText:'Невский 1'}).first().click();
+   if(role==='dispatcher'){await page.evaluate(()=>openBosOpsAttention('report'));await page.locator('[data-ops-attention-order="11"]').getByRole('button',{name:'Проверить отчёт',exact:true}).click();}else {await page.locator('.odReportDetails > summary').click();await page.locator('.reportReviewCard').filter({hasText:'Невский 1'}).first().click();}
    await page.locator('#rejectReportBtn').click();
    await expect(page.locator('#reviewMsg')).toContainText('Укажите причину отклонения');
    expect(order.report_review_status).toBe('pending');
@@ -77,7 +77,7 @@ for(const [role,width] of [['owner',390],['dispatcher',390],['owner',1280]]){
    expect(uploads.map(x=>x.kind)).toEqual(['act','photo','act','photo']);
 
    await page.evaluate(async()=>{await reloadData(true);window.BOS_MASTER_ORDER_ACTIONS_V179_REFRESH?.()});
-   if(role==='dispatcher'){await page.evaluate(()=>openBosOpsAttention('report'));await page.locator('[data-ops-attention-order="11"]').getByRole('button',{name:'Проверить отчёт',exact:true}).click();}else await page.locator('.reportReviewCard').filter({hasText:'Невский 1'}).first().click();
+   if(role==='dispatcher'){await page.evaluate(()=>openBosOpsAttention('report'));await page.locator('[data-ops-attention-order="11"]').getByRole('button',{name:'Проверить отчёт',exact:true}).click();}else {await page.locator('.odReportDetails > summary').click();await page.locator('.reportReviewCard').filter({hasText:'Невский 1'}).first().click();}
    await expect(page.locator('#reviewForm')).toHaveAttribute('data-report-token',order.report_upload_token);
    await page.locator('#approveReportBtn').click();
    await expect(page.locator('#reviewForm')).toHaveCount(0);

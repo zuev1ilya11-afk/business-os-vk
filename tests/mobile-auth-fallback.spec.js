@@ -14,7 +14,7 @@ test('mobile VK signed launch opens app and can create an order',async({page})=>
   await page.route('**/api/proxy/order-meta-api',async route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:{}})}));
   await page.goto('/?force_vk_auth=1&vk_app_id=54758847&vk_user_id=123456789&vk_language=ru&sign=signed_test_value',{waitUntil:'domcontentloaded'});
   await expect.poll(()=>sessionCalls,{timeout:15000}).toBe(1);
-  await expect(page.getByText('Загруженность мастеров')).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Обзор бизнеса',exact:true})).toBeVisible();
   await page.locator('nav button[data-page="orders"]').click();
   await page.getByRole('button',{name:/Новая/}).click();
   const form=page.locator('#orderForm');

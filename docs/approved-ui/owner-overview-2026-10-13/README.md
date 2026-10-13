@@ -19,7 +19,7 @@ Other existing indicators remain available in a disclosure at the bottom. Recent
 - Empty data, conflicts, stored zero payout, 25 masters, archive link and Moscow midnight tested.
 - Separate scoped review found an overlapping empty-report label when an archive exists. A failing visual geometry regression reproduced it, the CSS selector was corrected, and the test now passes. No other blocking finding.
 
-No lint script is defined in this repository. No broad audit or full unrelated suite was run.
+No lint script is defined in this repository. The first full GitHub CI run (38440899530) passed all build/server stages and exposed nine browser failures: stale owner-home labels/structure, report shortcuts now inside a disclosure, and three desktop control buttons below the existing 44px minimum. Test navigation/assertions were aligned with the approved layout; the desktop buttons were restored to 44px. All nine failures plus six related layout/responsive scenarios passed locally after this fix (15 tests, zero retries/skips). Screenshots were refreshed from that run. No auth or report-processing logic changed. Full CI reruns on the updated PR.
 
 ## Comparison with the approved image
 
@@ -29,4 +29,4 @@ Screenshots use synthetic test data and include exact viewport captures and full
 
 ## Release boundary
 
-No merge into main and no Russian production deployment. Stop at Preview for the owner's visual approval.
+Preview was approved and upload to the feature branch was authorized. PR #287 targets main; merge and Russian production deployment remain outside this approval.
