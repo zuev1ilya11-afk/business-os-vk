@@ -1,0 +1,26 @@
+{
+  "owner-tests": {
+    "startTime": "2026-10-13T17:25:13.972Z",
+    "duration": 8652.052,
+    "expected": 7,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "owner-regression-tests": {
+    "startTime": "2026-10-13T17:26:23.866Z",
+    "duration": 18018.957000000002,
+    "expected": 37,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "owner-final-layout-tests": {
+    "startTime": "2026-10-13T17:29:41.648Z",
+    "duration": 4825.289,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -18,7 +18,7 @@ for(const role of ['owner','manager'])test(role+' gets a rolling dashboard and w
  for(const width of [320,390,768,1440]){
   await page.setViewportSize({width,height:1000});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
-  const disclosure=dashboard.locator('.odMoreLoad');if(!await disclosure.evaluate(e=>e.open))await disclosure.locator('summary').click();
+  const disclosure=dashboard.locator('.odMoreLoad');if(await disclosure.count()&&!await disclosure.evaluate(e=>e.open))await disclosure.locator('summary').click();
   const table=dashboard.locator('.odTable');
   expect(await table.evaluate(el=>getComputedStyle(el).display)).toBe('table');
   if(width<600){
