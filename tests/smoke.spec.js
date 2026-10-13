@@ -61,8 +61,9 @@ test('launch smoke: Mini App loads, data renders, actions and report review work
   await expect(page.locator('#authGate')).toBeHidden();
   await expect(page.getByRole('heading',{name:'Обзор бизнеса'}).first()).toBeVisible();
   await expect(page.getByText('VK MINI APP')).toHaveCount(0);
-  await expect(page.getByText('Загруженность мастеров')).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Загрузка на 7 дней',exact:true})).toBeVisible();
   await expect(page.getByRole('heading',{name:'Отчёты на проверку'})).toBeVisible();
+  await page.locator('.odReportDetails > summary').click();
   const reportCard=page.locator('.reportReviewCard').filter({hasText:'REPORT-1 · Монтаж'});
   await expect(reportCard).toBeVisible();
 

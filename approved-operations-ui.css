@@ -295,3 +295,104 @@ body.bos-approved-ui .bosPushStates dd{margin:0;color:#edf2f8;text-align:right;f
  .bos-approved-ui #bosOrderControl .ocFilters button{flex:0 1 auto;width:auto!important;min-height:44px;padding:8px 10px;font-size:11px;white-space:normal}
  .bos-approved-ui #bosOrderControl>.ocList{width:100%;gap:0}
 }
+/* Approved owner overview. Keep these rules local to the owner home screen. */
+.bos-approved-ui #ownerDashboard.odOwnerOverview{gap:16px;align-content:start}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementHeading{margin:0;gap:12px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementHeading h1{font-size:28px;line-height:1.2;margin:0 0 4px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .card{background:var(--bos-ui-surface);border:1px solid var(--bos-ui-line);border-radius:12px;padding:16px;margin:0;box-shadow:none;min-width:0}
+.bos-approved-ui #ownerDashboard.odOwnerOverview h2,.bos-approved-ui #ownerDashboard.odOwnerOverview h3{font-size:17px;line-height:1.35}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odHeading{margin-bottom:12px;align-items:center}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .linkBtn{min-height:36px;padding:6px 10px;border:1px solid var(--bos-ui-line);border-radius:7px;background:var(--bos-ui-raised);color:var(--bos-ui-link);white-space:normal;flex-shrink:0}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odMetrics{gap:12px;margin:0;border:0;border-radius:0;background:none;overflow:visible;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:1fr}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .dashMetric{display:grid;grid-template-columns:42px minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:12px;row-gap:5px;min-height:0;padding:16px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .dashMetric>:not(.dashIcon){grid-column:2}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .dashMetric .dashIcon{display:flex;grid-column:1;grid-row:1 / 4;align-self:center;align-items:center;justify-content:center;width:42px;height:46px;border-radius:12px;background:#123e62;color:var(--bos-ui-link);font-size:25px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .dashMetric[data-owner-kpi=completed] .dashIcon{background:#114c40;color:#6be7b7}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .dashMetric strong{font-size:clamp(22px,1.8vw,30px);font-weight:600;line-height:1.2}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .dashMetric small{font-size:11px;line-height:1.4;color:var(--bos-ui-muted)}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odOverviewMain{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(280px,1fr);gap:16px;align-items:start}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odOverviewSide,.bos-approved-ui #ownerDashboard.odOwnerOverview .odOverviewActions{display:grid;gap:12px;min-width:0}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odOrders{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odOrderColumns,.bos-approved-ui #ownerDashboard.odOwnerOverview .odOrder{display:grid;grid-template-columns:44px minmax(0,1.2fr) minmax(0,1.4fr) minmax(65px,.7fr) minmax(82px,.7fr);gap:10px;align-items:center}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odOrderColumns{padding:9px 0;color:var(--bos-ui-muted);font-size:11px;border-bottom:1px solid var(--bos-ui-line)}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odOrder{padding:7px 0;min-height:44px;border-top:0;border-bottom:1px solid var(--bos-ui-line);line-height:1.4}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odOrder:last-child{border-bottom:0;padding-bottom:0}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odOrder:hover{background:var(--bos-ui-raised)}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odOrderText b{font-size:12px;font-weight:500;overflow-wrap:anywhere}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odOrderText b small{display:block;margin-top:3px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odOrderAddress,.bos-approved-ui #ownerDashboard.odOwnerOverview .odOrderMaster{font-size:12px;color:var(--bos-ui-muted);overflow-wrap:anywhere;min-width:0}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odOrder>.odStatus{grid-column:auto;justify-self:stretch;border-radius:6px;padding:5px;max-width:none}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odReports{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 12px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odReports>.odHeading{grid-column:1 / -1;margin:0 0 4px;min-height:32px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odReports>.odBig{grid-column:1;grid-row:2;margin:0;line-height:1.15}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odReports>p{grid-column:1;grid-row:3}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odReports>.odNumbers{grid-column:2;grid-row:2 / 4;margin:0;align-self:center}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odReports .odNumbers>div{font-size:11px;border:0;padding:4px 0}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odReports>.odReportDetails,.bos-approved-ui #ownerDashboard.odOwnerOverview .odReports>.odArchive,.bos-approved-ui #ownerDashboard.odOwnerOverview .odReports>p~p{grid-column:1 / -1;grid-row:auto}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odReportDetails summary{cursor:pointer;min-height:32px;align-content:center;color:var(--bos-ui-link);font-size:12px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementAttention .odAttentionTitle{gap:4px;padding-bottom:8px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementAttention .odAttentionTitle b{font-size:17px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementAttention .odAttentionFilters button{min-height:44px;padding:8px 0;font-size:12px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementAttention .odAttentionFilters b{font-size:14px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementAttention .linkBtn{margin-top:10px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odLoad .odHeading{margin-bottom:8px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odLegend{margin-bottom:10px;gap:14px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odTable{min-width:620px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odTable th:first-child{width:150px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odTable tbody th>span:last-child{max-width:95px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odTable :is(th,td){padding:5px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odTable thead th{padding:8px 5px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odDay{min-height:32px;height:auto}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odOverviewBottom{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(240px,1fr) minmax(0,1.5fr);gap:16px;align-items:start}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odCorrections .odHeading{align-items:flex-start}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odFinance .odNumbers{margin:0}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odFinance>.linkBtn{margin-top:12px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odNote{font-size:11px;line-height:1.5}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odQuick{gap:8px;margin-top:10px}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odQuick button{font-size:12px;min-height:44px;line-height:1.3}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odDayResult{padding:16px;margin:0}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odResultRevenue{display:flex;justify-content:space-between;gap:12px;color:var(--bos-ui-muted)}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odResultRevenue b{color:var(--bos-ui-text)}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odSecondaryIndicators{margin:0}
+.bos-approved-ui #ownerDashboard.odOwnerOverview .odSecondaryIndicators .odMetrics{margin-top:8px}
+@media(max-width:1400px){
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odOverviewBottom{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odOverviewActions{grid-column:1 / -1;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px}
+}
+@media(max-width:1100px){
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odOverviewMain{grid-template-columns:minmax(0,1fr)}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odOverviewSide{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+}
+@media(max-width:767px){
+ .bos-approved-ui #ownerDashboard.odOwnerOverview{gap:12px}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .card{padding:14px}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementHeading{flex-direction:row;align-items:center}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementHeading h1{font-size:23px}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementHeading>button{font-size:12px;padding:8px 10px;min-height:44px;flex-shrink:0}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .dashMetric{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto auto;gap:5px;padding:14px}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .dashMetric .dashIcon{display:none}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .dashMetric>:not(.dashIcon){grid-column:1}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .dashMetric strong{font-size:23px}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odOverviewMain,.bos-approved-ui #ownerDashboard.odOwnerOverview .odOverviewSide,.bos-approved-ui #ownerDashboard.odOwnerOverview .odOverviewBottom,.bos-approved-ui #ownerDashboard.odOwnerOverview .odOverviewActions{grid-template-columns:minmax(0,1fr);gap:12px}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odOrderColumns{display:none}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odOrder{grid-template-columns:40px minmax(0,1fr) minmax(70px,auto);gap:6px 10px;padding:12px 0}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odOrder time{grid-column:1;grid-row:1;align-self:start}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odOrderText{grid-column:2;grid-row:1}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odOrderAddress{grid-column:2 / -1;grid-row:2}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odOrderMaster{grid-column:2 / -1;grid-row:3}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odOrder>.odStatus{grid-column:3;grid-row:1;max-width:95px;align-self:start}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odDay{min-height:44px}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .linkBtn{min-height:44px}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .bosManagementAttention .odAttentionFilters button{min-height:44px}
+}
+
+@media(min-width:1101px){
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odLoad{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odLoad>.odHeading{grid-column:1;grid-row:1}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odLoad>.odLegend{grid-column:2;grid-row:1;align-self:center;margin:0 0 8px;font-size:10px;gap:10px}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odLoad>.odTableScroll,.bos-approved-ui #ownerDashboard.odOwnerOverview .odLoad>.odScheduleLink,.bos-approved-ui #ownerDashboard.odOwnerOverview .odLoad>.odEmpty{grid-column:1 / -1}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odTable :is(th,td){padding:3px 5px}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odDay{min-height:28px}
+ .bos-approved-ui #ownerDashboard.odOwnerOverview .odOrderText b small{display:inline;margin:0 0 0 4px}
+}
