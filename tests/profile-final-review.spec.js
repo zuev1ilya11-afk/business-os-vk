@@ -15,7 +15,10 @@ for(const role of ['master','dispatcher','manager','owner'])for(const width of [
  await expect(profile).toContainText(/профиль/i);
  await expect(profile.getByRole('button',{name:/О приложении/})).toBeVisible();
 
- await expect.soft(profile.getByRole('button',{name:/Команда|Финансы|Инструменты|Мой рабочий график|Мои рекламации/})).toHaveCount(0);
+ await expect.soft(profile.getByRole('button',{name:/Команда|Финансы|Инструменты|Мои рекламации/})).toHaveCount(0);
+ const schedule=profile.getByRole('button',{name:/Мой рабочий график/});
+ await expect(schedule).toHaveCount(role==='master'?1:0);
+ if(role==='master')await expect(schedule).toBeVisible();
  const login=profile.getByRole('button',{name:/Настройки входа|Логин и пароль/});await expect(login).toHaveCount(1);await expect(login).toBeVisible();
  const push=profile.getByRole('button',{name:/Уведомления на (?:устройстве|этом телефоне)|Push-уведомления/});await expect(push).toHaveCount(1);await expect(push).toBeVisible();
  if(role==='master'){await expect(profile.locator('#masterMoneyV130,.masterHomeWeek')).toHaveCount(0);await expect(profile.getByRole('heading',{name:'Памятка',exact:true})).toHaveCount(0);}
