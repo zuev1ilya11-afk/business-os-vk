@@ -49,9 +49,9 @@ for(const role of ['owner','dispatcher','master']){
       const content=await page.locator('#content').boundingBox();
       expect(nav).not.toBeNull();
       expect(content).not.toBeNull();
-      if(width>=1024){
+      if(width>600){
         expect(nav.x+nav.width).toBeLessThanOrEqual(content.x-8);
-        expect(content.width).toBeGreaterThan(620);
+        if(width>=1024)expect(content.width).toBeGreaterThan(620);
       }else{
         expect(nav.y).toBeGreaterThan(height/2);
       }

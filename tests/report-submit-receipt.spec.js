@@ -24,7 +24,7 @@ for(const [review,message] of [['pending','Отчёт уже загружен и
   await page.getByRole('button',{name:'Отправить отчёт и завершить',exact:true}).click();
   await expect(page.locator('#mrMsg')).toContainText(message);
   await expect(page.locator('#mrMsg')).not.toContainText('REPORT_CHANGED');
-  await expect(page.getByRole('button',{name:'Отправить отчёт и завершить',exact:true})).toBeDisabled();
+  await expect(page.locator('#masterReportForm button[type=submit]')).toBeDisabled();
   expect(f.uploads).toEqual([]);expect(f.order).toEqual(before);
   await page.getByRole('button',{name:'Открыть заявку',exact:true}).click();
   await expect(page.locator('#masterReportForm')).toHaveCount(0);
@@ -58,8 +58,8 @@ test('a failed fresh read cannot turn cached report data into a success receipt'
  await page.getByRole('button',{name:'Отправить отчёт и завершить',exact:true}).click();
  await expect(page.locator('#mrMsg')).toContainText('Результат отправки неизвестен');
  await expect(page.locator('#mrMsg')).not.toContainText('уже загружен');
- await expect(page.getByRole('button',{name:'Отправить отчёт и завершить',exact:true})).toBeDisabled();
-  await expect(page.getByRole('button',{name:'Проверить состояние',exact:true})).toBeEnabled();
+ await expect(page.locator('#masterReportForm button[type=submit]')).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Проверить состояние',exact:true})).toBeEnabled();await expect(page.getByRole('heading',{name:'Проверяем состояние отчёта',exact:true})).toBeVisible();await expect(page.getByRole('heading',{name:'Отчёт по заявке 11',exact:true})).toBeHidden();
  expect(await page.locator('#mrAct').evaluate(el=>el.files.length)).toBe(1);
  expect(f.uploads).toEqual([]);expect(f.order.report_uploaded_at).toBeUndefined();
 });

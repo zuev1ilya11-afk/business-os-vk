@@ -17,7 +17,7 @@ test('master orders can be filtered by day and upcoming orders are grouped by da
   await page.waitForFunction(()=>window.BOS_MASTER_ORDERS_FILTER_V99===true);
   await page.evaluate(({masterVkId})=>enterMasterPreview(masterVkId),{masterVkId:master.external_id});
 
-  await expect(page.locator('#masterDailyV127').getByRole('heading',{name:'Мой рабочий день',exact:true})).toBeVisible();
+  await expect(page.locator('#masterDailyV127').getByRole('heading',{name:'Мой день',exact:true})).toBeVisible();
   const cards=page.locator('#masterDailyV127 .masterV127Card');
   await expect(cards).toHaveCount(2);
   await expect(cards.nth(0)).toContainText('№ 11');

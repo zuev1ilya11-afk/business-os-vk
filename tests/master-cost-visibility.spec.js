@@ -23,7 +23,7 @@ for(const [source,width] of [['Авито',320],['Телефон',390],['VK',128
  await expect(page.locator('[data-master-cost]')).toBeVisible();
  await rows(page,{original:1000,deduction:-200,base:800,extras:300,total:1100,'master-base':480,'master-extras':300,company:320,'master-total':780});
  await expect(page.locator('[data-master-cost]')).toContainText('60%');await expect(page.locator('[data-master-cost]')).toContainText('40%');
- await expect(page.locator('.bosHandsHead')).toContainText('780');
+ await expect(page.locator('.bosCompactMoney')).toContainText('780');
  await page.locator('[data-master-cost]').screenshot({path:testInfo.outputPath(`master-cost-${width}.png`)});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
  expect(await page.locator('[data-master-cost]').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
@@ -35,7 +35,7 @@ for(const src of [{source:'Hands',external_source:'hands'},{source:'Руки',ex
  await page.evaluate(()=>show('orders'));await expect(page.locator('[data-master-order-cost]')).toHaveCount(0);
  await page.evaluate(()=>openOrder('11'));await expect(page.locator('.bosHandsOrder')).toBeVisible();await expect(page.locator('[data-master-cost]')).toHaveCount(0);
  await expect(page.locator('.bosHandsOrder')).not.toContainText('Полная стоимость');await expect(page.locator('.bosHandsOrder')).not.toContainText('Компании');
- await expect(page.locator('.bosHandsHead')).toContainText('442');
+ await expect(page.locator('.bosCompactMoney')).toContainText('442');
 });
 test('master report, retry, reopen and reload show one current breakdown without duplicate extras',async({page})=>{
  const {db,me}=await setup(page,{},'master',{master_workflow_stage:'started',amount:1000,original_amount:1000,extra_work_amount:0,uncompleted_work_amount:0,master_payout:600});

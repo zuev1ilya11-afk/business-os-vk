@@ -26,7 +26,7 @@ async function setup(page,{width=390,height=844,role='owner',count=12}={}){
   await route.fulfill({headers:fixtureCors,status,contentType:'application/json',body:JSON.stringify(d)});
  });
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
- await page.locator('#bosAvitoNav').click();await expect(page.locator('.avitoChatRow')).toHaveCount(count);
+ if(page.viewportSize().width<=600){await page.locator('nav [data-page=more]').click();await page.locator('[data-bos-destination=avito]').click();}else await page.locator('#bosAvitoNav').click();await expect(page.locator('.avitoChatRow')).toHaveCount(count);
  return {...stack,calls,errors,chats,fail:()=>fail=true};
 }
 async function noOverflow(page){expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1)}
@@ -99,7 +99,7 @@ test('mobile errors stay near search and returning to another tab restores its h
  await page.locator('#avitoSettings').click();await expect(page.locator('.modal')).toContainText('Домашний мастер');await page.locator('.modalClose').click();
  await page.locator('nav [data-page=orders]').click();await expect(page.locator('.avitoWorkspace')).toHaveCount(0);
  await expect(page.locator('#app>header .bosInstallAppBtn--header')).toBeVisible();
- expect(await page.locator('#app>header').evaluate(e=>getComputedStyle(e).flexWrap)).toBe('wrap');expect(x.errors).toEqual([]);
+ expect(await page.locator('#app>header').evaluate(e=>getComputedStyle(e).flexWrap)).toBe('nowrap');await noOverflow(page);expect(x.errors).toEqual([]);
 });
 
 for(const width of [900,1440])test(`desktop/tablet Avito keeps inline split panes at ${width}`,async({page})=>{

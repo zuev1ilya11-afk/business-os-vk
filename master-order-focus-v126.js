@@ -66,10 +66,12 @@ function decorateCards(){
     const o=orderById(card.dataset.masterOrderId);if(!o)return;
     let received=card.querySelector('.masterV126Received');
     if(!received){received=document.createElement('div');received.className='masterV126Received';const anchor=card.querySelector('.masterV125Title');if(anchor)anchor.insertAdjacentElement('afterend',received);else card.prepend(received)}
-    received.innerHTML=`<span>Дата поступления</span><b>${escv(receivedDate(o?.created_at))}</b>`;
+    if(received.innerHTML!==`<span>Дата поступления</span><b>${escv(receivedDate(o?.created_at))}</b>`)received.innerHTML=`<span>Дата поступления</span><b>${escv(receivedDate(o?.created_at))}</b>`;
     let address=card.querySelector('.masterV126Address');
     if(!address){address=document.createElement('div');address.className='masterV126Address';received.insertAdjacentElement('afterend',address)}
-    address.innerHTML=`<span aria-hidden="true">⌖</span><b>${escv(routeAddress(o)||'Адрес не указан')}</b>`;
+    const addressText=routeAddress(o)||'Адрес не указан';
+    if(!address.querySelector('b'))address.innerHTML='<span aria-hidden="true">⌖</span><b></b>';
+    if(address.querySelector('b').textContent!==addressText)address.querySelector('b').textContent=addressText;
     const firstPhone=phoneList(o?.phone||o?.client_phone)[0],call=card.querySelector('.masterV125Actions a[href^="tel:"]');
     if(call&&firstPhone)call.href='tel:'+firstPhone.tel;
   });
@@ -84,14 +86,14 @@ function decorateReceivedModal(modal,o,panel){
     else if(anchor)anchor.insertAdjacentElement('afterend',received);
     else modal.prepend(received);
   }
-  received.innerHTML=`<span>Дата поступления заявки</span><b>${escv(receivedDate(o?.created_at))}</b>`;
+  if(received.innerHTML!==`<span>Дата поступления заявки</span><b>${escv(receivedDate(o?.created_at))}</b>`)received.innerHTML=`<span>Дата поступления заявки</span><b>${escv(receivedDate(o?.created_at))}</b>`;
 }
 function decorate(){
   queued=false;
   if(!masterMode())return;
   decorateCards();
   const modal=document.querySelector('#modalRoot .modal');
-  if(!modal||modal.querySelector('#masterReportForm,#masterAgreementForm,#masterRescheduleForm'))return;
+  if(!modal||modal.querySelector('.bosStageTask,.bosReportReceipt,#masterReportForm,#masterAgreementForm,#masterOrderAgree179Form,#masterRescheduleForm'))return;
   const compact=modal.querySelector('.bosCompactMasterCard');
   if(compact){
     const id=String(modal.dataset?.bosMasterOrderId||window.__bosLastMasterOrderId||''),o=orderById(id);

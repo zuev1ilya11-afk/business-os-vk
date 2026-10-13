@@ -1,0 +1,954 @@
+{
+  "reviewBase": "2388b34bcf06dc8265d57eb9398f582c7f0cd798",
+  "testFixCommit": "9831e9037c1fd83d2341897699e13933c55bf470",
+  "runtimeBuild": "cdd3ea4f917ba89765d0",
+  "runtimeFilesChecked": 189,
+  "changedRuntimeFiles": 0,
+  "checks": [
+    {
+      "path": "android-navigation-v112.js",
+      "sha256": "3a02a35a41488ead58af3d6ea69fd13c9e0b6242309da5cdf671ec39b0551367",
+      "unchanged": true
+    },
+    {
+      "path": "api-integrations-v26.js",
+      "sha256": "32b7ee35f930557a8f0f97b6eeae024e4fa44da25fcc2c7f088db04099ca3c1b",
+      "unchanged": true
+    },
+    {
+      "path": "app-build-runtime.js",
+      "sha256": "6bbe89b0be26d2ddb0e09ac5f98cc0f654e2f9cc64a8faaf71b664a6749fef96",
+      "unchanged": true
+    },
+    {
+      "path": "app-icon.svg",
+      "sha256": "033e83762b4c7ef4eb9963548cb570a684542df4820841d2530ed0f32a73b9c5",
+      "unchanged": true
+    },
+    {
+      "path": "app-public.js",
+      "sha256": "781eefce579202758de54d1dbd906e96438ec4ce791f507083e9ce5d9415f5d3",
+      "unchanged": true
+    },
+    {
+      "path": "app-v2.js",
+      "sha256": "da92aad51c7c7b5740f3aa538e13304a87e7b78ef22303c9bc8226d811616847",
+      "unchanged": true
+    },
+    {
+      "path": "approved-master-ui.css",
+      "sha256": "951947808c4fa5f81343a54577a2dd21af7452b58a3b1303b243f8c2dc495e69",
+      "unchanged": true
+    },
+    {
+      "path": "approved-operations-ui.css",
+      "sha256": "1fda71796b65c374df152a393b7a10c825723099220ad895cbb1112b6ae7f060",
+      "unchanged": true
+    },
+    {
+      "path": "approved-ui.css",
+      "sha256": "f8f34dd66b0c3cb866732130ce2c2d7bfdc4a6e4d53369c755756ab5ca68ba78",
+      "unchanged": true
+    },
+    {
+      "path": "astra-schedule-ui-v5.js",
+      "sha256": "280ef4680e1ebcf6026a079f38a540a498335da14a82fbf9c8a0adc581bdc4ad",
+      "unchanged": true
+    },
+    {
+      "path": "auth-api-session-v41.js",
+      "sha256": "637e0c5ec9b581ad99f803c839eddfa9cb6c06bc3e0e752130f21a7551dc1923",
+      "unchanged": true
+    },
+    {
+      "path": "auth-ui-patch.js",
+      "sha256": "ae16e18447766c2871a047464f7d8e565ca03a59c6ba0ae9a1630a7fff831d59",
+      "unchanged": true
+    },
+    {
+      "path": "avito-messages-v25.js",
+      "sha256": "9c5212a4cf0cfd214643d6a51ca1a5bd2bed044e7817ccdb060732ac8d7ef946",
+      "unchanged": true
+    },
+    {
+      "path": "backend-version-patch.js",
+      "sha256": "8306dc501ddeaf5729df98ceafd0a5aa45bd215b3ce5a1898df0bca6f0c8ea46",
+      "unchanged": true
+    },
+    {
+      "path": "background-view.js",
+      "sha256": "61c5d6ff8bff7ae5779a9180767557ecb91f53976b8d3ee48b6b900775a61e2e",
+      "unchanged": true
+    },
+    {
+      "path": "brand-logo.svg",
+      "sha256": "248869a5b726f505936e5038f823df1dde31523277ec621da31ae8c5b5c837f3",
+      "unchanged": true
+    },
+    {
+      "path": "build-version.js",
+      "sha256": "34fa5308307b40e97243315017a9e53562b3da3677faca0a3d3753ed3e53ce76",
+      "unchanged": true
+    },
+    {
+      "path": "business-os-custom-v3.js",
+      "sha256": "be429b11d64079a6c2416e0b040f82838835047a6ed14a7f13e4667170d54baf",
+      "unchanged": true
+    },
+    {
+      "path": "busy-fix.js",
+      "sha256": "1eac15f3e9bc96145a26f42449b24095e20a744a788538cb3a6f1c688c8ed5ef",
+      "unchanged": true
+    },
+    {
+      "path": "claims-patch.js",
+      "sha256": "c2955903d4e4c757a297cea867cc10c9104a6cc70c8196452dd939d21e215472",
+      "unchanged": true
+    },
+    {
+      "path": "claims-role-v117.js",
+      "sha256": "ebdb6429ed6fbb68a39cce34adde6dee6d136542f04b5b1f3c0028580427d29a",
+      "unchanged": true
+    },
+    {
+      "path": "claims-runtime-patch.js",
+      "sha256": "d76795bc0e90c2c3e2ae3d4194332576d804c773351b11e7f220844e5705b2cc",
+      "unchanged": true
+    },
+    {
+      "path": "config.js",
+      "sha256": "a054dff4a63ba32e214644ddb07afb5df2e54eb5790281c962407aecb45458f7",
+      "unchanged": true
+    },
+    {
+      "path": "contact-status.js",
+      "sha256": "ca4ffc50cebbaae7bfae84060a72a094a003cf84a6b7d67aa2a21739a6e742a4",
+      "unchanged": true
+    },
+    {
+      "path": "dark-business-os.css",
+      "sha256": "6315ef2c63d67720aa11ae82441ace385854ac5f16db26eb75116f7eed434a60",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-attention-v123.js",
+      "sha256": "24a86f4a75346a9d60822243eceaa65f9a039a774166bfcfcedfa8efc505f886",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-board-compat-v93.js",
+      "sha256": "918df631ce95a00f3ddc1632e38c6474b035b0a56b97cff4f680dc669a39ed22",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-board-enhancements-v108.js",
+      "sha256": "9fdca10a78f5dfceb72ec4bc524d400dc8148e089f6b0f780a8037fba5773b05",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-board-v21.js",
+      "sha256": "f8c8c29893f281efc37327925d8b7a63a020585256de5761b34c35a9658342fd",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-board-v23.js",
+      "sha256": "194deedcd3edf3039b4319926836ea840dfe9a6ba70b5f0a74cc63239e2e49d4",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-board-v92.js",
+      "sha256": "07246348e6e3bfbfd1df1e08dcf32d8e3856fbbcdb3c85be10d8ab9a7921e7cf",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-close-v19.js",
+      "sha256": "64ee64d4b6ca9fda9dedd8527c109789872ed9f44d44ae3beb895901c114575e",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-control-v24.js",
+      "sha256": "14bd2cd6ac9d59c8d90d5094a065b24de9e77cd9c2c231b44332e780b5f6de1b",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-desktop-compat-v90.js",
+      "sha256": "e9d4f19642c3dd43281a2ca1d368300657f133a8215348c677913616f5cc26ed",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-desktop-mobile-v158.js",
+      "sha256": "1fe7fdd8f1ff3ded1a1fd0d36a7d58c46048bbec743b4b527baf2a1bb4590ac0",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-desktop-v89.js",
+      "sha256": "e08582e77ed43a2935f9856f4e76e2c2e9972dbdfb4c534e663ed7b026701175",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-free-slots-v120.js",
+      "sha256": "0526098f50254e5da73e13893f7c1dd64c4ddb99ffca64490e25f1c7174d6bea",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-header-v8.js",
+      "sha256": "af3143879947d72f9778e5515d3350059f8bb17185dada4109d282151e9e09f2",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-horizontal-schedule-v190-fix.js",
+      "sha256": "290a9b48c37e5481a2bb033d5e7640f1edf5e85d1fb8a2fe3b0c3f83fa2191b9",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-horizontal-schedule-v190.js",
+      "sha256": "01a35402aa87d4f36f75aee9030541e1a210fe034c4dd5fadaf3904d0f0aef5f",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-mobile-dispatch-v107.js",
+      "sha256": "a8446d44ec33a2165e41869f463740afc98d34f8dd592e1e81d604d9f6ed9635",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-mobile-touch-v101.css",
+      "sha256": "7b8de5f2accaf78b72afebfacf2fc491a09102e166089eb5bbe69c3eb9d6fc3a",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-mobile-v2-conflicts.js",
+      "sha256": "24c828dd1f0e71b8dae301d1af2df4de71c0499bfa398be3226e1e245ecd23af",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-mobile-v97.js",
+      "sha256": "ddef61d4030a5533c82b443cb6ecca63e9fa3522405b36cd13a1055a6966eb8f",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-order-priority-v105.js",
+      "sha256": "ab05201298bb3b224ee90d303249a84d422f8e8c1bb5a92fb7af58e2c44f598f",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-order-workflow-v114.js",
+      "sha256": "b41c3f371536b95f3f910c7ae8df9209ef00d59489ea8f8e88e0bf3f0217d905",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-orders-calendar-v7.js",
+      "sha256": "e7350c2033a5af3e2f085f1cf3130604349abdb93f3ebe2790cc6623377e169a",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-orders-polish-v98.js",
+      "sha256": "49af4b7f04f80ab154a18ac61cb1c9d6621448b327922cb37b96a1e2679004d3",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-orders-v3.js",
+      "sha256": "5c9db6750332ebf255d6f25dc014a1271bc78914804cc6fdc919de7af6e56dfd",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-permissions.js",
+      "sha256": "e97c5708c4e5b1a95f3538f66ffcdf5890155b442c550b486b1a7eb38c393bd3",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-preview-patch.js",
+      "sha256": "638550a891498a8bc28b33fa3fc90bf0daf20b4c83c254a96ea641c2865b2fb2",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-quick-actions-v159.js",
+      "sha256": "b98d9eca13962b51db7b9a632f40739a401dfd0f07849ef536ea07147ca6a00b",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-report-patch.js",
+      "sha256": "79c92fb409750cac0fb3fb27b8fd2ae5e61aeb6780687d99579c9d064505131e",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-reschedule-v91.js",
+      "sha256": "f0cdc424db1425872bd83bd0dd4d5b6ada4507904b9a60167c81ffe2b6fc47d9",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-responsive-workbench-v157.js",
+      "sha256": "e716fe727b318e863ec615e92dbb32b706b40e5bd8310154aac8ccfd20d37cb6",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-smart-assign-v119.js",
+      "sha256": "3797d46b2069f768cc585b6fdc4f5e3897b83a45cc97205c2f9dc4545acfd1d8",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-smart-assign-v22.js",
+      "sha256": "9cf554c02a53daffc345baa11d3170ecc6165e4c7182052c3e2b6f480e1353bb",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-smart-dispatch-v121.js",
+      "sha256": "85ad5bb06baf6c5dc4125ffa3e9ece2f186ac27b9bd3fb01badd9fc8cd45e8fc",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-ui-polish-v184.js",
+      "sha256": "413031256f89d8636959471428f193a7345c35b0b0084c0a333298c28498b373",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-ui-redesign-v183-compat.js",
+      "sha256": "629890f0d8ece86a456720d709b7803064c4fa0e9064e140b552dd7cfdd3f2b4",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-ui-redesign-v183.js",
+      "sha256": "dee3fefe99ce373af506c747dc08339dcd034989e1a6cb12dcb8ac1e3e4e6a20",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-ui-stability-v185.js",
+      "sha256": "10a8492b571ea98bc525bf3e998962847df74e5c64de4999668f7f66e6caf389",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-unassigned-queue-v122.js",
+      "sha256": "08f21907928a58e2dcf63a133159c5d8d3ad75fdb5af4023c6281678eb091cd8",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-unified-schedule-v187.js",
+      "sha256": "ad11375bdf035d5b90ec80581dec7f1049f1b5ad61d168220a1cd2de3129c117",
+      "unchanged": true
+    },
+    {
+      "path": "dispatcher-workspace-v6.js",
+      "sha256": "671ea690b4a4d6fe5029bb4ab01896b96f96d76211c04967cfcb8c9fb3c1ccaf",
+      "unchanged": true
+    },
+    {
+      "path": "employee-form-v16.js",
+      "sha256": "5b1592c9b43c1c8ee20f81f3b62d40dec877eb6fb80ae00376eb77ec42b02736",
+      "unchanged": true
+    },
+    {
+      "path": "employee-live-refresh-v27.js",
+      "sha256": "3eda16ea395a2b56b18796f386d635777d48585587d3dcc6d442fb49414f5cdd",
+      "unchanged": true
+    },
+    {
+      "path": "employee-profile-patch.js",
+      "sha256": "1738b8db31c3c8eaeb4546d599ce8fa447b1d5e5f8519501dab7f3dd889d33ab",
+      "unchanged": true
+    },
+    {
+      "path": "extra-work-patch.js",
+      "sha256": "27fc2b115a32ff2820364448ec4abe0c6cc53e9185477d2ea5c970cb788766a0",
+      "unchanged": true
+    },
+    {
+      "path": "finance-data.js",
+      "sha256": "5affa33b6d819ef08f6897c6d68724b90d04047b458dd135ead40af2d4206297",
+      "unchanged": true
+    },
+    {
+      "path": "finance-expenses.js",
+      "sha256": "eaefd4bae1789c5048e342ff6ec3ce4f9072b4a44d018b81556918e0159ec997",
+      "unchanged": true
+    },
+    {
+      "path": "finance-page.js",
+      "sha256": "96609e048012d8726d62bced63d80347c6c06394e4b768d9c7318665e29e9576",
+      "unchanged": true
+    },
+    {
+      "path": "finance-patch.js",
+      "sha256": "ce0484c258d09452bf93349617ae4b618a6bb6fff86cb4020cea2ea6e10665b2",
+      "unchanged": true
+    },
+    {
+      "path": "form-mobile-fix.css",
+      "sha256": "fc93254a260b4a9c36a6f2f66b0edcce166fdc1a45760581dc13ce5f54c4fbab",
+      "unchanged": true
+    },
+    {
+      "path": "hands-active-only-v70.js",
+      "sha256": "d010db08f12b603002f78a2559c535e6898d272b458d80899c2db449328ceb96",
+      "unchanged": true
+    },
+    {
+      "path": "hands-integration-v69.js",
+      "sha256": "b5ff540cf70255d22a036a54e9ab9f255bf73ddd50cdbe93e88612dbeec202bf",
+      "unchanged": true
+    },
+    {
+      "path": "hands-profile-entry-v70.js",
+      "sha256": "e6bfa32b204b55558e111fbed6d083484ad5e5ccf24a3c3ee96cba3d63ee094c",
+      "unchanged": true
+    },
+    {
+      "path": "index.html",
+      "sha256": "e392b41189d1a1f3ed734632b569a950ca0c0a94b8c335be8bc11d975af41bde",
+      "unchanged": true
+    },
+    {
+      "path": "install-app-v84.js",
+      "sha256": "7d37c170e56cd457954e6433235a9c911869b88d539337012915a16a40952aad",
+      "unchanged": true
+    },
+    {
+      "path": "launch-fix.js",
+      "sha256": "6a2702f248aa6f615b7b280734763db688a62a0439be39884e36df37e2f9af5d",
+      "unchanged": true
+    },
+    {
+      "path": "live-field-hotfix-v60.js",
+      "sha256": "a047555d2fe36e777db1e215eeda34bae98e1263d78524890c9d9f3c55249f17",
+      "unchanged": true
+    },
+    {
+      "path": "management-order-compact-v82.js",
+      "sha256": "6feb752326c659cb0fb913997dfa1c0fdd04e75830742fce9f5fcda5c56b4b98",
+      "unchanged": true
+    },
+    {
+      "path": "management-order-delete-v100.js",
+      "sha256": "4d686925e684b7a4a61f99c35a160eed08fa2d055cc192d4edcd066419cacdb3",
+      "unchanged": true
+    },
+    {
+      "path": "manager-memo-editor-v45.js",
+      "sha256": "e23a8000b7645246ecace650b723fa17ac2d5d88d85900596c4554f1a3604c2d",
+      "unchanged": true
+    },
+    {
+      "path": "manager-preview-v28.js",
+      "sha256": "aacc636fc399695a708e2cfd602b29bf05333e2446584650bd2f1c314afee580",
+      "unchanged": true
+    },
+    {
+      "path": "mandatory-auth-v29.js",
+      "sha256": "87679a4e6945401b99c728186e1a3b458e24f22e63b081eaed045de25f4ed294",
+      "unchanged": true
+    },
+    {
+      "path": "manifest.webmanifest",
+      "sha256": "6a50340f1a049fd4729cf735831f7aa7aedc78fb8ab8973b35f31b855cd3442b",
+      "unchanged": true
+    },
+    {
+      "path": "master-agreement-v109.js",
+      "sha256": "08a114d735c9571e30e4f2175b3117444012aea7995c11354821b15e31ecfe69",
+      "unchanged": true
+    },
+    {
+      "path": "master-cabinet-final-v81.js",
+      "sha256": "805bc41b5071dd2e1a4e33037e72fde173e64ae89e88d3421b9830ab21bdc5bd",
+      "unchanged": true
+    },
+    {
+      "path": "master-cabinet-v141.js",
+      "sha256": "9edc457b95daeab99fb52de099cac71db2579ab4aacbf6ee63259f14e95642d9",
+      "unchanged": true
+    },
+    {
+      "path": "master-calendar-patch.js",
+      "sha256": "1a28ea1049137785951630d809933b1e92ff1478adaeee7f6dabb8d5e8442c0f",
+      "unchanged": true
+    },
+    {
+      "path": "master-call-workflow-v26.js",
+      "sha256": "b77e270c29d6df650206526c4cfcafa304968ee468b2451ee6c37165516d058c",
+      "unchanged": true
+    },
+    {
+      "path": "master-daily-home-v127.js",
+      "sha256": "05078197d504fc35a18060c121e5e301a4ffcf8ab8c1676fe47ad662f79bbb78",
+      "unchanged": true
+    },
+    {
+      "path": "master-day-summary-v128.js",
+      "sha256": "17ca807e2d02f3a6e9ee78e4c32ad1b52e40d06618457a72a86439582f18d87f",
+      "unchanged": true
+    },
+    {
+      "path": "master-home-orders-v124.js",
+      "sha256": "578ea163a86b168f27fa7df4f14d9593ad51f0ee7a334520de366d9e5299a6c1",
+      "unchanged": true
+    },
+    {
+      "path": "master-memo-runtime-v21.js",
+      "sha256": "3885e80933b6cc6a53f2db1d9d9b5071380e16d67bb70c73f27d6cc479d30852",
+      "unchanged": true
+    },
+    {
+      "path": "master-memo-v20.js",
+      "sha256": "9646c747d13aff92ed9e3aa38b3d046f8c0caaf1a19b6cadea8cda61da4ecf90",
+      "unchanged": true
+    },
+    {
+      "path": "master-money-v130.js",
+      "sha256": "a215c34f4e38e6c0f1b6f4f20745760888ee92ade8ae05dfa06f87e71cc5dded",
+      "unchanged": true
+    },
+    {
+      "path": "master-nav-fix-v14.js",
+      "sha256": "8764a5944feb1793164ca68154a352dbab1eb0df49ead3aa2c333028b9a8a8d5",
+      "unchanged": true
+    },
+    {
+      "path": "master-order-actions-v179.js",
+      "sha256": "59ded8ad8c60cebf43e13ce2f8599539f6ffd5b0f914a910b3ec7861bc3c3a2e",
+      "unchanged": true
+    },
+    {
+      "path": "master-order-compact-v71.js",
+      "sha256": "3d935ae2611e1c161011d0c837bf6f8ea3ab225d6f4120938250963c9373ae60",
+      "unchanged": true
+    },
+    {
+      "path": "master-order-flags-patch.js",
+      "sha256": "9af5db808bb5d0b695c71bdaf089b0495a14172ef28e6b86dd2323811e72e01f",
+      "unchanged": true
+    },
+    {
+      "path": "master-order-focus-v126.js",
+      "sha256": "f9f3040cc03c3380ecc339bdb6ec95283f3703e87dbb4611309b215cd781e3e7",
+      "unchanged": true
+    },
+    {
+      "path": "master-order-hands-layout-v72.js",
+      "sha256": "d8106b4e0f08a4302074dd45f1d456cc5315bc322fcc6c9fbaaef930b47dd44a",
+      "unchanged": true
+    },
+    {
+      "path": "master-orders-filter-v99.js",
+      "sha256": "cd39ac96a158b7b5bed8793095cc1ff242dcb75daa124873666aff480dd58bf4",
+      "unchanged": true
+    },
+    {
+      "path": "master-orders-v125-compat.js",
+      "sha256": "84a81fa2a970137dd821ee55099e861db85e1e3fc8e8b9e5844d24c6e7c90656",
+      "unchanged": true
+    },
+    {
+      "path": "master-orders-v125.js",
+      "sha256": "d8a00f857e7dceb6a6eb5b1f06bb2df9cce87bdfbe9562e0964d7939b9168210",
+      "unchanged": true
+    },
+    {
+      "path": "master-price-memo-v131.js",
+      "sha256": "91bc3c05733a4184224fa565c06972fa688845c025179e696e19f4e5d85bcaf4",
+      "unchanged": true
+    },
+    {
+      "path": "master-profile-clean-v11.js",
+      "sha256": "4de5b5d5a242dbd980d28ce75b9a5c54ff069666a9557908b5c98ff5a7df3396",
+      "unchanged": true
+    },
+    {
+      "path": "master-profile-edit-v15.js",
+      "sha256": "8628757b470af2c44f0cac3a9bf5358152012d6f7a727e68907f5113fa25c988",
+      "unchanged": true
+    },
+    {
+      "path": "master-profile-summary-v129.js",
+      "sha256": "3503177bab302fb1feee7ddb8373de84002b41a7263b70e50f17b51ebb61c0bd",
+      "unchanged": true
+    },
+    {
+      "path": "master-profile-v4-fix.js",
+      "sha256": "1688aaa2519f38ef155592a3b1f3c9a79a06e335de794bcaa9cd88db1cebdcf0",
+      "unchanged": true
+    },
+    {
+      "path": "master-profile-v4.js",
+      "sha256": "22566bce92ef00c891e3f254dfef2c08f8350df63ea4b3e1187824bf86bbe05e",
+      "unchanged": true
+    },
+    {
+      "path": "master-report-patch.js",
+      "sha256": "9f0fc4beede4350ca80ea6ba6d7c93602f8a9439b5b6c8f12b3c9db5c37ae318",
+      "unchanged": true
+    },
+    {
+      "path": "master-report-ui-v12.js",
+      "sha256": "e7b89f3a0c88c948e9d18563e69e14392d9498e1596aa316e3241fad0b444d2e",
+      "unchanged": true
+    },
+    {
+      "path": "master-reschedule-call-v87.js",
+      "sha256": "ffeda1b7262256a38631ee1493e1f1acfeedf2a7db475ecee8c6f274c1d98e0f",
+      "unchanged": true
+    },
+    {
+      "path": "master-schedule-compact-v65.js",
+      "sha256": "a4f61d6191eadc456234e69f25ec74b0334ebaf730ce00160fbc49d0fff2db9d",
+      "unchanged": true
+    },
+    {
+      "path": "master-schedule-presets-v17.js",
+      "sha256": "3a083942eee9faefd1684d2978a4d7361f390cb49fd057b4e99e29abc271fcf1",
+      "unchanged": true
+    },
+    {
+      "path": "master-simple-patch.js",
+      "sha256": "44af51660f30ade0d9d78d7866ce4d9adbe3a60c758ce0c0ae25a2272fc1f387",
+      "unchanged": true
+    },
+    {
+      "path": "master-simple.css",
+      "sha256": "8cad04ef20ce2e5ae9d227a3d5ee92b829e3b187ba6227c691f7aac0100844be",
+      "unchanged": true
+    },
+    {
+      "path": "master-status-colors-v95.js",
+      "sha256": "19c8243238d65067a1e51d541558745b235e802a2d8a602aef44b12650fa53cf",
+      "unchanged": true
+    },
+    {
+      "path": "master-ui-contract-v42.js",
+      "sha256": "3c95442dd45427d8b7b7b1ab61809862c33182b1b1bc9c8cceccc1ea35bef378",
+      "unchanged": true
+    },
+    {
+      "path": "master-upcoming-claims-v110.js",
+      "sha256": "5d428513b08d42e990ccb497e08208384ec7361aec21368cfd7fce17e77df9bb",
+      "unchanged": true
+    },
+    {
+      "path": "master-upcoming-compact-v73.js",
+      "sha256": "2fcd59792309905ee1cfda8ab27d19a994489769ea2d07624ad94d7816e5a20f",
+      "unchanged": true
+    },
+    {
+      "path": "master-ux-runtime-v44.js",
+      "sha256": "6eab0f653c8e8b3b00f8b2afe705f3dfc31cbb9f087d3e2a4e40f5d8f5c21b53",
+      "unchanged": true
+    },
+    {
+      "path": "master-workflow-v115.js",
+      "sha256": "723b398a6b13c97526c6c9a539ea7ecfc4ae0ddb9428868a644a9245c72eafaf",
+      "unchanged": true
+    },
+    {
+      "path": "master-workflow-v116.js",
+      "sha256": "d2c3b93ff9c80ebb05ca72ea15ea579d11743ff197217a772ad91ebe8407c9a3",
+      "unchanged": true
+    },
+    {
+      "path": "master-workflow-v25.js",
+      "sha256": "0909de6a5dd7cf63eda2871c22006bada80f91fb0441caa31be28996ae9073e1",
+      "unchanged": true
+    },
+    {
+      "path": "netlify-deploy-helper.html",
+      "sha256": "6332e6edd15cf5610e4ac043c03040e69b73f9818042d35676d5ed36850130db",
+      "unchanged": true
+    },
+    {
+      "path": "network-direct-v86.js",
+      "sha256": "2c81572d88b12307661de2157536012bec07ee7230d13083a07f42a8fa474cd8",
+      "unchanged": true
+    },
+    {
+      "path": "network-fallback-v50.js",
+      "sha256": "2d81b6709180766d800cb10cf19e8fd1ec1095906fe0e26dbf19af193724e865",
+      "unchanged": true
+    },
+    {
+      "path": "new-order-card-v104.js",
+      "sha256": "b7e7b9447adf52fcc2360461ee06df78848d4b4db003b229011236fcfe9c9d83",
+      "unchanged": true
+    },
+    {
+      "path": "notification-center-v26.js",
+      "sha256": "f3dcb454a3922e3486f4c4c5e20826d08e7dc027278008d6d1f259a9a8fec656",
+      "unchanged": true
+    },
+    {
+      "path": "ops-contact-status.js",
+      "sha256": "4dc9f46794c3d87e98000bc9d15184d0c6b0b188fdb50dc0b034a9abc15cf57d",
+      "unchanged": true
+    },
+    {
+      "path": "order-control-tasks.js",
+      "sha256": "bde60b8fcc64cd400a556df83bc9e55c324fa7918dc347f574fefb3c54f27d9e",
+      "unchanged": true
+    },
+    {
+      "path": "order-control.js",
+      "sha256": "96eddef809ec96710ff5d71b7e596447a4c30e469905df1742c139aca11c9a5d",
+      "unchanged": true
+    },
+    {
+      "path": "order-create-fields-patch.js",
+      "sha256": "2bbee90e48fb97c64b2c5e5bdddb60bfb5f70b92c8140fec2150b6cc9f2f6c37",
+      "unchanged": true
+    },
+    {
+      "path": "order-filters-v22.js",
+      "sha256": "5bea7f8f4df53ce770019a51c224d9981e1069ccbfa42faa2be9bdc6f4e9c901",
+      "unchanged": true
+    },
+    {
+      "path": "order-lifecycle-v106.js",
+      "sha256": "afc9459be8e8f08c15bc6abbdbaa165abcce32dbf123f5f72a96211ada31e6bb",
+      "unchanged": true
+    },
+    {
+      "path": "order-payroll.js",
+      "sha256": "e1a9762fcf242dbb899d201f88528d5c8c9715e472d30f5aa60f8aa2d233ddd1",
+      "unchanged": true
+    },
+    {
+      "path": "owner-calendar-team-v10.js",
+      "sha256": "03b5994741be1f5d4600563fbc43ef56f4d92a934a63034960517c234b636dc0",
+      "unchanged": true
+    },
+    {
+      "path": "owner-dashboard-v9.js",
+      "sha256": "6c503b4a28ed6d26651f8168fd159819c7fcdde14edab4d1ab955f6d5a67f90b",
+      "unchanged": true
+    },
+    {
+      "path": "owner-dispatcher-dashboard-patch.js",
+      "sha256": "4d95f75b1a992c8e6d942c489d6047a7aa73f015e80bbe451b9d453edbe985a0",
+      "unchanged": true
+    },
+    {
+      "path": "owner-role-patch.js",
+      "sha256": "7de4078ce9743d494a16227b075dc89a9f514e97a418d896d839e09926333120",
+      "unchanged": true
+    },
+    {
+      "path": "owner-tools-v13.js",
+      "sha256": "d30ac949eb83e4e164e269c8a1d0c00ee68cab5ed60a096dd06452eef64a1ac2",
+      "unchanged": true
+    },
+    {
+      "path": "playwright.config.js",
+      "sha256": "879521edbad822fbe7096da7f1b960bb43c60a290515c0a397480c9f4fda081f",
+      "unchanged": true
+    },
+    {
+      "path": "production-role-patch.js",
+      "sha256": "9a90b9a1b328243a799c6ae673b4abfa5728f19619b1d9a6faeb45112e4059f5",
+      "unchanged": true
+    },
+    {
+      "path": "profile-logout-v96.js",
+      "sha256": "1d05f025317417f695a8b6810277856557e981074e8b55a37a739e76efae280b",
+      "unchanged": true
+    },
+    {
+      "path": "pwa-register.js",
+      "sha256": "5661a234de3e492624bf6c3981b6e9e270ac50d4fb301a37740c48a6e2865480",
+      "unchanged": true
+    },
+    {
+      "path": "reclamation-status-v18.js",
+      "sha256": "279a8b73b9952587190a7b34e5bdc7688c618d68bf798a32fbd4fe85f5289356",
+      "unchanged": true
+    },
+    {
+      "path": "regression-runtime-v74.js",
+      "sha256": "5c107ee0a92347ea9a629ddad82149bb9b1bdc7bc1b9ef605309f4644daa3750",
+      "unchanged": true
+    },
+    {
+      "path": "report-chunk-upload-v23.js",
+      "sha256": "39371e05ab2bfec29cef3fc102634416bfeb297b46856112c29e760255bb6a3e",
+      "unchanged": true
+    },
+    {
+      "path": "report-deduction.js",
+      "sha256": "c3d460440cf0b7b43108353f24da6c134f1a2132ed65f2e75ccebf502b2d52bc",
+      "unchanged": true
+    },
+    {
+      "path": "report-review-patch.js",
+      "sha256": "18ac44f57d52dee5df5fbd40e1ae67bd285b8d285957c6cd1a13627c7dcc0d42",
+      "unchanged": true
+    },
+    {
+      "path": "report-review-runtime-v30.js",
+      "sha256": "ddb3a74e09f9472fbd0b93d5ac153516a3f03d5534d4fca164c6e2db011cafdf",
+      "unchanged": true
+    },
+    {
+      "path": "report-review.css",
+      "sha256": "ab14ec5cd0c91aa3bde60b5a00e4d780fe1d8443fe38c12c54a077cf787dec0c",
+      "unchanged": true
+    },
+    {
+      "path": "report-supabase-patch.js",
+      "sha256": "f045dec35908e1e1d070fcb17c2f22b12b57af8c882f81141e4920189c871d57",
+      "unchanged": true
+    },
+    {
+      "path": "report-uncompleted-ui.js",
+      "sha256": "4e69d7d00cee658326745d8b88de9c3628e44c98ed355eb1ed10e350ae5f89ed",
+      "unchanged": true
+    },
+    {
+      "path": "report-upload-fix-v27.js",
+      "sha256": "da41d4f1e843ff7cfc1707cfc236d241e215ba5ec4414618335b9b2b9d9b0518",
+      "unchanged": true
+    },
+    {
+      "path": "role-chrome-v83.js",
+      "sha256": "09fa1381fa292c71c431fd3a97aa7c6cdbc75f198d602b061563f89ffc524d34",
+      "unchanged": true
+    },
+    {
+      "path": "role-preview-patch.js",
+      "sha256": "08cff161b737dda0a460773bde171810164e70b6292e9070fc15959a309f7b22",
+      "unchanged": true
+    },
+    {
+      "path": "salary-periods.js",
+      "sha256": "bf7cd774ae076340bdac1ac53a51885fd7bfb40352934ca4fcf18530689c41a2",
+      "unchanged": true
+    },
+    {
+      "path": "schedule-contract.js",
+      "sha256": "5776d2438586dd48adb4f8b755dea71f869eca8b3d8f887f094bbebd1d9ab92e",
+      "unchanged": true
+    },
+    {
+      "path": "schedule-identity-v46.js",
+      "sha256": "7a32ed43d9868e9ac40dd6180054a9a7283e01b506e6bacf5997f67fd08e0399",
+      "unchanged": true
+    },
+    {
+      "path": "schedule-save-hotfix-v69.js",
+      "sha256": "62c74f9d2111bc57d67c02d06d4ebf1fa711d12adade49f0314b1a8185119b27",
+      "unchanged": true
+    },
+    {
+      "path": "service-catalog.js",
+      "sha256": "23bc797e50cb0c168b33cf59d96dd013e5a96133890af24372e5d36eb707f1ec",
+      "unchanged": true
+    },
+    {
+      "path": "session-refresh-v113.js",
+      "sha256": "1f7324c7185b1ec79f1cd1e62bd8e5e03b87fb4a7585e7b3c8cc4a4f5938a582",
+      "unchanged": true
+    },
+    {
+      "path": "simple-auth-v57.js",
+      "sha256": "34c835d8ba32587ad5ba771014c228a883853911fe51a8df049a10a703df0f98",
+      "unchanged": true
+    },
+    {
+      "path": "staff-invite-ui-v66.js",
+      "sha256": "2e1b0557e9309c692260f258741d2f642e7ed799893b6b736cd4f06d5a251f22",
+      "unchanged": true
+    },
+    {
+      "path": "staff-link-patch.js",
+      "sha256": "8bf36225cb6260f2d2f348ca9cbd3f9589afe6a2509b9434a8f9a58a19a4fbe0",
+      "unchanged": true
+    },
+    {
+      "path": "staff-permissions-calendar-v43.js",
+      "sha256": "63afa2cf9b571d926a22cb26e91922617006b5d6a79892a2e2f8fd6c05e3b567",
+      "unchanged": true
+    },
+    {
+      "path": "startup-eager.bundle.js",
+      "sha256": "fcbe7b42a6748f0d6705d7fa36655855d67fb718d52e85bd3088b68459daf3d0",
+      "unchanged": true
+    },
+    {
+      "path": "startup-shell.bundle.js",
+      "sha256": "b16db054a72507fbfa56900bfd48eb3c160c135ffbe473c984f58e73e956ae91",
+      "unchanged": true
+    },
+    {
+      "path": "status-visual-patch.js",
+      "sha256": "857c017ffeb2cec652a37753258ad3bc353e3b3632ffae85630f09f489f13337",
+      "unchanged": true
+    },
+    {
+      "path": "styles.css",
+      "sha256": "4224b199d3c1d098d0d24c2ef682d439a998e85db93c14834617c5c8badbc153",
+      "unchanged": true
+    },
+    {
+      "path": "sw.js",
+      "sha256": "6e041a417e0fad29eaa4c4b46a6da6fed499d07228342db426712b2ed733b707",
+      "unchanged": true
+    },
+    {
+      "path": "team-calendar-patch.js",
+      "sha256": "e22b38c574f52837a21c9f667950e9db74321f40c869ddfb5bb10d5dec9fae9e",
+      "unchanged": true
+    },
+    {
+      "path": "team-roles-fix-v31.js",
+      "sha256": "6a0ef31de7ab01335b234aa57ab9482ce8f6242828409a87ac01e0a96dd718dc",
+      "unchanged": true
+    },
+    {
+      "path": "test-pin-auth.js",
+      "sha256": "e51901cfefcb0375950cb20d87b4b47bda33857a2c8c6821e05e30ce753a4c49",
+      "unchanged": true
+    },
+    {
+      "path": "ui-dispatch-master-v94.js",
+      "sha256": "a122bb52821caf24c2e92cfdcc9347f24f655ff0e8e4bd1dacfb81d3e505960c",
+      "unchanged": true
+    },
+    {
+      "path": "ui-refresh-v1.css",
+      "sha256": "61917b1daa686bc90ed20896cca318fe2157251d22ff3fcff471b3f676b410ec",
+      "unchanged": true
+    },
+    {
+      "path": "ui-v2-patch.js",
+      "sha256": "54e0f0c497d9b0d40d6ba12c39bb1d60cc028a79e0305fd2242227e2a0216895",
+      "unchanged": true
+    },
+    {
+      "path": "ui-v2.css",
+      "sha256": "e068918f6016cb01a1921707216988cdd1334e97725ad3814e7d98aa1865abf5",
+      "unchanged": true
+    },
+    {
+      "path": "unified-schedule-v102.js",
+      "sha256": "d6e747b127e33067849d3f2db9c48814ca85133c6c3a3e202b91b6b9a32344af",
+      "unchanged": true
+    },
+    {
+      "path": "visual-polish.js",
+      "sha256": "366c618df599e1e8f95fcf3cb9403f040b14e9be09b2b2fab519a33fd56b8cd3",
+      "unchanged": true
+    },
+    {
+      "path": "visual-v3.css",
+      "sha256": "fc16ff8c9a1df5176de3e0109c7202f18f2c0fe80559e11f5846df3de6ea0670",
+      "unchanged": true
+    },
+    {
+      "path": "vk-auth-patch.js",
+      "sha256": "aabeeaf65a4bfff94561ffc839ef28a60b398b21c99dbaa00ac17f3930b92985",
+      "unchanged": true
+    },
+    {
+      "path": "vk-init.js",
+      "sha256": "8cd06b88470796c48aee3688129c4ba1499ca1278ac799d2feca197ca5db15fb",
+      "unchanged": true
+    },
+    {
+      "path": "web-push-v211.js",
+      "sha256": "e82b387c8817570e0b52a69bf3eb56df3cff5a01c0988eae0de558fe2cfeb067",
+      "unchanged": true
+    }
+  ]
+}

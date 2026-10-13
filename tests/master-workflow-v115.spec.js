@@ -1,3 +1,4 @@
+const {confirmStage}=require('./helpers/approved-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
@@ -28,13 +29,13 @@ test('master follows departed started report sequence for scheduled order',async
   await expect(started).toHaveCount(0);
   await expect(report).toHaveCount(0);
 
-  await departed.click();
+  await confirmStage(page,departed,'departed');
   await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('departed');
   await expect(departed).toHaveCount(0);
   await expect(started).toBeEnabled();
   await expect(report).toHaveCount(0);
 
-  await started.click();
+  await confirmStage(page,started,'started');
   await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('started');
   await expect(started).toHaveCount(0);
   await expect(report).toBeEnabled();

@@ -1,0 +1,172 @@
+[
+  {
+    "text": "Подробнее →",
+    "handler": "openMasterAccrualsV130()",
+    "id": ""
+  },
+  {
+    "text": "Личные данныеТелефон и информация профиля›",
+    "handler": "openMasterProfileEdit()",
+    "id": ""
+  },
+  {
+    "text": "Мой рабочий графикРабочие дни и часы›",
+    "handler": "openMasterWorkMonth()",
+    "id": ""
+  },
+  {
+    "text": "Памятки и прайсАкты, замеры, цены и подсказки›",
+    "handler": "openMasterMemoMenuV129()",
+    "id": ""
+  },
+  {
+    "text": "Мои рекламацииНазначенные повторные визиты›",
+    "handler": "openMasterProfileClaimsV129()",
+    "id": ""
+  },
+  {
+    "text": "Настройки входаЛогин и пароль›",
+    "handler": "document.getElementById(\"profileBtn\")?.click()",
+    "id": ""
+  },
+  {
+    "text": "Помощь →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "О приложении →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Редактировать профиль",
+    "handler": "openMasterProfileEdit()",
+    "id": ""
+  },
+  {
+    "text": "День",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Неделя",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Месяц",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Свои даты",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "‹",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "›",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Начислено за период0 ₽Выполненных заявок: 0",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "По заявкам0 ₽",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Допработы+ 0 ₽",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Вычеты0 ₽",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "ВыплаченоНет данных",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Остаток—",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Выбрать другой период",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Изменить",
+    "handler": "show('dispatch')",
+    "id": ""
+  },
+  {
+    "text": "чт8Выходной",
+    "handler": "openMasterHomeDay('2026-10-08')",
+    "id": ""
+  },
+  {
+    "text": "пт9Выходной",
+    "handler": "openMasterHomeDay('2026-10-09')",
+    "id": ""
+  },
+  {
+    "text": "сб10Выходной",
+    "handler": "openMasterHomeDay('2026-10-10')",
+    "id": ""
+  },
+  {
+    "text": "вс11Выходной",
+    "handler": "openMasterHomeDay('2026-10-11')",
+    "id": ""
+  },
+  {
+    "text": "пн12Выходной",
+    "handler": "openMasterHomeDay('2026-10-12')",
+    "id": ""
+  },
+  {
+    "text": "вт13Выходной",
+    "handler": "openMasterHomeDay('2026-10-13')",
+    "id": ""
+  },
+  {
+    "text": "ср14Выходной",
+    "handler": "openMasterHomeDay('2026-10-14')",
+    "id": ""
+  },
+  {
+    "text": "Акты выполненных работ ›",
+    "handler": "openMasterMemoItem('acts')",
+    "id": ""
+  },
+  {
+    "text": "Листы замера ›",
+    "handler": "openMasterMemoItem('measurements')",
+    "id": ""
+  },
+  {
+    "text": "Прайс услуг ›",
+    "handler": "openMasterMemoItem('price')",
+    "id": ""
+  },
+  {
+    "text": "Подсказки по работе ›",
+    "handler": "openMasterMemoItem('tips')",
+    "id": ""
+  }
+]

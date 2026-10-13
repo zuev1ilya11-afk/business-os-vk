@@ -1,0 +1,12 @@
+{
+  "originalWholeSourceCheck": "One expected presentation difference retained in protected-stage5.json",
+  "inverseEntireSourceEqualsAccepted": true,
+  "onlyDifferences": "Guarded four-category modal menu and profile entry onclick",
+  "unchangedOriginalCallbacks": [
+    "acts",
+    "measurements",
+    "price",
+    "tips"
+  ],
+  "sourceCommit": "cfd6740"
+}

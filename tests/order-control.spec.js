@@ -16,7 +16,7 @@ async function setup(page,role='owner'){
  );
  await page.goto('/');
  await expect(page.locator('#authGate')).toBeHidden();
- if(role!=='master'){await page.waitForFunction(()=>!!window.BOS_ORDER_CONTROL);await page.locator('#bosOrderControlSummary [data-oc-enter], button#bosOrderControlSummary').click();}
+ if(role!=='master'){await page.waitForFunction(()=>!!window.BOS_ORDER_CONTROL);if(role==='dispatcher'){await page.locator('nav [data-page=orders]').click();await page.locator('#bosOrderControlEntry').click()}else await page.locator('#bosOrderControlSummary [data-oc-enter], button#bosOrderControlSummary').click();}
  return data;
 }
 for(const [role,width] of [['owner',1280],['dispatcher',360],['dispatcher',390],['manager',430]]){

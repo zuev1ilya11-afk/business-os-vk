@@ -1,0 +1,65 @@
+[
+  {
+    "file": "master-order-actions-v179.js",
+    "from": "async function api(",
+    "until": "function mergeOrder",
+    "unchanged": true,
+    "sha256": "d10deacec69688645a7e8687b1446978ec51c1da536b9aa5ad0ba02f205d5535"
+  },
+  {
+    "file": "master-order-actions-v179.js",
+    "from": "const workConfirmed=",
+    "until": "function actualTime",
+    "unchanged": true,
+    "sha256": "aaa378c9e189f0aa66c8de988eacd410ae5cf898bf802c2dddb7751f2f546a70"
+  },
+  {
+    "file": "master-order-actions-v179.js",
+    "from": "async function saveAction(",
+    "until": "window.masterOrderAgree179=",
+    "unchanged": true,
+    "sha256": "6f14a04f9626d63a6f809ad84d34f4669b6fb0df99893973080fedb382d7601f"
+  },
+  {
+    "file": "unified-schedule-v102.js",
+    "from": "window.saveUnifiedScheduleMonth=",
+    "until": "const previous=",
+    "unchanged": true,
+    "sha256": "9f6c0616969279f8fc1e5ea7b6cb30e08c4df3e9453415857c9fe10618edfdb7"
+  },
+  {
+    "file": "master-report-ui-v12.js",
+    "from": "async function compactFilePayload",
+    "until": "// Presentation only:",
+    "unchanged": true,
+    "sha256": "d51ca8dad3740133ecec06d8b592e67239ec38edb5465b815b4afc2e89f7f86d"
+  },
+  {
+    "file": "report-uncompleted-ui.js",
+    "from": "  function payload()",
+    "until": "  function open()",
+    "unchanged": true,
+    "sha256": "a6f208b3b18e958910b41dffa8b61989c2844d089717d828e5f1cb878f48f0b3"
+  },
+  {
+    "file": "master-reschedule-call-v87.js",
+    "from": "  markRescheduleModal();",
+    "until": "const style=",
+    "unchanged": true,
+    "sha256": "e6af7d5bb4648fe3140e594468469d38e0c91c4538699511d48533a7201ca5dc"
+  },
+  {
+    "file": "master-money-v130.js",
+    "from": "function mine()",
+    "until": "function summaryHtml(",
+    "unchanged": true,
+    "sha256": "a01522aced999bcbbee8a71d013e161fc5b495cded67908754e133651b660bd0"
+  },
+  {
+    "file": "master-profile-summary-v129.js",
+    "from": "function mine()",
+    "until": "function scheduleHtml(",
+    "unchanged": true,
+    "sha256": "2a5eb4f0287ddad34a36fd56ed3827f56ca100a43b8b0ef23e535f4f8b5b4d68"
+  }
+]

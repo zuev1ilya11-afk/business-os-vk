@@ -5,6 +5,7 @@ for(const role of ['master','owner'])test(role+' can find Avito tariffs without 
  await fullStack(page,role);await page.setViewportSize({width:320,height:800});
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
  await page.evaluate(()=>openMasterMemoItem('price'));
+ await page.locator('[data-price-tab=avito]').click();
  const section=page.locator('.bosAvitoCatalog');
  await expect(section).toContainText('Санкт-Петербург и Ленинградская область');
  expect(await page.evaluate(()=>window.BOS_AVITO_PRICE_CATALOG)).toEqual(catalog);

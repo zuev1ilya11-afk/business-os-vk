@@ -46,7 +46,7 @@ function groupedField(group,label,wide=false){
   return wrapper;
 }
 
-function enhanceNewOrderForm(){
+function enhanceNewOrderForm(id){
   const form=document.getElementById('orderForm');
   if(!form||form.dataset.newOrderCard==='1')return;
   form.dataset.newOrderCard='1';
@@ -64,17 +64,19 @@ function enhanceNewOrderForm(){
   }
 
   const channels=form.querySelector('.newOrderChannels');
-  const client=makeSection('Клиент','');
+  const client=makeSection('1. Клиент','');
   const clientInput=form.elements.client;
   const phoneInput=form.querySelector('#bosPhone');
   const phoneGroup=phoneInput?.closest('.bosPhoneEditor,.two');
   const addressInput=form.elements.address;
-  [field(clientInput,'Имя клиента'),groupedField(phoneGroup,'Телефон'),field(addressInput,'Адрес',true)].filter(Boolean).forEach(node=>client.body.appendChild(node));
+  [field(clientInput,'Имя клиента'),groupedField(phoneGroup,'Телефоны')].filter(Boolean).forEach(node=>client.body.appendChild(node));
   if(phoneInput)phoneInput.setAttribute('aria-label','Телефон');
   const phonePrefix=phoneGroup?.querySelector('input[disabled]');
   if(phonePrefix)phonePrefix.setAttribute('aria-label','Код страны');
 
-  const work=makeSection('Услуги','');
+  const address=makeSection('2. Адрес','');
+  const addressField=field(addressInput,'Улица, дом, корпус',true);if(addressField)address.body.appendChild(addressField);
+  const work=makeSection('3. Работы','');
   const service=form.querySelector('#bosService');
   if(service){
     const workStack=form.querySelector('#bosWorkStack');
@@ -91,7 +93,7 @@ function enhanceNewOrderForm(){
     work.body.appendChild(conditions);
   }
 
-  const plan=makeSection('Дата и назначение','');
+  const plan=makeSection('4. Визит и исполнитель','');
   const dateInput=form.elements.scheduled_date;
   const dateGroup=dateInput?.closest('.two');
   const slot=form.elements.time_slot;
@@ -132,7 +134,7 @@ function enhanceNewOrderForm(){
   const msg=form.querySelector(':scope > #formMsg');
   const actions=document.createElement('div');
   actions.className='newOrderActions';
-  if(submit){submit.textContent='Создать заявку';actions.appendChild(submit)}
+  if(submit){submit.textContent=id?'Сохранить изменения':'Создать заявку';actions.appendChild(submit)}
   const cancel=document.createElement('button');
   cancel.type='button';
   cancel.className='secondary newOrderCancel';
@@ -141,7 +143,7 @@ function enhanceNewOrderForm(){
   actions.appendChild(cancel);
   if(msg)actions.appendChild(msg);
 
-  form.prepend(...[channels,client.section,work.section,plan.section].filter(Boolean));
+  form.prepend(...[channels,client.section,address.section,work.section,plan.section].filter(Boolean));
   const bottom=document.createElement('div');bottom.className='newOrderBottom';bottom.append(finance.section,note.section);form.appendChild(bottom);
   if(completionSection)form.appendChild(completionSection);
   form.appendChild(actions);
@@ -165,7 +167,7 @@ function enhanceNewOrderForm(){
 
 window.openOrderForm=function(id){
   const result=previousOpenOrderForm.apply(this,arguments);
-  if(id===undefined||id===null||id==='')requestAnimationFrame(enhanceNewOrderForm);
+  requestAnimationFrame(()=>enhanceNewOrderForm(id));
   return result;
 };
 

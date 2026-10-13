@@ -11,7 +11,7 @@ test('management order mirrors master information blocks and stays editable',()=
   assert.match(management,/Поступила \$\{esc\(received\(o\)\)\}/);
   assert.match(management,/bosHandsBlock/);
   assert.match(management,/Комментарий/);
-  assert.match(management,/Состав работ/);
+  assert.match(management,/<h2 class="bosWorksLabel">Работы<\/h2>/);
   assert.match(management,/data-bos-contact-order/);
   assert.match(management,/Быстрое редактирование/);
   assert.match(management,/Редактировать заявку/);

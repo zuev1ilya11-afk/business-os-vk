@@ -1,0 +1,87 @@
+{
+  "reviewBase": "5f09d048db08ee6ce9b178761be4cf32dc4bfcdc",
+  "sourceCheckpoint": "1d8713f53f7090988f49b73d37ba983c724dac2b",
+  "finalBuild": "e7781dcd092dd7aa0078",
+  "counts": {
+    "restored": 37,
+    "pending": 14,
+    "partial": 0
+  },
+  "protectedRanges": 9,
+  "captures": {
+    "R1": 69,
+    "legacy": 60,
+    "gaps": [
+      [
+        "about",
+        [
+          "No matching existing openAbout entry was found in scoped renderer. No invented version/connectivity data supplied."
+        ]
+      ],
+      [
+        "help",
+        [
+          "No matching existing openMasterHelp entry was found in scoped renderer. No invented destination or controller supplied."
+        ]
+      ]
+    ],
+    "observedBuilds": {
+      "ea96b6b2b506871dd914": 36,
+      "da56f22c36c3ef2b02bb": 3,
+      "6227b932f4cca00ced89": 12,
+      "e7781dcd092dd7aa0078": 18
+    },
+    "overflow": [],
+    "pageErrors": []
+  },
+  "tests": [
+    {
+      "command": "BOS_QA_ROOT=$PWD npx playwright test --config=/workspace/scratch/59eaed6e4f64/offline-playwright.config.cjs tests/master-home-tabs.spec.js tests/master-confirmed-progress.spec.js tests/master-order-actions-v179.spec.js tests/master-profile-summary-v129.spec.js tests/master-money-v130.spec.js tests/master-profile-payout-regression.spec.js --workers=3",
+      "output": "29 passed (23.3s)"
+    },
+    {
+      "command": "approved-ui-master.spec.js + unified-schedule-v102.spec.js --grep approved|profile real|home Today|report file|master schedule",
+      "output": "8 passed (8.4s)"
+    },
+    {
+      "command": "Selected report-submit-receipt, report-deduction (Hands, everything done, catalog390), unified-schedule master cases",
+      "output": "10 original affected cases passed; the group initially also had2 fixture assertions fail, resolved in focused follow-ups, without broad rerun"
+    },
+    {
+      "command": "approved-ui-master.spec.js --grep profile real|report file --reporter=json",
+      "output": "expected2, unexpected0, flaky0 (3144ms)"
+    },
+    {
+      "command": "approved-ui-master.spec.js --grep approved detail --reporter=json",
+      "output": "expected1, unexpected0, flaky0 (3368ms)"
+    },
+    {
+      "command": "approved-ui-master.spec.js --grep report file --reporter=json (360px outcome-label width + original per-file ack/error/retained-file guards)",
+      "output": "expected1, unexpected0, flaky0 (2936ms)"
+    }
+  ],
+  "checks": [
+    "npm run build",
+    "npm run build:check",
+    "git diff --check",
+    "9 exact protected handler/calculation hashes verified unchanged"
+  ],
+  "signalLimitations": [
+    "Original uploader exposes textual per-file preparation/upload and final save phases only; no transmitted/total bytes or numeric progress",
+    "Server acknowledgement becomes visible through transition to the next file/save phase",
+    "Retry remains the original whole-report submit; there is no per-file retry API"
+  ],
+  "unchanged": [
+    "backend",
+    "auth",
+    "roles",
+    "transport",
+    "financial calculations",
+    "workflow save handlers"
+  ],
+  "deferred": [
+    "14 shared pending contract rows",
+    "real iPhone device checks",
+    "inherited management calendar overflow"
+  ]
+}

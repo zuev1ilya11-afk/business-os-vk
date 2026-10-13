@@ -1,0 +1,659 @@
+{
+  "runs": [
+    {
+      "log": "../recovery/dispatcher-finish-focused.log",
+      "scheduled": 83,
+      "passed": 75,
+      "failed": 8,
+      "failures": [
+        {
+          "file": "tests/calendar-master-details.spec.js",
+          "title": "owner: monthly calendar shows every master, majority colors and correct order details"
+        },
+        {
+          "file": "tests/dispatcher-board-v23.spec.js",
+          "title": "dispatcher unified schedule keeps list mode available"
+        },
+        {
+          "file": "tests/dispatcher-horizontal-schedule-v190.spec.js",
+          "title": "dispatcher v190 shows fixed hourly 10-21 timeline and keeps half-hour orders visible"
+        },
+        {
+          "file": "tests/dispatcher-mobile-dispatch-v107.spec.js",
+          "title": "dispatcher mobile schedule shows day load, conflicts and quick actions"
+        },
+        {
+          "file": "tests/dispatcher-mobile-v2-conflicts.spec.js",
+          "title": "mobile dispatcher highlights overlapping orders for the same master and filters them"
+        },
+        {
+          "file": "tests/dispatcher-order-workflow-v114.spec.js",
+          "title": "mobile dispatcher gets cancel, master profile and visible reschedule reason"
+        },
+        {
+          "file": "tests/dispatcher-orders-v3.spec.js",
+          "title": "dispatcher orders v3 adds tomorrow, city, status and quick status action"
+        },
+        {
+          "file": "tests/dispatcher-smart-assign-v119.spec.js",
+          "title": "mobile dispatcher can confirm a recommended master for an unassigned order"
+        }
+      ]
+    },
+    {
+      "log": "../recovery/dispatcher-finish-fixes.log",
+      "scheduled": 36,
+      "passed": 34,
+      "failed": 2,
+      "failures": [
+        {
+          "file": "tests/approved-ui-dispatcher.spec.js",
+          "title": "saved list time leads and disclosure survives repeated decorators refresh resize"
+        },
+        {
+          "file": "tests/dispatcher-smart-assign-v119.spec.js",
+          "title": "new dispatcher order shows ranked masters, load and free windows before save"
+        }
+      ]
+    },
+    {
+      "log": "../recovery/dispatcher-finish-last-fixes.log",
+      "scheduled": 26,
+      "passed": 25,
+      "failed": 1,
+      "failures": [
+        {
+          "file": "tests/new-order-card-v104.spec.js",
+          "title": "dispatcher new order card is grouped and touch friendly on mobile"
+        }
+      ]
+    },
+    {
+      "log": "../recovery/dispatcher-finish-narrow.log",
+      "scheduled": 22,
+      "passed": 21,
+      "failed": 1,
+      "failures": [
+        {
+          "file": "tests/approved-ui-dispatcher.spec.js",
+          "title": "filter dialog cancel keeps values and apply invokes existing city and source filters"
+        }
+      ]
+    },
+    {
+      "log": "../recovery/dispatcher-finish-filter-last.log",
+      "scheduled": 1,
+      "passed": 1,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "log": "../recovery/dispatcher-schedule-readable-green.log",
+      "scheduled": 3,
+      "passed": 3,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "log": "../recovery/dispatcher-schedule-readable-final.log",
+      "scheduled": 1,
+      "passed": 1,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "log": "../recovery/dispatcher-axis-red.log",
+      "scheduled": 2,
+      "passed": 0,
+      "failed": 2,
+      "failures": [
+        {
+          "file": "tests/approved-ui-dispatcher.spec.js",
+          "title": "calendar hour axis and half-hour starts share geometry at 1440"
+        },
+        {
+          "file": "tests/approved-ui-dispatcher.spec.js",
+          "title": "calendar hour axis and half-hour starts share geometry at 768"
+        }
+      ]
+    },
+    {
+      "log": "../recovery/dispatcher-axis-green.log",
+      "scheduled": 6,
+      "passed": 6,
+      "failed": 0,
+      "failures": []
+    }
+  ],
+  "latestObservedOutcomes": [
+    {
+      "file": "tests/calendar-timezone.spec.js",
+      "title": "calendar dates keep the local business day in positive UTC offsets",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "approved workspace has queue schedule detail at desktop and two columns at tablet",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/calendar-master-details.spec.js",
+      "title": "owner: monthly calendar shows every master, majority colors and correct order details",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-attention-v123.spec.js",
+      "title": "desktop dispatcher groups operational problems into simple priority filters",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "saved list time leads and disclosure survives repeated decorators refresh resize",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "create and edit have section headings and usable submit",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/dispatcher-board-v23.spec.js",
+      "title": "dispatcher unified schedule shows masters and hourly slots without a separate day-plan tab",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/calendar-master-details.spec.js",
+      "title": "dispatcher: monthly calendar shows every master, majority colors and correct order details",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "mobile timeline shows points for unknown duration and completed read only context",
+      "status": "passed",
+      "run": "dispatcher-axis-green"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "month and free slots wait for real history context then Back preserves day master",
+      "status": "passed",
+      "run": "dispatcher-axis-green"
+    },
+    {
+      "file": "tests/dispatcher-board-v23.spec.js",
+      "title": "dispatcher unified schedule keeps list mode available",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "reachable fixture summary counts match exact New Today Attention Reports identities",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/calendar-master-details.spec.js",
+      "title": "distinct masters with the same name keep their own schedules and counts",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-board-v23.spec.js",
+      "title": "dispatcher unified schedule stays desktop-only",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "Hands lifecycle retains order heading before client section across reopen",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/dispatcher-free-slots-v120.spec.js",
+      "title": "dispatcher free slots exclude busy hours and show daily load",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/calendar-master-details.spec.js",
+      "title": "large teams and an empty team do not hide masters or turn missing schedules into days off",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "nearest visits exclude past completed and undated and sort saved times",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/dispatcher-free-slots-v120.spec.js",
+      "title": "dispatcher assigns an unassigned order from a free slot without changing money",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "only explicit saved range occupies multiple calendar cells",
+      "status": "passed",
+      "run": "dispatcher-axis-green"
+    },
+    {
+      "file": "tests/dispatcher-horizontal-schedule-v190.spec.js",
+      "title": "dispatcher v190 shows fixed hourly 10-21 timeline and keeps half-hour orders visible",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "shared owner team calendar contains desktop overflow at 1600",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/dispatcher-mobile-dispatch-v107.spec.js",
+      "title": "dispatcher mobile schedule shows day load, conflicts and quick actions",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-mobile-touch-v101.spec.js",
+      "title": "dispatcher mobile controls keep usable touch targets and compact filters",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/dispatcher-horizontal-schedule-v190.spec.js",
+      "title": "dispatcher v190 scopes viewport fitting to dispatcher orders page",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-mobile-touch-v101.spec.js",
+      "title": "very narrow dispatcher screen stacks advanced selects without overflow",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/dispatcher-mobile-v2-conflicts.spec.js",
+      "title": "mobile dispatcher highlights overlapping orders for the same master and filters them",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-horizontal-schedule-v190.spec.js",
+      "title": "owner 1280: 20:00 and 20:30 orders are visible and clickable in the last hour",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-horizontal-schedule-v190.spec.js",
+      "title": "owner 1600: 20:00 and 20:30 orders are visible and clickable in the last hour",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-horizontal-schedule-v190.spec.js",
+      "title": "dispatcher 1280: 20:00 and 20:30 orders are visible and clickable in the last hour",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-horizontal-schedule-v190.spec.js",
+      "title": "dispatcher 1600: 20:00 and 20:30 orders are visible and clickable in the last hour",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-horizontal-schedule-v190.spec.js",
+      "title": "readable schedule keeps text separated and preserves both scroll axes on refresh",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-order-workflow-v114.spec.js",
+      "title": "mobile dispatcher gets cancel, master profile and visible reschedule reason",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-orders-v3.spec.js",
+      "title": "dispatcher orders v3 adds tomorrow, city, status and quick status action",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-mobile-v2-conflicts.spec.js",
+      "title": "conflict decoration stays mobile dispatcher only",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-profile-return.spec.js",
+      "title": "owner 360: profile and return survive dispatcher preview on home, orders, schedule",
+      "status": "passed",
+      "run": "dispatcher-finish-last-fixes"
+    },
+    {
+      "file": "tests/dispatcher-profile-return.spec.js",
+      "title": "owner 390: profile and return survive dispatcher preview on home, orders, schedule",
+      "status": "passed",
+      "run": "dispatcher-finish-last-fixes"
+    },
+    {
+      "file": "tests/dispatcher-order-workflow-v114.spec.js",
+      "title": "desktop dispatcher current board exposes the same safe quick actions",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-orders-v3.spec.js",
+      "title": "mobile dispatcher reassigns an active order through existing quick editor",
+      "status": "passed",
+      "run": "dispatcher-finish-fixes"
+    },
+    {
+      "file": "tests/dispatcher-reschedule.spec.js",
+      "title": "dispatcher reschedules requested order from desktop workspace",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/dispatcher-smart-assign-v119.spec.js",
+      "title": "new dispatcher order shows ranked masters, load and free windows before save",
+      "status": "passed",
+      "run": "dispatcher-finish-last-fixes"
+    },
+    {
+      "file": "tests/dispatcher-smart-assign-v119.spec.js",
+      "title": "mobile dispatcher can confirm a recommended master for an unassigned order",
+      "status": "passed",
+      "run": "dispatcher-finish-last-fixes"
+    },
+    {
+      "file": "tests/dispatcher-smart-assign.spec.js",
+      "title": "smart dispatcher recommends the best contextual master and assigns only after confirmation",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/dispatcher-profile-return.spec.js",
+      "title": "owner 430: profile and return survive dispatcher preview on home, orders, schedule",
+      "status": "passed",
+      "run": "dispatcher-finish-last-fixes"
+    },
+    {
+      "file": "tests/dispatcher-smart-assign.spec.js",
+      "title": "smart dispatcher stays desktop-only",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/dispatcher-ui-polish-v184.spec.js",
+      "title": "dispatcher v184 hides an empty unassigned queue and keeps the desktop workspace dense",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/dispatcher-ui-polish-v184.spec.js",
+      "title": "dispatcher v184 does not replace the mobile dispatcher layout",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/dispatcher-profile-return.spec.js",
+      "title": "owner 1280: profile and return survive dispatcher preview on home, orders, schedule",
+      "status": "passed",
+      "run": "dispatcher-finish-last-fixes"
+    },
+    {
+      "file": "tests/dispatcher-ui-redesign-v183.spec.js",
+      "title": "dispatcher redesign keeps the desktop list readable and action-focused",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/dispatcher-ui-redesign-v183.spec.js",
+      "title": "dispatcher desktop redesign does not replace the mobile workspace",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/dispatcher-ui-stability-v185.spec.js",
+      "title": "dispatcher v186 keeps filters, including undated, quick actions and compact desktop stable across viewport changes",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/dispatcher-smart-assign-v119.spec.js",
+      "title": "smart assignment follows custom work in added rows and refreshes when a row is removed",
+      "status": "passed",
+      "run": "dispatcher-finish-last-fixes"
+    },
+    {
+      "file": "tests/dispatcher-profile-return.spec.js",
+      "title": "real dispatcher keeps own profile across reload and cannot promote by preview controls",
+      "status": "passed",
+      "run": "dispatcher-finish-last-fixes"
+    },
+    {
+      "file": "tests/dispatcher-unified-schedule-v187.spec.js",
+      "title": "dispatcher v187 unifies schedule and day plan and keeps multi-slot duration when moved",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/new-order-card-v104.spec.js",
+      "title": "dispatcher new order card is grouped and touch friendly on mobile",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/dispatcher-unified-schedule-v187.spec.js",
+      "title": "real resize, reload and drag to another master preserve three hours",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/order-control-section.spec.js",
+      "title": "home has only a compact unique-order indicator and opens the Orders control section",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/new-order-card-v104.spec.js",
+      "title": "manual order persists services and channel: Авито",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/new-order-card-v104.spec.js",
+      "title": "manual order persists services and channel: Руки",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/dispatcher-unified-schedule-v187.spec.js",
+      "title": "range conflicts warn, cancel cleanly and remain separately clickable",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/order-control-section.spec.js",
+      "title": "background refresh retains a successful empty snapshot, then marks it stale on error",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/order-control-section.spec.js",
+      "title": "control filter and scroll survive order close and section return, then reset on preview and identity changes",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/new-order-card-v104.spec.js",
+      "title": "manual order persists services and channel: VK",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/order-control-section.spec.js",
+      "title": "leaving a preview during its pending verification loads the current identity without showing stale rows",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/new-order-card-v104.spec.js",
+      "title": "manual order persists services and channel: Телефон",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/dispatcher-unified-schedule-v187.spec.js",
+      "title": "desktop widths and scaled layout retain usable grid; mobile has none",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/order-create-multiple-rows.spec.js",
+      "title": "owner: create, reload and edit multiple phone/work rows at 1440px",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/new-order-card-v104.spec.js",
+      "title": "manual order persists services and channel: Рекомендация",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/dispatcher-unified-schedule-v187.spec.js",
+      "title": "free-window filter accounts for whole intervals and quick move keeps duration",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/order-create-multiple-rows.spec.js",
+      "title": "manager: create, reload and edit multiple phone/work rows at 390px",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/new-order-card-v104.spec.js",
+      "title": "manual order persists services and channel: Другое",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/new-order-card-v104.spec.js",
+      "title": "empty services cannot save and a failed create preserves the complete draft for retry",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/order-create-multiple-rows.spec.js",
+      "title": "dispatcher: create, reload and edit multiple phone/work rows at 320px",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/phone-registration.spec.js",
+      "title": "new employee redeems owner invite after signed VK launch",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/report-review-snapshot.spec.js",
+      "title": "approve: modal keeps the displayed report snapshot after background data changes",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/order-create-multiple-rows.spec.js",
+      "title": "invalid extra phone blocks creation, removal keeps first-field hooks, and retry retains every row",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/dispatcher-board-v21.spec.js",
+      "title": "dispatcher v2.1 moves an order to another day and preserves payout",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/report-review-snapshot.spec.js",
+      "title": "reject: modal keeps the displayed report snapshot after background data changes",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/order-create-multiple-rows.spec.js",
+      "title": "blank works are rejected; duplicate rows normalize and cancel starts a clean draft",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/report-review-snapshot.spec.js",
+      "title": "archive: modal keeps the displayed report snapshot after background data changes",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/dispatcher-board-v21.spec.js",
+      "title": "dispatcher v2.1 can auto-assign an unassigned order to a free slot",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/order-create-multiple-rows.spec.js",
+      "title": "master cannot open the creation form",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/dispatcher-board-v21.spec.js",
+      "title": "dispatcher v2.1 free-master filter and metrics stay desktop-only",
+      "status": "passed",
+      "run": "dispatcher-finish-focused"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "compact mobile list starts with its heading and retains queue below rows",
+      "status": "passed",
+      "run": "dispatcher-finish-narrow"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "filter dialog cancel keeps values and apply invokes existing city and source filters",
+      "status": "passed",
+      "run": "dispatcher-finish-filter-last"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "desktop calendar start points remain compact readable and open full order context",
+      "status": "passed",
+      "run": "dispatcher-axis-green"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "calendar hour axis and half-hour starts share geometry at 768",
+      "status": "passed",
+      "run": "dispatcher-axis-green"
+    },
+    {
+      "file": "tests/approved-ui-dispatcher.spec.js",
+      "title": "calendar hour axis and half-hour starts share geometry at 1440",
+      "status": "passed",
+      "run": "dispatcher-axis-green"
+    }
+  ],
+  "note": "Latest outcome per file/title from completed scoped runs; not a full suite and not a single final-build run."
+}

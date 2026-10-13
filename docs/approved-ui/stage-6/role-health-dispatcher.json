@@ -1,0 +1,772 @@
+[
+  {
+    "width": 360,
+    "destination": "home",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Новая заявка",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 158.84375,
+          "bottom": 202.84375,
+          "width": 230,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Новые",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 528.09375,
+          "bottom": 572.09375,
+          "width": 77.015625,
+          "hit": "BUTTON.primary"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 360,
+    "destination": "orders",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Новая",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 167.296875,
+          "bottom": 211.296875,
+          "width": 88.53125,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Все\n2",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 310.484375,
+          "bottom": 354.484375,
+          "width": 62.34375,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Открыть →",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 573.890625,
+          "bottom": 617.890625,
+          "width": 80.171875,
+          "hit": "BUTTON.primary bosOpsListOpen"
+        },
+        {
+          "id": "",
+          "text": "Открыть →",
+          "disabled": false,
+          "inViewport": false,
+          "unoccluded": false,
+          "top": 959.03125,
+          "bottom": 1003.03125,
+          "width": 80.171875,
+          "hit": "undefined.undefined"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [
+        {
+          "id": "",
+          "text": "Открыть →",
+          "disabled": false,
+          "inViewport": false,
+          "unoccluded": false,
+          "top": 959.03125,
+          "bottom": 1003.03125,
+          "width": 80.171875,
+          "hit": "undefined.undefined"
+        }
+      ],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 360,
+    "destination": "dispatch",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Заявка",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 162.484375,
+          "bottom": 206.484375,
+          "width": 253.96875,
+          "hit": "BUTTON.primary"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 360,
+    "destination": "team",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 390,
+    "destination": "home",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Новая заявка",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 158.84375,
+          "bottom": 202.84375,
+          "width": 230,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Новые",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 528.09375,
+          "bottom": 572.09375,
+          "width": 77.015625,
+          "hit": "BUTTON.primary"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 390,
+    "destination": "orders",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Новая",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 167.296875,
+          "bottom": 211.296875,
+          "width": 90.53125,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Все\n2",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 310.484375,
+          "bottom": 354.484375,
+          "width": 62.34375,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Открыть →",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 651.40625,
+          "bottom": 695.40625,
+          "width": 80.171875,
+          "hit": "BUTTON.primary bosOpsListOpen"
+        },
+        {
+          "id": "",
+          "text": "Открыть →",
+          "disabled": false,
+          "inViewport": false,
+          "unoccluded": false,
+          "top": 1034.125,
+          "bottom": 1078.125,
+          "width": 80.171875,
+          "hit": "undefined.undefined"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [
+        {
+          "id": "",
+          "text": "Открыть →",
+          "disabled": false,
+          "inViewport": false,
+          "unoccluded": false,
+          "top": 1034.125,
+          "bottom": 1078.125,
+          "width": 80.171875,
+          "hit": "undefined.undefined"
+        }
+      ],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 390,
+    "destination": "dispatch",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Заявка",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 162.484375,
+          "bottom": 206.484375,
+          "width": 253.96875,
+          "hit": "BUTTON.primary"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 390,
+    "destination": "team",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 430,
+    "destination": "home",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Новая заявка",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 158.84375,
+          "bottom": 202.84375,
+          "width": 230,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Новые",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 528.09375,
+          "bottom": 572.09375,
+          "width": 77.015625,
+          "hit": "BUTTON.primary"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 430,
+    "destination": "orders",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Новая",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 167.296875,
+          "bottom": 211.296875,
+          "width": 90.53125,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Все\n2",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 310.484375,
+          "bottom": 354.484375,
+          "width": 62.34375,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Открыть →",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 573.890625,
+          "bottom": 617.890625,
+          "width": 80.171875,
+          "hit": "BUTTON.primary bosOpsListOpen"
+        },
+        {
+          "id": "",
+          "text": "Открыть →",
+          "disabled": false,
+          "inViewport": false,
+          "unoccluded": false,
+          "top": 903.296875,
+          "bottom": 947.296875,
+          "width": 80.171875,
+          "hit": "undefined.undefined"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [
+        {
+          "id": "",
+          "text": "Открыть →",
+          "disabled": false,
+          "inViewport": false,
+          "unoccluded": false,
+          "top": 903.296875,
+          "bottom": 947.296875,
+          "width": 80.171875,
+          "hit": "undefined.undefined"
+        }
+      ],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 430,
+    "destination": "dispatch",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Заявка",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 162.484375,
+          "bottom": 206.484375,
+          "width": 253.96875,
+          "hit": "BUTTON.primary"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 430,
+    "destination": "team",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 768,
+    "destination": "home",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Новая заявка",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 108.171875,
+          "bottom": 152.171875,
+          "width": 144.71875,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Новые",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 450.21875,
+          "bottom": 494.21875,
+          "width": 77.015625,
+          "hit": "BUTTON.primary"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 768,
+    "destination": "orders",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Новая",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 166.375,
+          "bottom": 210.375,
+          "width": 90.53125,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Все\n2",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 234.75,
+          "bottom": 278.75,
+          "width": 62.34375,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Открыть →",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 784.53125,
+          "bottom": 828.53125,
+          "width": 80.171875,
+          "hit": "BUTTON.primary bosOpsListOpen"
+        },
+        {
+          "id": "",
+          "text": "Открыть →",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 785.03125,
+          "bottom": 829.03125,
+          "width": 80.171875,
+          "hit": "BUTTON.primary bosOpsListOpen"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 768,
+    "destination": "dispatch",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Заявка",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 113.171875,
+          "bottom": 157.171875,
+          "width": 97.453125,
+          "hit": "BUTTON.primary"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 768,
+    "destination": "team",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 1440,
+    "destination": "home",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Новая заявка",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 114.171875,
+          "bottom": 158.171875,
+          "width": 144.71875,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Новые",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 418.53125,
+          "bottom": 462.53125,
+          "width": 77.015625,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Открыть заявку",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 820.046875,
+          "bottom": 864.046875,
+          "width": 279,
+          "hit": "BUTTON.primary wide"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 1440,
+    "destination": "orders",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "Расписание",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 258.640625,
+          "bottom": 302.640625,
+          "width": 116.125,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "+ Новая",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 309.640625,
+          "bottom": 353.640625,
+          "width": 98,
+          "hit": "BUTTON.primary"
+        },
+        {
+          "id": "",
+          "text": "Подобрать мастера",
+          "disabled": false,
+          "inViewport": false,
+          "unoccluded": false,
+          "top": 964.09375,
+          "bottom": 1008.09375,
+          "width": 175.375,
+          "hit": "undefined.undefined"
+        },
+        {
+          "id": "",
+          "text": "Назначить",
+          "disabled": false,
+          "inViewport": false,
+          "unoccluded": false,
+          "top": 1759.5625,
+          "bottom": 1803.5625,
+          "width": 108.0625,
+          "hit": "undefined.undefined"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [
+        {
+          "id": "",
+          "text": "Подобрать мастера",
+          "disabled": false,
+          "inViewport": false,
+          "unoccluded": false,
+          "top": 964.09375,
+          "bottom": 1008.09375,
+          "width": 175.375,
+          "hit": "undefined.undefined"
+        },
+        {
+          "id": "",
+          "text": "Назначить",
+          "disabled": false,
+          "inViewport": false,
+          "unoccluded": false,
+          "top": 1759.5625,
+          "bottom": 1803.5625,
+          "width": 108.0625,
+          "hit": "undefined.undefined"
+        }
+      ],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 1440,
+    "destination": "dispatch",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [
+        {
+          "id": "",
+          "text": "+ Заявка",
+          "disabled": false,
+          "inViewport": true,
+          "unoccluded": true,
+          "top": 119.171875,
+          "bottom": 163.171875,
+          "width": 97.453125,
+          "hit": "BUTTON.primary"
+        }
+      ],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  },
+  {
+    "width": 1440,
+    "destination": "team",
+    "health": {
+      "documentOverflow": 0,
+      "bodyOverflow": 0,
+      "actions": [],
+      "visibleOccludedActions": [],
+      "offscreenActions": [],
+      "scope": "document",
+      "local404": [],
+      "pageErrors": [],
+      "limitation": "Offscreen controls require explicit scrolling/workflow proof; geometry is not universal usability verification"
+    }
+  }
+]

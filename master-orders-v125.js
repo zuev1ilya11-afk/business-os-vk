@@ -4,6 +4,7 @@ if(window.BOS_MASTER_ORDERS_V125)return;
 window.BOS_MASTER_ORDERS_V125=true;
 
 const masterMode=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
+let search='';
 const liveMaster=()=>String(state?.user?.role||'')==='master';
 const own=()=>typeof ownOrders==='function'?(ownOrders()||[]):(state?.orders||[]);
 const status=o=>String(o?.status||'');
@@ -51,7 +52,7 @@ function filters(all){const c=counts(all),defs=[['current','Текущие',c.cu
 function sortOrders(list){const f=filterOf();return list.slice().sort((a,b)=>{if(f==='current'){const pn=Number(isNew(b))-Number(isNew(a));if(pn)return pn}if(f==='done'||f==='archive')return String(completionDate(b)||'').localeCompare(String(completionDate(a)||''))||String(scheduledDate(b)||'').localeCompare(String(scheduledDate(a)||''));const sa=String((scheduledDate(a)||'9999')+(a?.scheduled_time||a?.time_slot||'99:99')),sb=String((scheduledDate(b)||'9999')+(b?.scheduled_time||b?.time_slot||'99:99'));return sa.localeCompare(sb)||String(b?.created_at||'').localeCompare(String(a?.created_at||''))})}
 function groupDate(o){return(filterOf()==='done'||filterOf()==='archive')?(completionDate(o)||scheduledDate(o)):scheduledDate(o)}
 function dateLabel(date){if(!date)return'Без даты';const d=new Date(`${date}T12:00:00`);if(Number.isNaN(d.getTime()))return date;return d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'short'}).replace(/^./,c=>c.toUpperCase())}
-function dayFilters(list){const dates=[...new Set(list.map(groupDate).filter(Boolean))].slice(0,12);let day=String(window.__bosMasterOrderDay||'all');if(day!=='all'&&!dates.includes(day)){window.__bosMasterOrderDay='all';day='all'}if(!dates.length)return'';return `<div class="masterDayFilters masterV125DayFilters"><button type="button" class="${day==='all'?'primary':'secondary'}" onclick="setMasterOrderDay('all')">Все даты</button>${dates.map(d=>`<button type="button" class="${day===d?'primary':'secondary'}" onclick="setMasterOrderDay('${escv(d)}')">${escv(dateLabel(d))}</button>`).join('')}</div>`}
+function dayFilters(list){const dates=[...new Set(list.map(groupDate).filter(Boolean))].slice(0,12);if(list.some(o=>!groupDate(o)))dates.push('undated');let day=String(window.__bosMasterOrderDay||'all');if(day!=='all'&&!dates.includes(day)){window.__bosMasterOrderDay='all';day='all'}if(!dates.length)return'';return `<div class="masterDayFilters masterV125DayFilters"><button type="button" class="${day==='all'?'primary':'secondary'}" onclick="setMasterOrderDay('all')">Все даты</button>${dates.map(d=>`<button type="button" class="${day===d?'primary':'secondary'}" onclick="setMasterOrderDay('${escv(d)}')">${d==='undated'?'Без даты':escv(dateLabel(d))}</button>`).join('')}</div>`}
 function card(o){
  const href=phoneHref(o?.phone||o?.client_phone),preview=!liveMaster();
  return `<article class="masterV125Card ${stageClass(o)}" data-master-order-id="${escv(o.id)}">
@@ -63,17 +64,18 @@ function card(o){
   <div class="masterV125Actions">${href&&!preview?`<a class="secondary" href="tel:${escv(href)}">Позвонить</a>`:''}<button type="button" class="primary" onclick="openOrder('${escv(o.id)}')">Открыть заявку</button></div>
  </article>`;
 }
-function grouped(list){const day=String(window.__bosMasterOrderDay||'all'),source=day==='all'?list:list.filter(o=>groupDate(o)===day),groups=[];source.forEach(o=>{const d=groupDate(o)||'';let g=groups.find(x=>x.date===d);if(!g){g={date:d,orders:[]};groups.push(g)}g.orders.push(o)});return groups.map(g=>`<section class="masterDayGroup masterV125Group"><div class="masterDayHeading"><strong>${escv(dateLabel(g.date))}</strong><span>${g.orders.length} заяв.</span></div>${g.orders.map(card).join('')}</section>`).join('')}
+function grouped(list){const day=String(window.__bosMasterOrderDay||'all'),source=day==='all'?list:list.filter(o=>day==='undated'?!groupDate(o):groupDate(o)===day),groups=[];source.forEach(o=>{const d=groupDate(o)||'';let g=groups.find(x=>x.date===d);if(!g){g={date:d,orders:[]};groups.push(g)}g.orders.push(o)});return groups.map(g=>`<section class="masterDayGroup masterV125Group"><div class="masterDayHeading"><strong>${escv(dateLabel(g.date))}</strong><span>${g.orders.length} заяв.</span></div>${g.orders.map(card).join('')}</section>`).join('')}
 function emptyText(){return({current:'Текущих заявок нет',new:'Новых заявок нет',work:'Заявок в работе нет',done:'Выполненных за эту неделю нет',claim:'Рекламаций нет',archive:'Архив пока пуст'})[filterOf()]||'Заявок нет'}
 
 const previousOrders=pages.orders;
 pages.orders=function(){
  if(!masterMode())return previousOrders();
- const all=own().slice(),list=sortOrders(all.filter(o=>matches(o))),c=counts(all);
- return `<div class="masterSimple masterOrdersDense masterOrdersV125"><div class="masterV125Header"><div><h2>Мои заявки</h2><div class="muted">Текущие: ${c.current} · Всего: ${all.length}</div></div></div>${filters(all)}${dayFilters(list)}${list.length?grouped(list):`<div class="masterEmpty">${emptyText()}</div>`}</div>`;
+ const all=own().slice(),filtered=sortOrders(all.filter(o=>matches(o))),list=filtered.filter(o=>!search||[o.id,o.external_id,o.address,o.client,o.work,workflowLabel(o)].join(' ').toLowerCase().includes(search.toLowerCase())),c=counts(all);
+ return `<div class="masterSimple masterOrdersDense masterOrdersV125"><div class="masterV125Header"><div><h2>Мои заявки</h2><div class="muted">Текущие: ${c.current} · Всего: ${all.length}</div></div></div>${filters(all)}<input type="search" id="masterOrdersSearch" aria-label="Поиск в моих заявках" placeholder="Номер, адрес или работа" value="${escv(search)}">${dayFilters(filtered)}${list.length?grouped(list):`<div class="masterEmpty">${search?'По вашему запросу заявок нет':emptyText()}</div>`}</div>`;
 };
 
 function rerender(){const root=document.getElementById('content');if(!root||!masterMode()||String(state?.page||'')!=='orders')return false;root.innerHTML=pages.orders();return true}
+document.addEventListener('input',e=>{if(e.target.id!=='masterOrdersSearch'||!masterMode())return;search=e.target.value;const caret=e.target.selectionStart;rerender();const input=document.getElementById('masterOrdersSearch');input?.focus();if(caret!=null)input?.setSelectionRange(caret,caret)});
 const baseSetFilter=window.setMasterOrdersFilter;
 window.setMasterOrdersFilter=function(v){window.__bosMasterOrderStatus=String(v||'current');window.__bosMasterOrderDay='all';if(!rerender()&&typeof baseSetFilter==='function')return baseSetFilter(v)};
 const baseSetDay=window.setMasterOrderDay;

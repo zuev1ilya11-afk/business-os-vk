@@ -1,0 +1,62 @@
+[
+  {
+    "text": "×",
+    "handler": "closeModal()",
+    "id": ""
+  },
+  {
+    "text": "Команда →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Финансы →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Настройки входа →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Личные данные →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Помощь →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "О приложении →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Уведомления на устройстве →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Инструменты владельца →",
+    "handler": null,
+    "id": ""
+  },
+  {
+    "text": "Обновить данные",
+    "handler": "closeModal();reloadData(true)",
+    "id": ""
+  },
+  {
+    "text": "Выйти",
+    "handler": null,
+    "id": "bosOwnerLogout"
+  },
+  {
+    "text": "Уведомления на этом телефоне",
+    "handler": null,
+    "id": ""
+  }
+]

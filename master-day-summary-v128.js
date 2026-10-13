@@ -9,7 +9,7 @@ const masterMode=()=>String(state?.user?.role||'')==='master'||(typeof isMasterP
 const num=v=>{const n=Number(v);return Number.isFinite(n)?n:0};
 const dateOf=o=>String(o?.scheduled_date||'').slice(0,10);
 const localIso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-const today=()=>localIso(new Date());
+const today=()=>window.BOS_SALARY_PERIODS?.day()||localIso(new Date());
 const orderNo=o=>{const ext=String(o?.external_id||'');return ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')};
 const moneyv=v=>typeof money==='function'?money(v):`${Number(v||0).toLocaleString('ru-RU',{maximumFractionDigits:2})} ₽`;
 
@@ -21,6 +21,7 @@ function mine(){
   return all.filter(o=>[o.master_staff_id,o.master_id,o.master_vk_id,o.staff_id,o.vk_user_id].filter(Boolean).map(String).some(x=>ids.has(x)));
 }
 function completedDay(o){
+  if(window.BOS_SALARY_PERIODS)return window.BOS_SALARY_PERIODS.completedDay(o);
   if(window.BOS_MASTER_PROFILE_SUMMARY_V129_API?.completedDay)return window.BOS_MASTER_PROFILE_SUMMARY_V129_API.completedDay(o);
   if(o?.completed_at){const d=new Date(o.completed_at);if(!Number.isNaN(d.getTime()))return localIso(d)}
   if(o?.report_reviewed_at){const d=new Date(o.report_reviewed_at);if(!Number.isNaN(d.getTime()))return localIso(d)}

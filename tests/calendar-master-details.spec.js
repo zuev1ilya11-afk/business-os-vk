@@ -21,6 +21,7 @@ async function openCalendar(page){
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
  await page.waitForFunction(()=>window.BOS_UNIFIED_SCHEDULE_V102);
  await page.locator('nav [data-page="dispatch"]').click();
+ if(await page.getByRole('button',{name:'График команды',exact:true}).count()){await page.getByRole('button',{name:'График команды',exact:true}).click();await page.getByLabel('Мастер календаря').selectOption('')}
  await expect(page.locator('.usManagement')).toBeVisible();
 }
 const cell=(page,day)=>page.locator(`.usTeamDay[data-date="2026-10-${String(day).padStart(2,'0')}"]`);

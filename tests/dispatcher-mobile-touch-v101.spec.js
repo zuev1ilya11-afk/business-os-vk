@@ -8,28 +8,21 @@ test('dispatcher mobile controls keep usable touch targets and compact filters',
   await expect(page.locator('#authGate')).toBeHidden();
 
   await page.locator('nav button[data-page="orders"]').click();
-  await expect(page.locator('.bosDispatcherMobile')).toBeVisible();
+  await expect(page.locator('#bosOrderList')).toBeVisible();
 
-  const touchTargets=[
-    page.locator('.dmNewOrder'),
-    page.locator('.dmMetrics button').first(),
-    page.locator('.dmShortcuts button').first(),
-    page.locator('.dmCardActions .secondary').first(),
-    page.locator('.dmAssignAction').first(),
-    page.locator('.dmDateTimeAction').first()
-  ];
+  await page.locator('.bosOpsSecondaryActions summary').first().click();await page.locator('.bosOpsSecondaryActions summary').last().click();
+  const touchTargets=[page.getByRole('button',{name:'+ Новая',exact:true}),page.getByRole('button',{name:'Фильтры',exact:true}),page.locator('.bosOrderFilters button').first(),page.locator('.dmShortcuts button').first(),page.locator('#bosOrderList .bosOpsListOpen').first(),page.locator('.dmCardActions .secondary').first(),page.locator('.dmAssignAction').first(),page.locator('.dmDateTimeAction').first()];
   for(const target of touchTargets){
     await expect.poll(async()=>(await target.boundingBox())?.height||0).toBeGreaterThanOrEqual(44);
   }
 
-  const master=await page.locator('#bosOrderMaster').boundingBox();
-  const source=await page.locator('#bosOrderSource').boundingBox();
+  await page.getByRole('button',{name:'Фильтры',exact:true}).click();const master=await page.locator('[data-original-id=bosOrderMaster]').boundingBox();
+  const source=await page.locator('[data-original-id=bosOrderSource]').boundingBox();
   expect(master).not.toBeNull();
   expect(source).not.toBeNull();
-  expect(Math.abs(master.y-source.y)).toBeLessThan(2);
-  expect(source.x).toBeGreaterThan(master.x);
+  expect(source.y).toBeGreaterThan(master.y);
 
-  const searchFont=await page.locator('#bosOrderSearch').evaluate(el=>getComputedStyle(el).fontSize);
+  await page.getByRole('button',{name:'Отмена',exact:true}).click();const searchFont=await page.locator('#bosOrderSearch').evaluate(el=>getComputedStyle(el).fontSize);
   expect(parseFloat(searchFont)).toBeGreaterThanOrEqual(16);
 });
 
@@ -40,10 +33,10 @@ test('very narrow dispatcher screen stacks advanced selects without overflow',as
   await expect(page.locator('#authGate')).toBeHidden();
 
   await page.locator('nav button[data-page="orders"]').click();
-  await expect(page.locator('.bosDispatcherMobile')).toBeVisible();
+  await expect(page.locator('#bosOrderList')).toBeVisible();
 
-  const master=await page.locator('#bosOrderMaster').boundingBox();
-  const source=await page.locator('#bosOrderSource').boundingBox();
+  await page.getByRole('button',{name:'Фильтры',exact:true}).click();const master=await page.locator('[data-original-id=bosOrderMaster]').boundingBox();
+  const source=await page.locator('[data-original-id=bosOrderSource]').boundingBox();
   expect(master).not.toBeNull();
   expect(source).not.toBeNull();
   expect(source.y).toBeGreaterThan(master.y);

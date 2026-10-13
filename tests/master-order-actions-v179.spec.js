@@ -23,14 +23,14 @@ test('scheduled master order shows confirmed sequential progress and confirmed r
   await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toBeEnabled();
   await expect(panel.getByRole('button',{name:/Подтвердить: начал работу/})).toHaveCount(0);
   await expect(panel.getByRole('button',{name:/Отправить отчёт/})).toHaveCount(0);
-  await expect(panel).toContainText('Требует подтверждения диспетчера или руководителя');
-  await expect(panel.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
+  await expect(page.locator('.bosCompactMasterCard')).toContainText('Требует подтверждения диспетчера или руководителя');
+  await expect(page.locator('.bosCompactMasterCard').getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
 
-  await panel.getByRole('button',{name:/Подтвердить: выехал/}).click();
+  await panel.getByRole('button',{name:/Подтвердить: выехал/}).click();if(await page.locator('.bosStageTask').count())await page.locator('.bosStageTask').getByRole('button',{name:/Подтвердить: выехал/}).click();
   await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('departed');
   await expect(panel.getByRole('button',{name:/Подтвердить: начал работу/})).toBeEnabled();
 
-  await panel.getByRole('button',{name:/Подтвердить: начал работу/}).click();
+  await panel.getByRole('button',{name:/Подтвердить: начал работу/}).click();if(await page.locator('.bosStageTask').count())await page.locator('.bosStageTask').getByRole('button',{name:/Подтвердить: начал работу/}).click();
   await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('started');
   await expect(panel.getByRole('button',{name:/Отправить отчёт/})).toBeEnabled();
 
@@ -89,6 +89,15 @@ test('reschedule action keeps existing approval request form',async({page})=>{
   await page.goto('/');
   await expect(page.locator('#authGate')).toBeHidden();
   await page.evaluate(()=>window.openOrder('11'));
-  await page.locator('.bosMasterWorkflow[data-bos-v179="1"] button',{hasText:'Запросить перенос'}).click();
+  await page.locator('.bosApprovedVisit button',{hasText:'Запросить перенос'}).click();
   await expect(page.locator('#masterRescheduleForm')).toBeVisible();
+  const original={date:order.scheduled_date,time:order.scheduled_time,amount:order.amount,payout:order.master_payout};
+  await page.getByLabel('Причина переноса *',{exact:true}).fill('Новая дата пока не определена');
+  await page.getByRole('button',{name:'Отправить запрос на перенос',exact:true}).click();
+  await expect(page.locator('#masterRescheduleForm')).toHaveCount(0);
+  await expect.poll(()=>order11(db).reschedule_requested).toBe(true);
+  expect(order11(db).reschedule_reason).toBe('Новая дата пока не определена');
+  await page.reload();await expect(page.locator('#authGate')).toBeHidden();
+  expect(await page.evaluate(()=>state.orders.find(o=>String(o.id)==='11').reschedule_requested)).toBe(true);
+  expect({date:order11(db).scheduled_date,time:order11(db).scheduled_time,amount:order11(db).amount,payout:order11(db).master_payout}).toEqual(original);
 });

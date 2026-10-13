@@ -1,0 +1,97 @@
+{
+  "fullRunCommit": "0aa8918546bf5004fb45794217463c768f63333c",
+  "fullRunBuild": "c3fd62aa534328f3a8f4",
+  "finalRuntimeCommit": "f0a5c8f",
+  "finalRuntimeBuild": "1af4e38739a8df02c0db",
+  "node": {
+    "passed": 729,
+    "failed": 0
+  },
+  "runs": {
+    "full-browser": {
+      "startTime": "2026-10-11T18:22:52.998Z",
+      "duration": 630685.8389999999,
+      "expected": 715,
+      "skipped": 0,
+      "unexpected": 9,
+      "flaky": 0
+    },
+    "closures": {
+      "startTime": "2026-10-11T18:34:30.579Z",
+      "duration": 48591.813,
+      "expected": 47,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "review-closures": {
+      "startTime": "2026-10-11T18:35:49.082Z",
+      "duration": 9153.215,
+      "expected": 9,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "logout-red": {
+      "startTime": "2026-10-11T18:33:53.897Z",
+      "duration": 13865.280999999999,
+      "expected": 0,
+      "skipped": 0,
+      "unexpected": 2,
+      "flaky": 0
+    }
+  },
+  "fullRunFailureClosures": [
+    {
+      "file": "current-production-sync.spec.js",
+      "title": "master preview refresh uses current employee rather than captured profile object",
+      "closed": true
+    },
+    {
+      "file": "current-production-sync.spec.js",
+      "title": "master saving profile updates users, masters and opens current home without reload",
+      "closed": true
+    },
+    {
+      "file": "master-day-summary-v128.spec.js",
+      "title": "approved order refresh flows from working day to daily totals and cabinet without duplicate earnings",
+      "closed": true
+    },
+    {
+      "file": "master-profile-preview-v133.spec.js",
+      "title": "master payment panel is rendered in owner master preview",
+      "closed": true
+    },
+    {
+      "file": "phone-registration.spec.js",
+      "title": "new employee redeems owner invite after signed VK launch",
+      "closed": true
+    },
+    {
+      "file": "report-payroll-contract.spec.js",
+      "title": "Hands real report handlers feed one approved salary into day, week, month and owner views",
+      "closed": true
+    },
+    {
+      "file": "shared-service-catalog.spec.js",
+      "title": "master browses the shared catalog and searches additional work on a narrow screen",
+      "closed": true
+    },
+    {
+      "file": "shared-service-catalog.spec.js",
+      "title": "price materials show loading, safe error, retry and empty states while catalog stays usable",
+      "closed": true
+    },
+    {
+      "file": "source-payroll.spec.js",
+      "title": "Direct source real report handlers feed one approved salary into day, week, month and owner views",
+      "closed": true
+    }
+  ],
+  "finalUnclosedFailures": 0,
+  "excludedLiveSuites": [
+    "gas-archive-health.spec.js",
+    "gas-bridge-health.spec.js"
+  ],
+  "method": "One complete isolated 724-case run, followed by changed-route and new navigation tests. No claim of another complete run on final runtime."
+}

@@ -1,0 +1,129 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:10] "GET / HTTP/1.1" 200 -
+
+Running 1 test using 1 worker
+
+(node:34) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET / HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /styles.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /ui-v2.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /report-review.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /master-simple.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /form-mobile-fix.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /ui-refresh-v1.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /approved-master-ui.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /brand-logo.svg?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /dispatcher-mobile-touch-v101.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /dark-business-os.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /approved-operations-ui.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /approved-ui.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /build-version.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /pwa-register.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:11] "GET /startup-shell.bundle.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /startup-eager.bundle.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-home-orders-v124.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-orders-v125.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-orders-v125-compat.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-daily-home-v127.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-order-focus-v126.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-day-summary-v128.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /salary-periods.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-profile-summary-v129.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-money-v130.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-cabinet-v141.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /sw.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /build-version.js?build=2ef09a0acb14c068050c HTTP/1.1" 304 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /visual-v3.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /ui-v2.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /ui-refresh-v1.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /test-pin-auth.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /styles.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /startup-shell.bundle.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /startup-eager.bundle.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /staff-link-patch.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /simple-auth-v57.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /salary-periods.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /report-review.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /pwa-register.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /playwright.config.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-ui-contract-v42.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /order-control.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-simple.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-profile-v4-fix.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-orders-v125.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-profile-summary-v129.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-orders-v125-compat.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-order-focus-v126.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-money-v130.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-home-orders-v124.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-day-summary-v128.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-daily-home-v127.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /master-cabinet-v141.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /manifest.webmanifest?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /form-mobile-fix.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /finance-page.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /finance-expenses.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /finance-data.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-unified-schedule-v187.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-unassigned-queue-v122.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-ui-redesign-v183.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-ui-stability-v185.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-ui-redesign-v183-compat.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-ui-polish-v184.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-smart-assign-v119.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-smart-dispatch-v121.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-responsive-workbench-v157.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-quick-actions-v159.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-horizontal-schedule-v190.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-mobile-touch-v101.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-horizontal-schedule-v190-fix.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-free-slots-v120.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-desktop-mobile-v158.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dark-business-os.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /dispatcher-attention-v123.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /brand-logo.svg?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /approved-ui.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /approved-operations-ui.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /approved-master-ui.css?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /app-v2.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /app-icon.svg?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /build-version.js?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /index.html?build=2ef09a0acb14c068050c HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /sw.js HTTP/1.1" 304 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 22:55:12] "GET /build-version.js?build=2ef09a0acb14c068050c HTTP/1.1" 304 -
+  ✘  1 tests/release-final-stability.spec.js:4:1 › contact metadata refresh preserves modern master stage action nodes (1.3s)
+
+
+  1) tests/release-final-stability.spec.js:4:1 › contact metadata refresh preserves modern master stage action nodes 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+    [32m- Expected  - 3[39m
+    [31m+ Received  + 3[39m
+
+    [2m  Object {[22m
+    [32m-   "connected": true,[39m
+    [32m-   "current": true,[39m
+    [32m-   "removed": 0,[39m
+    [31m+   "connected": false,[39m
+    [31m+   "current": false,[39m
+    [31m+   "removed": 1,[39m
+    [2m  }[22m
+
+      2 | const {fullStack}=require('./helpers/full-stack.cjs');
+      3 | async function boot(page){await page.setViewportSize({width:390,height:844});await fullStack(page,'master');await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.waitForFunction(()=>window.BOS_MASTER_ORDER_ACTIONS_V179);}
+    > 4 | test('contact metadata refresh preserves modern master stage action nodes',async({page})=>{await boot(page);await page.evaluate(()=>openOrder('11'));await expect(page.locator('.moa179StageCard').first()).toBeVisible();const changes=await page.evaluate(async()=>{const panel=document.querySelector('#modalRoot .bosMasterWorkflow'),stage=panel.querySelector('.moa179StageCard');let removed=0;const obs=new MutationObserver(ms=>{for(const m of ms)for(const node of m.removedNodes)if(node===stage||node.contains?.(stage))removed++});obs.observe(panel,{childList:true,subtree:true});state.orders.find(o=>String(o.id)==='11').master_contact_comment='Уточнили подъезд';const trigger=document.createElement('span');document.body.appendChild(trigger);trigger.remove();for(let i=0;i<16;i++)await new Promise(requestAnimationFrame);obs.disconnect();return {removed,connected:stage.isConnected,current:panel.querySelector('.moa179StageCard')===stage}});expect(changes).toEqual({removed:0,connected:true,current:true});await expect(page.locator('.moa179StageCard').first()).toBeVisible();});
+        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ^
+      5 | test('modern master detail retains its original action nodes after all presentation observers settle',async({page})=>{await boot(page);await page.evaluate(()=>openOrder('11'));await expect(page.locator('.moa179StageCard').first()).toBeVisible();await page.waitForTimeout(150);const changes=await page.evaluate(async()=>{const panel=document.querySelector('#modalRoot .bosMasterWorkflow');let n=0;const obs=new MutationObserver(ms=>n+=ms.filter(m=>m.target===panel).length);obs.observe(panel,{childList:true});for(let i=0;i<16;i++)await new Promise(requestAnimationFrame);obs.disconnect();return {count:n,connected:panel.isConnected,current:document.querySelector('#modalRoot .bosMasterWorkflow')===panel}});expect(changes).toEqual({count:0,connected:true,current:true});await expect(page.locator('.moa179StageCard').first()).toBeVisible();});
+      6 | test('undated master filter keeps dated new orders separate and decoration does not churn',async({page})=>{await boot(page);await page.evaluate(()=>{state.orders.push({...state.orders[0],id:'undated-release',address:'ЖК \"Море\", корпус O\'Neil',scheduled_date:null,scheduled_time:null,time_slot:null});show('orders')});const undated=page.getByRole('button',{name:'Без даты',exact:true});await expect(undated).toBeVisible();await undated.click();await expect(page.locator('.masterV125Card')).toHaveCount(1);await expect(page.locator('.masterV125Card')).toHaveAttribute('data-master-order-id','undated-release');const changes=await page.evaluate(async()=>{const card=document.querySelector('.masterV125Card');let n=0;const obs=new MutationObserver(ms=>n+=ms.length);obs.observe(card,{childList:true,subtree:true});for(let i=0;i<12;i++)await new Promise(requestAnimationFrame);obs.disconnect();return n});expect(changes).toBe(0);await page.getByRole('button',{name:'Все даты',exact:true}).click();await expect(page.locator('.masterV125Card[data-master-order-id="11"]')).toBeVisible();});
+      7 | test('late order decoration cannot insert a workflow into a newer agreement form',async({page})=>{await boot(page);await page.evaluate(()=>{const o=state.orders.find(o=>o.id==='11');o.scheduled_date=null;o.scheduled_time=null;o.time_slot=null;o.master_called_at=new Date().toISOString();o.master_contact_status='agreed';openOrder('11');masterOrderAgree179('11')});await expect(page.locator('#masterOrderAgree179Form')).toBeVisible();await page.waitForTimeout(180);await expect(page.locator('#masterOrderAgree179Form')).toBeVisible();await expect(page.locator('#modalRoot .bosMasterWorkflow,.bosMasterReportAction')).toHaveCount(0);});
+        at /workspace/scratch/de568ce658a8/business-os-vk/tests/release-final-stability.spec.js:4:958
+
+    Error Context: test-results/release-final-stability-co-8d2e7-n-master-stage-action-nodes/error-context.md
+
+  1 failed
+    tests/release-final-stability.spec.js:4:1 › contact metadata refresh preserves modern master stage action nodes 

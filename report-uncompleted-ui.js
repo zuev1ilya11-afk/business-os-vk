@@ -12,14 +12,14 @@ window.BOS_INIT_REPORT_DEDUCTION=function(form,order){
   box.classList.add('reportDeductionSummary');
   const dialog=document.createElement('dialog');dialog.id='mrDeductionDialog';dialog.className='reportDeductionDialog';
   dialog.setAttribute('aria-labelledby','mrDeductionTitle');
-  dialog.innerHTML=`<div class="deductionHeading"><div><div class="eyebrow">ОТЧЁТ ПО ЗАЯВКЕ</div><h2 id="mrDeductionTitle">Что не было сделано</h2></div><button type="button" class="secondary" id="mrCloseDeduction" aria-label="Вернуться к отчёту">×</button></div>
+  dialog.innerHTML=`<div class="deductionHeading"><div><div class="eyebrow">№ ${escape(order.id)} · РЕЗУЛЬТАТ РАБОТ</div><h2 id="mrDeductionTitle">Что не было сделано</h2></div><button type="button" class="secondary" id="mrCloseDeduction" aria-label="Вернуться к отчёту">×</button></div>
     <p class="muted">Выберите работы и укажите невыполненное количество. Допработы заполняются отдельно.</p>
     <button type="button" class="secondary wide" id="mrAddCatalog">+ Добавить из прайса</button>
     <section id="mrCatalogPicker" hidden><label for="mrCatalogSearch">Поиск услуги</label><input id="mrCatalogSearch" type="search" placeholder="Например, карниз или шторы" autocomplete="off"><div id="mrCatalogResults"></div></section>
     <div id="mrDeductionRows"></div><p id="mrDeductionEmpty" class="muted">Пока нет выбранных работ</p>
     <div class="deductionTotals" aria-live="polite"><div><span>Сумма вычета</span><b id="mrDeductionTotal"></b></div>${visibleCost?'<div><span>После вычета</span><b id="mrAfterDeduction"></b></div>':'<p class="muted">Полная стоимость заявки скрыта. Допустимый вычет проверяется при отправке отчёта.</p>'}</div>
-    <label for="mrDeductionComment">Комментарий к невыполненным работам</label><textarea id="mrDeductionComment" maxlength="4000" placeholder="Почему работы не выполнены"></textarea>
-    <p id="mrDeductionError" role="alert"></p><button type="button" class="primary wide" id="mrDeductionContinue">Продолжить</button>`;
+    <label for="mrDeductionComment">Причина</label><textarea id="mrDeductionComment" maxlength="4000" placeholder="Почему работы не выполнены"></textarea>
+    <p id="mrDeductionError" role="alert"></p><div class="bosTaskFooter"><button type="button" class="secondary" onclick="this.closest('dialog').close()">Отмена</button><button type="button" class="primary" id="mrDeductionContinue">Добавить в отчёт</button></div>`;
   form.append(dialog);
   const $=id=>form.querySelector('#'+id);
   $('mrDeductionComment').value=order.uncompleted_work_description||'';

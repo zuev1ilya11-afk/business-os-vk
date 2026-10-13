@@ -1,16 +1,19 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
+test.use({timezoneId:'UTC'});
 
 const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-const monday=()=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return iso(d)};
+const monday=date=>{const d=new Date(`${date}T12:00:00`);d.setHours(12,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return iso(d)};
 const addDays=(date,n)=>{const d=new Date(`${date}T12:00:00`);d.setDate(d.getDate()+n);return iso(d)};
 
 test('master v129 shows compact profile money metrics without duplicate schedule',async({page})=>{
   const {db,master}=await fullStack(page,'master');
-  const today=iso(new Date()),weekStart=monday(),previousWeek=addDays(weekStart,-2);
+  // Fix the Moscow/UTC week boundary so runner timezone cannot change expected periods.
+  await page.clock.setFixedTime(new Date('2026-10-11T21:10:00Z'));
+  const today='2026-10-12',weekStart=monday(today),previousWeek=addDays(weekStart,-2);
   const monthStart=`${today.slice(0,8)}01`;
   const priorInMonth=previousWeek>=monthStart?previousWeek:today;
-  const oldDateObj=new Date();oldDateObj.setHours(12,0,0,0);oldDateObj.setMonth(oldDateObj.getMonth()-1);oldDateObj.setDate(15);const previousMonth=iso(oldDateObj);
+  const oldDateObj=new Date(`${today}T12:00:00`);oldDateObj.setHours(12,0,0,0);oldDateObj.setMonth(oldDateObj.getMonth()-1);oldDateObj.setDate(15);const previousMonth=iso(oldDateObj);
   const primary=db.tables.orders.find(o=>String(o.id)==='11');
   Object.assign(primary,{
     status:'Выполнена',report_review_status:'approved',scheduled_date:today,completed_at:`${today}T12:00:00`,
@@ -36,26 +39,31 @@ test('master v129 shows compact profile money metrics without duplicate schedule
   const panel=page.locator('#masterProfileSummaryV129');
   await expect(panel).toBeVisible();
   await expect(panel.locator('.masterV129Schedule')).toHaveCount(0);
-  await expect(panel.locator('.masterV129Metric')).toHaveCount(2);
-  await expect(panel.getByText('В работе сейчас',{exact:true}).locator('..')).toContainText('1');
-  await expect(panel.getByText('Выполнено за всё время',{exact:true}).locator('..')).toContainText('3');
-  const hero=panel.locator('.salaryHero');
+  await expect(panel.getByText('Сегодня',{exact:true}).locator('..').locator('strong')).toContainText(/652[,.]5/);
+  await expect(panel.getByText('Неделя',{exact:true}).locator('..').locator('strong')).toContainText(/652[,.]5/);
+  await expect(panel.getByText('Месяц',{exact:true}).locator('..').locator('strong')).toContainText(/1[\s ]?757[,.]5/);
+  const totals=await page.evaluate(()=>BOS_MASTER_PROFILE_SUMMARY_V129_API.totals());
+  expect(totals.active).toHaveLength(1);expect(totals.done).toHaveLength(3);
+  await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
+  const accruals=page.locator('.bosPayoutTask');
+  const hero=accruals.locator('.salaryHero');
   const weekExpected=priorInMonth>=weekStart?1757.5:652.5;
   // Periods crossing a month can exceed 1,000; ignore currency grouping, not the amount.
   await expect.poll(async()=>{
     const amount=await hero.locator('strong').innerText();
     return Number(amount.replace(/\s/g,'').replace('₽','').replace(',','.'));
   }).toBe(weekExpected);
-  await panel.getByRole('button',{name:'Месяц',exact:true}).click();
+  await accruals.getByRole('button',{name:'Месяц',exact:true}).click();
   await expect(hero).toContainText(/1[\s ]?757[,.]5/);
-  await panel.getByRole('button',{name:'Свои даты',exact:true}).click();
-  await panel.locator('[name="start"]').fill(previousMonth);
-  await panel.locator('[name="end"]').fill(today);
-  await panel.getByRole('button',{name:'Показать',exact:true}).click();
+  await accruals.getByRole('button',{name:'Свои даты',exact:true}).click();
+  await accruals.locator('[name="start"]').fill(previousMonth);
+  await accruals.locator('[name="end"]').fill(today);
+  await accruals.getByRole('button',{name:'Показать',exact:true}).click();
   await expect(hero).toContainText(/2[\s ]?360/);
-  await expect(panel.getByText('Допработы',{exact:true}).locator('..')).toContainText(/150/);
-  await expect(panel.getByText('Вычеты',{exact:true}).locator('..')).toContainText(/200/);
+  await expect(accruals.getByText('Допработы',{exact:true}).locator('..')).toContainText(/150/);
+  await expect(accruals.getByText('Вычеты',{exact:true}).locator('..')).toContainText(/200/);
 
+  await page.getByRole('button',{name:'К профилю',exact:true}).click();
   await page.evaluate(()=>show('home'));
   await expect(page.locator('#masterProfileSummaryV129')).toHaveCount(0);
   await expect(page.locator('#content').getByRole('heading',{name:'Мой график'})).toHaveCount(0);
@@ -76,4 +84,17 @@ test('master v129 profile module is not loaded for dispatcher',async({page})=>{
   await expect(page.locator('script[src*="master-profile-summary-v129.js"]')).toHaveCount(0);
   await page.evaluate(()=>show('team'));
   await expect(page.locator('#masterProfileSummaryV129')).toHaveCount(0);
+});
+
+test('profile and home summaries agree with accruals across Moscow midnight',async({page})=>{
+  await page.clock.setFixedTime(new Date('2026-09-30T21:10:00Z'));
+  const {db,master}=await fullStack(page,'master');
+  const order={...db.tables.orders.find(o=>String(o.id)==='11'),status:'Выполнена',report_review_status:'approved',amount:1000,original_amount:1000,extra_work_amount:0,uncompleted_work_amount:0,master_staff_id:master.id,master_name:master.full_name};
+  db.tables.orders.splice(0,db.tables.orders.length,{...order,id:'11',completed_at:'2026-09-30T21:01:00Z'},{...order,id:'month-previous',completed_at:'2026-09-30T20:59:00Z'});
+  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.waitForFunction(()=>window.BOS_MASTER_PROFILE_SUMMARY_V129_API&&window.BOS_MASTER_MONEY_V130_API);
+  await page.evaluate(()=>show('team'));const panel=page.locator('#masterProfileSummaryV129');
+  for(const label of ['Сегодня','Месяц'])await expect(panel.getByText(label,{exact:true}).locator('..').locator('strong')).toContainText(/552[,.]5/);
+  await expect(panel.getByText('Неделя',{exact:true}).locator('..').locator('strong')).toContainText(/1[\s ]?105/);
+  await page.getByRole('button',{name:'Подробнее →',exact:true}).click();const detail=page.locator('.bosPayoutTask');await detail.getByRole('button',{name:'Месяц',exact:true}).click();await expect(detail.locator('.salaryHero')).toContainText(/552[,.]5/);
+  await page.evaluate(()=>{closeModal();show('home')});await expect(page.locator('#masterDaySummaryV128 summary')).toContainText(/Выполнено 1.*552[,.]5/);
 });

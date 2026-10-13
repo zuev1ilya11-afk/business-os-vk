@@ -14,7 +14,7 @@ async function openCabinet(page,role='master',width=390,time='2026-09-30T09:00:0
  db.tables.orders[0].extra_work_description='Дополнительное крепление';
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
  if(role==='owner')await page.evaluate(id=>enterMasterPreview(id),master.external_id);
- await page.evaluate(()=>show('team'));
+ await page.evaluate(()=>show('team'));await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
  await expect(page.locator('#masterMoneyV130')).toBeVisible();
  return data;
 }
@@ -30,7 +30,7 @@ for(const [role,width] of [['master',390],['owner',1280]])test(`${role}: salary 
  await expect(panel).not.toContainText('№ 16');await expect(panel).not.toContainText('№ 15');
  await panel.locator('[data-master-money-kind="deductions"]').click();
  await expect(page.locator('#modalRoot')).toContainText('повторно из зарплаты не вычитается');
- await expect(page.locator('#modalRoot')).toContainText('Не установлен держатель');await page.evaluate(()=>closeModal());
+ await expect(page.locator('#modalRoot')).toContainText('Не установлен держатель');await page.evaluate(()=>closeModal());await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
  await panel.locator('[data-money-action="previous"]').click();
  await expect(range(page)).toHaveText('21.09.2026 — 27.09.2026');await expect(hero(page)).toContainText(/1[\s ]?105/);
  await page.evaluate(()=>BOS_REFRESH_NOW());await expect(range(page)).toHaveText('21.09.2026 — 27.09.2026');
@@ -46,7 +46,7 @@ for(const [role,width] of [['master',390],['owner',1280]])test(`${role}: salary 
  await panel.locator('[name="start"]').fill('2026-09-28');await panel.getByRole('button',{name:'Показать',exact:true}).click();await expect(panel.getByRole('alert')).toContainText('начало не позже окончания');
  await expect(hero(page)).toContainText(/3[\s ]?315/);
  await panel.getByRole('button',{name:'К текущему',exact:true}).click();
- await panel.locator('[data-v130-order="11"]').click();await expect(page.locator('#modalRoot')).toContainText('Отчёт принят');await page.evaluate(()=>closeModal());
+ await panel.locator('[data-v130-order="11"]').click();await expect(page.locator('#modalRoot')).toContainText('Отчёт принят');await page.evaluate(()=>closeModal());await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
  await panel.getByRole('button',{name:'День',exact:true}).click();await panel.locator('[data-money-field="anchor"]').fill('2026-09-26');
  await expect(hero(page)).toContainText('0 ₽');await expect(panel.locator('.salaryOrders')).toContainText('За выбранный период начислений нет');
  await page.setViewportSize({width:320,height:700});expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
@@ -61,7 +61,11 @@ for(const [kind,time,before,after] of [
  const {db,master}=await openCabinet(page,'master',390,time);
  const base={...db.tables.orders[0],extra_work_amount:0,uncompleted_work_amount:0};
  db.tables.orders=[{...base,id:'11',amount:1000,completed_at:time},{...base,id:'12',amount:2000,completed_at:time.replace('20:59:00','21:00:00')}];
+ // Existing refresh deliberately defers while a modal is open. Load the changed fixture before reopening.
+ await page.getByRole('button',{name:'К профилю',exact:true}).click();
  await page.evaluate(()=>BOS_REFRESH_NOW());
+ await expect.poll(()=>page.evaluate(()=>state.orders.length)).toBe(2);
+ await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
  await page.locator(`[data-money-action="kind"][data-kind="${kind}"]`).click();
  await expect(range(page)).toHaveText(before);await expect(hero(page)).toContainText(/552[,.]5/);
  await page.clock.fastForward(61000);

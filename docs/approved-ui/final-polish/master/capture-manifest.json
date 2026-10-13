@@ -1,0 +1,1958 @@
+[
+  {
+    "role": "master",
+    "screen": "home-days",
+    "state": "real-tab",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-days-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual tab and16px search"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-days-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-new",
+    "state": "real-tab",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-new-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual tab and16px search"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-new-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-waiting",
+    "state": "real-tab",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-waiting-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual tab and16px search"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-waiting-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-callback",
+    "state": "real-tab",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-callback-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual tab and16px search"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-callback-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-overdue",
+    "state": "overdue-only",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-overdue-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original overdue classifier, explicit selected chip"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-overdue-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-empty",
+    "state": "empty-date",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-empty-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Real selected date"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-empty-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-search",
+    "state": "search",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-search-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Real text filtering at16px"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-search-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "order-detail",
+    "state": "full-width-sections",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/order-detail-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual two phones, all works and original costs; no legacy icon-column compression"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/order-detail-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "order-detail-bottom",
+    "state": "visit-workflow",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/order-detail-bottom-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original visit controls and saved progression"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/order-detail-bottom-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "order-hands",
+    "state": "full-width-sections",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/order-hands-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual two phones, all works and original costs; no legacy icon-column compression"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/order-hands-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "order-hands-bottom",
+    "state": "visit-workflow",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/order-hands-bottom-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original visit controls and saved progression"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/order-hands-bottom-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-uncompleted",
+    "state": "form-deduction-summary",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-uncompleted-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual incomplete-work selection, original catalog and original confirmation; no save"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/report-uncompleted-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-uncertain",
+    "state": "failed-fresh-read",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-uncertain-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual upload conflict and failed fresh read; form/files retained and existing reconcile button"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/report-uncertain-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "schedule-month",
+    "state": "flat-own-month",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/schedule-month-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original saved hours/counts, selected real day summary, flat grid"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/schedule-month-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-form",
+    "state": "current-form",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-form-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual retained controls; footer Cancel/Submit only, Transfer in form"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/report-form-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-rejected",
+    "state": "current-form",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-rejected-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual retained controls; footer Cancel/Submit only, Transfer in form"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "relativePath": "master/report-rejected-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-extras",
+    "state": "current-form",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-extras-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual retained controls; footer Cancel/Submit only, Transfer in form"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "relativePath": "master/report-extras-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-uploading",
+    "state": "acknowledged-act-current-photo",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-uploading-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual act response acknowledged; original photo request held; indeterminate progress, no percentage"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "relativePath": "master/report-uploading-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-error",
+    "state": "actual-photo-error",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-error-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original photo400error; act acknowledgement retained; actual input files retained and original retry"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "relativePath": "master/report-error-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-days",
+    "state": "real-tab",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-days-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual tab and16px search"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-days-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-new",
+    "state": "real-tab",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-new-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual tab and16px search"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-new-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-waiting",
+    "state": "real-tab",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-waiting-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual tab and16px search"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-waiting-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-callback",
+    "state": "real-tab",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-callback-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual tab and16px search"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-callback-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-overdue",
+    "state": "overdue-only",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-overdue-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original overdue classifier, explicit selected chip"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-overdue-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-empty",
+    "state": "empty-date",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-empty-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Real selected date"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-empty-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-search",
+    "state": "search",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-search-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Real text filtering at16px"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-search-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "order-detail",
+    "state": "full-width-sections",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/order-detail-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual two phones, all works and original costs; no legacy icon-column compression"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/order-detail-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "order-detail-bottom",
+    "state": "visit-workflow",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/order-detail-bottom-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original visit controls and saved progression"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/order-detail-bottom-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "order-hands",
+    "state": "full-width-sections",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/order-hands-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual two phones, all works and original costs; no legacy icon-column compression"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/order-hands-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "order-hands-bottom",
+    "state": "visit-workflow",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/order-hands-bottom-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original visit controls and saved progression"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/order-hands-bottom-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-uncompleted",
+    "state": "form-deduction-summary",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-uncompleted-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual incomplete-work selection, original catalog and original confirmation; no save"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/report-uncompleted-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-uncertain",
+    "state": "failed-fresh-read",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-uncertain-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual upload conflict and failed fresh read; form/files retained and existing reconcile button"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/report-uncertain-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "schedule-month",
+    "state": "flat-own-month",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/schedule-month-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original saved hours/counts, selected real day summary, flat grid"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/schedule-month-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-form",
+    "state": "current-form",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-form-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual retained controls; footer Cancel/Submit only, Transfer in form"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/report-form-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-rejected",
+    "state": "current-form",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-rejected-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual retained controls; footer Cancel/Submit only, Transfer in form"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "relativePath": "master/report-rejected-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-extras",
+    "state": "current-form",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-extras-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual retained controls; footer Cancel/Submit only, Transfer in form"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "relativePath": "master/report-extras-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-uploading",
+    "state": "acknowledged-act-current-photo",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-uploading-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual act response acknowledged; original photo request held; indeterminate progress, no percentage"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "relativePath": "master/report-uploading-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-error",
+    "state": "actual-photo-error",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-error-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original photo400error; act acknowledgement retained; actual input files retained and original retry"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "relativePath": "master/report-error-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-days",
+    "state": "real-tab",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-days-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual tab and16px search"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-days-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-new",
+    "state": "real-tab",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-new-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual tab and16px search"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-new-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-waiting",
+    "state": "real-tab",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-waiting-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual tab and16px search"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-waiting-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-callback",
+    "state": "real-tab",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-callback-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual tab and16px search"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-callback-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-overdue",
+    "state": "overdue-only",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-overdue-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original overdue classifier, explicit selected chip"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-overdue-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-empty",
+    "state": "empty-date",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-empty-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Real selected date"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-empty-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "home-search",
+    "state": "search",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/home-search-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Real text filtering at16px"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/home-search-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "order-detail",
+    "state": "full-width-sections",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/order-detail-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual two phones, all works and original costs; no legacy icon-column compression"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/order-detail-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "order-detail-bottom",
+    "state": "visit-workflow",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/order-detail-bottom-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original visit controls and saved progression"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/order-detail-bottom-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "order-hands",
+    "state": "full-width-sections",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/order-hands-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual two phones, all works and original costs; no legacy icon-column compression"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/order-hands-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "order-hands-bottom",
+    "state": "visit-workflow",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/order-hands-bottom-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original visit controls and saved progression"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/order-hands-bottom-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-uncompleted",
+    "state": "form-deduction-summary",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-uncompleted-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual incomplete-work selection, original catalog and original confirmation; no save"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/report-uncompleted-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-uncertain",
+    "state": "failed-fresh-read",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-uncertain-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual upload conflict and failed fresh read; form/files retained and existing reconcile button"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/report-uncertain-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "schedule-month",
+    "state": "flat-own-month",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/schedule-month-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original saved hours/counts, selected real day summary, flat grid"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/schedule-month-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-form",
+    "state": "current-form",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-form-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual retained controls; footer Cancel/Submit only, Transfer in form"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/report-form-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-rejected",
+    "state": "current-form",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-rejected-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual retained controls; footer Cancel/Submit only, Transfer in form"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "relativePath": "master/report-rejected-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-extras",
+    "state": "current-form",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-extras-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual retained controls; footer Cancel/Submit only, Transfer in form"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "relativePath": "master/report-extras-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-uploading",
+    "state": "acknowledged-act-current-photo",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-uploading-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Actual act response acknowledged; original photo request held; indeterminate progress, no percentage"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "relativePath": "master/report-uploading-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "report-error",
+    "state": "actual-photo-error",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/report-error-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "0aa8918546bf5004fb45794217463c768f63333c",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original photo400error; act acknowledgement retained; actual input files retained and original retry"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [
+      "https://test.invalid/storage/v1/object/sign/business-os-vk-files/orders/7381716/fixture-report/photo.jpg?token=test-signature"
+    ],
+    "coverageGaps": [],
+    "relativePath": "master/report-error-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "0aa8918546bf5004fb45794217463c768f63333c",
+    "captureBatch": "r1",
+    "observedBuild": "c3fd62aa534328f3a8f4",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "profile",
+    "state": "canonical-profile",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/profile-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "One identity, accrual summary and profile settings"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/profile-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "captureBatch": "finalprofile",
+    "observedBuild": "1af4e38739a8df02c0db",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "profile-menu",
+    "state": "canonical-settings",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/profile-menu-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original login, push, memo and personal actions"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/profile-menu-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "captureBatch": "finalprofile",
+    "observedBuild": "1af4e38739a8df02c0db",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "profile-personal-data",
+    "state": "canonical-personal-form",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/profile-personal-data-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original form and save handler, no synthetic save"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/profile-personal-data-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "captureBatch": "finalprofile",
+    "observedBuild": "1af4e38739a8df02c0db",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "payouts",
+    "state": "canonical-accrual-detail",
+    "width": 360,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/payouts-fixture-360.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original period controls and unchanged salary formulas"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/payouts-fixture-360.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "captureBatch": "finalprofile",
+    "observedBuild": "1af4e38739a8df02c0db",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "profile",
+    "state": "canonical-profile",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/profile-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "One identity, accrual summary and profile settings"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/profile-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "captureBatch": "finalprofile",
+    "observedBuild": "1af4e38739a8df02c0db",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "profile-menu",
+    "state": "canonical-settings",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/profile-menu-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original login, push, memo and personal actions"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/profile-menu-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "captureBatch": "finalprofile",
+    "observedBuild": "1af4e38739a8df02c0db",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "profile-personal-data",
+    "state": "canonical-personal-form",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/profile-personal-data-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original form and save handler, no synthetic save"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/profile-personal-data-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "captureBatch": "finalprofile",
+    "observedBuild": "1af4e38739a8df02c0db",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "payouts",
+    "state": "canonical-accrual-detail",
+    "width": 390,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/payouts-fixture-390.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original period controls and unchanged salary formulas"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/payouts-fixture-390.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "captureBatch": "finalprofile",
+    "observedBuild": "1af4e38739a8df02c0db",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "profile",
+    "state": "canonical-profile",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/profile-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "One identity, accrual summary and profile settings"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/profile-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "captureBatch": "finalprofile",
+    "observedBuild": "1af4e38739a8df02c0db",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "profile-menu",
+    "state": "canonical-settings",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/profile-menu-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original login, push, memo and personal actions"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/profile-menu-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "captureBatch": "finalprofile",
+    "observedBuild": "1af4e38739a8df02c0db",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "profile-personal-data",
+    "state": "canonical-personal-form",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/profile-personal-data-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original form and save handler, no synthetic save"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/profile-personal-data-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "captureBatch": "finalprofile",
+    "observedBuild": "1af4e38739a8df02c0db",
+    "provenance": "Actual runtime build captured from local working tree"
+  },
+  {
+    "role": "master",
+    "screen": "payouts",
+    "state": "canonical-accrual-detail",
+    "width": 430,
+    "height": 844,
+    "path": "/workspace/scratch/73e5936a7e6d/business-os-vk/docs/approved-ui/final-polish/master/master/payouts-fixture-430.png",
+    "source": "local-feature-fixture",
+    "commit": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "synthetic": true,
+    "fixedClock": "2026-10-08T09:00:00Z",
+    "actions": [
+      "Original period controls and unchanged salary formulas"
+    ],
+    "overflow": {
+      "document": 0,
+      "body": 0
+    },
+    "consoleErrors": [],
+    "blockedExternalRequests": [],
+    "coverageGaps": [],
+    "relativePath": "master/payouts-fixture-430.png",
+    "pageErrors": [],
+    "sourceCheckpoint": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+    "captureBatch": "finalprofile",
+    "observedBuild": "1af4e38739a8df02c0db",
+    "provenance": "Actual runtime build captured from local working tree"
+  }
+]

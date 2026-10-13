@@ -1,0 +1,128 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:41] "GET / HTTP/1.1" 200 -
+
+Running 1 test using 1 worker
+
+(node:44) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET / HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /styles.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /ui-v2.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /report-review.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /master-simple.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /ui-refresh-v1.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /dark-business-os.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /form-mobile-fix.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /dispatcher-mobile-touch-v101.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /approved-ui.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /approved-master-ui.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /brand-logo.svg?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /approved-operations-ui.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /build-version.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /startup-shell.bundle.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /pwa-register.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /startup-eager.bundle.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /master-orders-v125.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /master-daily-home-v127.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /master-home-orders-v124.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /master-order-focus-v126.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /master-day-summary-v128.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /master-orders-v125-compat.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /master-profile-summary-v129.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /master-cabinet-v141.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /master-money-v130.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /salary-periods.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:42] "GET /sw.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /build-version.js?build=b3037aeb680927a56fe3 HTTP/1.1" 304 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /ui-refresh-v1.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /visual-v3.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /ui-v2.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /test-pin-auth.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /styles.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /startup-shell.bundle.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /startup-eager.bundle.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /staff-link-patch.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /simple-auth-v57.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /salary-periods.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /report-review.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /playwright.config.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /pwa-register.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /order-control.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /master-ui-contract-v42.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /master-profile-v4-fix.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /master-simple.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /master-profile-summary-v129.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /master-orders-v125.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /master-orders-v125-compat.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /master-home-orders-v124.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /master-order-focus-v126.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /master-money-v130.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /master-day-summary-v128.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /master-cabinet-v141.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /master-daily-home-v127.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /form-mobile-fix.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /finance-page.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /manifest.webmanifest?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /finance-data.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /finance-expenses.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-unified-schedule-v187.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-unassigned-queue-v122.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-ui-stability-v185.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-ui-redesign-v183.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-ui-redesign-v183-compat.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-ui-polish-v184.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-smart-dispatch-v121.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-smart-assign-v119.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-responsive-workbench-v157.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-quick-actions-v159.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-mobile-touch-v101.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-horizontal-schedule-v190.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-horizontal-schedule-v190-fix.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-free-slots-v120.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-desktop-mobile-v158.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dispatcher-attention-v123.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /dark-business-os.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /brand-logo.svg?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /approved-ui.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /approved-operations-ui.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /approved-master-ui.css?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /app-v2.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /app-icon.svg?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /build-version.js?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /index.html?build=b3037aeb680927a56fe3 HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /sw.js HTTP/1.1" 304 -
+[2m[WebServer] [22m127.0.0.1 - - [11/Oct/2026 23:08:43] "GET /build-version.js?build=b3037aeb680927a56fe3 HTTP/1.1" 304 -
+  ✘  1 tests/master-profile-summary-v129.spec.js:89:1 › profile and home summaries agree with accruals across Moscow midnight (6.4s)
+
+
+  1) tests/master-profile-summary-v129.spec.js:89:1 › profile and home summaries agree with accruals across Moscow midnight 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('#masterDaySummaryV128 summary')
+    Expected pattern: [32m/Выполнено 1.*552[,.]5/[39m
+    Received string:  [31m"Выполнено 2 · Начислено 1 105 ₽"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 5000ms[22m
+    [2m  - waiting for locator('#masterDaySummaryV128 summary')[22m
+    [2m    7 × locator resolved to <summary class="masterV128Summary">Выполнено 2 · Начислено 1 105 ₽</summary>[22m
+    [2m      - unexpected value "Выполнено 2 · Начислено 1 105 ₽"[22m
+
+
+       97 |   await expect(panel.getByText('Неделя',{exact:true}).locator('..').locator('strong')).toContainText(/1[\s ]?105/);
+       98 |   await page.getByRole('button',{name:'Подробнее →',exact:true}).click();const detail=page.locator('.bosPayoutTask');await detail.getByRole('button',{name:'Месяц',exact:true}).click();await expect(detail.locator('.salaryHero')).toContainText(/552[,.]5/);
+    >  99 |   await page.evaluate(()=>{closeModal();show('home')});await expect(page.locator('#masterDaySummaryV128 summary')).toContainText(/Выполнено 1.*552[,.]5/);
+          |                                                                                                                    ^
+      100 | });
+      101 |
+        at /workspace/scratch/de568ce658a8/business-os-vk/tests/master-profile-summary-v129.spec.js:99:116
+
+    Error Context: test-results/master-profile-summary-v12-6512e-uals-across-Moscow-midnight/error-context.md
+
+  1 failed
+    tests/master-profile-summary-v129.spec.js:89:1 › profile and home summaries agree with accruals across Moscow midnight 

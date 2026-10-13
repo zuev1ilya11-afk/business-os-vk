@@ -16,6 +16,6 @@ test('master can open an order during slow workflow script delivery', async ({pa
   const workflow=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(workflow).toHaveCount(1);
   await expect(workflow.getByRole('button',{name:/Договориться|Подтвердить: выехал/})).toBeVisible();
-  await expect(workflow.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
+  await expect(page.locator('.bosApprovedVisit').getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
   await expect(page.getByRole('button', {name: 'Я на месте', exact: true})).toHaveCount(0);
 });

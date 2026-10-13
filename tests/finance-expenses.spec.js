@@ -6,7 +6,7 @@ async function setup(page){
  Object.assign(ctx.db.tables.orders[0],{status:'Выполнена',completed_at:'2026-10-04T08:00:00Z',source:'Авито',master_payout:600,extra_work_amount:0,city:'Москва'});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.locator('nav [data-page="finance"]').click();
- await expect(page.locator('[data-fin-kpi="expenses"] strong')).toContainText('0');return {...ctx,errors};
+ await expect(page.locator('[data-fin-kpi="expenses"] strong')).toContainText('0');await page.locator('.finFilters,.finPeriodControl').evaluateAll(es=>es.forEach(e=>e.open=true));return {...ctx,errors};
 }
 test('expense CRUD updates summary, category list and net profit without losing selected period',async({page})=>{
  const {db,errors}=await setup(page),root=page.locator('#financePage');

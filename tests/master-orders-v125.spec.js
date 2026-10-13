@@ -60,6 +60,6 @@ test('master orders v125 stays readable on mobile and shows concise real work',a
   await expect.poll(()=>page.evaluate(()=>window.__copiedPhone)).toBe('+79990000002');
   await copyButtons.nth(1).click();
   await expect.poll(()=>page.evaluate(()=>window.__copiedPhone)).toBe('+79990000003');
-  await expect(workflow.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
+  await expect(page.locator('.bosApprovedVisit').getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
   await expect(workflow.getByRole('button',{name:/Отправить отчёт/})).toBeEnabled();
 });

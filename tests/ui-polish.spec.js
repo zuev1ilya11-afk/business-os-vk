@@ -15,7 +15,7 @@ async function fits(page) {
         const rect = el.getBoundingClientRect();
         // Date/filter strips and the desktop month grid intentionally scroll internally.
         // calendar-master-details.spec.js verifies access to the grid's last column.
-        const strip = el.closest('.bosOrderFilters, .masterDayFilters, .masterWeekDays, .masterV129Week, .masterStatusFilters, .dmShortcuts, .usManagement .usMonthScroll, #ownerDashboard .odTableScroll');
+        const strip = el.closest('.bosOrderFilters, .bosHomeDayScopes, .masterDayFilters, .masterWeekDays, .masterV129Week, .masterStatusFilters, .dmShortcuts, .usManagement .usMonthScroll, #ownerDashboard .odTableScroll');
         return !strip && (rect.left < -1 || rect.right > width + 1);
       }).map(el => el.id || el.className),
       small: controls.filter(el => el.matches('.primary, .secondary, .wide, .modalClose') &&
@@ -33,6 +33,13 @@ async function fits(page) {
   }).toPass({timeout: 3000});
 }
 
+async function navigate(page,screen,role,width){
+  if(screen==='team'&&role!=='master'&&width<=600){
+    await page.locator('nav [data-page="more"]').click();
+    await page.locator('[data-bos-destination="team"]').click();
+  }else await page.locator(`nav [data-page="${screen}"]`).click();
+}
+
 for (const role of ['owner', 'manager', 'dispatcher', 'master']) {
   for (const width of [360, 390, 430, 1440]) {
     test(`polished forms and profiles: ${role} ${width}px`, async ({page}, testInfo) => {
@@ -41,17 +48,30 @@ for (const role of ['owner', 'manager', 'dispatcher', 'master']) {
       await page.goto('/');
       await expect(page.locator('#authGate')).toBeHidden();
       for (const screen of ['home', 'orders', 'dispatch', 'team']) {
-        await page.locator(`nav [data-page="${screen}"]`).click();
+        await navigate(page,screen,role,width);
         await expect(page.locator(`nav [data-page="${screen}"]`)).toHaveClass(/active/);
         if (role === 'master' && screen === 'dispatch')
-          await expect(page.locator('.usScheduleCard')).toBeVisible();
+          await expect(page.locator('.bosMasterTimeline')).toBeVisible();
         await fits(page);
+        if(role==='master'&&screen==='home'){
+          const scopes=page.locator('.bosHomeDayScopes');
+          for(const key of ['today','tomorrow','overdue','all']){
+            const chip=scopes.locator(`[data-home-scope="${key}"]`);
+            await chip.scrollIntoViewIfNeeded();await chip.click();
+            await expect(chip).toHaveAttribute('aria-pressed','true');
+            expect(await chip.evaluate(e=>{const r=e.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return r.left>=0&&r.right<=innerWidth&&(hit===e||e.contains(hit))})).toBe(true);
+          }
+        }
         if (role === 'owner' && width === 1440 && screen === 'home')
           await page.screenshot({path: testInfo.outputPath('desktop-home.png')});
         if (role === 'owner' && width === 390 && screen === 'orders')
           await page.screenshot({path: testInfo.outputPath('mobile-orders.png')});
       }
       await page.locator('#profileBtn').click();
+      if(role==='master'){
+        await expect(page.locator('.bosProfileIdentity')).toBeVisible();await fits(page);
+        await page.getByRole('button',{name:/Настройки входа/}).click();
+      }
       await expect(page.locator('#modalRoot .modal')).toBeVisible();
       await fits(page);
       await page.locator('.modalClose').click();
@@ -72,7 +92,7 @@ for (const role of ['owner', 'manager', 'dispatcher', 'master']) {
         await expect(page.locator('#modalRoot .modal')).toBeVisible();
         await fits(page);
         await page.locator('.modalClose').click();
-        await page.locator('nav [data-page="team"]').click();
+        await navigate(page,'team',role,width);
         await page.getByRole('button', {name: '+ Сотрудник', exact: true}).click();
         await expect(page.locator('#empForm')).toBeVisible();
         await fits(page);

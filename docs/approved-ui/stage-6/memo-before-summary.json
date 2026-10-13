@@ -1,0 +1,50 @@
+{
+  "reportPath": "/workspace/scratch/73e5936a7e6d/recovery/task6-memo-before-results.json",
+  "reportSha256": "cab7079e1f7cdeb3715bbc87a03f44b5ee813a1aa103b48240db93e34e535629",
+  "stats": {
+    "startTime": "2026-10-11T14:20:58.719Z",
+    "duration": 7819.306999999999,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "cases": 1,
+  "outcomes": {
+    "unexpected": 1
+  },
+  "globalErrors": [],
+  "failures": [
+    {
+      "file": "approved-master-memo.spec.js",
+      "line": 2,
+      "title": "master profile memo destination exposes four original material handlers",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "failed"
+      ],
+      "errors": [
+        "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#modalRoot')\nExpected string: \u001b[32m\"Акты выполненных работ\"\u001b[39m\nReceived string: \u001b[31m\"\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#modalRoot')\u001b[22m\n\u001b[2m    9 × locator resolved to <div id=\"modalRoot\"></div>\u001b[22m\n\u001b[2m      - unexpected value \"\"\u001b[22m\n\n\n  1 | const {test,expect}=require('@playwright/test');const {fullStack}=require('./helpers/full-stack.cjs');\n> 2 | test('master profile memo destination exposes four original material handlers',async({page})=>{await page.route('**/*',r=>['127.0.0.1','localhost'].includes(new URL(r.request().url()).hostname)?r.continue():r.abort());await fullStack(page,'master');await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>show('team'));await page.getByRole('button',{name:'Памятки и прайс',exact:false}).click();await expect(page.locator('#modalRoot')).toContainText('Акты выполненных работ');for(const kind of ['acts','measurements','price','tips'])await expect(page.locator(`#modalRoot [onclick=\"openMasterMemoItem('${kind}')\"]`)).toBeVisible();await page.locator('#modalRoot [onclick=\"openMasterMemoItem(\\'price\\')\"]').click();await expect(page.locator('#modalRoot h2')).toHaveText('Прайс услуг');await expect(page.locator('#bosCatalogSearch')).toBeVisible();});\n    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^\n  3 |\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/approved-master-memo.spec.js:2:479"
+      ],
+      "durationMs": 6438
+    }
+  ],
+  "skipped": [],
+  "allCases": [
+    {
+      "file": "approved-master-memo.spec.js",
+      "line": 2,
+      "title": "master profile memo destination exposes four original material handlers",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "failed"
+      ],
+      "errors": [
+        "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#modalRoot')\nExpected string: \u001b[32m\"Акты выполненных работ\"\u001b[39m\nReceived string: \u001b[31m\"\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#modalRoot')\u001b[22m\n\u001b[2m    9 × locator resolved to <div id=\"modalRoot\"></div>\u001b[22m\n\u001b[2m      - unexpected value \"\"\u001b[22m\n\n\n  1 | const {test,expect}=require('@playwright/test');const {fullStack}=require('./helpers/full-stack.cjs');\n> 2 | test('master profile memo destination exposes four original material handlers',async({page})=>{await page.route('**/*',r=>['127.0.0.1','localhost'].includes(new URL(r.request().url()).hostname)?r.continue():r.abort());await fullStack(page,'master');await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>show('team'));await page.getByRole('button',{name:'Памятки и прайс',exact:false}).click();await expect(page.locator('#modalRoot')).toContainText('Акты выполненных работ');for(const kind of ['acts','measurements','price','tips'])await expect(page.locator(`#modalRoot [onclick=\"openMasterMemoItem('${kind}')\"]`)).toBeVisible();await page.locator('#modalRoot [onclick=\"openMasterMemoItem(\\'price\\')\"]').click();await expect(page.locator('#modalRoot h2')).toHaveText('Прайс услуг');await expect(page.locator('#bosCatalogSearch')).toBeVisible();});\n    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^\n  3 |\n    at /workspace/scratch/73e5936a7e6d/business-os-vk/tests/approved-master-memo.spec.js:2:479"
+      ],
+      "durationMs": 6438
+    }
+  ]
+}

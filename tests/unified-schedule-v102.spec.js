@@ -25,7 +25,10 @@ test('dispatcher schedule day shows every master and distinguishes full partial 
   await expect(page.locator('#authGate')).toBeHidden();
   await page.waitForFunction(()=>window.BOS_UNIFIED_SCHEDULE_V102===true);
   await page.locator('nav [data-page="dispatch"]').click();
-  await expect(page.locator('.usScheduleCard')).toBeVisible();
+  await expect(page.locator('.bosOpsDaySchedule')).toBeVisible();
+  await page.getByRole('button',{name:'График команды',exact:true}).click();
+  await expect(page.locator('.bosOpsMonthTask')).toBeVisible();
+  await page.getByLabel('Мастер календаря',{exact:true}).selectOption('');
   await page.locator(`.usDay[data-date="${fullDate}"] .usDayHead`).click();
 
   const modal=page.locator('.modal');
@@ -38,7 +41,7 @@ test('dispatcher schedule day shows every master and distinguishes full partial 
   await expect(modal.locator('.usTime.unknown')).toContainText('Не задан');
 });
 
-test('master schedule uses the same calendar and keeps all controls inside one card',async({page})=>{
+test('master schedule retains month calendar and selected-day controls',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const {db,master}=await fullStack(page,'master');
   const fullDate=currentMonthDate(10),partialDate=currentMonthDate(11);
@@ -52,17 +55,18 @@ test('master schedule uses the same calendar and keeps all controls inside one c
   await page.waitForFunction(()=>window.BOS_UNIFIED_SCHEDULE_V102===true);
   await page.locator('nav [data-page="dispatch"]').click();
 
+  await page.getByRole('button',{name:'Мой рабочий график',exact:true}).click();
   const card=page.locator('.usScheduleCard');
   await expect(card).toBeVisible();
   await expect(card.locator(`.usDay[data-date="${fullDate}"]`)).toHaveClass(/full/);
   await expect(card.locator(`.usDay[data-date="${partialDate}"]`)).toHaveClass(/partial/);
   await card.locator(`.usDay[data-date="${partialDate}"]`).click();
 
-  await expect(card.locator('.usQuick')).toBeVisible();
-  await expect(card.locator('#usBulkStart')).toBeVisible();
-  await expect(card.locator('#usBulkEnd')).toBeVisible();
-  await expect(card.locator('.usEditor')).toBeVisible();
-  await expect(card.locator('#usStart')).toHaveValue('13:00');
-  await expect(card.locator('#usEnd')).toHaveValue('20:00');
-  await expect(card.getByRole('button',{name:'Сохранить график'})).toBeVisible();
+  const editor=page.locator('.bosScheduleEditorTask');await editor.locator('summary').click();await expect(editor.locator('.usQuick')).toBeVisible();
+  await expect(editor.locator('#usBulkStart')).toBeVisible();
+  await expect(editor.locator('#usBulkEnd')).toBeVisible();
+  await expect(editor.locator('.usEditor')).toBeVisible();
+  await expect(editor.locator('#usStart')).toHaveValue('13:00');
+  await expect(editor.locator('#usEnd')).toHaveValue('20:00');
+  await expect(editor.getByRole('button',{name:'Сохранить график'})).toBeVisible();
 });

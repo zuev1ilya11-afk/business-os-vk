@@ -1,3 +1,4 @@
+const {filterSelect}=require('./helpers/approved-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
@@ -39,16 +40,16 @@ for(const role of ['owner','manager','dispatcher'])test(`${role}: today includes
   await expectClients(page,['Сегодня в работе','Сегодня выполнена','Сегодня отменена','Сегодня рекламация']);
   await expect(filter(page,'today').locator('small')).toHaveText('4');
 
-  await page.locator('#dmv3Status').selectOption('Выполнена');
+  await filterSelect(page,'dmv3Status','Выполнена');
   await expectClients(page,['Сегодня выполнена']);
   await filter(page,'all').click();
   await expectClients(page,['Сегодня выполнена','Вчера выполнена','Завтра выполнена','Без даты выполнена']);
   await filter(page,'today').click();
   await expect(page.locator('#dmv3Status')).toHaveValue('Выполнена');
   await expectClients(page,['Сегодня выполнена']);
-  await page.locator('#dmv3Status').selectOption('В работе');
+  await filterSelect(page,'dmv3Status','В работе');
   await expectClients(page,['Сегодня в работе']);
-  await page.locator('#dmv3Status').selectOption('');
+  await filterSelect(page,'dmv3Status','');
   await expectClients(page,['Сегодня в работе','Сегодня выполнена','Сегодня отменена','Сегодня рекламация']);
 
   await filter(page,'active').click();

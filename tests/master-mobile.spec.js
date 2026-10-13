@@ -55,7 +55,7 @@ for(const s of sizes){
     await expect(workflow.getByRole('button',{name:/Подтвердить: выехал/})).toBeEnabled();
     await expect(workflow.getByRole('button',{name:/Подтвердить: начал работу/})).toHaveCount(0);
     await expect(workflow.getByRole('button',{name:/Отправить отчёт/})).toHaveCount(0);
-    await expect(workflow.getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
+    await expect(page.locator('.bosApprovedVisit').getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
     await expect(page.getByRole('button',{name:'Я на месте',exact:true})).toHaveCount(0);
     await expect(page.getByText('Исходная сумма',{exact:true})).toHaveCount(0);
     await expect(page.getByText('Итоговая сумма заявки',{exact:true})).toHaveCount(0);
@@ -63,14 +63,14 @@ for(const s of sizes){
     await page.evaluate(()=>closeModal());
 
     await page.locator('nav button[data-page="dispatch"]').click();
-    await expect(page.getByText('Мой график')).toBeVisible();
+    await expect(page.locator('.bosMasterTimeline')).toBeVisible();await page.getByRole('button',{name:'Мой рабочий график',exact:true}).click();
     await expect(page.locator('.usScheduleCard .usGrid')).toBeVisible();
-    await expect(page.getByRole('button',{name:'Сохранить график'})).toBeVisible();
+    await page.getByRole('button',{name:'Изменить дни',exact:true}).click();await expect(page.getByRole('button',{name:'Сохранить график'})).toBeVisible();
 
     const teamButton=page.locator('nav button[data-page="team"]');
     if(await teamButton.count()){
       await teamButton.click();
-      await expect(page.getByText('КАБИНЕТ МАСТЕРА')).toBeVisible();
+      await expect(page.locator('.bosProfileIdentity')).toBeVisible();
       await expect(page.getByRole('button',{name:'+ Сотрудник'})).toHaveCount(0);
       await expect(page.getByText('Управление сотрудниками',{exact:true})).toHaveCount(0);
       await expect(page.getByRole('button',{name:'Логины и пароли'})).toHaveCount(0);

@@ -1,0 +1,12 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> build
+> node scripts/build-version.cjs
+
+BUILD_ID=1af4e38739a8df02c0db
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> build:check
+> node scripts/build-version.cjs --check
+
+BUILD_ID=1af4e38739a8df02c0db

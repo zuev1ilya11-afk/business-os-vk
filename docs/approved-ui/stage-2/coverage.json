@@ -1,0 +1,1118 @@
+{
+  "base": "1a38667e662c426e688918785bbe249fd165fb57",
+  "sourceCheckpoint": "1d8713f53f7090988f49b73d37ba983c724dac2b",
+  "build": "e7781dcd092dd7aa0078",
+  "counts": {
+    "restored": 37,
+    "pending": 14,
+    "partial": 0
+  },
+  "rows": [
+    {
+      "role": "master",
+      "screen": "home-days",
+      "title": "Главная · По дням",
+      "status": "restored",
+      "renderer": "master-daily-home-v127.js / original saved-progress classifier",
+      "verification": "master-home-tabs; master-daily-home; approved-ui-master exact-day/search",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/home-days-fixture-360.png",
+        "docs/approved-ui/stage-2/master/home-days-fixture-390.png",
+        "docs/approved-ui/stage-2/master/home-days-fixture-430.png"
+      ],
+      "states": [
+        "real-tab"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "home-new",
+      "title": "Главная · Новые",
+      "status": "restored",
+      "renderer": "master-daily-home-v127.js / original saved-progress classifier",
+      "verification": "master-home-tabs; master-daily-home; approved-ui-master exact-day/search",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/home-new-fixture-360.png",
+        "docs/approved-ui/stage-2/master/home-new-fixture-390.png",
+        "docs/approved-ui/stage-2/master/home-new-fixture-430.png"
+      ],
+      "states": [
+        "real-tab"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "home-waiting",
+      "title": "Главная · Ожидание",
+      "status": "restored",
+      "renderer": "master-daily-home-v127.js / original saved-progress classifier",
+      "verification": "master-home-tabs; master-daily-home; approved-ui-master exact-day/search",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/home-waiting-fixture-360.png",
+        "docs/approved-ui/stage-2/master/home-waiting-fixture-390.png",
+        "docs/approved-ui/stage-2/master/home-waiting-fixture-430.png"
+      ],
+      "states": [
+        "real-tab"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "home-callback",
+      "title": "Главная · Перезвонить сегодня",
+      "status": "restored",
+      "renderer": "master-daily-home-v127.js / original saved-progress classifier",
+      "verification": "master-home-tabs; master-daily-home; approved-ui-master exact-day/search",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/home-callback-fixture-360.png",
+        "docs/approved-ui/stage-2/master/home-callback-fixture-390.png",
+        "docs/approved-ui/stage-2/master/home-callback-fixture-430.png"
+      ],
+      "states": [
+        "actual-callback"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "home-overdue",
+      "title": "Главная · Просроченные",
+      "status": "restored",
+      "renderer": "master-daily-home-v127.js / original saved-progress classifier",
+      "verification": "master-home-tabs; master-daily-home; approved-ui-master exact-day/search",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/home-overdue-fixture-360.png",
+        "docs/approved-ui/stage-2/master/home-overdue-fixture-390.png",
+        "docs/approved-ui/stage-2/master/home-overdue-fixture-430.png"
+      ],
+      "states": [
+        "overdue-only"
+      ],
+      "reason": "Explicit Today/Tomorrow/Overdue/All filters use the original real day/overdue classifier. Search is16px and visit time remains one line.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "home-empty",
+      "title": "Главная · Пустой день",
+      "status": "restored",
+      "renderer": "master-daily-home-v127.js / original saved-progress classifier",
+      "verification": "master-home-tabs; master-daily-home; approved-ui-master exact-day/search",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/home-empty-fixture-360.png",
+        "docs/approved-ui/stage-2/master/home-empty-fixture-390.png",
+        "docs/approved-ui/stage-2/master/home-empty-fixture-430.png"
+      ],
+      "states": [
+        "empty-date"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "home-refresh-error",
+      "title": "Главная · Ошибка обновления",
+      "status": "restored",
+      "renderer": "master-daily-home-v127.js / original saved-progress classifier",
+      "verification": "master-home-tabs; master-daily-home; approved-ui-master exact-day/search",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/home-refresh-error-fixture-360.png",
+        "docs/approved-ui/stage-2/master/home-refresh-error-fixture-390.png",
+        "docs/approved-ui/stage-2/master/home-refresh-error-fixture-430.png"
+      ],
+      "states": [
+        "home-refresh-error"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "orders-active",
+      "title": "Мои заявки · Активные",
+      "status": "restored",
+      "renderer": "master-orders-v125.js / original filters and day handlers",
+      "verification": "master-orders-v125; master-order-day-filter",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/orders-active-fixture-360.png",
+        "docs/approved-ui/stage-2/master/orders-active-fixture-390.png",
+        "docs/approved-ui/stage-2/master/orders-active-fixture-430.png"
+      ],
+      "states": [
+        "current"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "orders-undated",
+      "title": "Мои заявки · Без даты",
+      "status": "restored",
+      "renderer": "master-orders-v125.js / original filters and day handlers",
+      "verification": "master-orders-v125; master-order-day-filter",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/orders-undated-fixture-360.png",
+        "docs/approved-ui/stage-2/master/orders-undated-fixture-390.png",
+        "docs/approved-ui/stage-2/master/orders-undated-fixture-430.png"
+      ],
+      "states": [
+        "new"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "orders-today",
+      "title": "Мои заявки · Сегодня",
+      "status": "restored",
+      "renderer": "master-orders-v125.js / original filters and day handlers",
+      "verification": "master-orders-v125; master-order-day-filter",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/orders-today-fixture-360.png",
+        "docs/approved-ui/stage-2/master/orders-today-fixture-390.png",
+        "docs/approved-ui/stage-2/master/orders-today-fixture-430.png"
+      ],
+      "states": [
+        "current"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "orders-future",
+      "title": "Мои заявки · Будущие",
+      "status": "restored",
+      "renderer": "master-orders-v125.js / original filters and day handlers",
+      "verification": "master-orders-v125; master-order-day-filter",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/orders-future-fixture-360.png",
+        "docs/approved-ui/stage-2/master/orders-future-fixture-390.png",
+        "docs/approved-ui/stage-2/master/orders-future-fixture-430.png"
+      ],
+      "states": [
+        "current"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "orders-done",
+      "title": "Мои заявки · Выполненные",
+      "status": "restored",
+      "renderer": "master-orders-v125.js / original filters and day handlers",
+      "verification": "master-orders-v125; master-order-day-filter",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/orders-done-fixture-360.png",
+        "docs/approved-ui/stage-2/master/orders-done-fixture-390.png",
+        "docs/approved-ui/stage-2/master/orders-done-fixture-430.png"
+      ],
+      "states": [
+        "done"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "order-detail",
+      "title": "Заявка · Прямой источник",
+      "status": "restored",
+      "renderer": "master-order-hands-layout-v72.js + master-order-actions-v179.js",
+      "verification": "master-order-focus; master-orders; approved-ui-master phone/readability/no-write",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/order-detail-fixture-360.png",
+        "docs/approved-ui/stage-2/master/order-detail-fixture-390.png",
+        "docs/approved-ui/stage-2/master/order-detail-fixture-430.png"
+      ],
+      "states": [
+        "progress-header-fixed-actions"
+      ],
+      "reason": "Accurate saved progress precedes Client. Saved visit appears near address; truthful next-step labels and actual primary/contact action hooks in reachable fixed footer. Original full works/visit/edit data preserved.",
+      "observedBuilds": [
+        "6227b932f4cca00ced89"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "order-hands",
+      "title": "Заявка · Hands",
+      "status": "restored",
+      "renderer": "master-order-hands-layout-v72.js + master-order-actions-v179.js",
+      "verification": "master-order-focus; master-orders; approved-ui-master phone/readability/no-write",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/order-hands-fixture-360.png",
+        "docs/approved-ui/stage-2/master/order-hands-fixture-390.png",
+        "docs/approved-ui/stage-2/master/order-hands-fixture-430.png"
+      ],
+      "states": [
+        "progress-header-fixed-actions"
+      ],
+      "reason": "Accurate saved progress precedes Client. Saved visit appears near address; truthful next-step labels and actual primary/contact action hooks in reachable fixed footer. Original full works/visit/edit data preserved.",
+      "observedBuilds": [
+        "6227b932f4cca00ced89"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "contact-outcomes",
+      "title": "Связь · 6 результатов",
+      "status": "restored",
+      "renderer": "master-call-workflow-v26.js + master-agreement-v109.js",
+      "verification": "master-confirmed-progress agreement/contact assertions",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/contact-outcomes-fixture-360.png",
+        "docs/approved-ui/stage-2/master/contact-outcomes-fixture-390.png",
+        "docs/approved-ui/stage-2/master/contact-outcomes-fixture-430.png"
+      ],
+      "states": [
+        "outcomes"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "contact-agreed",
+      "title": "Связь · Договорились",
+      "status": "restored",
+      "renderer": "master-call-workflow-v26.js + master-agreement-v109.js",
+      "verification": "master-confirmed-progress agreement/contact assertions",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/contact-agreed-fixture-360.png",
+        "docs/approved-ui/stage-2/master/contact-agreed-fixture-390.png",
+        "docs/approved-ui/stage-2/master/contact-agreed-fixture-430.png"
+      ],
+      "states": [
+        "visit-agreement"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "contact-callback",
+      "title": "Связь · Перезвонить",
+      "status": "restored",
+      "renderer": "master-call-workflow-v26.js + master-agreement-v109.js",
+      "verification": "master-confirmed-progress agreement/contact assertions",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/contact-callback-fixture-360.png",
+        "docs/approved-ui/stage-2/master/contact-callback-fixture-390.png",
+        "docs/approved-ui/stage-2/master/contact-callback-fixture-430.png"
+      ],
+      "states": [
+        "callback-draft"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "departure",
+      "title": "Выезд к клиенту",
+      "status": "restored",
+      "renderer": "master-order-actions-v179.js / openMasterStageTask179",
+      "verification": "master-confirmed-progress; master-order-actions; approved-ui-master no-write",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/departure-fixture-360.png",
+        "docs/approved-ui/stage-2/master/departure-fixture-390.png",
+        "docs/approved-ui/stage-2/master/departure-fixture-430.png"
+      ],
+      "states": [
+        "confirmation-no-save"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "start-work",
+      "title": "Начало работы",
+      "status": "restored",
+      "renderer": "master-order-actions-v179.js / openMasterStageTask179",
+      "verification": "master-confirmed-progress; master-order-actions",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/start-work-fixture-360.png",
+        "docs/approved-ui/stage-2/master/start-work-fixture-390.png",
+        "docs/approved-ui/stage-2/master/start-work-fixture-430.png"
+      ],
+      "states": [
+        "confirmation-no-save"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "report-form",
+      "title": "Отчёт · Документы и проверки",
+      "status": "restored",
+      "renderer": "master-report-ui-v12.js / reportLinksHtml / original uploader and reconcile",
+      "verification": "report-deduction; report-submit-receipt; correction-cycle; attachment-links; submit-regression; node replay/photo guards",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/report-form-fixture-360.png",
+        "docs/approved-ui/stage-2/master/report-form-fixture-390.png",
+        "docs/approved-ui/stage-2/master/report-form-fixture-430.png"
+      ],
+      "states": [
+        "current-form"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "e7781dcd092dd7aa0078"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "report-uploading",
+      "title": "Отчёт · Загрузка файлов",
+      "status": "restored",
+      "renderer": "master-report-ui-v12.js / reportLinksHtml / original uploader and reconcile",
+      "verification": "report-deduction; report-submit-receipt; correction-cycle; attachment-links; submit-regression; node replay/photo guards",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/report-uploading-fixture-360.png",
+        "docs/approved-ui/stage-2/master/report-uploading-fixture-390.png",
+        "docs/approved-ui/stage-2/master/report-uploading-fixture-430.png"
+      ],
+      "states": [
+        "acknowledged-act-current-photo"
+      ],
+      "reason": "Per-file rows derive only original prepare/upload/save phase text. A previous file is acknowledged only after its server response advances to next phase; active file uses indeterminate progress. Transport exposes no byte count or numeric percentage.",
+      "observedBuilds": [
+        "e7781dcd092dd7aa0078"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "report-error",
+      "title": "Отчёт · Ошибка файла",
+      "status": "restored",
+      "renderer": "master-report-ui-v12.js / reportLinksHtml / original uploader and reconcile",
+      "verification": "report-deduction; report-submit-receipt; correction-cycle; attachment-links; submit-regression; node replay/photo guards",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/report-error-fixture-360.png",
+        "docs/approved-ui/stage-2/master/report-error-fixture-390.png",
+        "docs/approved-ui/stage-2/master/report-error-fixture-430.png"
+      ],
+      "states": [
+        "actual-photo-error"
+      ],
+      "reason": "Original failed current-file phase shown as Error; previously acknowledged files remain Uploaded. Selected inputs retained; retry uses original submit handler. No per-file retry API or byte-progress signal exists; no extra transport invented.",
+      "observedBuilds": [
+        "e7781dcd092dd7aa0078"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "report-submitted",
+      "title": "Отчёт · На проверке",
+      "status": "restored",
+      "renderer": "master-report-ui-v12.js / reportLinksHtml / original uploader and reconcile",
+      "verification": "report-deduction; report-submit-receipt; correction-cycle; attachment-links; submit-regression; node replay/photo guards",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/report-submitted-fixture-360.png",
+        "docs/approved-ui/stage-2/master/report-submitted-fixture-390.png",
+        "docs/approved-ui/stage-2/master/report-submitted-fixture-430.png"
+      ],
+      "states": [
+        "original-files-controls"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "report-rejected",
+      "title": "Отчёт · Возврат на доработку",
+      "status": "restored",
+      "renderer": "master-report-ui-v12.js / reportLinksHtml / original uploader and reconcile",
+      "verification": "report-deduction; report-submit-receipt; correction-cycle; attachment-links; submit-regression; node replay/photo guards",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/report-rejected-fixture-360.png",
+        "docs/approved-ui/stage-2/master/report-rejected-fixture-390.png",
+        "docs/approved-ui/stage-2/master/report-rejected-fixture-430.png"
+      ],
+      "states": [
+        "current-form"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "e7781dcd092dd7aa0078"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "schedule",
+      "title": "Моё расписание",
+      "status": "restored",
+      "renderer": "unified-schedule-v102.js / protected monthly save",
+      "verification": "unified-schedule master path; approved-ui-master draft/month boundary/cancel",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/schedule-fixture-360.png",
+        "docs/approved-ui/stage-2/master/schedule-fixture-390.png",
+        "docs/approved-ui/stage-2/master/schedule-fixture-430.png"
+      ],
+      "states": [
+        "own-visits-first"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "profile",
+      "title": "Мой профиль",
+      "status": "restored",
+      "renderer": "master-profile-summary-v129.js / actual identity and original personal block",
+      "verification": "approved-ui-master single identity/unique-data; profile-summary; payout regression",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/profile-fixture-360.png",
+        "docs/approved-ui/stage-2/master/profile-fixture-390.png",
+        "docs/approved-ui/stage-2/master/profile-fixture-430.png"
+      ],
+      "states": [
+        "single-identity-real-destinations"
+      ],
+      "reason": "One identity, original personal fields, and real personal/schedule/memo/own-claims/login/device destinations. Shared help/about content remains later-stage dependency; no absent actions invented.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "payouts",
+      "title": "Мои начисления",
+      "status": "restored",
+      "renderer": "master-money-v130.js / original period, pay and payment rules",
+      "verification": "master-money-v130; profile payout regression",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/payouts-fixture-360.png",
+        "docs/approved-ui/stage-2/master/payouts-fixture-390.png",
+        "docs/approved-ui/stage-2/master/payouts-fixture-430.png"
+      ],
+      "states": [
+        "standalone-real-period"
+      ],
+      "reason": "Standalone full original accrual panel, period controls and order breakdown. Original financial rules and unavailable-paid-data boundary preserved.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "memo",
+      "title": "Памятки мастера",
+      "status": "restored",
+      "renderer": "master-memo-v20.js + master-memo-runtime-v21.js / four categories retained",
+      "verification": "fixture category preservation capture (no changed save logic)",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/memo-fixture-360.png",
+        "docs/approved-ui/stage-2/master/memo-fixture-390.png",
+        "docs/approved-ui/stage-2/master/memo-fixture-430.png"
+      ],
+      "states": [
+        "categories"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "price",
+      "title": "Каталог и прайс",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [],
+      "captures": [],
+      "states": [],
+      "reason": "Existing price-material category retained. Approved searchable work/price catalog composition was not reconstructed."
+    },
+    {
+      "role": "master",
+      "screen": "personal",
+      "title": "Личные данные",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/personal-fixture-360.png",
+        "docs/approved-ui/stage-2/master/personal-fixture-390.png",
+        "docs/approved-ui/stage-2/master/personal-fixture-430.png"
+      ],
+      "states": [
+        "existing-shared"
+      ],
+      "reason": "Existing profile edit action and fields retained and captured; full approved personal-data form composition not reconstructed.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "help",
+      "title": "Помощь",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [],
+      "captures": [],
+      "states": [],
+      "reason": "No matching existing openMasterHelp entry was found in scoped renderer. No invented destination or controller supplied."
+    },
+    {
+      "role": "master",
+      "screen": "about",
+      "title": "О приложении",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [],
+      "captures": [],
+      "states": [],
+      "reason": "No matching existing openAbout entry was found in scoped renderer. No invented version/connectivity data supplied."
+    },
+    {
+      "role": "master",
+      "screen": "schedule-month",
+      "title": "Мой график · Месяц",
+      "status": "restored",
+      "renderer": "unified-schedule-v102.js / protected monthly save",
+      "verification": "unified-schedule master path; approved-ui-master draft/month boundary/cancel",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/schedule-month-fixture-360.png",
+        "docs/approved-ui/stage-2/master/schedule-month-fixture-390.png",
+        "docs/approved-ui/stage-2/master/schedule-month-fixture-430.png"
+      ],
+      "states": [
+        "flat-own-month"
+      ],
+      "reason": "Canonical flat grid/header/legend, original saved hours/visit counts, and real selected-day summary. Original monthly save and month constraints preserved.",
+      "observedBuilds": [
+        "da56f22c36c3ef2b02bb"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "schedule-edit",
+      "title": "Мой график · Выбранные дни",
+      "status": "restored",
+      "renderer": "unified-schedule-v102.js / protected monthly save",
+      "verification": "unified-schedule master path; approved-ui-master draft/month boundary/cancel",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/schedule-edit-fixture-360.png",
+        "docs/approved-ui/stage-2/master/schedule-edit-fixture-390.png",
+        "docs/approved-ui/stage-2/master/schedule-edit-fixture-430.png"
+      ],
+      "states": [
+        "selected-day-first"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "reschedule-request",
+      "title": "Запросить перенос",
+      "status": "restored",
+      "renderer": "master-reschedule-call-v87.js / original reason-only request",
+      "verification": "master-order-actions existing original reschedule assertions",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/reschedule-request-fixture-360.png",
+        "docs/approved-ui/stage-2/master/reschedule-request-fixture-390.png",
+        "docs/approved-ui/stage-2/master/reschedule-request-fixture-430.png"
+      ],
+      "states": [
+        "reason-only"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "report-deduction",
+      "title": "Невыполненные работы",
+      "status": "restored",
+      "renderer": "master-report-ui-v12.js / reportLinksHtml / original uploader and reconcile",
+      "verification": "report-deduction; report-submit-receipt; correction-cycle; attachment-links; submit-regression; node replay/photo guards",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/report-deduction-fixture-360.png",
+        "docs/approved-ui/stage-2/master/report-deduction-fixture-390.png",
+        "docs/approved-ui/stage-2/master/report-deduction-fixture-430.png"
+      ],
+      "states": [
+        "deduction-selected"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "claims",
+      "title": "Мои рекламации",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [],
+      "captures": [],
+      "states": [],
+      "reason": "Existing own claim notices/handlers retained; full approved claims list composition not reconstructed."
+    },
+    {
+      "role": "master",
+      "screen": "claim-detail",
+      "title": "Рекламация · Повторный визит",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [],
+      "captures": [],
+      "states": [],
+      "reason": "Existing claim detail/revisit handlers retained; full approved revisit composition not reconstructed."
+    },
+    {
+      "role": "master",
+      "screen": "push",
+      "title": "Уведомления на устройстве",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [],
+      "captures": [],
+      "states": [],
+      "reason": "Existing device notification control retained; shared approved composition pending."
+    },
+    {
+      "role": "master",
+      "screen": "login-settings",
+      "title": "Настройки входа",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [],
+      "captures": [],
+      "states": [],
+      "reason": "Existing login settings control retained; auth/session module untouched, shared approved composition pending."
+    },
+    {
+      "role": "master",
+      "screen": "report-extras",
+      "title": "Отчёт · Дополнительные работы",
+      "status": "restored",
+      "renderer": "master-report-ui-v12.js / reportLinksHtml / original uploader and reconcile",
+      "verification": "report-deduction; report-submit-receipt; correction-cycle; attachment-links; submit-regression; node replay/photo guards",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/report-extras-fixture-360.png",
+        "docs/approved-ui/stage-2/master/report-extras-fixture-390.png",
+        "docs/approved-ui/stage-2/master/report-extras-fixture-430.png"
+      ],
+      "states": [
+        "current-form"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "e7781dcd092dd7aa0078"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "report-uncompleted",
+      "title": "Отчёт · Не все работы выполнены",
+      "status": "restored",
+      "renderer": "master-report-ui-v12.js / reportLinksHtml / original uploader and reconcile",
+      "verification": "report-deduction; report-submit-receipt; correction-cycle; attachment-links; submit-regression; node replay/photo guards",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/report-uncompleted-fixture-360.png",
+        "docs/approved-ui/stage-2/master/report-uncompleted-fixture-390.png",
+        "docs/approved-ui/stage-2/master/report-uncompleted-fixture-430.png"
+      ],
+      "states": [
+        "form-deduction-summary"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "e7781dcd092dd7aa0078"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "filters",
+      "title": "Фильтры своих заявок",
+      "status": "restored",
+      "renderer": "master-orders-v125.js / real search/status/day controls",
+      "verification": "approved-ui-master exact-day/search; master order filters",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/filters-fixture-360.png",
+        "docs/approved-ui/stage-2/master/filters-fixture-390.png",
+        "docs/approved-ui/stage-2/master/filters-fixture-430.png"
+      ],
+      "states": [
+        "search"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    },
+    {
+      "role": "master",
+      "screen": "report-uncertain",
+      "title": "Отчёт · Результат отправки неизвестен",
+      "status": "restored",
+      "renderer": "master-report-ui-v12.js / reportLinksHtml / original uploader and reconcile",
+      "verification": "report-deduction; report-submit-receipt; correction-cycle; attachment-links; submit-regression; node replay/photo guards",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/report-uncertain-fixture-360.png",
+        "docs/approved-ui/stage-2/master/report-uncertain-fixture-390.png",
+        "docs/approved-ui/stage-2/master/report-uncertain-fixture-430.png"
+      ],
+      "states": [
+        "failed-fresh-read"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [
+        "ea96b6b2b506871dd914"
+      ],
+      "captureEvidence": "R1 runtime version recorded"
+    },
+    {
+      "role": "master",
+      "screen": "photo-error",
+      "title": "Просмотр фото · Ошибка",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [],
+      "captures": [],
+      "states": [],
+      "reason": "Original attachment/photo viewer behavior retained; approved shared photo-error composition pending."
+    },
+    {
+      "role": "master",
+      "screen": "notifications",
+      "title": "Уведомления",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [],
+      "captures": [],
+      "states": [],
+      "reason": "Original notification center retained; approved shared composition pending."
+    },
+    {
+      "role": "master",
+      "screen": "file-viewer",
+      "title": "Просмотр документа",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [],
+      "captures": [],
+      "states": [],
+      "reason": "Original reportLinksHtml attachment links/viewer retained; approved shared document viewer composition pending."
+    },
+    {
+      "role": "master",
+      "screen": "auth-login",
+      "title": "Вход в Business OS",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [],
+      "captures": [],
+      "states": [],
+      "reason": "Auth/session modules untouched; shared approved login composition pending."
+    },
+    {
+      "role": "master",
+      "screen": "auth-invite",
+      "title": "Вход по приглашению",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [],
+      "captures": [],
+      "states": [],
+      "reason": "Auth/session modules untouched; shared approved invite composition pending."
+    },
+    {
+      "role": "master",
+      "screen": "auth-expired",
+      "title": "Сессия истекла",
+      "status": "pending",
+      "renderer": "Existing shared control; no complete composition restoration",
+      "verification": "Not claimed restored",
+      "widths": [],
+      "captures": [],
+      "states": [],
+      "reason": "Auth/session modules untouched; shared approved expired-session composition pending."
+    },
+    {
+      "role": "master",
+      "screen": "day-detail",
+      "title": "День мастера",
+      "status": "restored",
+      "renderer": "master-profile-summary-v129.js / own saved schedule and visits",
+      "verification": "profile-summary; calendar fixture capture",
+      "widths": [
+        360,
+        390,
+        430
+      ],
+      "captures": [
+        "docs/approved-ui/stage-2/master/day-detail-fixture-360.png",
+        "docs/approved-ui/stage-2/master/day-detail-fixture-390.png",
+        "docs/approved-ui/stage-2/master/day-detail-fixture-430.png"
+      ],
+      "states": [
+        "own-day"
+      ],
+      "reason": "Approved main composition restored through actual data and original handlers; no placeholder production state.",
+      "observedBuilds": [],
+      "captureEvidence": "Legacy runtime version not recorded; composition unchanged in R1"
+    }
+  ],
+  "reviewBase": "5f09d048db08ee6ce9b178761be4cf32dc4bfcdc",
+  "captureVersionPolicy": "Each R1 capture records observedBuild from window.BOS_BUILD.id. Legacy captures retain an explicit unrecorded-version status; no global final-build attribution."
+}

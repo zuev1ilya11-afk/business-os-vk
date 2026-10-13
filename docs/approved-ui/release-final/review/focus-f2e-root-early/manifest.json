@@ -1,0 +1,97 @@
+[
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/review/focus-f2e-root-early/master-00.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "home-days",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/home-days-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/home-days-fixture-390.png",
+        "runtimeBuild": "f2e5943231221a2ee73e",
+        "state": "real-tab"
+      },
+      {
+        "role": "master",
+        "screen": "home-new",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/home-new-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/home-new-fixture-390.png",
+        "runtimeBuild": "f2e5943231221a2ee73e",
+        "state": "real-tab"
+      },
+      {
+        "role": "master",
+        "screen": "order-detail",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/order-detail-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/order-detail-fixture-390.png",
+        "runtimeBuild": "f2e5943231221a2ee73e",
+        "state": "full-width-sections"
+      },
+      {
+        "role": "master",
+        "screen": "order-hands",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/order-hands-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/order-hands-fixture-390.png",
+        "runtimeBuild": "f2e5943231221a2ee73e",
+        "state": "full-width-sections"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/review/focus-f2e-root-early/master-01.jpg",
+    "screens": [
+      {
+        "role": "master",
+        "screen": "report-extras",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/report-extras-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/report-extras-fixture-390.png",
+        "runtimeBuild": "f2e5943231221a2ee73e",
+        "state": "current-form"
+      },
+      {
+        "role": "master",
+        "screen": "profile",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/master/profile-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/master/profile-fixture-390.png",
+        "runtimeBuild": "f2e5943231221a2ee73e",
+        "state": "single-identity-real-destinations"
+      }
+    ]
+  },
+  {
+    "sheet": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/review/focus-f2e-root-early/dispatcher-00.jpg",
+    "screens": [
+      {
+        "role": "dispatcher",
+        "screen": "workspace",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/workspace-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/workspace-fixture-390.png",
+        "runtimeBuild": "f2e5943231221a2ee73e",
+        "state": "synthetic-fixture"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "orders",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/orders-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/orders-fixture-390.png",
+        "runtimeBuild": "f2e5943231221a2ee73e",
+        "state": "synthetic-fixture"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "team",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/team-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/team-fixture-390.png",
+        "runtimeBuild": "f2e5943231221a2ee73e",
+        "state": "synthetic-fixture"
+      },
+      {
+        "role": "dispatcher",
+        "screen": "schedule",
+        "approved": "/workspace/scratch/de568ce658a8/audit-ui/proposed/dispatcher/schedule-390.png",
+        "actual": "/workspace/scratch/de568ce658a8/business-os-vk/docs/approved-ui/release-final/visual/dispatcher/schedule-fixture-390.png",
+        "runtimeBuild": "f2e5943231221a2ee73e",
+        "state": "synthetic-fixture"
+      }
+    ]
+  }
+]

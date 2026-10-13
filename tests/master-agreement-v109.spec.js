@@ -58,7 +58,7 @@ test('scheduled order uses confirmed reschedule instead of direct date editing',
   await expect(panel).toBeVisible();
   await expect(panel.getByRole('button',{name:/Договориться/})).toHaveCount(0);
   await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toBeEnabled();
-  await expect(panel).toContainText('Требует подтверждения диспетчера или руководителя');
-  await panel.getByRole('button',{name:'Запросить перенос',exact:true}).click();
+  await expect(page.locator('.bosApprovedVisit')).toContainText('Требует подтверждения диспетчера или руководителя');
+  await page.locator('.bosApprovedVisit').getByRole('button',{name:'Запросить перенос',exact:true}).click();
   await expect(page.locator('#masterRescheduleForm')).toBeVisible();
 });

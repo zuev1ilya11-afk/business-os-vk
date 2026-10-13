@@ -1,0 +1,4269 @@
+[
+  {
+    "role": "master",
+    "screen": "home-days",
+    "title": "Главная · По дням",
+    "type": "masterHome",
+    "variant": "days",
+    "state": "days",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_home"
+    ],
+    "changes": [
+      "Сохранены вкладки «По дням / Новые / Ожидание» и фильтр звонков сегодня.",
+      "Визит, обратный звонок и просрочка имеют отдельные текстовые статусы.",
+      "Обновление компактно; следующий этап виден прямо в заявке."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "home-new",
+    "title": "Главная · Новые",
+    "type": "masterHome",
+    "variant": "new",
+    "state": "new",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_home"
+    ],
+    "changes": [
+      "Сохранены вкладки «По дням / Новые / Ожидание» и фильтр звонков сегодня.",
+      "Визит, обратный звонок и просрочка имеют отдельные текстовые статусы.",
+      "Обновление компактно; следующий этап виден прямо в заявке."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "home-waiting",
+    "title": "Главная · Ожидание",
+    "type": "masterHome",
+    "variant": "waiting",
+    "state": "waiting",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_home"
+    ],
+    "changes": [
+      "Сохранены вкладки «По дням / Новые / Ожидание» и фильтр звонков сегодня.",
+      "Визит, обратный звонок и просрочка имеют отдельные текстовые статусы.",
+      "Обновление компактно; следующий этап виден прямо в заявке."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "home-callback",
+    "title": "Главная · Перезвонить сегодня",
+    "type": "masterHome",
+    "variant": "callback",
+    "state": "callback",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_home"
+    ],
+    "changes": [
+      "Сохранены вкладки «По дням / Новые / Ожидание» и фильтр звонков сегодня.",
+      "Визит, обратный звонок и просрочка имеют отдельные текстовые статусы.",
+      "Обновление компактно; следующий этап виден прямо в заявке."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "home-overdue",
+    "title": "Главная · Просроченные",
+    "type": "masterHome",
+    "variant": "overdue",
+    "state": "overdue",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_home"
+    ],
+    "changes": [
+      "Сохранены вкладки «По дням / Новые / Ожидание» и фильтр звонков сегодня.",
+      "Визит, обратный звонок и просрочка имеют отдельные текстовые статусы.",
+      "Обновление компактно; следующий этап виден прямо в заявке."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "home-empty",
+    "title": "Главная · Пустой день",
+    "type": "masterHome",
+    "variant": "empty",
+    "state": "empty",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_home"
+    ],
+    "changes": [
+      "Сохранены вкладки «По дням / Новые / Ожидание» и фильтр звонков сегодня.",
+      "Визит, обратный звонок и просрочка имеют отдельные текстовые статусы.",
+      "Обновление компактно; следующий этап виден прямо в заявке."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "home-refresh-error",
+    "title": "Главная · Ошибка обновления",
+    "type": "masterHome",
+    "variant": "refresh-error",
+    "state": "refresh-error",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_home"
+    ],
+    "changes": [
+      "Сохранены вкладки «По дням / Новые / Ожидание» и фильтр звонков сегодня.",
+      "Визит, обратный звонок и просрочка имеют отдельные текстовые статусы.",
+      "Обновление компактно; следующий этап виден прямо в заявке."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "orders-active",
+    "title": "Мои заявки · Активные",
+    "type": "orders",
+    "variant": "active",
+    "state": "active",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_orders"
+    ],
+    "changes": [
+      "Заявки читаются по времени, адресу, составу работ и состоянию.",
+      "Фильтры расположены над списком; без даты и будущие заявки различимы.",
+      "Вложенные карточки заменены спокойными строками с разделителями."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "orders-undated",
+    "title": "Мои заявки · Без даты",
+    "type": "orders",
+    "variant": "undated",
+    "state": "undated",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_orders"
+    ],
+    "changes": [
+      "Заявки читаются по времени, адресу, составу работ и состоянию.",
+      "Фильтры расположены над списком; без даты и будущие заявки различимы.",
+      "Вложенные карточки заменены спокойными строками с разделителями."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "orders-today",
+    "title": "Мои заявки · Сегодня",
+    "type": "orders",
+    "variant": "today",
+    "state": "today",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_orders"
+    ],
+    "changes": [
+      "Заявки читаются по времени, адресу, составу работ и состоянию.",
+      "Фильтры расположены над списком; без даты и будущие заявки различимы.",
+      "Вложенные карточки заменены спокойными строками с разделителями."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "orders-future",
+    "title": "Мои заявки · Будущие",
+    "type": "orders",
+    "variant": "future",
+    "state": "future",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_orders"
+    ],
+    "changes": [
+      "Заявки читаются по времени, адресу, составу работ и состоянию.",
+      "Фильтры расположены над списком; без даты и будущие заявки различимы.",
+      "Вложенные карточки заменены спокойными строками с разделителями."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "orders-done",
+    "title": "Мои заявки · Выполненные",
+    "type": "orders",
+    "variant": "done",
+    "state": "done",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_orders"
+    ],
+    "changes": [
+      "Заявки читаются по времени, адресу, составу работ и состоянию.",
+      "Фильтры расположены над списком; без даты и будущие заявки различимы.",
+      "Вложенные карточки заменены спокойными строками с разделителями."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "order-detail",
+    "title": "Заявка · Прямой источник",
+    "type": "detail",
+    "variant": "direct",
+    "state": "direct",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_order"
+    ],
+    "changes": [
+      "У каждого телефона отдельные кнопки звонка и копирования.",
+      "Работы, количество, договорённость и визит разделены по смыслу.",
+      "Четыре этапа и следующий шаг видны без декоративных блоков."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "order-hands",
+    "title": "Заявка · Hands",
+    "type": "detail",
+    "variant": "hands",
+    "state": "hands",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_order"
+    ],
+    "changes": [
+      "У каждого телефона отдельные кнопки звонка и копирования.",
+      "Работы, количество, договорённость и визит разделены по смыслу.",
+      "Четыре этапа и следующий шаг видны без декоративных блоков."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "contact-outcomes",
+    "title": "Связь · 6 результатов",
+    "type": "contact",
+    "variant": "outcomes",
+    "state": "outcomes",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "master_contact",
+      "master_agreement"
+    ],
+    "changes": [
+      "Шесть результатов звонка имеют явные текстовые варианты.",
+      "Выбранный телефон и комментарий относятся к конкретному контакту.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "contact-agreed",
+    "title": "Связь · Договорились",
+    "type": "contact",
+    "variant": "agreed",
+    "state": "agreed",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "master_contact",
+      "master_agreement"
+    ],
+    "changes": [
+      "Шесть результатов звонка имеют явные текстовые варианты.",
+      "Выбранный телефон и комментарий относятся к конкретному контакту.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "contact-callback",
+    "title": "Связь · Перезвонить",
+    "type": "contact",
+    "variant": "callback",
+    "state": "callback",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "master_contact",
+      "master_agreement"
+    ],
+    "changes": [
+      "Шесть результатов звонка имеют явные текстовые варианты.",
+      "Выбранный телефон и комментарий относятся к конкретному контакту.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "departure",
+    "title": "Выезд к клиенту",
+    "type": "visit",
+    "variant": "departure",
+    "state": "departure",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_order"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "start-work",
+    "title": "Начало работы",
+    "type": "visit",
+    "variant": "start",
+    "state": "start",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_order"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "report-form",
+    "title": "Отчёт · Документы и проверки",
+    "type": "report",
+    "variant": "form",
+    "state": "form",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "master_report"
+    ],
+    "changes": [
+      "Документы подписаны по назначению и имеют состояния загрузки.",
+      "Проверки полноты работ и файлов названы словами.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "report-uploading",
+    "title": "Отчёт · Загрузка файлов",
+    "type": "report",
+    "variant": "uploading",
+    "state": "uploading",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "master_report"
+    ],
+    "changes": [
+      "Документы подписаны по назначению и имеют состояния загрузки.",
+      "Проверки полноты работ и файлов названы словами.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "report-error",
+    "title": "Отчёт · Ошибка файла",
+    "type": "report",
+    "variant": "error",
+    "state": "error",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "master_report"
+    ],
+    "changes": [
+      "Документы подписаны по назначению и имеют состояния загрузки.",
+      "Проверки полноты работ и файлов названы словами.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "report-submitted",
+    "title": "Отчёт · На проверке",
+    "type": "report",
+    "variant": "submitted",
+    "state": "submitted",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "master_report"
+    ],
+    "changes": [
+      "Документы подписаны по назначению и имеют состояния загрузки.",
+      "Проверки полноты работ и файлов названы словами.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "report-rejected",
+    "title": "Отчёт · Возврат на доработку",
+    "type": "report",
+    "variant": "rejected",
+    "state": "rejected",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "master_report"
+    ],
+    "changes": [
+      "Документы подписаны по назначению и имеют состояния загрузки.",
+      "Проверки полноты работ и файлов названы словами.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "schedule",
+    "title": "Моё расписание",
+    "type": "schedule",
+    "variant": "master",
+    "state": "master",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "ops_schedule_board",
+      "management_schedule"
+    ],
+    "changes": [
+      "На широком экране мастера расположены вертикально, часы 10–20 горизонтально.",
+      "На телефоне выбраны день и мастер; показана читаемая вертикальная шкала.",
+      "Звонки не выдаются за назначенные визиты."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "profile",
+    "title": "Мой профиль",
+    "type": "profile",
+    "variant": "master",
+    "state": "master",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_profile"
+    ],
+    "changes": [
+      "Полноэкранный профиль объединяет личные данные и полезные переходы.",
+      "Начисления отделены от фактически перечисленных выплат.",
+      "Состав действий соответствует роли; инструменты владельца доступны отдельно."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "payouts",
+    "title": "Мои начисления",
+    "type": "payouts",
+    "variant": "",
+    "state": "default",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_salary"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "memo",
+    "title": "Памятки мастера",
+    "type": "memo",
+    "variant": "list",
+    "state": "list",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_memo",
+      "memo_management"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "price",
+    "title": "Каталог и прайс",
+    "type": "memo",
+    "variant": "price",
+    "state": "price",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_memo",
+      "memo_management"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "personal",
+    "title": "Личные данные",
+    "type": "personal",
+    "variant": "",
+    "state": "default",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_profile_edit"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "help",
+    "title": "Помощь",
+    "type": "help",
+    "variant": "",
+    "state": "default",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_memo"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "about",
+    "title": "О приложении",
+    "type": "about",
+    "variant": "",
+    "state": "default",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "chrome"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "workspace",
+    "title": "Рабочее место",
+    "type": "workspace",
+    "variant": "",
+    "state": "default",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "dispatcher_home",
+      "ops_orders",
+      "ops_schedule_board"
+    ],
+    "changes": [
+      "Desktop использует три колонки: очередь, время, детали.",
+      "Выбранная заявка сохраняет контекст клиента и мастера.",
+      "Основной экран диспетчера фокусируется на работе и исключениях."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "attention",
+    "title": "Требуют внимания",
+    "type": "attention",
+    "variant": "",
+    "state": "default",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "ops_order_control",
+      "legacy_board_control"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "orders",
+    "title": "Все заявки",
+    "type": "orders",
+    "variant": "active",
+    "state": "active",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "ops_orders"
+    ],
+    "changes": [
+      "Заявки читаются по времени, адресу, составу работ и состоянию.",
+      "Фильтры расположены над списком; без даты и будущие заявки различимы.",
+      "Вложенные карточки заменены спокойными строками с разделителями."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-detail",
+    "title": "Заявка · Контроль выполнения",
+    "type": "detail",
+    "variant": "direct",
+    "state": "direct",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "order_detail_ops"
+    ],
+    "changes": [
+      "У каждого телефона отдельные кнопки звонка и копирования.",
+      "Работы, количество, договорённость и визит разделены по смыслу.",
+      "Четыре этапа и следующий шаг видны без декоративных блоков."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-create",
+    "title": "Новая заявка",
+    "type": "orderForm",
+    "variant": "create",
+    "state": "create",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "order_editor"
+    ],
+    "changes": [
+      "Клиент, адрес, работы и визит образуют последовательные блоки.",
+      "Каждая работа имеет своё количество; дополнительные телефоны не объединены.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-edit",
+    "title": "Редактирование заявки",
+    "type": "orderForm",
+    "variant": "edit",
+    "state": "edit",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "order_editor"
+    ],
+    "changes": [
+      "Клиент, адрес, работы и визит образуют последовательные блоки.",
+      "Каждая работа имеет своё количество; дополнительные телефоны не объединены.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "assign",
+    "title": "Назначение мастера",
+    "type": "assign",
+    "variant": "",
+    "state": "default",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "smart_assign"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "reschedule",
+    "title": "Перенос визита",
+    "type": "reschedule",
+    "variant": "",
+    "state": "default",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "reschedule_ops"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "schedule",
+    "title": "Расписание команды",
+    "type": "schedule",
+    "variant": "team",
+    "state": "team",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "ops_schedule_board",
+      "management_schedule"
+    ],
+    "changes": [
+      "На широком экране мастера расположены вертикально, часы 10–20 горизонтально.",
+      "На телефоне выбраны день и мастер; показана читаемая вертикальная шкала.",
+      "Звонки не выдаются за назначенные визиты."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "team",
+    "title": "Команда · Доступность",
+    "type": "team",
+    "variant": "",
+    "state": "default",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "team"
+    ],
+    "changes": [
+      "Сотрудники представлены строками с доступностью и ближайшим визитом.",
+      "Диспетчер видит активных мастеров; создание сотрудника остаётся владельцу.",
+      "Начисления не подменяют данные о фактической выплате."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "master-detail",
+    "title": "Карточка мастера",
+    "type": "teamMember",
+    "variant": "operational",
+    "state": "operational",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "employee_profile"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "reports",
+    "title": "Очередь отчётов",
+    "type": "reports",
+    "variant": "",
+    "state": "default",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "report_queue"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "review",
+    "title": "Проверка отчёта",
+    "type": "review",
+    "variant": "review",
+    "state": "review",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "report_review"
+    ],
+    "changes": [
+      "Файлы, результат работы и решение разделены.",
+      "Для возврата требуется понятная причина для мастера.",
+      "Подтверждённый архив показан отдельно от принятия отчёта."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "review-reject",
+    "title": "Отклонение отчёта",
+    "type": "review",
+    "variant": "reject",
+    "state": "reject",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "report_review"
+    ],
+    "changes": [
+      "Файлы, результат работы и решение разделены.",
+      "Для возврата требуется понятная причина для мастера.",
+      "Подтверждённый архив показан отдельно от принятия отчёта."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "avito",
+    "title": "Авито · Диалоги",
+    "type": "avito",
+    "variant": "list",
+    "state": "list",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "avito_workspace"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "avito-thread",
+    "title": "Авито · Диалог с заявкой",
+    "type": "avito",
+    "variant": "thread",
+    "state": "thread",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "avito_workspace"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "hands-sync",
+    "title": "Hands · Синхронизация",
+    "type": "hands",
+    "variant": "",
+    "state": "default",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "hands_settings"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "more",
+    "title": "Ещё",
+    "type": "more",
+    "variant": "",
+    "state": "default",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "chrome"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "profile",
+    "title": "Профиль диспетчера",
+    "type": "profile",
+    "variant": "staff",
+    "state": "staff",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "ops_profile"
+    ],
+    "changes": [
+      "Полноэкранный профиль объединяет личные данные и полезные переходы.",
+      "Начисления отделены от фактически перечисленных выплат.",
+      "Состав действий соответствует роли; инструменты владельца доступны отдельно."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "notifications",
+    "title": "Уведомления",
+    "type": "notifications",
+    "variant": "",
+    "state": "default",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "notifications"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "filters",
+    "title": "Фильтры заявок",
+    "type": "filters",
+    "variant": "",
+    "state": "default",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "ops_orders"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "dashboard",
+    "title": "Обзор руководителя",
+    "type": "managerHome",
+    "variant": "",
+    "state": "default",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "owner_home"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "orders",
+    "title": "Заявки · Исполнение",
+    "type": "orders",
+    "variant": "active",
+    "state": "active",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "ops_orders"
+    ],
+    "changes": [
+      "Заявки читаются по времени, адресу, составу работ и состоянию.",
+      "Фильтры расположены над списком; без даты и будущие заявки различимы.",
+      "Вложенные карточки заменены спокойными строками с разделителями."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "reports",
+    "title": "Отчёты · Контроль качества",
+    "type": "reports",
+    "variant": "",
+    "state": "default",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "report_queue"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "team",
+    "title": "Команда · Загрузка",
+    "type": "team",
+    "variant": "",
+    "state": "default",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "team"
+    ],
+    "changes": [
+      "Сотрудники представлены строками с доступностью и ближайшим визитом.",
+      "Диспетчер видит активных мастеров; создание сотрудника остаётся владельцу.",
+      "Начисления не подменяют данные о фактической выплате."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "team-member",
+    "title": "Сотрудник · Работа и начисления",
+    "type": "teamMember",
+    "variant": "management",
+    "state": "management",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "employee_profile"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "finance-overview",
+    "title": "Финансы · Обзор",
+    "type": "finance",
+    "variant": "overview",
+    "state": "overview",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_overview"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "finance-expenses",
+    "title": "Финансы · Расходы",
+    "type": "finance",
+    "variant": "expenses",
+    "state": "expenses",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_expenses"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "finance-masters",
+    "title": "Финансы · Мастера",
+    "type": "finance",
+    "variant": "masters",
+    "state": "masters",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_masters"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "finance-orders",
+    "title": "Финансы · Заявки",
+    "type": "finance",
+    "variant": "orders",
+    "state": "orders",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_orders"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "finance-sources",
+    "title": "Финансы · Источники",
+    "type": "finance",
+    "variant": "sources",
+    "state": "sources",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_sources"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "finance-works",
+    "title": "Финансы · Работы",
+    "type": "finance",
+    "variant": "works",
+    "state": "works",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_works"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "finance-periods",
+    "title": "Финансы · Периоды",
+    "type": "finance",
+    "variant": "periods",
+    "state": "periods",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_periods"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "finance-period",
+    "title": "Выбор периода",
+    "type": "period",
+    "variant": "",
+    "state": "default",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "finance-filters",
+    "title": "Финансовые фильтры",
+    "type": "filters",
+    "variant": "finance",
+    "state": "finance",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "ops_orders"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "expense-new",
+    "title": "Добавить расход",
+    "type": "expense",
+    "variant": "new",
+    "state": "new",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance_expense_form"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "expense-edit",
+    "title": "Редактировать расход",
+    "type": "expense",
+    "variant": "edit",
+    "state": "edit",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance_expense_form"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "finance-master",
+    "title": "Финансы мастера",
+    "type": "financeMaster",
+    "variant": "",
+    "state": "default",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance_master_detail"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "more",
+    "title": "Ещё · Руководитель",
+    "type": "more",
+    "variant": "",
+    "state": "default",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "chrome"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "profile",
+    "title": "Профиль руководителя",
+    "type": "profile",
+    "variant": "staff",
+    "state": "staff",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "ops_profile"
+    ],
+    "changes": [
+      "Полноэкранный профиль объединяет личные данные и полезные переходы.",
+      "Начисления отделены от фактически перечисленных выплат.",
+      "Состав действий соответствует роли; инструменты владельца доступны отдельно."
+    ],
+    "proposalNotes": [
+      "Предлагается полноценный профиль; текущий вход через header-avatar открывает настройки входа."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "dashboard",
+    "title": "Обзор владельца",
+    "type": "ownerHome",
+    "variant": "",
+    "state": "default",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "owner_home"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "orders-new",
+    "title": "Заявки · Новые",
+    "type": "orders",
+    "variant": "new",
+    "state": "new",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "ops_orders"
+    ],
+    "changes": [
+      "Заявки читаются по времени, адресу, составу работ и состоянию.",
+      "Фильтры расположены над списком; без даты и будущие заявки различимы.",
+      "Вложенные карточки заменены спокойными строками с разделителями."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "orders-active",
+    "title": "Заявки · В работе",
+    "type": "orders",
+    "variant": "active",
+    "state": "active",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "ops_orders"
+    ],
+    "changes": [
+      "Заявки читаются по времени, адресу, составу работ и состоянию.",
+      "Фильтры расположены над списком; без даты и будущие заявки различимы.",
+      "Вложенные карточки заменены спокойными строками с разделителями."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "orders-reports",
+    "title": "Заявки · Отчёты",
+    "type": "reports",
+    "variant": "",
+    "state": "default",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "report_queue"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "orders-archive",
+    "title": "Заявки · Архив",
+    "type": "orders",
+    "variant": "archive",
+    "state": "archive",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "ops_orders"
+    ],
+    "changes": [
+      "Заявки читаются по времени, адресу, составу работ и состоянию.",
+      "Фильтры расположены над списком; без даты и будущие заявки различимы.",
+      "Вложенные карточки заменены спокойными строками с разделителями."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "team",
+    "title": "Команда · Управление",
+    "type": "team",
+    "variant": "owner",
+    "state": "owner",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "team"
+    ],
+    "changes": [
+      "Сотрудники представлены строками с доступностью и ближайшим визитом.",
+      "Диспетчер видит активных мастеров; создание сотрудника остаётся владельцу.",
+      "Начисления не подменяют данные о фактической выплате."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "invite",
+    "title": "Создать сотрудника",
+    "type": "invite",
+    "variant": "",
+    "state": "default",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "employee_create"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "admin",
+    "title": "Инструменты владельца",
+    "type": "admin",
+    "variant": "",
+    "state": "default",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "owner_tools"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "memo-edit",
+    "title": "Материалы для команды",
+    "type": "memo",
+    "variant": "edit",
+    "state": "edit",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "memo_management"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "finance-overview",
+    "title": "Финансы владельца",
+    "type": "finance",
+    "variant": "overview",
+    "state": "overview",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_overview"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "profile",
+    "title": "Профиль владельца",
+    "type": "profile",
+    "variant": "owner",
+    "state": "owner",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "ops_profile"
+    ],
+    "changes": [
+      "Полноэкранный профиль объединяет личные данные и полезные переходы.",
+      "Начисления отделены от фактически перечисленных выплат.",
+      "Состав действий соответствует роли; инструменты владельца доступны отдельно."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "settings-proposal",
+    "title": "Настройки · Концепт",
+    "type": "settings",
+    "variant": "proposed",
+    "state": "proposed",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "owner_tools"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "loading",
+    "title": "Загрузка",
+    "type": "systemState",
+    "variant": "loading",
+    "state": "loading",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "chrome"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "empty",
+    "title": "Нет результатов",
+    "type": "systemState",
+    "variant": "empty",
+    "state": "empty",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "chrome"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "error",
+    "title": "Ошибка загрузки",
+    "type": "systemState",
+    "variant": "error",
+    "state": "error",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "chrome"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "offline",
+    "title": "Нет соединения",
+    "type": "systemState",
+    "variant": "offline",
+    "state": "offline",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "chrome"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "file-viewer",
+    "title": "Просмотр документа",
+    "type": "file",
+    "variant": "",
+    "state": "default",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "report_photo",
+      "report_review"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "system",
+    "screen": "design-system",
+    "title": "Визуальная система",
+    "type": "designSystem",
+    "variant": "",
+    "state": "default",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "chrome"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "system",
+    "screen": "navigation",
+    "title": "Навигация четырёх ролей",
+    "type": "navigation",
+    "variant": "",
+    "state": "default",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "chrome"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "schedule-month",
+    "title": "Мой график · Месяц",
+    "type": "scheduleMonth",
+    "variant": "own",
+    "state": "own",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_schedule"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "schedule-edit",
+    "title": "Мой график · Выбранные дни",
+    "type": "scheduleEdit",
+    "variant": "own",
+    "state": "own",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_schedule"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "reschedule-request",
+    "title": "Запросить перенос",
+    "type": "extra",
+    "variant": "master-reschedule",
+    "state": "master-reschedule",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_reschedule"
+    ],
+    "changes": [
+      "Причина переноса — единственное изменяемое поле мастера.",
+      "Текущий визит остаётся видимым; новая дата не назначается мастером.",
+      "Запрос и подтверждённый перенос показаны как разные действия."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "report-deduction",
+    "title": "Невыполненные работы",
+    "type": "extra",
+    "variant": "deduction",
+    "state": "deduction",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "report_deduction"
+    ],
+    "changes": [
+      "Невыполненная работа выбирается из состава заявки.",
+      "Количество, цена и подтверждение клиента представлены отдельными полями.",
+      "Результат возвращается в отчёт без новой финансовой формулы."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "claims",
+    "title": "Мои рекламации",
+    "type": "extra",
+    "variant": "master-claims",
+    "state": "master-claims",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_home",
+      "master_orders"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "claim-detail",
+    "title": "Рекламация · Повторный визит",
+    "type": "extra",
+    "variant": "master-claim",
+    "state": "master-claim",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_order"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "push",
+    "title": "Уведомления на устройстве",
+    "type": "extra",
+    "variant": "push",
+    "state": "push",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "push"
+    ],
+    "changes": [
+      "Поддержка браузера, разрешение и подписка устройства разделены.",
+      "Состояние подключения названо словами.",
+      "Одно основное действие включает уведомления на этом устройстве."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "login-settings",
+    "title": "Настройки входа",
+    "type": "extra",
+    "variant": "login-settings",
+    "state": "login-settings",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_profile"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "control",
+    "title": "Контроль заявок",
+    "type": "extra",
+    "variant": "control",
+    "state": "control",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "ops_order_control"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "control-task",
+    "title": "Ответственный и срок",
+    "type": "extra",
+    "variant": "task",
+    "state": "task",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "control_tasks"
+    ],
+    "changes": [
+      "Тип задачи показан явно и не заменён произвольным текстом.",
+      "Ответственный и срок в московском времени находятся рядом.",
+      "Напоминание обозначено как одно событие при наступлении срока."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "free-slots",
+    "title": "Свободные окна",
+    "type": "extra",
+    "variant": "free-slots",
+    "state": "free-slots",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "free_slots"
+    ],
+    "changes": [
+      "Свободные интервалы показаны в контексте рабочего графика мастера.",
+      "Выбор окна ведёт к существующим заявкам без исполнителя.",
+      "Свободное окно не выдано за подтверждённое согласие мастера."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "order-cancel",
+    "title": "Отменить заявку",
+    "type": "extra",
+    "variant": "cancel",
+    "state": "cancel",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "cancel_order"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "claims",
+    "title": "Рекламации",
+    "type": "extra",
+    "variant": "claims",
+    "state": "claims",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "claims"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "claim-create",
+    "title": "Создать рекламацию",
+    "type": "extra",
+    "variant": "claim-create",
+    "state": "claim-create",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "claim_create"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "schedule-month",
+    "title": "График команды · Месяц",
+    "type": "scheduleMonth",
+    "variant": "team",
+    "state": "team",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "management_schedule"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "day-detail",
+    "title": "День мастера",
+    "type": "extra",
+    "variant": "day-detail",
+    "state": "day-detail",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "management_schedule"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "avito-lead",
+    "title": "Авито → Новая заявка",
+    "type": "extra",
+    "variant": "avito-lead",
+    "state": "avito-lead",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "avito_lead"
+    ],
+    "changes": [
+      "Сохраняются свободный текст услуг, телефон и адрес клиента.",
+      "Пожелание по времени отделено от согласованного визита.",
+      "Необязательные город и сумма остаются доступны."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "avito-settings",
+    "title": "Авито · Подключение",
+    "type": "extra",
+    "variant": "avito-settings",
+    "state": "avito-settings",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "avito_settings"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "hands-order",
+    "title": "Hands · Отправка данных",
+    "type": "extra",
+    "variant": "hands-order",
+    "state": "hands-order",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "hands_order"
+    ],
+    "changes": [
+      "Статус доставки отделён от загрузки документов.",
+      "При неизвестном результате предлагается сначала проверить состояние.",
+      "Отправка и принятие данных не смешаны в один успешный статус."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "master-report",
+    "title": "Отчёт по мастерам",
+    "type": "extra",
+    "variant": "dispatcher-report",
+    "state": "dispatcher-report",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "dispatcher_report"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "staff-access",
+    "title": "Доступы сотрудников",
+    "type": "extra",
+    "variant": "staff-access",
+    "state": "staff-access",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "staff_access"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ],
+    "proposalNotes": [
+      "Видимый переход предложен в редизайне; текущий API восстановления сотрудников более низкой роли подтверждён исходным кодом."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "memo-edit",
+    "title": "Памятки · Управление",
+    "type": "memo",
+    "variant": "edit",
+    "state": "edit",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "memo_management"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "manual-complete",
+    "title": "Завершить вручную",
+    "type": "extra",
+    "variant": "manual-complete",
+    "state": "manual-complete",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "manual_complete"
+    ],
+    "changes": [
+      "Причина ручного завершения обязательна и расположена перед действием.",
+      "Сохранённые начисления и существующий отчёт не перезаписываются.",
+      "Ручное завершение визуально отличается от принятия отчёта."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "order-delete",
+    "title": "Удалить заявку",
+    "type": "extra",
+    "variant": "delete",
+    "state": "delete",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "delete_order"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "employee-edit",
+    "title": "Сотрудник · Управление доступом",
+    "type": "extra",
+    "variant": "employee-edit",
+    "state": "employee-edit",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "employee_profile",
+      "staff_access"
+    ],
+    "changes": [
+      "Управление логином и паролем остаётся владельцу.",
+      "Статус активности виден до сохранения.",
+      "Приглашение VK доступно отдельным переходом."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "staff-invite",
+    "title": "Приглашение VK",
+    "type": "extra",
+    "variant": "staff-invite",
+    "state": "staff-invite",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "staff_invite"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "api-integrations",
+    "title": "API · Интеграции",
+    "type": "extra",
+    "variant": "integrations",
+    "state": "integrations",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "api_integrations"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "api-create",
+    "title": "API · Создать интеграцию",
+    "type": "extra",
+    "variant": "api-create",
+    "state": "api-create",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "api_integrations"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "api-mapping",
+    "title": "API · Сопоставление полей",
+    "type": "extra",
+    "variant": "api-mapping",
+    "state": "api-mapping",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "api_integrations"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "hands-settings",
+    "title": "Hands · Состояние интеграции",
+    "type": "extra",
+    "variant": "hands-settings",
+    "state": "hands-settings",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "hands_settings"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "auth-login",
+    "title": "Вход в Business OS",
+    "type": "extra",
+    "variant": "auth",
+    "state": "auth",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "auth"
+    ],
+    "changes": [
+      "Вход сосредоточен в одном компактном блоке.",
+      "Логин, пароль и приглашение не смешаны с рабочей навигацией.",
+      "Никакие реальные учётные данные в макете не используются."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "auth-invite",
+    "title": "Вход по приглашению",
+    "type": "extra",
+    "variant": "auth-invite",
+    "state": "auth-invite",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "auth"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "auth-expired",
+    "title": "Сессия истекла",
+    "type": "extra",
+    "variant": "auth-expired",
+    "state": "auth-expired",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "auth"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "finance-overview-unknown",
+    "title": "Финансы · Неполные данные",
+    "type": "finance",
+    "variant": "unknown",
+    "state": "unknown",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "report-extras",
+    "title": "Отчёт · Дополнительные работы",
+    "type": "report",
+    "variant": "extras",
+    "state": "extras",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "master_report"
+    ],
+    "changes": [
+      "Документы подписаны по назначению и имеют состояния загрузки.",
+      "Проверки полноты работ и файлов названы словами.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "report-uncompleted",
+    "title": "Отчёт · Не все работы выполнены",
+    "type": "report",
+    "variant": "uncompleted",
+    "state": "uncompleted",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "master_report"
+    ],
+    "changes": [
+      "Документы подписаны по назначению и имеют состояния загрузки.",
+      "Проверки полноты работ и файлов названы словами.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "filters",
+    "title": "Фильтры своих заявок",
+    "type": "filters",
+    "variant": "master",
+    "state": "master",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "ops_orders"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "slot-assign",
+    "title": "Назначить заявку на свободное окно",
+    "type": "extra",
+    "variant": "slot-assign",
+    "state": "slot-assign",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "free_slots"
+    ],
+    "changes": [
+      "Выбранный мастер и время сохраняют контекст свободного окна.",
+      "Предлагаются существующие заявки без назначенного исполнителя.",
+      "Назначение подтверждается одним явным действием."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "report-uncertain",
+    "title": "Отчёт · Результат отправки неизвестен",
+    "type": "extra",
+    "variant": "report-uncertain",
+    "state": "report-uncertain",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "master_report"
+    ],
+    "changes": [
+      "Отсутствие ответа не выдаётся за успех или гарантированный провал.",
+      "Уже загруженные документы сохраняют видимые состояния.",
+      "Следующий шаг — проверка состояния, а не повторная отправка."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "photo-error",
+    "title": "Просмотр фото · Ошибка",
+    "type": "extra",
+    "variant": "photo-error",
+    "state": "photo-error",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "report_photo"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "role-preview",
+    "title": "Просмотр интерфейсов ролей",
+    "type": "extra",
+    "variant": "role-preview",
+    "state": "role-preview",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "owner_tools"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "expense-delete",
+    "title": "Удалить расход",
+    "type": "extra",
+    "variant": "expense-delete",
+    "state": "expense-delete",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance_expense_form"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "notifications",
+    "title": "Уведомления",
+    "type": "notifications",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:notifications",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "notifications"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "file-viewer",
+    "title": "Просмотр документа",
+    "type": "file",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "owner:file-viewer",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "report_photo",
+      "report_review"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "auth-login",
+    "title": "Вход в Business OS",
+    "type": "extra",
+    "variant": "auth",
+    "state": "auth",
+    "sharedFrom": "owner:auth-login",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "auth"
+    ],
+    "changes": [
+      "Вход сосредоточен в одном компактном блоке.",
+      "Логин, пароль и приглашение не смешаны с рабочей навигацией.",
+      "Никакие реальные учётные данные в макете не используются."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "auth-invite",
+    "title": "Вход по приглашению",
+    "type": "extra",
+    "variant": "auth-invite",
+    "state": "auth-invite",
+    "sharedFrom": "owner:auth-invite",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "auth"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "auth-expired",
+    "title": "Сессия истекла",
+    "type": "extra",
+    "variant": "auth-expired",
+    "state": "auth-expired",
+    "sharedFrom": "owner:auth-expired",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "auth"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "master",
+    "screen": "day-detail",
+    "title": "День мастера",
+    "type": "extra",
+    "variant": "day-detail",
+    "state": "day-detail",
+    "sharedFrom": "dispatcher:day-detail",
+    "block": "master",
+    "sourceSurfaceIds": [
+      "management_schedule"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "claim-detail",
+    "title": "Рекламация · Повторный визит",
+    "type": "extra",
+    "variant": "master-claim",
+    "state": "master-claim",
+    "sharedFrom": "master:claim-detail",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "claims"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "personal",
+    "title": "Личные данные",
+    "type": "personal",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "master:personal",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "master_profile_edit"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "help",
+    "title": "Помощь",
+    "type": "help",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "master:help",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "master_memo"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "about",
+    "title": "О приложении",
+    "type": "about",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "master:about",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "chrome"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "push",
+    "title": "Уведомления на устройстве",
+    "type": "extra",
+    "variant": "push",
+    "state": "push",
+    "sharedFrom": "master:push",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "push"
+    ],
+    "changes": [
+      "Поддержка браузера, разрешение и подписка устройства разделены.",
+      "Состояние подключения названо словами.",
+      "Одно основное действие включает уведомления на этом устройстве."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "login-settings",
+    "title": "Настройки входа",
+    "type": "extra",
+    "variant": "login-settings",
+    "state": "login-settings",
+    "sharedFrom": "master:login-settings",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "ops_profile"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "file-viewer",
+    "title": "Просмотр документа",
+    "type": "file",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "owner:file-viewer",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "report_photo",
+      "report_review"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "photo-error",
+    "title": "Просмотр фото · Ошибка",
+    "type": "extra",
+    "variant": "photo-error",
+    "state": "photo-error",
+    "sharedFrom": "master:photo-error",
+    "block": "dispatcher",
+    "sourceSurfaceIds": [
+      "report_photo"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "auth-login",
+    "title": "Вход в Business OS",
+    "type": "extra",
+    "variant": "auth",
+    "state": "auth",
+    "sharedFrom": "owner:auth-login",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "auth"
+    ],
+    "changes": [
+      "Вход сосредоточен в одном компактном блоке.",
+      "Логин, пароль и приглашение не смешаны с рабочей навигацией.",
+      "Никакие реальные учётные данные в макете не используются."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "auth-invite",
+    "title": "Вход по приглашению",
+    "type": "extra",
+    "variant": "auth-invite",
+    "state": "auth-invite",
+    "sharedFrom": "owner:auth-invite",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "auth"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "dispatcher",
+    "screen": "auth-expired",
+    "title": "Сессия истекла",
+    "type": "extra",
+    "variant": "auth-expired",
+    "state": "auth-expired",
+    "sharedFrom": "owner:auth-expired",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "auth"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "workspace",
+    "title": "Рабочее место",
+    "type": "workspace",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:workspace",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "dispatcher_home",
+      "ops_orders",
+      "ops_schedule_board"
+    ],
+    "changes": [
+      "Desktop использует три колонки: очередь, время, детали.",
+      "Выбранная заявка сохраняет контекст клиента и мастера.",
+      "Основной экран диспетчера фокусируется на работе и исключениях."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "attention",
+    "title": "Требуют внимания",
+    "type": "attention",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:attention",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "ops_order_control",
+      "legacy_board_control"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "order-detail",
+    "title": "Заявка · Контроль выполнения",
+    "type": "detail",
+    "variant": "direct",
+    "state": "direct",
+    "sharedFrom": "dispatcher:order-detail",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "order_detail_ops"
+    ],
+    "changes": [
+      "У каждого телефона отдельные кнопки звонка и копирования.",
+      "Работы, количество, договорённость и визит разделены по смыслу.",
+      "Четыре этапа и следующий шаг видны без декоративных блоков."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "order-create",
+    "title": "Новая заявка",
+    "type": "orderForm",
+    "variant": "create",
+    "state": "create",
+    "sharedFrom": "dispatcher:order-create",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "order_editor"
+    ],
+    "changes": [
+      "Клиент, адрес, работы и визит образуют последовательные блоки.",
+      "Каждая работа имеет своё количество; дополнительные телефоны не объединены.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "order-edit",
+    "title": "Редактирование заявки",
+    "type": "orderForm",
+    "variant": "edit",
+    "state": "edit",
+    "sharedFrom": "dispatcher:order-edit",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "order_editor"
+    ],
+    "changes": [
+      "Клиент, адрес, работы и визит образуют последовательные блоки.",
+      "Каждая работа имеет своё количество; дополнительные телефоны не объединены.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "assign",
+    "title": "Назначение мастера",
+    "type": "assign",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:assign",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "smart_assign"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "reschedule",
+    "title": "Перенос визита",
+    "type": "reschedule",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:reschedule",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "reschedule_ops"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "schedule",
+    "title": "Расписание команды",
+    "type": "schedule",
+    "variant": "team",
+    "state": "team",
+    "sharedFrom": "dispatcher:schedule",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "ops_schedule_board",
+      "management_schedule"
+    ],
+    "changes": [
+      "На широком экране мастера расположены вертикально, часы 10–20 горизонтально.",
+      "На телефоне выбраны день и мастер; показана читаемая вертикальная шкала.",
+      "Звонки не выдаются за назначенные визиты."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "schedule-month",
+    "title": "График команды · Месяц",
+    "type": "scheduleMonth",
+    "variant": "team",
+    "state": "team",
+    "sharedFrom": "dispatcher:schedule-month",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "management_schedule"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "day-detail",
+    "title": "День мастера",
+    "type": "extra",
+    "variant": "day-detail",
+    "state": "day-detail",
+    "sharedFrom": "dispatcher:day-detail",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "management_schedule"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "control",
+    "title": "Контроль заявок",
+    "type": "extra",
+    "variant": "control",
+    "state": "control",
+    "sharedFrom": "dispatcher:control",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "ops_order_control"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "control-task",
+    "title": "Ответственный и срок",
+    "type": "extra",
+    "variant": "task",
+    "state": "task",
+    "sharedFrom": "dispatcher:control-task",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "control_tasks"
+    ],
+    "changes": [
+      "Тип задачи показан явно и не заменён произвольным текстом.",
+      "Ответственный и срок в московском времени находятся рядом.",
+      "Напоминание обозначено как одно событие при наступлении срока."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "free-slots",
+    "title": "Свободные окна",
+    "type": "extra",
+    "variant": "free-slots",
+    "state": "free-slots",
+    "sharedFrom": "dispatcher:free-slots",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "free_slots"
+    ],
+    "changes": [
+      "Свободные интервалы показаны в контексте рабочего графика мастера.",
+      "Выбор окна ведёт к существующим заявкам без исполнителя.",
+      "Свободное окно не выдано за подтверждённое согласие мастера."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "slot-assign",
+    "title": "Назначить заявку на свободное окно",
+    "type": "extra",
+    "variant": "slot-assign",
+    "state": "slot-assign",
+    "sharedFrom": "dispatcher:slot-assign",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "free_slots"
+    ],
+    "changes": [
+      "Выбранный мастер и время сохраняют контекст свободного окна.",
+      "Предлагаются существующие заявки без назначенного исполнителя.",
+      "Назначение подтверждается одним явным действием."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "order-cancel",
+    "title": "Отменить заявку",
+    "type": "extra",
+    "variant": "cancel",
+    "state": "cancel",
+    "sharedFrom": "dispatcher:order-cancel",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "cancel_order"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "claims",
+    "title": "Рекламации",
+    "type": "extra",
+    "variant": "claims",
+    "state": "claims",
+    "sharedFrom": "dispatcher:claims",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "claims"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "claim-detail",
+    "title": "Рекламация · Повторный визит",
+    "type": "extra",
+    "variant": "master-claim",
+    "state": "master-claim",
+    "sharedFrom": "dispatcher:claim-detail",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "claims"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "claim-create",
+    "title": "Создать рекламацию",
+    "type": "extra",
+    "variant": "claim-create",
+    "state": "claim-create",
+    "sharedFrom": "dispatcher:claim-create",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "claim_create"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "review",
+    "title": "Проверка отчёта",
+    "type": "review",
+    "variant": "review",
+    "state": "review",
+    "sharedFrom": "dispatcher:review",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "report_review"
+    ],
+    "changes": [
+      "Файлы, результат работы и решение разделены.",
+      "Для возврата требуется понятная причина для мастера.",
+      "Подтверждённый архив показан отдельно от принятия отчёта."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "review-reject",
+    "title": "Отклонение отчёта",
+    "type": "review",
+    "variant": "reject",
+    "state": "reject",
+    "sharedFrom": "dispatcher:review-reject",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "report_review"
+    ],
+    "changes": [
+      "Файлы, результат работы и решение разделены.",
+      "Для возврата требуется понятная причина для мастера.",
+      "Подтверждённый архив показан отдельно от принятия отчёта."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "avito",
+    "title": "Авито · Диалоги",
+    "type": "avito",
+    "variant": "list",
+    "state": "list",
+    "sharedFrom": "dispatcher:avito",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "avito_workspace"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "avito-thread",
+    "title": "Авито · Диалог с заявкой",
+    "type": "avito",
+    "variant": "thread",
+    "state": "thread",
+    "sharedFrom": "dispatcher:avito-thread",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "avito_workspace"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "avito-lead",
+    "title": "Авито → Новая заявка",
+    "type": "extra",
+    "variant": "avito-lead",
+    "state": "avito-lead",
+    "sharedFrom": "dispatcher:avito-lead",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "avito_lead"
+    ],
+    "changes": [
+      "Сохраняются свободный текст услуг, телефон и адрес клиента.",
+      "Пожелание по времени отделено от согласованного визита.",
+      "Необязательные город и сумма остаются доступны."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "avito-settings",
+    "title": "Авито · Подключение",
+    "type": "extra",
+    "variant": "avito-settings",
+    "state": "avito-settings",
+    "sharedFrom": "dispatcher:avito-settings",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "avito_settings"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "hands-sync",
+    "title": "Hands · Синхронизация",
+    "type": "hands",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:hands-sync",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "hands_settings"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "hands-order",
+    "title": "Hands · Отправка данных",
+    "type": "extra",
+    "variant": "hands-order",
+    "state": "hands-order",
+    "sharedFrom": "dispatcher:hands-order",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "hands_order"
+    ],
+    "changes": [
+      "Статус доставки отделён от загрузки документов.",
+      "При неизвестном результате предлагается сначала проверить состояние.",
+      "Отправка и принятие данных не смешаны в один успешный статус."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "hands-settings",
+    "title": "Hands · Состояние интеграции",
+    "type": "extra",
+    "variant": "hands-settings",
+    "state": "hands-settings",
+    "sharedFrom": "owner:hands-settings",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "hands_settings"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "notifications",
+    "title": "Уведомления",
+    "type": "notifications",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:notifications",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "notifications"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "filters",
+    "title": "Фильтры заявок",
+    "type": "filters",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:filters",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "ops_orders"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "file-viewer",
+    "title": "Просмотр документа",
+    "type": "file",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "owner:file-viewer",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "report_photo",
+      "report_review"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "photo-error",
+    "title": "Просмотр фото · Ошибка",
+    "type": "extra",
+    "variant": "photo-error",
+    "state": "photo-error",
+    "sharedFrom": "dispatcher:photo-error",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "report_photo"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "push",
+    "title": "Уведомления на устройстве",
+    "type": "extra",
+    "variant": "push",
+    "state": "push",
+    "sharedFrom": "dispatcher:push",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "push"
+    ],
+    "changes": [
+      "Поддержка браузера, разрешение и подписка устройства разделены.",
+      "Состояние подключения названо словами.",
+      "Одно основное действие включает уведомления на этом устройстве."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "login-settings",
+    "title": "Настройки входа",
+    "type": "extra",
+    "variant": "login-settings",
+    "state": "login-settings",
+    "sharedFrom": "dispatcher:login-settings",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "ops_profile"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "personal",
+    "title": "Личные данные",
+    "type": "personal",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:personal",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "master_profile_edit"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "help",
+    "title": "Помощь",
+    "type": "help",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:help",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "master_memo"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "about",
+    "title": "О приложении",
+    "type": "about",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:about",
+    "block": "manager",
+    "sourceSurfaceIds": [
+      "chrome"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "auth-login",
+    "title": "Вход в Business OS",
+    "type": "extra",
+    "variant": "auth",
+    "state": "auth",
+    "sharedFrom": "owner:auth-login",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "auth"
+    ],
+    "changes": [
+      "Вход сосредоточен в одном компактном блоке.",
+      "Логин, пароль и приглашение не смешаны с рабочей навигацией.",
+      "Никакие реальные учётные данные в макете не используются."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "auth-invite",
+    "title": "Вход по приглашению",
+    "type": "extra",
+    "variant": "auth-invite",
+    "state": "auth-invite",
+    "sharedFrom": "owner:auth-invite",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "auth"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "manager",
+    "screen": "auth-expired",
+    "title": "Сессия истекла",
+    "type": "extra",
+    "variant": "auth-expired",
+    "state": "auth-expired",
+    "sharedFrom": "owner:auth-expired",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "auth"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "workspace",
+    "title": "Рабочее место",
+    "type": "workspace",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:workspace",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "dispatcher_home",
+      "ops_orders",
+      "ops_schedule_board"
+    ],
+    "changes": [
+      "Desktop использует три колонки: очередь, время, детали.",
+      "Выбранная заявка сохраняет контекст клиента и мастера.",
+      "Основной экран диспетчера фокусируется на работе и исключениях."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "attention",
+    "title": "Требуют внимания",
+    "type": "attention",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:attention",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "ops_order_control",
+      "legacy_board_control"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "order-detail",
+    "title": "Заявка · Контроль выполнения",
+    "type": "detail",
+    "variant": "direct",
+    "state": "direct",
+    "sharedFrom": "dispatcher:order-detail",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "order_detail_ops"
+    ],
+    "changes": [
+      "У каждого телефона отдельные кнопки звонка и копирования.",
+      "Работы, количество, договорённость и визит разделены по смыслу.",
+      "Четыре этапа и следующий шаг видны без декоративных блоков."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "order-create",
+    "title": "Новая заявка",
+    "type": "orderForm",
+    "variant": "create",
+    "state": "create",
+    "sharedFrom": "dispatcher:order-create",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "order_editor"
+    ],
+    "changes": [
+      "Клиент, адрес, работы и визит образуют последовательные блоки.",
+      "Каждая работа имеет своё количество; дополнительные телефоны не объединены.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "order-edit",
+    "title": "Редактирование заявки",
+    "type": "orderForm",
+    "variant": "edit",
+    "state": "edit",
+    "sharedFrom": "dispatcher:order-edit",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "order_editor"
+    ],
+    "changes": [
+      "Клиент, адрес, работы и визит образуют последовательные блоки.",
+      "Каждая работа имеет своё количество; дополнительные телефоны не объединены.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "assign",
+    "title": "Назначение мастера",
+    "type": "assign",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:assign",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "smart_assign"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "reschedule",
+    "title": "Перенос визита",
+    "type": "reschedule",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:reschedule",
+    "block": "shared",
+    "sourceSurfaceIds": [
+      "reschedule_ops"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "schedule",
+    "title": "Расписание команды",
+    "type": "schedule",
+    "variant": "team",
+    "state": "team",
+    "sharedFrom": "dispatcher:schedule",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "ops_schedule_board",
+      "management_schedule"
+    ],
+    "changes": [
+      "На широком экране мастера расположены вертикально, часы 10–20 горизонтально.",
+      "На телефоне выбраны день и мастер; показана читаемая вертикальная шкала.",
+      "Звонки не выдаются за назначенные визиты."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "schedule-month",
+    "title": "График команды · Месяц",
+    "type": "scheduleMonth",
+    "variant": "team",
+    "state": "team",
+    "sharedFrom": "dispatcher:schedule-month",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "management_schedule"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "day-detail",
+    "title": "День мастера",
+    "type": "extra",
+    "variant": "day-detail",
+    "state": "day-detail",
+    "sharedFrom": "dispatcher:day-detail",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "management_schedule"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "control",
+    "title": "Контроль заявок",
+    "type": "extra",
+    "variant": "control",
+    "state": "control",
+    "sharedFrom": "dispatcher:control",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "ops_order_control"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "control-task",
+    "title": "Ответственный и срок",
+    "type": "extra",
+    "variant": "task",
+    "state": "task",
+    "sharedFrom": "dispatcher:control-task",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "control_tasks"
+    ],
+    "changes": [
+      "Тип задачи показан явно и не заменён произвольным текстом.",
+      "Ответственный и срок в московском времени находятся рядом.",
+      "Напоминание обозначено как одно событие при наступлении срока."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "free-slots",
+    "title": "Свободные окна",
+    "type": "extra",
+    "variant": "free-slots",
+    "state": "free-slots",
+    "sharedFrom": "dispatcher:free-slots",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "free_slots"
+    ],
+    "changes": [
+      "Свободные интервалы показаны в контексте рабочего графика мастера.",
+      "Выбор окна ведёт к существующим заявкам без исполнителя.",
+      "Свободное окно не выдано за подтверждённое согласие мастера."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "slot-assign",
+    "title": "Назначить заявку на свободное окно",
+    "type": "extra",
+    "variant": "slot-assign",
+    "state": "slot-assign",
+    "sharedFrom": "dispatcher:slot-assign",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "free_slots"
+    ],
+    "changes": [
+      "Выбранный мастер и время сохраняют контекст свободного окна.",
+      "Предлагаются существующие заявки без назначенного исполнителя.",
+      "Назначение подтверждается одним явным действием."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "order-cancel",
+    "title": "Отменить заявку",
+    "type": "extra",
+    "variant": "cancel",
+    "state": "cancel",
+    "sharedFrom": "dispatcher:order-cancel",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "cancel_order"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "order-delete",
+    "title": "Удалить заявку",
+    "type": "extra",
+    "variant": "delete",
+    "state": "delete",
+    "sharedFrom": "manager:order-delete",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "delete_order"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "manual-complete",
+    "title": "Завершить вручную",
+    "type": "extra",
+    "variant": "manual-complete",
+    "state": "manual-complete",
+    "sharedFrom": "manager:manual-complete",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "manual_complete"
+    ],
+    "changes": [
+      "Причина ручного завершения обязательна и расположена перед действием.",
+      "Сохранённые начисления и существующий отчёт не перезаписываются.",
+      "Ручное завершение визуально отличается от принятия отчёта."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "claims",
+    "title": "Рекламации",
+    "type": "extra",
+    "variant": "claims",
+    "state": "claims",
+    "sharedFrom": "dispatcher:claims",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "claims"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "claim-detail",
+    "title": "Рекламация · Повторный визит",
+    "type": "extra",
+    "variant": "master-claim",
+    "state": "master-claim",
+    "sharedFrom": "dispatcher:claim-detail",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "claims"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "claim-create",
+    "title": "Создать рекламацию",
+    "type": "extra",
+    "variant": "claim-create",
+    "state": "claim-create",
+    "sharedFrom": "dispatcher:claim-create",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "claim_create"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "reports",
+    "title": "Очередь отчётов",
+    "type": "reports",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:reports",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "report_queue"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "review",
+    "title": "Проверка отчёта",
+    "type": "review",
+    "variant": "review",
+    "state": "review",
+    "sharedFrom": "dispatcher:review",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "report_review"
+    ],
+    "changes": [
+      "Файлы, результат работы и решение разделены.",
+      "Для возврата требуется понятная причина для мастера.",
+      "Подтверждённый архив показан отдельно от принятия отчёта."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "review-reject",
+    "title": "Отклонение отчёта",
+    "type": "review",
+    "variant": "reject",
+    "state": "reject",
+    "sharedFrom": "dispatcher:review-reject",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "report_review"
+    ],
+    "changes": [
+      "Файлы, результат работы и решение разделены.",
+      "Для возврата требуется понятная причина для мастера.",
+      "Подтверждённый архив показан отдельно от принятия отчёта."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "avito",
+    "title": "Авито · Диалоги",
+    "type": "avito",
+    "variant": "list",
+    "state": "list",
+    "sharedFrom": "dispatcher:avito",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "avito_workspace"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "avito-thread",
+    "title": "Авито · Диалог с заявкой",
+    "type": "avito",
+    "variant": "thread",
+    "state": "thread",
+    "sharedFrom": "dispatcher:avito-thread",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "avito_workspace"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "avito-lead",
+    "title": "Авито → Новая заявка",
+    "type": "extra",
+    "variant": "avito-lead",
+    "state": "avito-lead",
+    "sharedFrom": "dispatcher:avito-lead",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "avito_lead"
+    ],
+    "changes": [
+      "Сохраняются свободный текст услуг, телефон и адрес клиента.",
+      "Пожелание по времени отделено от согласованного визита.",
+      "Необязательные город и сумма остаются доступны."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "avito-settings",
+    "title": "Авито · Подключение",
+    "type": "extra",
+    "variant": "avito-settings",
+    "state": "avito-settings",
+    "sharedFrom": "dispatcher:avito-settings",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "avito_settings"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "hands-sync",
+    "title": "Hands · Синхронизация",
+    "type": "hands",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:hands-sync",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "hands_settings"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "hands-order",
+    "title": "Hands · Отправка данных",
+    "type": "extra",
+    "variant": "hands-order",
+    "state": "hands-order",
+    "sharedFrom": "dispatcher:hands-order",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "hands_order"
+    ],
+    "changes": [
+      "Статус доставки отделён от загрузки документов.",
+      "При неизвестном результате предлагается сначала проверить состояние.",
+      "Отправка и принятие данных не смешаны в один успешный статус."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "notifications",
+    "title": "Уведомления",
+    "type": "notifications",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:notifications",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "notifications"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "filters",
+    "title": "Фильтры заявок",
+    "type": "filters",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:filters",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "ops_orders"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "photo-error",
+    "title": "Просмотр фото · Ошибка",
+    "type": "extra",
+    "variant": "photo-error",
+    "state": "photo-error",
+    "sharedFrom": "dispatcher:photo-error",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "report_photo"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "push",
+    "title": "Уведомления на устройстве",
+    "type": "extra",
+    "variant": "push",
+    "state": "push",
+    "sharedFrom": "dispatcher:push",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "push"
+    ],
+    "changes": [
+      "Поддержка браузера, разрешение и подписка устройства разделены.",
+      "Состояние подключения названо словами.",
+      "Одно основное действие включает уведомления на этом устройстве."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "login-settings",
+    "title": "Настройки входа",
+    "type": "extra",
+    "variant": "login-settings",
+    "state": "login-settings",
+    "sharedFrom": "dispatcher:login-settings",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "ops_profile"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "personal",
+    "title": "Личные данные",
+    "type": "personal",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:personal",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "master_profile_edit"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "help",
+    "title": "Помощь",
+    "type": "help",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:help",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "master_memo"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "about",
+    "title": "О приложении",
+    "type": "about",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:about",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "chrome"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "more",
+    "title": "Ещё",
+    "type": "more",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "dispatcher:more",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "chrome"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "staff-access",
+    "title": "Доступы сотрудников",
+    "type": "extra",
+    "variant": "staff-access",
+    "state": "staff-access",
+    "sharedFrom": "manager:staff-access",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "staff_access"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "team-member",
+    "title": "Сотрудник · Работа и начисления",
+    "type": "teamMember",
+    "variant": "management",
+    "state": "management",
+    "sharedFrom": "manager:team-member",
+    "block": "owner",
+    "sourceSurfaceIds": [
+      "employee_profile"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "finance-expenses",
+    "title": "Финансы · Расходы",
+    "type": "finance",
+    "variant": "expenses",
+    "state": "expenses",
+    "sharedFrom": "manager:finance-expenses",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_expenses"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "finance-masters",
+    "title": "Финансы · Мастера",
+    "type": "finance",
+    "variant": "masters",
+    "state": "masters",
+    "sharedFrom": "manager:finance-masters",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_masters"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "finance-orders",
+    "title": "Финансы · Заявки",
+    "type": "finance",
+    "variant": "orders",
+    "state": "orders",
+    "sharedFrom": "manager:finance-orders",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_orders"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "finance-sources",
+    "title": "Финансы · Источники",
+    "type": "finance",
+    "variant": "sources",
+    "state": "sources",
+    "sharedFrom": "manager:finance-sources",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_sources"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "finance-works",
+    "title": "Финансы · Работы",
+    "type": "finance",
+    "variant": "works",
+    "state": "works",
+    "sharedFrom": "manager:finance-works",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_works"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "finance-periods",
+    "title": "Финансы · Периоды",
+    "type": "finance",
+    "variant": "periods",
+    "state": "periods",
+    "sharedFrom": "manager:finance-periods",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance",
+      "finance_periods"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "finance-period",
+    "title": "Выбор периода",
+    "type": "period",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "manager:finance-period",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "finance-filters",
+    "title": "Финансовые фильтры",
+    "type": "filters",
+    "variant": "finance",
+    "state": "finance",
+    "sharedFrom": "manager:finance-filters",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "ops_orders"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "expense-new",
+    "title": "Добавить расход",
+    "type": "expense",
+    "variant": "new",
+    "state": "new",
+    "sharedFrom": "manager:expense-new",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance_expense_form"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "expense-edit",
+    "title": "Редактировать расход",
+    "type": "expense",
+    "variant": "edit",
+    "state": "edit",
+    "sharedFrom": "manager:expense-edit",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance_expense_form"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "На телефоне основное действие закреплено над нижней навигацией; контент имеет запас под панель."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "expense-delete",
+    "title": "Удалить расход",
+    "type": "extra",
+    "variant": "expense-delete",
+    "state": "expense-delete",
+    "sharedFrom": "manager:expense-delete",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance_expense_form"
+    ],
+    "changes": [
+      "Сохранены существующие поля и допустимые действия выбранной роли.",
+      "Состояние, контекст и следующий шаг названы явно.",
+      "Форма использует единый ритм полей и действий без вложенных карточек."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "finance-master",
+    "title": "Финансы мастера",
+    "type": "financeMaster",
+    "variant": "",
+    "state": "default",
+    "sharedFrom": "manager:finance-master",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance_master_detail"
+    ],
+    "changes": [
+      "Единая тёмная визуальная система и спокойные разделители.",
+      "Информация сгруппирована по задаче пользователя.",
+      "Ролевая навигация и явные текстовые состояния доступны на телефоне."
+    ]
+  },
+  {
+    "role": "owner",
+    "screen": "finance-overview-unknown",
+    "title": "Финансы · Неполные данные",
+    "type": "finance",
+    "variant": "unknown",
+    "state": "unknown",
+    "sharedFrom": "manager:finance-overview-unknown",
+    "block": "finance",
+    "sourceSurfaceIds": [
+      "finance"
+    ],
+    "changes": [
+      "Все семь вкладок используют один период и общие фильтры.",
+      "Начисления, доля компании, расходы и аналитический остаток названы отдельно.",
+      "Неизвестные значения показаны прочерком; новый расчёт не придуман."
+    ]
+  }
+]

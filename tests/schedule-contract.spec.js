@@ -1,3 +1,4 @@
+const {secondary}=require('./helpers/approved-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 for(const width of [390,1600])test(`conflicts agree on canonical masters and exact interval at ${width}`,async({page})=>{
@@ -36,6 +37,7 @@ test('smart assignment fits the whole three-hour job between bookings and shift 
  Object.assign(db.tables.orders[0],{scheduled_date:'2026-10-01',scheduled_time:'12:00',time_slot:'12:00–13:00'});
  Object.assign(db.tables.orders[1],{scheduled_date:'2026-10-01',scheduled_time:'10:00',time_slot:'10:00–13:00'});
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.waitForFunction(()=>window.BOS_DISPATCHER_SMART_ASSIGN_V119);await page.locator('nav [data-page=orders]').click();
+ await secondary(page.locator('#bosOrderList .opsCompactOrder').filter({hasText:'Борис'}));
  await page.locator('#bosOrderList .opsCompactOrder').filter({hasText:'Борис'}).getByRole('button',{name:'Подобрать мастера'}).click();
  await expect(page.locator('#dsa119ModalList .dsa119Times')).toHaveText('13:00');
  page.once('dialog',d=>d.accept());await page.locator('#dsa119ModalList .dsa119Pick').click();await expect.poll(()=>db.tables.orders[1].time_slot).toBe('13:00–16:00');

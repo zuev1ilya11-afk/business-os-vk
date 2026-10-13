@@ -9,7 +9,8 @@ async function openFreeSlots(page){
   await expect(page.locator('#authGate')).toBeHidden();
   await page.waitForFunction(()=>window.BOS_DISPATCHER_FREE_SLOTS_V120===true);
   await page.locator('nav [data-page="dispatch"]').click();
-  await expect(page.locator('.dfs120Panel')).toBeVisible();
+  await page.getByRole('button',{name:'Свободные окна',exact:true}).click();
+ await expect(page.locator('.dfs120Panel')).toBeVisible();
 }
 
 test('dispatcher free slots exclude busy hours and show daily load',async({page})=>{

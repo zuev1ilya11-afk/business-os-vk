@@ -38,8 +38,29 @@
     detail.innerHTML=`<h3>Что не было сделано</h3>${items.length?items.map(r=>`<div class="reportDeductionReviewRow"><b>${esc(r.name)}</b><span>${esc(r.quantity)} ${esc(r.unit||'(ед. не указана)')} × ${money(r.unit_price)} = <b>${money(r.amount)}</b></span>${r.price_confirmed?'<small class="muted">Мастер подтвердил согласование цены и объёма</small>':''}</div>`).join(''):'<p class="muted">Старый отчёт без детализации по прайсу</p>'}<p>Сумма вычета: <b>${money(o.uncompleted_work_amount)}</b></p>${o.original_amount!=null?`<p>После вычета: <b>${money(Number(o.original_amount)-Number(o.uncompleted_work_amount||0))}</b> <span class="muted">без допработ</span></p>`:''}${description?`<p class="reportDeductionComment">${esc(description)}</p>`:''}`;
     if(line)line.after(detail);else root.querySelector('.card')?.append(detail);
   }
+  // Reparent the existing review nodes; their snapshot, validation and handlers stay authoritative.
+  function composeManagementReview(){
+    const modal=document.querySelector('#modalRoot .modal:has(#reviewForm)');
+    if(!modal||modal.querySelector('.bosReviewWorkspace'))return;
+    const form=modal.querySelector('#reviewForm'),cards=[...modal.children].filter(e=>e.matches('section.card'));
+    const card=title=>cards.find(e=>e.querySelector('h3')?.textContent===title);
+    const result=card('Результат'),documents=card('Документы'),archive=card('Архив Google Drive');
+    if(!form||!result||!documents||!archive)return;
+    modal.classList.add('bosManagementReview');
+    const workspace=document.createElement('div');workspace.className='bosReviewWorkspace';
+    const content=document.createElement('div');content.className='bosReviewContent';content.append(documents,result);
+    const decision=document.createElement('aside');decision.className='bosReviewDecision';decision.setAttribute('aria-label','Решение и архив отчёта');
+    const heading=document.createElement('h3');heading.textContent='Решение';form.prepend(heading);
+    form.querySelector('.two').classList.add('bosReviewActions');
+    decision.append(form,archive);workspace.append(content,decision);modal.append(workspace);
+    // The original rejection validates first; bring its required reason into view on mobile.
+    form.querySelector('#rejectReportBtn').addEventListener('click',()=>{
+      const comment=form.querySelector('#reviewComment');
+      if(innerWidth<=760&&!comment.value.trim()){comment.scrollIntoView({block:'center'});comment.focus({preventScroll:true})}
+    });
+  }
   const openReview=window.openReportReview;
-  if(typeof openReview==='function')window.openReportReview=function(id){openReview(id);enrichExtraWork(id);enrichUncompletedWork(id)};
+  if(typeof openReview==='function')window.openReportReview=function(id){openReview(id);enrichExtraWork(id);enrichUncompletedWork(id);if(canReview())composeManagementReview()};
   const home=pages.home;
   pages.home=function(){
     const html=home();

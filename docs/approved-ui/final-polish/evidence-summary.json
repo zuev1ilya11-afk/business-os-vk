@@ -1,0 +1,12 @@
+{
+  "contractRows": 242,
+  "freshContractRows": 62,
+  "captures": 235,
+  "uniqueCapturedScreens": 69,
+  "gaps": [],
+  "consoleErrorCaptures": 0,
+  "overflowCaptures": 0,
+  "missingPairs": [],
+  "protectedChecks": 80,
+  "unexpectedProtectedChanges": []
+}

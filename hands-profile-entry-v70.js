@@ -10,15 +10,6 @@ window.openOwnerProfile=function(){
     if(!modal)return;
     const isOwner=String(state?.user?.role||'')==='owner';
     if(!isOwner)return;
-    if(!modal.querySelector('#handsProfileSection')){
-      const section=document.createElement('section');
-      section.className='card';
-      section.id='handsProfileSection';
-      section.innerHTML='<h3 style="margin-top:0">Интеграции</h3><button class="secondary wide" id="handsProfileBtn"><span>Hands.ru</span><b>Открыть ›</b></button>';
-      const refresh=[...modal.querySelectorAll('button')].find(b=>/обновить данные/i.test(b.textContent||''));
-      if(refresh)modal.insertBefore(section,refresh);else modal.appendChild(section);
-      const btn=document.getElementById('handsProfileBtn');if(btn)btn.onclick=()=>{if(typeof openHandsIntegration==='function')openHandsIntegration()};
-    }
     if(!modal.querySelector('#authSettingsProfileSection')){
       const section=document.createElement('section');
       section.className='card';

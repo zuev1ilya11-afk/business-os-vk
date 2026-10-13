@@ -1,0 +1,297 @@
+/* Approved operational composition. Existing classic-script handlers own all writes. */
+.bos-approved-ui .bosOpsWorkspace,.bos-approved-ui .bosOpsDaySchedule{min-width:0;max-width:100%}
+.bos-approved-ui .bosOpsHeading,.bos-approved-ui .bosOpsSectionHead{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.bos-approved-ui .bosOpsHeading{margin-bottom:24px}.bosOpsHeading h1{margin:0;font-size:30px}.bosOpsHeading p{margin:8px 0 0}
+.bos-approved-ui .bosOpsSummary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--bos-ui-line);border-radius:16px;background:var(--bos-ui-surface);overflow:hidden;margin-bottom:28px}
+.bos-approved-ui .bosOpsSummary button{display:grid;justify-items:start;gap:12px;padding:24px 22px;border:0;border-right:1px solid var(--bos-ui-line);border-radius:0;background:transparent;text-align:left;color:var(--bos-ui-text)}
+.bosOpsSummary button:last-child{border-right:0}.bosOpsSummary span,.bosOpsSummary small{font-size:13px;color:var(--bos-ui-muted)}.bosOpsSummary strong{font-size:30px;font-weight:500}
+.bos-approved-ui .bosOpsColumns{display:grid;grid-template-columns:minmax(220px,.85fr) minmax(260px,1fr) minmax(300px,1.2fr);gap:20px}.bosOpsColumns>section{min-width:0}.bosOpsColumns>section+section{border-left:1px solid var(--bos-ui-line);padding-left:20px}
+.bosOpsSectionHead h2{margin:0 0 16px;font-size:20px}.bosOpsTabs{display:flex;gap:8px;margin:0 0 20px;overflow:auto}.bosOpsTabs button{min-height:44px;white-space:nowrap}
+.bos-approved-ui .bosOpsQueueOrder{display:grid;gap:8px;width:100%;text-align:left;padding:18px 0;border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;background:transparent;color:var(--bos-ui-text)}
+.bos-approved-ui .bosOpsQueueOrder.selected{padding:16px;border-radius:10px;background:var(--bos-ui-raised);margin-bottom:14px;border:0}.bosOpsQueueOrder strong{font-size:16px}.bosOpsQueueOrder span,.bosOpsQueueOrder small{font-size:13px}.bosOpsQueueOrder .bosOpsOrderMeta{font-size:11px;color:var(--bos-ui-muted)}
+.bosOpsHomeEvent{display:grid;grid-template-columns:54px minmax(0,1fr);gap:8px;border-top:1px solid var(--bos-ui-line);padding:12px 0;min-height:76px}.bosOpsHomeEvent time{font-size:12px;color:var(--bos-ui-muted)}.bos-approved-ui .bosOpsHomeEvent button{display:grid;text-align:left;gap:6px;padding:12px;border:0;border-left:3px solid var(--bos-ui-link);border-radius:0 8px 8px 0;background:var(--bos-ui-raised)}.bosOpsHomeEvent small{font-size:12px;color:var(--bos-ui-muted)}
+.bosOpsHomeDetail h3{font-size:19px;line-height:1.5}.bosOpsHomeDetail p{font-size:14px}.bosOpsHomeDetail dl{display:grid;grid-template-columns:70px minmax(0,1fr);gap:12px;font-size:13px;padding-bottom:24px;border-bottom:1px solid var(--bos-ui-line)}.bosOpsHomeDetail dd{text-align:right;margin:0}.bosOpsHomeDetail dt{color:var(--bos-ui-muted)}.bosOpsDetailActions,.bosOpsHomeLinks,.bosOpsScheduleLinks{display:flex;flex-wrap:wrap;gap:9px}.bosOpsHomeLinks{margin-top:24px;padding-top:16px;border-top:1px solid var(--bos-ui-line)}
+.bosOpsAttentionRow{border-top:1px solid var(--bos-ui-line);padding:20px 0}.bosOpsAttentionRow h3{margin:8px 0;font-size:18px}.bosOpsAttentionRow p{font-size:14px}
+.bos-approved-ui #content .bosOrderFilterBox{display:grid;grid-template-columns:minmax(0,1fr) 190px 170px;padding:14px 0;border:0;background:transparent;box-shadow:none}
+.bos-approved-ui #content .bosOrderFilters button{min-height:44px}.bos-approved-ui #content .bosOrderFilterBox[hidden]{display:none!important}
+.bos-approved-ui #content .opsCompactOrder{background:transparent!important;border:0!important;border-top:1px solid var(--bos-ui-line)!important;border-radius:0!important;box-shadow:none!important}
+.bos-approved-ui .bosOpsDaySchedule{display:grid;gap:18px}.bosOpsDaySchedule .dmv2Header{display:flex;align-items:center;justify-content:space-between;gap:16px}.bosOpsDaySchedule .dmv2Header h2{font-size:28px;margin:0}.bosOpsDaySchedule .dmv2Header p{margin:8px 0 0}.bosOpsDaySchedule .dmv2DayNav{display:grid;grid-template-columns:44px 1fr 44px;gap:8px}.bosOpsDaySchedule .dmv2DayStrip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}.bosOpsDaySchedule .dmv2DayStrip button{display:grid;gap:6px;min-height:60px;background:transparent;border:0;color:var(--bos-ui-muted)}.bosOpsDaySchedule .dmv2DayStrip button.active{background:var(--bos-ui-raised);color:var(--bos-ui-text)}
+.bosOpsDayMaster,.bosOpsMonthMaster,.bosOpsTeamSearch,.bosOpsAssignSearch{display:grid;gap:8px;font-size:14px}.bosOpsDayMaster select{width:100%}
+.bosOpsMobileTimeline{display:none}.bosOpsGridScroll{max-width:100%;min-width:0;overflow-x:auto;border:1px solid var(--bos-ui-line);border-radius:12px}.bosOpsDayGrid{min-width:950px}.bosOpsGridHead,.bosOpsGridRow{display:grid;grid-template-columns:200px minmax(0,1fr)}.bosOpsGridHead>span,.bosOpsGridMaster{padding:14px;border-right:1px solid var(--bos-ui-line);display:grid;gap:7px}.bosOpsGridMaster small{font-size:12px;color:var(--bos-ui-muted)}.bosOpsGridHead>div,.bosOpsGridVisits{display:grid;grid-template-columns:repeat(var(--ops-hours),minmax(28px,1fr));gap:3px;padding:8px}.bosOpsGridHead>div{font-size:12px;color:var(--bos-ui-muted);align-items:center}.bosOpsGridVisits{min-height:140px;border-top:1px solid var(--bos-ui-line);background:repeating-linear-gradient(90deg,transparent 0,transparent calc(100% / var(--ops-hours) - 1px),var(--bos-ui-line) calc(100% / var(--ops-hours) - 1px),var(--bos-ui-line) calc(100% / var(--ops-hours)))}
+.bos-approved-ui .bosOpsVisit{display:grid;align-content:start;gap:5px;min-width:0;padding:12px;text-align:left;border:0;border-left:3px solid var(--bos-ui-link);border-radius:0 8px 8px 0;background:var(--bos-ui-raised);color:var(--bos-ui-text);overflow-wrap:anywhere}.bosOpsVisit strong{font-size:13px}.bosOpsVisit span,.bosOpsVisit small{font-size:12px}.bosOpsVisit small{color:var(--bos-ui-muted)}.bosOpsVisit.conflict{border-left-color:var(--bos-ui-error)}.bosOpsVisit.completed{opacity:.8}.bosOpsVisit[data-duration-known=false]{min-width:125px;z-index:1}
+.bosOpsUntimed{padding:16px 0;border-top:1px solid var(--bos-ui-line)}.bosOpsUntimed .bosOpsVisit{margin-top:8px}
+.bosOpsDaySchedule .dmv2Metrics{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--bos-ui-muted);border-top:1px solid var(--bos-ui-line);padding-top:12px}.bosOpsDaySchedule .dmv2Metrics>div{display:flex;gap:8px;padding:0;border:0;background:transparent}.bosOpsDaySchedule .dmv2Metrics b{font-size:14px;color:var(--bos-ui-text)}
+.bosOpsMonthWeek,.bosOpsMonthGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.bosOpsMonthWeek{margin-top:20px;text-align:center;color:var(--bos-ui-muted);font-size:12px}.bosOpsMonthGrid button{display:grid;gap:8px;text-align:left;min-height:100px;padding:12px;min-width:0;background:var(--bos-ui-surface);border:1px solid var(--bos-ui-line);color:var(--bos-ui-text)}.bosOpsMonthGrid small,.bosOpsMonthGrid span{font-size:11px}.bosOpsMonthGrid .full{border-left:3px solid var(--bos-ui-success)}.bosOpsMonthGrid .partial{border-left:3px solid var(--bos-ui-warning)}.bosOpsMonthGrid .off{color:var(--bos-ui-muted)}
+.bos-approved-ui .newOrderSection{padding:22px 0;background:transparent;border-top:1px solid var(--bos-ui-line)}.bos-approved-ui .newOrderSectionHead h3{font-size:20px}.bos-approved-ui .newOrderActions{background:var(--bos-ui-surface);padding:12px 0}.bos-approved-ui .newOrderFieldLabel{color:var(--bos-ui-muted)}.bos-approved-ui .newOrderTotals,.bos-approved-ui .newOrderConditions{background:transparent!important;border:0!important;padding:0!important}.bos-approved-ui .newOrderChannel:has(input:checked){background:var(--bos-ui-raised);border-color:var(--bos-ui-link);color:var(--bos-ui-text)!important}
+.bos-approved-ui .bosOpsOrderTitle{font-size:22px;margin:0}.bos-approved-ui .bosOpsDetailLabel,.bos-approved-ui .bosWorksLabel,.bos-approved-ui .bosQuickEditLabel{font-size:20px;color:var(--bos-ui-text);margin:20px 0 10px}.bos-approved-ui .bosHandsBlock,.bos-approved-ui .bosQuickEditBlock{background:transparent;border:0;border-top:1px solid var(--bos-ui-line);border-radius:0;padding:16px 0}.bosOpsAssignContext{font-size:16px}.bosOpsFormFooter{position:sticky;bottom:0;background:var(--bos-ui-surface);padding-top:12px}
+.bos-approved-ui .compactTeam{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.bos-approved-ui .compactTeamCard{padding:18px;background:var(--bos-ui-surface);border:1px solid var(--bos-ui-line);border-radius:16px}.bos-approved-ui .compactTeamCard[hidden]{display:none!important}.bosOpsMasterVisits{display:grid;gap:8px}.bosOpsMasterVisits button{display:grid;gap:6px;text-align:left}.bosOpsMasterVisits small{font-size:12px;color:var(--bos-ui-muted)}
+/* Shared management calendar containment: scroll within the page, never the document. */
+.bos-approved-ui #content .usManagement,.bos-approved-ui #content .usMonthScroll{min-width:0;max-width:100%;box-sizing:border-box}@media(min-width:761px){.bos-approved-ui #content .usManagement .usGrid,.bos-approved-ui #content .usManagement .usWeek{width:100%;min-width:1246px}}
+@media(max-width:1049px){.bos-approved-ui .bosOpsColumns{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.bos-approved-ui .bosOpsHomeDetail{display:none}.bos-approved-ui .compactTeam{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.bos-approved-ui .bosOpsHeading{display:grid;gap:16px;margin-bottom:20px}.bosOpsHeading h1{font-size:28px}.bosOpsHeading>.primary{width:100%}.bos-approved-ui .bosOpsSummary{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:20px}.bos-approved-ui .bosOpsSummary button{padding:16px 12px;gap:9px;border-bottom:1px solid var(--bos-ui-line)}.bosOpsSummary strong{font-size:25px}.bosOpsSummary span,.bosOpsSummary small{font-size:11px}.bos-approved-ui .bosOpsColumns{grid-template-columns:1fr}.bos-approved-ui .bosOpsColumns>section+section{border-left:0;padding-left:0;border-top:1px solid var(--bos-ui-line);padding-top:20px}.bos-approved-ui .bosOpsHomeSchedule{display:none}.bos-approved-ui .bosOpsDaySchedule .dmv2Header{display:grid}.bos-approved-ui .bosOpsGridScroll{display:none}.bos-approved-ui .bosOpsMobileTimeline{display:block}.bosOpsMobileTimeline h3{font-size:16px;margin-bottom:8px}.bosOpsMobileTimeline>p{font-size:12px}.bosOpsHour{display:grid;grid-template-columns:54px minmax(0,1fr);gap:8px;min-height:74px}.bosOpsHour time{font-size:12px;color:var(--bos-ui-muted);padding-top:12px}.bosOpsHour>div{border-top:1px solid var(--bos-ui-line);padding:8px 0}.bosOpsHour .bosOpsVisit{width:100%;margin:0 0 6px}.bosOpsMonthGrid button{min-height:72px;padding:8px 4px}.bosOpsMonthGrid small,.bosOpsMonthGrid span{font-size:9px;overflow-wrap:anywhere}.bos-approved-ui .compactTeam{grid-template-columns:1fr}.bos-approved-ui #content .bosOrderFilterBox{grid-template-columns:1fr 1fr}.bos-approved-ui #content .bosOrderFilterBox>#bosOrderSearch{grid-column:1/-1}.bos-approved-ui .newOrderGrid,.bos-approved-ui .newOrderBottom{grid-template-columns:1fr}.bos-approved-ui .newOrderSection{padding:18px 0}.bosOpsHomeLinks button{width:100%}}
+
+/* Saved visit time leads; secondary handlers remain inside their original action host. */
+.bos-approved-ui #content #bosOrderList .bosOpsListRow{display:grid!important;grid-template-columns:64px minmax(0,1fr);column-gap:14px;row-gap:9px;align-items:start;padding:20px 0!important}
+.bos-approved-ui #content #bosOrderList .bosOpsListRow>*{grid-column:2;margin:0!important;min-width:0}
+.bos-approved-ui #content #bosOrderList .bosOpsListRow>.bosOpsListTime{grid-column:1;grid-row:1/8;display:grid;gap:8px}.bos-approved-ui .bosOpsListTime b{font-size:20px;font-weight:600;white-space:nowrap}.bos-approved-ui .bosOpsListTime small{font-size:10px;color:var(--bos-ui-muted);overflow-wrap:normal}
+.bos-approved-ui #content #bosOrderList .bosOpsListRow>.opsCompactTop{grid-row:1;display:flex!important;font-size:11px;color:var(--bos-ui-muted)}.bos-approved-ui #content #bosOrderList .bosOpsListRow>.opsCompactTop>span{display:none}.bos-approved-ui #content #bosOrderList .bosOpsListRow>.opsCompactTop>b{font-size:11px;font-weight:400}
+.bos-approved-ui #content #bosOrderList .bosOpsListRow>.opsCompactAddress{grid-row:2;font-size:16px;font-weight:600;line-height:1.45;color:var(--bos-ui-text)}.bos-approved-ui #content #bosOrderList .bosOpsListRow>.opsCompactWorks{grid-row:3;font-size:13px;border:0;padding:0}.bos-approved-ui #content #bosOrderList .bosOpsListRow>.bosOpsListContact{grid-row:4;font-size:12px;color:var(--bos-ui-muted)}
+.bos-approved-ui #content #bosOrderList .bosOpsListRow>.opsCompactBottom{grid-row:5;justify-content:flex-start;gap:6px;font-size:11px}.bos-approved-ui #content #bosOrderList .bosOpsListRow>.opsCompactMain{grid-row:6;display:flex!important;justify-content:space-between;gap:10px;color:var(--bos-ui-muted)}.bos-approved-ui #content #bosOrderList .bosOpsListRow>.opsCompactMain>b{font-size:12px;font-weight:400;white-space:normal}.bos-approved-ui #content #bosOrderList .bosOpsListRow>.opsCompactMain>strong{font-size:12px;font-weight:400}
+.bos-approved-ui #content #bosOrderList .bosOpsListRow>.bosOpsListOpen{grid-row:7;min-height:44px;background:transparent!important;border:0;color:var(--bos-ui-link);padding:0;text-align:left;justify-self:start}
+.bos-approved-ui #content #bosOrderList .bosOpsListRow>.dmCardActions{grid-row:8;display:block!important;padding:0;border:0}.bos-approved-ui .bosOpsListRow .dmOpenAction{display:none!important}.bos-approved-ui .bosOpsListRow .mwv2MobileStage[hidden]{display:none!important}
+.bos-approved-ui .bosOpsSecondaryActions summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--bos-ui-muted);font-size:12px}.bos-approved-ui .bosOpsSecondaryBody{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:8px 0}.bos-approved-ui .bosOpsSecondaryBody>*{min-width:0!important;min-height:44px!important;font-size:11px!important;padding:8px!important;overflow-wrap:anywhere}
+.bos-approved-ui .bosOpsFreeTask .dfs120Stats{margin-bottom:10px}.bos-approved-ui .bosOpsFreeTask .dfs120Stats span{padding:10px;gap:6px}
+
+.bos-approved-ui #content #bosOrderList .bosOpsListRow>.bosOpsSecondaryActions{grid-row:8}.bos-approved-ui #content #bosOrderList .bosOpsListRow>.dmCardActions{grid-row:9}.bos-approved-ui #content #bosOrderList .bosOpsListRow:not(:has(>.bosOpsSecondaryActions[open]))>.dmCardActions,.bos-approved-ui #content #bosOrderList .bosOpsListRow>.dmCardActions[hidden]{display:none!important}
+
+/* Approved page composition remains the visible surface after late legacy decorators. */
+.bos-approved-ui #content:has(>.bosOpsWorkspace)>:not(.bosOpsWorkspace){display:none!important}
+.bos-approved-ui #content #bosOrderList .bosOpsListRow[hidden],.bos-approved-ui #content #bosOrderList .bosOpsListRow.dmv3FilteredOut{display:none!important}
+.bos-approved-ui #content:has(#bosOrderList)>.duq122{padding:14px 0;border:0;border-top:1px solid var(--bos-ui-line);border-radius:0;background:transparent}
+.bos-approved-ui .bosOpsListTools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin:18px 0}.bosOpsListTools input{min-width:0}
+.bos-approved-ui #content:has(#bosOrderList)>.bosDispatcherMobile .dmMobileHeader,.bos-approved-ui #content:has(#bosOrderList)>.bosDispatcherMobile .dmMetrics{display:none!important}
+.bos-approved-ui #content #bosOrderList .bosOpsListRow>.dmCardActions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.bos-approved-ui .bosOpsFiltersForm{display:grid;gap:18px}.bosOpsFiltersForm label{display:grid;gap:8px}.bosOpsFiltersActions{display:flex;gap:8px}.bosOpsFiltersActions button{flex:1}
+@media(min-width:1050px){.bos-approved-ui #content .dh190Board .dbLayout{grid-template-columns:minmax(190px,205px) minmax(0,1fr) minmax(250px,280px)!important}}
+
+@media(min-width:1500px){.bos-approved-ui #content .usManagement .usGrid,.bos-approved-ui #content .usManagement .usWeek{min-width:0;grid-template-columns:repeat(7,minmax(0,1fr))}}
+@media(min-width:601px){.bos-approved-ui .bosOpsFiltersForm{grid-template-columns:1fr 1fr}.bosOpsFiltersActions{grid-column:1/-1}}
+
+.bos-approved-ui .compactTeamCard dl{display:grid;grid-template-columns:100px minmax(0,1fr);gap:10px;font-size:12px;line-height:1.5;margin:18px 0}.compactTeamCard dt{color:var(--bos-ui-muted)}.compactTeamCard dd{margin:0;overflow-wrap:anywhere}.compactTeamCard>.bosTextAction{font-size:13px;color:var(--bos-ui-link)}
+@media(max-width:760px){.bos-approved-ui #app>#content{padding-bottom:120px!important}.bos-approved-ui .bosOpsSecondaryActions summary,.bos-approved-ui .bosOpsListRow button{scroll-margin-block:110px}html{scroll-padding-bottom:110px}}
+
+.bos-approved-ui .bosOpsProfile>section.card{border:0;border-top:1px solid var(--bos-ui-line);border-radius:0;background:transparent;padding:20px 0}.bosOpsProfile>.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.bosOpsProfile>.grid>.card{background:transparent;border:0;padding:16px 0}.bosOpsProfile>.grid .metric strong{font-size:24px}
+
+@media(max-width:760px){.bos-approved-ui #content:has(#bosOrderList)>.row{order:0;display:grid!important;gap:14px}.bos-approved-ui #content:has(#bosOrderList)>.row>.primary{width:100%}.bos-approved-ui #content:has(#bosOrderList)>.bosOpsListTools{order:1}.bos-approved-ui #content:has(#bosOrderList)>.bosOrderFilters{order:2}.bos-approved-ui #content:has(#bosOrderList)>.bosDispatcherMobile{order:3}.bos-approved-ui #content:has(#bosOrderList)>#bosOrderList{order:4}.bos-approved-ui #content:has(#bosOrderList)>.duq122{order:5}.bos-approved-ui #content:has(#bosOrderList)>#bosOrderControlEntry{order:6!important}}
+
+@media(max-width:760px){.bos-approved-ui #app>#content:has(#bosOrderList){display:flex!important;flex-direction:column;align-items:stretch}.bos-approved-ui #content:has(#bosOrderList)>#bosOrderControlEntry{order:6!important}}
+.bos-approved-ui #content #bosOrderList .bosOpsListRow>.bosOpsListOpen{color:var(--bos-ui-link)!important}
+
+.bosOpsVisitTime,.bosOpsVisitNumber{display:block}.bosOpsGridLegend{font-size:12px;color:var(--bos-ui-muted);margin:10px 0}
+@media(min-width:601px){.bos-approved-ui .bosOpsDayGrid .bosOpsVisit{height:108px;max-height:108px;min-width:0;width:100%;align-self:start;gap:6px;padding:10px 6px;overflow:hidden;overflow-wrap:normal}.bos-approved-ui .bosOpsDayGrid .bosOpsVisit strong,.bos-approved-ui .bosOpsDayGrid .bosOpsVisit>span,.bos-approved-ui .bosOpsDayGrid .bosOpsVisit strong span,.bos-approved-ui .bosOpsDayGrid .bosOpsVisitStatus{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.bos-approved-ui .bosOpsDayGrid .bosOpsVisit strong{font-size:11px;line-height:18px}.bos-approved-ui .bosOpsDayGrid .bosOpsVisit .bosOpsVisitTime{font-size:11px;letter-spacing:-.3px}.bos-approved-ui .bosOpsDayGrid .bosOpsVisit>span{font-size:11px}.bos-approved-ui .bosOpsDayGrid .bosOpsVisitAddress,.bos-approved-ui .bosOpsDayGrid .bosOpsVisitDuration{display:none}.bos-approved-ui .bosOpsDayGrid .bosOpsVisit[data-duration-known=false]{background:transparent;border-left:0;position:relative;padding:18px 2px 8px}.bos-approved-ui .bosOpsDayGrid .bosOpsVisit[data-duration-known=false]::before{content:"";position:absolute;top:5px;left:6px;width:6px;height:6px;border-radius:50%;background:var(--bos-ui-link)}}
+
+@media(max-width:600px){.bosOpsGridLegend{display:none}}
+
+/* Management composition: source-backed summaries, compact controls and records. */
+.bos-approved-ui #financePage{min-width:0;max-width:100%}.bos-approved-ui #financePage .finHeading{margin:0 0 22px;display:flex;align-items:center;justify-content:space-between;gap:16px}.bos-approved-ui #financePage h1{font-size:30px;margin:0 0 10px}.bos-approved-ui #financePage .finHeading p{margin:0;color:var(--bos-ui-muted)}
+.bos-approved-ui #financePage .finTabs{display:flex;gap:26px;border-bottom:1px solid var(--bos-ui-line);overflow-x:auto;white-space:nowrap;padding:0;margin:0 0 24px;scrollbar-width:thin}.bos-approved-ui #financePage .finTabs button{border:0;border-radius:0;background:transparent;color:var(--bos-ui-muted);padding:0 0 20px;min-height:50px;flex:0 0 auto;font-size:14px}.bos-approved-ui #financePage .finTabs button.primary{color:var(--bos-ui-text);border-bottom:2px solid var(--bos-ui-link)}
+.bos-approved-ui #financePage .finCompactControls{display:flex;align-items:start;flex-wrap:wrap;gap:10px;margin-bottom:24px}.bos-approved-ui #financePage .finCompactControls details{border:0;background:transparent;margin:0;padding:0;min-width:0;max-width:100%}.bos-approved-ui #financePage .finCompactControls summary{display:flex;align-items:center;min-height:44px;cursor:pointer;border:1px solid var(--bos-ui-line);border-radius:10px;padding:10px 14px;font-size:13px;list-style:none}.bos-approved-ui #financePage .finPeriodControl{flex:0 1 240px}.bos-approved-ui #financePage .finFilters{flex:0 1 auto}.bos-approved-ui #financePage .finCompactControls details[open]{flex-basis:100%}.bos-approved-ui #financePage .finPeriodOptions,.bos-approved-ui #financePage .finFilterGrid{padding:16px 0;display:flex;flex-wrap:wrap;gap:12px}.bos-approved-ui #financePage .finFilterGrid label{flex:1 1 180px;min-width:0;display:grid;gap:8px}.bos-approved-ui #financePage .finSelectedRange{align-self:center;font-size:12px;line-height:1.5}
+.bos-approved-ui #financePage .finKpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border:1px solid var(--bos-ui-line);border-radius:16px;overflow:hidden;background:var(--bos-ui-surface);margin:0 0 24px}.bos-approved-ui #financePage .finKpi{border:0;border-right:1px solid var(--bos-ui-line);border-radius:0;padding:24px 22px;background:transparent;box-shadow:none;display:grid;align-content:start;gap:15px;margin:0;min-width:0}.bos-approved-ui #financePage .finKpi:last-child{border-right:0}.bos-approved-ui #financePage .finKpi strong{font-size:29px;font-weight:500;overflow-wrap:anywhere}.bos-approved-ui #financePage .finKpi small,.bos-approved-ui #financePage .finKpi>.muted{font-size:12px;color:var(--bos-ui-muted);line-height:1.5}.bos-approved-ui #financePage .finExtraMetrics,.bos-approved-ui #financePage .finOverviewMasters,.bos-approved-ui #financePage .finCalculationNotes{margin:0 0 24px;border:0;padding:0}.bos-approved-ui #financePage details>summary{cursor:pointer;min-height:44px;align-content:center;color:var(--bos-ui-link)}.bos-approved-ui #financePage .finWorkspaceMetrics[hidden]{display:none}.bos-approved-ui #financePage .finOverviewGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:32px 0}.bos-approved-ui #financePage #finContent .card{background:none;border:0;box-shadow:none;border-radius:0;padding:0;margin:0 0 24px}.bos-approved-ui #financePage h2,.bos-approved-ui #financePage h3{font-size:20px}.bos-approved-ui #financePage .finComposition dl>div{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--bos-ui-line);padding:22px 0}.bos-approved-ui #financePage .finComposition dd{margin:0;text-align:right;white-space:nowrap}.bos-approved-ui #financePage .finTableWrap{max-width:100%;overflow:auto}.bos-approved-ui #financePage .finTable th,.bos-approved-ui #financePage .finTable td{padding:16px 10px;border-bottom:1px solid var(--bos-ui-line);font-size:13px}.bos-approved-ui #financePage .finTable th{font-weight:500}.bos-approved-ui #financePage .finTable thead th{color:var(--bos-ui-muted);font-size:12px;background:none}.bos-approved-ui #financePage .finExpense{border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;padding:20px 0;background:transparent}.bos-approved-ui #financePage .finExpenseActions{display:flex;gap:10px;flex-wrap:wrap}.bos-approved-ui #financePage .finNote{font-size:12px;color:var(--bos-ui-muted);line-height:1.6}
+.bos-approved-ui [data-fin-expense-dialog] #finExpenseForm{display:grid;gap:18px}.bos-approved-ui [data-fin-expense-dialog] label{display:grid;gap:8px}.bos-approved-ui [data-fin-expense-dialog] .finExpenseOptional{border:0;border-top:1px solid var(--bos-ui-line);padding:12px 0}.bos-approved-ui [data-fin-expense-dialog] .finExpenseOptional label{margin:12px 0}.bos-approved-ui [data-fin-expense-dialog] [type=submit]{position:sticky;bottom:0;z-index:2;min-height:48px}
+.bos-approved-ui .bosManagementHeading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 24px}.bos-approved-ui .bosManagementHeading h1{font-size:30px;margin:0 0 10px}.bos-approved-ui .bosManagementHeading p{margin:0}.bos-approved-ui #ownerDashboard .odMetrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--bos-ui-line);border-radius:16px;background:var(--bos-ui-surface);overflow:hidden;gap:0;margin:0 0 28px}.bos-approved-ui #ownerDashboard .dashMetric{border:0;border-right:1px solid var(--bos-ui-line);border-radius:0;background:none;box-shadow:none;margin:0;padding:22px;gap:14px}.bos-approved-ui #ownerDashboard .dashMetric:last-child{border-right:0}.bos-approved-ui #ownerDashboard .dashIcon{display:none}.bos-approved-ui #ownerDashboard .dashMetric strong{font-weight:500;font-size:29px}.bos-approved-ui #ownerDashboard .odMain,.bos-approved-ui #ownerDashboard .odBottom{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}.bos-approved-ui #ownerDashboard .card{background:none;border:0;border-radius:0;box-shadow:none;padding:0;min-width:0}.bos-approved-ui #ownerDashboard .odBottom{margin-top:28px}.bos-approved-ui #ownerDashboard h2,.bos-approved-ui #ownerDashboard h3{font-size:20px}.bos-approved-ui .bosManagementAttention{min-width:0}.bos-approved-ui .bosManagementAttention .odAttention{display:block;border:0;border-radius:0;background:none;padding:0;margin:0}.bos-approved-ui .bosManagementAttention .odAttentionTitle{display:grid;gap:8px;padding:0 0 16px}.bos-approved-ui .bosManagementAttention .odAttentionTitle b{font-size:20px}.bos-approved-ui .bosManagementAttention .odAttentionFilters{display:grid;gap:0}.bos-approved-ui .bosManagementAttention .odAttentionFilters button{display:flex;justify-content:space-between;gap:14px;background:none;border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;padding:20px 0;text-align:left;font-size:15px}.bos-approved-ui .bosManagementLoadRow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0;border-bottom:1px solid var(--bos-ui-line)}.bosManagementLoadRow small{display:block;margin-top:7px;color:var(--bos-ui-muted)}.bos-approved-ui #ownerDashboard .odMoreLoad{margin-top:16px}.bos-approved-ui #ownerDashboard .odMoreLoad summary{min-height:44px;color:var(--bos-ui-link);cursor:pointer}.bos-approved-ui #ownerDashboard .odDay{min-height:44px}
+.bos-approved-ui .bosManagementTeam .compactTeamCard{background:none;border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;box-shadow:none;padding:20px 0}.bos-approved-ui .bosManagementTeam .compactTeam{display:grid;gap:0}.bos-approved-ui .bosManagementTeam .compactStats{background:none}.bos-approved-ui .bosManagementMember .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border:1px solid var(--bos-ui-line);border-radius:16px;overflow:hidden;background:var(--bos-ui-surface);margin:24px 0}.bos-approved-ui .bosManagementMember .grid .metric{background:none;box-shadow:none;border:0;border-radius:0;border-bottom:1px solid var(--bos-ui-line);padding:18px 15px;margin:0}.bos-approved-ui .bosManagementMember>.card,.bos-approved-ui .bosManagementMember .staffAdminActions{background:none;box-shadow:none;border:0;border-top:1px solid var(--bos-ui-line);border-radius:0;padding:20px 0}.bos-approved-ui .bosManagementReview>.card{background:none;border:0;border-top:1px solid var(--bos-ui-line);border-radius:0;padding:20px 0;box-shadow:none}.bos-approved-ui .bosManagementReview #reviewForm{display:grid;gap:12px}.bos-approved-ui .bosManagementReview #reviewForm label{display:grid;gap:8px}.bos-approved-ui .bosManagementReview .two{position:sticky;bottom:0;background:var(--bos-ui-bg);padding:12px 0;z-index:3}.bos-approved-ui .bosManagementReview .reportPhotoGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.bos-approved-ui #bosOrderControl .ocList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.bos-approved-ui #bosOrderControl .ocItem{background:none;border:0;border-top:1px solid var(--bos-ui-line);border-radius:0;padding:20px 0}.bos-approved-ui #bosOrderControl{background:none;border:0;padding:0}.bos-approved-ui .ctDialog{background:var(--bos-ui-surface);border-color:var(--bos-ui-line)}
+@media(max-width:760px){.bos-approved-ui #financePage .finTabs{gap:24px}.bos-approved-ui #financePage .finKpis{grid-template-columns:repeat(2,minmax(0,1fr))}.bos-approved-ui #financePage .finKpi{padding:20px 15px;border-bottom:1px solid var(--bos-ui-line);gap:14px}.bos-approved-ui #financePage .finKpi:nth-child(2n){border-right:0}.bos-approved-ui #financePage .finKpi strong{font-size:27px}.bos-approved-ui #financePage .finOverviewGrid{grid-template-columns:minmax(0,1fr);gap:10px}.bos-approved-ui #financePage .finSelectedRange{flex-basis:100%}.bos-approved-ui #financePage .finPeriodControl{flex:1 1 180px}.bos-approved-ui #financePage .finTable,.bos-approved-ui #financePage .finTable tbody,.bos-approved-ui #financePage .finTable tfoot{display:block;width:100%;min-width:0}.bos-approved-ui #financePage .finTable thead{display:none}.bos-approved-ui #financePage .finTable tr{display:grid;grid-template-columns:minmax(0,1fr);border-bottom:1px solid var(--bos-ui-line);padding:18px 0;gap:10px;background:none}.bos-approved-ui #financePage .finTable th,.bos-approved-ui #financePage .finTable td{border:0;padding:0;font-size:13px;background:none;min-width:0;overflow-wrap:anywhere}.bos-approved-ui #financePage .finTable td[data-label]{display:grid;grid-template-columns:minmax(100px,43%) minmax(0,1fr);gap:10px;text-align:left}.bos-approved-ui #financePage .finTable td[data-label]::before{content:attr(data-label);color:var(--bos-ui-muted);font-size:12px}.bos-approved-ui #financePage .finTable td small{grid-column:2}.bos-approved-ui #financePage .finHeading{align-items:start;flex-direction:column}.bos-approved-ui #ownerDashboard .odMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}.bos-approved-ui #ownerDashboard .dashMetric{padding:20px 15px;border-bottom:1px solid var(--bos-ui-line)}.bos-approved-ui #ownerDashboard .dashMetric:nth-child(2n){border-right:0}.bos-approved-ui #ownerDashboard .odMain,.bos-approved-ui #ownerDashboard .odBottom{grid-template-columns:minmax(0,1fr);gap:28px}.bos-approved-ui .bosManagementHeading{flex-direction:column;align-items:stretch}.bos-approved-ui #bosOrderControl .ocList{grid-template-columns:minmax(0,1fr)}.bos-approved-ui .bosManagementReview .reportPhotoGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.bos-approved-ui .bosManagementProfile h2,.bos-approved-ui .bosManagementMember>h2,.bos-approved-ui .bosManagementForm>h2,.bos-approved-ui .bosManagementReview>h2{font-size:30px;line-height:1.2;margin:0 0 18px}
+.bos-approved-ui .bosManagementProfile>.card,.bos-approved-ui .bosManagementForm>.card{background:none;border:0;border-top:1px solid var(--bos-ui-line);border-radius:0;padding:22px 0;box-shadow:none}
+.bos-approved-ui .bosManagementProfileMenu{display:grid;margin:24px 0}.bos-approved-ui .bosManagementProfileMenu button{border:0;border-bottom:1px solid var(--bos-ui-line);background:none;border-radius:0;padding:20px 0;text-align:left}
+.bos-approved-ui .bosManagementForm form{display:grid;gap:12px}.bos-approved-ui .bosManagementForm form label{font-size:14px;color:var(--bos-ui-muted)}.bos-approved-ui .bosManagementForm form>[type=submit],.bos-approved-ui .bosManagementForm form>.two{position:sticky;bottom:0;z-index:2;background:var(--bos-ui-bg);padding-top:10px}
+.bos-approved-ui .bosManagementForm #manualCompletionForm:before{content:'Сохранённый расчёт и существующий отчёт не перезаписываются. Причина обязательна.';display:block;padding:16px;border-left:3px solid var(--bos-ui-warning);background:var(--bos-ui-raised);font-size:13px;line-height:1.5}
+.bos-approved-ui .bosManagementTeamVisit{display:grid;grid-template-columns:140px minmax(0,1fr);gap:14px;font-size:13px}.bos-approved-ui .bosManagementTeamVisit dt{color:var(--bos-ui-muted)}.bos-approved-ui .bosManagementTeamVisit dd{margin:0}
+@media(min-width:1024px){.bos-approved-ui .bosManagementTeam .compactTeamCard{display:grid;grid-template-columns:minmax(230px,1fr) minmax(260px,1.1fr) 180px 100px;gap:16px;align-items:center}.bos-approved-ui .bosManagementTeam .compactTeamCard>.row{display:grid;grid-template-columns:minmax(0,1fr) auto}.bos-approved-ui .bosManagementTeam .compactStats{margin:0}.bos-approved-ui .bosManagementTeamVisit{grid-template-columns:minmax(0,1fr);gap:6px}}
+@media(max-width:760px){.bos-approved-ui #modalRoot .modal:is(.bosManagementProfile,.bosManagementMember,.bosManagementReview,.bosManagementForm){width:100%;height:100dvh;max-height:100dvh;max-width:100%;margin:0;border:0;border-radius:0;padding:76px 19px 32px;background:var(--bos-ui-bg)}.bos-approved-ui #modalRoot:has(.modal:is(.bosManagementProfile,.bosManagementMember,.bosManagementReview,.bosManagementForm)){padding:0}.bos-approved-ui #modalRoot .bosManagementReview .two,.bos-approved-ui #modalRoot .bosManagementForm form>.two{bottom:-32px;padding:12px 0 28px;background:var(--bos-ui-bg)}}
+/* Reset inherited wrapping/card styles for the approved tab strip and rows. */
+.bos-approved-ui #financePage .finTabs{flex-wrap:nowrap}
+.bos-approved-ui #financePage .finTabs button.primary{background:transparent!important;color:var(--bos-ui-text)!important;border-color:var(--bos-ui-link)!important}
+.bos-approved-ui #financePage .finKpi>span.muted{min-height:0}.bos-approved-ui #financePage .finTable tr{border-radius:0;margin:0}
+.bos-approved-ui #ownerDashboard .bosManagementAttention .odAttention{width:100%;text-align:left;padding:0}
+.bos-approved-ui #ownerDashboard .bosManagementAttention .odAttentionTitle{align-items:start;text-align:left}
+.bos-approved-ui #ownerDashboard .bosManagementAttention .odAttentionFilters{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.bos-approved-ui #ownerDashboard .bosManagementAttention .odAttentionFilters button{flex-direction:row;padding:18px 0;font-size:15px;text-align:left}
+.bos-approved-ui #ownerDashboard .bosManagementAttention .odAttentionFilters b{font-size:16px;color:var(--bos-ui-text)}
+.bos-approved-ui #ownerDashboard .bosManagementAttention .linkBtn{width:auto;text-align:left;background:none;border:0;padding:14px 0}
+.bos-approved-ui .bosManagementTools .card,.bos-approved-ui .bosManagementAccess>.card{border:0;border-top:1px solid var(--bos-ui-line);background:none;border-radius:0;box-shadow:none;padding:22px 0}.bos-approved-ui .bosManagementTools .ownerToolAction,.bos-approved-ui .bosManagementTools .ownerPreviewBtn,.bos-approved-ui .bosManagementAccess>button.wide{border:0;border-bottom:1px solid var(--bos-ui-line);background:none;border-radius:0;padding:18px 0;text-align:left}.bos-approved-ui .bosManagementTools .ownerToolsHead h2{font-size:30px}.bos-approved-ui .bosManagementReportRow{display:flex;align-items:center;justify-content:space-between;gap:16px;border:0;border-bottom:1px solid var(--bos-ui-line);background:none;border-radius:0;text-align:left;padding:20px 0}.bosManagementReportRow small{display:block;color:var(--bos-ui-muted);font-size:13px;margin-top:8px}
+@media(min-width:1024px){.bos-approved-ui #bosOrderControl .ocList{display:grid;grid-template-columns:minmax(0,1fr);gap:0}.bos-approved-ui #bosOrderControl .ocItem{display:grid;grid-template-columns:210px minmax(0,1fr) 170px;gap:10px 24px}.bos-approved-ui #bosOrderControl .ocItemTop,.bos-approved-ui #bosOrderControl .ocClient,.bos-approved-ui #bosOrderControl .ocWork{grid-column:1}.bos-approved-ui #bosOrderControl .ocItemTop{display:grid;gap:8px}.bos-approved-ui #bosOrderControl .ocItemTop span{text-align:left}.bos-approved-ui #bosOrderControl .ocIssue{grid-column:2}.bos-approved-ui #bosOrderControl .ocItem>button{grid-column:3;grid-row:1;align-self:start;margin:0}.bos-approved-ui #bosOrderControl .ocItem>.ctMeta{grid-column:2}.bos-approved-ui .bosManagementTools .ownerToolAction{display:flex;justify-content:space-between}}
+@media(max-width:760px){.bos-approved-ui #modalRoot .modal:is(.bosManagementTools,.bosManagementAccess){width:100%;height:100dvh;max-height:100dvh;margin:0;max-width:100%;padding:76px 19px 32px;border:0;border-radius:0;background:var(--bos-ui-bg)}.bos-approved-ui #modalRoot:has(.modal:is(.bosManagementTools,.bosManagementAccess)){padding:0}.bos-approved-ui .bosManagementReportRow{display:grid}}
+.bos-approved-ui #financePage .finExpenseTotals{grid-template-columns:repeat(2,minmax(0,1fr));max-width:650px}.bos-approved-ui #financePage .finSeries0{background:var(--bos-ui-primary)}.bos-approved-ui #financePage .finSeries1{background:#6384a8}.bos-approved-ui #financePage .finSeries2{background:var(--bos-ui-muted)}
+
+/* Keep original finance data available without competing with the primary overview. */
+.bos-approved-ui #financePage #finContent .finExpenseTotals .finKpi{padding:24px 22px;margin:0;border-right:1px solid var(--bos-ui-line)}
+@media(max-width:760px){.bos-approved-ui #financePage .finKpi,.bos-approved-ui #financePage #finContent .finExpenseTotals .finKpi{padding:18px 15px;gap:8px}.bos-approved-ui #financePage .finTable tr{border:0;border-bottom:1px solid var(--bos-ui-line)}.bos-approved-ui #financePage .finTable tfoot{background:none}.bos-approved-ui #financePage .finOrders [data-fin-order]{background:none;border:0;border-radius:0;padding:0;color:var(--bos-ui-link);text-align:left;min-height:32px}}
+/* Management employee rows use the full content width; late team styles retain two columns otherwise. */
+.bos-approved-ui #content .bosManagementTeam .compactTeam{grid-template-columns:minmax(0,1fr)}
+.bos-approved-ui .bosManagementMember .metric::before,.bos-approved-ui .bosManagementMember .metric::after{display:none}
+.bos-approved-ui .bosManagementProfileMenu button{justify-content:flex-start}
+.bos-approved-ui .bosManagementProfileMenu [data-bos-push-entry]{border:0;background:none;margin:0;padding:0;}
+.bos-approved-ui .bosManagementProfileMenu [data-bos-push-entry]>h3{display:none;}
+@media(max-width:760px){.bos-approved-ui #modalRoot .modalBackdrop:has(.modal:is(.bosManagementProfile,.bosManagementMember,.bosManagementReview,.bosManagementForm,.bosManagementTools,.bosManagementAccess)),.bos-approved-ui #modalRoot .modalBackdrop:has([data-fin-expense-dialog]){padding:0}.bos-approved-ui #modalRoot .modal:has([data-fin-expense-dialog]){width:100%;height:100dvh;max-height:100dvh;max-width:100%;margin:0;border:0;border-radius:0;padding:76px 19px 32px;background:var(--bos-ui-bg)}}
+
+/* Task 4 review feedback: preserve secondary source indicators and original review controls. */
+.bos-approved-ui #ownerDashboard .odSecondaryIndicators{margin:0 0 28px}.bos-approved-ui #ownerDashboard .odSecondaryIndicators summary{min-height:44px;cursor:pointer;color:var(--bos-ui-link)}.bos-approved-ui #ownerDashboard .odSecondaryIndicators .odMetrics{margin:12px 0 0}
+.bos-approved-ui #modalRoot .bosManagementReview{width:min(1180px,calc(100vw - 48px));max-width:1180px;max-height:calc(100dvh - 48px);padding:72px 24px 24px;scroll-padding-bottom:24px}
+.bos-approved-ui .bosReviewWorkspace{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:28px;align-items:start}.bos-approved-ui .bosReviewContent,.bos-approved-ui .bosReviewDecision{min-width:0}.bos-approved-ui .bosReviewDecision{position:sticky;top:0}.bos-approved-ui .bosReviewWorkspace>div>section.card,.bos-approved-ui .bosReviewDecision>section.card{background:none;border:0;border-top:1px solid var(--bos-ui-line);border-radius:0;padding:20px 0;margin:0;box-shadow:none}.bos-approved-ui .bosReviewContent>section.card:first-child{border-top:0;padding-top:0}.bos-approved-ui .bosManagementReview #reviewForm h3{margin:0}.bos-approved-ui #modalRoot .bosManagementReview .bosReviewActions{position:static;padding:12px 0;background:var(--bos-ui-bg);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.bos-approved-ui .bosReviewActions button{min-height:44px}
+@media(max-width:760px){.bos-approved-ui #modalRoot .bosManagementReview{width:100%;max-width:100%;height:100dvh;max-height:100dvh;padding:76px 19px 120px;scroll-padding-bottom:120px}.bos-approved-ui .bosReviewWorkspace{grid-template-columns:minmax(0,1fr);gap:24px}.bos-approved-ui .bosReviewDecision{position:static}.bos-approved-ui #modalRoot .bosManagementReview .bosReviewActions{position:fixed;left:0;right:0;bottom:0;padding:12px 19px max(12px,env(safe-area-inset-bottom));border-top:1px solid var(--bos-ui-line);z-index:6}}
+
+.bos-approved-ui #financePage #finContent #finMasterDetail .finKpi{padding:24px 22px;margin:0;border-right:1px solid var(--bos-ui-line)}.bos-approved-ui #financePage #finContent #finMasterDetail .finKpi:last-child{border-right:0}
+@media(max-width:760px){.bos-approved-ui #financePage #finContent #finMasterDetail .finKpi{padding:20px 15px;border-bottom:1px solid var(--bos-ui-line)}.bos-approved-ui #financePage #finContent #finMasterDetail .finKpi:nth-child(2n){border-right:0}}
+
+/* Stage 5: shared personal, administration, integration and system surfaces. */
+body.bos-approved-ui .bosSharedInfo{padding:0;background:none;border:0}
+body.bos-approved-ui .bosSharedRow{display:flex;justify-content:space-between;gap:20px;padding:18px 0;border-bottom:1px solid var(--bos-line,#2a3543);font-size:14px}
+body.bos-approved-ui .bosSharedRow span{color:#a3b1c3;flex:0 1 45%}
+body.bos-approved-ui .bosSharedRow b{font-weight:500;text-align:right;overflow-wrap:anywhere;min-width:0}
+body.bos-approved-ui .bosSharedNotice{padding:16px;background:#1b2634;border-left:3px solid #91bfff;font-size:14px;line-height:1.5}
+body.bos-approved-ui .bosSharedDisclosure{border-top:1px solid #2a3543;margin:20px 0;padding:14px 0}
+body.bos-approved-ui .bosSharedDisclosure summary{cursor:pointer;color:#a3b1c3;min-height:44px;align-content:center}
+body.bos-approved-ui .bosManagementTools .ownerToolsHead{margin-bottom:24px}
+body.bos-approved-ui .bosManagementTools .ownerToolAction,body.bos-approved-ui .bosManagementTools .ownerPreviewBtn,body.bos-approved-ui .bosManagementProfileMenu>button{border:0!important;border-bottom:1px solid #2a3543!important;border-radius:0!important;background:transparent!important;min-height:56px;text-align:left;justify-content:space-between;padding:14px 0!important;margin:0!important}
+body.bos-approved-ui .bosSharedIntegration>.card,body.bos-approved-ui .bosSharedClaim>.card{background:none;border:0;border-radius:0;padding:18px 0;border-bottom:1px solid #2a3543;box-shadow:none}
+body.bos-approved-ui .bosSharedForm label{font-size:14px;color:#a3b1c3;line-height:1.5;margin-bottom:5px}
+body.bos-approved-ui .bosSharedForm :is(input,textarea,select){font-size:16px;border-radius:9px;min-height:44px}
+body.bos-approved-ui .bosSharedForm .form>.primary{position:sticky;bottom:0;margin-top:18px;z-index:2}
+body.bos-approved-ui .bosSharedForm .apiMapForm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+body.bos-approved-ui .bosSharedForm .apiMapForm>button,body.bos-approved-ui .bosSharedForm .apiMapForm>p{grid-column:1/-1}
+body.bos-approved-ui .bosNotifyPanel{background:#151d28;color:#edf2f8;border-color:#2a3543;border-radius:16px;padding:24px}
+body.bos-approved-ui .bosNotifyItem,body.bos-approved-ui .bosNotifyItem.unread{border:0;border-bottom:1px solid #2a3543;border-radius:0;background:none;margin:0;padding:18px 0;box-shadow:none}
+body.bos-approved-ui .bosNotifyReadState{font-size:11px;color:#a3b1c3;display:block;margin-bottom:5px}
+body.bos-approved-ui .bosNotifyItem.unread .bosNotifyReadState{color:#91bfff}
+body.bos-approved-ui .bosNotifyText{font-size:13px;color:#a3b1c3}
+body.bos-approved-ui .bosNotifyClose{min-width:44px;min-height:44px}
+body.bos-approved-ui .bos-claim-compact{background:none!important;border:0!important;border-bottom:1px solid #2a3543!important;border-radius:0!important;padding:18px 0!important}
+body.bos-approved-ui #authGate{background:#0e141c!important}
+body.bos-approved-ui .authGateCard{background:#151d28!important;border-color:#2a3543!important;border-radius:16px!important;box-shadow:none!important;max-height:100%;overflow:auto}
+body.bos-approved-ui .authGateCard :is(input,button){font-size:16px;min-height:44px}
+body.bos-approved-ui .authError{background:#30242c;color:#f4a5ac;border-radius:9px}
+body.bos-approved-ui .reportPhotoViewerBox{background:#151d28;border-color:#2a3543}
+@media(max-width:767px){
+ body.bos-approved-ui .bosSharedForm .apiMapForm{grid-template-columns:minmax(0,1fr)}
+ body.bos-approved-ui .bosNotifyPanel{left:12px;right:12px;top:68px;width:auto;max-height:calc(100dvh - 160px);padding:20px}
+ body.bos-approved-ui .bosSharedRow{gap:12px}
+}
+body.bos-approved-ui .reportPhotoViewerPanel{background:#151d28;border-color:#2a3543}
+body.bos-approved-ui .reportPhotoViewerPanel:has(.bosSharedPhotoError)>img{display:none}
+body.bos-approved-ui .bosSharedPhotoError{text-align:center;padding:56px 24px;max-width:520px;margin:auto}
+body.bos-approved-ui .avitoChatRow{background:none;border:0;border-bottom:1px solid #2a3543;border-radius:0;margin:0;padding:18px 0;box-shadow:none}
+body.bos-approved-ui .avitoChatRow.selected{background:#1b2634;border-radius:9px;padding-left:12px;padding-right:12px}
+body.bos-approved-ui .avitoAvatar{background:#243447;color:#a8ceff}
+body.bos-approved-ui .avitoFilters button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;min-height:44px}
+body.bos-approved-ui .avitoFilters button.active{background:none;color:#a8ceff;border-bottom-color:#a8ceff}
+body.bos-approved-ui .avitoBubble{background:#1b2634;border-radius:10px;color:#edf2f8}
+body.bos-approved-ui .avitoBubble.out{background:#243d58;color:#edf2f8}
+body.bos-approved-ui .avitoConversation,body.bos-approved-ui .avitoLeadPane,body.bos-approved-ui .avitoQueue{background:transparent;border-color:#2a3543}
+body.bos-approved-ui .avitoSearch:before{display:none}
+body.bos-approved-ui .bosSharedScreen>h2,body.bos-approved-ui .bosSharedForm>h2,body.bos-approved-ui .bosSharedIntegration>h2,body.bos-approved-ui .bosSharedInfo>h2{font-size:28px;margin:0 0 14px}
+@media(max-width:760px){
+ body.bos-approved-ui #modalRoot .modal:is(.bosSharedForm,.bosSharedScreen,.bosSharedClaim,.bosSharedIntegration){width:100%;height:100dvh;max-height:100dvh;max-width:100%;margin:0;border:0;border-radius:0;padding:76px 19px 32px;background:#0e141c}
+ body.bos-approved-ui #modalRoot:has(.modal:is(.bosSharedForm,.bosSharedScreen,.bosSharedClaim,.bosSharedIntegration)),body.bos-approved-ui #modalRoot .modalBackdrop:has(.modal:is(.bosSharedForm,.bosSharedScreen,.bosSharedClaim,.bosSharedIntegration)){padding:0}
+ body.bos-approved-ui .bosSharedForm .form>.primary{bottom:-32px}
+}
+body.bos-approved-ui .bosNotifyFilters{display:flex;gap:20px;border-bottom:1px solid #2a3543}
+body.bos-approved-ui .bosNotifyFilters button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:12px 0;color:#a3b1c3;min-height:44px;font-size:13px}
+body.bos-approved-ui .bosNotifyFilters [aria-pressed=true]{color:#edf2f8;border-bottom-color:#91bfff}
+body.bos-approved-ui .bosNotifyItem[hidden]{display:none}
+@media(min-width:761px){body.bos-approved-ui #modalRoot .modal:is(.bosSharedScreen,.bosSharedIntegration,.bosSharedForm,.bosManagementTools){width:min(1000px,calc(100vw - 80px));max-width:1000px}}
+body.bos-approved-ui .bosPriceTabs{display:flex;gap:18px;border-bottom:1px solid #2a3543;margin:20px 0}
+body.bos-approved-ui .bosPriceTabs button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;min-height:44px;padding:12px 0;color:#a3b1c3;font-size:13px}
+body.bos-approved-ui .bosPriceTabs [aria-pressed=true]{border-bottom-color:#91bfff;color:#edf2f8}
+body.bos-approved-ui .bosSharedScreen :is(.bosSharedCatalog,.bosAvitoCatalog){background:none;border:0;padding:0;box-shadow:none}
+body.bos-approved-ui .bosSharedScreen :is(.bosSharedCatalog,.bosAvitoCatalog,.bosPriceMaterials)[hidden]{display:none!important}
+body.bos-approved-ui .bosPriceRow{padding:18px 0;border-color:#2a3543}
+body.bos-approved-ui .bosPriceRow b{color:#91bfff}
+
+/* Saved claim details: source-backed correction and revisit groups. */
+.bosSharedClaimWork,.bosSharedClaimVisit{padding:16px 0;border-bottom:1px solid var(--bos-approved-line,#2a3543)}
+.bosSharedClaimWork h3,.bosSharedClaimVisit h3{margin:0 0 12px;font-size:17px}
+.bosSharedClaimWork p,.bosSharedClaimVisit p{margin:8px 0;line-height:1.5}
+.bosSharedClaimVisit{margin-bottom:20px}
+/* Browser capability, consent and device subscription are independent states. */
+body.bos-approved-ui .bosPushStates{margin:0 0 20px}
+body.bos-approved-ui .bosPushStates>div{display:flex;justify-content:space-between;align-items:baseline;gap:20px;padding:16px 0;border-bottom:1px solid #2a3543}
+body.bos-approved-ui .bosPushStates dt{color:#a3b1c3}
+body.bos-approved-ui .bosPushStates dd{margin:0;color:#edf2f8;text-align:right;font-weight:600}
+@media(max-width:600px){body.bos-approved-ui .bosPushStates>div{display:block}body.bos-approved-ui .bosPushStates dd{text-align:left;margin-top:6px}}
+
+/* Final comparison: retain native controls with the approved mobile hierarchy. */
+@media(max-width:760px){
+ .bos-approved-ui #ownerDashboard .bosManagementHeading{margin-bottom:20px;}
+ .bos-approved-ui #ownerDashboard>.odMetrics{margin-bottom:12px;}
+ .bos-approved-ui #ownerDashboard .dashMetric{padding:16px 14px;gap:8px;}
+ .bos-approved-ui #ownerDashboard .odSecondaryIndicators{margin-bottom:12px;}
+ .bos-approved-ui #financePage .finHeading{align-items:stretch;}
+ .bos-approved-ui #financePage .finHeading>[data-fin-expense-add]{width:100%;}
+}
+@media(max-width:600px){
+ .bos-approved-ui .bosOpsWorkspace .bosOpsHeading{grid-template-columns:minmax(0,1fr);justify-content:stretch;}
+ .bos-approved-ui .bosOpsWorkspace .bosOpsHeading>.primary{width:100%;max-width:none;}
+ .bos-approved-ui .newOrderForm .newOrderActions{grid-template-columns:80px minmax(0,1fr);gap:8px;padding-bottom:calc(10px + env(safe-area-inset-bottom));}
+ .bos-approved-ui .newOrderForm .newOrderActions button{min-height:44px;margin:0;padding:10px 8px;font-size:13px;line-height:1.35;}
+ .bos-approved-ui .newOrderForm .newOrderActions button[type=submit]{grid-column:2;grid-row:1;}
+ .bos-approved-ui .newOrderForm .newOrderActions button[type=button]{grid-column:1;grid-row:1;}
+}
+
+/* Release review: primary actions and secondary explanations at mobile widths. */
+.bos-approved-ui .bosOpsTabs{flex-wrap:wrap;overflow:visible}
+.bos-approved-ui .bosOpsTabs button{flex:0 0 auto}
+.bos-approved-ui .bosOpsAttention h1{font-size:30px;line-height:1.2}
+.bos-approved-ui .bosOpsFreeTask .dfs120Head>div:first-child{display:none}
+.bos-approved-ui .bosOpsFreeTask .dfs120Date{width:100%}
+.bos-approved-ui .bosTeamMemo,.bos-approved-ui .finMethodNote{padding:14px 0;border-top:1px solid var(--bos-ui-line)}
+.bos-approved-ui :is(.bosTeamMemo,.finMethodNote)>summary{min-height:44px;align-content:center;cursor:pointer;color:var(--bos-ui-muted);font-size:13px}
+.bos-approved-ui .compactTeamCard>.row>div{display:grid;gap:7px;min-width:0}
+.bos-approved-ui .bosEmployeeRecentOrder .row>strong{flex:0 0 auto;white-space:nowrap}
+.bos-approved-ui .bosEmployeeRecentOrder .row>span{min-width:0;overflow-wrap:anywhere}
+@media(max-width:760px){
+ .bos-approved-ui #app>#content:has(#bosOrderList)>.row>button.primary,.bos-approved-ui .bosManagementTeam>.row>button.primary{width:100%!important;max-width:none!important;flex-basis:100%}
+ .bos-approved-ui .bosManagementTeam>.row{display:flex;flex-wrap:wrap}
+ .bos-approved-ui .bosOpsDaySchedule .dmv2Header>button.primary{width:100%!important}
+ .bos-approved-ui[data-bos-ui-role="dispatcher"] .compactTeamCard{background:none;border:0;border-top:1px solid var(--bos-ui-line);border-radius:0;padding:18px 0;box-shadow:none}
+ .bos-approved-ui #bosOrderControl .ocNote{font-size:11px;margin:6px 0}
+ .bos-approved-ui #bosOrderControl .ocFilters{gap:6px;margin:10px 0}
+ .bos-approved-ui #bosOrderControl .ocFilters button{padding:8px 10px;font-size:11px}
+}
+
+.bos-approved-ui .bosEmployeeRecentOrder>b{flex:0 0 auto;white-space:nowrap}
+.bos-approved-ui .bosEmployeeRecentOrder>span{min-width:0}
+
+.bos-approved-ui .bosEmployeeQuality>summary{min-height:44px;align-content:center;color:var(--bos-ui-muted);cursor:pointer;font-size:13px}
+.bos-approved-ui .bosEmployeeQuality .grid{margin:8px 0}
+
+.bos-approved-ui #modalRoot .modal:has(.bosEmployeeQuality) .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border:1px solid var(--bos-ui-line);border-radius:12px;overflow:hidden;margin:16px 0}
+.bos-approved-ui #modalRoot .modal:has(.bosEmployeeQuality) .grid .metric{min-height:0;gap:10px;padding:14px 12px;margin:0;border:0;border-bottom:1px solid var(--bos-ui-line);border-radius:0;box-shadow:none;background:transparent}
+.bos-approved-ui #modalRoot .modal:has(.bosEmployeeQuality) .grid .metric strong{font-size:24px}
+
+/* Verified grid containment: 100% buttons need a full-width grid track. */
+@media(max-width:760px){
+ .bos-approved-ui #app>#content:has(#bosOrderList)>.row,.bos-approved-ui .bosOpsDaySchedule .dmv2Header{grid-template-columns:minmax(0,1fr)!important;justify-content:stretch!important;justify-items:stretch!important}
+}
+.bos-approved-ui .bosOpsListRow:has(>.bosOpsListContact)>.bosOpsContact{display:none}
+.bos-approved-ui .bosManagementAccess button[onclick^="openStaffAdminCard"]{display:grid!important;gap:7px;justify-items:start;align-content:center}
+.bos-approved-ui .bosManagementAccess button[onclick^="openStaffAdminCard"]>br{display:none}
+.bos-approved-ui .bosSharedRow b{flex:0 1 60%}
+.bos-approved-ui #modalRoot .modal:has(.bosEmployeeQuality) .metric::before,.bos-approved-ui #modalRoot .modal:has(.bosEmployeeQuality) .metric::after{display:none}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]{display:grid;grid-template-columns:54px minmax(0,1fr);column-gap:16px;row-gap:6px;background:none!important;border:0!important;box-shadow:none;padding:18px 0!important;align-items:center}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]::before{content:attr(data-bos-avatar);grid-column:1;grid-row:1/4;display:grid;place-items:center;width:54px;height:54px;border-radius:50%;background:#26354b;color:#a8ccff;font-size:21px;font-weight:600}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>p{grid-column:2;margin:0!important;font-size:13px;color:var(--bos-ui-muted)}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>p:first-of-type{font-size:20px;font-weight:600;color:var(--bos-ui-text)}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>p:first-of-type>b{display:none}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>*{grid-column:2;min-width:0}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]::before{grid-row:1/5}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>.ownerProfileLine{padding:0;border:0;font-size:13px;justify-content:flex-start;align-items:baseline}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>.ownerProfileLine:first-child>span{display:none}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>.ownerProfileLine:first-child>b{font-size:20px;font-weight:600}
+.bos-approved-ui .bosManagementIdentity[data-bos-avatar]>.ownerProfileLine>b{font-weight:500;overflow-wrap:anywhere}
+
+/* Wide operational screens occupy the full parent grid and use compact order rows. */
+@media(min-width:1024px){
+ .bos-approved-ui #content>.bosOpsWorkspace{grid-column:1/-1;width:100%}
+ .bos-approved-ui #content #bosOrderList .bosOpsListRow{grid-template-columns:64px minmax(0,1fr) 210px;column-gap:20px;row-gap:6px;min-height:0!important;padding:16px 0!important}
+ .bos-approved-ui #content #bosOrderList .bosOpsListRow>.bosOpsListOpen{grid-column:3;grid-row:1/3;justify-self:end;align-self:start}
+ .bos-approved-ui #content #bosOrderList .bosOpsListRow>.opsCompactMain{grid-column:3;grid-row:3/5;display:flex!important;flex-wrap:wrap;align-items:baseline;align-self:start}
+ .bos-approved-ui #content #bosOrderList .bosOpsListRow>.opsCompactBottom{display:flex!important;flex-direction:row!important;flex-wrap:wrap;align-items:center;align-self:start}
+ .bos-approved-ui #content #bosOrderList .bosOpsListRow>.bosOpsSecondaryActions{grid-column:3;grid-row:5/7;font-size:12px}
+ .bos-approved-ui #content #bosOrderList .bosOpsListRow>.dmCardActions{grid-column:2/4;grid-row:7}
+}
+
+/* Control keeps its native filters, reminder status and task refresh in a compact header. */
+@media(max-width:760px){
+ .bos-approved-ui #bosOrderControl{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;align-items:start}
+ .bos-approved-ui #bosOrderControl>*{grid-column:1/-1;min-width:0}
+ .bos-approved-ui #bosOrderControl>.ocBack{grid-column:2;grid-row:1;margin:0;padding:8px 10px;font-size:12px;min-height:44px}
+ .bos-approved-ui #bosOrderControl>.ocHeading{grid-column:1;grid-row:1;gap:8px}
+ .bos-approved-ui #bosOrderControl .ocHeading h2{font-size:22px;line-height:1.2;margin:5px 0 8px}
+ .bos-approved-ui #bosOrderControl>.ctBar{display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,42%);gap:10px;align-items:center;padding:5px 0;font-size:11px;line-height:1.4}
+ .bos-approved-ui #bosOrderControl .ctBar button{min-height:44px;padding:8px;font-size:11px;white-space:normal}
+ .bos-approved-ui #bosOrderControl>.ocFilters{display:flex!important;flex-wrap:wrap;gap:6px;margin:8px 0}
+ .bos-approved-ui #bosOrderControl .ocFilters button{flex:0 1 auto;width:auto!important;min-height:44px;padding:8px 10px;font-size:11px;white-space:normal}
+ .bos-approved-ui #bosOrderControl>.ocList{width:100%;gap:0}
+}

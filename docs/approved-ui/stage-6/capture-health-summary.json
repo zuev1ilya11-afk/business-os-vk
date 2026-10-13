@@ -1,0 +1,39 @@
+{
+  "captures": 226,
+  "roleTotals": {
+    "master": 71,
+    "dispatcher": 41,
+    "manager": 54,
+    "owner": 60
+  },
+  "widths": [
+    360,
+    390,
+    430,
+    1440
+  ],
+  "commitCounts": {
+    "87c123b363a7e7202fb8bd7bbad6b2318cb80a92": 220,
+    "39b7d5f54ebf8a5f8f7bed5b43c8722109327092": 1,
+    "cfd6740b2f92e56e7a9a6063fa19e0ee737391b5": 5
+  },
+  "runtimeCounts": {
+    "8db611d1fc9cd27917d7": 221,
+    "cdd3ea4f917ba89765d0": 5
+  },
+  "captureGaps": 0,
+  "healthMeasurements": 225,
+  "pageErrors": 0,
+  "local404": 0,
+  "overflows": 0,
+  "initialOcclusionFlags": 13,
+  "longReviewStates": 12,
+  "longFormsEndStates": 12,
+  "proofs": "Independent five-width role health; initial/scrolled probes; native callback tests. Counts do not certify universal usability.",
+  "toolingProvenance": "Source commit refers to application source/runtime. Capture wrapper instrumentation was developed in working tree across batches; original per-batch logs retained. No unrecorded exact historical tooling hash is invented. Current reproducible tools hashed below.",
+  "toolHashes": {
+    "capture-final.cjs": "460df8bafdf8524b3bbd5a4d7f082e14f07a59bdf4668bcd3a222fd85f5d743f",
+    "probe-occlusion.cjs": "9255768767aa313311a9d83d41394e0811982398ac7a633171a97b1a4d6778c5",
+    "capture-health.cjs": "51e6b855faec3a40e08578a9015ffe2114412e3c4d2a4a760ad6965b2cdcb971"
+  }
+}

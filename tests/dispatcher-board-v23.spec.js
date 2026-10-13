@@ -37,7 +37,7 @@ test('dispatcher unified schedule keeps list mode available',async({page})=>{
   await page.getByRole('button',{name:'Список',exact:true}).click();
   await expect(page.locator('.dbV94ListCard').first()).toBeVisible();
   await expect(page.locator('.du187Root')).toHaveCount(0);
-  await page.getByRole('button',{name:'Расписание',exact:true}).click();
+  await page.locator('#content').getByRole('button',{name:'Расписание',exact:true}).click();
   await expect(page.locator('.du187Root')).toBeVisible();
 });
 

@@ -1,0 +1,50 @@
+{
+  "reportPath": "/workspace/scratch/73e5936a7e6d/recovery/task6-main-comparison-results.json",
+  "reportSha256": "47b95a071df5fa3d10f8b3e1484103d7d5d03fc5c897893f1bc490e7db5ed7dc",
+  "stats": {
+    "startTime": "2026-10-11T14:07:06.236Z",
+    "duration": 7880.521,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "cases": 1,
+  "outcomes": {
+    "unexpected": 1
+  },
+  "globalErrors": [],
+  "failures": [
+    {
+      "file": "master-home-tabs.spec.js",
+      "line": 62,
+      "title": "home result and agreement move an undated order to its saved day without reload",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "failed"
+      ],
+      "errors": [
+        "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#masterOrderAgree179Form')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#masterOrderAgree179Form')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n\n\n  66 |  expect(db.tables.orders.find(o=>o.id==='14').master_contact_history).toHaveLength(0);\n  67 |  await page.locator('input[name=result][value=agreed]').check();await page.locator('#masterContactResultForm textarea').fill('Согласован монтаж 10 октября');await page.locator('#masterContactResultForm button[type=submit]').click();\n> 68 |  const form=page.locator('#masterOrderAgree179Form');await expect(form).toBeVisible();await form.locator('input[name=scheduled_date]').fill('2026-10-10');await form.locator('input[name=scheduled_time]').fill('12:00');await form.locator('button[type=submit]').click();await expect(form).toHaveCount(0);\n     |                                                                                                                                                                                                                                                                                               ^\n  69 |  const saved=db.tables.orders.find(o=>o.id==='14');expect(saved.scheduled_date).toBe('2026-10-10');expect(saved.master_contact_phone).toBe('+79999876543');\n  70 |  await page.evaluate(()=>closeModal());await home.getByRole('tab',{name:/По дням/}).click();await expect(home.locator('[data-order-id=\"14\"]')).toContainText('12:00');await expect(home.locator('[data-order-id=\"14\"]')).toContainText('Согласовано');await expect(home.getByRole('tab',{name:/Новые/})).toContainText('1');\n  71 | });\n    at /workspace/scratch/73e5936a7e6d/task6-main-comparison/tests/master-home-tabs.spec.js:68:287"
+      ],
+      "durationMs": 6534
+    }
+  ],
+  "skipped": [],
+  "allCases": [
+    {
+      "file": "master-home-tabs.spec.js",
+      "line": 62,
+      "title": "home result and agreement move an undated order to its saved day without reload",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "resultStatuses": [
+        "failed"
+      ],
+      "errors": [
+        "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#masterOrderAgree179Form')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#masterOrderAgree179Form')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n\n\n  66 |  expect(db.tables.orders.find(o=>o.id==='14').master_contact_history).toHaveLength(0);\n  67 |  await page.locator('input[name=result][value=agreed]').check();await page.locator('#masterContactResultForm textarea').fill('Согласован монтаж 10 октября');await page.locator('#masterContactResultForm button[type=submit]').click();\n> 68 |  const form=page.locator('#masterOrderAgree179Form');await expect(form).toBeVisible();await form.locator('input[name=scheduled_date]').fill('2026-10-10');await form.locator('input[name=scheduled_time]').fill('12:00');await form.locator('button[type=submit]').click();await expect(form).toHaveCount(0);\n     |                                                                                                                                                                                                                                                                                               ^\n  69 |  const saved=db.tables.orders.find(o=>o.id==='14');expect(saved.scheduled_date).toBe('2026-10-10');expect(saved.master_contact_phone).toBe('+79999876543');\n  70 |  await page.evaluate(()=>closeModal());await home.getByRole('tab',{name:/По дням/}).click();await expect(home.locator('[data-order-id=\"14\"]')).toContainText('12:00');await expect(home.locator('[data-order-id=\"14\"]')).toContainText('Согласовано');await expect(home.getByRole('tab',{name:/Новые/})).toContainText('1');\n  71 | });\n    at /workspace/scratch/73e5936a7e6d/task6-main-comparison/tests/master-home-tabs.spec.js:68:287"
+      ],
+      "durationMs": 6534
+    }
+  ]
+}

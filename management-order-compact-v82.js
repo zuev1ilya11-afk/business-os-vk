@@ -44,18 +44,18 @@ window.openOrder=function(id){
   const pay=o.master_vk_id?(window.BOS_ORDER_PAYROLL?.directMaster(o)??(o.master_payout||payout(o.amount))):0;
   openModal(`<div class="bosManageOrder">
     <div class="bosManageHead">
-      <div class="bosManageTitle"><b>№ ${esc(displayNo(o))}</b><small>Поступила ${esc(received(o))}</small></div>
+      <div class="bosManageTitle"><h2 class="bosOpsOrderTitle">№ ${esc(displayNo(o))}</h2><small>Поступила ${esc(received(o))}</small></div>
       <div class="bosManageMoney"><strong>Сумма: ${money(o.amount)}</strong><span>Мастеру: ${money(pay)}</span></div>
     </div>
     <div class="bosManageMeta"><span class="status info">${esc(o.status||'В работе')}</span>${source?`<span class="bosSourceChip">${esc(source)}</span>`:''}</div>
     ${window.BOS_MANUAL_COMPLETION?.history(o)||''}
     <div class="bosHandsBlock"><span class="bosHandsIcon">⌖</span><div>${addressHtml(o)}${apartmentHtml(o)}</div></div>
     <div class="bosHandsBlock"><span class="bosHandsIcon">◷</span><div>${esc(dateTime(o))}</div></div>
-    <div class="bosHandsBlock"><span class="bosHandsIcon">◉</span><div><b>${esc(client)}</b>${phoneHtml(o)}<div data-bos-contact-order="${esc(o.id)}">${window.BOS_CONTACT_STATUS?.html(o,{details:true})||''}</div></div></div>
+    <h2 class="bosOpsDetailLabel">Клиент</h2><div class="bosHandsBlock"><span class="bosHandsIcon">◉</span><div><b>${esc(client)}</b>${phoneHtml(o)}<div data-bos-contact-order="${esc(o.id)}">${window.BOS_CONTACT_STATUS?.html(o,{details:true})||''}</div></div></div>
     ${commentHtml(o)}
-    <section class="bosHandsWorks"><b class="bosWorksLabel">Состав работ</b><div class="bosHandsWorkList">${workRows(o)}</div></section>
+    <section class="bosHandsWorks"><h2 class="bosWorksLabel">Работы</h2><div class="bosHandsWorkList">${workRows(o)}</div></section>
     <section class="bosManagementQuickEdit" aria-label="Быстрое редактирование">
-      <div class="bosQuickEditLabel">Быстрое редактирование</div>
+      <h2 class="bosQuickEditLabel">Визит</h2>
       <div class="bosOrderControls"><div><label for="quickScheduledDate">Дата заявки</label><input id="quickScheduledDate" type="date" value="${esc(date)}"></div><div><label for="quickScheduledTime">Время</label><input id="quickScheduledTime" type="time" value="${esc(time)}"></div></div>
       <div class="bosOrderControls"><div><label for="quickStatus">Статус</label><select id="quickStatus">${STATUSES.map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}</select></div><div><label for="quickMaster">Мастер</label><select id="quickMaster"><option value="">Не назначен</option>${state.masters.map(m=>`<option value="${esc(m.vk_user_id)}" ${String(o.master_vk_id||'')===String(m.vk_user_id)?'selected':''}>${esc(m.full_name)}</option>`).join('')}</select></div></div>
       <div class="bosOrderFinance"><div class="bosOrderMoney"><small>Сумма</small><b>${money(o.amount)}</b></div><div class="bosOrderMoney"><small>Мастеру</small><b id="payoutPreview">${money(pay)}</b></div></div>

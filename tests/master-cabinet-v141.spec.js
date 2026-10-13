@@ -26,7 +26,8 @@ test('master cabinet shows day salary and selected completed orders in profile',
   await page.waitForFunction(()=>window.BOS_MASTER_CABINET_V141===true);
   await page.locator('nav button[data-page="team"]').click();
 
-  const panel=page.locator('#masterProfileSummaryV129');
+  await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
+  const panel=page.locator('.bosPayoutTask');
   await expect(panel).toBeVisible();
   await panel.getByRole('button',{name:'День',exact:true}).click();
   const todayCard=panel.locator('.salaryHero');
@@ -34,7 +35,7 @@ test('master cabinet shows day salary and selected completed orders in profile',
   await todayCard.click();
   await expect(page.locator('#modalRoot')).toContainText(/652[,.]5/);
   await expect(page.locator('#modalRoot')).toContainText('Допработы');
-  await page.evaluate(()=>closeModal());
+  await page.evaluate(()=>closeModal());await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
   await panel.getByRole('button',{name:'Свои даты',exact:true}).click();
   await panel.locator('[name="start"]').fill(yesterday);
   await panel.locator('[name="end"]').fill(today);
@@ -50,7 +51,7 @@ test('master cabinet shows day salary and selected completed orders in profile',
   await panel.locator('.salaryHero').click();
   await expect(page.locator('#modalRoot')).toContainText('Вычет');
   await expect(page.locator('#modalRoot')).toContainText('Итого начислено');
-  await page.evaluate(()=>closeModal());
+  await page.evaluate(()=>closeModal());await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
   await page.setViewportSize({width:320,height:640});
   const last=completed.locator('.salaryOrder').last();
   await expect(async()=>{
@@ -61,10 +62,11 @@ test('master cabinet shows day salary and selected completed orders in profile',
   await last.click();
   await expect(page.locator('#modalRoot .modal')).toBeVisible();
   await expect(page.locator('#modalRoot')).toContainText('Отчёт принят');
-  await page.evaluate(()=>closeModal());
+  await page.evaluate(()=>closeModal());await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
+  await page.getByRole('button',{name:'К профилю',exact:true}).click();
   await page.locator('nav button[data-page="home"]').click();
   await expect(page.locator('#masterMoneyV130')).toHaveCount(0);
   await expect(page.locator('.salaryOrders')).toHaveCount(0);

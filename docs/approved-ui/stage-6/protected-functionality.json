@@ -1,0 +1,2036 @@
+{
+  "acceptedSource": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+  "latestMain": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+  "earlierAcceptedProofs": [
+    {
+      "path": "docs/approved-ui/stage-2/protected-handlers.json",
+      "sha256": "541c3894c61f47634d21ba4237ba084089b2c1faf69f978ef0994e4f2690f38c",
+      "comparisons": 9,
+      "changed": 0
+    },
+    {
+      "path": "docs/approved-ui/stage-3/protected-handlers.json",
+      "sha256": "b41d164ee283dbafd47a646a61a6e812d4e5cba71f214664992283f2ae72d228",
+      "comparisons": 106,
+      "changed": 0
+    },
+    {
+      "path": "docs/approved-ui/stage-4/protected-handlers.json",
+      "sha256": "5963c4c74aa3da8ace58c18b52ff037cf12649bd73d8c830705cdc980437c6c3",
+      "comparisons": 107,
+      "changed": 0
+    },
+    {
+      "path": "docs/approved-ui/stage-5/protected-handlers.json",
+      "sha256": "7e409bb09543ec34d6939d8e25ec5adbf8d9323db6ecc7729d562be3e2ae4e83",
+      "comparisons": 229,
+      "changed": 0
+    }
+  ],
+  "checks": [
+    {
+      "file": "android-navigation-v112.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "3a02a35a41488ead58af3d6ea69fd13c9e0b6242309da5cdf671ec39b0551367",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "api-integrations-v26.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "32b7ee35f930557a8f0f97b6eeae024e4fa44da25fcc2c7f088db04099ca3c1b",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "app-build-runtime.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "6bbe89b0be26d2ddb0e09ac5f98cc0f654e2f9cc64a8faaf71b664a6749fef96",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "app-public.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "781eefce579202758de54d1dbd906e96438ec4ce791f507083e9ce5d9415f5d3",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "app-v2.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "da92aad51c7c7b5740f3aa538e13304a87e7b78ef22303c9bc8226d811616847",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "approved-master-ui.css",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "951947808c4fa5f81343a54577a2dd21af7452b58a3b1303b243f8c2dc495e69",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "approved-operations-ui.css",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "1fda71796b65c374df152a393b7a10c825723099220ad895cbb1112b6ae7f060",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "approved-ui.css",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "f8f34dd66b0c3cb866732130ce2c2d7bfdc4a6e4d53369c755756ab5ca68ba78",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "astra-schedule-ui-v5.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "280ef4680e1ebcf6026a079f38a540a498335da14a82fbf9c8a0adc581bdc4ad",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "auth-api-session-v41.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "637e0c5ec9b581ad99f803c839eddfa9cb6c06bc3e0e752130f21a7551dc1923",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "auth-ui-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "ae16e18447766c2871a047464f7d8e565ca03a59c6ba0ae9a1630a7fff831d59",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "avito-messages-v25.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "9c5212a4cf0cfd214643d6a51ca1a5bd2bed044e7817ccdb060732ac8d7ef946",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "backend-version-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "8306dc501ddeaf5729df98ceafd0a5aa45bd215b3ce5a1898df0bca6f0c8ea46",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "background-view.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "61c5d6ff8bff7ae5779a9180767557ecb91f53976b8d3ee48b6b900775a61e2e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "build-version.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": false,
+      "sha256": "34fa5308307b40e97243315017a9e53562b3da3677faca0a3d3753ed3e53ce76",
+      "task6PresentationChange": true
+    },
+    {
+      "file": "business-os-custom-v3.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "be429b11d64079a6c2416e0b040f82838835047a6ed14a7f13e4667170d54baf",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "busy-fix.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "1eac15f3e9bc96145a26f42449b24095e20a744a788538cb3a6f1c688c8ed5ef",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "claims-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "c2955903d4e4c757a297cea867cc10c9104a6cc70c8196452dd939d21e215472",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "claims-role-v117.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "ebdb6429ed6fbb68a39cce34adde6dee6d136542f04b5b1f3c0028580427d29a",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "claims-runtime-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "d76795bc0e90c2c3e2ae3d4194332576d804c773351b11e7f220844e5705b2cc",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "config.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "a054dff4a63ba32e214644ddb07afb5df2e54eb5790281c962407aecb45458f7",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "contact-status.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "ca4ffc50cebbaae7bfae84060a72a094a003cf84a6b7d67aa2a21739a6e742a4",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dark-business-os.css",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "6315ef2c63d67720aa11ae82441ace385854ac5f16db26eb75116f7eed434a60",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-attention-v123.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "24a86f4a75346a9d60822243eceaa65f9a039a774166bfcfcedfa8efc505f886",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-board-compat-v93.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "918df631ce95a00f3ddc1632e38c6474b035b0a56b97cff4f680dc669a39ed22",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-board-enhancements-v108.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "9fdca10a78f5dfceb72ec4bc524d400dc8148e089f6b0f780a8037fba5773b05",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-board-v21.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "f8c8c29893f281efc37327925d8b7a63a020585256de5761b34c35a9658342fd",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-board-v23.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "194deedcd3edf3039b4319926836ea840dfe9a6ba70b5f0a74cc63239e2e49d4",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-board-v92.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "07246348e6e3bfbfd1df1e08dcf32d8e3856fbbcdb3c85be10d8ab9a7921e7cf",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-close-v19.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "64ee64d4b6ca9fda9dedd8527c109789872ed9f44d44ae3beb895901c114575e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-control-v24.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "14bd2cd6ac9d59c8d90d5094a065b24de9e77cd9c2c231b44332e780b5f6de1b",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-desktop-compat-v90.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "e9d4f19642c3dd43281a2ca1d368300657f133a8215348c677913616f5cc26ed",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-desktop-mobile-v158.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "1fe7fdd8f1ff3ded1a1fd0d36a7d58c46048bbec743b4b527baf2a1bb4590ac0",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-desktop-v89.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "e08582e77ed43a2935f9856f4e76e2c2e9972dbdfb4c534e663ed7b026701175",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-free-slots-v120.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "0526098f50254e5da73e13893f7c1dd64c4ddb99ffca64490e25f1c7174d6bea",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-header-v8.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "af3143879947d72f9778e5515d3350059f8bb17185dada4109d282151e9e09f2",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-horizontal-schedule-v190-fix.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "290a9b48c37e5481a2bb033d5e7640f1edf5e85d1fb8a2fe3b0c3f83fa2191b9",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-horizontal-schedule-v190.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "01a35402aa87d4f36f75aee9030541e1a210fe034c4dd5fadaf3904d0f0aef5f",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-mobile-dispatch-v107.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "a8446d44ec33a2165e41869f463740afc98d34f8dd592e1e81d604d9f6ed9635",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-mobile-touch-v101.css",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "7b8de5f2accaf78b72afebfacf2fc491a09102e166089eb5bbe69c3eb9d6fc3a",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-mobile-v2-conflicts.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "24c828dd1f0e71b8dae301d1af2df4de71c0499bfa398be3226e1e245ecd23af",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-mobile-v97.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "ddef61d4030a5533c82b443cb6ecca63e9fa3522405b36cd13a1055a6966eb8f",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-order-priority-v105.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "ab05201298bb3b224ee90d303249a84d422f8e8c1bb5a92fb7af58e2c44f598f",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-order-workflow-v114.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "b41c3f371536b95f3f910c7ae8df9209ef00d59489ea8f8e88e0bf3f0217d905",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-orders-calendar-v7.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "e7350c2033a5af3e2f085f1cf3130604349abdb93f3ebe2790cc6623377e169a",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-orders-polish-v98.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "49af4b7f04f80ab154a18ac61cb1c9d6621448b327922cb37b96a1e2679004d3",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-orders-v3.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "5c9db6750332ebf255d6f25dc014a1271bc78914804cc6fdc919de7af6e56dfd",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-permissions.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "e97c5708c4e5b1a95f3538f66ffcdf5890155b442c550b486b1a7eb38c393bd3",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-preview-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "638550a891498a8bc28b33fa3fc90bf0daf20b4c83c254a96ea641c2865b2fb2",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-quick-actions-v159.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "b98d9eca13962b51db7b9a632f40739a401dfd0f07849ef536ea07147ca6a00b",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-report-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "79c92fb409750cac0fb3fb27b8fd2ae5e61aeb6780687d99579c9d064505131e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-reschedule-v91.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "f0cdc424db1425872bd83bd0dd4d5b6ada4507904b9a60167c81ffe2b6fc47d9",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-responsive-workbench-v157.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "e716fe727b318e863ec615e92dbb32b706b40e5bd8310154aac8ccfd20d37cb6",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-smart-assign-v119.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "3797d46b2069f768cc585b6fdc4f5e3897b83a45cc97205c2f9dc4545acfd1d8",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-smart-assign-v22.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "9cf554c02a53daffc345baa11d3170ecc6165e4c7182052c3e2b6f480e1353bb",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-smart-dispatch-v121.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "85ad5bb06baf6c5dc4125ffa3e9ece2f186ac27b9bd3fb01badd9fc8cd45e8fc",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-ui-polish-v184.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "413031256f89d8636959471428f193a7345c35b0b0084c0a333298c28498b373",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-ui-redesign-v183-compat.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "629890f0d8ece86a456720d709b7803064c4fa0e9064e140b552dd7cfdd3f2b4",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-ui-redesign-v183.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "dee3fefe99ce373af506c747dc08339dcd034989e1a6cb12dcb8ac1e3e4e6a20",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-ui-stability-v185.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "10a8492b571ea98bc525bf3e998962847df74e5c64de4999668f7f66e6caf389",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-unassigned-queue-v122.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "08f21907928a58e2dcf63a133159c5d8d3ad75fdb5af4023c6281678eb091cd8",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-unified-schedule-v187.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "ad11375bdf035d5b90ec80581dec7f1049f1b5ad61d168220a1cd2de3129c117",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "dispatcher-workspace-v6.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "671ea690b4a4d6fe5029bb4ab01896b96f96d76211c04967cfcb8c9fb3c1ccaf",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "employee-form-v16.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "5b1592c9b43c1c8ee20f81f3b62d40dec877eb6fb80ae00376eb77ec42b02736",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "employee-live-refresh-v27.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "3eda16ea395a2b56b18796f386d635777d48585587d3dcc6d442fb49414f5cdd",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "employee-profile-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "1738b8db31c3c8eaeb4546d599ce8fa447b1d5e5f8519501dab7f3dd889d33ab",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "extra-work-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "27fc2b115a32ff2820364448ec4abe0c6cc53e9185477d2ea5c970cb788766a0",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "finance-data.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "5affa33b6d819ef08f6897c6d68724b90d04047b458dd135ead40af2d4206297",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "finance-expenses.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "eaefd4bae1789c5048e342ff6ec3ce4f9072b4a44d018b81556918e0159ec997",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "finance-page.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "96609e048012d8726d62bced63d80347c6c06394e4b768d9c7318665e29e9576",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "finance-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "ce0484c258d09452bf93349617ae4b618a6bb6fff86cb4020cea2ea6e10665b2",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "form-mobile-fix.css",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "fc93254a260b4a9c36a6f2f66b0edcce166fdc1a45760581dc13ce5f54c4fbab",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "google-apps-script/Code.gs",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "98dfc3a5226d3c397fc324a26c00f627369ccf9ca473513ee4920afa0d83c1e7",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "google-apps-script/README.md",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "14e229789ff36f1eb86756d3d2372c33afef7df314107d7754c96a8ffe02af91",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "google-apps-script/ReportUpload.gs",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "23ee0600b80c2914584de69f01d44bc83b426dd2a6a058c21bff92ba8047e33e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "google-apps-script/SupabaseSync.gs",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "fb04377c90032db551f461ed3dc6c10af48795a661e62a2f6b3b6433e4eed534",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "hands-active-only-v70.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "d010db08f12b603002f78a2559c535e6898d272b458d80899c2db449328ceb96",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "hands-integration-v69.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "b5ff540cf70255d22a036a54e9ab9f255bf73ddd50cdbe93e88612dbeec202bf",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "hands-profile-entry-v70.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "e6bfa32b204b55558e111fbed6d083484ad5e5ccf24a3c3ee96cba3d63ee094c",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "index.html",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": false,
+      "sha256": "e392b41189d1a1f3ed734632b569a950ca0c0a94b8c335be8bc11d975af41bde",
+      "task6PresentationChange": true
+    },
+    {
+      "file": "install-app-v84.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "7d37c170e56cd457954e6433235a9c911869b88d539337012915a16a40952aad",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "launch-fix.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "6a2702f248aa6f615b7b280734763db688a62a0439be39884e36df37e2f9af5d",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "live-field-hotfix-v60.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "a047555d2fe36e777db1e215eeda34bae98e1263d78524890c9d9f3c55249f17",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "management-order-compact-v82.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "6feb752326c659cb0fb913997dfa1c0fdd04e75830742fce9f5fcda5c56b4b98",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "management-order-delete-v100.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "4d686925e684b7a4a61f99c35a160eed08fa2d055cc192d4edcd066419cacdb3",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "manager-memo-editor-v45.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "e23a8000b7645246ecace650b723fa17ac2d5d88d85900596c4554f1a3604c2d",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "manager-preview-v28.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "aacc636fc399695a708e2cfd602b29bf05333e2446584650bd2f1c314afee580",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "mandatory-auth-v29.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "87679a4e6945401b99c728186e1a3b458e24f22e63b081eaed045de25f4ed294",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-agreement-v109.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "08a114d735c9571e30e4f2175b3117444012aea7995c11354821b15e31ecfe69",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-cabinet-final-v81.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "805bc41b5071dd2e1a4e33037e72fde173e64ae89e88d3421b9830ab21bdc5bd",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-cabinet-v141.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "9edc457b95daeab99fb52de099cac71db2579ab4aacbf6ee63259f14e95642d9",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-calendar-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "1a28ea1049137785951630d809933b1e92ff1478adaeee7f6dabb8d5e8442c0f",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-call-workflow-v26.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "b77e270c29d6df650206526c4cfcafa304968ee468b2451ee6c37165516d058c",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-daily-home-v127.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "05078197d504fc35a18060c121e5e301a4ffcf8ab8c1676fe47ad662f79bbb78",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-day-summary-v128.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "17ca807e2d02f3a6e9ee78e4c32ad1b52e40d06618457a72a86439582f18d87f",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-home-orders-v124.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "578ea163a86b168f27fa7df4f14d9593ad51f0ee7a334520de366d9e5299a6c1",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-memo-runtime-v21.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "3885e80933b6cc6a53f2db1d9d9b5071380e16d67bb70c73f27d6cc479d30852",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-memo-v20.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "9646c747d13aff92ed9e3aa38b3d046f8c0caaf1a19b6cadea8cda61da4ecf90",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-money-v130.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "a215c34f4e38e6c0f1b6f4f20745760888ee92ade8ae05dfa06f87e71cc5dded",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-nav-fix-v14.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "8764a5944feb1793164ca68154a352dbab1eb0df49ead3aa2c333028b9a8a8d5",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-order-actions-v179.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "59ded8ad8c60cebf43e13ce2f8599539f6ffd5b0f914a910b3ec7861bc3c3a2e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-order-compact-v71.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "3d935ae2611e1c161011d0c837bf6f8ea3ab225d6f4120938250963c9373ae60",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-order-flags-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "9af5db808bb5d0b695c71bdaf089b0495a14172ef28e6b86dd2323811e72e01f",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-order-focus-v126.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "f9f3040cc03c3380ecc339bdb6ec95283f3703e87dbb4611309b215cd781e3e7",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-order-hands-layout-v72.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "d8106b4e0f08a4302074dd45f1d456cc5315bc322fcc6c9fbaaef930b47dd44a",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-orders-filter-v99.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "cd39ac96a158b7b5bed8793095cc1ff242dcb75daa124873666aff480dd58bf4",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-orders-v125-compat.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "84a81fa2a970137dd821ee55099e861db85e1e3fc8e8b9e5844d24c6e7c90656",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-orders-v125.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "d8a00f857e7dceb6a6eb5b1f06bb2df9cce87bdfbe9562e0964d7939b9168210",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-price-memo-v131.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "91bc3c05733a4184224fa565c06972fa688845c025179e696e19f4e5d85bcaf4",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-profile-clean-v11.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "4de5b5d5a242dbd980d28ce75b9a5c54ff069666a9557908b5c98ff5a7df3396",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-profile-edit-v15.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "8628757b470af2c44f0cac3a9bf5358152012d6f7a727e68907f5113fa25c988",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-profile-summary-v129.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": false,
+      "sha256": "3503177bab302fb1feee7ddb8373de84002b41a7263b70e50f17b51ebb61c0bd",
+      "task6PresentationChange": true
+    },
+    {
+      "file": "master-profile-v4-fix.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "1688aaa2519f38ef155592a3b1f3c9a79a06e335de794bcaa9cd88db1cebdcf0",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-profile-v4.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "22566bce92ef00c891e3f254dfef2c08f8350df63ea4b3e1187824bf86bbe05e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-report-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "9f0fc4beede4350ca80ea6ba6d7c93602f8a9439b5b6c8f12b3c9db5c37ae318",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-report-ui-v12.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "e7b89f3a0c88c948e9d18563e69e14392d9498e1596aa316e3241fad0b444d2e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-reschedule-call-v87.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "ffeda1b7262256a38631ee1493e1f1acfeedf2a7db475ecee8c6f274c1d98e0f",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-schedule-compact-v65.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "a4f61d6191eadc456234e69f25ec74b0334ebaf730ce00160fbc49d0fff2db9d",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-schedule-presets-v17.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "3a083942eee9faefd1684d2978a4d7361f390cb49fd057b4e99e29abc271fcf1",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-simple-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "44af51660f30ade0d9d78d7866ce4d9adbe3a60c758ce0c0ae25a2272fc1f387",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-simple.css",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "8cad04ef20ce2e5ae9d227a3d5ee92b829e3b187ba6227c691f7aac0100844be",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-status-colors-v95.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "19c8243238d65067a1e51d541558745b235e802a2d8a602aef44b12650fa53cf",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-ui-contract-v42.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "3c95442dd45427d8b7b7b1ab61809862c33182b1b1bc9c8cceccc1ea35bef378",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-upcoming-claims-v110.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "5d428513b08d42e990ccb497e08208384ec7361aec21368cfd7fce17e77df9bb",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-upcoming-compact-v73.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "2fcd59792309905ee1cfda8ab27d19a994489769ea2d07624ad94d7816e5a20f",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-ux-runtime-v44.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "6eab0f653c8e8b3b00f8b2afe705f3dfc31cbb9f087d3e2a4e40f5d8f5c21b53",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-workflow-v115.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "723b398a6b13c97526c6c9a539ea7ecfc4ae0ddb9428868a644a9245c72eafaf",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-workflow-v116.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "d2c3b93ff9c80ebb05ca72ea15ea579d11743ff197217a772ad91ebe8407c9a3",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "master-workflow-v25.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "0909de6a5dd7cf63eda2871c22006bada80f91fb0441caa31be28996ae9073e1",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "netlify/functions/gas-report.mts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "3aceed3faf6a55ffa2d9596db964159e1698c6e414919308c1870871daf7c0a9",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "netlify/functions/health.mts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "b548717feddfa5a7d450a410ffdd64f332c1f7e20beb8d82fc675580db62a417",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "netlify/functions/proxy.mts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "f756f96cfd9043ddfb11374e2add2211937e23e2bd8b05e2d6ba45fbf1eea2a2",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "netlify/functions/vk-bridge.mts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "5ed290d61afe5324780306818ae4db4db4bb8712cae4521615f29fb48d3a7277",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "network-direct-v86.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "2c81572d88b12307661de2157536012bec07ee7230d13083a07f42a8fa474cd8",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "network-fallback-v50.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "2d81b6709180766d800cb10cf19e8fd1ec1095906fe0e26dbf19af193724e865",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "new-order-card-v104.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "b7e7b9447adf52fcc2360461ee06df78848d4b4db003b229011236fcfe9c9d83",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "notification-center-v26.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "f3dcb454a3922e3486f4c4c5e20826d08e7dc027278008d6d1f259a9a8fec656",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "ops-contact-status.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "4dc9f46794c3d87e98000bc9d15184d0c6b0b188fdb50dc0b034a9abc15cf57d",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "order-control-tasks.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "bde60b8fcc64cd400a556df83bc9e55c324fa7918dc347f574fefb3c54f27d9e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "order-control.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "96eddef809ec96710ff5d71b7e596447a4c30e469905df1742c139aca11c9a5d",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "order-create-fields-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "2bbee90e48fb97c64b2c5e5bdddb60bfb5f70b92c8140fec2150b6cc9f2f6c37",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "order-filters-v22.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "5bea7f8f4df53ce770019a51c224d9981e1069ccbfa42faa2be9bdc6f4e9c901",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "order-lifecycle-v106.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "afc9459be8e8f08c15bc6abbdbaa165abcce32dbf123f5f72a96211ada31e6bb",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "order-payroll.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "e1a9762fcf242dbb899d201f88528d5c8c9715e472d30f5aa60f8aa2d233ddd1",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "owner-calendar-team-v10.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "03b5994741be1f5d4600563fbc43ef56f4d92a934a63034960517c234b636dc0",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "owner-dashboard-v9.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "6c503b4a28ed6d26651f8168fd159819c7fcdde14edab4d1ab955f6d5a67f90b",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "owner-dispatcher-dashboard-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "4d95f75b1a992c8e6d942c489d6047a7aa73f015e80bbe451b9d453edbe985a0",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "owner-role-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "7de4078ce9743d494a16227b075dc89a9f514e97a418d896d839e09926333120",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "owner-tools-v13.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "d30ac949eb83e4e164e269c8a1d0c00ee68cab5ed60a096dd06452eef64a1ac2",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "playwright.config.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "879521edbad822fbe7096da7f1b960bb43c60a290515c0a397480c9f4fda081f",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "production-role-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "9a90b9a1b328243a799c6ae673b4abfa5728f19619b1d9a6faeb45112e4059f5",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "profile-logout-v96.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "1d05f025317417f695a8b6810277856557e981074e8b55a37a739e76efae280b",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "pwa-register.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "5661a234de3e492624bf6c3981b6e9e270ac50d4fb301a37740c48a6e2865480",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "reclamation-status-v18.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "279a8b73b9952587190a7b34e5bdc7688c618d68bf798a32fbd4fe85f5289356",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "regression-runtime-v74.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "5c107ee0a92347ea9a629ddad82149bb9b1bdc7bc1b9ef605309f4644daa3750",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "report-chunk-upload-v23.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "39371e05ab2bfec29cef3fc102634416bfeb297b46856112c29e760255bb6a3e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "report-deduction.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "c3d460440cf0b7b43108353f24da6c134f1a2132ed65f2e75ccebf502b2d52bc",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "report-review-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "18ac44f57d52dee5df5fbd40e1ae67bd285b8d285957c6cd1a13627c7dcc0d42",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "report-review-runtime-v30.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "ddb3a74e09f9472fbd0b93d5ac153516a3f03d5534d4fca164c6e2db011cafdf",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "report-review.css",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "ab14ec5cd0c91aa3bde60b5a00e4d780fe1d8443fe38c12c54a077cf787dec0c",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "report-supabase-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "f045dec35908e1e1d070fcb17c2f22b12b57af8c882f81141e4920189c871d57",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "report-uncompleted-ui.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "4e69d7d00cee658326745d8b88de9c3628e44c98ed355eb1ed10e350ae5f89ed",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "report-upload-fix-v27.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "da41d4f1e843ff7cfc1707cfc236d241e215ba5ec4414618335b9b2b9d9b0518",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "role-chrome-v83.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "09fa1381fa292c71c431fd3a97aa7c6cdbc75f198d602b061563f89ffc524d34",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "role-preview-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "08cff161b737dda0a460773bde171810164e70b6292e9070fc15959a309f7b22",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "salary-periods.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "bf7cd774ae076340bdac1ac53a51885fd7bfb40352934ca4fcf18530689c41a2",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "schedule-contract.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "5776d2438586dd48adb4f8b755dea71f869eca8b3d8f887f094bbebd1d9ab92e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "schedule-identity-v46.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "7a32ed43d9868e9ac40dd6180054a9a7283e01b506e6bacf5997f67fd08e0399",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "schedule-save-hotfix-v69.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "62c74f9d2111bc57d67c02d06d4ebf1fa711d12adade49f0314b1a8185119b27",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "service-catalog.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "23bc797e50cb0c168b33cf59d96dd013e5a96133890af24372e5d36eb707f1ec",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "session-refresh-v113.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "1f7324c7185b1ec79f1cd1e62bd8e5e03b87fb4a7585e7b3c8cc4a4f5938a582",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "simple-auth-v57.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "34c835d8ba32587ad5ba771014c228a883853911fe51a8df049a10a703df0f98",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "staff-invite-ui-v66.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "2e1b0557e9309c692260f258741d2f642e7ed799893b6b736cd4f06d5a251f22",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "staff-link-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "8bf36225cb6260f2d2f348ca9cbd3f9589afe6a2509b9434a8f9a58a19a4fbe0",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "staff-permissions-calendar-v43.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "63afa2cf9b571d926a22cb26e91922617006b5d6a79892a2e2f8fd6c05e3b567",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "startup-eager.bundle.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "fcbe7b42a6748f0d6705d7fa36655855d67fb718d52e85bd3088b68459daf3d0",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "startup-shell.bundle.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "b16db054a72507fbfa56900bfd48eb3c160c135ffbe473c984f58e73e956ae91",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "status-visual-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "857c017ffeb2cec652a37753258ad3bc353e3b3632ffae85630f09f489f13337",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "styles.css",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "4224b199d3c1d098d0d24c2ef682d439a998e85db93c14834617c5c8badbc153",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/avito-assistant-activation.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "f1c29b63cf80a132820d4d7e2a6a4197b9d213ab5a1910228b21c1aac19391eb",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/avito-assistant-setup.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "3a8ff330e2e35c1e0133dd06a8748e657851d70b31763ebc89f66a77c9d05f70",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/_shared/avito-price-catalog.json",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "f0e5785859a6733a9e4164697c231febb728d79300bda77d6ef3df91e830c0f7",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/_shared/hands-details.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "5e772f8e7c1eb4f8301d567246f3463fb036e7b03c216cbe5e1ba1384c1eb38f",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/avito-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "2cde2a0bcf1236d69f3e30db6a010680d766d90d058f9b199dc5d0195315bca0",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/avito-assistant-api/core.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "5e62c791acf65b1cc95ee7dfc1bea77d11c9e1baf943b396f3b5ae0bbcc69d7b",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/avito-assistant-api/deno.json",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "3ed4f298d51edc3371f0e09968c99cfe59b705e2fb04dd4ed6dc64f9d702aa5c",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/avito-assistant-api/deno.lock",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "5856c3dd463889de9d61a4dd0b88bb516513ac38f8cb1d480307db0c7971f093",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/avito-assistant-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "4503c4e8fb55bc7a3da88d3aa330be9acad894233bd9821d28b0891dbf1739b6",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/claims-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "469350c49e4b641d1ffd281e905b5aec1adc860d8237b89166abab38e568adb4",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/drive-archive-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "ad1b3eed4c1dd4b982ebfb2eb905fd9051b2c7bb71e86e43518461374c171a6e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/employee-meta-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "8b6a6080f27fd954fd95b1f76df14d6fe9b1f3318b3f263d46953dbb963117d6",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/gas-bridge-health/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "9202b7321f816f428821ba532bb9865653bc9388b0835cb34b2ebb50ebaf229c",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/hands-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "690c98ba45a6a5f0d9b89545d617472420f8d52a685a209930b656297cf24583",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/hands-report-api/deno.json",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "3ed4f298d51edc3371f0e09968c99cfe59b705e2fb04dd4ed6dc64f9d702aa5c",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/hands-report-api/deno.lock",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "0c7f982863a4dad67b52805255b52180eb28d090c9ffb1126f97993a91bf3130",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/hands-report-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "a42138784c685b62e7429f8ba746e51c9879e67d31dbd483c5d4638110e34a41",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/integration-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "5bf02c14f638895ef1624b06bbf0e9d5a9092ed21838c0730586bab235c2524e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/master-memo-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "0871ad305c9e245d4af7c0de70d67ef6c26140c9ad1a928a5a3165d17f36c4f4",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/master-workflow-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "e245ad0b1d001afc4a8d8e1191fbfd394d87e0faaaec03269a5946b8f5f73548",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/mini-app-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "78a3f32e85f128d815aed72184f5995fd9e243dbd75e33cf1602a206ca0c0af2",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/order-lifecycle-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "2b8f5dd41d2419512c76ad225d38f570d9c95dca8158b5c9e1acff71470a0520",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/order-meta-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "c276fc3770fc813047d6457ab4b1a6539e8a35c528d058879a77d79afb8c2c8f",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/password-session-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "0aa2f482a8df5ba12c5cd7c779363e2068c750273372e070e963de2b1f4d98d1",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/profile-self-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "bf6fc13da5dcdada425eed1b3b83fa39b3da61b0ef2bf8954c7a1befe8dd9bb1",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/push-api/deno.json",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "3ed4f298d51edc3371f0e09968c99cfe59b705e2fb04dd4ed6dc64f9d702aa5c",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/push-api/deno.lock",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "5856c3dd463889de9d61a4dd0b88bb516513ac38f8cb1d480307db0c7971f093",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/push-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "6bd9d08bf8615854f5e5ce8c475869f9e6bb11f5b9c3fa2adcaa1cad33cb7113",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/push-api/webpush-runtime.test.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "092e1e79eda29b35992b41efba90657ae1366d1c2a3a9a8db53e67b542ab5b4d",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/report-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "a41a571c246b72c5210e39832f4473d8dcb8babc1e5e8b0b6e857b73ffd61ad1",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/report-file-upload/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "78c823d62f7b3a2b1b9eb7d11582c24948bf8c9c77605712e04ebe0e1791fafe",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/staff-admin-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "ceeb8ad5eaa1c3a727c71872dd9b691d285614e694e95d5b198eedcf40cf3480",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/staff-invite-api/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "1a1f3460c4a1e69ba77c2ad1b9611643b3591940b9c38a962cbe003f76c4e6a9",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/functions/vk-auth/index.ts",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "3c677b234e834392bece5e2b8f2ae603b9724ffb2cc3f70ce219c0dd0fae2af0",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/hands-report-activation.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "255426e0bf9377b7029ece8a9e0015037e673754861721de374de9b3f2443c18",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20260913163500_staff_invites.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "2309503b9c64832f1491cc477c0be11e785950443f782d7e04de9b10ab50be1b",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20260914145500_fix_master_payout_formula.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "36a09283f1e9011f92e28f07ece50bc8fc5e57c30fdc5d5ab5eb1cebdbb46053",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20260919203032_add_order_reschedule_request_fields.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "15c7d2f16695e189d9b3aa2d220de481bfa2561590e833222d9e6cb023915995",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20260919203544_master_reschedule_profile_bridge.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "016da7d5dc564288e282f1cefbc75c760618b1678432cfeeac2f8605adab54f4",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20260919204023_add_order_reschedule_requester_index.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "a911998e73b7351595ec0367fff79cb7a89c795a8c80e0e8e687ef368862fd7e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20260920133158_add_master_workflow_fields.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "4897c82d6b042f86637f2a9eb65df5161afa8c4ec5dac2b35cdfd87daf5d0d43",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20260922104500_master_workflow_profile_bridge.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "bb3fac658ea1807547ea2c0de00c3984b0ea7c2f500e42abfdd42052a09cc297",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20260923172733_master_workflow_v2_contact_events.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "3534e49e70e57501ad199226f10234c676a85dc6f8c62724db05c8ae43b58502",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20260924211948_harden_internal_table_grants.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "04711eed25424b56a5ed3daab1f3284f7aeb49e1a3b175d339b567fbe1df5a8b",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20260925121000_add_staff_last_seen_at.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "783009894de31922278810e5452f70edaf0e4a378b79b074ab4b70ba8ee2647e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20260929160000_capture_live_order_guards.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "9f09306a2665b2dbad4c0a26dbe98c9c3a9d12df8aa9ca0a84a961f5c71b59af",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20260929163737_web_push_v211.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "6da0aae2fa47f85c834abe85c091fbeb70cc3fb41c978675ddefea2263b02d77",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20260930195125_hands_report_delivery.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "4075fe28e9288c89430d3b77e410abe258b428cbc6bde24395b60d1cf7bc63a7",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20261001074029_order_control_tasks_v2.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "c96e1c5331fb657c11e28569f6d994bfd6c9f1b1e0fccd41b9d21f22d962633d",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20261001174717_report_uncompleted_items.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "3ba41c87381c85e86b531e720004dcfc9a88793802faebf766c922565035a9af",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20261001193413_master_hands_details.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "f2b12c22da9557902914697e97a4ab590ec30cd92f2a57e588f4884b402d2c7d",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20261002101000_master_contact_confirmation.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "8e6a4e629b8db5eab22c25dc6fb0840585618de1093a822a3fcdfd72ed7d8942",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20261004100840_manual_order_completion.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "2b9c89552359174d4e40b3be0f71e45696d16c6199ce0ac71839a60fa5043eff",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20261004183000_master_contact_journal.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "c138879fbaaaf556def2948153a762123405b584ddc1c2489401037f642213e0",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/migrations/20261004191357_finance_expenses.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "d2b29aefc0b8b33a3fb10035de79749d51b81fe099432cb2a87fb85211948fc6",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/push-activation.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "9a0511147d7a7357016ffe8d808c30141f7b1dd093fead838e324962c89ad4d9",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "supabase/setup.sql",
+      "base": "736c819a388e3b973a81c55f53a2a4832d9c1054",
+      "label": "entire protected backend",
+      "unchanged": true,
+      "sha256": "6ca1eae0d2893c0b3c17375a9ce2d74b2f980dd08bc2ac71cb7f16daa441ec80",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "sw.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": false,
+      "sha256": "6e041a417e0fad29eaa4c4b46a6da6fed499d07228342db426712b2ed733b707",
+      "task6PresentationChange": true
+    },
+    {
+      "file": "team-calendar-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "e22b38c574f52837a21c9f667950e9db74321f40c869ddfb5bb10d5dec9fae9e",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "team-roles-fix-v31.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "6a0ef31de7ab01335b234aa57ab9482ce8f6242828409a87ac01e0a96dd718dc",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "test-pin-auth.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "e51901cfefcb0375950cb20d87b4b47bda33857a2c8c6821e05e30ce753a4c49",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "ui-dispatch-master-v94.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "a122bb52821caf24c2e92cfdcc9347f24f655ff0e8e4bd1dacfb81d3e505960c",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "ui-refresh-v1.css",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "61917b1daa686bc90ed20896cca318fe2157251d22ff3fcff471b3f676b410ec",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "ui-v2-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "54e0f0c497d9b0d40d6ba12c39bb1d60cc028a79e0305fd2242227e2a0216895",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "ui-v2.css",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "e068918f6016cb01a1921707216988cdd1334e97725ad3814e7d98aa1865abf5",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "unified-schedule-v102.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "d6e747b127e33067849d3f2db9c48814ca85133c6c3a3e202b91b6b9a32344af",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "visual-polish.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "366c618df599e1e8f95fcf3cb9403f040b14e9be09b2b2fab519a33fd56b8cd3",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "visual-v3.css",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "fc16ff8c9a1df5176de3e0109c7202f18f2c0fe80559e11f5846df3de6ea0670",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "vk-auth-patch.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "aabeeaf65a4bfff94561ffc839ef28a60b398b21c99dbaa00ac17f3930b92985",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "vk-init.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "8cd06b88470796c48aee3688129c4ba1499ca1278ac799d2feca197ca5db15fb",
+      "task6PresentationChange": false
+    },
+    {
+      "file": "web-push-v211.js",
+      "base": "30e9373310f9e66bb63dd130378f53b86c0cc3f7",
+      "label": "entire accepted runtime",
+      "unchanged": true,
+      "sha256": "e82b387c8817570e0b52a69bf3eb56df3cff5a01c0988eae0de558fe2cfeb067",
+      "task6PresentationChange": false
+    }
+  ],
+  "changed": 4,
+  "unexpectedChanges": 0,
+  "task6ChangeCommit": "cfd6740",
+  "task6Change": "Four original memo callbacks exposed in guarded presentation menu; generated version/shell/SW hashes only"
+}

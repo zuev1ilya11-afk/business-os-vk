@@ -1,0 +1,421 @@
+{
+  "base": "ad9b864cb62342fc731d0f87445c2f35f036d52a",
+  "head": "f0a5c8f2c0ffe3f10d8af28de3f49758f24eb283",
+  "changedRuntime": [
+    "approved-master-ui.css",
+    "approved-operations-ui.css",
+    "build-version.js",
+    "dispatcher-workspace-v6.js",
+    "employee-profile-patch.js",
+    "index.html",
+    "master-money-v130.js",
+    "master-profile-summary-v129.js",
+    "owner-tools-v13.js",
+    "startup-shell.bundle.js",
+    "sw.js"
+  ],
+  "protectedChecks": [
+    {
+      "file": "auth-api-session-v41.js",
+      "unchanged": true,
+      "sha256": "637e0c5ec9b581ad99f803c839eddfa9cb6c06bc3e0e752130f21a7551dc1923"
+    },
+    {
+      "file": "auth-ui-patch.js",
+      "unchanged": true,
+      "sha256": "ae16e18447766c2871a047464f7d8e565ca03a59c6ba0ae9a1630a7fff831d59"
+    },
+    {
+      "file": "dispatcher-permissions.js",
+      "unchanged": true,
+      "sha256": "e97c5708c4e5b1a95f3538f66ffcdf5890155b442c550b486b1a7eb38c393bd3"
+    },
+    {
+      "file": "finance-data.js",
+      "unchanged": true,
+      "sha256": "5affa33b6d819ef08f6897c6d68724b90d04047b458dd135ead40af2d4206297"
+    },
+    {
+      "file": "finance-expenses.js",
+      "unchanged": true,
+      "sha256": "eaefd4bae1789c5048e342ff6ec3ce4f9072b4a44d018b81556918e0159ec997"
+    },
+    {
+      "file": "hands-integration-v69.js",
+      "unchanged": true,
+      "sha256": "b5ff540cf70255d22a036a54e9ab9f255bf73ddd50cdbe93e88612dbeec202bf"
+    },
+    {
+      "file": "hands-profile-entry-v70.js",
+      "unchanged": true,
+      "sha256": "e6bfa32b204b55558e111fbed6d083484ad5e5ccf24a3c3ee96cba3d63ee094c"
+    },
+    {
+      "file": "mandatory-auth-v29.js",
+      "unchanged": true,
+      "sha256": "87679a4e6945401b99c728186e1a3b458e24f22e63b081eaed045de25f4ed294"
+    },
+    {
+      "file": "order-lifecycle-v106.js",
+      "unchanged": true,
+      "sha256": "afc9459be8e8f08c15bc6abbdbaa165abcce32dbf123f5f72a96211ada31e6bb"
+    },
+    {
+      "file": "report-chunk-upload-v23.js",
+      "unchanged": true,
+      "sha256": "39371e05ab2bfec29cef3fc102634416bfeb297b46856112c29e760255bb6a3e"
+    },
+    {
+      "file": "report-supabase-patch.js",
+      "unchanged": true,
+      "sha256": "f045dec35908e1e1d070fcb17c2f22b12b57af8c882f81141e4920189c871d57"
+    },
+    {
+      "file": "report-upload-fix-v27.js",
+      "unchanged": true,
+      "sha256": "da41d4f1e843ff7cfc1707cfc236d241e215ba5ec4414618335b9b2b9d9b0518"
+    },
+    {
+      "file": "salary-periods.js",
+      "unchanged": true,
+      "sha256": "bf7cd774ae076340bdac1ac53a51885fd7bfb40352934ca4fcf18530689c41a2"
+    },
+    {
+      "file": "simple-auth-v57.js",
+      "unchanged": true,
+      "sha256": "34c835d8ba32587ad5ba771014c228a883853911fe51a8df049a10a703df0f98"
+    },
+    {
+      "file": "staff-permissions-calendar-v43.js",
+      "unchanged": true,
+      "sha256": "63afa2cf9b571d926a22cb26e91922617006b5d6a79892a2e2f8fd6c05e3b567"
+    },
+    {
+      "file": "supabase/avito-assistant-activation.sql",
+      "unchanged": true,
+      "sha256": "f1c29b63cf80a132820d4d7e2a6a4197b9d213ab5a1910228b21c1aac19391eb"
+    },
+    {
+      "file": "supabase/avito-assistant-setup.sql",
+      "unchanged": true,
+      "sha256": "3a8ff330e2e35c1e0133dd06a8748e657851d70b31763ebc89f66a77c9d05f70"
+    },
+    {
+      "file": "supabase/functions/_shared/avito-price-catalog.json",
+      "unchanged": true,
+      "sha256": "f0e5785859a6733a9e4164697c231febb728d79300bda77d6ef3df91e830c0f7"
+    },
+    {
+      "file": "supabase/functions/_shared/hands-details.ts",
+      "unchanged": true,
+      "sha256": "5e772f8e7c1eb4f8301d567246f3463fb036e7b03c216cbe5e1ba1384c1eb38f"
+    },
+    {
+      "file": "supabase/functions/avito-api/index.ts",
+      "unchanged": true,
+      "sha256": "2cde2a0bcf1236d69f3e30db6a010680d766d90d058f9b199dc5d0195315bca0"
+    },
+    {
+      "file": "supabase/functions/avito-assistant-api/core.ts",
+      "unchanged": true,
+      "sha256": "5e62c791acf65b1cc95ee7dfc1bea77d11c9e1baf943b396f3b5ae0bbcc69d7b"
+    },
+    {
+      "file": "supabase/functions/avito-assistant-api/deno.json",
+      "unchanged": true,
+      "sha256": "3ed4f298d51edc3371f0e09968c99cfe59b705e2fb04dd4ed6dc64f9d702aa5c"
+    },
+    {
+      "file": "supabase/functions/avito-assistant-api/deno.lock",
+      "unchanged": true,
+      "sha256": "5856c3dd463889de9d61a4dd0b88bb516513ac38f8cb1d480307db0c7971f093"
+    },
+    {
+      "file": "supabase/functions/avito-assistant-api/index.ts",
+      "unchanged": true,
+      "sha256": "4503c4e8fb55bc7a3da88d3aa330be9acad894233bd9821d28b0891dbf1739b6"
+    },
+    {
+      "file": "supabase/functions/claims-api/index.ts",
+      "unchanged": true,
+      "sha256": "469350c49e4b641d1ffd281e905b5aec1adc860d8237b89166abab38e568adb4"
+    },
+    {
+      "file": "supabase/functions/drive-archive-api/index.ts",
+      "unchanged": true,
+      "sha256": "ad1b3eed4c1dd4b982ebfb2eb905fd9051b2c7bb71e86e43518461374c171a6e"
+    },
+    {
+      "file": "supabase/functions/employee-meta-api/index.ts",
+      "unchanged": true,
+      "sha256": "8b6a6080f27fd954fd95b1f76df14d6fe9b1f3318b3f263d46953dbb963117d6"
+    },
+    {
+      "file": "supabase/functions/gas-bridge-health/index.ts",
+      "unchanged": true,
+      "sha256": "9202b7321f816f428821ba532bb9865653bc9388b0835cb34b2ebb50ebaf229c"
+    },
+    {
+      "file": "supabase/functions/hands-api/index.ts",
+      "unchanged": true,
+      "sha256": "690c98ba45a6a5f0d9b89545d617472420f8d52a685a209930b656297cf24583"
+    },
+    {
+      "file": "supabase/functions/hands-report-api/deno.json",
+      "unchanged": true,
+      "sha256": "3ed4f298d51edc3371f0e09968c99cfe59b705e2fb04dd4ed6dc64f9d702aa5c"
+    },
+    {
+      "file": "supabase/functions/hands-report-api/deno.lock",
+      "unchanged": true,
+      "sha256": "0c7f982863a4dad67b52805255b52180eb28d090c9ffb1126f97993a91bf3130"
+    },
+    {
+      "file": "supabase/functions/hands-report-api/index.ts",
+      "unchanged": true,
+      "sha256": "a42138784c685b62e7429f8ba746e51c9879e67d31dbd483c5d4638110e34a41"
+    },
+    {
+      "file": "supabase/functions/integration-api/index.ts",
+      "unchanged": true,
+      "sha256": "5bf02c14f638895ef1624b06bbf0e9d5a9092ed21838c0730586bab235c2524e"
+    },
+    {
+      "file": "supabase/functions/master-memo-api/index.ts",
+      "unchanged": true,
+      "sha256": "0871ad305c9e245d4af7c0de70d67ef6c26140c9ad1a928a5a3165d17f36c4f4"
+    },
+    {
+      "file": "supabase/functions/master-workflow-api/index.ts",
+      "unchanged": true,
+      "sha256": "e245ad0b1d001afc4a8d8e1191fbfd394d87e0faaaec03269a5946b8f5f73548"
+    },
+    {
+      "file": "supabase/functions/mini-app-api/index.ts",
+      "unchanged": true,
+      "sha256": "78a3f32e85f128d815aed72184f5995fd9e243dbd75e33cf1602a206ca0c0af2"
+    },
+    {
+      "file": "supabase/functions/order-lifecycle-api/index.ts",
+      "unchanged": true,
+      "sha256": "2b8f5dd41d2419512c76ad225d38f570d9c95dca8158b5c9e1acff71470a0520"
+    },
+    {
+      "file": "supabase/functions/order-meta-api/index.ts",
+      "unchanged": true,
+      "sha256": "c276fc3770fc813047d6457ab4b1a6539e8a35c528d058879a77d79afb8c2c8f"
+    },
+    {
+      "file": "supabase/functions/password-session-api/index.ts",
+      "unchanged": true,
+      "sha256": "0aa2f482a8df5ba12c5cd7c779363e2068c750273372e070e963de2b1f4d98d1"
+    },
+    {
+      "file": "supabase/functions/profile-self-api/index.ts",
+      "unchanged": true,
+      "sha256": "bf6fc13da5dcdada425eed1b3b83fa39b3da61b0ef2bf8954c7a1befe8dd9bb1"
+    },
+    {
+      "file": "supabase/functions/push-api/deno.json",
+      "unchanged": true,
+      "sha256": "3ed4f298d51edc3371f0e09968c99cfe59b705e2fb04dd4ed6dc64f9d702aa5c"
+    },
+    {
+      "file": "supabase/functions/push-api/deno.lock",
+      "unchanged": true,
+      "sha256": "5856c3dd463889de9d61a4dd0b88bb516513ac38f8cb1d480307db0c7971f093"
+    },
+    {
+      "file": "supabase/functions/push-api/index.ts",
+      "unchanged": true,
+      "sha256": "6bd9d08bf8615854f5e5ce8c475869f9e6bb11f5b9c3fa2adcaa1cad33cb7113"
+    },
+    {
+      "file": "supabase/functions/push-api/webpush-runtime.test.ts",
+      "unchanged": true,
+      "sha256": "092e1e79eda29b35992b41efba90657ae1366d1c2a3a9a8db53e67b542ab5b4d"
+    },
+    {
+      "file": "supabase/functions/report-api/index.ts",
+      "unchanged": true,
+      "sha256": "a41a571c246b72c5210e39832f4473d8dcb8babc1e5e8b0b6e857b73ffd61ad1"
+    },
+    {
+      "file": "supabase/functions/report-file-upload/index.ts",
+      "unchanged": true,
+      "sha256": "78c823d62f7b3a2b1b9eb7d11582c24948bf8c9c77605712e04ebe0e1791fafe"
+    },
+    {
+      "file": "supabase/functions/staff-admin-api/index.ts",
+      "unchanged": true,
+      "sha256": "ceeb8ad5eaa1c3a727c71872dd9b691d285614e694e95d5b198eedcf40cf3480"
+    },
+    {
+      "file": "supabase/functions/staff-invite-api/index.ts",
+      "unchanged": true,
+      "sha256": "1a1f3460c4a1e69ba77c2ad1b9611643b3591940b9c38a962cbe003f76c4e6a9"
+    },
+    {
+      "file": "supabase/functions/vk-auth/index.ts",
+      "unchanged": true,
+      "sha256": "3c677b234e834392bece5e2b8f2ae603b9724ffb2cc3f70ce219c0dd0fae2af0"
+    },
+    {
+      "file": "supabase/hands-report-activation.sql",
+      "unchanged": true,
+      "sha256": "255426e0bf9377b7029ece8a9e0015037e673754861721de374de9b3f2443c18"
+    },
+    {
+      "file": "supabase/migrations/20260913163500_staff_invites.sql",
+      "unchanged": true,
+      "sha256": "2309503b9c64832f1491cc477c0be11e785950443f782d7e04de9b10ab50be1b"
+    },
+    {
+      "file": "supabase/migrations/20260914145500_fix_master_payout_formula.sql",
+      "unchanged": true,
+      "sha256": "36a09283f1e9011f92e28f07ece50bc8fc5e57c30fdc5d5ab5eb1cebdbb46053"
+    },
+    {
+      "file": "supabase/migrations/20260919203032_add_order_reschedule_request_fields.sql",
+      "unchanged": true,
+      "sha256": "15c7d2f16695e189d9b3aa2d220de481bfa2561590e833222d9e6cb023915995"
+    },
+    {
+      "file": "supabase/migrations/20260919203544_master_reschedule_profile_bridge.sql",
+      "unchanged": true,
+      "sha256": "016da7d5dc564288e282f1cefbc75c760618b1678432cfeeac2f8605adab54f4"
+    },
+    {
+      "file": "supabase/migrations/20260919204023_add_order_reschedule_requester_index.sql",
+      "unchanged": true,
+      "sha256": "a911998e73b7351595ec0367fff79cb7a89c795a8c80e0e8e687ef368862fd7e"
+    },
+    {
+      "file": "supabase/migrations/20260920133158_add_master_workflow_fields.sql",
+      "unchanged": true,
+      "sha256": "4897c82d6b042f86637f2a9eb65df5161afa8c4ec5dac2b35cdfd87daf5d0d43"
+    },
+    {
+      "file": "supabase/migrations/20260922104500_master_workflow_profile_bridge.sql",
+      "unchanged": true,
+      "sha256": "bb3fac658ea1807547ea2c0de00c3984b0ea7c2f500e42abfdd42052a09cc297"
+    },
+    {
+      "file": "supabase/migrations/20260923172733_master_workflow_v2_contact_events.sql",
+      "unchanged": true,
+      "sha256": "3534e49e70e57501ad199226f10234c676a85dc6f8c62724db05c8ae43b58502"
+    },
+    {
+      "file": "supabase/migrations/20260924211948_harden_internal_table_grants.sql",
+      "unchanged": true,
+      "sha256": "04711eed25424b56a5ed3daab1f3284f7aeb49e1a3b175d339b567fbe1df5a8b"
+    },
+    {
+      "file": "supabase/migrations/20260925121000_add_staff_last_seen_at.sql",
+      "unchanged": true,
+      "sha256": "783009894de31922278810e5452f70edaf0e4a378b79b074ab4b70ba8ee2647e"
+    },
+    {
+      "file": "supabase/migrations/20260929160000_capture_live_order_guards.sql",
+      "unchanged": true,
+      "sha256": "9f09306a2665b2dbad4c0a26dbe98c9c3a9d12df8aa9ca0a84a961f5c71b59af"
+    },
+    {
+      "file": "supabase/migrations/20260929163737_web_push_v211.sql",
+      "unchanged": true,
+      "sha256": "6da0aae2fa47f85c834abe85c091fbeb70cc3fb41c978675ddefea2263b02d77"
+    },
+    {
+      "file": "supabase/migrations/20260930195125_hands_report_delivery.sql",
+      "unchanged": true,
+      "sha256": "4075fe28e9288c89430d3b77e410abe258b428cbc6bde24395b60d1cf7bc63a7"
+    },
+    {
+      "file": "supabase/migrations/20261001074029_order_control_tasks_v2.sql",
+      "unchanged": true,
+      "sha256": "c96e1c5331fb657c11e28569f6d994bfd6c9f1b1e0fccd41b9d21f22d962633d"
+    },
+    {
+      "file": "supabase/migrations/20261001174717_report_uncompleted_items.sql",
+      "unchanged": true,
+      "sha256": "3ba41c87381c85e86b531e720004dcfc9a88793802faebf766c922565035a9af"
+    },
+    {
+      "file": "supabase/migrations/20261001193413_master_hands_details.sql",
+      "unchanged": true,
+      "sha256": "f2b12c22da9557902914697e97a4ab590ec30cd92f2a57e588f4884b402d2c7d"
+    },
+    {
+      "file": "supabase/migrations/20261002101000_master_contact_confirmation.sql",
+      "unchanged": true,
+      "sha256": "8e6a4e629b8db5eab22c25dc6fb0840585618de1093a822a3fcdfd72ed7d8942"
+    },
+    {
+      "file": "supabase/migrations/20261004100840_manual_order_completion.sql",
+      "unchanged": true,
+      "sha256": "2b9c89552359174d4e40b3be0f71e45696d16c6199ce0ac71839a60fa5043eff"
+    },
+    {
+      "file": "supabase/migrations/20261004183000_master_contact_journal.sql",
+      "unchanged": true,
+      "sha256": "c138879fbaaaf556def2948153a762123405b584ddc1c2489401037f642213e0"
+    },
+    {
+      "file": "supabase/migrations/20261004191357_finance_expenses.sql",
+      "unchanged": true,
+      "sha256": "d2b29aefc0b8b33a3fb10035de79749d51b81fe099432cb2a87fb85211948fc6"
+    },
+    {
+      "file": "supabase/push-activation.sql",
+      "unchanged": true,
+      "sha256": "9a0511147d7a7357016ffe8d808c30141f7b1dd093fead838e324962c89ad4d9"
+    },
+    {
+      "file": "supabase/setup.sql",
+      "unchanged": true,
+      "sha256": "6ca1eae0d2893c0b3c17375a9ce2d74b2f980dd08bc2ac71cb7f16daa441ec80"
+    },
+    {
+      "file": "test-pin-auth.js",
+      "unchanged": true,
+      "sha256": "e51901cfefcb0375950cb20d87b4b47bda33857a2c8c6821e05e30ce753a4c49"
+    },
+    {
+      "file": "tests/auth-402-failover.spec.js",
+      "unchanged": true,
+      "sha256": "eff68dc4a8bc14ee1d43623c24fdcfe48db263b85bdf5828fda38a3fa1b27336"
+    },
+    {
+      "file": "tests/mobile-auth-fallback.spec.js",
+      "unchanged": true,
+      "sha256": "a2cc600d8c20c1876c4b01a78880b69edd394e1d46de6e472e165e99eb81eb64"
+    },
+    {
+      "file": "tests/mobile-auth-launch-recovery.spec.js",
+      "unchanged": true,
+      "sha256": "8aaaa07f8be3a0306381f5f29972cb82ac1c8e908807a75859ade0a457e86310"
+    },
+    {
+      "file": "tests/simple-desktop-auth.spec.js",
+      "unchanged": true,
+      "sha256": "2cb8bcb719d50310355fb3400641736b14c5b340304a8b9dda7f9eed03bce96c"
+    },
+    {
+      "file": "vk-auth-patch.js",
+      "unchanged": true,
+      "sha256": "aabeeaf65a4bfff94561ffc839ef28a60b398b21c99dbaa00ac17f3930b92985"
+    },
+    {
+      "file": "web-push-v211.js",
+      "unchanged": true,
+      "sha256": "e82b387c8817570e0b52a69bf3eb56df3cff5a01c0988eae0de558fe2cfeb067"
+    },
+    {
+      "file": "master-money-v130.js",
+      "scope": "All data selection, salary calculations, period definitions and detail computations before openMasterAccrualsV130",
+      "unchanged": true,
+      "sha256": "69722ae634fc296c99412ea3c84f81be27470a254748b8cbde5bb9410d650d9b"
+    }
+  ],
+  "unexpectedChanges": []
+}

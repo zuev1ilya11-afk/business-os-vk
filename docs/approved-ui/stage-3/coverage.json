@@ -1,0 +1,1187 @@
+{
+  "stage": 3,
+  "baseCommit": "cd3bf9232a6ac632cb8da151aa32a0b2b478361e",
+  "ownedSurfaceCount": 19,
+  "dispatcherContractRowCount": 45,
+  "rows": [
+    {
+      "role": "dispatcher",
+      "screen": "workspace",
+      "title": "Рабочее место",
+      "sourceSurfaceIds": [
+        "dispatcher_home",
+        "ops_orders",
+        "ops_schedule_board"
+      ],
+      "status": "implemented",
+      "renderer": "dispatcher-workspace-v6.js",
+      "description": "Queue / schedule / detail desktop; queue / schedule tablet; attention summary and original routes.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/workspace-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/workspace-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/workspace-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/workspace-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/workspace-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "attention",
+      "title": "Требуют внимания",
+      "sourceSurfaceIds": [
+        "ops_order_control",
+        "legacy_board_control"
+      ],
+      "status": "implemented",
+      "renderer": "dispatcher-attention-v123.js",
+      "description": "Operational priority filters and exact existing destination predicates.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/attention-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/attention-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/attention-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/attention-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/attention-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "orders",
+      "title": "Все заявки",
+      "sourceSurfaceIds": [
+        "ops_orders"
+      ],
+      "status": "implemented",
+      "renderer": "order-filters-v22.js",
+      "description": "Saved visit time, address, works, contact, one Open; original action host kept under persistent disclosure.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/orders-fixture-360.png",
+          "buildId": "8db21ea069ba79bda217",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/orders-fixture-390.png",
+          "buildId": "8db21ea069ba79bda217",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/orders-fixture-430.png",
+          "buildId": "8db21ea069ba79bda217",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/orders-fixture-768.png",
+          "buildId": "8db21ea069ba79bda217",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/orders-fixture-1440.png",
+          "buildId": "8db21ea069ba79bda217",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "order-detail",
+      "title": "Заявка · Контроль выполнения",
+      "sourceSurfaceIds": [
+        "order_detail_ops"
+      ],
+      "status": "implemented",
+      "renderer": "management-order-compact-v82.js",
+      "description": "Order title precedes Client heading for Hands; Client / Works / Visit labels preserve all saved fields and original save.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-detail-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-detail-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-detail-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-detail-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-detail-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "order-create",
+      "title": "Новая заявка",
+      "sourceSurfaceIds": [
+        "order_editor"
+      ],
+      "status": "implemented",
+      "renderer": "new-order-card-v104.js",
+      "description": "Four labeled sections, original input nodes, multiwork / multiphone and reachable original submit.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-create-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-create-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-create-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-create-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-create-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "order-edit",
+      "title": "Редактирование заявки",
+      "sourceSurfaceIds": [
+        "order_editor"
+      ],
+      "status": "implemented",
+      "renderer": "new-order-card-v104.js",
+      "description": "Same sectioned edit with original values, original save and error / retry behavior.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-edit-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-edit-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-edit-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-edit-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-edit-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "assign",
+      "title": "Назначение мастера",
+      "sourceSurfaceIds": [
+        "smart_assign"
+      ],
+      "status": "implemented",
+      "renderer": "dispatcher-smart-assign-v119.js",
+      "description": "Context and master search; original ranked candidates, conflicts, assignment handler and payload.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/assign-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/assign-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/assign-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/assign-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/assign-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "reschedule",
+      "title": "Перенос визита",
+      "sourceSurfaceIds": [
+        "reschedule_ops"
+      ],
+      "status": "implemented",
+      "renderer": "dispatcher-reschedule-v91.js",
+      "description": "Labeled visit context and existing date / time controls; original update.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/reschedule-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/reschedule-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/reschedule-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/reschedule-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/reschedule-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "schedule",
+      "title": "Расписание команды",
+      "sourceSurfaceIds": [
+        "ops_schedule_board",
+        "management_schedule"
+      ],
+      "status": "implemented",
+      "renderer": "dispatcher-mobile-dispatch-v107.js",
+      "description": "Mobile selected-master timeline; desktop / tablet time grid. Completed read-only; untimed separate. Unknown duration is a labeled start point.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/schedule-fixture-360.png",
+          "buildId": "f3a76983375464e3cd16",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/schedule-fixture-390.png",
+          "buildId": "f3a76983375464e3cd16",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/schedule-fixture-430.png",
+          "buildId": "f3a76983375464e3cd16",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/schedule-fixture-768.png",
+          "buildId": "b6d695216206634a3a16",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/schedule-fixture-1440.png",
+          "buildId": "b6d695216206634a3a16",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "team",
+      "title": "Команда · Доступность",
+      "sourceSurfaceIds": [
+        "team"
+      ],
+      "status": "implemented",
+      "renderer": "staff-permissions-calendar-v43.js",
+      "description": "Master identity / saved schedule / saved upcoming visits; original card actions and guards.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/team-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/team-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/team-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/team-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/team-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "master-detail",
+      "title": "Карточка мастера",
+      "sourceSurfaceIds": [
+        "employee_profile"
+      ],
+      "status": "implemented",
+      "renderer": "staff-permissions-calendar-v43.js",
+      "description": "Readonly nearest future saved visits sorted chronologically; original profile / permissions controls.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/master-detail-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/master-detail-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/master-detail-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/master-detail-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/master-detail-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "reports",
+      "title": "Очередь отчётов",
+      "sourceSurfaceIds": [
+        "report_queue"
+      ],
+      "status": "deferred-manager",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "review",
+      "title": "Проверка отчёта",
+      "sourceSurfaceIds": [
+        "report_review"
+      ],
+      "status": "deferred-manager",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "review-reject",
+      "title": "Отклонение отчёта",
+      "sourceSurfaceIds": [
+        "report_review"
+      ],
+      "status": "deferred-manager",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "avito",
+      "title": "Авито · Диалоги",
+      "sourceSurfaceIds": [
+        "avito_workspace"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "avito-thread",
+      "title": "Авито · Диалог с заявкой",
+      "sourceSurfaceIds": [
+        "avito_workspace"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "hands-sync",
+      "title": "Hands · Синхронизация",
+      "sourceSurfaceIds": [
+        "hands_settings"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "more",
+      "title": "Ещё",
+      "sourceSurfaceIds": [
+        "chrome"
+      ],
+      "status": "foundation-existing",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "profile",
+      "title": "Профиль диспетчера",
+      "sourceSurfaceIds": [
+        "ops_profile"
+      ],
+      "status": "implemented",
+      "renderer": "dispatcher-workspace-v6.js",
+      "description": "Readonly identity and real existing salary summary composed after late profile wrappers; original profile actions retained.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/profile-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/profile-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/profile-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/profile-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/profile-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "notifications",
+      "title": "Уведомления",
+      "sourceSurfaceIds": [
+        "notifications"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "filters",
+      "title": "Фильтры заявок",
+      "sourceSurfaceIds": [
+        "ops_orders"
+      ],
+      "status": "implemented",
+      "renderer": "order-filters-v22.js",
+      "description": "Modal clones only filter controls; Cancel preserves values; Apply invokes original onchange on original IDs; reopened selection persists.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/filters-fixture-360.png",
+          "buildId": "0632423c7abd3fad3fae",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/filters-fixture-390.png",
+          "buildId": "0632423c7abd3fad3fae",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/filters-fixture-430.png",
+          "buildId": "0632423c7abd3fad3fae",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/filters-fixture-768.png",
+          "buildId": "0632423c7abd3fad3fae",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/filters-fixture-1440.png",
+          "buildId": "0632423c7abd3fad3fae",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "control",
+      "title": "Контроль заявок",
+      "sourceSurfaceIds": [
+        "ops_order_control"
+      ],
+      "status": "deferred-manager",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "control-task",
+      "title": "Ответственный и срок",
+      "sourceSurfaceIds": [
+        "control_tasks"
+      ],
+      "status": "deferred-manager",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "free-slots",
+      "title": "Свободные окна",
+      "sourceSurfaceIds": [
+        "free_slots"
+      ],
+      "status": "implemented",
+      "renderer": "dispatcher-free-slots-v120.js",
+      "description": "Separate opsFreeSlots page; saved day / master history and existing load / conflict information. No invented exact capacity.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/free-slots-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/free-slots-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/free-slots-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/free-slots-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/free-slots-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "order-cancel",
+      "title": "Отменить заявку",
+      "sourceSurfaceIds": [
+        "cancel_order"
+      ],
+      "status": "implemented-existing-safe-controls",
+      "renderer": "dispatcher-order-workflow-v114.js (existing)",
+      "description": "Existing warning, order context and original confirmation retained; new reason persistence unsupported.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-cancel-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-cancel-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-cancel-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-cancel-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/order-cancel-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "claims",
+      "title": "Рекламации",
+      "sourceSurfaceIds": [
+        "claims"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "claim-create",
+      "title": "Создать рекламацию",
+      "sourceSurfaceIds": [
+        "claim_create"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "schedule-month",
+      "title": "График команды · Месяц",
+      "sourceSurfaceIds": [
+        "management_schedule"
+      ],
+      "status": "implemented",
+      "renderer": "unified-schedule-v102.js",
+      "description": "Separate opsScheduleMonth page, real Schedule navigation / history, existing team calendar, shared desktop containment.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/schedule-month-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/schedule-month-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/schedule-month-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/schedule-month-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/schedule-month-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "day-detail",
+      "title": "День мастера",
+      "sourceSurfaceIds": [
+        "management_schedule"
+      ],
+      "status": "implemented-existing-safe-controls",
+      "renderer": "unified-schedule-v102.js (existing)",
+      "description": "Existing master-day list / details and saved schedule data, bounded shared presentation.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/day-detail-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/day-detail-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/day-detail-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/day-detail-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/day-detail-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "avito-lead",
+      "title": "Авито → Новая заявка",
+      "sourceSurfaceIds": [
+        "avito_lead"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "avito-settings",
+      "title": "Авито · Подключение",
+      "sourceSurfaceIds": [
+        "avito_settings"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "hands-order",
+      "title": "Hands · Отправка данных",
+      "sourceSurfaceIds": [
+        "hands_order"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "master-report",
+      "title": "Отчёт по мастерам",
+      "sourceSurfaceIds": [
+        "dispatcher_report"
+      ],
+      "status": "implemented",
+      "renderer": "dispatcher-report-patch.js",
+      "description": "Existing report under operational heading; same payroll calculation and data semantics.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/master-report-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/master-report-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/master-report-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/master-report-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/master-report-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "slot-assign",
+      "title": "Назначить заявку на свободное окно",
+      "sourceSurfaceIds": [
+        "free_slots"
+      ],
+      "status": "implemented-existing-safe-controls",
+      "renderer": "dispatcher-free-slots-v120.js (existing)",
+      "description": "Existing eligible order list and assignment controls retained; same assignment payload / confirm flow.",
+      "captures": [
+        {
+          "width": 360,
+          "path": "docs/approved-ui/stage-3/dispatcher/slot-assign-fixture-360.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 390,
+          "path": "docs/approved-ui/stage-3/dispatcher/slot-assign-fixture-390.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 430,
+          "path": "docs/approved-ui/stage-3/dispatcher/slot-assign-fixture-430.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 768,
+          "path": "docs/approved-ui/stage-3/dispatcher/slot-assign-fixture-768.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        },
+        {
+          "width": 1440,
+          "path": "docs/approved-ui/stage-3/dispatcher/slot-assign-fixture-1440.png",
+          "buildId": "660688f3675c8c19f86f",
+          "synthetic": true
+        }
+      ],
+      "tests": "See targeted-test-evidence.json; new semantic assertions in tests/approved-ui-dispatcher.spec.js."
+    },
+    {
+      "role": "dispatcher",
+      "screen": "claim-detail",
+      "title": "Рекламация · Повторный визит",
+      "sourceSurfaceIds": [
+        "claims"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "personal",
+      "title": "Личные данные",
+      "sourceSurfaceIds": [
+        "master_profile_edit"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "help",
+      "title": "Помощь",
+      "sourceSurfaceIds": [
+        "master_memo"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "about",
+      "title": "О приложении",
+      "sourceSurfaceIds": [
+        "chrome"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "push",
+      "title": "Уведомления на устройстве",
+      "sourceSurfaceIds": [
+        "push"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "login-settings",
+      "title": "Настройки входа",
+      "sourceSurfaceIds": [
+        "ops_profile"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "file-viewer",
+      "title": "Просмотр документа",
+      "sourceSurfaceIds": [
+        "report_photo",
+        "report_review"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "photo-error",
+      "title": "Просмотр фото · Ошибка",
+      "sourceSurfaceIds": [
+        "report_photo"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "auth-login",
+      "title": "Вход в Business OS",
+      "sourceSurfaceIds": [
+        "auth"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "auth-invite",
+      "title": "Вход по приглашению",
+      "sourceSurfaceIds": [
+        "auth"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    },
+    {
+      "role": "dispatcher",
+      "screen": "auth-expired",
+      "title": "Сессия истекла",
+      "sourceSurfaceIds": [
+        "auth"
+      ],
+      "status": "deferred-owner",
+      "renderer": "",
+      "description": "Deferred composition; no implementation claim based on global CSS.",
+      "captures": [],
+      "tests": null
+    }
+  ]
+}
