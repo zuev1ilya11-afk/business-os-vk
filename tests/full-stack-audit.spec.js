@@ -40,6 +40,6 @@ test('memo and claims requests stop on timeout and preserve retry UI',async({pag
  await page.route('**/api/proxy/master-memo-api',()=>{});await page.route('**/api/proxy/claims-api',()=>{});
  await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/master-memo-api',()=>{});await page.route('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api',()=>{});
  const claimResult=page.evaluate(()=>claimsApi('bootstrap').catch(e=>e.message));
- await page.evaluate(()=>openMasterMemoItem('tips'));await expect(page.locator('#masterMemoItems')).toContainText('Сервер не ответил',{timeout:25000});
- expect(await claimResult).toContain('Сервер не ответил');await page.getByRole('button',{name:'Закрыть',exact:true}).click();await expect(page.locator('.modal')).toHaveCount(0);
+ await page.evaluate(()=>openMasterMemoItem('tips'));await page.locator('#bosMasterHelp').getByRole('button',{name:'Памятки и файлы',exact:true}).click();await expect(page.locator('#bosHelpMaterials')).toContainText('Сервер не ответил',{timeout:25000});
+ expect(await claimResult).toContain('Сервер не ответил');await page.getByRole('button',{name:'Закрыть помощь',exact:true}).click();await expect(page.locator('.modal')).toHaveCount(0);
 });
