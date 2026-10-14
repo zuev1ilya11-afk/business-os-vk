@@ -25,6 +25,7 @@ OPTIONAL = {}
 PATCHED = (HERE/'package/push-api.ts').read_bytes()
 BASELINE = PATCHED.replace(b"'https://139.100.237.167',", b'')
 REAL_COMMAND = f.command
+REAL_PROBE_CANDIDATE = b.probe_candidate
 
 
 class ReleaseTests(unittest.TestCase):
@@ -38,7 +39,10 @@ class ReleaseTests(unittest.TestCase):
         (self.root/'unrelated.txt').write_text('retain runtime settings')
         self.edge = dict(Id='edge-id', Name='/bos-release-test-edge', Image='sha256:fixed',
                          Config={'Image':'edge:tag', 'Env':['VK_APP_SECRET=preserve-secret',
-                                 'SUPABASE_URL=http://existing-rest','SUPABASE_SERVICE_ROLE_KEY=fixture-key'],
+                                 'SUPABASE_URL=http://existing-rest','SUPABASE_SERVICE_ROLE_KEY=fixture-key',
+                                 'BOS_AUTH_ORIGIN=http://bos-release-test-auth:9999',
+                                 'BOS_REST_ORIGIN=http://bos-release-test-rest:3000',
+                                 'BOS_STORAGE_ORIGIN=http://bos-release-test-storage:5000'],
                                  'Entrypoint':['edge-runtime'], 'Cmd':['start','--main-service','/bos-main']},
                          HostConfig={'NetworkMode':'existing'}, Mounts=[], State={'Running':True, 'Pid':123})
         self.web = dict(Id='web-id', Name='/bos-release-test-https',
@@ -118,6 +122,61 @@ class ReleaseTests(unittest.TestCase):
         self.assertEqual(info['before'],self.backend_before)
         self.assertFalse(b.STAGE.exists())
         self.assertFalse(f.STAGE.exists())
+        self.assertEqual(self.restarts,[])
+
+    def test_candidate_preserves_gateway_origins_without_production_credentials(self):
+        original=copy.deepcopy(self.edge)
+        actual=b.discover(self.root)['environment']
+        live=dict(x.split('=',1) for x in self.edge['Config']['Env'])
+        for name in ['BOS_AUTH_ORIGIN','BOS_REST_ORIGIN','BOS_STORAGE_ORIGIN']:
+            self.assertEqual(actual[name],live[name])
+        for name in ['SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','VK_APP_SECRET']:
+            self.assertNotEqual(actual[name],live[name])
+        self.assertFalse(any(v in actual.values() for v in ['preserve-secret','fixture-key']))
+        self.assertEqual(self.edge,original)
+        self.assertEqual(self.restarts,[])
+        self.assertFalse(b.STAGE.exists())
+
+    def test_candidate_rejects_origins_with_credentials_paths_or_non_http_schemes(self):
+        original=list(self.edge['Config']['Env'])
+        for value in ['http://user:password@service:9999','http://service:9999/private',
+                      'http://service:9999?token=secret','http://service:9999#secret',
+                      'file:///etc/passwd','http://service:99999','http://service:0',
+                      'http://service:9999\n','http://','http://service:9999?','http://service:9999#']:
+            with self.subTest(value=value):
+                self.edge['Config']['Env']=[x for x in original if not x.startswith('BOS_AUTH_ORIGIN=')]
+                self.edge['Config']['Env'].append('BOS_AUTH_ORIGIN='+value)
+                with self.assertRaisesRegex(f.Stop,'credential-free base URL'):
+                    b.discover(self.root)
+        self.assertEqual(self.restarts,[])
+        self.assertFalse(b.STAGE.exists())
+
+    def test_candidate_rejects_missing_private_service_origin(self):
+        original=list(self.edge['Config']['Env'])
+        for name in ['BOS_AUTH_ORIGIN','BOS_REST_ORIGIN','BOS_STORAGE_ORIGIN']:
+            with self.subTest(name=name):
+                self.edge['Config']['Env']=[x for x in original if not x.startswith(name+'=')]
+                with self.assertRaisesRegex(f.Stop,'credential-free base URL'):
+                    b.discover(self.root)
+
+    def test_candidate_probe_retains_no_network_and_readonly_staging_mounts(self):
+        rec=b.discover(self.root)
+        rec['nonce']='a'*32
+        commands=[]
+        def run(args,label,**kwargs):
+            commands.append(args)
+            return b'temporary-container'
+        with patch.object(b,'private_command',side_effect=run), \
+             patch.object(b,'assert_isolated',return_value=123), \
+             patch.object(b,'probe',return_value=True):
+            REAL_PROBE_CANDIDATE(rec)
+        args=commands[0]
+        self.assertEqual(args[args.index('--network')+1],'none')
+        self.assertEqual(args[args.index('--pull=never')],'--pull=never')
+        mounts=[args[i+1] for i,v in enumerate(args) if v=='--mount']
+        self.assertEqual(len(mounts),3)
+        self.assertTrue(all('src='+str(b.STAGE)+'/' in m and m.endswith(',readonly') for m in mounts))
+        self.assertNotIn('--env-file',args)
         self.assertEqual(self.restarts,[])
 
     def test_discover_rejects_mount_from_another_release(self):

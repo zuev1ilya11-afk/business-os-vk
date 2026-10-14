@@ -54,3 +54,14 @@ mount output shows /bos-{src,bundles,main} bound to the same release's nested
 edge/{sources,bundles,main}, not siblings of web. Added failing reproduction,
 corrected the exact expected paths, and added negative path/symlink/overlay
 tests. Payload/build ID and backend source patch remain unchanged. 29 tests.
+
+Isolated runtime follow-up (2026-10-14): user reached the candidate probe after
+successful exact baseline compilation and offline CORS compilation. Candidate
+exited with `invalid private upstream`; production files remained unchanged.
+The new installer had replaced the three BOS_*_ORIGIN values with loopback
+placeholders, contrary to the prior RU staging helper's handling of the gateway.
+Preserve only the live credential-free base origins, retaining network=none,
+loopback interface verification, dummy credentials and read-only staging mounts.
+Added failing regression for origin preservation, rejection cases for credential
+and non-base URLs, missing origins, and a command-boundary isolation test.
+Application payload, push source and release BUILD_ID remain unchanged. 33 tests.
