@@ -62,8 +62,8 @@ function applyShell(board,on){
   document.body?.classList.remove('dh190Active');
   if(!board)return;
   board.classList.toggle('dh190Board',on);
-  if(on){const top=Math.max(0,board.getBoundingClientRect().top);board.style.setProperty('--dh190-vh',`${Math.max(480,window.innerHeight-top-8)}px`)}
-  else board.style.removeProperty('--dh190-vh');
+  // Content owns the page height; viewport fitting used to trap all three tabs.
+  board.style.removeProperty('--dh190-vh');
 }
 function rememberScroll(wrap){if(wrap?.classList?.contains('dh190GridWrap'))scrollState={date:wrap.dataset.date,left:wrap.scrollLeft,top:wrap.scrollTop}}
 function cleanup(){const board=document.querySelector('#content .dbBoard');applyShell(board,false);lastSignature=''}
@@ -78,22 +78,22 @@ window.BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190={version:'190',refresh:()=>render
 
 const style=document.createElement('style');style.textContent=`
 @media(min-width:${MIN}px){
-body #app:has(#content .dh190Board){height:100dvh!important;min-height:100dvh!important;padding-bottom:0!important;overflow:hidden!important}
-#app>#content:has(.dh190Board){min-height:0!important;padding-bottom:0!important;overflow:hidden!important}
-#content .dh190Board{height:var(--dh190-vh)!important;max-height:var(--dh190-vh)!important;overflow:hidden!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important}
+body #app:has(#content .dh190Board){height:auto!important;min-height:100dvh!important;overflow:visible!important}
+#app>#content:has(.dh190Board){min-height:0!important;overflow:visible!important}
+#content .dh190Board{height:auto!important;max-height:none!important;overflow:visible!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important}
 #content .dh190Board>.dbTop,#content .dh190Board>.dbToolbar{display:flex!important;flex:0 0 auto!important;min-height:32px!important;margin:0 0 5px!important;padding:4px 7px!important;gap:5px!important;align-items:center!important}
 #content .dh190Board .dbV21Tools{flex:0 0 auto!important;min-height:54px!important;margin:0 0 6px!important}
 #content .dh190Board .du183Kpis{gap:7px!important}.dh190Board .du183Kpi{min-height:54px!important;padding:7px 10px!important;gap:8px!important}.dh190Board .du183KpiIcon{width:31px!important;height:31px!important;font-size:15px!important}.dh190Board .du183Kpi strong{font-size:18px!important}.dh190Board .du183Kpi div span{font-size:9px!important}
 #content .dh190Board .du183StatusStrip{flex:0 0 auto!important;min-height:30px!important;padding:4px 8px!important;margin:0 0 5px!important;border-radius:10px!important}
-#content .dh190Board .dbLayout{flex:1 1 auto!important;height:auto!important;min-height:0!important;grid-template-columns:minmax(200px,220px) minmax(0,1fr) minmax(260px,300px)!important;gap:8px!important;align-items:stretch!important;overflow:hidden!important}
-#content .dh190Board .dbAttention,#content .dh190Board .dbSchedule,#content .dh190Board #dispatchBoardDetail,#content .dh190Board #dispatchBoardDetail>.dbDetail{height:100%!important;max-height:100%!important;min-height:0!important;box-sizing:border-box!important}
-#content .dh190Board .dbAttention{position:sticky!important;top:0!important;padding:9px!important;overflow:auto!important;scrollbar-width:thin}
+#content .dh190Board .dbLayout{flex:1 1 auto!important;height:auto!important;min-height:0!important;grid-template-columns:minmax(200px,220px) minmax(0,1fr) minmax(260px,300px)!important;gap:8px!important;align-items:start!important;overflow:visible!important}
+#content .dh190Board .dbAttention,#content .dh190Board .dbSchedule,#content .dh190Board #dispatchBoardDetail,#content .dh190Board #dispatchBoardDetail>.dbDetail{height:auto!important;max-height:none!important;min-height:0!important;box-sizing:border-box!important}
+#content .dh190Board .dbAttention{position:static!important;padding:9px!important;overflow:visible!important}
 #content .dh190Board .dbAttention>.dbFilters{margin:5px 0 7px!important;gap:5px!important}.dh190Board .dbAttention>.dbFilters input,.dh190Board .dbAttention>.dbFilters select{min-height:34px!important;height:34px!important;font-size:11px!important}.dh190Board .dbAttention>.dbFilters button{min-height:44px!important;height:44px!important;font-size:11px!important}.dh190Board .dbAttentionMetrics{margin:5px 0 7px!important}.dh190Board .dbAttentionMetrics button{min-height:42px!important;padding:5px!important}.dh190Board .dbTray{gap:5px!important}.dh190Board .dbTray .dbOrderCard{min-height:68px!important;padding:7px 7px 20px!important}
-#content .dh190Board .dbSchedule{padding:9px!important;overflow:hidden!important;display:block!important}
-#content .dh190Board #dispatchBoardDetail{overflow:hidden!important}#content .dh190Board #dispatchBoardDetail>.dbDetail{padding:9px!important;overflow:auto!important;scrollbar-width:thin}.dh190Board .dbDetailGrid{gap:5px!important}.dh190Board .dbDetailGrid>div{padding:7px!important}.dh190Board .dbV21QuickMove{margin-top:7px!important;padding:7px!important;gap:6px!important}.dh190Board .dbV21QuickMove input,.dh190Board .dbV21QuickMove button{min-height:32px!important;font-size:10px!important}
-#content .dh190Root{height:100%!important;min-height:0!important;display:grid!important;grid-template-rows:auto minmax(0,1fr)!important;gap:6px!important}
+#content .dh190Board .dbSchedule{padding:9px!important;overflow:visible!important;display:block!important}
+#content .dh190Board #dispatchBoardDetail{overflow:visible!important}#content .dh190Board #dispatchBoardDetail>.dbDetail{padding:12px!important;overflow:visible!important}.dh190Board .dbDetailGrid{gap:8px!important}.dh190Board .dbDetailGrid>div{padding:9px!important}.dh190Board .dbV21QuickMove{margin-top:12px!important;padding:10px!important;gap:8px!important}.dh190Board .dbV21QuickMove input,.dh190Board .dbV21QuickMove button{min-height:44px!important;font-size:12px!important}
+#content .dh190Root{height:auto!important;min-height:0!important;display:grid!important;grid-template-rows:auto auto!important;gap:10px!important}
 #content .dh190Head{padding:0 1px 5px!important;gap:8px!important}.dh190Title{display:flex;align-items:center;gap:8px}.dh190Title b{font-size:16px!important}.dh190Mode{display:inline-flex!important;align-items:center;padding:3px 7px;border:1px solid rgba(41,151,255,.45);border-radius:999px;background:rgba(41,151,255,.12);color:#8fc8ff!important;font-size:10px!important;font-weight:800;white-space:nowrap}.dh190Head>div:first-child>span{font-size:11px!important}.dh190HeadRight{display:flex;align-items:center;gap:8px}.dh190Date{display:flex;align-items:center;gap:4px;padding:3px 4px;border:1px solid rgba(126,166,204,.18);border-radius:9px;background:#0b1b29}.dh190Date b{font-size:11px!important;white-space:nowrap}.dh190Date button{width:25px!important;height:25px!important;min-height:25px!important;padding:0!important;border-radius:7px!important;border:0!important;background:#10283d!important;color:#cfe7fb!important;font-size:16px!important}.dh190Head .du187Legend span{font-size:11px!important}
-#content .dh190GridWrap{height:100%!important;min-height:0!important;max-height:none!important;overflow:auto!important;border-radius:10px!important;scrollbar-width:auto;scrollbar-color:auto;overscroll-behavior:contain;scroll-padding-left:92px;isolation:isolate!important}
+#content .dh190GridWrap{height:auto!important;min-height:0!important;max-height:none!important;overflow-x:auto!important;overflow-y:hidden!important;border-radius:10px!important;scrollbar-width:auto;scrollbar-color:auto;overscroll-behavior-x:contain;overscroll-behavior-y:auto;scroll-padding-left:92px;isolation:isolate!important}
 #content .dh190Grid{display:grid!important;grid-template-columns:88px repeat(var(--dh190-times),minmax(76px,1fr))!important;min-width:calc(88px + var(--dh190-times)*76px)!important;width:100%!important;position:relative!important}
 #content .dh190Grid .du187Corner,#content .dh190Grid .du187Time{position:sticky!important;top:0!important;z-index:35!important;height:42px!important;min-height:42px!important;padding:0 4px!important;background:#0c1d2d!important;border-bottom:1px solid rgba(126,166,204,.2)!important;display:flex!important;align-items:center!important;font-size:13px!important;font-weight:800!important;box-sizing:border-box!important}
 #content .dh190Grid .du187Corner{left:0!important;z-index:40!important}.dh190Grid .du187Time{justify-content:center!important;border-left:1px solid rgba(126,166,204,.12)!important}

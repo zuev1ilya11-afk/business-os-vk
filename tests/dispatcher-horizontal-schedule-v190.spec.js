@@ -47,10 +47,10 @@ test('dispatcher v190 shows fixed hourly 10-21 timeline and keeps half-hour orde
   expect(Math.abs(geometry.times[1].y-geometry.times[0].y)).toBeLessThan(2);
   expect(geometry.masters[1].y).toBeGreaterThan(geometry.masters[0].y);
   expect(Math.abs(geometry.masters[1].x-geometry.masters[0].x)).toBeLessThan(2);
-  expect(geometry.pageHeight).toBeLessThanOrEqual(geometry.innerHeight+1);
+  expect(geometry.pageHeight).toBeGreaterThan(geometry.innerHeight);
   expect(geometry.pageWidth).toBeLessThanOrEqual(geometry.innerWidth+1);
   expect(geometry.wrapClientHeight).toBeGreaterThan(0);
-  expect(geometry.wrapScrollHeight).toBeGreaterThanOrEqual(geometry.wrapClientHeight);
+  expect(geometry.wrapScrollHeight).toBeLessThanOrEqual(geometry.wrapClientHeight+1);
   expect(geometry.gridScrollWidth).toBeGreaterThan(geometry.wrapClientWidth);
   expect(geometry.gridScrollWidth-geometry.wrapClientWidth).toBeLessThanOrEqual(170);
 
@@ -119,7 +119,7 @@ for(const role of ['owner','dispatcher'])for(const width of [1280,1600]){
 }
 
 
-test('readable schedule keeps text separated and preserves both scroll axes on refresh',async({page})=>{
+test('readable schedule keeps text separated and preserves horizontal scroll on refresh',async({page})=>{
   const {db,master}=await fullStack(page,'owner');
   db.tables.business_staff.find(m=>m.id===master.id).full_name='Руслан';
   for(let i=0;i<9;i++)db.tables.business_staff.push(employee(`scroll-${i}`,'master',{full_name:`Мастер ${i}`,city:'Санкт-Петербург'}));
@@ -137,7 +137,10 @@ test('readable schedule keeps text separated and preserves both scroll axes on r
   expect(metrics).toMatchObject({masterWidth:88,masterFont:14,clientFont:14,rowHeight:80,endHidden:true,separate:true});
   await wrap.evaluate(el=>{el.scrollLeft=el.scrollWidth;el.scrollTop=120;el.dispatchEvent(new Event('scroll'))});
   const before=await wrap.evaluate(el=>({left:el.scrollLeft,top:el.scrollTop}));
-  expect(before.left).toBeGreaterThan(0);expect(before.top).toBe(120);
+  expect(before.left).toBeGreaterThan(0);expect(before.top).toBe(0);
+  // Vertical navigation belongs to the document, never the timeline viewport.
+  await page.evaluate(()=>window.scrollTo(0,120));
+  expect(await page.evaluate(()=>scrollY)).toBe(120);
   await page.evaluate(()=>show('orders'));
   await expect.poll(()=>wrap.evaluate(el=>({left:el.scrollLeft,top:el.scrollTop}))).toEqual(before);
   await page.evaluate(()=>BOS_DISPATCHER_HORIZONTAL_SCHEDULE_V190.shiftDate(1));

@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
-test('dispatcher desktop keeps attention and selected order visible in compact three-column board',async({page})=>{
+test('dispatcher desktop keeps three columns flowing with the document',async({page})=>{
   await fullStack(page,'dispatcher');
   await page.setViewportSize({width:1280,height:900});
   await page.goto('/');
@@ -24,6 +24,6 @@ test('dispatcher desktop keeps attention and selected order visible in compact t
   }));
   expect(css.display).toBe('grid');
   expect(css.columns).toBeGreaterThanOrEqual(3);
-  expect(css.attention).toBe('sticky');
-  expect(css.detail).toBe('sticky');
+  expect(css.attention).toBe('static');
+  expect(css.detail).toBe('static');
 });
