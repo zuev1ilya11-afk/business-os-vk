@@ -37,7 +37,8 @@ class ReleaseTests(unittest.TestCase):
             (self.root/n).write_bytes(BASE_FILES[n])
         (self.root/'unrelated.txt').write_text('retain runtime settings')
         self.edge = dict(Id='edge-id', Name='/bos-release-test-edge', Image='sha256:fixed',
-                         Config={'Image':'edge:tag', 'Env':['VK_APP_SECRET=preserve-secret'],
+                         Config={'Image':'edge:tag', 'Env':['VK_APP_SECRET=preserve-secret',
+                                 'SUPABASE_URL=http://existing-rest','SUPABASE_SERVICE_ROLE_KEY=fixture-key'],
                                  'Entrypoint':['edge-runtime'], 'Cmd':['start','--main-service','/bos-main']},
                          HostConfig={'NetworkMode':'existing'}, Mounts=[], State={'Running':True, 'Pid':123})
         self.web = dict(Id='web-id', Name='/bos-release-test-https',
@@ -45,8 +46,8 @@ class ReleaseTests(unittest.TestCase):
                         Mounts=[dict(Type='bind', Source=str(self.root), Destination='/srv')], State={'Running':True})
         self.roots = {}
         for folder, mount in b.MOUNTS.items():
-            path = self.root.parent/folder
-            path.mkdir()
+            path = self.root.parent/'edge'/folder
+            path.mkdir(parents=True)
             self.roots[folder] = str(path)
             self.edge['Mounts'].append(dict(Type='bind', Source=str(path), Destination=mount))
         (Path(self.roots['sources'])/'push-api').mkdir()
@@ -92,6 +93,11 @@ class ReleaseTests(unittest.TestCase):
             return cid.encode()
         if args[1] == 'exec' and args[-2:] == ['cat','/srv/build-version.js']:
             return (self.root/'build-version.js').read_bytes()
+        if args[1:4] == ['exec','edge-id','sha256sum']:
+            mounted=args[4]
+            folder=next(k for k,v in b.MOUNTS.items() if mounted.startswith(v+'/'))
+            path=Path(self.roots[folder])/mounted.removeprefix(b.MOUNTS[folder]+'/')
+            return (f.sha(path.read_bytes())+'  '+mounted+'\n').encode()
         raise AssertionError('unexpected action: '+str(args))
 
     def http_get(self, origin, name):
@@ -105,6 +111,34 @@ class ReleaseTests(unittest.TestCase):
         (b.STAGE/'bundles/push-api.eszip').write_bytes(b'new-compiled-bundle'*20)
 
     def prepare(self): return b.prepare(self.info,PATCHED)
+
+    def test_discover_accepts_observed_nested_edge_layout_without_mutations(self):
+        info=b.discover(self.root)
+        self.assertEqual(info['roots'],self.roots)
+        self.assertEqual(info['before'],self.backend_before)
+        self.assertFalse(b.STAGE.exists())
+        self.assertFalse(f.STAGE.exists())
+        self.assertEqual(self.restarts,[])
+
+    def test_discover_rejects_mount_from_another_release(self):
+        self.edge['Mounts'][0]['Source']=str(self.parent/'release-other/edge/sources')
+        with self.assertRaises(f.Stop): b.discover(self.root)
+        self.assertEqual(self.restarts,[])
+
+    def test_discover_rejects_wrong_edge_directory(self):
+        self.edge['Mounts'][0]['Source']=str(self.root.parent/'edge/main')
+        with self.assertRaises(f.Stop): b.discover(self.root)
+
+    def test_discover_rejects_symlinked_edge_mount(self):
+        source=Path(self.roots['sources'])
+        moved=source.with_name('sources-moved')
+        source.rename(moved)
+        source.symlink_to(moved,target_is_directory=True)
+        with self.assertRaises(f.Stop): b.discover(self.root)
+
+    def test_discover_rejects_overlay_below_source_mount(self):
+        self.edge['Mounts'].append(dict(Type='bind',Source='/unexpected',Destination='/bos-src/push-api'))
+        with self.assertRaises(f.Stop): b.discover(self.root)
 
     def test_frontend_readonly_preflight(self):
         f.preflight(META,OPTIONAL)

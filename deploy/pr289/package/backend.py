@@ -30,7 +30,8 @@ def discover(web_root):
         mounts=[m for m in edge['Mounts'] if m['Destination']==dest and m['Type']=='bind']
         f.require(len(mounts)==1,'Missing edge bind: '+dest)
         root=Path(mounts[0]['Source'])
-        f.require(root.resolve()==root and root.parent==web_root.parent and root!=web_root,
+        # Existing RU layout: release-*/web and release-*/edge/{sources,bundles,main}.
+        f.require(root.resolve()==root and root==web_root.parent/'edge'/folder,
                   'Edge and web release paths disagree')
         f.require(not any(m['Destination'].startswith(dest+'/') for m in edge['Mounts']),
                   'Unexpected nested edge mount')
