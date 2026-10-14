@@ -1,7 +1,9 @@
 # Shared help content — RU deployment boundary
 
-This directory is a candidate, not a production release or a runnable production installer.
-Do not apply SQL or replace the live edge bundle before separate owner approval.
+This directory contains the help editor candidate and the pinned RU installer
+`bos293.pyz`. Production activation still requires a successful on-host
+`--prepare` and separate owner approval after Preview. The installer has not yet
+been executed on the RU host. Do not apply raw SQL or copy the generic repo shell.
 
 ## Storage and API
 
@@ -75,3 +77,41 @@ The previous checker reported `SQLSTATE_42P01` with `DB_TARGET=container default
 on the owner's server. That report does not establish the state of the application
 database. The revised checker must report `DB_TARGET=verified active release`
 before its schema/role metadata can be used to prepare a deployment.
+
+## Pinned RU package
+
+The owner's latest read-only report confirmed PostgreSQL 17.11, the verified
+active release route, `owner/manager/master/dispatcher`, the absent help table,
+and existing memo columns (UUID ID, category/title/note and file metadata).
+Structured help therefore uses one new table; existing memo rows/files stay intact.
+
+`bos293.pyz` upgrades only RU build `05f9f54b55a82dd2eff6` to
+`4960149db306fca8149a`. It preserves all unrelated RU startup sources, the gateway
+and previously published push/mobile changes. `release-manifest.json` lists exact
+file hashes. The API helper is inlined into the one existing memo source target;
+removing only that helper and dispatch yields the exact observed RU baseline hash.
+
+- `python3 /root/bos293.pyz --check`: read-only checks, including an already active release.
+- `python3 /root/bos293.pyz --prepare`: private full web/API backups, baseline ESZIP rebuild/hash comparison, isolated candidate compile, then disposable RU PostgreSQL/PostgREST/edge tests using signed synthetic roles. All test services share a loopback-only network namespace, without production credentials/data/ports. It restarts only test containers. Production remains unchanged.
+- `python3 /root/bos293.pyz --apply`: requires successful preparation; creates and seeds the help table in one guarded transaction, reloads the existing PostgREST schema, updates only the memo API and web candidate, verifies public file hashes and existing authentication rejection. Run only after approval.
+- `python3 /root/bos293.pyz --rollback`: validates both backups and current hashes before restoring previous web/API; refuses later unrelated deployments. **Retains the help table and employee edits.** Reprepare/reapply uses the saved ownership marker and does not reseed retained data.
+
+Private staging/backups are under `/opt/business-os/deploy/help293`,
+`help293-api`, and `help293-web`. Failed preparation can be retried; old attempts
+are archived. The canonical table ownership journal remains available even if
+reprepare is interrupted. No production keys or employee identities are printed.
+Initial dependency download during the baseline compiler run uses a temporary
+container without credentials; it is disconnected before candidate compilation.
+
+Build with the verified previous RU source directory:
+`python3 deploy/help-editor/build_package.py /path/to/05f9-RU-source`.
+The generator refuses any mismatching baseline input and checks that unrelated
+startup sources, eager bundle, index structure and service worker are preserved.
+
+Executed locally: 12 filesystem activation/rollback/retry tests; 12 read-only
+route/redaction tests; 31 assertions from the **packaged** signed HTTP probes
+against the **packaged** API and disk-backed PostgreSQL, including restart,
+repeat seed, CAS conflict and direct master rejection. No Docker runtime is
+available in this workspace, so the actual RU ESZIP/PostgREST launch is deliberately
+a required `--prepare` gate, not a claimed local success. The disposable runtime
+does not replace the outstanding real employee and hosted Preview checks.
