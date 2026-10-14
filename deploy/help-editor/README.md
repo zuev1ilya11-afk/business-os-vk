@@ -36,3 +36,14 @@ node scripts/qa/help-preview.cjs
 Open http://127.0.0.1:4188/ on the machine running the command. Choose a synthetic owner/manager/master account. Create or edit in help, then open a second browser session as master. Data persists in the local temporary directory `bos-help-preview` across server restarts. Optional variables: `BOS_HELP_PREVIEW_PORT`, `BOS_HELP_PREVIEW_DATA` (isolated local directory). The server binds loopback only; **do not expose it publicly** because it intentionally issues test-account sessions without production login. It never contacts production or serves real files/orders.
 
 `node scripts/qa/capture-help-editor.cjs` runs an isolated HTTP + PostgreSQL demonstration, restarts the database/server, verifies master visibility and direct API write rejection, and captures evidence. It removes only its own generated temporary database.
+
+## Read-only check on the existing RU server
+
+`python3 check_server.py` prints only the active build, hashes of help assets and
+master-memo source/bundle, container image identifiers, and relevant database
+metadata. The SQL runs inside `BEGIN READ ONLY` and ends with `ROLLBACK`.
+It never prints environment values, source contents, employee identities or
+customer data; it does not modify files, database rows or services. A missing or
+unexpected layout stops the check. This command is **not an installer**: its output
+is needed to prepare the exact server-compatible release and rollback package.
+Local safety checks: `python3 deploy/help-editor/test_check_server.py` (3 tests).
