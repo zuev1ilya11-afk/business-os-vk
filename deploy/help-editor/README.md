@@ -46,7 +46,7 @@ It never prints environment values, source contents, employee identities or
 customer data; it does not modify files, database rows or services. A missing or
 unexpected layout stops the check. This command is **not an installer**: its output
 is needed to prepare the exact server-compatible release and rollback package.
-Local safety checks: `python3 deploy/help-editor/test_check_server.py` (3 tests).
+Local safety checks: `python3 deploy/help-editor/test_check_server.py` (12 tests).
 
 Observed RU memo source SHA-256:
 `5825b23c65e501bced7e7fe3bfe4bbc173e1bea3908365c39f43920acff0ec75`.
@@ -56,13 +56,22 @@ only a line break before the final UNKNOWN_ACTION return and the final newline.
 No authentication or memo behavior differs. The existing source formatting must
 still be retained by the RU release patch.
 
-`python3 check_server.py --brief` produces a short console report and uses the
-PostgreSQL container's configured database/user/password internally for read-only
-metadata queries. Credentials are not printed or copied out of the container.
+`python3 check_server.py --brief` produces a short console report. It follows the
+existing RU release route used by `scripts/ru-hands-intake-check.py`: active edge
+name, `BOS_REST_ORIGIN`, the matching release REST container and its `PGRST_DB_URI`,
+then the matching release PostgreSQL container. Each hostname must resolve
+uniquely on the caller's Docker networks. Image names are not used: pinned image
+IDs and custom image tags are valid. Foreign/ambiguous targets, URI overrides,
+unexpected ports and missing routes stop before any database query. There is no
+fallback to the container's bootstrap database.
 
-The short check now selects the application database from the running PostgREST
-connection, verifies that its host maps to the local PostgreSQL container, and
-reports only a safe SQLSTATE when a query fails. It refuses ambiguous or foreign
-PostgREST targets. The initial container database is used only when no PostgREST
-container exists. This avoids treating an empty bootstrap database as the app DB.
-Five read-only/redaction/target-selection tests pass locally.
+The configured database user/password stay inside the PostgreSQL container.
+Queries run read-only with a five-second statement timeout. Only a safe SQLSTATE
+is returned on failure, never credentials or raw errors. Twelve focused tests
+cover read-only operation, redaction, pinned images, the live database selection
+and refusal of an unverified route.
+
+The previous checker reported `SQLSTATE_42P01` with `DB_TARGET=container default`
+on the owner's server. That report does not establish the state of the application
+database. The revised checker must report `DB_TARGET=verified active release`
+before its schema/role metadata can be used to prepare a deployment.

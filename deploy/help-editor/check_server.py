@@ -11,6 +11,7 @@ import urllib.parse
 RU_MEMO_SHA = '5825b23c65e501bced7e7fe3bfe4bbc173e1bea3908365c39f43920acff0ec75'
 BASE_MEMO_SHA = '0871ad305c9e245d4af7c0de70d67ef6c26140c9ad1a928a5a3165d17f36c4f4'
 SQL = """BEGIN READ ONLY;
+SET LOCAL statement_timeout='5s';
 SELECT json_build_object(
  'version', current_setting('server_version'),
  'help_table_exists', to_regclass('public.master_help_materials') IS NOT NULL,
@@ -45,29 +46,56 @@ def container_env(container):
     return dict(x.split('=',1) for x in container['Config'].get('Env',[]) if '=' in x)
 
 
+def route_targets(source, hostname, containers):
+    """Resolve only names/IPs on the source container's Docker networks."""
+    networks=source.get('NetworkSettings',{}).get('Networks',{})
+    found=set()
+    for candidate in containers:
+        target=candidate.get('NetworkSettings',{}).get('Networks',{})
+        for network in set(networks) & set(target):
+            net=target[network]
+            names=[candidate['Name'].lstrip('/'),net.get('IPAddress'),
+                   *(net.get('Aliases') or []),*(net.get('DNSNames') or [])]
+            if hostname in names:found.add(candidate['Id'])
+    return found
+
+
 def database_report(containers, command=run):
-    databases=[c for c in containers if re.search(r'(?:^|/)postgres(?::|@)',c['Config']['Image'])]
-    if len(databases)!=1:return {'status':'POSTGRES_CONTAINER_NOT_UNIQUE'}
-    db=databases[0];env=container_env(db)
-    database=env.get('POSTGRES_DB') or env.get('POSTGRES_USER') or 'postgres'
-    source='container default'
-    rests=[c for c in containers if 'postgrest' in c['Config']['Image'].lower()]
-    if len(rests)>1:return {'status':'POSTGREST_CONTAINER_NOT_UNIQUE'}
-    if len(rests)==1:
-        uri=container_env(rests[0]).get('PGRST_DB_URI','')
-        try:
-            parsed=urllib.parse.urlsplit(uri)
-            if parsed.scheme not in ('postgres','postgresql'):return {'status':'POSTGREST_URI_UNAVAILABLE'}
-            hosts={db['Name'].lstrip('/'),db['Id']}
-            for net in db.get('NetworkSettings',{}).get('Networks',{}).values():
-                hosts.update(net.get('Aliases') or [])
-                hosts.update(net.get('DNSNames') or [])
-                hosts.add(net.get('IPAddress'))
-            if parsed.hostname not in hosts:return {'status':'POSTGREST_DATABASE_HOST_NOT_MAPPED'}
-            database=urllib.parse.unquote(parsed.path.lstrip('/'))
-            if not re.fullmatch(r'[A-Za-z0-9_-]{1,63}',database):return {'status':'POSTGREST_DATABASE_NAME_UNAVAILABLE'}
-            source='live PostgREST'
-        except ValueError:return {'status':'POSTGREST_URI_UNAVAILABLE'}
+    # RU containers can use image IDs/custom tags. Follow the established release
+    # names and verified edge/REST network route, as ru-hands-intake-check.py does.
+    # Never fall back to POSTGRES_DB: it can be an empty bootstrap database.
+    edges=[c for c in containers if re.fullmatch(r'/bos-release-.+-edge',c['Name'])]
+    if len(edges)!=1:return {'status':'ACTIVE_EDGE_NOT_UNIQUE'}
+    edge=edges[0];prefix=edge['Name'][:-5]
+    rests=[c for c in containers if c['Name']==prefix+'-rest']
+    if len(rests)!=1:return {'status':'ACTIVE_REST_NOT_UNIQUE'}
+    rest=rests[0]
+    try:
+        route=urllib.parse.urlsplit(container_env(edge).get('BOS_REST_ORIGIN',''))
+        if (route.scheme not in ('http','https') or not route.hostname or route.username
+                or route.password or route.query or route.fragment or route.path not in ('','/')):
+            return {'status':'EDGE_REST_ROUTE_UNAVAILABLE'}
+        if route_targets(edge,route.hostname,containers)!={rest['Id']}:
+            return {'status':'EDGE_REST_ROUTE_NOT_MAPPED'}
+        port=int(container_env(rest).get('PGRST_SERVER_PORT','3000'))
+        if not 1<=port<=65535 or (route.port or (443 if route.scheme=='https' else 80))!=port:
+            return {'status':'EDGE_REST_PORT_MISMATCH'}
+    except ValueError:return {'status':'EDGE_REST_ROUTE_UNAVAILABLE'}
+    try:
+        parsed=urllib.parse.urlsplit(container_env(rest).get('PGRST_DB_URI',''))
+        if (parsed.scheme not in ('postgres','postgresql') or not parsed.hostname
+                or parsed.query or parsed.fragment or parsed.port not in (None,5432)):
+            return {'status':'POSTGREST_URI_UNAVAILABLE'}
+        database=urllib.parse.unquote(parsed.path.lstrip('/'))
+        if not re.fullmatch(r'[A-Za-z0-9_-]{1,63}',database):
+            return {'status':'POSTGREST_DATABASE_NAME_UNAVAILABLE'}
+    except ValueError:return {'status':'POSTGREST_URI_UNAVAILABLE'}
+    databases=[c for c in containers if c['Name']==prefix+'-db']
+    if len(databases)!=1:return {'status':'ACTIVE_DATABASE_NOT_UNIQUE'}
+    db=databases[0]
+    if route_targets(rest,parsed.hostname,containers)!={db['Id']}:
+        return {'status':'POSTGREST_DATABASE_HOST_NOT_MAPPED'}
+    source='verified active release'
     shell='export PGPASSWORD="${PGPASSWORD:-$POSTGRES_PASSWORD}"; exec psql -X -w -U "${POSTGRES_USER:-postgres}" -d "$1" -qAt -v ON_ERROR_STOP=1 -v VERBOSITY=sqlstate -c "$2"'
     try:
         raw=command(['docker','exec',db['Id'],'sh','-c',shell,'help-metadata',database,SQL])
