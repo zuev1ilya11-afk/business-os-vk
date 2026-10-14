@@ -1,0 +1,21 @@
+name: RU PR289 release installer
+on:
+  pull_request:
+    paths:
+      - 'deploy/pr289/**'
+      - '.github/workflows/ru-pr289-release.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'deploy/pr289/**'
+      - '.github/workflows/ru-pr289-release.yml'
+permissions:
+  contents: read
+jobs:
+  release-installer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exercise release and rollback with simulated Docker and network
+        run: sudo python3 deploy/pr289/test_release.py
