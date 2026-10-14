@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-14T21:23:34.087Z",
+  "sourceBuild": "58cc0354f4630cf6b5fa",
+  "backend": "Actual master-memo-api handler, signed synthetic sessions, PostgreSQL WASM persisted on local server disk",
+  "externalUpstreams": false,
+  "productionConnected": false,
+  "checks": [
+    "Owner created FAQ over HTTP",
+    "Owner edited FAQ over HTTP",
+    "Database and HTTP server restarted",
+    "Master loaded saved edits after restart",
+    "Master direct API write with spoofed role denied: HTTP 403"
+  ],
+  "screenshots": [
+    "01-management.png",
+    "02-create.png",
+    "03-edit.png",
+    "04-master-after-restart.png"
+  ]
+}

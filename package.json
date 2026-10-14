@@ -9,6 +9,7 @@
     "build:check": "node scripts/build-version.cjs --check"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.10",
     "@playwright/test": "1.55.1"
   }
 }

@@ -70,3 +70,20 @@
 #bosMasterHelp .bhZoom img{display:block;width:100%;height:auto}
 #bosMasterHelp .bhImageFallback{padding:20px;font-size:14px}
 @media(max-width:600px){#bosMasterHelp{width:100%;height:100dvh;max-height:100dvh;border-radius:0;border:0}#bosMasterHelp .bhHeader{padding:calc(14px + env(safe-area-inset-top)) 14px 10px}#bosMasterHelp .bhHeader strong{font-size:16px}#bosMasterHelp .bhTabs{padding:0 14px 10px;gap:5px}#bosMasterHelp .bhTabs button{font-size:12px;flex-basis:80px;padding:8px}#bosMasterHelp .bhBody{padding:20px 14px}#bosMasterHelp .bhLessons{grid-template-columns:1fr;gap:8px;margin-top:16px}#bosMasterHelp .bhLessonCard{min-height:78px;padding:13px}#bosMasterHelp .bhLesson{grid-template-columns:1fr;gap:18px}#bosMasterHelp .bhImageButton img{max-height:300px}#bosMasterHelp .bhLead{font-size:17px}#bosMasterHelp .bhFooter{padding:12px 14px max(12px,env(safe-area-inset-bottom))}#bosMasterHelp .bhLessonTop{align-items:flex-start}#bosMasterHelp .bhClose{max-width:110px}#bosMasterHelp .bhStatus{padding:8px 14px}}
+/* Shared content management stays inside the existing help dialog. */
+#bosMasterHelp .bhManage{display:flex;gap:8px;padding:8px 24px;flex-wrap:wrap;border-bottom:1px solid #263b55;flex-shrink:0}
+#bosMasterHelp .bhLessonItem{display:grid;gap:6px;align-content:start}
+#bosMasterHelp .bhLessonItem>.bhLessonCard{width:100%;height:100%}
+#bosMasterHelp .bhTextOnly{grid-template-columns:1fr}
+#bosMasterHelp .bhField{display:grid;gap:7px;margin:0 0 16px;font-size:14px;color:#c6d8ec}
+#bosMasterHelp .bhField input,#bosMasterHelp .bhField textarea,#bosMasterHelp .bhField select{width:100%;padding:12px;border:1px solid #415a79;border-radius:12px;background:#0c1728;color:#edf4ff;font:inherit;font-size:16px;min-height:44px;scroll-margin:20px;resize:vertical}
+#bosMasterHelp .bhEditStep{border:1px solid #304964;background:#16283d;border-radius:14px;padding:16px;margin:16px 0}
+#bosMasterHelp .bhEditStep legend{padding:0 8px;color:#9dc7ff}
+#bosMasterHelp .bhActionRow{display:flex;align-items:start;gap:8px}
+#bosMasterHelp .bhActionRow label{flex:1}
+#bosMasterHelp .bhEditorButtons{display:flex;gap:10px;flex-wrap:wrap;padding:16px 0 max(24px,env(safe-area-inset-bottom))}
+#bosMasterHelp [data-editor-error]{color:#ffd398;white-space:pre-wrap;overflow-wrap:anywhere}
+#bosMasterHelp [data-current-version]{white-space:pre-wrap;overflow-wrap:anywhere}
+#bosMasterHelp button:disabled{opacity:.6;cursor:wait}
+#bosMasterHelp .bhLead,#bosMasterHelp blockquote,#bosMasterHelp .bhDetailBody>p,#bosMasterHelp .bhWarning p{white-space:pre-wrap}
+@media(max-width:600px){#bosMasterHelp .bhManage{padding:8px 14px}#bosMasterHelp .bhEditorButtons button{flex:1}#bosMasterHelp .bhEditStep{padding:12px}}
