@@ -113,3 +113,19 @@ test('push: internal errors masked; preflight exposes only intended headers',asy
  const f=fixture({rpc:()=>{throw Error('private-test-sentinel SQL secret')}});const r=await f.invoke({action:'status'});assert.equal(r.status,500);assert(!JSON.stringify(r.body).includes('SQL'));assert(!JSON.stringify(r.body).includes('private-test'));
  const p=await f.invoke('', '',{method:'OPTIONS',headers:{Origin:'https://zuev1ilya11-afk.github.io'}});assert.equal(p.status,204);assert.equal(p.headers.get('access-control-allow-origin'),'https://zuev1ilya11-afk.github.io');
 });
+test('push: migrated application origin can preflight and read authenticated responses',async()=>{
+ const origin='https://139.100.237.167',f=fixture();
+ const preflight=await f.invoke('', '',{method:'OPTIONS',headers:{Origin:origin}});
+ assert.equal(preflight.status,204);
+ assert.equal(preflight.headers.get('access-control-allow-origin'),origin);
+ assert(preflight.headers.get('access-control-allow-headers').includes('x-bos-session'));
+ const status=await f.invoke({action:'status'},token('100'),{headers:{Origin:origin}});
+ assert.equal(status.status,200);
+ assert.equal(status.headers.get('access-control-allow-origin'),origin);
+ const unauthorized=await f.invoke({action:'status'},'',{headers:{Origin:origin}});
+ assert.equal(unauthorized.status,401);
+ assert.equal(unauthorized.headers.get('access-control-allow-origin'),origin);
+ const untrusted='https://139.100.237.167.attacker.invalid';
+ const other=await f.invoke('', '',{method:'OPTIONS',headers:{Origin:untrusted}});
+ assert.notEqual(other.headers.get('access-control-allow-origin'),untrusted);
+});
