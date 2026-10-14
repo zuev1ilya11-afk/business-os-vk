@@ -47,3 +47,15 @@ customer data; it does not modify files, database rows or services. A missing or
 unexpected layout stops the check. This command is **not an installer**: its output
 is needed to prepare the exact server-compatible release and rollback package.
 Local safety checks: `python3 deploy/help-editor/test_check_server.py` (3 tests).
+
+Observed RU memo source SHA-256:
+`5825b23c65e501bced7e7fe3bfe4bbc173e1bea3908365c39f43920acff0ec75`.
+It matches the previously captured production inventory. A byte-identical source
+copy was retrieved and compared: its difference from the repository baseline is
+only a line break before the final UNKNOWN_ACTION return and the final newline.
+No authentication or memo behavior differs. The existing source formatting must
+still be retained by the RU release patch.
+
+`python3 check_server.py --brief` produces a short console report and uses the
+PostgreSQL container's configured database/user/password internally for read-only
+metadata queries. Credentials are not printed or copied out of the container.

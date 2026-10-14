@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 
+RU_MEMO_SHA = '5825b23c65e501bced7e7fe3bfe4bbc173e1bea3908365c39f43920acff0ec75'
 BASE_MEMO_SHA = '0871ad305c9e245d4af7c0de70d67ef6c26140c9ad1a928a5a3165d17f36c4f4'
 SQL = """BEGIN READ ONLY;
 SELECT json_build_object(
@@ -44,6 +45,7 @@ def report(containers, command=run):
     src = command(['docker', 'exec', edge['Id'], 'cat', '/bos-src/master-memo-api/index.ts']).encode()
     result['memo_source_sha256'] = digest(src)
     result['memo_matches_repository_base'] = digest(src) == BASE_MEMO_SHA
+    result['memo_matches_verified_ru_source'] = digest(src) == RU_MEMO_SHA
     result['edge_image_id'] = edge['Image']
     result['memo_bundle_sha256'] = command(['docker', 'exec', edge['Id'], 'sha256sum', '/bos-bundles/master-memo-api.eszip']).split()[0]
     release = Path(sources[0]).parent.parent
@@ -62,7 +64,9 @@ def report(containers, command=run):
     databases = [c for c in containers if re.search(r'(?:^|/)postgres(?::|@)', c['Config']['Image'])]
     if len(databases) == 1:
         try:
-            raw = command(['docker', 'exec', databases[0]['Id'], 'psql', '-X', '-U', 'postgres', '-d', 'postgres', '-qAt', '-v', 'ON_ERROR_STOP=1', '-c', SQL])
+            # Use the database container's existing credentials without printing or copying them.
+            shell = 'export PGPASSWORD="${PGPASSWORD:-$POSTGRES_PASSWORD}"; exec psql -X -w -U "${POSTGRES_USER:-postgres}" -d "${POSTGRES_DB:-${POSTGRES_USER:-postgres}}" -qAt -v ON_ERROR_STOP=1 -c "$1"'
+            raw = command(['docker', 'exec', databases[0]['Id'], 'sh', '-c', shell, 'help-metadata', SQL])
             result['database'] = json.loads(raw.strip())
         except (RuntimeError, ValueError):
             result['database'] = 'Metadata unavailable; no write attempted'
@@ -77,7 +81,19 @@ def main():
     if not ids:
         raise RuntimeError('No running containers')
     result = report(json.loads(run(['docker', 'inspect', *ids])))
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    if '--brief' in sys.argv:
+        print('MODE=READ_ONLY; application and data unchanged')
+        print('MEMO_VERIFIED=' + str(result.get('memo_matches_verified_ru_source', False)))
+        print('WEB_BUILD=' + result.get('web_build', 'unknown'))
+        db=result.get('database')
+        if isinstance(db, dict):
+            print('DB_VERSION=' + str(db.get('version')))
+            print('HELP_TABLE_EXISTS=' + str(db.get('help_table_exists')))
+            print('ACTIVE_ROLES=' + ','.join(db.get('active_roles') or []))
+            print('MEMO_COLUMNS=' + ','.join(c['column_name']+':'+c['data_type'] for c in (db.get('columns') or []) if c['table_name']=='master_memo_materials'))
+        else: print('DB_STATUS=' + str(db))
+    else:
+        print(json.dumps(result, ensure_ascii=False, indent=2))
 
 
 if __name__ == '__main__':

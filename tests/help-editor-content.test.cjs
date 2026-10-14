@@ -1,12 +1,16 @@
-const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),cp=require('node:child_process');
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),{createHash}=require('node:crypto');
 function read(s){const c={window:{}};vm.runInNewContext(s,c);return JSON.parse(JSON.stringify(c.window.BOS_MASTER_HELP_DATA))}
-const old=read(cp.execFileSync('git',['show','cf73b2b:master-help-data.js'],{encoding:'utf8'}));
+const baseline=require('./fixtures/help-content-baseline.json');
+const digest=x=>createHash('sha256').update(JSON.stringify(x,(k,v)=>k==='id'?undefined:v)).digest('hex');
 const current=read(fs.readFileSync('master-help-data.js','utf8'));
 const removed=['Как и кому оплачивать?','Можно в следующий раз вызвать вас напрямую?'];
 test('remove only the two requested FAQ cards and preserve every other field',()=>{
- old.faq=old.faq.filter(x=>!removed.includes(x.question));
- const strip=(k,v)=>k==='id'?undefined:v;
- assert.equal(JSON.stringify(current,strip),JSON.stringify(old,strip));
+ assert.deepEqual(Object.keys(current),baseline.keys);
+ for(const key of baseline.keys){
+  const expected=baseline.materials[key];
+  if(Array.isArray(expected)){assert.equal(current[key].length,expected.length,key);for(const [i,x] of current[key].entries())assert.equal(digest(x),expected[i].sha256,key+': '+expected[i].name)}
+  else assert.equal(digest(current[key]),expected,key);
+ }
  assert.ok(!removed.some(q=>fs.readFileSync('master-help-data.js','utf8').includes(q)));
 });
 test('all materials and lesson steps have unique stable identifiers',()=>{
