@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import time
+import urllib.parse
 import uuid
 import frontend as f
 
@@ -53,12 +54,26 @@ def discover(web_root):
     env={'SUPABASE_URL':'http://127.0.0.1:1','SUPABASE_ANON_KEY':'isolated-no-database-access',
          'SUPABASE_SERVICE_ROLE_KEY':'isolated-no-database-access',
          'JWT_SECRET':'isolated-key-not-valid-in-production',
-         'VK_APP_SECRET':'isolated-key-not-valid-in-production',
-         'BOS_AUTH_ORIGIN':'http://127.0.0.1:1','BOS_REST_ORIGIN':'http://127.0.0.1:1',
-         'BOS_STORAGE_ORIGIN':'http://127.0.0.1:1'}
+         'VK_APP_SECRET':'isolated-key-not-valid-in-production'}
+    real_env=dict(x.split('=',1) for x in edge['Config'].get('Env',[]) if '=' in x)
+    # The unchanged gateway validates these private upstreams during startup.
+    # Preserve only bare service origins; credentials stay dummy and the probe
+    # retains --network=none, with loopback-only interfaces verified separately.
+    for name in ('BOS_AUTH_ORIGIN','BOS_REST_ORIGIN','BOS_STORAGE_ORIGIN'):
+        value=real_env.get(name,'')
+        try:
+            url=urllib.parse.urlsplit(value)
+            valid=(bool(value) and not any(c.isspace() for c in value) and
+                   url.scheme in ('http','https') and bool(url.hostname) and
+                   url.username is None and url.password is None and
+                   url.path in ('','/') and '?' not in value and '#' not in value and
+                   (url.port is None or 1<=url.port<=65535))
+        except ValueError:
+            valid=False
+        f.require(valid,'Expected credential-free base URL: '+name)
+        env[name]=value
     names=set(re.findall(r'Deno\.env\.get\(\s*[\'"]([A-Z][A-Z0-9_]{0,79})[\'"]\s*\)',gateway))
     f.require(not names-set(env),'Unreviewed gateway environment names: '+','.join(sorted(names-set(env))))
-    real_env=dict(x.split('=',1) for x in edge['Config'].get('Env',[]) if '=' in x)
     f.require(all(real_env.get(n) for n in names|{'SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','VK_APP_SECRET'}),
               'Active edge environment is incomplete')
     f.emit('PUSH_SOURCE_BEFORE='+SOURCE_BEFORE)

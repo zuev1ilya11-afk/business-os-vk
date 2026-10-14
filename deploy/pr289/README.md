@@ -33,7 +33,12 @@ Its replacement is the reviewed CORS-only addition of the current origin, SHA-25
 The installer reconstructs the old bundle with the exact running Docker image and
 requires byte equality with the deployed bundle, disconnects the compiler network,
 and compiles the CORS change with those same cached dependencies. The candidate
-is tested on a separate network-none runtime using dummy credentials.
+is tested on a separate network-none runtime using dummy credentials. The three
+credential-free `BOS_AUTH_ORIGIN`, `BOS_REST_ORIGIN`, and `BOS_STORAGE_ORIGIN`
+values are retained from the running gateway: it validates its private upstream
+addresses at startup and rejects loopback placeholders. Origins with credentials,
+paths beyond `/`, queries, fragments, invalid ports or non-HTTP schemes are refused.
+The candidate still has no external network; all secrets remain dummy values.
 
 No database migration, database writes, VAPID rotation, notification sends,
 environment changes or changes to other handlers are performed. Probe requests
@@ -89,7 +94,7 @@ These archives are retained, not deleted.
 
 Application CI succeeded. Local review checked build consistency, 36 push unit
 tests and 21 mobile/push browser tests. Deployment code has separate filesystem
-and injected-failure tests (29 passing; Docker/network boundaries simulated) and independent
+and injected-failure tests (33 passing; Docker/network boundaries simulated) and independent
 review. Real pinned-image compilation and isolated Docker probes must still pass
 on the server; preparing this package does not deploy it.
 The 21 mobile/push browser tests also passed against the actual RU candidate.
