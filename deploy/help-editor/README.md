@@ -59,3 +59,10 @@ still be retained by the RU release patch.
 `python3 check_server.py --brief` produces a short console report and uses the
 PostgreSQL container's configured database/user/password internally for read-only
 metadata queries. Credentials are not printed or copied out of the container.
+
+The short check now selects the application database from the running PostgREST
+connection, verifies that its host maps to the local PostgreSQL container, and
+reports only a safe SQLSTATE when a query fails. It refuses ambiguous or foreign
+PostgREST targets. The initial container database is used only when no PostgREST
+container exists. This avoids treating an empty bootstrap database as the app DB.
+Five read-only/redaction/target-selection tests pass locally.

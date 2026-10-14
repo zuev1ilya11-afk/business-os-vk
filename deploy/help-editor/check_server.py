@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import urllib.parse
 
 RU_MEMO_SHA = '5825b23c65e501bced7e7fe3bfe4bbc173e1bea3908365c39f43920acff0ec75'
 BASE_MEMO_SHA = '0871ad305c9e245d4af7c0de70d67ef6c26140c9ad1a928a5a3165d17f36c4f4'
@@ -18,15 +19,63 @@ SELECT json_build_object(
 ROLLBACK;"""
 
 
+class ReadFailure(RuntimeError):
+    def __init__(self, message, code='COMMAND_FAILED'):
+        super().__init__(message)
+        self.code=code
+
+
 def run(args):
     try:
         return subprocess.run(args, check=True, capture_output=True, timeout=25).stdout.decode()
-    except (OSError, subprocess.SubprocessError):
-        raise RuntimeError('Read-only command failed: ' + ' '.join(args[:2])) from None
+    except (OSError, subprocess.SubprocessError) as error:
+        raw=getattr(error,'stderr',b'') or b''
+        if isinstance(raw,bytes):raw=raw.decode(errors='replace')
+        # Export only a PostgreSQL SQLSTATE, never arbitrary stderr or credentials.
+        state=re.search(r'(?:ERROR|FATAL):\s+([0-9A-Z]{5})(?:\s|$)',raw)
+        code='SQLSTATE_'+state[1] if state else ('TIMEOUT' if isinstance(error,subprocess.TimeoutExpired) else 'COMMAND_FAILED')
+        raise ReadFailure('Read-only command failed: ' + ' '.join(args[:2]),code) from None
 
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def container_env(container):
+    return dict(x.split('=',1) for x in container['Config'].get('Env',[]) if '=' in x)
+
+
+def database_report(containers, command=run):
+    databases=[c for c in containers if re.search(r'(?:^|/)postgres(?::|@)',c['Config']['Image'])]
+    if len(databases)!=1:return {'status':'POSTGRES_CONTAINER_NOT_UNIQUE'}
+    db=databases[0];env=container_env(db)
+    database=env.get('POSTGRES_DB') or env.get('POSTGRES_USER') or 'postgres'
+    source='container default'
+    rests=[c for c in containers if 'postgrest' in c['Config']['Image'].lower()]
+    if len(rests)>1:return {'status':'POSTGREST_CONTAINER_NOT_UNIQUE'}
+    if len(rests)==1:
+        uri=container_env(rests[0]).get('PGRST_DB_URI','')
+        try:
+            parsed=urllib.parse.urlsplit(uri)
+            if parsed.scheme not in ('postgres','postgresql'):return {'status':'POSTGREST_URI_UNAVAILABLE'}
+            hosts={db['Name'].lstrip('/'),db['Id']}
+            for net in db.get('NetworkSettings',{}).get('Networks',{}).values():
+                hosts.update(net.get('Aliases') or [])
+                hosts.update(net.get('DNSNames') or [])
+                hosts.add(net.get('IPAddress'))
+            if parsed.hostname not in hosts:return {'status':'POSTGREST_DATABASE_HOST_NOT_MAPPED'}
+            database=urllib.parse.unquote(parsed.path.lstrip('/'))
+            if not re.fullmatch(r'[A-Za-z0-9_-]{1,63}',database):return {'status':'POSTGREST_DATABASE_NAME_UNAVAILABLE'}
+            source='live PostgREST'
+        except ValueError:return {'status':'POSTGREST_URI_UNAVAILABLE'}
+    shell='export PGPASSWORD="${PGPASSWORD:-$POSTGRES_PASSWORD}"; exec psql -X -w -U "${POSTGRES_USER:-postgres}" -d "$1" -qAt -v ON_ERROR_STOP=1 -v VERBOSITY=sqlstate -c "$2"'
+    try:
+        raw=command(['docker','exec',db['Id'],'sh','-c',shell,'help-metadata',database,SQL])
+        result=json.loads(raw.strip())
+        if not isinstance(result,dict):raise ValueError('Expected object')
+        return {**result,'status':'OK','target_source':source}
+    except (RuntimeError,ValueError) as error:
+        return {'status':getattr(error,'code','QUERY_OR_JSON_FAILED'),'target_source':source}
 
 
 def report(containers, command=run):
@@ -61,17 +110,7 @@ def report(containers, command=run):
             value = command(['docker', 'exec', web['Id'], 'sha256sum', '/srv/'+name]).split()[0]
             hashes[name] = value
         result['web_hashes'] = hashes
-    databases = [c for c in containers if re.search(r'(?:^|/)postgres(?::|@)', c['Config']['Image'])]
-    if len(databases) == 1:
-        try:
-            # Use the database container's existing credentials without printing or copying them.
-            shell = 'export PGPASSWORD="${PGPASSWORD:-$POSTGRES_PASSWORD}"; exec psql -X -w -U "${POSTGRES_USER:-postgres}" -d "${POSTGRES_DB:-${POSTGRES_USER:-postgres}}" -qAt -v ON_ERROR_STOP=1 -c "$1"'
-            raw = command(['docker', 'exec', databases[0]['Id'], 'sh', '-c', shell, 'help-metadata', SQL])
-            result['database'] = json.loads(raw.strip())
-        except (RuntimeError, ValueError):
-            result['database'] = 'Metadata unavailable; no write attempted'
-    else:
-        result['database'] = 'Cannot uniquely identify PostgreSQL; no query attempted'
+    result['database']=database_report(containers,command)
     result['next'] = 'Review this output before preparing the matching RU installer. This check does not approve deployment.'
     return result
 
@@ -86,12 +125,15 @@ def main():
         print('MEMO_VERIFIED=' + str(result.get('memo_matches_verified_ru_source', False)))
         print('WEB_BUILD=' + result.get('web_build', 'unknown'))
         db=result.get('database')
-        if isinstance(db, dict):
+        if isinstance(db,dict):
+            print('DB_STATUS=' + str(db.get('status')))
+            print('DB_TARGET=' + str(db.get('target_source','unknown')))
+        if isinstance(db, dict) and db.get('status')=='OK':
             print('DB_VERSION=' + str(db.get('version')))
             print('HELP_TABLE_EXISTS=' + str(db.get('help_table_exists')))
             print('ACTIVE_ROLES=' + ','.join(db.get('active_roles') or []))
             print('MEMO_COLUMNS=' + ','.join(c['column_name']+':'+c['data_type'] for c in (db.get('columns') or []) if c['table_name']=='master_memo_materials'))
-        else: print('DB_STATUS=' + str(db))
+        elif not isinstance(db,dict): print('DB_STATUS=' + str(db))
     else:
         print(json.dumps(result, ensure_ascii=False, indent=2))
 
