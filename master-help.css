@@ -1,0 +1,72 @@
+#bosMasterHelp{box-sizing:border-box;width:min(980px,calc(100vw - 32px));max-width:none;height:min(850px,calc(100dvh - 32px));max-height:calc(100dvh - 32px);margin:auto;padding:0;color:#edf4ff;background:#101d30;border:1px solid #31445f;border-radius:24px;box-shadow:0 24px 100px #0009;font:16px/1.5 system-ui,sans-serif;overflow:hidden}
+#bosMasterHelp[open]{display:flex;flex-direction:column}
+#bosMasterHelp::backdrop{background:#020a16c9;backdrop-filter:blur(4px)}
+#bosMasterHelp *{box-sizing:border-box;min-width:0}
+#bosMasterHelp [hidden]{display:none!important}
+#bosMasterHelp button,#bosMasterHelp summary,#bosMasterHelp input{font:inherit;min-height:44px;touch-action:manipulation}
+#bosMasterHelp button{cursor:pointer;white-space:normal}
+#bosMasterHelp :focus-visible{outline:3px solid #8ac3ff;outline-offset:3px}
+#bosMasterHelp h2{font-size:clamp(23px,3vw,30px);line-height:1.2;letter-spacing:-.025em;margin:8px 0 16px;overflow-wrap:anywhere;outline:none}
+#bosMasterHelp h3{font-size:18px;margin:20px 0 10px}
+#bosMasterHelp p{margin:0 0 14px;overflow-wrap:anywhere}
+#bosMasterHelp ul,#bosMasterHelp ol{padding-left:24px}
+#bosMasterHelp li{margin:7px 0}
+#bosMasterHelp .bhHeader{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:20px 24px 12px;flex-shrink:0}
+#bosMasterHelp .bhHeader strong{display:block;font-size:18px}
+#bosMasterHelp .bhEyebrow{display:block;font-size:10px;letter-spacing:.13em;line-height:1.5;font-weight:750;color:#83b3ed}
+#bosMasterHelp .bhButton{border:1px solid #344b68;border-radius:12px;background:#1b2d44;color:#e4efff;padding:10px 14px;font-size:14px;line-height:1.4;text-align:center}
+#bosMasterHelp .bhButton:hover{background:#294668}
+#bosMasterHelp .bhPrimary,#bosMasterHelp .isActive{background:#1e67ce;border-color:#468dff;color:white}
+#bosMasterHelp .bhClose{font-size:12px;max-width:145px;background:transparent}
+#bosMasterHelp .bhTabs{display:flex;gap:6px;flex-wrap:wrap;padding:0 24px 16px;flex-shrink:0;border-bottom:1px solid #263b55}
+#bosMasterHelp .bhTabs button{flex:1 1 140px}
+#bosMasterHelp .bhBody{padding:24px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;min-height:0;flex:1}
+#bosMasterHelp .bhMuted,#bosMasterHelp small{color:#a3b6cd}
+#bosMasterHelp small{display:block;font-size:12px;line-height:1.5}
+#bosMasterHelp .bhLessons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+#bosMasterHelp .bhLessonCard{display:grid;grid-template-columns:36px 1fr 16px;gap:12px;align-items:center;text-align:left;min-height:90px;border:1px solid #2e4664;background:#16283f;border-radius:16px;color:#e7f0ff;padding:16px}
+#bosMasterHelp .bhLessonCard:hover{background:#203b5a;border-color:#5086bd}
+#bosMasterHelp .bhLessonCard b{display:block;font-size:15px;line-height:1.4;margin-bottom:4px}
+#bosMasterHelp .bhNumber{color:#79b4ff;font-size:15px;font-weight:700;background:#214267;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;min-width:32px;min-height:32px}
+#bosMasterHelp .bhResources{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+#bosMasterHelp .bhLessonTop{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+#bosMasterHelp .bhLessonTop button{flex-shrink:0}
+#bosMasterHelp .bhProgress{display:flex;gap:18px;align-items:center;margin-bottom:16px;color:#a7c4e4;font-size:13px}
+#bosMasterHelp .bhProgress>div{flex:1;height:5px;border-radius:8px;background:#29405d;overflow:hidden}
+#bosMasterHelp .bhProgress i{display:block;height:100%;background:#64a9ff}
+#bosMasterHelp .bhLesson{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:24px;align-items:start}
+#bosMasterHelp .bhFigure{padding:10px;border-radius:18px;background:#081322;border:1px solid #2a415c}
+#bosMasterHelp .bhImageButton{display:block;width:100%;border:0;background:none;padding:0;border-radius:10px;overflow:hidden}
+#bosMasterHelp .bhImageButton img{display:block;width:100%;max-height:440px;object-fit:contain}
+#bosMasterHelp .bhFigure small{text-align:center;font-size:10px;padding-top:8px}
+#bosMasterHelp .bhLead{font-size:19px;line-height:1.5}
+#bosMasterHelp .bhWarning{background:#3c301c;border:1px solid #66512b;border-radius:12px;padding:13px 15px;font-size:14px;color:#f3dca8;margin:16px 0}
+#bosMasterHelp .bhWarning p{margin:5px 0 0}
+#bosMasterHelp .bhDetails{border:1px solid #304964;background:#16283d;border-radius:14px;margin:10px 0;overflow:hidden}
+#bosMasterHelp .bhDetails summary{cursor:pointer;padding:15px 16px;line-height:1.4;overflow-wrap:anywhere;font-weight:650}
+#bosMasterHelp .bhDetails summary .bhNumber{margin-right:12px}
+#bosMasterHelp .bhDetails>p,#bosMasterHelp .bhDetails>ol{margin:12px 18px 18px}
+#bosMasterHelp .bhDetailBody{padding:0 18px 18px}
+#bosMasterHelp blockquote{margin:12px 0 16px;padding-left:14px;border-left:3px solid #569efa;color:#d6e7fc;font-size:18px}
+#bosMasterHelp .bhBranches{border:0;padding:0;margin:16px 0}
+#bosMasterHelp .bhBranches legend{font-size:12px;margin-bottom:8px;color:#b2c8e4}
+#bosMasterHelp .bhBranches button{margin:0 5px 7px 0}
+#bosMasterHelp .bhBranchResult{padding-top:8px}
+#bosMasterHelp .bhFooter{flex-shrink:0;display:flex;justify-content:space-between;gap:12px;padding:16px 24px max(16px,env(safe-area-inset-bottom));border-top:1px solid #2a3d55;background:#112138}
+#bosMasterHelp .bhFooter button{flex:1;max-width:280px}
+#bosMasterHelp .bhStatus:empty{display:none}
+#bosMasterHelp .bhStatus{padding:10px 24px;color:#c9dfff;background:#1c3450;font-size:13px;flex-shrink:0}
+#bosMasterHelp .bhStepList{display:grid;gap:10px}
+#bosMasterHelp .bhStepList button{text-align:left}
+#bosMasterHelp .bhSearch{display:grid;gap:8px;font-size:13px;color:#b4cae2}
+#bosMasterHelp .bhSearch input{display:block;width:100%;padding:12px;border:1px solid #415a79;border-radius:12px;background:#0c1728;color:#edf4ff;font-size:16px}
+#bosMasterHelp .bhFilters{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 18px}
+#bosMasterHelp .bhEmpty{padding:25px 0;color:#afc4df}
+#bosMasterHelp .bhManager{margin-top:25px;padding:18px;background:#1b314d;border-radius:16px}
+#bosMasterHelp .bhManager h3{margin-top:0}
+#bosMasterHelp .bhTemplate{white-space:pre-line}
+#bosMasterHelp .bhManager small{margin-top:10px}
+#bosMasterHelp .bhZoom{overflow:auto;margin:16px 0}
+#bosMasterHelp .bhZoom img{display:block;width:100%;height:auto}
+#bosMasterHelp .bhImageFallback{padding:20px;font-size:14px}
+@media(max-width:600px){#bosMasterHelp{width:100%;height:100dvh;max-height:100dvh;border-radius:0;border:0}#bosMasterHelp .bhHeader{padding:calc(14px + env(safe-area-inset-top)) 14px 10px}#bosMasterHelp .bhHeader strong{font-size:16px}#bosMasterHelp .bhTabs{padding:0 14px 10px;gap:5px}#bosMasterHelp .bhTabs button{font-size:12px;flex-basis:80px;padding:8px}#bosMasterHelp .bhBody{padding:20px 14px}#bosMasterHelp .bhLessons{grid-template-columns:1fr;gap:8px;margin-top:16px}#bosMasterHelp .bhLessonCard{min-height:78px;padding:13px}#bosMasterHelp .bhLesson{grid-template-columns:1fr;gap:18px}#bosMasterHelp .bhImageButton img{max-height:300px}#bosMasterHelp .bhLead{font-size:17px}#bosMasterHelp .bhFooter{padding:12px 14px max(12px,env(safe-area-inset-bottom))}#bosMasterHelp .bhLessonTop{align-items:flex-start}#bosMasterHelp .bhClose{max-width:110px}#bosMasterHelp .bhStatus{padding:8px 14px}}

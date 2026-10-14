@@ -2708,6 +2708,12 @@ function readFile64(file){return new Promise((resolve,reject)=>{const fr=new Fil
 function isWordFile(name=''){return /\.(docx?|DOCX?)$/.test(String(name||''))}
 function fileButtonLabel(x){return isWordFile(x?.file_name)?'Скачать Word':'Скачать файл'}
 function memoItemHtml(x,owner=false){const fileName=esc(x.file_name||'document');return `<section class="card memoMaterial"><div class="row" style="align-items:flex-start"><div style="min-width:0"><b>${esc(x.title||'Материал')}</b>${x.note?`<p class="muted" style="margin:5px 0">${esc(x.note)}</p>`:''}${x.file_name?`<small class="muted">${fileName}</small>`:''}</div>${owner?`<button class="secondary" type="button" onclick="deleteOwnerMemo('${esc(x.id)}')">Удалить</button>`:''}</div>${x.file_url?`<div class="memoFileActions"><a class="secondary wide memoFileLink" href="${esc(x.file_url)}" target="_blank" rel="noopener">Открыть файл</a><a class="primary wide memoFileLink memoDownloadLink" href="${esc(x.file_url)}" download="${fileName}" target="_blank" rel="noopener">${fileButtonLabel(x)}</a></div>`:''}</section>`}
+// Render existing materials into the independent help layer without touching modalRoot.
+window.BOS_LOAD_HELP_MATERIALS=async function(root){
+ root.textContent='Загружаем материалы…';
+ try{const d=await memoApi('list'),list=(d.items||[]).filter(x=>x.category==='tips');if(root.isConnected)root.innerHTML=list.length?list.map(x=>memoItemHtml(x,false)).join(''):'<p class="muted">Дополнительных материалов пока нет.</p>'}
+ catch(e){if(root.isConnected){root.textContent='Не удалось загрузить материалы. '+(e.message||'Проверьте соединение.');const retry=document.createElement('button');retry.type='button';retry.className='secondary';retry.textContent='Повторить загрузку материалов';retry.onclick=()=>window.BOS_LOAD_HELP_MATERIALS(root);root.append(retry)}}
+};
 window.openMasterMemoItem=async function(kind){const title=MEMO_NAMES[kind]||'Памятка';openModal(`<h2>${esc(title)}</h2><div id="masterMemoItems"><p class="muted">Загружаем…</p></div><button class="secondary wide" onclick="closeModal()">Закрыть</button>`);try{const d=await memoApi('list'),list=(d.items||[]).filter(x=>x.category===kind),root=document.getElementById('masterMemoItems');if(root)root.innerHTML=list.length?list.map(x=>memoItemHtml(x,false)).join(''):'<section class="card"><p class="muted" style="margin:0">Материалов пока нет.</p></section>'}catch(e){const root=document.getElementById('masterMemoItems');if(root)root.innerHTML=`<section class="card"><p style="margin:0 0 8px">Не удалось загрузить памятку.</p><p class="muted" style="margin:0">${esc(e.message||String(e))}</p></section>`}}
 window.openOwnerMemoManager=async function(){if(!ownerMemoMode())return;openModal(`<h2>Памятка мастеров</h2><section class="card"><h3 style="margin-top:0">Добавить материал</h3><form id="ownerMemoForm" class="form"><label>Раздел</label><select name="category"><option value="acts">Акты выполненных работ</option><option value="measurements">Листы замера</option><option value="price">Прайс услуг</option><option value="tips">Подсказки по работе</option></select><label>Название</label><input name="title" required placeholder="Название материала"><label>Комментарий / подсказка</label><textarea name="note" placeholder="Необязательно"></textarea><label>Файлы</label><input name="file" type="file" multiple accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png"><small class="muted">Можно выбрать несколько файлов. Максимум 10 МБ на каждый файл.</small><button class="primary wide" type="submit">Добавить</button><p id="ownerMemoMsg" class="muted"></p></form></section><div id="ownerMemoList"><p class="muted">Загружаем материалы…</p></div>`);const form=document.getElementById('ownerMemoForm');form.onsubmit=async e=>{e.preventDefault();if(state.busy)return;const msg=document.getElementById('ownerMemoMsg'),fd=new FormData(form),files=[...form.elements.file.files],oversized=files.find(file=>file.size>10*1024*1024);if(oversized){msg.textContent=`Файл «${oversized.name}» больше 10 МБ`;return}state.busy=true;setBusy(form,true);msg.textContent='Сохраняем…';try{const base={category:fd.get('category'),title:String(fd.get('title')||'').trim(),note:String(fd.get('note')||'').trim()};if(files.length){for(let i=0;i<files.length;i++){const file=files[i];msg.textContent=`Загружаем ${i+1} из ${files.length}…`;await memoApi('upload',{...base,file_name:file.name,file_mime:file.type||'application/octet-stream',file_data:await readFile64(file)})}}else await memoApi('upload',base);state.busy=false;await openOwnerMemoManager()}catch(err){msg.textContent=err.message||String(err);setBusy(form,false);state.busy=false}};await loadOwnerMemoList()}
 async function loadOwnerMemoList(){try{const d=await memoApi('list'),root=document.getElementById('ownerMemoList');if(!root)return;const list=d.items||[];root.innerHTML=`<h3>Материалы</h3>${list.length?list.map(x=>`<div class="memoOwnerGroup"><small class="muted">${esc(MEMO_NAMES[x.category]||x.category)}</small>${memoItemHtml(x,true)}</div>`).join(''):'<section class="card"><p class="muted" style="margin:0">Материалов пока нет.</p></section>'}`}catch(e){const root=document.getElementById('ownerMemoList');if(root)root.innerHTML=`<p class="muted">${esc(e.message||String(e))}</p>`}}
@@ -6900,6 +6906,84 @@ window.BOS_OPS_CONTACT_STATUS={refresh:schedule};
 new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
 window.addEventListener('bos:data-refreshed',schedule);window.addEventListener('resize',schedule);schedule();
 const style=document.createElement('style');style.textContent='.bosOpsContact{min-width:0;margin-top:5px}.dbV94ListCard>.bosOpsContact{grid-column:2/-1}.dbDetail>.bosOpsContact,.ddDetail>.bosOpsContact{margin:8px 0}';document.head.appendChild(style);
+})();
+
+
+;
+// Source: master-help-entry.js
+(()=>{
+'use strict';
+if(window.BOS_MASTER_HELP_ENTRY)return;
+window.BOS_MASTER_HELP_ENTRY=true;
+let loading=null,active=null,activeBack=null;
+// Register before the existing Android navigation module. Its target is window too.
+window.addEventListener('popstate',event=>{if(active?.open)activeBack?.(event)},true);
+const asset=name=>window.BOS_ASSET_URL?window.BOS_ASSET_URL('./'+name):'./'+name;
+function loadFile(name,css=false){return new Promise((resolve,reject)=>{
+ const el=document.createElement(css?'link':'script');
+ if(css){el.rel='stylesheet';el.href=asset(name)}else{el.src=asset(name);el.async=false}
+ el.onload=resolve;el.onerror=()=>{el.remove();reject(new Error('Не удалось загрузить подсказки. Проверьте соединение и повторите.'))};
+ document.head.appendChild(el);
+})}
+function load(){
+ if(!loading)loading=Promise.all([loadFile('master-help.css',true),loadFile('master-help-data.js'),loadFile('master-help.js')]).catch(e=>{loading=null;throw e});
+ return loading;
+}
+window.openMasterHelp=function(topic='home'){
+ if(active?.open){window.BOS_MASTER_HELP_VIEW?.(active,topic);return}
+ const previous=document.activeElement,position={x:scrollX,y:scrollY},historyState=history.state,historyUrl=location.href;
+ const dialog=document.createElement('dialog');dialog.id='bosMasterHelp';dialog.className='bosHelp';dialog.setAttribute('aria-label','Подсказки по работе');
+ // Basic loading presentation remains usable even if the stylesheet fails.
+ dialog.style.cssText='background:#101d30;color:#edf4ff;border:1px solid #344a66;border-radius:20px;padding:20px;max-width:calc(100vw - 16px)';
+ const loadingText=document.createElement('p');loadingText.setAttribute('role','status');loadingText.textContent='Загружаем подсказки…';dialog.append(loadingText);
+ const close=document.createElement('button');close.type='button';close.textContent='Закрыть помощь';close.onclick=()=>dialog.close();dialog.append(close);
+ const key=event=>{
+  if(event.key==='Tab'&&dialog.open){
+   const targets=[...dialog.querySelectorAll('button,a[href],input,select,textarea,summary,[tabindex]:not([tabindex="-1"])')].filter(el=>!el.disabled&&el.getClientRects().length);
+   const first=targets[0],last=targets[targets.length-1],focused=document.activeElement;
+   if(first&&((event.shiftKey&&(focused===first||!dialog.contains(focused)))||(!event.shiftKey&&(focused===last||!dialog.contains(focused))))){event.preventDefault();(event.shiftKey?last:first).focus()}
+  }
+  if(event.key==='Escape'&&dialog.open){event.preventDefault();event.stopImmediatePropagation();
+   if(!window.BOS_MASTER_HELP_ESCAPE?.(dialog))dialog.close();
+  }
+ };
+ window.addEventListener('keydown',key,true);
+ const back=event=>{if(!dialog.open)return;event.stopImmediatePropagation();history.pushState(historyState,'',historyUrl);dialog.close()};
+ activeBack=back;
+ dialog.addEventListener('cancel',event=>{event.preventDefault();dialog.close()});
+ dialog.addEventListener('close',()=>{
+  window.removeEventListener('keydown',key,true);activeBack=null;if(active===dialog)active=null;dialog.remove();
+  if(previous?.isConnected)previous.focus({preventScroll:true});window.scrollTo(position.x,position.y);
+ },{once:true});
+ document.body.append(dialog);active=dialog;dialog.showModal();
+ const render=()=>load().then(()=>{if(dialog.open){dialog.removeAttribute('style');window.BOS_MASTER_HELP_VIEW(dialog,topic)}}).catch(error=>{
+  if(!dialog.open)return;loadingText.textContent=error.message;
+  if(!dialog.querySelector('[data-help-retry]')){const retry=document.createElement('button');retry.type='button';retry.dataset.helpRetry='';retry.textContent='Повторить загрузку';retry.onclick=()=>{retry.remove();loadingText.textContent='Загружаем подсказки…';render()};dialog.insertBefore(retry,close)}
+ });
+ render();
+};
+const originalMemo=window.openMasterMemoItem;
+window.openMasterMemoItem=function(kind){return kind==='tips'?window.openMasterHelp():originalMemo?.apply(this,arguments)};
+const master=()=>typeof state!=='undefined'&&(state.user?.role==='master'||typeof isMasterPreview==='function'&&isMasterPreview());
+function add(target,topic,label){
+ if(!target||target.querySelector(':scope > [data-bos-help]'))return;
+ const button=document.createElement('button');button.type='button';button.className='secondary bosHelpEntry';button.dataset.bosHelp=topic;button.textContent=label;
+ button.style.cssText='min-height:44px;margin:8px 0;white-space:normal';button.addEventListener('click',()=>window.openMasterHelp(topic));target.prepend(button);
+}
+function decorate(){
+ if(!master())return;
+ add(document.querySelector('#masterContactResultForm'),'contact','Как заполнить?');
+ add(document.querySelector('#masterOrderAgree179Form,#masterAgreementForm'),'agreement','Как согласовать?');
+ add(document.querySelector('#masterReportForm'),'report','Как отправить?');
+ add(document.querySelector('#bosMasterWorkCalendar,.bosScheduleEditorTask'),'profile','Как настроить?');
+ add(document.querySelector('#masterMoneyV130')||document.querySelector('.bosProfileAccrual'),'money','Как проверить начисления?');
+ const card=document.querySelector('#modalRoot .bosCompactMasterCard');
+ if(card)add(card,'home','Помощь по заявке');
+}
+let queued=false;
+const observer=new MutationObserver(()=>{if(!queued){queued=true;requestAnimationFrame(()=>{queued=false;decorate()})}});
+for(const id of ['content','modalRoot']){const root=document.getElementById(id);if(root)observer.observe(root,{childList:true,subtree:true})}
+decorate();
 })();
 
 ;
