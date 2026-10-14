@@ -40,6 +40,33 @@ dispatcher and master across status, subscribe and test; forged tokens,
 excessive expiry and disabled staff remain rejected. Physical delivery is a
 separate check that must be repeated on the user's phone after deployment.
 
+## Recovery after an origin or server migration
+
+Browser permission, the service worker and its subscription are scoped to the
+application origin. Moving from GitHub Pages to `https://139.100.237.167` requires
+enabling notifications at the new address. On iPhone, add the current address to
+the Home Screen and launch that icon; a denied permission requires changing
+Business OS notification settings on the phone. The application cannot grant a
+denied permission itself. The settings panel refreshes when the user returns.
+
+For an already consented device on the current origin, reconciliation now checks
+the server even when the locally saved binding is recent. A missing or changed
+server binding is repaired using that device's existing subscription and
+revocation capability. If the application server key changed, the old subscription
+is not presented as connected: the user explicitly enables notifications again
+to replace it. New devices are never subscribed automatically.
+
+The push handler's CORS allowlist includes the current application origin for
+preflight, successful replies and authorization errors. Deploy that small handler
+change to the active backend separately from the frontend, preserving its current
+configuration and keys; do not replace a differing live handler without reviewing
+its source. No database migration or key rotation is required by these fixes.
+
+Regression coverage: `tests/push-client-v211.test.cjs` exercises actual client
+source with browser/API boundaries controlled; `tests/push-api-v211.test.cjs`
+checks the migrated origin against the actual handler. Physical phone delivery
+still needs an enable/test check after deployment.
+
 ## Rollback
 
 First set `bos_push_private.runtime.enabled=false`; optionally unschedule only the named `bos-web-push-recovery` cron job. The additive order trigger then returns immediately. Do not drop business tables, rotate existing account passwords, remove historical orders or change payroll/auth. Restore the preceding frontend through the normal reviewed build path. Subscription records and Vault keys need not be deleted.

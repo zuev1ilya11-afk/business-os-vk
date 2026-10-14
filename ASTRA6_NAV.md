@@ -5,6 +5,7 @@ Purpose: a compact map for Astra 6 and future maintainers. Update this file when
 ## Current production path
 
 - `index.html` — application entrypoint and script order.
+- `mobile-viewport.js` — early phone viewport recovery. Uses layout width and touch-screen geometry; if the browser ignores viewport metadata, shows a readable instruction to disable its desktop-site mode. Does not reset pinch zoom or keyboard resizing. Regression coverage: `tests/mobile-viewport.spec.js`.
 - `network-direct-v86.js` — network resilience layer for API requests. It keeps the Netlify gateway primary, applies a short network deadline, and falls back directly to Supabase Functions only for retryable network failures.
 - `config.js` — legacy/runtime URL normalization and gateway routing. **Keep `network-direct-v86.js` loaded before `config.js`.**
 - `vk-init.js` — asynchronous VK Bridge bootstrap. Current source order: unpkg -> jsDelivr -> Netlify fallback. Publishes `window.BOS_VK_BRIDGE_READY` when bridge loading completes.

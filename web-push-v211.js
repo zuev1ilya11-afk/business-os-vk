@@ -11,10 +11,18 @@ const token=()=>{try{return sessionStorage.getItem(SESSION)||localStorage.getIte
 const account=()=>token().split('.')[0]||''; // Only change detection; the server validates the complete signed session.
 function currentTab(){try{const shared=localStorage.getItem(SESSION)||'';return localStorage.getItem('bos_manual_logout_v1')!=='1'&&(!shared||shared.split('.')[0]===account())}catch{return false}}
 const ready=()=>document.body.classList.contains('bos-auth-ok')&&!!token()&&currentTab();
+const sameDevice=(left,right)=>!!right?.revoke_token&&left?.account===right.account&&left?.endpoint===right.endpoint&&left?.revoke_token===right.revoke_token;
+const ownsDevice=device=>ready()&&device?.account===account()&&sameDevice(read(STORAGE),device);
 const supported=()=>isSecureContext&&'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
 const ios=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const installed=()=>navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches;
 const toBytes=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
+function currentKey(sub,publicKey,saved){
+  const key=sub?.options?.applicationServerKey;
+  if(!key)return !saved?.public_key||saved.public_key===publicKey;
+  const bytes=ArrayBuffer.isView(key)?new Uint8Array(key.buffer,key.byteOffset,key.byteLength):new Uint8Array(key),expected=toBytes(publicKey);
+  return bytes.length===expected.length&&bytes.every((value,index)=>value===expected[index]);
+}
 const randomToken=()=>btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32)))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
 function message(text){const target=document.getElementById('bosPushMessage');if(target)target.textContent=text}
 function timeout(promise,milliseconds=10000){let id;return Promise.race([promise,new Promise((_,reject)=>{id=setTimeout(()=>reject(new Error('Телефон не ответил. Повторите попытку.')),milliseconds)})]).finally(()=>clearTimeout(id))}
@@ -75,7 +83,9 @@ async function disconnect({logout=false}={}){
 function uiState(){
   if(ios()&&!installed())return 'На iPhone откройте меню браузера → «На экран Домой», затем запустите приложение с новой иконки.';
   if(!supported())return 'Откройте установленное приложение или Chrome / Firefox. Встроенный браузер VK может не поддерживать Web Push.';
-  if(Notification.permission==='denied')return 'Уведомления запрещены. Разрешите их в настройках браузера и телефона, затем вернитесь сюда.';
+  if(Notification.permission==='denied')return ios()?
+    'Уведомления запрещены на этом iPhone. Откройте «Настройки» → «Уведомления» → Business OS и включите «Допуск уведомлений», затем вернитесь сюда. Если Business OS нет в списке, откройте в Safari '+location.origin+'/ и добавьте приложение через «Поделиться» → «На экран Домой». Запустите новую иконку: разрешения и подписка со старого адреса не переносятся.':
+    'Уведомления запрещены для '+location.origin+'. Разрешите уведомления в настройках этого сайта в браузере и в настройках телефона, затем вернитесь сюда. Разрешения со старого адреса не переносятся.';
   return 'Проверяем подключение…';
 }
 function controls(enabled){
@@ -94,13 +104,14 @@ async function refresh(){
     const result=await request('status',{endpoint:sub?.endpoint||''});
     if(run!==generation||!ready()||result.account!==account())return;
     configValue=result;
-    const enabled=Notification.permission==='granted'&&!!sub&&saved?.account===result.account&&saved?.endpoint===sub.endpoint&&
+    const matchingKey=!!sub&&currentKey(sub,result.public_key,saved);
+    const enabled=Notification.permission==='granted'&&matchingKey&&saved?.account===result.account&&saved?.endpoint===sub.endpoint&&
       result.connected&&saved?.binding_id===result.device?.binding_id;
     controls(enabled);
     if(enabled){
       await swMessage('BOS_PUSH_BIND',{binding_id:saved.binding_id});
       message('Подключены на этом телефоне. Уведомления приходят для вашего аккаунта, даже когда приложение закрыто.');
-    }else message(Notification.permission==='denied'?uiState():'Не подключены на этом телефоне. Нажмите «Включить уведомления».');
+    }else message(Notification.permission==='denied'?uiState():sub&&!matchingKey?'Переподключите уведомления после обновления сервера: нажмите «Включить уведомления».':'Не подключены на этом телефоне. Нажмите «Включить уведомления». Разрешения и подписка со старого адреса не переносятся.');
   }catch(error){message(error.message);controls(false)}
 }
 async function enable(){
@@ -109,31 +120,41 @@ async function enable(){
   // Permission is requested directly in the click handler, before the first await (required on iOS).
   const permission=Notification.permission==='granted'?Promise.resolve('granted'):Notification.requestPermission();
   const currentAccount=account(),run=generation,publicKey=configValue.public_key;
-  let subscribed=null,device=null;
+  let subscribed=null,device=null,connected=false,sharedDevice=false;
   try{
     if(await permission!=='granted')throw new Error('Разрешение не получено. Уведомления не включены.');
     if(run!==generation||!ready()||account()!==currentAccount)throw new Error('Аккаунт изменился. Войдите снова.');
     const reg=await serviceWorker();
     const existing=await reg.pushManager.getSubscription(),saved=read(STORAGE);
-    if(existing&&saved?.account===currentAccount&&saved?.endpoint===existing.endpoint){subscribed=existing;device=saved}
-    else{if(existing)await existing.unsubscribe();subscribed=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:toBytes(publicKey)})}
+    if(existing&&saved?.account===currentAccount&&saved?.endpoint===existing.endpoint&&currentKey(existing,publicKey,saved)){subscribed=existing;device=saved}
+    else{
+      if(existing){
+        await swMessage('BOS_PUSH_CLEAR',{});await existing.unsubscribe();
+        if(saved){revokeLater(saved);if(sameDevice(read(STORAGE),saved))write(STORAGE,null)}
+        void flushRevokes();
+      }
+      subscribed=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:toBytes(publicKey)});
+    }
     if(run!==generation||!ready()||account()!==currentAccount)throw new Error('Аккаунт изменился. Подключение отменено.');
     device=device||{account:currentAccount,endpoint:subscribed.endpoint,revoke_token:randomToken()};
     // Persist the revocation capability before the server request so an interrupted registration can be cleaned up.
     write(STORAGE,device);
     const response=await request('subscribe',{subscription:subscribed.toJSON(),revoke_token:device.revoke_token});
-    device={...device,...response.device,account:response.account};
+    device={...device,...response.device,account:response.account,public_key:publicKey,updated_at:new Date().toISOString()};
     if(run!==generation||!ready()||account()!==currentAccount||read(STORAGE)?.revoke_token!==device.revoke_token){
+      if(ownsDevice(device)){sharedDevice=true;return}
       revokeLater(device);await flushRevokes();throw new Error('Аккаунт изменился. Подключение отменено.');
     }
     write(STORAGE,device);
     await swMessage('BOS_PUSH_BIND',{binding_id:device.binding_id});
+    connected=true;
     message('Уведомления включены. Нажмите «Отправить тестовое уведомление».');
   }catch(error){
+    if(run!==generation&&ownsDevice(device)){sharedDevice=true;return}
     if(device){revokeLater(device);if(read(STORAGE)?.revoke_token===device.revoke_token)write(STORAGE,null);void flushRevokes()}
     if(subscribed)try{await subscribed.unsubscribe()}catch{}
     message(error.message);
-  }finally{busy=false;controls(!!read(STORAGE)?.binding_id)}
+  }finally{busy=false;if(sharedDevice)await refresh();else controls(connected)}
 }
 async function test(){
   const saved=read(STORAGE);if(busy||!saved||saved.account!==account())return;
@@ -176,10 +197,17 @@ async function reconcile(){
       const reg=await serviceWorker(),sub=await reg.pushManager.getSubscription();
       if(run!==generation||!currentTab()||read(STORAGE)?.revoke_token!==saved.revoke_token)return;
       if(!sub||sub.endpoint!==saved.endpoint){await disconnect({logout:true});return}
-      if(!saved.updated_at||Date.now()-Date.parse(saved.updated_at)>24*3600*1000){
+      const status=await request('status',{endpoint:sub.endpoint});
+      if(run!==generation||!ready()||!currentTab()||status.account!==account()||read(STORAGE)?.revoke_token!==saved.revoke_token)return;
+      if(!currentKey(sub,status.public_key,saved)){await swMessage('BOS_PUSH_CLEAR',{});return}
+      const updated=Date.parse(saved.updated_at);
+      if(!status.connected||status.device?.binding_id!==saved.binding_id||!Number.isFinite(updated)||Date.now()-updated>24*3600*1000){
         const result=await request('subscribe',{subscription:sub.toJSON(),revoke_token:saved.revoke_token});
-        if(run!==generation||!ready()||saved.account!==account()||read(STORAGE)?.revoke_token!==saved.revoke_token){revokeLater(saved);void flushRevokes();return}
-        write(STORAGE,{...saved,...result.device,updated_at:new Date().toISOString()});
+        if(run!==generation||!ready()||saved.account!==account()||read(STORAGE)?.revoke_token!==saved.revoke_token){
+          if(!ownsDevice(saved)){revokeLater(saved);void flushRevokes()}
+          return;
+        }
+        write(STORAGE,{...saved,...result.device,public_key:status.public_key,updated_at:new Date().toISOString()});
       }
       if(run===generation&&ready()&&read(STORAGE)?.revoke_token===saved.revoke_token)await swMessage('BOS_PUSH_BIND',{binding_id:read(STORAGE)?.binding_id});
     }catch{}
@@ -213,9 +241,10 @@ function onAuth(){
 window.BOS_PUSH={open,disconnect,refresh};
 window.addEventListener('bos:logout',()=>{configValue=null;void disconnect({logout:true})});
 window.addEventListener('storage',event=>{if([SESSION,STORAGE,'bos_manual_logout_v1'].includes(event.key)){generation++;configValue=null;if(currentTab())void reconcile();controls(false)}});
-window.addEventListener('online',()=>{void flushRevokes();if(ready())void reconcile()});
-window.addEventListener('pageshow',()=>{if(ready())void reconcile();onAuth()});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ready())void reconcile()});
+const resume=()=>{if(ready())void reconcile().then(refresh)};
+window.addEventListener('online',()=>{void flushRevokes();resume()});
+window.addEventListener('pageshow',()=>{resume();onAuth()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)resume()});
 if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',event=>{
   const data=event.data||{},saved=read(STORAGE);
   if(data.type==='BOS_PUSH_OPEN'&&saved?.binding_id===data.binding_id&&currentTab()){
