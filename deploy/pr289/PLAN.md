@@ -47,3 +47,10 @@ legacy /api/proxy URL is not a supported public server alias and is not used by
 the running client. No gateway/config changes are required.
 UI login/registration, SW transition, physical iPhone layout and push delivery
 remain production verification gates.
+
+Server preflight follow-up (2026-10-14): the first installer correctly stopped
+before staging/mutations, but its layout assumption was wrong. User's Docker
+mount output shows /bos-{src,bundles,main} bound to the same release's nested
+edge/{sources,bundles,main}, not siblings of web. Added failing reproduction,
+corrected the exact expected paths, and added negative path/symlink/overlay
+tests. Payload/build ID and backend source patch remain unchanged. 29 tests.

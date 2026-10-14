@@ -21,6 +21,10 @@ consistent release. The eager bundle and other manifested assets remain exact.
 The complete live web directory is copied, checked, then atomically exchanged;
 unchanged CSS, bundles, images and files are retained. Existing ownership and
 permissions are retained. Only the existing Caddy and edge containers restart.
+The observed host layout is `release-*/web` for frontend and
+`release-*/edge/{sources,bundles,main}` for the three edge binds. The installer
+requires the same release directory, exact bind destinations and canonical paths;
+symlinks, unexpected directories and nested mount overlays are refused.
 
 The active push-api source must match SHA-256
 `6bd9d08bf8615854f5e5ce8c475869f9e6bb11f5b9c3fa2adcaa1cad33cb7113`.
@@ -85,13 +89,13 @@ These archives are retained, not deleted.
 
 Application CI succeeded. Local review checked build consistency, 36 push unit
 tests and 21 mobile/push browser tests. Deployment code has separate filesystem
-and injected-failure tests (24 passing; Docker/network boundaries simulated) and independent
+and injected-failure tests (29 passing; Docker/network boundaries simulated) and independent
 review. Real pinned-image compilation and isolated Docker probes must still pass
 on the server; preparing this package does not deploy it.
 The 21 mobile/push browser tests also passed against the actual RU candidate.
 
 After `RELEASE_OK`, verify trusted HTTPS, the live build/assets, login with an
-existing account, the registration screen/flow, service worker registration and
+existing account, service worker registration and
 update, mobile layout and notification settings. Authenticated production checks
 require the user's session; no production account is created by this installer.
 For an already-open tab, reload/update into the new service worker release.
