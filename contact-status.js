@@ -8,6 +8,8 @@ const LABELS={
  waiting_delivery:'Ждёт доставку',
  call_later:'Перезвонить позже',
  agreed:'Договорились',
+ needs_help:'Требуется помощь',
+ client_declined:'Клиент отказался',
  other:'Другое'
 };
 function time(value){
@@ -17,7 +19,7 @@ function time(value){
  return `${parts.day}.${parts.month}, ${parts.hour}:${parts.minute}`;
 }
 const history=order=>Array.isArray(order?.master_contact_history)?order.master_contact_history.filter(x=>x&&typeof x==='object'):[];
-const latest=order=>{const h=history(order);return h[h.length-1]||null};
+const latest=order=>{const all=history(order),h=order?.master_contact_control_active?all.filter(x=>x.result!=='pending'):all;return h[h.length-1]||all[all.length-1]||null};
 const confirmed=order=>!!time(order?.master_called_at)&&!!order?.master_called_by_staff_id&&!!String(order?.master_called_by_name||'').trim();
 const tone=result=>result==='agreed'?'confirmed':result==='no_answer'?'attention':result==='pending'?'legacy':['thinking','waiting_delivery','call_later','other'].includes(result)?'info':'unconfirmed';
 function eventHtml(event){
@@ -30,9 +32,11 @@ function html(order,{details=false}={}){
  if(event){
   const result=String(event.result||'pending'),label=LABELS[result]||'Звонок',at=time(event.result_at||event.at),phone=String(event.phone||'').trim(),comment=String(event.comment||'').trim();
   const summary=`<span class="bosContactStatus ${tone(result)}">${escape(label)}${at?' · '+escape(at):''}${phone?' · '+escape(phone):''}</span>`;
-  if(!details)return summary;
+  const callback=time(order?.master_contact_callback_at),visit=order?.master_contact_status==='agreed'&&order?.scheduled_date&&order?.scheduled_time?String(order.scheduled_date).slice(0,10)+' · '+String(order.scheduled_time).slice(0,5):'';
+  const next=order?.master_contact_control_active?(visit?`<small class="bosContactLatestComment">Визит: ${escape(visit)} МСК</small>`:callback?`<small class="bosContactLatestComment">Следующий контакт: ${escape(callback)} МСК${!['Выполнена','Отменена'].includes(order.status)&&Date.parse(order.master_contact_callback_at)<Date.now()?' · Просрочено':''}</small>`:''):'';
+  if(!details)return summary+next;
   const events=history(order).slice(-50).reverse();
-  return summary+`${comment?`<small class="bosContactLatestComment">${escape(comment)}</small>`:''}<div class="bosContactHistory"><b>История связи</b>${events.map(eventHtml).join('')}</div>`;
+  return summary+next+`${comment?`<small class="bosContactLatestComment">${escape(comment)}</small>`:''}<div class="bosContactHistory"><b>История связи</b>${events.map(eventHtml).join('')}</div>`;
  }
  const at=time(order?.master_called_at),proven=confirmed(order),legacy=!!order?.master_called_at;
  const label=proven?'Связался':legacy?'Звонок отмечен':'Связь не подтверждена';

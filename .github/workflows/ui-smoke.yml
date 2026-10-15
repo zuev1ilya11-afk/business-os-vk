@@ -76,13 +76,14 @@ jobs:
           bash scripts/test-avito-assistant.sh
           bash scripts/test-hands-reports.sh
           bash scripts/test-control-tasks.sh
+          bash scripts/test-contact-control.sh
           bash scripts/test-finance-expenses.sh
 
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server
 
       - name: Complete Playwright suite
-        run: npm run test:ui -- --workers=2
+        run: bash scripts/test-ui-offline.sh --workers=2
 
       - name: Upload test results
         if: failure()

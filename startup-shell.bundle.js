@@ -743,6 +743,8 @@ const LABELS={
  waiting_delivery:'Ждёт доставку',
  call_later:'Перезвонить позже',
  agreed:'Договорились',
+ needs_help:'Требуется помощь',
+ client_declined:'Клиент отказался',
  other:'Другое'
 };
 function time(value){
@@ -752,7 +754,7 @@ function time(value){
  return `${parts.day}.${parts.month}, ${parts.hour}:${parts.minute}`;
 }
 const history=order=>Array.isArray(order?.master_contact_history)?order.master_contact_history.filter(x=>x&&typeof x==='object'):[];
-const latest=order=>{const h=history(order);return h[h.length-1]||null};
+const latest=order=>{const all=history(order),h=order?.master_contact_control_active?all.filter(x=>x.result!=='pending'):all;return h[h.length-1]||all[all.length-1]||null};
 const confirmed=order=>!!time(order?.master_called_at)&&!!order?.master_called_by_staff_id&&!!String(order?.master_called_by_name||'').trim();
 const tone=result=>result==='agreed'?'confirmed':result==='no_answer'?'attention':result==='pending'?'legacy':['thinking','waiting_delivery','call_later','other'].includes(result)?'info':'unconfirmed';
 function eventHtml(event){
@@ -765,9 +767,11 @@ function html(order,{details=false}={}){
  if(event){
   const result=String(event.result||'pending'),label=LABELS[result]||'Звонок',at=time(event.result_at||event.at),phone=String(event.phone||'').trim(),comment=String(event.comment||'').trim();
   const summary=`<span class="bosContactStatus ${tone(result)}">${escape(label)}${at?' · '+escape(at):''}${phone?' · '+escape(phone):''}</span>`;
-  if(!details)return summary;
+  const callback=time(order?.master_contact_callback_at),visit=order?.master_contact_status==='agreed'&&order?.scheduled_date&&order?.scheduled_time?String(order.scheduled_date).slice(0,10)+' · '+String(order.scheduled_time).slice(0,5):'';
+  const next=order?.master_contact_control_active?(visit?`<small class="bosContactLatestComment">Визит: ${escape(visit)} МСК</small>`:callback?`<small class="bosContactLatestComment">Следующий контакт: ${escape(callback)} МСК${!['Выполнена','Отменена'].includes(order.status)&&Date.parse(order.master_contact_callback_at)<Date.now()?' · Просрочено':''}</small>`:''):'';
+  if(!details)return summary+next;
   const events=history(order).slice(-50).reverse();
-  return summary+`${comment?`<small class="bosContactLatestComment">${escape(comment)}</small>`:''}<div class="bosContactHistory"><b>История связи</b>${events.map(eventHtml).join('')}</div>`;
+  return summary+next+`${comment?`<small class="bosContactLatestComment">${escape(comment)}</small>`:''}<div class="bosContactHistory"><b>История связи</b>${events.map(eventHtml).join('')}</div>`;
  }
  const at=time(order?.master_called_at),proven=confirmed(order),legacy=!!order?.master_called_at;
  const label=proven?'Связался':legacy?'Звонок отмечен':'Связь не подтверждена';
@@ -5590,6 +5594,7 @@ function pendingCall(){
 }
 function savePendingCall(x){try{sessionStorage.setItem('bosPendingClientCall',JSON.stringify(x))}catch(_){}}
 function clearPendingCall(attemptId=''){if(attemptId&&pendingCall()?.attempt_id!==attemptId)return;try{sessionStorage.removeItem('bosPendingClientCall')}catch(_){}}
+const contactAllowed=()=>liveMaster()||(['owner','manager','dispatcher'].includes(String(state?.user?.role||''))&&!(typeof isMasterPreview==='function'&&isMasterPreview()));
 const contactActor=()=>JSON.stringify([state?.user?.role,state?.user?.id,state?.user?.vk_user_id,state?.user?.external_id]);
 async function contactApi(action,id,payload={}){
  const who=contactActor(),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),25000);
@@ -5601,21 +5606,21 @@ async function contactApi(action,id,payload={}){
   saved=d;
  }catch(error){
   // Never replay a business write. Read the exact attempt receipt after a lost response.
-  if(action==='recordContactResult'&&who===contactActor()&&liveMaster()&&(!error.status||error.status>=500)&&typeof window.api==='function'){
+  if(action==='recordContactResult'&&who===contactActor()&&contactAllowed()&&(!error.status||error.status>=500)&&typeof window.api==='function'){
    try{
     const data=await window.api('bootstrap');
     const order=data?.ok&&Array.isArray(data.orders)?data.orders.find(o=>String(o.id)===String(id)):null;
     const event=Array.isArray(order?.master_contact_history)?order.master_contact_history.find(x=>String(x?.id)===String(payload.attempt_id)):null;
-    if(who===contactActor()&&liveMaster()&&event&&normalizeClientPhone(event.phone)===normalizeClientPhone(payload.phone)&&String(event.result)===String(payload.result)&&String(event.comment||'')===String(payload.comment||'')&&String(event.callback_at||'')===String(payload.callback_at||''))saved={ok:true,order,reconciled:true};
+    if(who===contactActor()&&contactAllowed()&&event&&normalizeClientPhone(event.phone)===normalizeClientPhone(payload.phone)&&String(event.result)===String(payload.result)&&String(event.comment||'')===String(payload.comment||'')&&String(event.callback_at||'')===String(payload.callback_at||'')&&(!payload.contact_control||(event.request&&String(event.request.scheduled_date||'')===String(payload.scheduled_date||'')&&String(event.request.scheduled_time||'')===String(payload.scheduled_time||''))))saved={ok:true,order,reconciled:true};
    }catch(_){}
   }
   if(!saved)throw error.name==='AbortError'?new Error('Ответ на сохранение не получен. Проверьте интернет и повторите проверку заявки.'):error;
  }finally{clearTimeout(timer)}
- if(who!==contactActor()||!liveMaster())throw new Error('Аккаунт изменился. Откройте заявку заново.');
+ if(who!==contactActor()||!contactAllowed())throw new Error('Аккаунт изменился. Откройте заявку заново.');
  // A late phone-attempt response must not replace a newer saved call result.
  const current=findOrder(id),oldAt=Date.parse(current?.updated_at),newAt=Date.parse(saved.order.updated_at);
  if(!Number.isFinite(oldAt)||!Number.isFinite(newAt)||newAt>=oldAt)mergeOrder(id,saved.order);
- refreshMasterUi(id);return saved;
+ refreshMasterUi(id);window.BOS_CONTROL_TASKS?.reload();return saved;
 }
 async function recordContactAttempt(id,phone,attemptId){
  return contactApi('recordContactAttempt',id,{phone,attempt_id:attemptId});
@@ -5623,69 +5628,89 @@ async function recordContactAttempt(id,phone,attemptId){
 async function recordContactResult(id,phone,attemptId,result,comment,callbackAt){
  return contactApi('recordContactResult',id,{phone,attempt_id:attemptId,result,comment,callback_at:callbackAt||null});
 }
-function resultOptions(){
+function resultOptions(pilot=false){
  return [
   ['no_answer','Не дозвонился','Клиент не ответил или телефон недоступен'],
   ['thinking','Клиент думает','Нужно время, чтобы определиться'],
   ['waiting_delivery','Ждёт доставку','Работы зависят от доставки товара'],
   ['call_later','Перезвонить позже','Связались, но разговор нужно продолжить позже'],
-  ['agreed','Договорились','Переходим к дате и времени выезда'],
+  ['agreed','Договорились',pilot?'Укажите согласованные дату и время визита':'Переходим к дате и времени выезда'],
+  ...(pilot?[['needs_help','Требуется помощь','Укажите причину для руководителя'],['client_declined','Клиент отказался','Решение об отмене принимает руководитель']]:[]),
   ['other','Другое','Зафиксировать другой результат']
  ];
 }
-function openContactResult(pending){
- if(!liveMaster()||!pending||document.getElementById('masterContactResultForm'))return;
- const id=String(pending.id),phone=normalizeClientPhone(pending.phone),attemptId=String(pending.attempt_id||'');
- if(!id||!phone||!attemptId)return;
- const o=findOrder(id);if(!o)return;
- const options=resultOptions().map(([value,title,hint])=>`<label class="bosContactResultChoice"><input type="radio" name="result" value="${escv(value)}"><span><b>${escv(title)}</b><small>${escv(hint)}</small></span></label>`).join('');
- openModal(`<div class="bosContactResult"><h2>Как прошёл звонок?</h2><p class="muted">Номер: <b>${escv(phone)}</b></p><form id="masterContactResultForm" class="form"><div class="bosContactResultChoices">${options}</div><p class="bosContactSelection" role="status" aria-live="polite">Выберите итог звонка</p><label>Комментарий <span class="muted">(необязательно)</span></label><textarea name="comment" maxlength="500" rows="3" placeholder="Например: клиент уточняет дату доставки"></textarea><div class="bosContactCallback" hidden><label>Дата и время обратного звонка</label><p class="muted">Напоминание о звонке. Дата визита не изменится.</p><input type="datetime-local" name="callback_at"></div><div class="bosTaskFooter"><button type="submit" class="primary wide" disabled>Сохранить итог</button><button type="button" class="secondary wide bosContactLater">Заполнить позже</button></div><p class="muted bosContactResultMsg" role="status"></p></form></div>`);
+let openingContact=false;
+const draftKey=id=>'bosContactDraft:'+contactActor()+':'+id;
+function readDraft(id){try{return JSON.parse(sessionStorage.getItem(draftKey(id))||'null')}catch{return null}}
+function writeDraft(id,value){try{if(value)sessionStorage.setItem(draftKey(id),JSON.stringify(value));else sessionStorage.removeItem(draftKey(id))}catch{}}
+async function contactPolicy(id){
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
+ try{const r=await fetch(CONTACT_URL,{method:'POST',headers:await authHeaders(),body:JSON.stringify({action:'contactPolicy',id}),signal:controller.signal});
+ const data=await r.json().catch(()=>({}));if(r.status===404&&data.error==='UNKNOWN_ACTION')return {enabled:false};
+ if(!r.ok||!data.ok)throw new Error(data.error||'Не удалось загрузить правила связи. Проверьте интернет.');return data;
+ }finally{clearTimeout(timer)}
+}
+async function openContactResult(pending){
+ if(!contactAllowed()||!pending||openingContact||document.getElementById('masterContactResultForm'))return;
+ const id=String(pending.id),who=contactActor(),o=findOrder(id);if(!o)return;
+ openingContact=true;let policy;
+ try{policy=await contactPolicy(id)}catch(error){
+  if(who===contactActor()){openModal(`<h2>Итог связи</h2><p role="alert">${escv(error.message||'Нет связи с сервером.')}</p><button type="button" data-contact-retry>Повторить</button>`);document.querySelector('[data-contact-retry]').onclick=()=>openContactResult(pending)}return;
+ }finally{openingContact=false}
+ if(who!==contactActor()||!contactAllowed())return;
+ const pilot=policy.enabled===true,savedDraft=readDraft(id);
+ const draft=pilot&&savedDraft?savedDraft:null;
+ const phone=normalizeClientPhone(draft?.phone||pending.phone);let attemptId=String(draft?.attempt_id||pending.attempt_id||'').replace(/:attempt$/,'');
+ let revision=draft?.revision??Number(o.master_contact_revision||0);if(!phone||!attemptId)return;
+ const options=resultOptions(pilot).map(([value,title,hint])=>`<label class="bosContactResultChoice"><input type="radio" name="result" value="${escv(value)}"><span><b>${escv(title)}</b><small>${escv(hint)}</small></span></label>`).join('');
+ openModal(`<div class="bosContactResult"><h2>Как прошёл звонок?</h2><p class="muted">Номер: <b>${escv(phone)}</b>${pilot?' · Все сроки — МСК':''}</p><form id="masterContactResultForm" class="form"><div class="bosContactResultChoices">${options}</div><p class="bosContactSelection" role="status" aria-live="polite">Выберите итог звонка</p><label>Комментарий / причина</label><textarea name="comment" maxlength="500" rows="3" placeholder="Например: клиент уточняет дату доставки"></textarea><div class="bosContactCallback" hidden><label>Дата и время следующего контакта${pilot?' · МСК *':''}</label><p class="muted">Дата визита не изменится.</p><input type="datetime-local" name="callback_at"></div>${pilot?'<div class="bosContactVisit" hidden><label>Согласованная дата визита *</label><input type="date" name="scheduled_date"><label>Время визита · МСК *</label><input type="time" name="scheduled_time"><p class="muted">Длительность работы сохраняется.</p></div>':''}<div class="bosTaskFooter"><button type="submit" class="primary wide" disabled>Сохранить итог</button><button type="button" class="secondary wide bosContactLater">Заполнить позже</button><button type="button" class="secondary wide" data-contact-reload hidden>Обновить заявку</button></div><p class="muted bosContactResultMsg" role="status"></p></form></div>`);
  const form=document.getElementById('masterContactResultForm');if(!form)return;
- const submit=form.querySelector('[type=submit]'),callback=form.querySelector('.bosContactCallback'),msg=form.querySelector('.bosContactResultMsg');
- let saving=false;
- const who=contactActor();
+ const submit=form.querySelector('[type=submit]'),callback=form.querySelector('.bosContactCallback'),msg=form.querySelector('.bosContactResultMsg'),visit=form.querySelector('.bosContactVisit');let saving=false;
+ const waiting=result=>['no_answer','thinking','waiting_delivery','call_later','other'].includes(result);
+ function keepDraft(){if(pilot&&who===contactActor())writeDraft(id,{phone,attempt_id:attemptId,revision,result:form.elements.result.value,comment:form.elements.comment.value,callback_at:form.elements.callback_at.value,scheduled_date:form.elements.scheduled_date?.value,scheduled_time:form.elements.scheduled_time?.value})}
  function refreshForm(){
   const result=String(form.elements.result?.value||'');
-  form.querySelectorAll('button,input,textarea').forEach(el=>el.disabled=saving);
-  submit.disabled=saving||!result;
-  form.setAttribute('aria-busy',String(saving));
-  callback.hidden=result!=='call_later';
+  form.querySelectorAll('button,input,textarea').forEach(el=>el.disabled=saving);submit.disabled=saving||!result;form.setAttribute('aria-busy',String(saving));
+  callback.hidden=pilot?!waiting(result):result!=='call_later';form.elements.callback_at.required=pilot&&waiting(result);
+  form.elements.comment.required=result==='other'||(pilot&&['needs_help','client_declined'].includes(result));
+  if(visit){visit.hidden=result!=='agreed';form.elements.scheduled_date.required=result==='agreed';form.elements.scheduled_time.required=result==='agreed'}
   form.querySelectorAll('.bosContactResultChoice').forEach(row=>row.classList.toggle('is-selected',row.querySelector('input').checked));
-  const label=resultOptions().find(x=>x[0]===result)?.[1];
-  form.querySelector('.bosContactSelection').textContent=label?'Выбрано: '+label:'Выберите итог звонка';
+  const label=resultOptions(pilot).find(x=>x[0]===result)?.[1];form.querySelector('.bosContactSelection').textContent=label?'Выбрано: '+label:'Выберите итог звонка';
  }
- if(pending.prefill){
-  const prior=pending.prefill;
-  const radio=[...form.querySelectorAll('input[name=result]')].find(x=>x.value===prior.result);if(radio)radio.checked=true;
-  form.elements.comment.value=String(prior.comment||'');
-  if(prior.callback_at){const d=new Date(prior.callback_at);if(!Number.isNaN(d.getTime())){const local=new Date(d.getTime()-d.getTimezoneOffset()*60000);form.elements.callback_at.value=local.toISOString().slice(0,16);}}
+ const prior=draft||pending.prefill;
+ if(prior){const radio=[...form.querySelectorAll('input[name=result]')].find(x=>x.value===prior.result);if(radio)radio.checked=true;form.elements.comment.value=String(prior.comment||'');
+  if(prior.callback_at){const d=new Date(prior.callback_at);if(draft)form.elements.callback_at.value=prior.callback_at;else if(!Number.isNaN(d.getTime()))form.elements.callback_at.value=new Date(d.getTime()+(pilot?10800000:-d.getTimezoneOffset()*60000)).toISOString().slice(0,16)}
  }
- form.addEventListener('change',refreshForm);refreshForm();
- form.querySelector('.bosContactLater').onclick=()=>{if(saving)return;clearPendingCall(attemptId);closeModal();window.openOrder?.(id)};
+ if(pilot){form.elements.scheduled_date.value=draft?.scheduled_date||String(o.scheduled_date||'').slice(0,10);form.elements.scheduled_time.value=draft?.scheduled_time||String(o.scheduled_time||'').slice(0,5)}
+ form.addEventListener('change',()=>{refreshForm();keepDraft()});form.addEventListener('input',keepDraft);refreshForm();
+ form.querySelector('.bosContactLater').onclick=()=>{if(saving)return;keepDraft();clearPendingCall(attemptId);closeModal();window.openOrder?.(id)};
+ form.querySelector('[data-contact-reload]').onclick=async()=>{try{
+  const data=await window.api('bootstrap'),fresh=data.orders?.find(x=>String(x.id)===id);if(!data.ok||!fresh||who!==contactActor())throw new Error('Не удалось обновить заявку.');
+  mergeOrder(id,fresh);revision=Number(fresh.master_contact_revision||0);attemptId=newAttemptId();keepDraft();
+  msg.textContent='Актуальный итог: '+(window.BOS_CONTACT_STATUS?.labels[fresh.master_contact_status]||'не указан')+'. Проверьте черновик перед сохранением.';form.querySelector('[data-contact-reload]').hidden=true;
+ }catch(e){msg.textContent=e.message}};
  form.onsubmit=async event=>{
-  event.preventDefault();if(sending||saving||who!==contactActor()||!liveMaster())return;
+  event.preventDefault();if(sending||saving||who!==contactActor()||!contactAllowed())return;
   const result=String(form.elements.result?.value||''),comment=String(form.elements.comment?.value||'').trim();
-  if(!result){msg.textContent='Выберите итог звонка';return}
-  if(result==='other'&&!comment){msg.textContent='Для варианта «Другое» добавьте комментарий';form.elements.comment.focus();return}
-  let callbackAt='';if(result==='call_later'&&form.elements.callback_at?.value){const d=new Date(form.elements.callback_at.value);if(!Number.isNaN(d.getTime()))callbackAt=d.toISOString();}
-  sending=true;saving=true;refreshForm();msg.textContent='Сохраняем…';
+  if(!result||!form.reportValidity())return;
+  let callbackAt='';try{if(!callback.hidden&&form.elements.callback_at.value){const raw=form.elements.callback_at.value,d=new Date(raw+(pilot?':00+03:00':''));if(Number.isNaN(d.getTime())||(pilot&&new Date(d.getTime()+10800000).toISOString().slice(0,16)!==raw))throw new Error('Укажите корректную дату.');callbackAt=d.toISOString()}}catch(e){msg.textContent=e.message;return}
+  const extra=pilot?{contact_control:true,expected_revision:revision,...(result==='agreed'?{scheduled_date:form.elements.scheduled_date.value,scheduled_time:form.elements.scheduled_time.value}:{})}:{};
+  keepDraft();sending=true;saving=true;refreshForm();msg.textContent='Сохраняем…';
   try{
-   await recordContactResult(id,phone,attemptId,result,comment,callbackAt);clearPendingCall(attemptId);
-   if(!form.isConnected||who!==contactActor())return;
-   closeModal();
-   if(result==='agreed'&&typeof window.masterOrderAgree179==='function')window.masterOrderAgree179(id);
-   else window.openOrder?.(id);
-  }catch(error){if(form.isConnected)msg.textContent=error?.message||String(error)}
+   await contactApi('recordContactResult',id,{phone,attempt_id:attemptId,result,comment,callback_at:callbackAt||null,...extra});clearPendingCall();writeDraft(id,null);
+   if(!form.isConnected||who!==contactActor())return;closeModal();
+   if(!pilot&&result==='agreed'&&typeof window.masterOrderAgree179==='function')window.masterOrderAgree179(id);else window.openOrder?.(id);
+  }catch(error){if(form.isConnected){msg.textContent=(error?.message||String(error))+(pilot?' Черновик сохранён.':'');form.querySelector('[data-contact-reload]').hidden=error.status!==409}}
   finally{sending=false;saving=false;if(form.isConnected)refreshForm()}
  };
 }
-window.openMasterContactResultForOrder=function(id){
+window.openMasterContactResultForOrder=function(id,preferredResult){
  const o=findOrder(id),items=window.BOS_CONTACT_STATUS?.history?.(o)||[];
- if(!o||!liveMaster()||['Выполнена','Отменена'].includes(String(o.status)))return;
+ if(!o||!contactAllowed()||['Выполнена','Отменена'].includes(String(o.status)))return;
  const latest=items[items.length-1],event=latest?.result==='pending'?latest:null;
  if(event){openContactResult({id:String(id),phone:event.phone,attempt_id:event.id,started_at:Date.now()-1000});return}
  const phones=window.BOS_MASTER_CLIENT_PHONES?.(o.phone||o.client_phone)||[];
- const prefill=latest||{result:o.master_contact_status,comment:o.master_contact_comment,callback_at:o.master_contact_callback_at};
+ const prefill={...(latest||{result:o.master_contact_status,comment:o.master_contact_comment,callback_at:o.master_contact_callback_at}),...(preferredResult?{result:preferredResult}:{})};
  const start=phone=>openContactResult({id:String(id),phone,attempt_id:newAttemptId(),started_at:Date.now()-1000,prefill});
  const prior=normalizeClientPhone(latest?.phone||o.master_contact_phone);
  if(phones.some(p=>p.tel===prior)){start(prior);return}
@@ -5693,6 +5718,7 @@ window.openMasterContactResultForOrder=function(id){
  openModal(`<h2>Итог связи</h2><p class="muted">${phones.length?'Выберите номер, по которому общались с клиентом.':'Телефон не указан. Уточните его у диспетчера.'}</p><div class="masterV127Phones">${phones.map(p=>`<button type="button" class="secondary wide" data-contact-phone="${escv(p.tel)}">${escv(p.tel)}</button>`).join('')}</div><button type="button" class="secondary wide" onclick="closeModal()">Отмена</button>`);
  document.querySelectorAll('[data-contact-phone]').forEach(button=>button.onclick=()=>start(button.dataset.contactPhone));
 };
+window.BOS_CONTACT_POLICY=contactPolicy;
 function callOrderId(link){
   const host=link?.closest?.('[data-master-order-id],[data-order-id]');
   const direct=host?.dataset?.masterOrderId||host?.dataset?.orderId;
@@ -5879,8 +5905,9 @@ async function saveAction(id,action,payload={}){
 window.masterOrderStage179=async function(id,stage){const o=orderById(id);if(!o||!active(o)||!hasSchedule(o))return;const n=confirmedCount(o),expected=n===1?'departed':n===2?'started':'';if(stage!==expected){message(id,'Этапы нужно отмечать по порядку');return}return saveAction(id,'setStage',{stage})};
 window.masterOrderContact179=(id,action)=>['markCalled','confirmAgreement'].includes(action)?saveAction(id,action,action==='markCalled'?{contact_confirmed:true}:{}):undefined;
 window.masterOrderReport179=function(id){const o=orderById(id);if(!liveMaster()||busy||uncertain.has(String(id))||!active(o)||confirmedCount(o)!==3)return;return window.masterWorkflowComplete?.(id)};
-window.masterOrderAgree179=function(id){
+window.masterOrderAgree179=async function(id){
  const o=orderById(id);if(!o||!liveMaster()||!active(o))return;
+ if(window.BOS_CONTACT_POLICY){try{const policy=await window.BOS_CONTACT_POLICY(id);if(policy.enabled){window.openMasterContactResultForOrder?.(id,'agreed');return}}catch(error){message(id,error.message||'Не удалось проверить правила связи.');return}}
  const contactStatus=String(o?.master_contact_status||'');
  if(contactStatus==='pending'){
   const pending=[...(Array.isArray(o?.master_contact_history)?o.master_contact_history:[])].reverse().find(x=>String(x?.result||'')==='pending');
