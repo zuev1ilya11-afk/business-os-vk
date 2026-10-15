@@ -115,3 +115,22 @@ repeat seed, CAS conflict and direct master rejection. No Docker runtime is
 available in this workspace, so the actual RU ESZIP/PostgREST launch is deliberately
 a required `--prepare` gate, not a claimed local success. The disposable runtime
 does not replace the outstanding real employee and hosted Preview checks.
+
+### Observed preparation stop (15 October)
+
+The owner's console reached the isolated-runtime phase after the baseline bundle
+comparison and candidate build, then stopped with `Help database query failed`.
+Production activation had not started. The earlier probe removed its temporary
+container before retaining the PostgreSQL startup error, so the root cause is
+not established by that message.
+
+`diagnose_pg.py` is a separate diagnostic for this exact failed candidate
+(installer SHA-256 pinned in the script). It checks the saved baseline read-only,
+starts only a new disposable PostgreSQL with the same image/configuration/limits,
+and prints bounded, redacted errors from that test container. It runs the packaged
+synthetic fixture only in that new database. It does not rebuild the API, change
+the installer, alter old backups/journals, apply live SQL or restart live services.
+Its own temporary container is removed even if log collection is interrupted.
+Five focused fixture/hash, redaction, bounds, synthetic SQL-target and interrupted
+cleanup tests pass locally; synthetic psql errors use normal diagnostic verbosity;
+actual diagnostic execution is pending the owner's console command.
