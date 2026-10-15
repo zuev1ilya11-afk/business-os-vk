@@ -56,13 +56,16 @@ def probe_candidate(rec):
     context=rec['database'];nonce=rec['nonce'];password=secrets.token_hex(24);secret=secrets.token_hex(32)
     prefix=['docker','run','-d','--pull=never','--label','bos.help293='+nonce,'--pids-limit','128','--cpus','1']
     directory=b.STAGE/'probe-pg';directory.mkdir(mode=0o700)
-    postgres_env=envfile('probe-pg.env',{'POSTGRES_USER':'postgres','POSTGRES_PASSWORD':password,'POSTGRES_DB':'help_preview','PGDATA':'/var/lib/postgresql/help-preview'})
+    # The RU image starts PostgreSQL with data_directory=/var/lib/postgresql/data.
+    # Bind only our fresh private directory there; changing PGDATA alone leaves
+    # the server using the image's unprepared default directory (observed EXIT=1).
+    postgres_env=envfile('probe-pg.env',{'POSTGRES_USER':'postgres','POSTGRES_PASSWORD':password,'POSTGRES_DB':'help_preview','PGDATA':'/var/lib/postgresql/data'})
     aliases=[]
     for name in ('BOS_AUTH_ORIGIN','BOS_REST_ORIGIN','BOS_STORAGE_ORIGIN'):
         host=urllib.parse.urlsplit(rec['environment'][name]).hostname
         aliases+=['--add-host',host+':127.0.0.1']
     args=prefix+['--name','bos-help293-pg-'+nonce,'--network','none','--memory','256m','--memory-swap','256m',*aliases,
-                 '--env-file',postgres_env,'--mount','type=bind,src='+str(directory)+',dst=/var/lib/postgresql/help-preview',context['db_image']]
+                 '--env-file',postgres_env,'--mount','type=bind,src='+str(directory)+',dst=/var/lib/postgresql/data',context['db_image']]
     try:
         pg=invoke(args,'test-db-start');pid=b.assert_isolated(pg)
         ready(lambda:json.loads(db.sql(pg,'help_preview',"SELECT json_build_object('ok',true);")))

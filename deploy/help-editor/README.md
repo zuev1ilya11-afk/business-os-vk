@@ -2,8 +2,9 @@
 
 This directory contains the help editor candidate and the pinned RU installer
 `bos293.pyz`. Production activation still requires a successful on-host
-`--prepare` and separate owner approval after Preview. The installer has not yet
-been executed on the RU host. Do not apply raw SQL or copy the generic repo shell.
+`--prepare` and separate owner approval after Preview. The first on-host
+preparation stopped at disposable PostgreSQL startup; production activation has
+not started. Do not apply raw SQL or copy the generic repo shell.
 
 ## Storage and API
 
@@ -133,4 +134,21 @@ the installer, alter old backups/journals, apply live SQL or restart live servic
 Its own temporary container is removed even if log collection is interrupted.
 Five focused fixture/hash, redaction, bounds, synthetic SQL-target and interrupted
 cleanup tests pass locally; synthetic psql errors use normal diagnostic verbosity;
-actual diagnostic execution is pending the owner's console command.
+the subsequent on-host diagnostic result is recorded below.
+
+### Disposable PostgreSQL path correction (15 October)
+
+The on-host diagnostic then reported `FAILED_PHASE=startup`, `EXIT=1`,
+`OOM=False` and `FATAL: data directory "/var/lib/postgresql/data" has invalid
+permissions`. The test had set PGDATA and mounted its fresh 0700 directory at
+`/var/lib/postgresql/help-preview`, while the server still used the image's
+default data directory. The probe now aligns both PGDATA and the **private test
+bind destination** with `/var/lib/postgresql/data`. It does not chmod/chown or
+mount any production directory. The original image, network isolation, random
+test credentials, resource limits, fixture and production payload are unchanged.
+
+`test_probe_storage.py` failed on the old path and passes with the corrected
+launch configuration; Docker is intercepted in this regression test. The
+standalone diagnostic uses the same correction and is pinned to the rebuilt
+installer. Successful PostgreSQL startup and the complete RU preparation must
+still be confirmed on-host; local tests do not establish that outcome.

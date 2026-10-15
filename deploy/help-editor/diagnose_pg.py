@@ -22,7 +22,7 @@ import uuid
 import zipfile
 
 ZIP=Path('/root/bos293.pyz')
-ZIP_SHA='8846d2a280ada3836dff608218be0211c82a3cc2c536da19fade05ca6731cd96'
+ZIP_SHA='421c61ffa4769453f41aa8288108b6860ee949be24c3b139d6d94bb856b4ce2a'
 
 
 def safe_lines(raw,password):
@@ -94,7 +94,7 @@ def main():
         b.STAGE.mkdir(mode=0o700)
         data=b.STAGE/'data';data.mkdir(mode=0o700)
         password=secrets.token_hex(24)
-        environment=probe.envfile('test.env',{'POSTGRES_USER':'postgres','POSTGRES_PASSWORD':password,'POSTGRES_DB':'help_preview','PGDATA':'/var/lib/postgresql/help-preview'})
+        environment=probe.envfile('test.env',{'POSTGRES_USER':'postgres','POSTGRES_PASSWORD':password,'POSTGRES_DB':'help_preview','PGDATA':'/var/lib/postgresql/data'})
         aliases=[]
         for name in ('BOS_AUTH_ORIGIN','BOS_REST_ORIGIN','BOS_STORAGE_ORIGIN'):
             host=urllib.parse.urlsplit(record['environment'][name]).hostname
@@ -102,7 +102,7 @@ def main():
             aliases+=['--add-host',host+':127.0.0.1']
         args=['docker','run','-d','--pull=never','--label','bos.help293='+nonce,'--name','bos-help293-pg-check-'+nonce,
               '--network','none','--memory','256m','--memory-swap','256m','--pids-limit','128','--cpus','1',*aliases,
-              '--env-file',environment,'--mount','type=bind,src='+str(data)+',dst=/var/lib/postgresql/help-preview',record['database']['db_image']]
+              '--env-file',environment,'--mount','type=bind,src='+str(data)+',dst=/var/lib/postgresql/data',record['database']['db_image']]
         print('MODE=ISOLATED_PG_DIAGNOSTIC; production unchanged',flush=True)
         cid=None;last=None;phase='startup';okay=False
         try:
