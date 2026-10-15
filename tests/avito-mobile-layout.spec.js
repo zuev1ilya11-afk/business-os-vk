@@ -99,7 +99,14 @@ test('mobile errors stay near search and returning to another tab restores its h
  await page.locator('#avitoSettings').click();await expect(page.locator('.modal')).toContainText('Домашний мастер');await page.locator('.modalClose').click();
  await page.locator('nav [data-page=orders]').click();await expect(page.locator('.avitoWorkspace')).toHaveCount(0);
  await expect(page.locator('#app>header .bosInstallAppBtn--header')).toBeVisible();
- expect(await page.locator('#app>header').evaluate(e=>getComputedStyle(e).flexWrap)).toBe('nowrap');await noOverflow(page);expect(x.errors).toEqual([]);
+ const header=await page.locator('#app>header').boundingBox();
+ const install=await page.locator('#app>header .bosInstallAppBtn--header').boundingBox();
+ const profile=await page.locator('#profileBtn').boundingBox();
+ expect(profile.y).toBe(header.y+8);
+ expect(install.y-(profile.y+profile.height)).toBe(8);
+ expect(install.y+install.height).toBeLessThanOrEqual(header.y+header.height);
+ expect((await page.locator('#content').boundingBox()).y).toBeGreaterThanOrEqual(header.y+header.height);
+ await noOverflow(page);expect(x.errors).toEqual([]);
 });
 
 for(const width of [900,1440])test(`desktop/tablet Avito keeps inline split panes at ${width}`,async({page})=>{
