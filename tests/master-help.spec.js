@@ -42,10 +42,10 @@ test('tips entry exposes lessons, FAQ search, communication, problems and origin
  await expect(help(page)).toBeVisible();await expect(help(page).getByRole('button',{name:/Получил новую заявку/})).toBeVisible();
  await help(page).getByRole('button',{name:'Общение с клиентом',exact:true}).click();await expect(help(page).locator('[data-talk]')).toHaveCount(6);
  await help(page).locator('[data-talk]').first().click();await expect(help(page)).toContainText('Что сказать');
- await help(page).getByRole('button',{name:'Частые вопросы',exact:true}).click();await expect(help(page).locator('details[data-faq]')).toHaveCount(12);
+ await help(page).getByRole('button',{name:'Частые вопросы',exact:true}).click();await expect(help(page).locator('details[data-faq]')).toHaveCount(10);
  await help(page).getByLabel('Поиск по вопросам и ответам').fill('1 год');await expect(help(page).locator('details[data-faq]')).toHaveCount(1);
  await help(page).getByLabel('Поиск по вопросам и ответам').fill('zzz');await expect(help(page)).toContainText('Ничего не найдено');
- await help(page).getByRole('button',{name:'Очистить поиск',exact:true}).click();await expect(help(page).locator('details[data-faq]')).toHaveCount(12);
+ await help(page).getByRole('button',{name:'Очистить поиск',exact:true}).click();await expect(help(page).locator('details[data-faq]')).toHaveCount(10);
  await help(page).getByRole('button',{name:'Возникла проблема',exact:true}).click();await expect(help(page).locator('[data-problem]')).toHaveCount(5);
  await help(page).getByRole('button',{name:'Работа в приложении',exact:true}).click();
  await help(page).getByRole('button',{name:'Памятки и файлы',exact:true}).click();await expect(help(page).locator('#bosHelpMaterials')).toBeVisible();
@@ -76,8 +76,8 @@ test('copy reports success and failure honestly; search matches answers and cate
  await expect(help(page).locator('.bhStatus')).toContainText('Скопировано');expect(await page.evaluate(()=>__copied)).toBe('Здравствуйте! Меня зовут … Звоню по вашей заявке на … Удобно уточнить детали и договориться о визите?');
  await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('denied')}}}));
  await help(page).getByRole('button',{name:'Скопировать фразу',exact:true}).first().click();await expect(help(page).locator('.bhStatus')).toContainText('Не удалось');
- await help(page).getByRole('button',{name:'Частые вопросы',exact:true}).click();await help(page).getByRole('button',{name:'Оплата',exact:true}).click();await expect(help(page).locator('[data-faq]')).toHaveCount(2);
- await help(page).getByRole('button',{name:'Вернуться к категориям',exact:true}).click();await expect(help(page).locator('[data-faq]')).toHaveCount(12);
+ await help(page).getByRole('button',{name:'Частые вопросы',exact:true}).click();await help(page).getByRole('button',{name:'Оплата',exact:true}).click();await expect(help(page).locator('[data-faq]')).toHaveCount(1);
+ await help(page).getByRole('button',{name:'Вернуться к категориям',exact:true}).click();await expect(help(page).locator('[data-faq]')).toHaveCount(10);
 });
 
 test('missing illustration keeps text, and failed lazy loading can be retried',async({page})=>{
