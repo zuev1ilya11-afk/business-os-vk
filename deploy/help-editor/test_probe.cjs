@@ -4,14 +4,19 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const {execFileSync,spawn}=require('node:child_process'),{stripTypeScriptTypes}=require('node:module'),{webcrypto}=require('node:crypto');
 const {PGlite}=require('@electric-sql/pglite'),{postgresAdapter}=require('../../tests/helpers/help-postgres.cjs');
 const root=__dirname,secret='isolated-local-fixture-key-not-production';
+function packagedFixture(pkg){return execFileSync('python3',['-c',`import ast,sys
+tree=ast.parse(open(sys.argv[1]).read())
+values=[n.value.value for n in ast.walk(tree) if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='fixture' for t in n.targets) and isinstance(n.value,ast.Constant)]
+assert len(values)==1
+print(values[0])`,path.join(pkg,'probe_runtime.py')],{encoding:'utf8'});}
 function runPython(file,phase){return new Promise((resolve,reject)=>{const p=spawn('python3',[file],{stdio:['pipe','pipe','pipe']});let out='',err='';p.stdout.on('data',b=>out+=b);p.stderr.on('data',b=>err+=b);p.on('error',reject);p.on('exit',code=>code===0?resolve(JSON.parse(out)):reject(Error('Probe '+phase+' failed: '+err)));p.stdin.end(JSON.stringify({secret,phase}));})}
 test('packaged signed HTTP probes validate CAS, server rights and restart persistence',async()=>{
  const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'bos-help-probe-'));let server,pg;
  try{
   execFileSync('python3',['-m','zipfile','-e',path.join(root,'bos293.pyz'),path.join(temporary,'package')]);
   const pkg=path.join(temporary,'package'),sql=n=>fs.readFileSync(path.join(pkg,n),'utf8'),dir=path.join(temporary,'database');
-  pg=new PGlite(dir);await pg.exec('create role anon; create role authenticated; create role service_role bypassrls; create table business_staff(id text primary key,external_id text,role text,is_active boolean);');
-  for(const role of ['owner','manager','master','dispatcher','inactive'])await pg.query('insert into business_staff values($1,$2,$3,$4)',[role,'preview_'+role,role==='inactive'?'owner':role,role!=='inactive']);
+  pg=new PGlite(dir);await pg.exec('create role anon; create role authenticated; create role service_role bypassrls;');
+  await pg.exec(packagedFixture(pkg));
   await pg.exec(sql('schema.sql'));await pg.exec(sql('seed.sql'));
   const code=stripTypeScriptTypes(sql('master-memo-api.ts').replace(/^import .*?;\s*/gm,''),{mode:'transform'});
   async function start(){

@@ -22,7 +22,7 @@ import uuid
 import zipfile
 
 ZIP=Path('/root/bos293.pyz')
-ZIP_SHA='421c61ffa4769453f41aa8288108b6860ee949be24c3b139d6d94bb856b4ce2a'
+ZIP_SHA='527ccfe24723ebcdb449ae1290e18b021fc2c41c6c879c5e33497037bfe558da'
 
 
 def safe_lines(raw,password):
@@ -44,10 +44,10 @@ def fixture(archive):
     return values[0]+archive.read('schema.sql').decode()+archive.read('seed.sql').decode()
 
 
-def test_sql(cid,statement,shell):
+def test_sql(cid,statement,shell,name='help_preview'):
     # Only the container just created below is ever passed to this function.
     shell=shell.replace('-v VERBOSITY=sqlstate','-v VERBOSITY=default')
-    return subprocess.run(['docker','exec','-i',cid,'sh','-c',shell,'help-metadata','help_preview'],
+    return subprocess.run(['docker','exec','-i','-e','PGHOST=127.0.0.1',cid,'sh','-c',shell,'help-metadata',name],
                           input=statement.encode(),capture_output=True,timeout=20)
 
 
@@ -94,7 +94,7 @@ def main():
         b.STAGE.mkdir(mode=0o700)
         data=b.STAGE/'data';data.mkdir(mode=0o700)
         password=secrets.token_hex(24)
-        environment=probe.envfile('test.env',{'POSTGRES_USER':'postgres','POSTGRES_PASSWORD':password,'POSTGRES_DB':'help_preview','PGDATA':'/var/lib/postgresql/data'})
+        environment=probe.envfile('test.env',probe.pg_environment(password))
         aliases=[]
         for name in ('BOS_AUTH_ORIGIN','BOS_REST_ORIGIN','BOS_STORAGE_ORIGIN'):
             host=urllib.parse.urlsplit(record['environment'][name]).hostname
@@ -111,11 +111,14 @@ def main():
             info=f.inspect(cid)
             f.require(info['Config'].get('Labels',{}).get('bos.help293')==nonce and info['Id']==cid,'Test container ownership mismatch')
             b.assert_isolated(cid)
-            for attempt in range(20):
-                last=test_sql(cid,"BEGIN READ ONLY; SET LOCAL statement_timeout='5s'; SELECT json_build_object('ok',true); ROLLBACK;",db.SHELL)
+            for attempt in range(60):
+                last=test_sql(cid,"BEGIN READ ONLY; SET LOCAL statement_timeout='5s'; SELECT json_build_object('ok',true); ROLLBACK;",db.SHELL,'postgres')
                 if last.returncode==0:break
                 if not f.inspect(cid)['State']['Running']:break
                 time.sleep(1)
+            if last.returncode==0:
+                print('TEST_PG_BOOTSTRAP=OK',flush=True);phase='create_database'
+                last=test_sql(cid,'CREATE DATABASE help_preview;',db.SHELL,'postgres')
             if last.returncode==0:
                 print('TEST_PG_CONNECT=OK',flush=True);phase='fixture'
                 with zipfile.ZipFile(ZIP) as archive:statement=fixture(archive)

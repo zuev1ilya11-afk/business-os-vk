@@ -52,6 +52,31 @@ def ready(callback,tries=12):
             time.sleep(1)
 
 
+def pg_environment(password):
+    # Match the image's bootstrap contract: migrate.sh explicitly connects as
+    # supabase_admin and initializes roles/extensions in the postgres database.
+    return {'POSTGRES_USER':'supabase_admin','POSTGRES_PASSWORD':password,
+            'POSTGRES_DB':'postgres','PGDATA':'/var/lib/postgresql/data'}
+
+
+def pg_execute(cid,name,statement):
+    # The entrypoint's temporary init server accepts Unix sockets only. TCP
+    # prevents a successful query from racing its remaining migrations/restart.
+    return invoke(['docker','exec','-i','-e','PGHOST=127.0.0.1',cid,'sh','-c',
+                   db.SHELL,'help-preview',name],'test-db-query',timeout=25,input_data=statement.encode())
+
+
+def pg_sql(cid,statement,write=False,name='help_preview'):
+    wrapper=('BEGIN;' if write else 'BEGIN READ ONLY;')+" SET LOCAL statement_timeout='15s'; "+statement+(' COMMIT;' if write else ' ROLLBACK;')
+    return pg_execute(cid,name,wrapper)
+
+
+def prepare_pg(cid):
+    ready(lambda:json.loads(pg_sql(cid,"SELECT json_build_object('ok',true);",name='postgres')),tries=60)
+    # This is called only for the fresh, isolated container created below.
+    pg_execute(cid,'postgres','CREATE DATABASE help_preview;')
+
+
 def probe_candidate(rec):
     context=rec['database'];nonce=rec['nonce'];password=secrets.token_hex(24);secret=secrets.token_hex(32)
     prefix=['docker','run','-d','--pull=never','--label','bos.help293='+nonce,'--pids-limit','128','--cpus','1']
@@ -59,7 +84,7 @@ def probe_candidate(rec):
     # The RU image starts PostgreSQL with data_directory=/var/lib/postgresql/data.
     # Bind only our fresh private directory there; changing PGDATA alone leaves
     # the server using the image's unprepared default directory (observed EXIT=1).
-    postgres_env=envfile('probe-pg.env',{'POSTGRES_USER':'postgres','POSTGRES_PASSWORD':password,'POSTGRES_DB':'help_preview','PGDATA':'/var/lib/postgresql/data'})
+    postgres_env=envfile('probe-pg.env',pg_environment(password))
     aliases=[]
     for name in ('BOS_AUTH_ORIGIN','BOS_REST_ORIGIN','BOS_STORAGE_ORIGIN'):
         host=urllib.parse.urlsplit(rec['environment'][name]).hostname
@@ -68,10 +93,14 @@ def probe_candidate(rec):
                  '--env-file',postgres_env,'--mount','type=bind,src='+str(directory)+',dst=/var/lib/postgresql/data',context['db_image']]
     try:
         pg=invoke(args,'test-db-start');pid=b.assert_isolated(pg)
-        ready(lambda:json.loads(db.sql(pg,'help_preview',"SELECT json_build_object('ok',true);")))
+        prepare_pg(pg)
         with zipfile.ZipFile(Path(__file__).parent) as archive:
             schema=archive.read('schema.sql').decode();seed=archive.read('seed.sql').decode()
-        fixture="""CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS;
+        fixture="""DO $roles$ BEGIN
+          IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='anon') THEN CREATE ROLE anon; END IF;
+          IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='authenticated') THEN CREATE ROLE authenticated; END IF;
+          IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='service_role') THEN CREATE ROLE service_role BYPASSRLS; END IF;
+          END $roles$;
           CREATE TABLE business_staff(id uuid PRIMARY KEY,external_id text UNIQUE,role text,is_active boolean);
           INSERT INTO business_staff VALUES
           ('00000000-0000-4000-8000-000000000001','preview_owner','owner',true),
@@ -82,9 +111,9 @@ def probe_candidate(rec):
           GRANT USAGE ON SCHEMA public TO service_role;
           GRANT SELECT ON business_staff TO service_role;
         """
-        db.sql(pg,'help_preview',fixture+schema+seed,write=True)
+        pg_sql(pg,fixture+schema+seed,write=True)
         rest_port=urllib.parse.urlsplit(rec['environment']['BOS_REST_ORIGIN']).port or 80
-        rest_env=envfile('probe-rest.env',{'PGRST_DB_URI':'postgres://postgres:'+password+'@127.0.0.1:5432/help_preview','PGRST_DB_SCHEMAS':'public','PGRST_DB_ANON_ROLE':'anon','PGRST_JWT_SECRET':secret,'PGRST_SERVER_PORT':rest_port,'PGRST_SERVER_HOST':'127.0.0.1','PGRST_DB_POOL':3})
+        rest_env=envfile('probe-rest.env',{'PGRST_DB_URI':'postgres://supabase_admin:'+password+'@127.0.0.1:5432/help_preview','PGRST_DB_SCHEMAS':'public','PGRST_DB_ANON_ROLE':'anon','PGRST_JWT_SECRET':secret,'PGRST_SERVER_PORT':rest_port,'PGRST_SERVER_HOST':'127.0.0.1','PGRST_DB_POOL':3})
         rest_args=prefix+['--name','bos-help293-rest-'+nonce,'--network','container:'+pg,'--memory','128m','--memory-swap','128m','--env-file',rest_env]
         rest_entry=context['rest_config'].get('Entrypoint') or []
         f.require(len(rest_entry)<=1,'Compound REST entrypoint requires review')
@@ -104,7 +133,7 @@ def probe_candidate(rec):
         ready(lambda:test_api(pid,secret,'ready'))
         test_api(pid,secret,'before')
         # Repeat the production seed after real HTTP edits; it must preserve them.
-        db.sql(pg,'help_preview',seed,write=True)
+        pg_sql(pg,seed,write=True)
         # Check persistent storage through actual process restarts, not an in-memory fake.
         for cid,label in [(edge,'edge'),(rest,'rest'),(pg,'postgres')]:invoke(['docker','stop','--time','5',cid],'test-stop-'+label)
         for cid,label in [(pg,'postgres'),(rest,'rest'),(edge,'edge')]:invoke(['docker','start',cid],'test-restart-'+label)

@@ -46,7 +46,22 @@ class StorageTest(unittest.TestCase):
             self.assertEqual(args[args.index('--network')+1],'none')
             self.assertNotIn('--publish',args);self.assertNotIn('-p',args)
             self.assertEqual(args[-1],rec['database']['db_image'])
-            self.assertEqual(env['POSTGRES_DB'],'help_preview')
+            self.assertEqual(env['POSTGRES_USER'],'supabase_admin')
+            self.assertEqual(env['POSTGRES_DB'],'postgres')
+
+    def test_bootstrap_uses_tcp_before_creating_only_the_disposable_database(self):
+        self.assertTrue(callable(getattr(p,'prepare_pg',None)),'Explicit post-bootstrap test database creation required')
+        queries=[]
+        def command(args,label,**kwargs):
+            queries.append((args,kwargs['input_data'].decode()))
+            return b'{"ok":true}' if len(queries)==1 else b''
+        with patch.object(b,'private_command',command):p.prepare_pg('new-isolated-test-container')
+        self.assertEqual(len(queries),2)
+        for args,sql in queries:
+            self.assertEqual(args[:6],['docker','exec','-i','-e','PGHOST=127.0.0.1','new-isolated-test-container'])
+            self.assertEqual(args[-1],'postgres')
+        self.assertIn('BEGIN READ ONLY;',queries[0][1])
+        self.assertEqual(queries[1][1],'CREATE DATABASE help_preview;')
 
 
 if __name__=='__main__':unittest.main()

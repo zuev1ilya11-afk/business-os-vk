@@ -152,3 +152,31 @@ launch configuration; Docker is intercepted in this regression test. The
 standalone diagnostic uses the same correction and is pinned to the rebuilt
 installer. Successful PostgreSQL startup and the complete RU preparation must
 still be confirmed on-host; local tests do not establish that outcome.
+
+### Image bootstrap correction (15 October, subsequent diagnostic)
+
+The corrected data path allowed PostgreSQL to start. The next on-host diagnostic
+reported `EXIT=2`, `OOM=False` and `role "supabase_admin" does not exist` during
+the image's initialization script. The probe had overridden the image defaults
+with `POSTGRES_USER=postgres` and `POSTGRES_DB=help_preview`.
+
+The image bootstrap contract was checked against the upstream Supabase
+`Dockerfile-17` and `migrations/db/migrate.sh`: the latter explicitly connects as
+`supabase_admin`; its initial schema also creates anon/authenticated/service_role.
+The isolated probe now uses `supabase_admin` and `postgres` for bootstrap, with a
+fresh random password. It waits for TCP connections (not the entrypoint's temporary
+Unix-socket server), then creates its own empty `help_preview` database. Test
+fixture roles are created only when absent, so the image's initialized roles are
+preserved. The test REST connection uses the same synthetic admin/password.
+
+The standalone diagnostic follows the same sequence and distinguishes bootstrap,
+test-database creation and fixture phases. Local command-construction tests
+verify the role/database/TCP ordering; the packaged SQL fixture is now also used
+by the real PostgreSQL-WASM HTTP test with pre-existing image-style roles. The
+old fixture failed that test with duplicate role `anon`; the revised fixture
+passes. Only `probe_runtime.py` changes inside the installer archive; all live
+web/API/SQL, migration and activation/rollback code remains byte-identical.
+Full Docker initialization and preparation still require on-host confirmation.
+Executed locally after this correction: 19 Python tests and 31 packaged HTTP
+checks, including signed roles, CAS conflict, repeat seed and disk persistence
+after restart. These HTTP checks use PostgreSQL-WASM, not Docker/PostgREST.

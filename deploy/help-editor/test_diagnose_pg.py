@@ -34,7 +34,7 @@ class DiagnosticTests(unittest.TestCase):
         with patch.object(m.subprocess,'run',return_value=subprocess.CompletedProcess([],0,b'',b'')) as run:
             m.test_sql('test-only-id','BEGIN READ ONLY; SELECT 1; ROLLBACK;','psql -v VERBOSITY=sqlstate')
         args=run.call_args.args[0]
-        self.assertEqual(args[:4],['docker','exec','-i','test-only-id'])
+        self.assertEqual(args[:6],['docker','exec','-i','-e','PGHOST=127.0.0.1','test-only-id'])
         self.assertEqual(args[-1],'help_preview')
         self.assertIn('psql -v VERBOSITY=default',args)
         self.assertEqual(run.call_args.kwargs['input'],b'BEGIN READ ONLY; SELECT 1; ROLLBACK;')
