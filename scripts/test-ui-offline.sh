@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 # Dependencies/browsers must be installed before this step.
 BOS_UI_NODE_BIN="$(command -v node)"
 BOS_UI_BROWSER_CACHE="${PLAYWRIGHT_BROWSERS_PATH:-$HOME/.cache/ms-playwright}"
-sudo env "PLAYWRIGHT_BROWSERS_PATH=$BOS_UI_BROWSER_CACHE" unshare --net -- bash -ceu '
+sudo env "CI=${CI:-}" BOS_TEST_OFFLINE=1 "PLAYWRIGHT_BROWSERS_PATH=$BOS_UI_BROWSER_CACHE" unshare --net -- bash -ceu '
  ip link set lo up
  exec "$@"
 ' bos-ui-offline "$BOS_UI_NODE_BIN" node_modules/playwright/cli.js test "$@"

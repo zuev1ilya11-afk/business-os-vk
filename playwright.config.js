@@ -16,6 +16,8 @@ module.exports = defineConfig({
   webServer: {
     command: 'python3 -m http.server 4173 --bind 127.0.0.1',
     url: 'http://127.0.0.1:4173',
+    // Asset access logs overwhelm the CI job log; test failures retain assertions.
+    stderr: 'ignore',
     reuseExistingServer: true,
     timeout: 30000
   }

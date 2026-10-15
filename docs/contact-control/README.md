@@ -12,6 +12,22 @@ PR реализует этап 1 в существующем business-os-vk. Р�
 - `bos_push_subscriptions`, `bos_push_deliveries`, claim/delivery/finish: существующий дополнительный push-канал. Статус «принят сервисом» не означает показ на телефоне.
 - Фактическая инфраструктура по `deploy/pr289`: существующий PostgreSQL и Edge Runtime на российском сервере. Новая БД, облачный проект и новые интеграции не нужны. Legacy URL в исходниках не переопределялись; используется действующая упаковка RU-релиза.
 
+## Изменённые файлы и данные
+
+| Область | Изменение |
+|---|---|
+| `master-workflow-api/index.ts` | Проверка подписанной сессии и вызов атомарного contact RPC; безопасный legacy fallback |
+| `master-call-workflow-v26.js`, `master-order-actions-v179.js` | Та же форма результата, обязательные сроки, черновик, конфликт и согласование визита |
+| `contact-status.js`, `order-control.js`, `order-control-tasks.js` | Последний результат/следующий шаг, категории контроля и автоматические поручения |
+| `orders` | Новые `master_contact_revision`, `master_contact_control_active`; существующие contact/history/schedule поля переиспользованы |
+| `bos_control_private.tasks` | Четыре contact issue codes, ревизия/мастер/руководитель, даты напоминания/эскалации и аудит передачи |
+| `bos_control_private.contact_config` | Одна приватная строка параметров пилота; закрыта для browser-ролей |
+| `scripts/`, `deploy/contact-control/`, `supabase/contact-control-scheduler.sql` | Disposable SQL-тесты, read-only preflight, необязательные средства будущего запуска таймера |
+| `tests/`, `.github/workflows/ui-smoke.yml` | Контракты/API/UI, миграция на PostgreSQL 17.6 и полный UI в сетевой изоляции |
+| Сгенерированные bundles, `index.html`, `sw.js`, `build-version.js` | Пересобраны стандартным `npm run build` |
+
+Данные рабочих заявок, сотрудники, настройки production и интеграции не изменялись. В Git находятся только код, синтетические тесты и инструкции.
+
 ## Поведение
 
 Результат, серверный журнал, ревизия заявки и поручение сохраняются в одной транзакции `bos_contact_action`. `expected_revision` защищает от устаревшего окна. Повтор того же `attempt_id` подтверждается без новой записи; изменение его содержимого отклоняется. Даже повтор старого успешного запроса после нового результата не восстанавливает старое поручение.
