@@ -81,7 +81,24 @@ for(const role of ['master','dispatcher','manager','owner'])for(const width of [
    return {overflow:document.documentElement.scrollWidth-vw,touch:rects.every(r=>r.height>=44&&r.width>=44),width:r.width,left:r.left,contentLeft:content.left};
   });
   expect(geometry.overflow).toBe(0);expect(geometry.touch).toBe(true);
-  if(width===390){await expectEqualMobileDestinations(nav,['manager','owner'].includes(role)?5:4);expect((await page.locator('#app > header').boundingBox()).height).toBeLessThanOrEqual(74);}
+  if(width===390){
+   await expectEqualMobileDestinations(nav,['manager','owner'].includes(role)?5:4);
+   const header=page.locator('#app > header'),box=await header.boundingBox();
+   const install=header.locator('.bosInstallAppBtn--header');
+   // The optional install action has its own row; account actions stay together.
+   if(await install.isVisible()){
+    const installBox=await install.boundingBox();
+    const actions=await header.locator(':scope > button:visible:not(.bosInstallAppBtn--header)').all();
+    for(const action of actions){
+     const b=await action.boundingBox();
+     expect(b.y).toBe(box.y+8);expect(b.width).toBe(48);expect(b.height).toBe(48);
+     expect(installBox.y-(b.y+b.height)).toBe(8);
+    }
+    expect(installBox.height).toBeGreaterThanOrEqual(44);
+    expect(box.height).toBeLessThanOrEqual(122);
+   }else expect(box.height).toBeLessThanOrEqual(74);
+   expect((await page.locator('#content').boundingBox()).y).toBeGreaterThanOrEqual(box.y+box.height);
+  }
   if(width===1440){expect(geometry.width).toBe(222);expect(geometry.left).toBe(0);expect(geometry.contentLeft).toBeGreaterThanOrEqual(260);}
   await page.screenshot({path:testInfo.outputPath(`${role}-${width}-shell.png`),fullPage:true});
   if(role!=='master'&&width===390){

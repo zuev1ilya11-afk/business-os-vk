@@ -119,9 +119,31 @@ html body.bos-approved-ui { margin:0; background:var(--bos-ui-bg); color:var(--b
   .bos-approved-ui #app > nav :is(.bosNavBrand,.bosNavIdentity) { display:none; }
   .bos-approved-ui:not([data-bos-ui-role="master"]) #app > nav [data-page="team"] { display:none!important; }
   .bos-approved-ui[data-bos-ui-role="master"] #app > nav [data-page="more"] { display:none!important; }
-  .bos-approved-ui #app > header { min-height:60px; padding:8px 19px!important; margin:0 -19px!important; width:calc(100% + 38px); display:flex; flex-wrap:nowrap; gap:6px; }
+  /* Keep the existing header in flow; its full padded height reserves content space. */
+  .bos-approved-ui #app > header {
+    --bos-header-action-size:44px;
+    top:0; min-height:60px;
+    padding:calc(env(safe-area-inset-top, 0px) + 8px) max(12px, env(safe-area-inset-right, 0px)) 8px max(12px, env(safe-area-inset-left, 0px))!important;
+    margin:0 -19px!important; width:calc(100% + 38px);
+    display:flex; align-items:center; flex-wrap:nowrap; gap:6px;
+  }
   .bos-approved-ui #app > header .brandWrap { flex:1 1 auto; min-width:0; }
-  .bos-approved-ui #app > header > button { flex:0 0 44px; width:44px; height:44px; min-height:44px; margin:0!important; padding:8px; }
+  .bos-approved-ui #app > header .brandText { max-width:100%; }
+  .bos-approved-ui #app > header > button {
+    flex:0 0 var(--bos-header-action-size);
+    width:var(--bos-header-action-size); min-width:var(--bos-header-action-size);
+    height:var(--bos-header-action-size); min-height:var(--bos-header-action-size);
+    margin:0!important; padding:8px; line-height:1;
+  }
+  .bos-approved-ui #app > header #ownerToolsBtn { font-size:24px; }
+  .bos-approved-ui #app > header #profileBtn { font-size:16px; white-space:nowrap; }
+  .bos-approved-ui #app > header > button svg { width:24px; height:24px; flex-shrink:0; }
+  .bos-approved-ui #app > header #bosNotificationBell { position:relative; }
+  .bos-approved-ui #app > header #bosNotificationBell .bosNB { top:2px; right:2px; }
+  /* The optional browser install action must not compete with the four shortcuts. */
+  .bos-approved-ui #app > header:has(> .bosInstallAppBtn--header:not([hidden])) { flex-wrap:wrap; }
+  .bos-approved-ui #app > header > .bosInstallAppBtn--header { order:1; flex:1 0 100%; width:auto; font-size:12px; }
+  .bos-approved-ui #app > header > .bosInstallAppBtn--header::after { content:none; }
   .bos-approved-ui #app > header .roleBadge { min-width:0; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .bos-approved-ui #app > header:has(#dispatcherPreviewReturn) { flex-wrap:wrap; }
   .bos-approved-ui #app > header:has(#dispatcherPreviewReturn) .brandWrap { flex-basis:100%; }
@@ -130,6 +152,12 @@ html body.bos-approved-ui { margin:0; background:var(--bos-ui-bg); color:var(--b
   .bosMoreHeading h1 { font-size:28px; }
   .bosMoreHeading p { font-size:13px; }
   .bosMoreMenu button { padding:18px 0; }
+}
+@media(max-width:430px) {
+  .bos-approved-ui #app > header { --bos-header-action-size:48px; gap:8px; }
+}
+@media(max-width:360px) {
+  .bos-approved-ui #app > header { --bos-header-action-size:44px; gap:6px; }
 }
 
 @media(max-width:600px){
