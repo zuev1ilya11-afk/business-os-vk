@@ -1,6 +1,6 @@
 # Проверки
 
-База ветки: `d350079` (main, PR294 safe area). Только disposable/fixture-данные; production не использовался.
+База ветки: `d350079` (main, PR294 safe area). Новая функция проверялась на disposable/fixture-данных; рабочие заявки не изменялись.
 
 | Проверка | Фактический результат |
 |---|---|
@@ -13,8 +13,8 @@
 | Повтор миграции + SQL assertions | Pass в PGlite |
 | Старые manual control assertions с новой миграцией | Pass в PGlite |
 | `git diff --check`, `bash -n scripts/test-contact-control.sh` | Pass |
-| Native PostgreSQL 17.6 и TypeScript | Pass в CI run 38775549468 |
-| Полный Playwright | Актуальный итог в [PR #295](https://github.com/zuev1ilya11-afk/business-os-vk/pull/295); запускается только с network namespace |
+| Native PostgreSQL 17.6 и TypeScript | Pass в [CI run 38777540457](https://github.com/zuev1ilya11-afk/business-os-vk/actions/runs/38777540457) |
+| Полный Playwright | CI success: 833 passed, 1 flaky (успешный retry), 6 skipped; весь процесс в network namespace |
 | Навигация при виртуальных часах | После синхронизации отложенного timer: 5/5 повторов passed |
 
 ## Что проверяют контракты
@@ -29,12 +29,20 @@
 
 ## Границы доказательств
 
-Локального `psql`/Docker нет, поэтому native PostgreSQL-скрипт подключён к существующему CI job с PostgreSQL 17.6. Локально SQL действительно выполнялся embedded PostgreSQL, но это не проверка установленной production БД/расширений.
+Локального `psql`/Docker нет; native PostgreSQL-скрипт выполнен успешно в CI с PostgreSQL 17.6. Локально SQL действительно выполнялся embedded PostgreSQL, но это не проверка установленной production БД/расширений.
 
-Локальная попытка `deno check --node-modules-dir=none --no-lock supabase/functions/master-workflow-api/index.ts` остановилась на загрузке npm Supabase dependency (`Connection refused`). Это ошибка доступа к registry, не успешная проверка типов; соответствующая проверка остаётся обязательной в CI.
+Локальная попытка `deno check --node-modules-dir=none --no-lock supabase/functions/master-workflow-api/index.ts` остановилась на загрузке npm Supabase dependency (`Connection refused`). Это ошибка доступа к registry, не успешная локальная проверка типов. В CI эта проверка затем прошла.
 
 Первый полный UI-прогон был прерван auto-review из-за адресов общего backend в старых тестах. Добавлен закрытый loopback proxy как на уровне контекста, так и запуска браузера; отдельный тест подтвердил отказ внешнего соединения, включая `browser.newContext()`. Auto-review повторно отклонил полный запуск, поскольку proxy не принят как доказательство изоляции всех прямых запросов. Эти частичные прогоны не засчитываются. В CI добавлен `scripts/test-ui-offline.sh`: весь Node/browser/HTTP-server работает в Linux network namespace с одним loopback, без внешних интерфейсов. При невозможности изоляции скрипт завершается ошибкой без fallback. Локальный `unshare --net` недоступен (`Operation not permitted`), поэтому этот gate должен выполниться в GitHub Actions.
 
 Не проверялись и не изменялись: российский сервер, его cron/systemd, реальные push subscriptions/устройства, доставка внешним push-сервисом, production VAPID/worker credentials. Настоящего staging endpoint для hosted Preview не было. Макеты transport/fixture не выдаются за production-проверку.
 
 Первый полный offline CI прогон выявил два сбоя: online-only GAS health и гонку виртуальных часов в старом тесте dispatcher history. GAS явно пропускается только при `BOS_TEST_OFFLINE=1`; доступность живого bridge не считается проверенной. Для navigation записан trace: отложенный `pushState(dispatch)` запускался виртуальными часами после `pushState(opsScheduleMonth)`. Тест теперь завершает этот timer перед вторым переходом, не меняя навигацию приложения. Повтор CI выполняется с исходным `CI` флагом, переданным через sudo, и с компактным журналом.
+
+## Финальный CI
+
+[Успешный запуск 38777540457](https://github.com/zuev1ilya11-afk/business-os-vk/actions/runs/38777540457) проверил код коммита `45867e8c02e7fb4ebc632d010230f874764c43b8`. После него изменён только этот отчёт и отметка выполнения плана; исполняемый код тот же.
+
+Из 840 UI сценариев: 833 прошли сразу, один тест геометрии dispatcher workspace прошёл при автоматическом retry; 6 явно пропущены. Пропуски: два online GAS health и четыре opt-in задания снимков экранов помощи. Это не скрытые успешные проверки внешних сервисов.
+
+Миграция на PostgreSQL 17.6, её повторное применение, SQL assertions пилота и старых поручений, 755 server tests, TypeScript функций и frozen push runtime прошли. Build `76a7c1736f9c0b36bc31`. PR не merged, RU production не опубликован, флаги пилота не включены.

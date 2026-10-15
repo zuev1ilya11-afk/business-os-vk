@@ -11,7 +11,7 @@ Global constraints: no merge/deploy; default off; master allowlist; historic row
 - [x] 1. SQL contract tests, additive migration, atomic RPC, immutable event receipts, revision checks, pilot config and assignment tracking. Reuse existing contact journal and task table. Verify missing fields, idempotency, permissions, outdated writes, reports and completion independence.
 - [x] 2. Working-minute due dates using staff_schedule, explicit company window and observed current visit; server tick independent of push; versioned reminders, capped repeats, escalation and reassignment. Verify boundaries, no historical backfill, stop on completion/cancel and feature-off.
 - [x] 3. Extend existing contact form with required next contact or visit, preserve draft on error/reload and receipt ID on retry. Extend existing contact summary and Control categories; show future vs overdue. Verify mobile, network, attempt vs success, existing schedule/report regressions.
-- [ ] 4. Run required checks, independent branch review, commit/push and PR; provide isolated fixture Preview if supported. Record deployment prerequisites and unverified production boundaries.
+- [x] 4. Run required checks, independent branch review, commit/push and PR; provide isolated fixture Preview if supported. Record deployment prerequisites and unverified production boundaries.
 
 ## Review focus
 1. Old clients must not bypass new requirements for enrolled/pilot masters.
@@ -30,3 +30,5 @@ Global constraints: no merge/deploy; default off; master allowlist; historic row
 - Independent backend review: corrected queue starvation beyond 200; disabled legacy saves now invalidate old tasks and retain full journal/immutable receipts; explicit shifts override fallback; 24:00/spaced slot duration preserved; existing transferred obligations continue outside enrollment allowlist.
 - Independent frontend review: fixed stale contact summary repaint, home counters for automatic obligations, and loading missing orders before opening the result action. Added targeted regressions. Conflict/draft flow independently exercised at 320px in a Los Angeles browser.
 - Workstation UI tests now deny unmocked external network at browser launch and context level; fixture tests prove isolation.
+
+Completed as PR #295. Final code CI run 38777540457 succeeded; actual counts and explicit skips are in verification.md. Hosted staging was unavailable; three fixture scenarios are captured in preview/. Production activation remains a separate user decision.
