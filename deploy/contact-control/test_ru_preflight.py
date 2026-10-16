@@ -73,7 +73,23 @@ class PreflightTests(unittest.TestCase):
                 bundle = manifest.get('assetBundles', {}).get(name)
                 data = p.module(get(bundle), name) if bundle else get(name).rstrip()
                 data = data.replace(b'https://obsropbslfwtanyspjbi.supabase.co', b'https://139.100.237.167')
+                data = data.replace(b'https://business-os-api-gateway.netlify.app', b'https://139.100.237.167')
                 self.assertEqual(p.sha(data), expected[state], (state, name))
+
+    def test_file_diagnostics_distinguish_missing_symlink_and_large_bundle(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            with self.assertRaisesRegex(p.Stop, '^MISSING_RELEASE_FILE:api.ts$'):
+                p.read(root, 'api.ts')
+            (root / 'api.eszip').write_bytes(b'fixture-bundle')
+            with self.assertRaisesRegex(p.Stop, '^OVERSIZED_RELEASE_FILE:api.eszip$'):
+                p.read(root, 'api.eszip', limit=4)
+            self.assertEqual(p.read(root, 'api.eszip', limit=32), b'fixture-bundle')
+            (root / 'api.ts').symlink_to(root / 'api.eszip')
+            self.assertEqual(p.file_metadata(root, 'api.ts'),
+                             {'name': 'api.ts', 'canonical': False, 'file': False, 'bytes': None})
+            with self.assertRaisesRegex(p.Stop, '^SYMLINKED_RELEASE_FILE:api.ts$'):
+                p.read(root, 'api.ts')
 
     def test_unknown_or_duplicated_module_is_rejected(self):
         marker = b'// Source: x.js\n'

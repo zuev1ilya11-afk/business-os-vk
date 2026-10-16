@@ -3,6 +3,19 @@
 Deployment is authorized by the user on 2026-10-16. Direct SSH from the working
 environment returns `Network is unreachable`, so the host console is required.
 
+PR295 merged as `3fb9bd0acc7cc954c53f52638127774e352e5a66` after CI run
+38779022875 attempt 2 passed: 834 UI tests, 6 explicit skips, server/SQL/TypeScript
+checks green. The prior failed attempt was retained; no tests were changed to
+obtain this rerun result.
+
+The first host check on 2026-10-16 confirmed RU build `2f2dbcab6f4f8b4881cb`
+and complete frontend manifest integrity. Four contact modules matched directly;
+the fifth matched the retained RU source exactly after substituting the existing
+Netlify gateway origin with the RU origin. Version 2 recognizes this reviewed
+substitution. The first script stopped at the API file read, before DB collection;
+v2 collects DB metadata independently and distinguishes missing, symlinked and
+oversized files. No production mutation has been performed.
+
 `ru-preflight.py` is a self-contained Python 3 script for that console. It only
 inspects the active Docker release, reads public application source hashes and
 queries schema metadata in explicit read-only PostgreSQL transactions. It has
