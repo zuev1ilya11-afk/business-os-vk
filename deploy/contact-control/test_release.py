@@ -26,6 +26,7 @@ OPTIONAL = {}
 PATCHED = (HERE/'package/api-after.ts').read_bytes()
 BASELINE = (HERE/'package/api-before.ts').read_bytes()
 MIGRATION = (HERE/'package/migration.sql').read_text()
+PAYROLL = (HERE/'fixtures/order-payroll.ru.js').read_bytes()
 REAL_COMMAND = f.command
 REAL_PROBE_CANDIDATE = b.probe_candidate
 
@@ -57,7 +58,7 @@ class ReleaseTests(unittest.TestCase):
             self.roots[folder] = str(path)
             self.edge['Mounts'].append(dict(Type='bind', Source=str(path), Destination=mount))
         (Path(self.roots['sources'])/'master-workflow-api/supabase/functions/master-workflow-api').mkdir(parents=True)
-        (Path(self.roots['sources'])/'master-workflow-api/order-payroll.js').write_bytes((HERE.parent.parent/'order-payroll.js').read_bytes())
+        (Path(self.roots['sources'])/'master-workflow-api/order-payroll.js').write_bytes(PAYROLL)
         (Path(self.roots['sources'])/'master-workflow-api/supabase/functions/master-workflow-api/index.ts').write_bytes(BASELINE)
         (Path(self.roots['sources'])/'other-api.ts').write_text('unchanged private handler')
         (Path(self.roots['bundles'])/'master-workflow-api.eszip').write_bytes(b'old-bundle'*20)
@@ -174,6 +175,17 @@ class ReleaseTests(unittest.TestCase):
         self.assertFalse(b.STAGE.exists())
         self.assertFalse(f.STAGE.exists())
         self.assertEqual(self.restarts,[])
+
+    def test_discover_rejects_payroll_that_differs_from_running_release(self):
+        payroll=Path(self.roots['sources'])/'master-workflow-api/order-payroll.js'
+        for value in [(HERE.parent.parent/'order-payroll.js').read_bytes(),PAYROLL+b'\n// unrelated edit\n']:
+            with self.subTest(sha256=f.sha(value)):
+                payroll.write_bytes(value)
+                with self.assertRaisesRegex(f.Stop,'Workflow payroll dependency differs'):
+                    b.discover(self.root)
+                self.assertEqual(payroll.read_bytes(),value)
+                self.assertFalse(b.STAGE.exists())
+                self.assertEqual(self.restarts,[])
 
     def test_candidate_preserves_gateway_origins_without_production_credentials(self):
         original=copy.deepcopy(self.edge)
@@ -296,8 +308,10 @@ class ReleaseTests(unittest.TestCase):
 
     def test_backend_activation_rollback_preserves_every_other_file_and_mode(self):
         rec=self.prepare()
+        self.assertEqual((b.STAGE/'sources/master-workflow-api/order-payroll.js').read_bytes(),PAYROLL)
         b.activate(rec)
         self.assertEqual(rec['state'],'active')
+        self.assertEqual((Path(self.roots['sources'])/'master-workflow-api/order-payroll.js').read_bytes(),PAYROLL)
         self.assertEqual((Path(self.roots['sources'])/'master-workflow-api/supabase/functions/master-workflow-api/index.ts').read_bytes(),PATCHED)
         b.restore(rec)
         self.assertEqual(rec['state'],'rolled_back')

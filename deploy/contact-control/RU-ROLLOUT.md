@@ -50,6 +50,17 @@ Version 3 recognizes it. The existing function answers its public health request
 at `/functions/v1/master-workflow-api`; legacy proxy URLs are rewritten by the
 existing RU frontend adapter, which the package preserves.
 
+The first installer check stopped before any production mutation because its
+payroll dependency pin incorrectly used current main. A read-only checksum from
+the active edge container confirmed the retained export is exactly
+`order-payroll.js` from `a47464c3002e75eac4988446b0de9dd6ed60e63b`, SHA-256
+`271ad428d0a8367f77601708675893309b7bf8a685b24c1e4f44bb46b1b0ac89`.
+The installer now pins that observed source. The workflow API only calls its
+`masterView` function, which is identical in the retained and current-main files.
+The existing payroll file is copied into staging, used for both bundle builds,
+and never replaced in production. `fixtures/order-payroll.ru.js` is the exact
+historical file for offline tests; it is not included in the deployment payload.
+
 `bos295.pyz` is the RU-specific installer, pinned to main commit
 `3fb9bd0acc7cc954c53f52638127774e352e5a66`. Expected build transition:
 `2f2dbcab6f4f8b4881cb` → `77899953454eb1870e2e`.
@@ -84,7 +95,7 @@ the additive schema and customer data; it never restores a whole DB over newer
 orders or drops contact history. A retry archives earlier preparation/backup
 directories instead of deleting them. Interrupted activation requires rollback.
 
-Local release checks: 35 filesystem/failure/recovery integration tests (Docker,
+Local release checks: 36 filesystem/failure/recovery integration tests (Docker,
 network and DB lifecycle are explicit fakes), 8 diagnostic tests, and 4 disposable
 PGlite PostgreSQL transaction cases (flags off, baseline drift, wrong flag rollback,
 DDL failure rollback). The feature's original native PostgreSQL/server/UI CI is

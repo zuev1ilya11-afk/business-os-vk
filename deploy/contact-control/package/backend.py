@@ -14,6 +14,9 @@ import frontend as f
 STAGE = f.PARENT/'contact-295-api'
 SOURCE_BEFORE = 'e245ad0b1d001afc4a8d8e1191fbfd394d87e0faaaec03269a5946b8f5f73548'
 SOURCE_AFTER = '1bcc5569dd2d1fbd44bd0618acacf110f718fe2949f1f80ac1f6e3f166d43c1d'
+# Existing RU export, confirmed on the active edge container on 2026-10-16.
+# Exact order-payroll.js from a47464c; retained in staging and never replaced.
+PAYROLL_BEFORE = '271ad428d0a8367f77601708675893309b7bf8a685b24c1e4f44bb46b1b0ac89'
 MOUNTS = {'sources':'/bos-src', 'bundles':'/bos-bundles', 'main':'/bos-main'}
 TARGETS = {'sources':'master-workflow-api/supabase/functions/master-workflow-api/index.ts', 'bundles':'master-workflow-api.eszip'}
 LIMITS = ['--memory','512m','--memory-swap','512m','--cpus','1','--pids-limit','256','--user','0:0']
@@ -44,7 +47,7 @@ def discover(web_root):
     f.require(f.sha(source.read_bytes())==SOURCE_BEFORE,'Live master-workflow-api source is not the reviewed baseline')
     f.require(bundle.is_file() and bundle.stat().st_size>64,'Missing active workflow bundle')
     payroll=Path(roots['sources'])/'master-workflow-api/order-payroll.js'
-    f.require(payroll.is_file() and f.sha(payroll.read_bytes())=='e1a9762fcf242dbb899d201f88528d5c8c9715e472d30f5aa60f8aa2d233ddd1', 'Workflow payroll dependency differs from reviewed baseline')
+    f.require(payroll.is_file() and f.sha(payroll.read_bytes())==PAYROLL_BEFORE, 'Workflow payroll dependency differs from reviewed baseline')
     for folder in TARGETS:
         digest=before[folder][TARGETS[folder]]['sha256']
         actual=f.command(['docker','exec',edge['Id'],'sha256sum',MOUNTS[folder]+'/'+TARGETS[folder]]).decode().split()[0]
