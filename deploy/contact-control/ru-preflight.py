@@ -195,11 +195,10 @@ def backend(edge, src):
     bundles = mount_root(edge, '/bos-bundles')
     if bundles != src.parent / 'bundles':
         raise Stop('BUNDLE_AND_SOURCE_RELEASE_DISAGREE')
-    for name in ('master-workflow-api/index.ts', 'master-workflow-api.ts',
-                 'supabase/functions/master-workflow-api/index.ts'):
-        emit('API_SOURCE_FILE', file_metadata(src, name))
+    entry = 'master-workflow-api/supabase/functions/master-workflow-api/index.ts'
+    emit('API_SOURCE_FILE', file_metadata(src, entry))
     emit('API_BUNDLE_FILE', file_metadata(bundles, 'master-workflow-api.eszip'))
-    code = read(src, 'master-workflow-api/index.ts')
+    code = read(src, entry)
     lines = code.split(b'\n', 2)
     body = lines[2] if len(lines) == 3 else b''
     # Do not discard or normalize code: the two known import positions are
@@ -246,7 +245,7 @@ def database(db, dbname):
 def main():
     if len(sys.argv) != 1:
         raise Stop('NO_ARGUMENTS_SUPPORTED_READ_ONLY')
-    print('BOS_CONTACT_PREFLIGHT_V2 READ_ONLY', flush=True)
+    print('BOS_CONTACT_PREFLIGHT_V3 READ_ONLY', flush=True)
     ids = run(['docker', 'ps', '-q']).split()
     if not ids:
         raise Stop('NO_RUNNING_CONTAINERS')

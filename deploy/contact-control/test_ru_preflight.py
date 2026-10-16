@@ -97,6 +97,20 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaises(p.Stop):
                 p.module(bundle, 'x.js')
 
+    def test_backend_accepts_observed_exported_source_layout(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            src=root/'sources'; bundles=root/'bundles'; bundles.mkdir()
+            entry=src/'master-workflow-api/supabase/functions/master-workflow-api/index.ts'
+            entry.parent.mkdir(parents=True)
+            entry.write_bytes(subprocess.check_output(['git','show',p.SOURCE_BASE+':supabase/functions/master-workflow-api/index.ts'],cwd=HERE.parent.parent))
+            (bundles/'master-workflow-api.eszip').write_bytes(b'compiled-fixture')
+            with patch.object(p,'mount_root',return_value=bundles), patch.object(p,'emit') as emit:
+                p.backend({},src)
+            api=next(call.args[1] for call in emit.call_args_list if call.args[0]=='API')
+            self.assertEqual(api['state'],'baseline')
+            self.assertTrue(api['imports_known'])
+
 
 if __name__ == '__main__':
     unittest.main()
