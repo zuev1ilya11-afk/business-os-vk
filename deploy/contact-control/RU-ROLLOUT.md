@@ -61,6 +61,24 @@ The existing payroll file is copied into staging, used for both bundle builds,
 and never replaced in production. `fixtures/order-payroll.ru.js` is the exact
 historical file for offline tests; it is not included in the deployment payload.
 
+The next host attempt stopped in API preparation because rebuilding the baseline
+with a fresh dependency cache produced different bytes. No migration, API/web
+replacement or production restart occurred. The original service-trial cache
+still exists. Shell-based extraction of version tokens returned no usable result;
+do not infer dependency versions from those empty lists.
+
+`bundle-diagnose.py` requires the exact installed d56030e package and an inactive
+`preparing` journal. It compares the retained baseline with the failed rebuild,
+then finds a cache whose original image, source, payroll and compiled bundle all
+match the running release. It copies the cache and source into a new private
+directory, runs a bounded compiler without network or production credentials, and
+compares one or two builds byte-for-byte. All original inputs and running files
+are checked again afterwards. It neither installs a candidate nor changes the DB.
+Temporary containers are removed; diagnostic copies/results remain for review.
+Run `python3 /root/bos295-diag.py` after downloading that script. Four local tests
+cover cache provenance, isolated mounts, exact-match reporting and mismatch
+reporting; Docker execution itself remains a host-side check.
+
 `bos295.pyz` is the RU-specific installer, pinned to main commit
 `3fb9bd0acc7cc954c53f52638127774e352e5a66`. Expected build transition:
 `2f2dbcab6f4f8b4881cb` → `77899953454eb1870e2e`.
