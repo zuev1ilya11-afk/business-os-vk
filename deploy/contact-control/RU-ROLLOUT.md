@@ -79,6 +79,15 @@ Run `python3 /root/bos295-diag.py` after downloading that script. Four local tes
 cover cache provenance, isolated mounts, exact-match reporting and mismatch
 reporting; Docker execution itself remains a host-side check.
 
+The host diagnostic then confirmed `CACHED_BASELINE_MATCH=yes` on its first
+offline build: all 818840 bytes matched the live bundle, with no differing version
+tokens. The fresh-cache build had removed token `2.117.3` and added `2.118.0` and
+`1.30.0`. This establishes the retained build cache as a required build input.
+The installer now validates and privately copies the matching original cache,
+uses the original in-container paths and runs both builds offline from startup.
+It still requires exact baseline bundle equality before compiling the patch.
+The original cache is never mounted into the builder and is checked after use.
+
 `bos295.pyz` is the RU-specific installer, pinned to main commit
 `3fb9bd0acc7cc954c53f52638127774e352e5a66`. Expected build transition:
 `2f2dbcab6f4f8b4881cb` → `77899953454eb1870e2e`.
@@ -92,9 +101,10 @@ Its guarded sequence is:
 
 1. Verify the exact current frontend, source, payroll dependency, schema and
    container configurations. Refuse unknown changes.
-2. Stage API source/bundle privately. Rebuild the original bundle with the running
-   image and require byte-for-byte equality. Compile the new source using the same
-   dependencies after disconnecting the builder network. Run the staged gateway
+2. Stage API source/bundle and the matching original dependency cache privately.
+   Rebuild the original bundle offline with the running image and require
+   byte-for-byte equality. Compile the new source in the same isolated builder.
+   Run the staged gateway
    with dummy credentials, no external network, and health/auth/CORS probes.
 3. Back up the complete frontend/API and create a private custom-format full
    PostgreSQL dump. Check the dump with `pg_restore --list` and retain its hash.
@@ -113,12 +123,14 @@ the additive schema and customer data; it never restores a whole DB over newer
 orders or drops contact history. A retry archives earlier preparation/backup
 directories instead of deleting them. Interrupted activation requires rollback.
 
-Local release checks: 36 filesystem/failure/recovery integration tests (Docker,
-network and DB lifecycle are explicit fakes), 8 diagnostic tests, and 4 disposable
+Local release checks: 36 filesystem/failure/recovery integration tests, 4 cached
+build regression tests (Docker/network/DB boundaries are explicit fakes),
+8 preflight diagnostic tests, 4 bundle diagnostic tests, and 4 disposable
 PGlite PostgreSQL transaction cases (flags off, baseline drift, wrong flag rollback,
 DDL failure rollback). The feature's original native PostgreSQL/server/UI CI is
-listed above. Actual Edge compilation is a host-side gate before any migration or
-activation; it has not run in this environment, which has no Docker daemon.
+listed above. Actual baseline Edge compilation was verified on the host as noted
+above. Candidate compilation remains a host-side gate before migration or
+activation; this environment has no Docker daemon.
 
 Rebuild with `python3 deploy/contact-control/build_package.py <verified-RU-input>`.
 The input is the six public current assets listed in `build_package.py`; its exact

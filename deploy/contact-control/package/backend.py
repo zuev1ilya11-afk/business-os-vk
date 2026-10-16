@@ -160,29 +160,60 @@ def assert_isolated(cid):
     return info['State']['Pid']
 
 
+def original_build_cache(rec):
+    matches=[]
+    expected=rec['before']['bundles']['master-workflow-api.eszip']['sha256']
+    for edge in sorted(f.PARENT.glob('service-trial-*/edge')):
+        if edge.resolve()!=edge or not (edge/'cache').is_dir(): continue
+        def read(name):
+            path=edge/name
+            f.require(path.resolve()==path and path.is_file() and not path.is_symlink() and
+                      path.stat().st_size<=32*1024*1024,'Unsafe original build input')
+            return path.read_bytes()
+        try:
+            valid=(json.loads(read('image.json'))['image_id']==rec['image'] and
+                   f.sha(read('bundles/master-workflow-api.eszip'))==expected and
+                   f.sha(read('sources/'+TARGETS['sources']))==SOURCE_BEFORE and
+                   f.sha(read('sources/master-workflow-api/order-payroll.js'))==PAYROLL_BEFORE)
+        except (OSError,ValueError,KeyError,f.Stop): continue
+        if valid: matches.append(edge/'cache')
+    f.require(len(matches)==1,'Cannot uniquely identify the matching original build cache')
+    return matches[0]
+
+
 def compile_candidate(rec,patched):
+    cache=original_build_cache(rec)
+    cache_before=f.snapshot(cache)
+    size=sum(entry.get('size',0) for entry in cache_before.values())
+    f.require(shutil.disk_usage(f.PARENT).free>size*2+256*1024*1024,'Insufficient cache staging disk space')
+    f.copy_tree(cache,STAGE/'cache')
+    f.require(f.snapshot(STAGE/'cache')==cache_before,'Original build cache copy differs')
     output=STAGE/'output'; output.mkdir()
-    args=['docker','run','-d','--pull=never','--network','bridge','--label','bos.contact295='+rec['nonce'],
-          '--name','bos-contact295-build-'+rec['nonce'],*LIMITS,'--entrypoint','/bin/sh',
-          '--mount','type=bind,src='+str(STAGE/'sources')+',dst=/bos-src,readonly',
-          '--mount','type=bind,src='+str(output)+',dst=/bos-output',rec['image'],
+    args=['docker','run','-d','--pull=never','--network','none','--label','bos.contact295='+rec['nonce'],
+          '--name','bos-contact295-build-'+rec['nonce'],*LIMITS,'--read-only',
+          '--tmpfs','/tmp:rw,nosuid,size=128m','--env','DENO_DIR=/bos-cache','--entrypoint','/bin/sh',
+          '--mount','type=bind,src='+str(STAGE/'sources/master-workflow-api')+',dst=/bos-src/master-workflow-api,readonly',
+          '--mount','type=bind,src='+str(STAGE/'cache')+',dst=/bos-cache',
+          '--mount','type=bind,src='+str(output)+',dst=/bos-bundles',rec['image'],
           '-c','while :; do sleep 1; done']
     try:
         cid=private_command(args,'build-start').decode().strip()
+        assert_isolated(cid)
         build=['docker','exec',cid,'edge-runtime','bundle','--entrypoint','/bos-src/master-workflow-api/supabase/functions/master-workflow-api/index.ts',
-               '--output','/bos-output/master-workflow-api.eszip','--quiet','--timeout','300']
+               '--output','/bos-bundles/master-workflow-api.eszip','--timeout','300']
         private_command(build,'baseline-build',timeout=330)
         built=output/'master-workflow-api.eszip'
         f.require(f.sha(built.read_bytes())==rec['before']['bundles']['master-workflow-api.eszip']['sha256'],
                   'Baseline bundle rebuild differs; production unchanged')
-        f.command(['docker','network','disconnect','bridge',cid])
-        assert_isolated(cid)
+        f.emit('BASELINE_REPRODUCED; building candidate offline with the original dependencies...')
         (STAGE/'sources/master-workflow-api/supabase/functions/master-workflow-api/index.ts').write_bytes(patched)
         built.unlink()
         private_command(build,'patched-build',timeout=330)
         f.require(built.is_file() and built.stat().st_size>64,'Compiled workflow bundle is empty')
         shutil.copyfile(built,STAGE/'bundles/master-workflow-api.eszip')
-    finally: cleanup(rec)
+    finally:
+        try: cleanup(rec)
+        finally: f.require(f.snapshot(cache)==cache_before,'Original build cache changed during staging')
 
 
 PROBE = r'''
