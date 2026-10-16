@@ -1,0 +1,15 @@
+[Unit]
+Description=Business OS contact control in the existing PostgreSQL database
+After=network.target
+
+[Service]
+Type=oneshot
+# Set this to the existing host account allowed to connect to PostgreSQL.
+User=postgres
+EnvironmentFile=/etc/business-os/contact-control.env
+ExecStart=/usr/bin/psql --no-psqlrc --no-password --set=ON_ERROR_STOP=1 --command="SELECT bos_control_private.tick();"
+TimeoutStartSec=45
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true

@@ -51,11 +51,11 @@ test('reassignment during automatic call save never creates a false contact rece
   const result=await workflow(route.request().postDataJSON(),master.external_id);
   await route.fulfill({status:result.status,headers:{'access-control-allow-origin':'*'},contentType:'application/json',body:JSON.stringify(result.body)});
  });
- const resultForm=await tapCall(page,'thinking',false);await expect.poll(()=>db.tables.orders[0].master_staff_id).toBe('another');expect(db.tables.orders[0].master_called_at).toBeFalsy();expect(db.tables.orders[0].master_called_by_staff_id).toBeFalsy();expect(db.tables.orders[0].master_contact_history||[]).toHaveLength(0);await expect(resultForm).toBeVisible();
+ await page.locator('.bosCompactClient a[aria-label^="Позвонить клиенту"]').first().dispatchEvent('click');await expect(page.locator('#modalRoot [role=alert]')).toBeVisible();await expect.poll(()=>db.tables.orders[0].master_staff_id).toBe('another');expect(db.tables.orders[0].master_called_at).toBeFalsy();expect(db.tables.orders[0].master_called_by_staff_id).toBeFalsy();expect(db.tables.orders[0].master_contact_history||[]).toHaveLength(0);await expect(page.locator('#masterContactResultForm')).toHaveCount(0);
 });
 test('failed automatic save can be retried by another phone tap and dispatcher sees the receipt',async({page,browser})=>{
  const {db}=await setup(page);await page.evaluate(()=>openOrder('11'));
- const failure=async route=>{if(route.request().method()==='OPTIONS')return route.fallback();await route.fulfill({status:503,headers:{'access-control-allow-origin':'*'},contentType:'application/json',body:JSON.stringify({ok:false,error:'Тестовая ошибка сохранения'})})};
+ const failure=async route=>{if(route.request().method()==='OPTIONS'||route.request().postDataJSON()?.action==='contactPolicy')return route.fallback();await route.fulfill({status:503,headers:{'access-control-allow-origin':'*'},contentType:'application/json',body:JSON.stringify({ok:false,error:'Тестовая ошибка сохранения'})})};
  await page.route('**/master-workflow-api',failure);const failedForm=await tapCall(page,'thinking',false);await page.waitForTimeout(100);expect(db.tables.orders[0].master_called_at).toBeFalsy();await failedForm.getByRole('button',{name:'Заполнить позже',exact:true}).click();
  await page.unroute('**/master-workflow-api',failure);await page.waitForTimeout(550);await tapCall(page);await expect.poll(()=>db.tables.orders[0].master_called_at).toBeTruthy();const receipt=structuredClone(db.tables.orders[0]);
  const context=await browser.newContext();try{

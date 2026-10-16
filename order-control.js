@@ -7,9 +7,9 @@
   const getState=()=>typeof state==='undefined'?{}:state;
   const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let filter='all',limit=12,queued=false,actor='',midnightTimer,loadState='loading',rows=[],trustedOrders=null,requestRun=0,identityRevision=0,verifyQueued=false,scrollTop=0,restoreScroll=false,modalWasOpen=false,scrollRestoreQueued=false,hasSnapshot=false,refreshError=false;
-  const filters=[['all','Все'],['urgent','Срочно'],['dispatcher','Диспетчеру'],['master','Мастеру'],['reports','Отчёты']];
+  const filters=[['all','Все'],['urgent','Срочно'],['dispatcher','Диспетчеру'],['master','Мастеру'],['reports','Отчёты'],['contact_first','Первый контакт'],['contact_followup','Повторный контакт'],['needsManager','Решение руководителя'],['notDue','Ещё есть время']];
   const homeFilters=[['unassigned','Без мастера'],['overdue','Просрочено'],['contact','Не связались']];
-  const matches=(item,key)=>key==='all'||(key==='urgent'?item.priority===0:key==='reports'?item.issues.some(x=>x.code.startsWith('report_')):key==='contact'?item.issues.some(x=>x.code==='agreement')&&!currentRows().find(o=>String(o.id)===item.id)?.master_called_at:['unassigned','overdue'].includes(key)?item.issues.some(x=>x.code===key):item.issues.some(x=>x.role===key));
+  const matches=(item,key)=>key==='all'||(key==='notDue'&&item.issues.some(x=>x.automatic&&!x.overdue&&!x.needsManager))||(key==='needsManager'&&item.issues.some(x=>x.needsManager))||(key.startsWith('contact_')&&item.issues.some(x=>x.code===key))||(key==='urgent'?item.priority===0:key==='reports'?item.issues.some(x=>x.code.startsWith('report_')):key==='contact'?item.issues.some(x=>x.code==='contact_first'&&x.overdue||x.code==='agreement'&&!currentRows().find(o=>String(o.id)===item.id)?.master_called_at):key==='overdue'?item.issues.some(x=>x.code==='overdue'||x.automatic&&x.overdue):key==='unassigned'?item.issues.some(x=>x.code===key):item.issues.some(x=>x.role===key));
   const session=()=>{try{return sessionStorage.getItem(SESSION)||localStorage.getItem(SESSION)||''}catch{return ''}};
   function identity(){
     const u=getState().user,token=session();
@@ -56,14 +56,14 @@
   function card(item){
     const review=item.issues.some(x=>x.code==='report_review'),order=currentRows().find(x=>String(x.id)===item.id);
     const contact=root.BOS_CONTACT_STATUS?.html(order,{details:false})||'';
-    return `<article class="ocItem" data-oc-order="${escape(item.id)}"><div class="ocItemTop"><b>№ ${escape(item.number)}</b><span>${escape(item.visit)}</span></div><div class="ocClient">${escape(item.client||'Клиент не указан')}</div><div class="ocWork">${escape(item.work||'Работы не указаны')}</div>${contact}${item.issues.map(issue=>`<div class="ocIssue" data-oc-reason="${issue.code}"><strong>${escape(issue.title)}</strong><span>Кто действует: ${escape(issue.role==='master'?item.master||'Назначенный мастер':'Диспетчер')}</span><span>${escape(issue.next)}</span></div>`).join('')}<button type="button" class="secondary" data-oc-open="${escape(item.id)}" data-oc-action="${review?'review':'order'}">${review?'Проверить отчёт':'Открыть заявку'}</button></article>`;
+    return `<article class="ocItem" data-oc-order="${escape(item.id)}"><div class="ocItemTop"><b>№ ${escape(item.number)}</b><span>${escape(item.visit)}</span></div><div class="ocClient">${escape(item.client||'Клиент не указан')}</div><div class="ocWork">${escape(item.work||'Работы не указаны')}</div>${contact}${item.issues.map(issue=>`<div class="ocIssue" data-oc-reason="${issue.code}"><strong>${escape(issue.title)}</strong><span>Кто действует: ${escape(issue.responsible||(issue.role==='master'?item.master||'Назначенный мастер':'Диспетчер'))}</span><span>${escape(issue.next)}</span></div>`).join('')}<button type="button" class="secondary" data-oc-open="${escape(item.id)}" data-oc-action="${review?'review':'order'}">${review?'Проверить отчёт':'Открыть заявку'}</button></article>`;
   }
   const summary=count=>loadState==='loading'?'Загрузка…':loadState==='error'?'Не удалось загрузить':refreshError||root.BOS_LAST_REFRESH_ERROR?'Не удалось обновить · сохранённые данные':count?`${count} требуют внимания`:'Всё в порядке';
   function render(){
     queued=false;const changed=syncIdentity(),s=getState(),content=document.getElementById('content');
     if(!content||!actor){document.querySelectorAll('#bosOrderControl,#bosOrderControlSummary,#bosOrderControlEntry').forEach(n=>n.remove());return;}
     if(changed)verify();
-    const all=core.collect(currentRows()),visible=all.filter(item=>matches(item,filter));
+    const all=core.collect(currentRows(),new Date(),root.BOS_CONTROL_TASKS?.current?.()||[]),visible=all.filter(item=>matches(item,filter));
     if(s.page==='home'||s.page==='orders'){
       document.getElementById('bosOrderControl')?.remove();
       const id=s.page==='home'?'bosOrderControlSummary':'bosOrderControlEntry';
@@ -72,7 +72,7 @@
       if(management)root.BOS_OWNER_DASHBOARD?.setLoadState(refreshError||root.BOS_LAST_REFRESH_ERROR?'error':loadState);
       if(entry&&entry.tagName!==(management?'DIV':'BUTTON')){entry.remove();entry=null;}
       if(!entry){entry=document.createElement(management?'div':'button');entry.id=id;if(!management)entry.type='button';entry.className='secondary ocSummary'+(management?' odAttention':'');entry.dataset.ocEnter='';(management?content.querySelector('.bosManagementAttention')||content:content).prepend(entry)}
-      const text=`${s.page==='home'?'Контроль заявок':'Контроль'} · ${summary(all.length)}`;
+      const text=`${s.page==='home'?'Контроль заявок':'Контроль'} · ${summary(all.filter(x=>x.issues.some(i=>!i.automatic||i.overdue||i.needsManager)).length)}`;
       const counts=homeFilters.map(([key])=>loadState==='ready'?all.filter(item=>matches(item,key)).length:'—');
       const label=JSON.stringify([text,management,counts]);
       if(entry.dataset.label!==label){entry.dataset.label=label;const html=management?`<div class="odAttentionTitle"><b>Контроль исполнения</b><small>${escape(text)}</small></div><div class="odAttentionFilters">${homeFilters.map(([key,title],i)=>`<button type="button" class="secondary" data-oc-home-filter="${key}">${title} <b>${counts[i]}</b></button>`).join('')}</div><button type="button" class="linkBtn" data-oc-enter>Перейти к заявкам →</button>`:`<span>${escape(text)}</span><span aria-hidden="true">→</span>`;if(root.BOS_PATCH_CONTENT)root.BOS_PATCH_CONTENT(entry,html);else entry.innerHTML=html;}
@@ -84,12 +84,12 @@
     if(s.page!==PAGE){document.getElementById('bosOrderControl')?.remove();return;}
     document.querySelectorAll('nav [data-page]').forEach(button=>button.classList.toggle('active',button.dataset.page==='orders'));
     let panel=document.getElementById('bosOrderControl');
-    const signature=JSON.stringify([actor,loadState,refreshError,filter,limit,all,currentRows().map(o=>[o.id,o.master_called_at,o.master_called_by_staff_id,o.master_called_by_name])]);
+    const signature=JSON.stringify([actor,loadState,refreshError,filter,limit,all,currentRows().map(o=>[o.id,root.BOS_CONTACT_STATUS?.html(o,{details:false})||''])]);
     if(!panel){panel=document.createElement('section');panel.id='bosOrderControl';panel.className='card ocPanel';panel.setAttribute('aria-labelledby','ocTitle');content.replaceChildren(panel);restoreScroll=true;}
     if(panel.dataset.signature!==signature){
       const focused=document.activeElement,restore=panel.contains(focused)?focused?.getAttribute('data-oc-filter'):null;
       panel.dataset.signature=signature;
-      const html=`<button type="button" class="secondary ocBack" data-oc-back>← Заявки</button><div class="ocHeading"><div><div class="eyebrow">ЗАЯВКИ · КОНТРОЛЬ</div><h2 id="ocTitle">Требует внимания</h2></div><span class="softChip" data-oc-total>${loadState==='ready'?all.length:'—'}</span></div><p class="muted ocNote">По загруженным заявкам. Даты визитов — по Москве. Автонапоминания не включены.</p><div class="ocFilters" aria-label="Фильтры контроля заявок">${filters.concat(homeFilters.filter(([key])=>key===filter)).map(([key,title])=>`<button type="button" class="${filter===key?'primary':'secondary'}" data-oc-filter="${key}" aria-pressed="${filter===key}">${title} <b>${loadState==='ready'?all.filter(item=>matches(item,key)).length:'—'}</b></button>`).join('')}</div>${refreshError?'<p class="muted" role="status">Не удалось обновить данные. Показаны сохранённые заявки. <button class="secondary" data-oc-retry>Повторить</button></p>':''}<div class="ocList">${loadState!=='ready'?`<p class="muted" role="status">${loadState==='error'?'Не удалось загрузить заявки. Повторите загрузку.':'Загружаем заявки…'}</p>${loadState==='error'?'<button type="button" class="secondary" data-oc-retry>Повторить</button>':''}`:visible.length?visible.slice(0,limit).map(card).join(''):'<p class="muted ocEmpty">'+(all.length?'По этому фильтру задач нет.':'По проверяемым условиям проблем не найдено.')+'</p>'}</div>${visible.length>limit?`<button type="button" class="secondary wide" data-oc-more>Показать ещё (${visible.length-limit})</button>`:''}`;
+      const html=`<button type="button" class="secondary ocBack" data-oc-back>← Заявки</button><div class="ocHeading"><div><div class="eyebrow">ЗАЯВКИ · КОНТРОЛЬ</div><h2 id="ocTitle">Контроль заявок</h2></div><span class="softChip" data-oc-total>${loadState==='ready'?all.length:'—'}</span></div><p class="muted ocNote">По загруженным заявкам. Даты визитов — по Москве. Автонапоминания не включены.</p><div class="ocFilters" aria-label="Фильтры контроля заявок">${filters.concat(homeFilters.filter(([key])=>key===filter)).map(([key,title])=>`<button type="button" class="${filter===key?'primary':'secondary'}" data-oc-filter="${key}" aria-pressed="${filter===key}">${title} <b>${loadState==='ready'?all.filter(item=>matches(item,key)).length:'—'}</b></button>`).join('')}</div>${refreshError?'<p class="muted" role="status">Не удалось обновить данные. Показаны сохранённые заявки. <button class="secondary" data-oc-retry>Повторить</button></p>':''}<div class="ocList">${loadState!=='ready'?`<p class="muted" role="status">${loadState==='error'?'Не удалось загрузить заявки. Повторите загрузку.':'Загружаем заявки…'}</p>${loadState==='error'?'<button type="button" class="secondary" data-oc-retry>Повторить</button>':''}`:visible.length?visible.slice(0,limit).map(card).join(''):'<p class="muted ocEmpty">'+(all.length?'По этому фильтру задач нет.':'По проверяемым условиям проблем не найдено.')+'</p>'}</div>${visible.length>limit?`<button type="button" class="secondary wide" data-oc-more>Показать ещё (${visible.length-limit})</button>`:''}`;
       if(root.BOS_PATCH_CONTENT)root.BOS_PATCH_CONTENT(panel,html);else panel.innerHTML=html;
       if(restore)panel.querySelector(`[data-oc-filter="${restore}"]`)?.focus({preventScroll:true});
     }
@@ -117,7 +117,7 @@
     if(event.target.closest('[data-oc-more]')){limit+=12;refresh();return;}
     const button=event.target.closest('[data-oc-open]');if(!button)return;
     const order=(getState().orders||[]).find(x=>String(x.id)===button.dataset.ocOpen);
-    if(!order){refresh();return;}
+    if(!order){Promise.resolve(root.reloadData?.(true)).then(()=>{if((getState().orders||[]).some(x=>String(x.id)===button.dataset.ocOpen))root.openOrder?.(button.dataset.ocOpen);else refresh()}).catch(refresh);return;}
     rememberScroll();
     const pending=core.collect([order]).some(x=>x.issues.some(y=>y.code==='report_review'));
     if(button.dataset.ocAction==='review'&&pending&&typeof root.openReportReview==='function')root.openReportReview(String(order.id));
@@ -162,9 +162,11 @@
     const match=raw.match(/^(\d{1,2}):(\d{2})(?:$|\b)/);
     return match&&Number(match[1])<24&&Number(match[2])<60?`${match[1].padStart(2,'0')}:${match[2]}`:'';
   }
-  function collect(orders,now=new Date()){
+  function collect(orders,now=new Date(),tasks=[]){
     const today=businessDay(now),tomorrow=nextDay(today),seen=new Set(),result=[];
-    for(const order of Array.isArray(orders)?orders:[]){
+    const source=Array.isArray(orders)?orders:[],auto=(Array.isArray(tasks)?tasks:[]).filter(t=>t.active&&t.automatic);
+    const missing=auto.filter(t=>!source.some(o=>String(o?.id)===String(t.order_id))).map(t=>({id:String(t.order_id),_controlOnly:true}));
+    for(const order of [...source,...missing]){
       if(!order||typeof order!=='object')continue;
       const id=text(order.id),status=text(order.status);
       if(!id||seen.has(id)||['Выполнена','Отменена'].includes(status))continue;
@@ -172,9 +174,10 @@
       const date=dateOnly(order.scheduled_date),time=visitTime(order);
       const assigned=[order.master_staff_id,order.master_vk_id,order.master_id,order.master_name].some(x=>!!text(x));
       const near=!!date&&date<=tomorrow,late=!!date&&date<today;
-      const review=text(order.report_review_status),issues=[];
+      const review=text(order.report_review_status),issues=[],contactTasks=auto.filter(t=>String(t.order_id)===id);
       const add=(code,title,role,next,priority)=>issues.push({code,title,role,next,priority});
       const transfer=order.reschedule_requested===true||order.reschedule_requested==='true';
+      if(!order._controlOnly){
       if(transfer)add('reschedule','Запрошен перенос','dispatcher',text(order.reschedule_reason)||'Уточнить причину и согласовать новое время.',0);
       if(review==='rejected'){
         add('report_rejected','Отчёт возвращён на исправление',assigned?'master':'dispatcher',text(order.report_review_comment)||'Открыть заявку и проверить причину возврата.',0);
@@ -183,14 +186,21 @@
       }else if(review!=='approved'){
         if(late)add('overdue','Прошёл день визита','dispatcher','Уточнить результат работы и состояние отчёта.',0);
         if(!assigned)add('unassigned','Мастер не назначен','dispatcher','Выбрать мастера в карточке заявки.',near?0:2);
-        if(!date)add('undated',text(order.scheduled_date)?'Проверить дату визита':'Дата визита не указана','dispatcher','Согласовать дату с клиентом и мастером.',2);
-        else if(!time)add('untimed','Время визита не указано','dispatcher','Уточнить и сохранить время визита.',near?1:2);
+        if(!date&&!contactTasks.length)add('undated',text(order.scheduled_date)?'Проверить дату визита':order.status==='Перенос'?'Перенос без новой даты':'Дата визита не указана','dispatcher','Согласовать дату с клиентом и мастером.',2);
+        else if(date&&!time&&!contactTasks.length)add('untimed','Время визита не указано','dispatcher','Уточнить и сохранить время визита.',near?1:2);
         const beforeWork=!['departed','arrived','started'].includes(text(order.master_workflow_stage))&&!order.master_started_at&&!order.master_departed_at;
-        if(assigned&&date>=today&&near&&beforeWork&&!order.master_agreed_at&&!transfer){
+        if(!contactTasks.length&&assigned&&date>=today&&near&&beforeWork&&!order.master_agreed_at&&!transfer){
           add('agreement',order.master_called_at?'Договорённость не отмечена':'Звонок клиенту не отмечен','master',order.master_called_at?'Уточнить, согласованы ли дата и время с клиентом.':'Связаться с клиентом и отметить результат в заявке.',date===today?0:1);
         }
       }
       if(Number(order.uncompleted_work_amount)>0)add('unfinished_work','Есть невыполненные работы','dispatcher',text(order.uncompleted_work_description)||'Уточнить оставшиеся работы и согласовать дальнейшие действия.',1);
+      }
+      for(const t of contactTasks){
+        const overdue=Date.parse(t.due_at)<=now.getTime(),needsManager=!!t.needs_manager;
+        const titles={contact_first:'Нет результата первого контакта',contact_followup:overdue?'Просрочен повторный контакт':'Следующий контакт',contact_help:'Требуется помощь',contact_declined:'Клиент отказался — нужно решение'};
+        const next=['contact_help','contact_declined'].includes(t.issue_code)?text(order.master_contact_comment)||'Руководителю нужно принять решение.':'Связаться с клиентом и сохранить итог.';
+        issues.push({code:t.issue_code,title:titles[t.issue_code]||t.issue_code,role:needsManager?'dispatcher':'master',responsible:needsManager?t.manager_name:t.assignee_name,next,priority:needsManager||overdue?0:2,automatic:true,overdue,needsManager});
+      }
       if(!issues.length)continue;
       issues.sort((a,b)=>a.priority-b.priority||a.code.localeCompare(b.code));
       const external=text(order.external_id);

@@ -108,8 +108,9 @@ async function saveAction(id,action,payload={}){
 window.masterOrderStage179=async function(id,stage){const o=orderById(id);if(!o||!active(o)||!hasSchedule(o))return;const n=confirmedCount(o),expected=n===1?'departed':n===2?'started':'';if(stage!==expected){message(id,'Этапы нужно отмечать по порядку');return}return saveAction(id,'setStage',{stage})};
 window.masterOrderContact179=(id,action)=>['markCalled','confirmAgreement'].includes(action)?saveAction(id,action,action==='markCalled'?{contact_confirmed:true}:{}):undefined;
 window.masterOrderReport179=function(id){const o=orderById(id);if(!liveMaster()||busy||uncertain.has(String(id))||!active(o)||confirmedCount(o)!==3)return;return window.masterWorkflowComplete?.(id)};
-window.masterOrderAgree179=function(id){
+window.masterOrderAgree179=async function(id){
  const o=orderById(id);if(!o||!liveMaster()||!active(o))return;
+ if(window.BOS_CONTACT_POLICY){try{const policy=await window.BOS_CONTACT_POLICY(id);if(policy.enabled){window.openMasterContactResultForOrder?.(id,'agreed');return}}catch(error){message(id,error.message||'Не удалось проверить правила связи.');return}}
  const contactStatus=String(o?.master_contact_status||'');
  if(contactStatus==='pending'){
   const pending=[...(Array.isArray(o?.master_contact_history)?o.master_contact_history:[])].reverse().find(x=>String(x?.result||'')==='pending');

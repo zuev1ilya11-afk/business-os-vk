@@ -3,6 +3,7 @@ const {test,expect}=require('@playwright/test');
 if(process.env.HTTPS_PROXY)test.use({proxy:{server:process.env.HTTPS_PROXY}});
 
 test('signed GAS bridge is reachable and configured',async({request})=>{
+  test.skip(process.env.BOS_TEST_OFFLINE==='1','Live GAS/Supabase health requires a separate authorized online run; excluded from fixture CI.');
   const r=await request.get('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/gas-bridge-health');
   const d=await r.json();
   console.log('SIGNED_GAS_HEALTH',JSON.stringify(d));

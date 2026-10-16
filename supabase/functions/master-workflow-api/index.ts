@@ -22,7 +22,8 @@ const hasSchedule=(o:any)=>!!String(o?.scheduled_date||'').slice(0,10)&&!!String
 const normalizedStage=(o:any)=>{const s=String(o?.master_workflow_stage||'assigned');return s==='arrived'?'departed':activeStages.includes(s)?s:'assigned'};
 const contactResults=['no_answer','thinking','waiting_delivery','call_later','agreed','other'];
 const successfulContact=new Set(['thinking','waiting_delivery','call_later','agreed','other']);
-const contactHistory=(o:any)=>Array.isArray(o?.master_contact_history)?o.master_contact_history.filter((x:any)=>x&&typeof x==='object').slice(-50):[];
+const keepHistory=(o:any,items:any[])=>o?.master_contact_control_active?items:items.slice(-50);
+const contactHistory=(o:any)=>Array.isArray(o?.master_contact_history)?keepHistory(o,o.master_contact_history.filter((x:any)=>x&&typeof x==='object')):[];
 function normalizePhone(v:any){
   const digits=String(v||'').replace(/\D/g,'');
   if(digits.length===10)return '+7'+digits;
@@ -56,14 +57,37 @@ Deno.serve(async r=>{
     if(action==='health')return j({ok:true,version:'2026-10-04-contact-journal'});
     const me=await actor(db,r);
     if(!me)return j({ok:false,error:'Доступ не подтверждён'},401);
-    if(String(me.role||'')!=='master')return j({ok:false,error:'Действие доступно только мастеру'},403);
+    const contactAction=['contactPolicy','recordContactAttempt','recordContactResult','markCalled','confirmAgreement','setAgreementSchedule'].includes(action);
+    if(me.role!=='master'&&(!['owner','manager','dispatcher'].includes(me.role)||!['contactPolicy','recordContactResult'].includes(action)))return j({ok:false,error:'Действие доступно только мастеру'},403);
 
     const q=await db.from('orders').select('*').eq('id',b.id).maybeSingle();
     if(q.error)throw q.error;
     const cur=q.data;
     if(!cur)return j({ok:false,error:'Заявка не найдена'},404);
-    if(String(cur.master_staff_id||'')!==String(me.id||''))return j({ok:false,error:'Можно менять только свою заявку'},403);
+    if(me.role==='master'&&String(cur.master_staff_id||'')!==String(me.id||''))return j({ok:false,error:'Можно менять только свою заявку'},403);
     if(['Выполнена','Отменена'].includes(String(cur.status||'')))return j({ok:false,error:'Завершённую или отменённую заявку менять нельзя'},409);
+
+    if(contactAction){
+      const input={...b};
+      if(['recordContactAttempt','recordContactResult'].includes(action)){
+        input.phone=normalizePhone(b.phone);
+        if(!input.phone||!orderPhones(cur).includes(input.phone))return j({ok:false,error:'Номер не относится к этой заявке'},400);
+      }
+      const result=await db.rpc('bos_contact_action',{p_actor:me.id,p_action:action,p_input:input});
+      if(result.error){
+        // Rolling deployment: only an absent RPC permits legacy behavior. An enabled
+        // pilot or explicit new request never falls through after a database error.
+        if(result.error.code!=='PGRST202')throw new Error('Не удалось проверить и сохранить договорённость. Повторите попытку.');
+        if(cur.master_contact_control_active||b.contact_control===true)return j({ok:false,error:'Сервер контроля ещё не обновлён. Черновик сохранён.'},503);
+        if(action==='contactPolicy')return j({ok:true,enabled:false});
+      }else if(result.data?.handled!==false){
+        const data=result.data;
+        if(!data)return j({ok:false,error:'Сервер не подтвердил сохранение'},500);
+        if(data.order&&me.role==='master')data.order=safeOrder(data.order);
+        return j(data,data.ok?200:([400,403,404,409].includes(data.status)?data.status:500));
+      }else if(action==='contactPolicy')return j({ok:true,enabled:false});
+      if(me.role!=='master')return j({ok:false,error:'Пилот контроля выключен'},409);
+    }
 
     async function save(patch:any,confirmed:(o:any)=>boolean){
       const u=await workflowWrite(db,cur,patch);if(u.error)throw u.error;
@@ -83,7 +107,7 @@ Deno.serve(async r=>{
       if(existing)return j({ok:true,order:safeOrder(cur),contact_event:existing,idempotent:true});
       const now=new Date().toISOString();
       const event={id:attemptId,at:now,phone,result:'pending',comment:'',callback_at:null,by_staff_id:me.id,by_name:String(me.full_name||'').trim()||'Мастер'};
-      const next=[...oldHistory,event].slice(-50);
+      const next=keepHistory(cur,[...oldHistory,event]);
       return await save({master_contact_history:next,master_contact_status:'pending',master_contact_comment:null,master_contact_phone:phone,master_contact_updated_at:now,master_contact_callback_at:null,updated_at:now,sync_status:'pending_sheet'},o=>contactHistory(o).some((x:any)=>String(x.id||'')===attemptId));
     }
 
@@ -100,10 +124,17 @@ Deno.serve(async r=>{
       const event=history[index];
       if(normalizePhone(event.phone)!==phone)return j({ok:false,error:'Номер попытки звонка изменить нельзя'},409);
       if(String(event.by_staff_id||'')&&String(event.by_staff_id)!==String(me.id))return j({ok:false,error:'Эта попытка звонка принадлежит другому мастеру'},403);
+      if(cur.master_contact_control_active&&event.result!=='pending'){
+        const request=event.request;
+        const retryCallback=b.callback_at?new Date(String(b.callback_at)).toISOString():null;
+        const identical=request?request.result===result&&request.phone===phone&&request.comment===comment&&String(request.callback_at||'')===String(retryCallback||'')&&String(request.scheduled_date||'')===String(b.scheduled_date||'')&&String(request.scheduled_time||'')===String(b.scheduled_time||''):sameContactResult(event,result,comment,callbackAt);
+        if(identical)return j({ok:true,order:safeOrder(cur),contact_event:event,idempotent:true});
+        return j({ok:false,error:'Этот итог уже сохранён. Откройте новую запись связи.'},409);
+      }
       if(sameContactResult(event,result,comment,callbackAt))return j({ok:true,order:safeOrder(cur),contact_event:event,idempotent:true});
       history[index]={...event,phone,result,comment,callback_at:callbackAt,result_at:now,by_staff_id:me.id,by_name:String(me.full_name||'').trim()||'Мастер'};
       const latest=history[history.length-1];
-      const patch:any={master_contact_history:history.slice(-50),master_contact_status:latest.result,master_contact_comment:latest.comment||null,master_contact_phone:latest.phone,master_contact_updated_at:latest.result_at||latest.at,master_contact_callback_at:latest.callback_at||null,updated_at:now,sync_status:'pending_sheet'};
+      const patch:any={master_contact_history:keepHistory(cur,history),master_contact_status:latest.result,master_contact_comment:latest.comment||null,master_contact_phone:latest.phone,master_contact_updated_at:latest.result_at||latest.at,master_contact_callback_at:latest.callback_at||null,updated_at:now,sync_status:'pending_sheet'};
       if(successfulContact.has(result)&&!contactConfirmed(cur)){patch.master_called_at=now;patch.master_called_by_staff_id=me.id;patch.master_called_by_name=String(me.full_name||'').trim()||'Мастер';}
       return await save(patch,o=>contactHistory(o).some((x:any)=>String(x.id||'')===attemptId&&String(x.result||'')===result));
     }

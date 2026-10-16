@@ -1,0 +1,12 @@
+[Unit]
+Description=Run Business OS contact control every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+AccuracySec=5s
+Persistent=true
+Unit=business-os-contact-control.service
+
+[Install]
+WantedBy=timers.target

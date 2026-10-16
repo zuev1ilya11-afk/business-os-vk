@@ -12,6 +12,8 @@ function database(seed = {}) {
   const tables = structuredClone({business_staff:[],finance_expenses:[],orders:[],staff_schedule:[],order_claims:[],master_memo_materials:[],...seed});
   const db = {tables, calls:[], rpc:async(name,p)=>{
     db.calls.push({rpc:name,p});
+    // Default fixture models production with the contact pilot disabled. SQL tests exercise the real RPC.
+    if(name==='bos_contact_action')return {data:p.p_action==='contactPolicy'?{ok:true,enabled:false}:{handled:false},error:null};
     if(name==='bos_verify_staff_credentials')return {data:tables.business_staff.find(x=>x.is_active&&x.login?.toLowerCase()===p.p_login.trim().toLowerCase()&&x.password_hash===p.p_password)?.id||null,error:null};
     if(name==='bos_consume_login_attempt')return {data:[{allowed:true,retry_after:0}],error:null};
     if(name==='bos_set_staff_credentials'){

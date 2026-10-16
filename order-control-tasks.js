@@ -5,7 +5,7 @@
  if(root.BOS_CONTROL_TASKS)return;
  const API='https://business-os-api-gateway.netlify.app/api/proxy/push-api',SESSION='bos_vk_session_v2';
  const stateNow=()=>typeof state==='undefined'?{}:state;
- const activePage=()=>stateNow().user?.role==='master'?stateNow().page==='home':!!root.BOS_ORDER_CONTROL?.isActive();
+ const activePage=()=>stateNow().user?.role==='master'?['home','orders'].includes(stateNow().page)||!!document.querySelector('#modalRoot .modal'):['home','orders'].includes(stateNow().page)||!!root.BOS_ORDER_CONTROL?.isActive();
  const token=()=>{try{return sessionStorage.getItem(SESSION)||localStorage.getItem(SESSION)||''}catch{return ''}};
  const escape=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let identity='',generation=0,tasks=[],staff=[],enabled=false,more=false,loaded=false,error='',loading=false,paintQueued=false,lastLoad=0,dialog=null;
@@ -31,7 +31,7 @@
   if(who()!==identity)reset();
   if(!identity||!activePage()||document.hidden||loading||(!force&&Date.now()-lastLoad<60000))return;
   const run=generation;loading=true;lastLoad=Date.now();refresh();
-  try{const data=await request('controlList');if(run!==generation)return;tasks=data.tasks||[];staff=data.staff||[];enabled=!!data.reminders_enabled;more=!!data.more;loaded=true;error=''}
+  try{const data=await request('controlList');if(run!==generation)return;tasks=data.tasks||[];staff=data.staff||[];enabled=!!data.reminders_enabled;more=!!data.more;loaded=true;error='';root.BOS_ORDER_CONTROL?.refresh()}
   catch(e){if(run===generation)error=e.message}finally{if(run===generation){loading=false;refresh()}}
  }
  function reminder(t){
@@ -40,7 +40,7 @@
   if(!enabled)return 'Серверные напоминания пока выключены';
   return t.has_push?'Один push при наступлении срока':'У сотрудника нет активного подключения push';
  }
- function taskText(t){return `<b>${escape(t.assignee_name)}</b><span>Срок: ${escape(core.displayDue(t.due_at))} МСК${Date.parse(t.due_at)<=Date.now()?' · Просрочено':''}</span><span>${escape(reminder(t))}</span>`}
+ function taskText(t){return `<b>${escape(t.assignee_name)}</b><span>Срок: ${escape(core.displayDue(t.due_at))} МСК${Date.parse(t.due_at)<=Date.now()?' · Просрочено на '+Math.max(1,Math.floor((Date.now()-Date.parse(t.due_at))/60000))+' мин.':' · Ещё есть время'}</span><span>${escape(reminder(t))}</span>${t.escalated_at?`<span>Передано руководителю: ${escape(t.manager_name||'Руководитель')}</span>`:''}`}
  function update(node,html){if(node.__ctHTML!==html){node.__ctHTML=html;node.innerHTML=html}}
  function paint(){
   paintQueued=false;
@@ -51,6 +51,7 @@
   }
   if(s.user.role==='master'){
    let own=document.getElementById('bosMyControlTasks');
+   if(s.page!=='home'){own?.remove();load();return;}
    if(!loaded||!tasks.length){own?.remove();load();return;}
    if(!own){own=document.createElement('section');own.id='bosMyControlTasks';own.className='card';document.getElementById('content')?.appendChild(own)}
    update(own,`<h2>Мои поручения</h2><p class="muted">Поручения по заявкам. Сроки — по Москве.</p>${error?`<p role="status">${escape(error)}</p>`:''}${tasks.map(t=>`<article class="ctOwn"><b>Заявка № ${escape(t.order_id)} · ${escape(core.titles[t.issue_code]||t.issue_code)}</b>${taskText(t)}<button type="button" class="secondary" data-ct-open="${escape(t.order_id)}">Открыть заявку</button></article>`).join('')}${more?'<p>Показаны первые 500 поручений.</p>':''}<button type="button" class="secondary" data-ct-refresh>Обновить поручения</button>`);
@@ -58,11 +59,12 @@
    let bar=panel.querySelector('.ctBar');
    if(!bar){bar=document.createElement('div');bar.className='ctBar';panel.querySelector('.ocFilters')?.before(bar)}
    update(bar,`<span role="status">${escape(error||(loaded?'Назначьте сотрудника и срок у нужной проблемы.':'Загрузка ответственных и сроков…'))}</span><button class="secondary" type="button" data-ct-refresh ${loading?'disabled':''}>Обновить поручения</button>${more?'<span>Показаны первые 500 поручений. Открытие назначения загрузит его актуальное состояние отдельно.</span>':''}`);
-   if(loaded){const note=panel.querySelector('.ocNote');const text='По загруженным заявкам. Даты визитов и сроки поручений — по Москве. Напоминание включается отдельно для каждого поручения.';if(note&&note.textContent!==text)note.textContent=text;}
+   if(loaded){const note=panel.querySelector('.ocNote');const text='По загруженным заявкам. Даты визитов и сроки поручений — по Москве. Автопоручения обновляются при сохранении итога связи; напоминания включаются отдельно.';if(note&&note.textContent!==text)note.textContent=text;}
    for(const issue of panel.querySelectorAll('.ocIssue')){
     const oid=issue.closest('[data-oc-order]')?.dataset.ocOrder,code=issue.dataset.ocReason;
     let meta=issue.querySelector('.ctMeta');if(!meta){meta=document.createElement('div');meta.className='ctMeta';issue.appendChild(meta)}
     const task=tasks.find(t=>t.active&&t.order_id===oid&&t.issue_code===code);
+    if(task?.automatic){update(meta,`${taskText(task)}<button type="button" class="secondary" data-ct-result="${escape(oid)}">Обновить итог связи</button>`);continue;}
     update(meta,`${task?taskText(task):`<span>${!loaded?'Статус поручения ещё не загружен':more?'Проверьте актуальное назначение':'Персональное поручение не назначено'}</span>`}<button type="button" class="secondary" data-ct-edit="${escape(oid)}" data-ct-code="${escape(code)}">${task?'Изменить поручение':'Назначить ответственного и срок'}</button>`);
    }
   }
@@ -105,6 +107,13 @@
  document.addEventListener('click',event=>{
   if(event.target.closest?.('[data-ct-close]')){closeEditor();return;}
   if(!who())return;
+  const outcome=event.target.closest?.('[data-ct-result]');if(outcome){
+   const oid=outcome.dataset.ctResult,actor=who();
+   const openResult=()=>{if(actor===who())root.openMasterContactResultForOrder?.(oid)};
+   if((stateNow().orders||[]).some(o=>String(o.id)===oid))openResult();
+   else {outcome.disabled=true;Promise.resolve(root.reloadData?.(true)).then(openResult).catch(()=>{}).finally(()=>{outcome.disabled=false})}
+   return;
+  }
   const editButton=event.target.closest?.('[data-ct-edit]');if(editButton){edit(editButton.dataset.ctEdit,editButton.dataset.ctCode);return;}
   if(event.target.closest?.('[data-ct-refresh]')){load(true);return;}
   const open=event.target.closest?.('[data-ct-open]');if(open&&typeof root.openOrder==='function')root.openOrder(open.dataset.ctOpen);
@@ -118,11 +127,11 @@
  root.addEventListener('storage',refresh);root.addEventListener('pageshow',refresh);
  setInterval(()=>{refresh();load()},60000);
  const style=document.createElement('style');style.textContent='.ctBar,.ctMeta,.ctOwn{display:flex;flex-direction:column;gap:8px;min-width:0}.ctBar{font-size:12px;padding:10px 0}.ctMeta{border-top:1px dashed var(--line,#778);padding-top:10px}.ctMeta button,.ctOwn button{min-height:44px;white-space:normal}.ctOwn{border-top:1px solid var(--line,#778);padding:12px 0}.ctDialog{background:var(--card,#101b2a);color:var(--text,#edf3ff);border:1px solid var(--line,#778);border-radius:16px;width:min(520px,calc(100vw - 24px));max-height:90dvh;overflow:auto;box-sizing:border-box;padding:18px}.ctDialog::backdrop{background:rgba(0,0,0,.65)}.ctDialog label{display:flex;flex-direction:column;gap:7px;margin:14px 0}.ctDialog select,.ctDialog input:not([type=checkbox]){width:100%;min-width:0;box-sizing:border-box;min-height:44px}.ctDialog .ctCheckbox{flex-direction:row;align-items:center}.ctActions{display:flex;flex-wrap:wrap;gap:8px}.ctActions button{min-height:44px;flex:1 1 120px}.ctDialog [role=alert]{color:#ffb9b9;overflow-wrap:anywhere}';document.head.appendChild(style);
- root.BOS_CONTROL_TASKS=Object.freeze({...core,refresh,reload:()=>load(true)});
+ root.BOS_CONTROL_TASKS=Object.freeze({...core,refresh,reload:()=>load(true),current:()=>who()===identity?tasks:[]});
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })(typeof window==='undefined'?globalThis:window,function(){
  'use strict';
- const titles={reschedule:'Перенос визита',overdue:'Проверить результат визита',unassigned:'Назначить мастера',undated:'Согласовать дату',untimed:'Согласовать время',agreement:'Связаться с клиентом',report_review:'Проверить отчёт',report_rejected:'Исправить отчёт',unfinished_work:'Уточнить невыполненные работы'};
+ const titles={contact_first:'Связаться с клиентом впервые',contact_followup:'Повторно связаться с клиентом',contact_help:'Помощь руководителя',contact_declined:'Решение по отказу клиента',reschedule:'Перенос визита',overdue:'Проверить результат визита',unassigned:'Назначить мастера',undated:'Согласовать дату',untimed:'Согласовать время',agreement:'Связаться с клиентом',report_review:'Проверить отчёт',report_rejected:'Исправить отчёт',unfinished_work:'Уточнить невыполненные работы'};
  function parseDue(value){
   if(!/^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):[0-5]\d$/.test(String(value)))throw new Error('Укажите корректные дату и время.');
   const result=new Date(value+':00+03:00');
