@@ -88,6 +88,18 @@ uses the original in-container paths and runs both builds offline from startup.
 It still requires exact baseline bundle equality before compiling the patch.
 The original cache is never mounted into the builder and is checked after use.
 
+The 2026-10-17 host attempt passed the API staging gates and reached the database
+backup verification. `pg_restore --list` reported an invalid archive, and the
+installer reported `RELEASE_ROLLBACK_OK` with the original build. The migration
+had not started. The cause was reproduced locally: reading the five-byte header
+through a buffered Python file and seeking to logical offset zero still left the
+underlying descriptor ahead of the header. The child process received that
+descriptor and started partway into the dump. The verification stream now uses
+unbuffered I/O so its seek resets the actual descriptor. Two regression tests use
+real child processes to check complete binary transmission and rejection handling;
+their synthetic fixture is not a PostgreSQL archive. On-host PostgreSQL validation
+remains mandatory, and the failed dump/logs are retained when the installer retries.
+
 `bos295.pyz` is the RU-specific installer, pinned to main commit
 `3fb9bd0acc7cc954c53f52638127774e352e5a66`. Expected build transition:
 `2f2dbcab6f4f8b4881cb` → `77899953454eb1870e2e`.
@@ -125,7 +137,7 @@ directories instead of deleting them. Interrupted activation requires rollback.
 
 Local release checks: 36 filesystem/failure/recovery integration tests, 4 cached
 build regression tests (Docker/network/DB boundaries are explicit fakes),
-8 preflight diagnostic tests, 4 bundle diagnostic tests, and 4 disposable
+2 backup stream regression tests, 8 preflight diagnostic tests, 4 bundle diagnostic tests, and 4 disposable
 PGlite PostgreSQL transaction cases (flags off, baseline drift, wrong flag rollback,
 DDL failure rollback). The feature's original native PostgreSQL/server/UI CI is
 listed above. Actual baseline Edge compilation was verified on the host as noted

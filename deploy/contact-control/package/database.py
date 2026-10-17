@@ -125,7 +125,9 @@ def prepare(info):
         command(rec, ['pg_dump', '-U', 'postgres', '-d', rec['dbname'], '--format=custom'], stdout=stream, label='backup')
         stream.flush()
         os.fsync(stream.fileno())
-    with open(dump, 'rb') as stream:
+    # subprocess passes the file descriptor, not Python's buffered position.
+    # Keep header inspection and the child's stdin at the same byte offset.
+    with open(dump, 'rb', buffering=0) as stream:
         f.require(stream.read(5) == b'PGDMP', 'PostgreSQL backup is incomplete')
         stream.seek(0)
         listing = command(rec, ['pg_restore', '--list'], stdin=stream, label='backup-verify')
