@@ -1,4 +1,5 @@
 import { handsDetailsPatch, handsWorkText, updateAcceptedHandsDetails } from "../_shared/hands-details.ts";
+import { syncHandsPages } from "../_shared/hands-sync.ts";
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const cors={
@@ -80,17 +81,9 @@ async function importOrder(db:any,o:any,staffByName:Map<string,any>){
 async function syncOrders(db:any,b:any){
   const status=clean(b.status||'ACTIVE').toUpperCase();
   if(status&&!['ACTIVE','COMPLETE'].includes(status))throw new Error('Неверный status');
-  const perPage=Math.min(500,Math.max(1,Number(b.per_page||500))),maxPages=Math.min(10,Math.max(1,Number(b.max_pages||4)));
   const staffQ=await db.from('business_staff').select('id,full_name,role').eq('is_active',true).eq('role','master');if(staffQ.error)throw staffQ.error;
   const staffByName=new Map<string,any>((staffQ.data||[]).map((x:any)=>[clean(x.full_name).toLocaleLowerCase('ru-RU'),x]));
-  let seen=0,created=0,updated=0,pages=0;
-  for(let page=1;page<=maxPages;page++){
-    const q=new URLSearchParams({page:String(page),per_page:String(perPage)});if(status)q.set('status',status);if(b.date_from)q.set('date_from',clean(b.date_from));if(b.date_to)q.set('date_to',clean(b.date_to));if(b.search)q.set('search',clean(b.search));
-    const d=await hands(`/orders/?${q.toString()}`);const rows=listFromResponse(d);pages++;if(!rows.length)break;
-    for(const o of rows){const r=await importOrder(db,o,staffByName);if(r.ok){seen++;r.created?created++:updated++}}
-    if(rows.length<perPage)break;
-  }
-  return {seen,created,updated,pages,status};
+  return await syncHandsPages(b,status,q=>hands(`/orders/?${q}`),o=>importOrder(db,o,staffByName));
 }
 
 Deno.serve(async(req:Request)=>{

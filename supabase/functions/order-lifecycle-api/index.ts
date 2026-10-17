@@ -1,4 +1,5 @@
 import { handsDetailsPatch, handsWorkText, updateAcceptedHandsDetails } from "../_shared/hands-details.ts";
+import { syncHandsPages } from "../_shared/hands-sync.ts";
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import "../../../order-payroll.js";
 import "../../../service-catalog.js";
@@ -177,14 +178,8 @@ async function importHandsOrder(db:any,o:any,staffByName:Map<string,any>){
 async function syncHandsOrders(db:any,req:Request,body:any){
   const actor=await currentActor(db,req);if(!actor)return json({ok:false,error:'Доступ не подтверждён'},401);if(!ops(String(actor.role||'')))return json({ok:false,error:'Недостаточно прав'},403);
   const status=clean(body.status||'ACTIVE').toUpperCase();if(status&&!['ACTIVE','COMPLETE'].includes(status))return json({ok:false,error:'Неверный status'},400);
-  const perPage=Math.min(500,Math.max(1,Number(body.per_page||500))),maxPages=Math.min(10,Math.max(1,Number(body.max_pages||4)));
   const staffQ=await db.from('business_staff').select('id,full_name,role').eq('is_active',true).eq('role','master');if(staffQ.error)throw staffQ.error;const staffByName=new Map<string,any>((staffQ.data||[]).map((x:any)=>[clean(x.full_name).toLocaleLowerCase('ru-RU'),x]));
-  let seen=0,created=0,updated=0,pages=0;
-  for(let page=1;page<=maxPages;page++){
-    const p=new URLSearchParams({page:String(page),per_page:String(perPage)});if(status)p.set('status',status);if(body.date_from)p.set('date_from',clean(body.date_from));if(body.date_to)p.set('date_to',clean(body.date_to));if(body.search)p.set('search',clean(body.search));
-    const d=await hands(`/orders/?${p.toString()}`),rows=listFromResponse(d);pages++;if(!rows.length)break;for(const o of rows){const r=await importHandsOrder(db,o,staffByName);if(r.ok){seen++;r.created?created++:updated++}}if(rows.length<perPage)break;
-  }
-  return json({ok:true,seen,created,updated,pages,status});
+  return json({ok:true,...await syncHandsPages(body,status,p=>hands(`/orders/?${p}`),o=>importHandsOrder(db,o,staffByName))});
 }
 
 Deno.serve(async(req:Request)=>{
