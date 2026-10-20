@@ -6,13 +6,14 @@
     return `<a class="secondary wide" target="_blank" rel="noopener" href="${esc(url)}"${image?' onclick="if(window.BOS_OPEN_REPORT_PHOTO){event.preventDefault();BOS_OPEN_REPORT_PHOTO(this.href,\'Акт выполненных работ\')}"':''}>📄 Открыть акт</a>`;
   }
   function intakeHeader(o){
-    const external=String(o.external_id||''),number=external.startsWith('hands:')?external.slice(6):String(o.id||'');
+    const external=String(o.external_id||''),number=o.order_number?String(o.order_number):external.startsWith('hands:')?external.slice(6):String(o.id||'');
     const date=o.created_at?new Date(o.created_at):null;
     let received='Дата поступления не указана';
     if(date&&Number.isFinite(date.getTime())){
       const p=Object.fromEntries(new Intl.DateTimeFormat('ru-RU',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(date).map(x=>[x.type,x.value]));
       received=`Поступила: ${p.day}.${p.month}.${p.year} в ${p.hour}:${p.minute}`;
     }
+    if(o.received_date){const [y,m,d]=o.received_date.split('-');received=`Поступила: ${d}.${m}.${y}`}
     return `<p class="reportReviewNumber"><b>Заявка №${esc(number)}</b></p><p class="muted reportReviewReceived">${received}</p>`;
   }
   function canReviewReports(){return !(typeof isMasterPreview==='function'&&isMasterPreview())&&((typeof isDispatcherPreview==='function'&&isDispatcherPreview())||['owner','manager','dispatcher'].includes(String(state.user?.role||'')))}

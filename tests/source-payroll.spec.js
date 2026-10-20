@@ -58,11 +58,11 @@ for(const width of [320,1280])test(`new-order pricing follows source without cha
  await form.locator('[name="master_vk_id"]').selectOption('staff_m');
  await expect(form.locator('#bosMasterPay')).toContainText('600');
  await expect(form.locator('#bosPricingRule')).toContainText('400');
- await form.locator('[name="source"][value="Руки"]').check();
+ await form.locator('[name=source]').selectOption('Руки');
  await expect(form.locator('#bosMasterPay')).toContainText(/552[,.]5/);
  await expect(form.locator('#bosPricingRule')).toContainText('Hands');
  await expect(form.locator('#bosPricingRule')).not.toContainText('40%');
- await form.locator('[name="source"][value="Телефон"]').check();
+ await form.locator('[name=source]').selectOption('Телефон');
  await expect(form.locator('#bosMasterPay')).toContainText('600');
  await expect(form.locator('#bosPricingRule')).toContainText('Компания 40%');
  await form.locator('#bosPricingRule').scrollIntoViewIfNeeded();

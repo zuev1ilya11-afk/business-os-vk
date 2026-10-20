@@ -3,7 +3,7 @@ claimsApi=async function(action,payload={}){const headers=window.BOS_AUTH_HEADER
 // Compact management view for problem orders/claims. Full details remain in openClaimDetails().
 claimCardHtml=function(c){
   const o=claimOrder(c),late=claimOverdue(c);
-  const orderNo=o?.id??c.order_id;
+  const orderNo=o?.order_number||o?.id||c.order_id;
   const status=c.status==='closed'?'Закрыта':late?'Просрочена':'Открыта';
   const date=c.scheduled_date?String(c.scheduled_date):'';
   const time=c.scheduled_time?String(c.scheduled_time).slice(0,5):'';

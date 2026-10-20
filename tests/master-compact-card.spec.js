@@ -76,7 +76,7 @@ test('management full edit keeps separate phones, multiple works and a master co
  await expect(form.locator('.bosPhoneInput').nth(1)).toHaveValue('9214453890');
  await expect(form.locator('.bosWorkSelect')).toHaveCount(2);
  await expect(form.locator('#bosServiceInfo')).toBeHidden();
- await expect(form.getByRole('heading',{name:'Комментарий',exact:true})).toBeVisible();
+ await expect(form.getByLabel('Комментарий',{exact:true})).toBeVisible();
 
  await form.locator('#bosAddPhone').click();
  await expect(form.locator('.bosPhoneInput')).toHaveCount(3);

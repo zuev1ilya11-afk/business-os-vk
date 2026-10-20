@@ -11,7 +11,7 @@ const truthy=v=>v===true||v===1||String(v).toLowerCase()==='true'||String(v)==='
 const dateOnly=v=>String(v||'').slice(0,10);
 const num=v=>{const n=Number(v);return Number.isFinite(n)?n:0};
 const payout=o=>{const direct=window.BOS_ORDER_PAYROLL?.directMaster(o);if(direct!=null)return direct;const amount=o?.amount;if(amount!==undefined&&amount!==null&&amount!==''){const n=Number(amount);if(Number.isFinite(n))return n*.85*.65}return num(o?.master_payout)};
-const orderNo=o=>{const ext=String(o?.external_id||'');return ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')};
+const orderNo=o=>{const ext=String(o?.external_id||'');return o?.order_number?String(o.order_number):ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')};
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 function dayLabel(date){const d=new Date(date+'T12:00:00');const t=today(),tom=new Date();tom.setDate(tom.getDate()+1);const tomorrow=`${tom.getFullYear()}-${String(tom.getMonth()+1).padStart(2,'0')}-${String(tom.getDate()).padStart(2,'0')}`;if(date===t)return 'Сегодня';if(date===tomorrow)return 'Завтра';return d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'short'}).replace('.','')}
 function workSource(o){const raw=[o?.work,o?.description,o?.service_name,o?.service,o?.services_text].filter(v=>v!==undefined&&v!==null&&String(v).trim()).join(' · ');return raw.replace(/\s+/g,' ').trim()}

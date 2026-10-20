@@ -23,6 +23,30 @@ function norm(v:any){let d=String(v||'').replace(/\D/g,'');if(d.length===11&&d[0
 // Match staff-admin's owner-only credential metadata boundary in every staff response.
 const out=(s:any,includeCredentials=false)=>{const x={...(s||{})};delete x.password_hash;if(!includeCredentials){delete x.login;delete x.has_password}return {...x,vk_user_id:x.external_id}};
 const masterOrder=(o:any)=>orderPayroll.masterView({...o,master_payout:orderPayroll.directMaster(o)??payouts(o?.amount,!!o?.master_staff_id).master_payout});
+// Manual business identifiers never replace the primary key or integration IDs.
+function intakePatch(body:any){
+  const patch:any={};
+  const fail=(field:string,error:string)=>{throw Object.assign(new Error(error),{field})};
+  for(const [field,max] of [['order_number',80],['entrance',120],['floor',120],['intercom',120],['work',10000]] as const){
+    if(!Object.hasOwn(body,field))continue;
+    if(typeof body[field]!=='string')fail(field,'Введите текст');
+    const value=body[field].trim();
+    if(value.length>max||/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(value)||(field==='order_number'&&/[\r\n\t]/.test(value)))fail(field,`Недопустимое значение: не более ${max} символов`);
+    if(field==='work'&&!value)fail(field,'Добавьте хотя бы одну работу');
+    patch[field]=field==='order_number'?(value||null):value;
+  }
+  if(Object.hasOwn(body,'received_date')){
+    const value=body.received_date;
+    if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value)||value<'1900-01-01'||value>'9999-12-31'||Number.isNaN(Date.parse(value))||new Date(value+'T12:00:00Z').toISOString().slice(0,10)!==value)fail('received_date','Укажите корректную дату поступления');
+    patch.received_date=value;
+  }
+  if(Object.hasOwn(body,'amount_confirmed')){
+    if(typeof body.amount_confirmed!=='boolean')fail('amount_confirmed','Некорректное состояние стоимости');
+    patch.amount_confirmed=body.amount_confirmed;
+  }
+  return patch;
+}
+const numberConflict=()=>j({ok:false,field:'order_number',error:'Заявка с таким номером уже существует в этом источнике. Укажите другой номер.'},409);
 const safeRequestId=(v:any)=>{const s=String(v||'').trim();return /^[A-Za-z0-9_-]{8,128}$/.test(s)?s:''};
 // PostgREST caps an unpaginated response at 1000 rows. Keep totals complete.
 async function allRows(query:any){
@@ -121,6 +145,7 @@ Deno.serve(async r=>{
         if(q.error)throw q.error;
         cur=q.data;
       }
+      let intake:any;try{intake=intakePatch(b)}catch(error){return j({ok:false,field:(error as any).field,error:(error as Error).message},400)}
       for(const k of a==='createOrder'?['client','address','work']:[])if(!String(b[k]||'').trim())return j({ok:false,error:'Заполните обязательные поля'},400);
 
       const requestId=a==='createOrder'?safeRequestId(b.request_id):'';
@@ -140,7 +165,7 @@ Deno.serve(async r=>{
       for(const k of ['original_amount','amount','extra_work_amount','uncompleted_work_amount'])if(k in b&&(!Number.isFinite(Number(b[k]))||Number(b[k])<0))return j({ok:false,error:'Сумма должна быть конечным неотрицательным числом'},400);
       const original=round(b.original_amount??b.amount??cur?.original_amount??cur?.amount??0),unfinished=round(b.uncompleted_work_amount??cur?.uncompleted_work_amount??0),amount=round(original-unfinished),now=new Date().toISOString();
       if(amount<0)return j({ok:false,error:'Невыполненные работы не могут превышать сумму заказа'},400);
-      const p:any={updated_at:now,sync_status:'pending_sheet'};
+      const p:any={updated_at:now,sync_status:'pending_sheet',...intake};
       for(const k of ['status','client','phone','address','work','scheduled_date','scheduled_time','time_slot','source','city','comment','extra_work_done','extra_work_description','extra_work_amount','uncompleted_work_done','uncompleted_work_description','uncompleted_work_amount','wall_over_3m','wall_material','possible_extra_work'])if(a==='createOrder'||Object.prototype.hasOwnProperty.call(b,k))p[k]=b[k]??'';
       for(const k of ['scheduled_date','scheduled_time'])if(k in p&&!p[k])p[k]=null;
       for(const k of ['extra_work_done','uncompleted_work_done','wall_over_3m','possible_extra_work'])if(k in p)p[k]=p[k]===true||p[k]==='true'||p[k]==='on';
@@ -148,6 +173,8 @@ Deno.serve(async r=>{
       try{Object.assign(p,manualDetailsPatch(b,cur))}catch(error){return j({ok:false,error:(error as Error).message},400)}
       p.original_amount=original;
       p.amount=amount;
+      if(cur&&!Object.hasOwn(b,'amount_confirmed')&&['original_amount','amount'].some(k=>Object.hasOwn(b,k)))p.amount_confirmed=true;
+      if(p.amount_confirmed===false&&(original!==0||amount!==0))p.amount_confirmed=true;
       if(ms!==undefined){p.master_staff_id=ms?.id||null;p.master_name=ms?.full_name||''}
       const pricingOrder=cur?{...cur,...p,status:cur.status,report_review_status:cur.report_review_status}:{external_source:createSource,source:avitoChat?'Авито':(b.source||'VK')};
       const sourceChanged=!!cur&&orderPayroll.isDirect(cur)!==orderPayroll.isDirect(pricingOrder);
@@ -173,6 +200,7 @@ Deno.serve(async r=>{
           const prior=await db.from('orders').select('*').eq('external_source',createSource).eq('external_id',createExternalId).maybeSingle();
           if(prior.data)return j({ok:true,order:prior.data,idempotent:true});
         }
+        if(q.error?.code==='23505'&&p.order_number)return numberConflict();
         if(q.error)throw q.error;
         return j({ok:true,order:q.data});
       }
@@ -180,6 +208,7 @@ Deno.serve(async r=>{
       let update=db.from('orders').update(p).eq('id',b.id);
       for(const key of ['status','updated_at'])update=cur[key]==null?update.is(key,null):update.eq(key,cur[key]);
       const q=await update.select().maybeSingle();
+      if(q.error?.code==='23505'&&(p.order_number||cur.order_number))return numberConflict();
       if(q.error)throw q.error;
       if(!q.data)return j({ok:false,error:'Заявка уже изменена. Обновите данные.'},409);
       return j({ok:true,order:q.data});

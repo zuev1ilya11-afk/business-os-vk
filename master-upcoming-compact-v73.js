@@ -3,7 +3,7 @@
 if(window.BOS_MASTER_UPCOMING_COMPACT_V73)return;window.BOS_MASTER_UPCOMING_COMPACT_V73=true;
 const masterMode=()=>String(state.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
 const own=()=>typeof ownOrders==='function'?ownOrders():(state.orders||[]);
-const no=o=>{const x=String(o?.external_id||'');return x.startsWith('hands:')?x.slice(6):String(o?.id||'')};
+const no=o=>{const x=String(o?.external_id||'');return o?.order_number?String(o.order_number):x.startsWith('hands:')?x.slice(6):String(o?.id||'')};
 const dt=o=>{const d=String(o?.scheduled_date||'').slice(0,10)||'Дата не назначена';const t=String(o?.scheduled_time||o?.time_slot||'').slice(0,5)||'Время не назначено';return `${d} · ${t}`};
 const payout=o=>{const direct=window.BOS_ORDER_PAYROLL?.directMaster(o);if(direct!=null)return direct;const raw=o?.amount;if(raw!==null&&raw!==undefined&&raw!==''){const amount=Number(raw);if(Number.isFinite(amount))return amount*0.85*0.65}const stored=Number(o?.master_payout||0);return Number.isFinite(stored)?stored:0};
 const workLines=o=>String(o?.work||'Работа не указана').split(/\n+/).map(x=>x.trim()).filter(Boolean);

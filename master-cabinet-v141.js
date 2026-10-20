@@ -16,7 +16,7 @@ const payout=o=>num(window.BOS_MASTER_PROFILE_SUMMARY_V129_API?.payout?.(o)??o?.
 const extra=o=>num(o?.extra_work_amount);
 const deduction=o=>num(o?.uncompleted_work_amount);
 const salary=o=>payout(o)+extra(o);
-const orderNo=o=>{const ext=String(o?.external_id||'');return ext.startsWith('hands:')?ext.slice(6):String(o?.id||'—')};
+const orderNo=o=>{const ext=String(o?.external_id||'');return o?.order_number?String(o.order_number):ext.startsWith('hands:')?ext.slice(6):String(o?.id||'—')};
 function mine(){
   if(typeof ownOrders==='function')return (ownOrders()||[]).filter(Boolean);
   const all=(state?.orders||[]).filter(Boolean),u=state?.user||{};

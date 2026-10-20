@@ -8,7 +8,7 @@ const number=v=>Number.isFinite(Number(v))?Number(v):0;
 const finite=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v));
 const done=o=>o.status==='Выполнена';
 const alive=o=>o.status!=='Отменена';
-const orderNo=o=>String(o.external_id||'').startsWith('hands:')?String(o.external_id).slice(6):String(o.id||'—');
+const orderNo=o=>o?.order_number?String(o.order_number):String(o.external_id||'').startsWith('hands:')?String(o.external_id).slice(6):String(o.id||'—');
 const orderButton=(o,review=false)=>`data-owner-${review?'review':'order'}="${esc(o.id)}"`;
 function corrections(){return (state.orders||[]).filter(o=>done(o)&&(o.report_review_status==='rejected'||number(o.uncompleted_work_amount)>0)).sort((a,b)=>String(b.report_uploaded_at||b.updated_at||'').localeCompare(String(a.report_uploaded_at||a.updated_at||'')))}
 function pending(){return (state.orders||[]).filter(o=>o.report_uploaded_at&&String(o.report_review_status||'pending')==='pending')}

@@ -11,6 +11,7 @@ test('Drive archive uses the same visible Hands order number as the app',async()
     orders:[{
       id:'uuid-1',
       external_id:'hands:1644',
+      order_number:'001', // Display label must never replace the archive integration key.
       report_uploaded_at:'2026-09-21T10:00:00Z',
       report_type:'work',
       report_upload_token:'audit',

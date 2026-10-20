@@ -6,7 +6,7 @@ const CLAIMS_GATEWAY='https://business-os-api-gateway.netlify.app/api/proxy/clai
 const CLAIMS_DIRECT='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/claims-api';
 const nativeFetch=window.fetch.bind(window);
 const handsOrder=o=>String(o?.external_source||'').toLowerCase()==='hands'||String(o?.external_id||'').startsWith('hands:');
-const displayNo=o=>handsOrder(o)?String(o?.external_id||'').replace(/^hands:/,'').trim()||String(o?.id||''):String(o?.id||'');
+const displayNo=o=>o?.order_number?String(o.order_number):handsOrder(o)?String(o?.external_id||'').replace(/^hands:/,'').trim()||String(o?.id||''):String(o?.id||'');
 window.BOS_ORDER_NO=displayNo;
 const dispatcherMode=()=>String(state?.user?.role||'')==='dispatcher'||(typeof isDispatcherPreview==='function'&&isDispatcherPreview());
 

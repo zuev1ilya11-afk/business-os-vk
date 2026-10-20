@@ -17,7 +17,7 @@ function localToday(){const d=new Date();return `${d.getFullYear()}-${String(d.g
 function escv(v){return typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function effectiveStage(o){if(String(o?.status||'')==='Выполнена')return'completed';if(String(o?.status||'')==='Отменена')return'cancelled';const s=String(o?.master_workflow_stage||'assigned');return STAGES.includes(s)?s:'assigned'}
 function fmt(v){if(!v)return'';const d=new Date(v);return Number.isNaN(d.getTime())?'':d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}
-function orderNo(o){const x=String(o?.external_id||'');return x.startsWith('hands:')?x.slice(6):String(o?.id||'')}
+function orderNo(o){const x=String(o?.external_id||'');return o?.order_number?String(o.order_number):x.startsWith('hands:')?x.slice(6):String(o?.id||'')}
 function phoneHref(v){let p=String(v||'').trim().replace(/[^\d+]/g,'');if(/^8\d{10}$/.test(p))p='+7'+p.slice(1);else if(/^\d{10}$/.test(p))p='+7'+p;return p}
 function nextAction(stage){return({assigned:['departed','Выехал'],departed:['arrived','Я на месте'],arrived:['started','Начать работу'],started:['complete','Завершить работу']})[stage]||null}
 function timeline(o){const stage=effectiveStage(o),current=STAGES.indexOf(stage);return `<div class="bosMwSteps">${STAGES.map((s,i)=>{const done=stage==='completed'?true:i<=current,at=fmt(o?.[TIMES[s]]);return `<div class="bosMwStep${done?' done':''}${s===stage?' current':''}"><i></i><span><b>${LABELS[s]}</b>${at?`<small>${escv(at)}</small>`:''}</span></div>`}).join('')}</div>`}
