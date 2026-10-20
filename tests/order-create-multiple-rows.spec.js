@@ -37,7 +37,7 @@ for(const [role,width] of [['owner',1440],['manager',390],['dispatcher',320]])te
  await form.locator('#bosWorkStack').scrollIntoViewIfNeeded();await page.screenshot({path:testInfo.outputPath('creation-works-'+width+'.png')});
  await form.getByRole('button',{name:'Создать заявку',exact:true}).click();await expect(form).toHaveCount(0);
  const saved=db.tables.orders.find(o=>o.client==='Несколько строк');
- expect(saved).toMatchObject({phone:'+79991234567; +79217654321',work:'Установка декоративного карниза длиной до 2,5 метров\nНестандартный монтаж <без сверления>',original_amount:2500,comment:'Позвонить за 30 минут'});
+ expect(saved).toMatchObject({phone:'+79991234567; +79217654321',work:'Установка декоративного карниза длиной до 2,5 метров × 1 комплект\nНестандартный монтаж <без сверления> × 1 шт.',original_amount:2500,comment:'Позвонить за 30 минут'});
  expect(db.tables.orders).toHaveLength(3);
  await page.reload();await expect(page.locator('#authGate')).toBeHidden();
  await page.evaluate(id=>openOrderForm(id),saved.id);
@@ -65,10 +65,10 @@ test('invalid extra phone blocks creation, removal keeps first-field hooks, and 
  await expect(form.locator('.bosPhoneInput')).toHaveCount(2);await expect(form.locator('.bosWorkSelect')).toHaveCount(2);await expect(form.locator('.bosCustomWork:visible')).toHaveValue('Отдельная работа');
  await form.getByRole('button',{name:'Создать заявку',exact:true}).click();await expect(form).toHaveCount(0);
  expect(db.tables.orders.filter(o=>o.client==='Несколько строк')).toHaveLength(1);
- expect(db.tables.orders.find(o=>o.client==='Несколько строк')).toMatchObject({phone:'+79217654321; +79990001122',work:'Установка декоративного карниза длиной до 3,5 метров\nОтдельная работа'});
+ expect(db.tables.orders.find(o=>o.client==='Несколько строк')).toMatchObject({phone:'+79217654321; +79990001122',work:'Установка декоративного карниза длиной до 3,5 метров × 1 комплект\nОтдельная работа × 1 шт.'});
 });
 
-test('blank works are rejected; duplicate rows normalize and cancel starts a clean draft',async({page})=>{
+test('blank works are rejected; separate work rows retain their quantities and cancel starts a clean draft',async({page})=>{
  const {db,form}=await openCreation(page);await details(form);await form.locator('.bosPhoneInput').fill('9991234567');
  await form.getByRole('button',{name:'Создать заявку',exact:true}).click();await expect(form.locator('#formMsg')).toContainText('Добавьте хотя бы одну работу');
  await form.locator('.bosWorkSelect').selectOption('custom');await form.locator('.bosCustomWork:visible').fill('   ');
@@ -76,7 +76,7 @@ test('blank works are rejected; duplicate rows normalize and cancel starts a cle
  await form.locator('.bosCustomWork:visible').fill('Работа');await form.locator('#bosAddPhone').click();await form.locator('.bosPhoneInput').nth(1).fill('9991234567');
  await form.locator('#bosAddWork').click();await form.locator('.bosWorkSelect').nth(1).selectOption('custom');await form.locator('.bosCustomWork:visible').nth(1).fill('Работа');
  await form.getByRole('button',{name:'Создать заявку',exact:true}).click();await expect(form).toHaveCount(0);
- expect(db.tables.orders.find(o=>o.client==='Несколько строк')).toMatchObject({phone:'+79991234567',work:'Работа'});
+ expect(db.tables.orders.find(o=>o.client==='Несколько строк')).toMatchObject({phone:'+79991234567',work:'Работа × 1 шт.\nРабота × 1 шт.'});
  await page.evaluate(()=>openOrderForm());await expect(form).toBeVisible();await form.locator('#bosAddPhone').click();await form.locator('#bosAddWork').click();
  await form.getByRole('button',{name:'Отмена',exact:true}).click();await expect(form).toHaveCount(0);
  await page.evaluate(()=>openOrderForm());await expect(form).toBeVisible();await expect(form.locator('.bosPhoneInput')).toHaveCount(1);await expect(form.locator('.bosWorkSelect')).toHaveCount(1);

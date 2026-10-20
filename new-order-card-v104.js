@@ -99,7 +99,7 @@ function enhanceNewOrderForm(id){
   form.prepend(basic.section,client.section,address.section,work.section,extra.section);form.append(actions);
   [...form.children].forEach(node=>{if(node.tagName==='LABEL'&&!node.querySelector('input,select,textarea'))node.remove();if(node.classList.contains('two')&&!node.children.length)node.remove()});
   // Existing editors and planning wrappers keep their control instances/listeners.
-  const fingerprint=()=>JSON.stringify([...form.querySelectorAll('input,select,textarea')].filter(el=>(el.type==='checkbox'||el.type==='radio')?el.checked:el.value!=='').map(el=>[el.name||el.className,el.type==='checkbox'||el.type==='radio'?el.checked:el.value]));
+  const fingerprint=()=>JSON.stringify([...form.querySelectorAll('input,select,textarea')].filter(el=>!(el.closest('.bosWorkNumbers')&&!el.closest('.bosWorkEditRow')?.querySelector('.bosWorkSelect')?.value)).filter(el=>(el.type==='checkbox'||el.type==='radio')?el.checked:el.value!=='').map(el=>[el.name||el.className,el.type==='checkbox'||el.type==='radio'?el.checked:el.value]));
   form.bosFieldError=(key,message,control)=>{let box=form.querySelector('[data-error-for="'+key+'"]');if(!box){box=document.createElement('small');box.className='newOrderError';box.dataset.errorFor=key;control.closest('.newOrderField')?.append(box)}box.textContent=message;control.setAttribute('aria-invalid','true');control.focus()};
   const initial=fingerprint();form.bosHasUnsavedChanges=()=>form.dataset.saved!=='1'&&fingerprint()!==initial;
   const fit=()=>{if(!modal?.isConnected){window.visualViewport?.removeEventListener('resize',fit);return}modal.style.maxHeight=Math.max(180,(window.visualViewport?.height||innerHeight)-24)+'px'};

@@ -1,5 +1,9 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import "../../../order-payroll.js";
+import "../../../order-work-items.js";
+import "../../../lemana-import.js";
+import "../../../vendor/lemana-xlsx.js";
+import { lemanaApi } from "../_shared/lemana-api.ts";
 import "../../../finance-expenses.js";
 const expenseRules=(globalThis as any).BOS_FINANCE_EXPENSES;
 import { manualDetailsPatch } from "../_shared/hands-details.ts";
@@ -24,8 +28,9 @@ function norm(v:any){let d=String(v||'').replace(/\D/g,'');if(d.length===11&&d[0
 const out=(s:any,includeCredentials=false)=>{const x={...(s||{})};delete x.password_hash;if(!includeCredentials){delete x.login;delete x.has_password}return {...x,vk_user_id:x.external_id}};
 const masterOrder=(o:any)=>orderPayroll.masterView({...o,master_payout:orderPayroll.directMaster(o)??payouts(o?.amount,!!o?.master_staff_id).master_payout});
 // Manual business identifiers never replace the primary key or integration IDs.
-function intakePatch(body:any){
+function intakePatch(body:any,current:any=null){
   const patch:any={};
+  if(Object.hasOwn(body,'work_items'))patch.work_items=(globalThis as any).BOS_WORK_ITEMS.normalize(body.work_items);
   const fail=(field:string,error:string)=>{throw Object.assign(new Error(error),{field})};
   for(const [field,max] of [['order_number',80],['entrance',120],['floor',120],['intercom',120],['work',10000]] as const){
     if(!Object.hasOwn(body,field))continue;
@@ -43,6 +48,14 @@ function intakePatch(body:any){
   if(Object.hasOwn(body,'amount_confirmed')){
     if(typeof body.amount_confirmed!=='boolean')fail('amount_confirmed','Некорректное состояние стоимости');
     patch.amount_confirmed=body.amount_confirmed;
+  }
+  if(Object.hasOwn(patch,'work_items')){
+    const W=(globalThis as any).BOS_WORK_ITEMS,items=patch.work_items;
+    let description=String(body.work??current?.work??'').trim();
+    for(const suffix of [W.text(items),W.text(current?.work_items||[])])if(suffix&&description.endsWith(suffix)){description=description.slice(0,-suffix.length).trim();break}
+    if(description===items.map((x:any)=>x.name).join('\n'))description='';
+    patch.work=[description,W.text(items)].filter(Boolean).join('\n');
+    if(patch.work.length>10000)fail('work','Описание работ: не более 10000 символов');
   }
   return patch;
 }
@@ -80,6 +93,11 @@ Deno.serve(async r=>{
     if(!me)return j({ok:false,error:'Доступ не подтверждён'},401);
     const role=String(me.role||'');
 
+    if(['previewLemanaImport','confirmLemanaImport'].includes(a)){
+      const result=await lemanaApi(db,b,me,s=>hmac(s,Deno.env.get('VK_APP_SECRET')||''));
+      return j(result.body,result.status);
+    }
+
     if(a==='bootstrap'){
       let oq=db.from('orders').select('*').order('created_at',{ascending:false}).order('id',{ascending:false});
       if(role==='master')oq=oq.eq('master_staff_id',me.id);
@@ -93,7 +111,7 @@ Deno.serve(async r=>{
       const all=st.data||[],vis=role==='master'?all.filter((x:any)=>x.id===me.id):all,map=new Map<string,any>(all.map((x:any)=>[String(x.id),x]));
       let orders=(or.data||[]).map((o:any)=>({...o,id:String(o.id),master_vk_id:map.get(String(o.master_staff_id))?.external_id||'',master_name:o.master_name||map.get(String(o.master_staff_id))?.full_name||''}));
       if(role==='master')orders=orders.map(masterOrder);
-      return j({ok:true,user:out(me,role==='owner'),orders,users:vis.map((x:any)=>out(x,role==='owner')),masters:(role==='master'?vis:all.filter((x:any)=>x.role==='master')).map((x:any)=>out(x,role==='owner')),masterSchedule:(sr.data||[]).filter((x:any)=>role!=='master'||x.staff_id===me.id),claims:(cl.data||[]).filter((x:any)=>role!=='master'||x.master_staff_id===me.id),sources:[{source:'VK'},{source:'Google Sheets'},{source:'Авито'}],settings:{permissions:{can_manage_orders:ops(role),can_manage_schedule:ops(role),can_manage_staff:['owner','manager'].includes(role),can_review_reports:ops(role),can_view_finance:['owner','manager'].includes(role)}}});
+      return j({ok:true,user:out(me,role==='owner'),orders,users:vis.map((x:any)=>out(x,role==='owner')),masters:(role==='master'?vis:all.filter((x:any)=>x.role==='master')).map((x:any)=>out(x,role==='owner')),masterSchedule:(sr.data||[]).filter((x:any)=>role!=='master'||x.staff_id===me.id),claims:(cl.data||[]).filter((x:any)=>role!=='master'||x.master_staff_id===me.id),sources:[{source:'VK'},{source:'Google Sheets'},{source:'Авито'},{source:'Руки'},{source:'Лемана Про'}],settings:{permissions:{can_manage_orders:ops(role),can_manage_schedule:ops(role),can_manage_staff:['owner','manager'].includes(role),can_review_reports:ops(role),can_view_finance:['owner','manager'].includes(role)}}});
     }
 
     if(['listExpenses','createExpense','updateExpense','deleteExpense'].includes(a)){
@@ -145,7 +163,7 @@ Deno.serve(async r=>{
         if(q.error)throw q.error;
         cur=q.data;
       }
-      let intake:any;try{intake=intakePatch(b)}catch(error){return j({ok:false,field:(error as any).field,error:(error as Error).message},400)}
+      let intake:any;try{intake=intakePatch(b,cur)}catch(error){return j({ok:false,field:(error as any).field,error:(error as Error).message},400)}
       for(const k of a==='createOrder'?['client','address','work']:[])if(!String(b[k]||'').trim())return j({ok:false,error:'Заполните обязательные поля'},400);
 
       const requestId=a==='createOrder'?safeRequestId(b.request_id):'';
@@ -163,16 +181,18 @@ Deno.serve(async r=>{
       if(a==='createOrder'||Object.prototype.hasOwnProperty.call(b,'master_vk_id')||Object.prototype.hasOwnProperty.call(b,'master_id'))ms=await staff(db,b.master_vk_id||b.master_id);
       if((b.master_vk_id||b.master_id)&&(!ms||ms.role!=='master'||!ms.is_active))return j({ok:false,error:'Выберите активного мастера'},400);
       for(const k of ['original_amount','amount','extra_work_amount','uncompleted_work_amount'])if(k in b&&(!Number.isFinite(Number(b[k]))||Number(b[k])<0))return j({ok:false,error:'Сумма должна быть конечным неотрицательным числом'},400);
-      const original=round(b.original_amount??b.amount??cur?.original_amount??cur?.amount??0),unfinished=round(b.uncompleted_work_amount??cur?.uncompleted_work_amount??0),amount=round(original-unfinished),now=new Date().toISOString();
+      const original=round(b.original_amount??b.amount??cur?.original_amount??cur?.amount??0),unfinished=round(b.uncompleted_work_amount??cur?.uncompleted_work_amount??0);
+      const priceChanged=!cur||original!==Number(cur.original_amount??cur.amount??0)||unfinished!==Number(cur.uncompleted_work_amount||0);
+      const amount=!priceChanged&&cur?.amount!=null?Number(cur.amount):round(original-unfinished),now=new Date().toISOString();
       if(amount<0)return j({ok:false,error:'Невыполненные работы не могут превышать сумму заказа'},400);
       const p:any={updated_at:now,sync_status:'pending_sheet',...intake};
       for(const k of ['status','client','phone','address','work','scheduled_date','scheduled_time','time_slot','source','city','comment','extra_work_done','extra_work_description','extra_work_amount','uncompleted_work_done','uncompleted_work_description','uncompleted_work_amount','wall_over_3m','wall_material','possible_extra_work'])if(a==='createOrder'||Object.prototype.hasOwnProperty.call(b,k))p[k]=b[k]??'';
+      if(Object.hasOwn(intake,'work_items'))p.work=intake.work;
       for(const k of ['scheduled_date','scheduled_time'])if(k in p&&!p[k])p[k]=null;
       for(const k of ['extra_work_done','uncompleted_work_done','wall_over_3m','possible_extra_work'])if(k in p)p[k]=p[k]===true||p[k]==='true'||p[k]==='on';
       for(const k of ['extra_work_amount','uncompleted_work_amount'])if(k in p)p[k]=round(p[k]);
       try{Object.assign(p,manualDetailsPatch(b,cur))}catch(error){return j({ok:false,error:(error as Error).message},400)}
-      p.original_amount=original;
-      p.amount=amount;
+      if(priceChanged){p.original_amount=original;p.amount=amount;}
       if(cur&&!Object.hasOwn(b,'amount_confirmed')&&['original_amount','amount'].some(k=>Object.hasOwn(b,k)))p.amount_confirmed=true;
       if(p.amount_confirmed===false&&(original!==0||amount!==0))p.amount_confirmed=true;
       if(ms!==undefined){p.master_staff_id=ms?.id||null;p.master_name=ms?.full_name||''}
@@ -188,7 +208,7 @@ Deno.serve(async r=>{
       }
       if(a==='createOrder'){
         if(b.status==='Выполнена')return j({ok:false,error:'Заявка становится выполненной только после приёма отчёта.'},409);
-        Object.assign(p,{status:b.status||'В работе',client:String(b.client).trim(),address:String(b.address).trim(),work:String(b.work).trim(),source:b.source||'VK',city:b.city||'Санкт-Петербург',external_source:'mini_app',external_id:createExternalId||('app_'+crypto.randomUUID()),created_by_vk_id:me.external_id,source_updated_at:now});
+        Object.assign(p,{status:b.status||'В работе',client:String(b.client).trim(),address:String(b.address).trim(),work:p.work??String(b.work).trim(),source:b.source||'VK',city:b.city||'Санкт-Петербург',external_source:'mini_app',external_id:createExternalId||('app_'+crypto.randomUUID()),created_by_vk_id:me.external_id,source_updated_at:now});
         if(avitoChat){
           p.external_source='avito';p.source='Авито';p.avito_chat_id=avitoChat;
           p.avito_item_id=String(b.avito_item_id||'').slice(0,200)||null;

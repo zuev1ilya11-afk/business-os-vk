@@ -9,11 +9,16 @@
   const text=v=>String(v??'').trim().toLowerCase();
   const finite=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v));
   const round=v=>Math.round(Number(v||0)*100)/100;
+  function isHandsLinked(o){return text(o?.external_source)!=='lemana_pro'&&(text(o?.external_source)==='hands'||text(o?.external_id).startsWith('hands:'));}
   function isHands(o){
-    return text(o?.external_source)==='hands'||text(o?.external_id).startsWith('hands:')||['hands','руки'].includes(text(o?.source));
+    if(text(o?.external_source)==='lemana_pro')return false;
+    return isHandsLinked(o)||['hands','руки','руки (hands)'].includes(text(o?.source));
   }
+  function isLemana(o){return ['лемана про','lemana_pro'].includes(text(o?.source))||text(o?.external_source)==='lemana_pro';}
+  function sourceLabel(o){return isHands(o)?'Руки (Hands)':isLemana(o)?'Лемана Про':String(o?.source||o?.lead_source||o?.external_source||'').trim();}
+  function sourceValue(value){return sourceLabel({source:value})==='Руки (Hands)'?'Руки':sourceLabel({source:value});}
   // Untagged legacy rows keep their existing contract; newly created orders always have a source.
-  function isDirect(o){return !isHands(o)&&!!(text(o?.external_source)||text(o?.source));}
+  function isDirect(o){return !isHands(o)&&!isLemana(o)&&!!(text(o?.external_source)||text(o?.source));}
   function closed(o){return o?.status==='Выполнена'||o?.report_review_status==='approved';}
   function snapshot(o){return closed(o)||!!o?.report_uploaded_at||['pending','rejected'].includes(o?.report_review_status);}
   function calculate(amount,o,hasMaster=true){
@@ -31,6 +36,7 @@
   // null means use the unchanged Hands/legacy reader. Zero is a real amount, never a fallback.
   function directMaster(o){
     if(manualSnapshot(o)&&finite(o.master_payout))return Number(o.master_payout);
+    if(isLemana(o)&&snapshot(o)&&finite(o.master_payout))return Number(o.master_payout);
     if(!isDirect(o))return null;
     if(o.status==='Отменена')return 0;
     if(snapshot(o)&&finite(o.master_payout))return Number(o.master_payout);
@@ -49,7 +55,7 @@
     return round(Number(o.amount)-Number(master||0));
   }
   function label(o){
-    if(isHands(o))return 'Hands: выплата мастеру без изменений · остаток компании';
+    if(isHands(o)||isLemana(o))return sourceLabel(o)+': расчёт по правилам Hands · допработы отдельно';
     if(!isDirect(o))return 'Прежний расчёт: источник не указан';
     if(snapshot(o)&&finite(o.master_payout)&&(round(o.master_payout)!==round(Number(o.amount)*.60)||Number(o.manager_payout||0)!==0||Number(o.dispatcher_payout||0)!==0))return 'Сохранённый расчёт отчёта';
     return 'Мастер 60% · Компания 40%';
@@ -59,7 +65,7 @@
   function masterView(o){
     const x={...(o||{})};
     delete x.manager_payout;delete x.dispatcher_payout;
-    if(!isDirect(o)){delete x.amount;delete x.original_amount;}
+    if(!isDirect(o)){delete x.amount;delete x.original_amount;if(Array.isArray(x.work_items))x.work_items=x.work_items.map(({unit_price,amount,...item})=>item);}
     return x;
   }
   function masterBreakdown(o){
@@ -71,5 +77,5 @@
       master,masterTotal:cancelled?0:round(master+extras),company:directCompany(o),
       saved:snapshot(o),standard:!cancelled&&round(master)===round(amount*.60),cancelled};
   }
-  return Object.freeze({version,isHands,isDirect,closed,snapshot,calculate,directMaster,directCompany,companyShare,label,masterView,masterBreakdown});
+  return Object.freeze({version,isHands,isHandsLinked,isLemana,sourceLabel,sourceValue,isDirect,closed,snapshot,calculate,directMaster,directCompany,companyShare,label,masterView,masterBreakdown});
 });

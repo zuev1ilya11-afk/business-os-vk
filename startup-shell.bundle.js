@@ -562,11 +562,16 @@ window.BOS_PERMISSIONS=Object.freeze({canUseDispatcherWorkspace,isDispatcherWork
   const text=v=>String(v??'').trim().toLowerCase();
   const finite=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v));
   const round=v=>Math.round(Number(v||0)*100)/100;
+  function isHandsLinked(o){return text(o?.external_source)!=='lemana_pro'&&(text(o?.external_source)==='hands'||text(o?.external_id).startsWith('hands:'));}
   function isHands(o){
-    return text(o?.external_source)==='hands'||text(o?.external_id).startsWith('hands:')||['hands','руки'].includes(text(o?.source));
+    if(text(o?.external_source)==='lemana_pro')return false;
+    return isHandsLinked(o)||['hands','руки','руки (hands)'].includes(text(o?.source));
   }
+  function isLemana(o){return ['лемана про','lemana_pro'].includes(text(o?.source))||text(o?.external_source)==='lemana_pro';}
+  function sourceLabel(o){return isHands(o)?'Руки (Hands)':isLemana(o)?'Лемана Про':String(o?.source||o?.lead_source||o?.external_source||'').trim();}
+  function sourceValue(value){return sourceLabel({source:value})==='Руки (Hands)'?'Руки':sourceLabel({source:value});}
   // Untagged legacy rows keep their existing contract; newly created orders always have a source.
-  function isDirect(o){return !isHands(o)&&!!(text(o?.external_source)||text(o?.source));}
+  function isDirect(o){return !isHands(o)&&!isLemana(o)&&!!(text(o?.external_source)||text(o?.source));}
   function closed(o){return o?.status==='Выполнена'||o?.report_review_status==='approved';}
   function snapshot(o){return closed(o)||!!o?.report_uploaded_at||['pending','rejected'].includes(o?.report_review_status);}
   function calculate(amount,o,hasMaster=true){
@@ -584,6 +589,7 @@ window.BOS_PERMISSIONS=Object.freeze({canUseDispatcherWorkspace,isDispatcherWork
   // null means use the unchanged Hands/legacy reader. Zero is a real amount, never a fallback.
   function directMaster(o){
     if(manualSnapshot(o)&&finite(o.master_payout))return Number(o.master_payout);
+    if(isLemana(o)&&snapshot(o)&&finite(o.master_payout))return Number(o.master_payout);
     if(!isDirect(o))return null;
     if(o.status==='Отменена')return 0;
     if(snapshot(o)&&finite(o.master_payout))return Number(o.master_payout);
@@ -602,7 +608,7 @@ window.BOS_PERMISSIONS=Object.freeze({canUseDispatcherWorkspace,isDispatcherWork
     return round(Number(o.amount)-Number(master||0));
   }
   function label(o){
-    if(isHands(o))return 'Hands: выплата мастеру без изменений · остаток компании';
+    if(isHands(o)||isLemana(o))return sourceLabel(o)+': расчёт по правилам Hands · допработы отдельно';
     if(!isDirect(o))return 'Прежний расчёт: источник не указан';
     if(snapshot(o)&&finite(o.master_payout)&&(round(o.master_payout)!==round(Number(o.amount)*.60)||Number(o.manager_payout||0)!==0||Number(o.dispatcher_payout||0)!==0))return 'Сохранённый расчёт отчёта';
     return 'Мастер 60% · Компания 40%';
@@ -612,7 +618,7 @@ window.BOS_PERMISSIONS=Object.freeze({canUseDispatcherWorkspace,isDispatcherWork
   function masterView(o){
     const x={...(o||{})};
     delete x.manager_payout;delete x.dispatcher_payout;
-    if(!isDirect(o)){delete x.amount;delete x.original_amount;}
+    if(!isDirect(o)){delete x.amount;delete x.original_amount;if(Array.isArray(x.work_items))x.work_items=x.work_items.map(({unit_price,amount,...item})=>item);}
     return x;
   }
   function masterBreakdown(o){
@@ -624,7 +630,115 @@ window.BOS_PERMISSIONS=Object.freeze({canUseDispatcherWorkspace,isDispatcherWork
       master,masterTotal:cancelled?0:round(master+extras),company:directCompany(o),
       saved:snapshot(o),standard:!cancelled&&round(master)===round(amount*.60),cancelled};
   }
-  return Object.freeze({version,isHands,isDirect,closed,snapshot,calculate,directMaster,directCompany,companyShare,label,masterView,masterBreakdown});
+  return Object.freeze({version,isHands,isHandsLinked,isLemana,sourceLabel,sourceValue,isDirect,closed,snapshot,calculate,directMaster,directCompany,companyShare,label,masterView,masterBreakdown});
+});
+
+
+;
+// Source: order-work-items.js
+// Main-work snapshots. amount is the LINE total; order.amount remains the agreed order total.
+(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.BOS_WORK_ITEMS=api;})(typeof window==='undefined'?globalThis:window,function(){
+ 'use strict';
+ const round=n=>Math.round((n+Number.EPSILON)*100)/100;
+ const fractional=unit=>['км','пог. м','п.м.','м','м²','м2','час'].includes(unit);
+ const fail=message=>{throw Object.assign(new Error(message),{field:'work_items'})};
+ function numeric(value,label){
+  if((typeof value!=='number'&&typeof value!=='string')||String(value).trim()===''||!/^\d+(?:[.,]\d+)?$/.test(String(value).trim()))fail(label+': укажите число');
+  const n=Number(String(value).trim().replace(',','.'));if(!Number.isFinite(n)||n>1e9)fail(label+': недопустимое число');return n;
+ }
+ function normalize(input){
+  if(!Array.isArray(input)||input.length>100)fail('Допустимо не более 100 работ');
+  return input.map(row=>{
+   const name=typeof row?.name==='string'?row.name.trim():'';
+   if(!name||name.length>1000||/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(name))fail('Укажите название каждой работы (до 1000 символов)');
+   const unit=String(row.unit??'шт.').trim();if(unit.length>30)fail('Некорректная единица измерения');
+   const quantity=numeric(row.quantity,'Количество');
+   if(quantity<=0||quantity>10000||Math.abs(quantity*1000-Math.round(quantity*1000))>1e-7||(!fractional(unit)&&!Number.isInteger(quantity)))fail('Количество должно быть положительным; для штучных работ — целым');
+   const unit_price=row.unit_price==null||row.unit_price===''?null:numeric(row.unit_price,'Цена');
+   if(unit_price!==null&&Math.abs(unit_price*100-Math.round(unit_price*100))>1e-7)fail('Цена — с точностью до копеек');
+   const amount=unit_price===null?null:round(quantity*unit_price);
+   if(amount!==null&&amount>1e9)fail('Сумма позиции слишком велика');
+   if(row.amount!==undefined&&row.amount!==amount)fail('Сумма позиции не соответствует количеству и цене');
+   return {name,unit,quantity,unit_price,amount,...(typeof row.service_id==='string'&&/^[a-z0-9_]{1,80}$/.test(row.service_id)?{service_id:row.service_id}:{})};
+  });
+ }
+ const text=rows=>rows.map(r=>r.name+' × '+String(r.quantity).replace('.',',')+(r.unit?' '+r.unit:'')).join('\n');
+ const total=rows=>rows.length&&rows.every(r=>r.amount!==null)?round(rows.reduce((sum,r)=>sum+r.amount,0)):null;
+ return Object.freeze({normalize,numeric,fractional,text,total});
+});
+
+
+;
+// Source: lemana-import.js
+(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.BOS_LEMANA_IMPORT=api;})(typeof window==='undefined'?globalThis:window,function(){
+ 'use strict';
+ const value=c=>String(c?.value??'').trim();
+ const nameKey=s=>String(s||'').trim().toLocaleLowerCase('ru').replace(/ё/g,'е').replace(/\s+/g,' ');
+ const numberKey=s=>String(s??'').trim();
+ const statuses={'подтвержден':'Новая','подтверждён':'Новая','новый':'Новая','новая':'Новая','назначена дата':'Назначена','назначен':'Назначена','в работе':'В работе','отменен':'Отменена','отменён':'Отменена','отменена':'Отменена'};
+ const safeStatuses=['Новая','Назначена','В работе','Отменена'];
+ const timezones=['Europe/Moscow','Europe/Kaliningrad','Europe/Samara','Asia/Yekaterinburg','Asia/Omsk','Asia/Novosibirsk','Asia/Krasnoyarsk','Asia/Irkutsk','Asia/Yakutsk','Asia/Vladivostok','Asia/Magadan','Asia/Kamchatka','UTC'];
+ function identifier(c){
+  let s=value(c);if(c?.kind==='number'){
+   const n=Number(s);if(!Number.isSafeInteger(n)||n<0||n>=1e15)throw Error('Номер должен быть сохранён в Excel как текст (до 15 цифр для числовой ячейки)');
+   s=String(n);if(/^0+$/.test(c.format||''))s=s.padStart(c.format.length,'0');
+  }
+  if(!s||s.length>80||/[\x00-\x1f\x7f]/.test(s))throw Error('Отсутствует или некорректен номер заказа');return s;
+ }
+ function localDate(c,date1904=false){
+  if(!value(c))return null;let str=value(c);
+  if(c.kind==='number'){
+   const n=Number(str);if(!Number.isFinite(n)||n<0||n>2958465||(!date1904&&Math.floor(n)===60))throw Error('Некорректная дата Excel');
+   const base=date1904?Date.UTC(1904,0,1):Date.UTC(1899,11,n<60?31:30);
+   str=new Date(base+Math.round(n*86400)*1000).toISOString().slice(0,19).replace('T',' ');
+  }
+  let m=/^(\d{2})\.(\d{2})\.(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/.exec(str);
+  if(m)str=`${m[3]}-${m[2]}-${m[1]} ${m[4]||'00'}:${m[5]||'00'}:${m[6]||'00'}`;
+  m=/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/.exec(str);
+  if(!m)throw Error('Дата должна быть ДД.ММ.ГГГГ или ГГГГ-ММ-ДД с необязательным временем');
+  const date=`${m[1]}-${m[2]}-${m[3]}`,time=`${(m[4]||'00').padStart(2,'0')}:${m[5]||'00'}:${m[6]||'00'}`,iso=date+'T'+time;
+  if(Number(m[1])<1900||!Number.isFinite(Date.parse(iso+'Z'))||new Date(iso+'Z').toISOString().slice(0,19)!==iso)throw Error('Некорректная календарная дата');
+  return {date,time,local:date+' '+time};
+ }
+ function instant(local,zone){
+  const want=local.date+'T'+local.time,ms=Date.parse(want+'Z');
+  const fmt=new Intl.DateTimeFormat('sv-SE',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
+  let candidate=ms;for(let i=0;i<3;i++){const shown=fmt.format(new Date(candidate)).replace(' ','T');candidate+=ms-Date.parse(shown+'Z')}
+  if(fmt.format(new Date(candidate)).replace(' ','T')!==want)throw Error('Время не существует в выбранном часовом поясе');
+  if([-3600000,3600000].some(d=>fmt.format(new Date(candidate+d)).replace(' ','T')===want))throw Error('Неоднозначное время при переводе часов');
+  return new Date(candidate).toISOString();
+ }
+ function orderNumbers(o){const external=o.external_source==='lemana_pro'?o.external_id:String(o.external_id||'').startsWith('hands:')?String(o.external_id).slice(6):null;return [...new Set([o.order_number,external,!o.order_number&&!external?o.id:null].filter(x=>x!==undefined&&x!==null&&x!=='').map(numberKey))]}
+ function isLemana(o){return ['лемана про','lemana_pro'].includes(nameKey(o.source))||o.external_source==='lemana_pro'}
+ function classify(number,orders){const matches=orders.filter(o=>orderNumbers(o).includes(numberKey(number)));return matches.length?{kind:matches.some(isLemana)?'existing':'possible',reason:matches.some(isLemana)?'Уже существует в Лемана Про':'Номер совпадает с заявкой другого источника. Проверьте вручную; импорт заблокирован'}:{kind:'new',reason:''}}
+ function preview(parsed,orders,staff,timezone,overrides={}){
+  if(!timezones.includes(timezone))throw Error('Выберите часовой пояс выгрузки');
+  if(!Array.isArray(parsed?.rows)||parsed.rows.length>1000)throw Error('Не более 1000 строк');
+  const numbers=new Map();for(const r of parsed.rows){try{const key=identifier(r['Номер заказа']);numbers.set(key,(numbers.get(key)||0)+1)}catch(_){}}
+  const rows=parsed.rows.map(r=>{
+   const out={row:r._row,number:value(r['Номер заказа']),client:value(r['ФИО клиента']),phone:value(r['Телефон клиента']),address:value(r['Адрес клиента']),category:value(r['Категория заказа']),rawStatus:value(r['Статус']),rawMaster:value(r['ФИ мастера']),kind:'error',reason:'',order:null};
+   try{
+    out.number=identifier(r['Номер заказа']);if(numbers.get(out.number)>1)throw Error('Номер повторяется в файле');
+    const collision=classify(out.number,orders);if(collision.kind!=='new')return {...out,...collision};
+    if(!out.client||!out.phone||!out.address)throw Error('Заполните ФИО, телефон и адрес клиента');
+    if(out.client.length>300||out.address.length>2000||out.category.length>1000||out.phone.length>60)throw Error('Слишком длинное значение');
+    let phone=out.phone.replace(/[\s()+.\-]/g,'');if(phone.length===10)phone='7'+phone;if(phone.length===11&&phone[0]==='8')phone='7'+phone.slice(1);if(!/^7\d{10}$/.test(phone))throw Error('Некорректный телефон клиента');
+    const price=value(r['Стоимость заказа']).replace(/[\s\u00a0]/g,'').replace(',','.');if(!/^\d+(?:\.\d{1,2})?$/.test(price)||Number(price)>1e9)throw Error('Некорректная стоимость заказа');
+    const created=localDate(r['Дата создания заказа'],parsed.date1904);if(!created)throw Error('Нет даты создания заказа');
+    const scheduled=localDate(r['Назначенная дата'],parsed.date1904),completed=localDate(r['Дата выполнения'],parsed.date1904);
+    const override=overrides[String(r._row)]||{};const status=override.status||statuses[nameKey(out.rawStatus)];
+    if(!safeStatuses.includes(status))throw Error('Статус требует проверки и явного выбора');
+    if(status==='Назначена'&&!scheduled)throw Error('Для назначенной заявки нужна дата визита');
+    let master=null;const active=staff.filter(s=>s.role==='master'&&s.is_active);
+    if(Object.hasOwn(override,'master_id')){if(override.master_id){master=active.find(s=>String(s.id)===String(override.master_id));if(!master)throw Error('Выбранный мастер недоступен')}}
+    else if(out.rawMaster){const key=nameKey(out.rawMaster),matches=active.filter(s=>nameKey(s.full_name)===key||nameKey(s.full_name).split(' ').slice(0,2).join(' ')===key);if(matches.length!==1)throw Error(matches.length?'Неоднозначное совпадение мастера: выберите сотрудника':'Мастер не найден: выберите сотрудника или «Без мастера»');master=matches[0]}
+    out.order={order_number:out.number,source:'Лемана Про',external_source:'lemana_pro',external_id:out.number,client:out.client,phone:'+'+phone,address:out.address,work:'',amount:Number(price),original_amount:Number(price),amount_confirmed:true,created_at:instant(created,timezone),received_date:created.date,scheduled_date:scheduled?.date||null,scheduled_time:scheduled?.time||null,status,master_staff_id:master?.id||null,master_name:master?.full_name||'',city:master?.city||'',lemana_import_meta:{timezone,category:out.category,shop:value(r['Магазин']).slice(0,500),reported_status:out.rawStatus.slice(0,200),reported_master:out.rawMaster.slice(0,300),reported_completed_at:completed?instant(completed,timezone):null}};
+    out.dates={created:created.local,scheduled:scheduled?.local||'',completed:completed?.local||'',timezone};out.kind='new';out.reason='';return out;
+   }catch(e){out.reason=e.message;return out}
+  });
+  return {timezone,rows,counts:{total:rows.length,new:rows.filter(r=>r.kind==='new').length,existing:rows.filter(r=>r.kind==='existing').length,possible:rows.filter(r=>r.kind==='possible').length,error:rows.filter(r=>r.kind==='error').length}};
+ }
+ return Object.freeze({preview,classify,identifier,localDate,instant,orderNumbers,safeStatuses,timezones});
 });
 
 
@@ -860,9 +974,9 @@ if(typeof document!=='undefined'){
 
 ;
 // Source: app-public.js
-const cfg=window.BUSINESS_OS_CONFIG||{};const ROLE_NAMES={owner:'Владелец',manager:'Руководитель',dispatcher:'Диспетчер',master:'Мастер'};const STATUSES=['В работе','Выполнена','Отменена'];const state={page:'home',user:{full_name:'Илья',role:'owner',city:'Москва'},orders:[],masters:[],users:[],sources:[],settings:{},masterSchedule:[],busy:false};const $=s=>document.querySelector(s);const esc=s=>String(s??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','\"':'&quot;'}[c]));const money=n=>Number(n||0).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽';const payout=a=>Math.round(Number(a||0)*.85*.65*100)/100;
+const cfg=window.BUSINESS_OS_CONFIG||{};const ROLE_NAMES={owner:'Владелец',manager:'Руководитель',dispatcher:'Диспетчер',master:'Мастер'};const STATUSES=['В работе','Выполнена','Отменена','Новая','Назначена'];const state={page:'home',user:{full_name:'Илья',role:'owner',city:'Москва'},orders:[],masters:[],users:[],sources:[],settings:{},masterSchedule:[],busy:false};const $=s=>document.querySelector(s);const esc=s=>String(s??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','\"':'&quot;'}[c]));const money=n=>Number(n||0).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽';const payout=a=>Math.round(Number(a||0)*.85*.65*100)/100;
 function api(action,payload={}){const url=cfg.API_URL||cfg.GAS_WEB_APP_URL;if(!url)return Promise.reject(new Error('Не настроен API'));const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...payload}),signal:controller.signal}).then(async r=>{let d;try{d=await r.json()}catch(_){throw new Error('Сервер вернул неверный ответ')}if(!r.ok&&!d?.error)throw new Error('Ошибка сервера '+r.status);return d}).catch(e=>{if(e&&e.name==='AbortError')throw new Error('Сервер не ответил');throw e}).finally(()=>clearTimeout(timer))}
-async function reloadData(keepPage=true){state.busy=false;const d=await api('bootstrap');if(!d.ok)throw new Error(d.error);const normalizedOrders=(d.orders||[]).map(o=>({...o,status:['В работе','Выполнена','Отменена'].includes(String(o.status))?String(o.status):'В работе'}));Object.assign(state,{user:d.user||state.user,orders:normalizedOrders,masters:d.masters||[],users:d.users||[],sources:d.sources||[],settings:d.settings||{},masterSchedule:d.masterSchedule||[]});show(keepPage?state.page:'home')}
+async function reloadData(keepPage=true){state.busy=false;const d=await api('bootstrap');if(!d.ok)throw new Error(d.error);const normalizedOrders=(d.orders||[]).map(o=>({...o,status:['В работе','Выполнена','Отменена','Новая','Назначена'].includes(String(o.status))?String(o.status):'В работе'}));Object.assign(state,{user:d.user||state.user,orders:normalizedOrders,masters:d.masters||[],users:d.users||[],sources:d.sources||[],settings:d.settings||{},masterSchedule:d.masterSchedule||[]});show(keepPage?state.page:'home')}
 async function init(){try{$('#roleBadge').textContent='Владелец';$('#content').innerHTML='<section class="hero"><h2>Загружаем данные…</h2><p class="muted">Без авторизации</p></section>';await reloadData(false)}catch(e){state.busy=false;$('#content').innerHTML=`<section class="hero"><h2>Не удалось загрузить данные</h2><p class="muted">${esc(e.message)}</p><button class="primary" onclick="init()">Повторить</button></section>`}}
 function weekStart(d=new Date()){const x=new Date(d);x.setHours(0,0,0,0);const n=(x.getDay()+6)%7;x.setDate(x.getDate()-n);return x}function ymd(d){return d.toISOString().slice(0,10)}function weeklyLoad(){const start=weekStart(),days=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];return days.map((label,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);const date=ymd(d);const schedules=(state.masterSchedule||[]).filter(s=>String(s.work_date||s.date||'').slice(0,10)===date);const scheduledMasters=new Set(schedules.map(s=>String(s.master_vk_id||s.vk_user_id||s.master_id||''))).size;const orders=state.orders.filter(o=>String(o.scheduled_date||'').slice(0,10)===date&&o.status!=='Отменена');const workingMasters=new Set(orders.map(o=>String(o.master_vk_id||'')).filter(Boolean)).size;const total=Math.max(state.masters.length,1);const available=Math.max(scheduledMasters,workingMasters);const off=Math.max(total-available,0);const busy=Math.min(workingMasters,total);const pct=Math.round(busy/total*100);return{label,date,day:d.getDate(),busy,available,off,pct,total}})}
 function loadChart(){const data=weeklyLoad();return `<section class="card loadCard"><div class="row"><div><div class="eyebrow">НЕДЕЛЬНЫЙ ГРАФИК</div><h2>Загруженность мастеров</h2></div><span class="softChip">${state.masters.length} маст.</span></div><div class="loadLegend"><span><i class="dot busyDot"></i>Занят</span><span><i class="dot freeDot"></i>Работает</span><span><i class="dot offDot"></i>Выходной</span></div><div class="loadBars">${data.map(x=>{const workPct=x.total?Math.round(x.available/x.total*100):0;const busyH=Math.max(4,x.pct),freeH=Math.max(0,workPct-x.pct),offH=Math.max(0,100-workPct);return `<div class="loadDay"><div class="bar" title="${x.label}: ${x.pct}%"><span class="barOff" style="height:${offH}%"></span><span class="barFree" style="height:${freeH}%"></span><span class="barBusy" style="height:${busyH}%"></span></div><b>${x.label}</b><small>${x.day}</small><strong>${x.pct}%</strong></div>`}).join('')}</div><p class="chartHint muted">Синим — мастера с заявками, зелёным — вышли по графику без заявки, серым — выходные.</p></section>`}
@@ -1855,6 +1969,50 @@ const baseHome=pages.home;pages.home=function(){if(!(typeof isMasterPreview==='f
 
 
 ;
+// Source: order-work-editor.js
+(()=>{
+ 'use strict';
+ window.BOS_ATTACH_WORK_EDITOR=function(form,order,selectedWork,workEditRow){
+  const W=window.BOS_WORK_ITEMS,stack=form.querySelector('#bosWorkStack'),description=form.querySelector('#bosWorkDescription');
+  let dirty=false;const priorText=form.bosWorkText;
+  const units=['шт.','комплект','выезд','пил.','точка','м','пог. м','п.м.','км','м²','час',''];
+  function enhance(row,saved){
+   if(row.querySelector('.bosWorkNumbers'))return;
+   const item=selectedWork(row.querySelector('select')),unit=saved?.unit??item?.u??'шт.';
+   const quantity=saved?.quantity??(row.bosOriginalLegacy?'':1),price=saved?.unit_price??(order?null:item?.p);
+   row.insertAdjacentHTML('beforeend',`<div class="bosWorkNumbers"><label>Количество<input class="bosWorkQty" inputmode="decimal" value="${esc(String(quantity).replace('.',','))}" placeholder="Не указано" aria-label="Количество"></label><label>Единица<select class="bosWorkUnit" aria-label="Единица измерения">${[...new Set([unit,...units])].map(u=>`<option value="${esc(u)}" ${u===unit?'selected':''}>${esc(u||'без единицы')}</option>`).join('')}</select></label><label>Цена за единицу, ₽<input class="bosWorkPrice" inputmode="decimal" value="${esc(price??'')}" placeholder="Не указана" aria-label="Цена за единицу"></label><div>Сумма позиции<strong class="bosWorkLineTotal">—</strong></div></div>`);
+  }
+  const rows=()=>[...stack.querySelectorAll('.bosWorkEditRow')];
+  if(Array.isArray(order?.work_items)&&order.work_items.length){
+   rows().forEach(row=>row.remove());stack.querySelector('#bosAddWork').insertAdjacentHTML('beforebegin',order.work_items.map((x,i)=>workEditRow(x.name,i===0,true)).join(''));
+   const generated=W.text(order.work_items),old=String(order.work||'');description.value=old.endsWith(generated)?old.slice(0,old.length-generated.length).trim():'';
+  }
+  rows().forEach((row,i)=>{row.bosOriginalLegacy=!!order&&!order.work_items?.length&&!!selectedWork(row.querySelector('.bosWorkSelect'));enhance(row,order?.work_items?.[i])});
+  function collect(){return W.normalize(rows().map(row=>{
+   const s=selectedWork(row.querySelector('.bosWorkSelect'));if(!s||row.bosOriginalLegacy&&!row.bosTouched)return null;
+   return {name:s.n,service_id:s.id,quantity:row.querySelector('.bosWorkQty').value,unit:row.querySelector('.bosWorkUnit').value,unit_price:row.querySelector('.bosWorkPrice').value};
+  }).filter(Boolean));}
+  const footer=document.createElement('div');footer.className='bosWorkSum';footer.innerHTML='<p class="muted">Общая стоимость сохраняется отдельно. Чтобы взять сумму позиций, нажмите кнопку.</p><button type="button" class="secondary bosUseWorkTotal">Использовать сумму позиций</button><p class="bosWorkError newOrderError" role="status"></p>';stack.append(footer);
+  function paint(){rows().forEach(row=>{enhance(row);const s=selectedWork(row.querySelector('select'));try{const [v]=W.normalize([{name:s?.n||'Позиция',quantity:row.querySelector('.bosWorkQty').value,unit:row.querySelector('.bosWorkUnit').value,unit_price:row.querySelector('.bosWorkPrice').value}]);row.querySelector('.bosWorkLineTotal').textContent=v.amount==null?'Не указана':money(v.amount)}catch(_){row.querySelector('.bosWorkLineTotal').textContent='—'}})}
+  stack.addEventListener('click',e=>{if(e.target.closest('#bosAddWork,.bosRemoveWork')){rows().forEach(row=>enhance(row));dirty=true;paint()}});
+  stack.addEventListener('change',e=>{
+   const changed=e.target.closest('.bosWorkEditRow');if(changed)changed.bosTouched=true;
+   if(e.target.matches('.bosWorkSelect')){const row=e.target.closest('.bosWorkEditRow'),item=selectedWork(e.target);enhance(row);row.querySelector('.bosWorkQty').value='1';const u=row.querySelector('.bosWorkUnit');if(item?.u&&!Array.from(u.options).some(x=>x.value===item.u))u.add(new Option(item.u,item.u));u.value=item?.u??'шт.';row.querySelector('.bosWorkPrice').value=item?.p??'';}
+   dirty=true;paint();
+  });
+  stack.addEventListener('input',e=>{const changed=e.target.closest('.bosWorkEditRow');if(changed)changed.bosTouched=true;dirty=true;paint()});
+  footer.querySelector('button').onclick=()=>{try{if(rows().some(row=>row.bosOriginalLegacy&&!row.bosTouched))throw Error('Для суммы позиций укажите количество и цену старых работ');const total=W.total(collect());if(total===null)throw Error('Укажите цену для каждой позиции');const amount=form.elements.original_amount;amount.value=String(total);amount.dispatchEvent(new Event('input',{bubbles:true}));footer.querySelector('[role=status]').textContent='Сумма заявки обновлена: '+money(total)}catch(e){footer.querySelector('[role=status]').textContent=e.message}};
+  form.bosWorkItems=()=>{if(order&&!dirty)return undefined;return collect()};
+  form.bosWorkText=()=>{if(order&&!dirty)return priorText();return [description.value.trim(),...rows().filter(row=>row.bosOriginalLegacy&&!row.bosTouched).map(row=>selectedWork(row.querySelector('.bosWorkSelect'))?.n),W.text(collect())].filter(Boolean).join('\n')};
+  // If only the general description changes, preserve structured rows and the existing quantities.
+  if(order?.work_items?.length)form.bosWorkText=()=>[description.value.trim(),W.text(dirty?collect():order.work_items)].filter(Boolean).join('\n');
+  paint();
+ };
+ const style=document.createElement('style');style.textContent='.bosWorkEditRow{min-width:0!important;flex-wrap:wrap}.bosWorkNumbers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;grid-column:1/-1}.bosWorkNumbers label,.bosWorkNumbers>div{display:flex;flex-direction:column;gap:4px;font-size:12px;min-width:0}.bosWorkNumbers input,.bosWorkNumbers select{width:100%;min-width:0!important}.bosWorkLineTotal{padding:12px 0;font-size:14px}.bosWorkSum{grid-column:1/-1}.bosWorkStack,.bosWorkEditRow select{max-width:100%;min-width:0!important}.newOrderField:has(#bosWorkStack){grid-column:1/-1}.bosWorkNumbers input[aria-invalid=true]{border-color:#ed7474}';document.head.append(style);
+})();
+
+
+;
 // Source: business-os-custom-v3.js
 (()=>{
 window.BOS_AVITO_PRICE_CATALOG=window.BOS_PRICE_CATALOG.avito;
@@ -1866,11 +2024,11 @@ const mid=m=>String(m?.vk_user_id||m?.external_id||m?.id||'');
 const serviceOptions=(selected='')=>'<option value="">Выберите услугу</option>'+
  (selected&&!SERVICES.some(s=>s.n===selected)?`<option value="legacy" selected>${esc(selected)} — работа из заявки</option>`:'')+
  SERVICES.map((s,i)=>`<option value="${i}" ${s.n===selected?'selected':''}>${esc(s.n)}${s.p!=null?' — '+money(s.p):' — цена по согласованию'}${s.u?' / '+esc(s.u):''}</option>`).join('');
-const newOrderChannels=()=>{const values=[...new Set(['Авито','Руки','VK','Телефон','Рекомендация','Другое',...(state.sources||[]).map(s=>String(s?.source||s||'').trim()).filter(Boolean)])];return '<label>Источник заявки</label><select name="source">'+values.map(source=>'<option>'+esc(source)+'</option>').join('')+'</select>'};
+const newOrderChannels=o=>{const P=window.BOS_ORDER_PAYROLL,values=[...new Set(['Авито','Руки','Лемана Про','VK','Телефон','Рекомендация','Другое',...(state.sources||[]).map(s=>s?.source||s),o?.source].filter(Boolean).map(P.sourceValue))];return '<label>Источник заявки</label><select name="source">'+(o&&!o.source?'<option value="" selected>Источник не указан</option>':'')+values.map(source=>'<option value="'+esc(source)+'" '+(o&&P.sourceValue(o.source)===source?'selected':'')+'>'+esc(P.sourceLabel({source}))+'</option>').join('')+'</select>'};
 const intakeToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 
 const masterOptions=(selected='')=>'<option value="">Назначить позже</option>'+state.masters.map(m=>`<option value="${esc(mid(m))}" data-city="${esc(m.city||'')}" ${String(selected)===mid(m)?'selected':''}>${esc(m.full_name||'Мастер')}${m.city?' — '+esc(m.city):''}</option>`).join('');
-const slotOptions=(selected='')=>'<option value="">Выберите время</option>'+SLOTS.map(s=>`<option ${selected===s?'selected':''}>${s}</option>`).join('');
+const slotOptions=(selected='')=>'<option value="">Выберите время</option>'+(selected&&!SLOTS.includes(selected)?`<option selected>${esc(selected)}</option>`:'')+SLOTS.map(s=>`<option ${selected===s?'selected':''}>${s}</option>`).join('');
 function phoneDigitsList(value){
  const raw=String(value||'').trim(),hits=raw.match(/(?:\+?7|8)?[\s(.-]*\d{3}[\s).-]*\d{3}[\s.-]*\d{2}[\s.-]*\d{2}/g)||[],source=hits.length?hits:(raw?[raw]:[]),seen=new Set(),out=[];
  for(const item of source){const digits=String(item||'').replace(/\D/g,'');const ten=digits.length===10?digits:(digits.length===11&&(digits[0]==='7'||digits[0]==='8')?digits.slice(1):'');if(ten.length===10&&!seen.has(ten)){seen.add(ten);out.push(ten)}}
@@ -1896,8 +2054,8 @@ async function saveOrderType(id,type){const headers=await authHeaders();const r=
 window.openOrderForm=function(id){
  if(!['owner','manager','dispatcher'].includes(String(state.user?.role||'')))return;
  const o=id?state.orders.find(x=>String(x.id)===String(id)):null;
- const slot=o?.time_slot||((o?.scheduled_time||'').slice(0,5)?`${(o.scheduled_time||'').slice(0,5)}–${String(Number((o.scheduled_time||'').slice(0,2))+1).padStart(2,'0')}:00`:'');
- openModal(`<h2>${o?'Редактировать заявку':'Новая заявка'}</h2><form id="orderForm" class="form ${o?'bosLeadershipOrderForm':''}">${o?'':newOrderChannels()}
+ const slot=o?.time_slot||(o?.scheduled_time||'').slice(0,5);
+ openModal(`<h2>${o?'Редактировать заявку':'Новая заявка'}</h2><form id="orderForm" class="form ${o?'bosLeadershipOrderForm':''}">${newOrderChannels(o)}
  <label>Номер заявки</label><input name="order_number" maxlength="80" value="${esc(o?.order_number||'')}" autocomplete="off" aria-describedby="orderNumberHint"><small id="orderNumberHint" class="muted">Укажите номер из источника или оставьте пустым для автоматического</small>
  <label>Дата поступления</label><input name="received_date" type="date" min="1900-01-01" max="9999-12-31" lang="ru" value="${esc(o?.received_date||(!o?intakeToday():''))}" aria-describedby="receivedDateHint"><small id="receivedDateHint" class="muted">Дата, когда заявка поступила в компанию</small>
  <label>ФИО клиента</label><input name="client" required value="${esc(o?.client||'')}" placeholder="Иван Иванов">
@@ -1907,9 +2065,9 @@ window.openOrderForm=function(id){
  <label for="orderApartment">Квартира</label><input id="orderApartment" name="apartment" maxlength="120" value="${esc(o?.apartment||'')}" placeholder="Номер квартиры">
  ${['entrance','floor','intercom'].map((key,i)=>`<label>${['Подъезд','Этаж','Домофон'][i]}</label><input name="${key}" maxlength="120" value="${esc(o?.[key]||'')}">`).join('')}
  ${o?`<label>Тип заявки</label><select name="order_type"><option value="work" ${(o?.order_type||'work')==='work'?'selected':''}>Обычная заявка</option><option value="measurement" ${o?.order_type==='measurement'?'selected':''}>Замер</option></select>
- `:''}<label>Описание работ</label><textarea id="bosWorkDescription" name="work_description" maxlength="10000" rows="4" placeholder="Опишите, что нужно сделать"></textarea><small id="workDescriptionHint" class="muted">Опишите работы вручную или добавьте из списка</small><label>${o?'Работа':'Быстрые варианты'}</label>${workEditor(o?.work||'',!o)}<div id="bosServiceInfo" class="muted"></div>
+ `:''}<label>Описание работ</label><textarea id="bosWorkDescription" name="work_description" maxlength="10000" rows="4" placeholder="Опишите, что нужно сделать"></textarea><small id="workDescriptionHint" class="muted">Опишите работы вручную или добавьте из списка</small><label>${o?'Работа':'Быстрые варианты'}</label>${workEditor(o?.work||'',true)}<div id="bosServiceInfo" class="muted"></div>
  <label>Дата и время</label><div class="two"><input type="date" name="scheduled_date" value="${esc(o?.scheduled_date||'')}"><select name="time_slot">${slotOptions(slot)}</select></div>
- <label>Статус заявки</label><select name="status">${STATUSES.map(s=>`<option ${String(o?.status||'В работе')===s?'selected':''}>${s}</option>`).join('')}</select>
+ <label>Статус заявки</label><select name="status">${[...new Set([o?.status,...STATUSES].filter(Boolean))].map(s=>`<option ${String(o?.status||'В работе')===s?'selected':''}>${s}</option>`).join('')}</select>
  <section class="card"><h3 style="margin-top:0">Условия на объекте</h3><label class="checkRow"><input type="checkbox" name="wall_over_3m" ${o?.wall_over_3m?'checked':''}><span>Высота более 3 метров</span></label><label>Материал стены</label><select name="wall_material">${WALLS.map(w=>`<option value="${w==='Не указан'?'':esc(w)}" ${(o?.wall_material||'')===(w==='Не указан'?'':w)?'selected':''}>${esc(w)}</option>`).join('')}</select>${o?'':'<label class="checkRow"><input type="checkbox" name="possible_extra_work"><span>Возможны допработы</span></label>'}</section>
  <label>Исходная сумма</label><input type="number" name="original_amount" min="0" step="1" value="${esc(o?.amount_confirmed===false&&!Number(o?.original_amount)&&!Number(o?.amount)?'':(o?.original_amount??o?.amount??''))}" placeholder="2800">
  <div class="card"><div class="row"><span>Расчёт мастера</span><b id="bosMasterPay">${money(o?.master_vk_id?(o?.master_payout||payout(o?.amount||o?.original_amount)):0)}</b></div></div>
@@ -1920,14 +2078,14 @@ window.openOrderForm=function(id){
  const syncPhoneButtons=()=>{if(!phoneStack)return;const rows=[...phoneStack.querySelectorAll('.bosPhoneEditRow')];rows.forEach((row,index)=>{row.querySelector('.bosPhoneInput').id=index===0?'bosPhone':'';const button=row.querySelector('.bosRemovePhone');if(button)button.hidden=rows.length<=1})};
  const syncWorkButtons=()=>{if(!workStack)return;const rows=[...workStack.querySelectorAll('.bosWorkEditRow')];rows.forEach((row,index)=>{row.querySelector('.bosWorkSelect').id=index===0?'bosService':'';const button=row.querySelector('.bosRemoveWork');if(button)button.hidden=rows.length<=1})};
  if(phoneStack){phoneStack.addEventListener('input',event=>{if(event.target.classList.contains('bosPhoneInput'))event.target.value=event.target.value.replace(/\D/g,'').slice(0,10)});phoneStack.addEventListener('click',event=>{const remove=event.target.closest('.bosRemovePhone');if(remove){const rows=phoneStack.querySelectorAll('.bosPhoneEditRow');if(rows.length>1)remove.closest('.bosPhoneEditRow').remove();syncPhoneButtons()}});$('#bosAddPhone').onclick=()=>{const add=$('#bosAddPhone'),holder=document.createElement('div');holder.innerHTML=phoneEditRow('');add.insertAdjacentElement('beforebegin',holder.firstElementChild);syncPhoneButtons();phoneStack.querySelector('.bosPhoneEditRow:last-of-type .bosPhoneInput')?.focus()}}else if(phoneEl)phoneEl.oninput=()=>phoneEl.value=phoneEl.value.replace(/\D/g,'').slice(0,10);
- if(workStack){workStack.addEventListener('click',event=>{const remove=event.target.closest('.bosRemoveWork');if(remove){const rows=workStack.querySelectorAll('.bosWorkEditRow');if(rows.length>1)remove.closest('.bosWorkEditRow').remove();syncWorkButtons();workStack.dispatchEvent(new Event('change',{bubbles:true}))}});workStack.addEventListener('change',event=>{if(!event.target.classList.contains('bosWorkSelect'))return;const legacy=event.target.closest('.bosWorkEditRow').querySelector('.bosLegacyWork');if(legacy)legacy.hidden=event.target.value!=='legacy';const custom=event.target.closest('.bosWorkEditRow').querySelector('.bosCustomWork');if(custom){custom.hidden=event.target.value!=='custom';if(!custom.hidden)custom.focus()}});$('#bosAddWork').onclick=()=>{const add=$('#bosAddWork'),holder=document.createElement('div');holder.innerHTML=workEditRow('',false,!o);add.insertAdjacentElement('beforebegin',holder.firstElementChild);syncWorkButtons();workStack.querySelector('.bosWorkEditRow:last-of-type select')?.focus()}}
+ if(workStack){workStack.addEventListener('click',event=>{const remove=event.target.closest('.bosRemoveWork');if(remove){const rows=workStack.querySelectorAll('.bosWorkEditRow');if(rows.length>1)remove.closest('.bosWorkEditRow').remove();syncWorkButtons();workStack.dispatchEvent(new Event('change',{bubbles:true}))}});workStack.addEventListener('change',event=>{if(!event.target.classList.contains('bosWorkSelect'))return;const legacy=event.target.closest('.bosWorkEditRow').querySelector('.bosLegacyWork');if(legacy)legacy.hidden=event.target.value!=='legacy';const custom=event.target.closest('.bosWorkEditRow').querySelector('.bosCustomWork');if(custom){custom.hidden=event.target.value!=='custom';if(!custom.hidden)custom.focus()}});$('#bosAddWork').onclick=()=>{const add=$('#bosAddWork'),holder=document.createElement('div');holder.innerHTML=workEditRow('',false,true);add.insertAdjacentElement('beforebegin',holder.firstElementChild);syncWorkButtons();workStack.querySelector('.bosWorkEditRow:last-of-type select')?.focus()}}
  syncPhoneButtons();syncWorkButtons();
  const showService=()=>{info.textContent='';recalc()};
  form.bosWorkText=()=>[...new Set([form.querySelector('#bosWorkDescription').value.trim(),...[...workStack.querySelectorAll('.bosWorkSelect')].map(selectedWork).filter(Boolean).map(item=>item.n)].filter(Boolean))].join('\n');
- form.bosSetWork=value=>{form.querySelector('#bosWorkDescription').value='';workStack.querySelectorAll('.bosWorkEditRow').forEach(row=>row.remove());const rows=workLines(value);$('#bosAddWork').insertAdjacentHTML('beforebegin',(rows.length?rows:['']).map((work,index)=>workEditRow(work,index===0,!o)).join(''));syncWorkButtons();workStack.dispatchEvent(new Event('change',{bubbles:true}))};
+ form.bosSetWork=value=>{form.querySelector('#bosWorkDescription').value='';workStack.querySelectorAll('.bosWorkEditRow').forEach(row=>row.remove());const rows=workLines(value);$('#bosAddWork').insertAdjacentHTML('beforebegin',(rows.length?rows:['']).map((work,index)=>workEditRow(work,index===0,true)).join(''));syncWorkButtons();workStack.dispatchEvent(new Event('change',{bubbles:true}))};
  const recalc=()=>{
-    const base=Math.max(0,Number(amount.value||0)-Number(o?.uncompleted_work_amount||0));
-    const pricing={...(o||{external_source:'mini_app'}),source:form.elements.source?.value||o?.source||'Авито'};
+    const base=o&&Number(amount.value)===Number(o.original_amount??o.amount)?Number(o.amount||0):Math.max(0,Number(amount.value||0)-Number(o?.uncompleted_work_amount||0));
+    const pricing={...(o||{external_source:'mini_app'}),source:form.elements.source?.value??o?.source??'Авито'};
     const model={...pricing,amount:base};
     const pay=window.BOS_ORDER_PAYROLL.calculate(base,model,!!master.value);
     const saved=window.BOS_ORDER_PAYROLL.snapshot(model)&&base===Number(o?.amount);
@@ -1935,8 +2093,9 @@ window.openOrderForm=function(id){
     let note=form.querySelector('#bosPricingRule');if(!note){note=document.createElement('p');note.id='bosPricingRule';note.className='muted';$('#bosMasterPay').closest('.card').appendChild(note)}
     note.textContent=amount.value.trim()===''?'Расчёт появится после согласования стоимости.':window.BOS_ORDER_PAYROLL.label(saved?model:{...model,status:'В работе',report_review_status:'not_submitted',report_uploaded_at:null})+(window.BOS_ORDER_PAYROLL.isDirect(model)?' · Компании: '+money(saved?window.BOS_ORDER_PAYROLL.directCompany(model):Math.round((base-Math.round(base*.6*100)/100)*100)/100):'')+' · Допработы учитываются отдельно';
   };
+ window.BOS_ATTACH_WORK_EDITOR(form,o,selectedWork,workEditRow);
  if(service)service.oninput=showService;amount.oninput=recalc;master.onchange=()=>recalc();form.addEventListener('change',e=>{if(e.target.name==='source')recalc()});showService();
- form.onsubmit=async e=>{e.preventDefault();if(state.busy)return;const msg=$('#formMsg');const rawPhones=[...phoneStack.querySelectorAll('.bosPhoneInput')].map(input=>input.value.trim()).filter(Boolean);if(!rawPhones.length||rawPhones.some(value=>value.length!==10)){msg.textContent='Введите по 10 цифр для каждого номера после +7';form.bosFieldError?.('phone',msg.textContent,phoneStack?.querySelector('.bosPhoneInput')||phoneEl);return}const phones=[...new Set(rawPhones)];const works=[...workStack.querySelectorAll('.bosWorkSelect')].map(selectedWork).filter(Boolean);if(!works.length&&!form.querySelector('#bosWorkDescription').value.trim()){msg.textContent='Добавьте хотя бы одну работу';form.bosFieldError?.('work',msg.textContent,form.querySelector('#bosWorkDescription'));return}const f=Object.fromEntries(new FormData(form));f.edited_detail_fields=[...editedDetails];if(o)for(const key of ['apartment','comment'])if(!editedDetails.has(key))delete f[key];const type=o?f.order_type:'work';delete f.order_type;f.phone=phones.map(value=>'+7'+value).join('; ');f.work=form.bosWorkText();delete f.work_description;if(!f.received_date)delete f.received_date;f.amount_confirmed=form.elements.original_amount.value.trim()!=='';f.original_amount=Number(f.original_amount||0);f.amount=f.original_amount;f.wall_over_3m=!!form.elements.wall_over_3m.checked;f.possible_extra_work=!!form.elements.possible_extra_work?.checked;f.city=master.options[master.selectedIndex]?.dataset?.city||o?.city||state.user?.city||'';f.scheduled_time=f.time_slot?f.time_slot.split('–')[0]:'';if(o){f.id=o.id;for(const key of ['order_number','received_date'])if((f[key]||'')===(o[key]||''))delete f[key]}msg.textContent=o?'Сохраняем…':'Создание…';form.querySelectorAll('[data-error-for]').forEach(el=>el.textContent='');setBusy(form,true);form.querySelector('[type=submit]').textContent=o?'Сохраняем…':'Создание…';try{const d=await api(o?'updateOrder':'createOrder',f);if(!d.ok)throw Object.assign(new Error(d.error),{field:d.field});const meta=o?await saveOrderType(d.order.id,type):{};const merged={...f,...d.order,...meta,order_type:type};if(o){const i=state.orders.findIndex(x=>String(x.id)===String(o.id));state.orders[i]=merged}else{const i=state.orders.findIndex(x=>String(x.id)===String(merged.id));if(i>=0)state.orders[i]=merged;else state.orders.unshift(merged)};form.dataset.saved='1';state.busy=false;closeModal();show('orders')}catch(err){msg.textContent=err.message;setBusy(form,false);form.querySelector('[type=submit]').textContent=o?'Сохранить изменения':'Создать заявку';const key=err.field||err.data?.field,control=key==='received_date'?(form.querySelector('#bosReceivedDisplay')||form.elements[key]):key&&form.elements[key],error=key&&form.querySelector('[data-error-for="'+CSS.escape(key)+'"]');if(error)error.textContent=err.message;if(control){control.setAttribute('aria-invalid','true');control.focus()}}finally{state.busy=false}}
+ form.onsubmit=async e=>{e.preventDefault();if(state.busy)return;const msg=$('#formMsg');const rawPhones=[...phoneStack.querySelectorAll('.bosPhoneInput')].map(input=>input.value.trim()).filter(Boolean);if(!rawPhones.length||rawPhones.some(value=>value.length!==10)){msg.textContent='Введите по 10 цифр для каждого номера после +7';form.bosFieldError?.('phone',msg.textContent,phoneStack?.querySelector('.bosPhoneInput')||phoneEl);return}const phones=[...new Set(rawPhones)];const works=[...workStack.querySelectorAll('.bosWorkSelect')].map(selectedWork).filter(Boolean);if(!works.length&&!form.querySelector('#bosWorkDescription').value.trim()&&!(o?.external_source==='lemana_pro'&&!o.work)){msg.textContent='Добавьте хотя бы одну работу';form.bosFieldError?.('work',msg.textContent,form.querySelector('#bosWorkDescription'));return}const f=Object.fromEntries(new FormData(form));f.edited_detail_fields=[...editedDetails];if(o)for(const key of ['apartment','comment'])if(!editedDetails.has(key))delete f[key];const type=o?f.order_type:'work';delete f.order_type;f.phone=phones.map(value=>'+7'+value).join('; ');try{f.work=form.bosWorkText();const items=form.bosWorkItems();if(items!==undefined)f.work_items=items}catch(error){msg.textContent=error.message;return}if(o?.external_source==='lemana_pro'&&!o.work&&!f.work)delete f.work;if(o&&window.BOS_ORDER_PAYROLL.sourceValue(f.source)===window.BOS_ORDER_PAYROLL.sourceValue(o.source))delete f.source;delete f.work_description;if(!f.received_date)delete f.received_date;f.amount_confirmed=form.elements.original_amount.value.trim()!=='';f.original_amount=Number(f.original_amount||0);f.amount=f.original_amount;f.wall_over_3m=!!form.elements.wall_over_3m.checked;f.possible_extra_work=!!form.elements.possible_extra_work?.checked;f.city=master.options[master.selectedIndex]?.dataset?.city||o?.city||state.user?.city||'';f.scheduled_time=f.time_slot?f.time_slot.split('–')[0]:'';if(o){if(f.time_slot===slot){delete f.time_slot;delete f.scheduled_time}f.id=o.id;for(const key of ['order_number','received_date'])if((f[key]||'')===(o[key]||''))delete f[key]}msg.textContent=o?'Сохраняем…':'Создание…';form.querySelectorAll('[data-error-for]').forEach(el=>el.textContent='');setBusy(form,true);form.querySelector('[type=submit]').textContent=o?'Сохраняем…':'Создание…';try{const d=await api(o?'updateOrder':'createOrder',f);if(!d.ok)throw Object.assign(new Error(d.error),{field:d.field});const meta=o?await saveOrderType(d.order.id,type):{};const merged={...f,...d.order,...meta,order_type:type};if(o){const i=state.orders.findIndex(x=>String(x.id)===String(o.id));state.orders[i]=merged}else{const i=state.orders.findIndex(x=>String(x.id)===String(merged.id));if(i>=0)state.orders[i]=merged;else state.orders.unshift(merged)};form.dataset.saved='1';state.busy=false;closeModal();show('orders')}catch(err){msg.textContent=err.message;setBusy(form,false);form.querySelector('[type=submit]').textContent=o?'Сохранить изменения':'Создать заявку';const key=err.field||err.data?.field,control=key==='received_date'?(form.querySelector('#bosReceivedDisplay')||form.elements[key]):key&&form.elements[key],error=key&&form.querySelector('[data-error-for="'+CSS.escape(key)+'"]');if(error)error.textContent=err.message;if(control){control.setAttribute('aria-invalid','true');control.focus()}}finally{state.busy=false}}
 };
 const prevOpen=window.openOrder;
 window.openOrder=function(id){prevOpen(id);const o=state.orders.find(x=>String(x.id)===String(id)),modal=document.querySelector('.modal');if(!o||!modal)return;const has=modal.querySelector('.bosConditionsView');if(has)return;const box=document.createElement('section');box.className='card bosConditionsView';box.innerHTML=`<h3>Детали заявки</h3><p><b>Тип:</b> ${o.order_type==='measurement'?'Замер':'Обычная заявка'}</p><p><b>Условия:</b> ${o.wall_over_3m?'высота > 3 м':'высота до 3 м'} · ${esc(o.wall_material||'материал не указан')}</p>${o.comment?`<p><b>Комментарий:</b> ${esc(o.comment)}</p>`:''}`;modal.insertBefore(box,modal.children[1]||null)};
@@ -1987,8 +2146,9 @@ function bool(v){return v===true||String(v)==='true'}
 function scheduleRows(){return state.masterSchedule||masterSchedule||[]}
 function scheduleRowFor(master,date){const id=masterId(master);return scheduleRows().find(r=>String(r.master_vk_id||r.master_id||r.external_id||'')===id&&dateOnly(r.work_date||r.date)===date)}
 function masterAvailable(master,date,slot){if(!master||!date||!slot)return true;const row=scheduleRowFor(master,date);if(!row||!bool(row.is_working))return false;const start=hm(row.work_start),end=hm(row.work_end),slotStart=String(slot).split('–')[0],slotEnd=String(slot).split('–')[1]||slotStart;return (!start||slotStart>=start)&&(!end||slotEnd<=end)}
-function refreshMasterAvailability(form){if(!form)return;const date=form.elements.scheduled_date?.value||'',slot=form.elements.time_slot?.value||'',sel=form.elements.master_vk_id;if(!sel)return;const current=sel.value;[...sel.options].forEach((opt,i)=>{if(i===0)return;const m=state.masters.find(x=>masterId(x)===String(opt.value));const ok=!date||!slot||masterAvailable(m,date,slot);opt.disabled=!ok;const base=(m?.full_name||opt.textContent.split(' — ')[0]||'Мастер')+(m?.city?' — '+m.city:'');opt.textContent=ok?base:base+' · не работает в это время'});if(current&&sel.selectedOptions[0]?.disabled)sel.value='';let hint=form.querySelector('#masterAvailabilityHint');if(!hint){hint=document.createElement('div');hint.id='masterAvailabilityHint';hint.className='muted';hint.style.fontSize='12px';sel.insertAdjacentElement('afterend',hint)}if(date&&slot){const count=state.masters.filter(m=>masterAvailable(m,date,slot)).length;hint.textContent=count?`Доступно мастеров: ${count}`:'На это время нет мастеров по рабочему графику'}else hint.textContent='Сначала выберите дату и время — список мастеров отфильтруется по графику'}
-const baseOrderForm=window.openOrderForm;window.openOrderForm=function(id){baseOrderForm(id);const form=document.querySelector('#orderForm');if(!form)return;const date=form.elements.scheduled_date,slot=form.elements.time_slot,master=form.elements.master_vk_id;if(date)date.addEventListener('change',()=>refreshMasterAvailability(form));if(slot)slot.addEventListener('change',()=>refreshMasterAvailability(form));if(master)master.addEventListener('change',()=>{const m=state.masters.find(x=>masterId(x)===String(master.value));if(master.value&&date?.value&&slot?.value&&!masterAvailable(m,date.value,slot.value)){master.value='';const msg=document.querySelector('#formMsg');if(msg)msg.textContent='Этот мастер не работает в выбранные дату и время'}});const originalSubmit=form.onsubmit;form.onsubmit=function(e){const m=state.masters.find(x=>masterId(x)===String(master?.value||''));if(master?.value&&date?.value&&slot?.value&&!masterAvailable(m,date.value,slot.value)){e.preventDefault();const msg=document.querySelector('#formMsg');if(msg)msg.textContent='Нельзя назначить мастера вне его рабочего графика';return false}return originalSubmit&&originalSubmit.call(this,e)};refreshMasterAvailability(form)};
+function keepsAssignment(form,value){const saved=form.bosSavedAssignment;return !!saved&&String(value)===saved.master&&form.elements.scheduled_date?.value===saved.date&&form.elements.time_slot?.value===saved.slot}
+function refreshMasterAvailability(form){if(!form)return;const date=form.elements.scheduled_date?.value||'',slot=form.elements.time_slot?.value||'',sel=form.elements.master_vk_id;if(!sel)return;const current=sel.value;[...sel.options].forEach((opt,i)=>{if(i===0)return;const m=state.masters.find(x=>masterId(x)===String(opt.value));const ok=keepsAssignment(form,opt.value)||!date||!slot||masterAvailable(m,date,slot);opt.disabled=!ok;const base=(m?.full_name||opt.textContent.split(' — ')[0]||'Мастер')+(m?.city?' — '+m.city:'');opt.textContent=ok?base:base+' · не работает в это время'});if(current&&sel.selectedOptions[0]?.disabled)sel.value='';let hint=form.querySelector('#masterAvailabilityHint');if(!hint){hint=document.createElement('div');hint.id='masterAvailabilityHint';hint.className='muted';hint.style.fontSize='12px';sel.insertAdjacentElement('afterend',hint)}if(date&&slot){const count=state.masters.filter(m=>masterAvailable(m,date,slot)).length;hint.textContent=count?`Доступно мастеров: ${count}`:'На это время нет мастеров по рабочему графику'}else hint.textContent='Сначала выберите дату и время — список мастеров отфильтруется по графику'}
+const baseOrderForm=window.openOrderForm;window.openOrderForm=function(id){baseOrderForm(id);const form=document.querySelector('#orderForm');if(!form)return;if(id)form.bosSavedAssignment={master:form.elements.master_vk_id?.value||'',date:form.elements.scheduled_date?.value||'',slot:form.elements.time_slot?.value||''};const date=form.elements.scheduled_date,slot=form.elements.time_slot,master=form.elements.master_vk_id;if(date)date.addEventListener('change',()=>refreshMasterAvailability(form));if(slot)slot.addEventListener('change',()=>refreshMasterAvailability(form));if(master)master.addEventListener('change',()=>{const m=state.masters.find(x=>masterId(x)===String(master.value));if(master.value&&date?.value&&slot?.value&&!keepsAssignment(form,master.value)&&!masterAvailable(m,date.value,slot.value)){master.value='';const msg=document.querySelector('#formMsg');if(msg)msg.textContent='Этот мастер не работает в выбранные дату и время'}});const originalSubmit=form.onsubmit;form.onsubmit=function(e){const m=state.masters.find(x=>masterId(x)===String(master?.value||''));if(master?.value&&date?.value&&slot?.value&&!keepsAssignment(form,master.value)&&!masterAvailable(m,date.value,slot.value)){e.preventDefault();const msg=document.querySelector('#formMsg');if(msg)msg.textContent='Нельзя назначить мастера вне его рабочего графика';return false}return originalSubmit&&originalSubmit.call(this,e)};refreshMasterAvailability(form)};
 const baseReport=window.openMasterReportForm;if(typeof baseReport==='function')window.openMasterReportForm=function(id){baseReport(id);const o=state.orders.find(x=>String(x.id)===String(id)),type=document.querySelector('#mrType');if(!type)return;type.value=o?.order_type==='measurement'?'measurement':'work';const label=type.previousElementSibling;if(label&&label.tagName==='LABEL')label.style.display='none';type.style.display='none';const info=document.createElement('div');info.className='card';info.style.padding='12px 14px';info.innerHTML=`<span class="muted">Тип заявки</span><br><b>${o?.order_type==='measurement'?'Замер':'Обычная заявка'}</b>`;type.insertAdjacentElement('afterend',info);if(typeof toggleReportBlocks==='function')toggleReportBlocks()};
 
 let calendarMonth=new Date();calendarMonth.setDate(1);calendarMonth.setHours(12,0,0,0);
@@ -2696,7 +2856,7 @@ const st=document.createElement('style');st.textContent='.bosSchedulePresets{mar
 const RECLAMATION='Рекламация';
 try{if(Array.isArray(STATUSES)&&!STATUSES.includes(RECLAMATION))STATUSES.push(RECLAMATION)}catch(_){}
 
-function normalizeStatus(s){const v=String(s||'');return ['В работе','Выполнена','Отменена',RECLAMATION].includes(v)?v:'В работе'}
+function normalizeStatus(s){const v=String(s||'');return ['В работе','Выполнена','Отменена','Новая','Назначена',RECLAMATION].includes(v)?v:'В работе'}
 
 const oldReload=window.reloadData;
 window.reloadData=async function(keepPage=true){
@@ -2860,7 +3020,7 @@ function odMode(){const master=(typeof liveMasterMode==='function'&&liveMasterMo
 function odRescheduleRole(){const role=String(state.user?.role||'');return ['manager','dispatcher'].includes(role)||(typeof isDispatcherPreview==='function'&&isDispatcherPreview())||(typeof isManagerPreview==='function'&&isManagerPreview())}
 function odToday(){return new Date().toISOString().slice(0,10)}
 function odStatus(o){return String(o?.status||'')}
-function odSource(o){return String(o?.source||o?.lead_source||'').trim()}
+function odSource(o){return window.BOS_ORDER_PAYROLL.sourceLabel(o)}
 function odHands(o){return String(o?.external_source||'').toLowerCase()==='hands'||String(o?.external_id||'').startsWith('hands:')}
 function odRealId(v){const s=String(v??'').trim().toLowerCase();return !!s&&!['0','null','undefined'].includes(s)}
 function odHasMaster(o){
@@ -2903,9 +3063,9 @@ function scheduleOpsListActions(){if(opsActionsQueued)return;opsActionsQueued=tr
 const opsListRoot=document.getElementById('content');if(opsListRoot)new MutationObserver(scheduleOpsListActions).observe(opsListRoot,{childList:true,subtree:true});
 document.addEventListener('toggle',e=>{if(e.target.matches?.('.bosOpsSecondaryActions')){e.target.closest('.bosOpsListRow')?.querySelector(':scope>.dmCardActions')?.toggleAttribute('hidden',!e.target.open)}},true);
 function odCount(type){const old=bosOrderFilter;bosOrderFilter=type;const n=(state.orders||[]).filter(odMatchFilter).length;bosOrderFilter=old;return n}
-function odSources(){const set=new Set(['Авито']);(state.sources||[]).forEach(s=>{const v=String(s?.source||s||'').trim();if(v)set.add(v)});(state.orders||[]).forEach(o=>{const v=odSource(o);if(v)set.add(v)});return [...set].sort((a,b)=>a.localeCompare(b,'ru'))}
+function odSources(){const set=new Set(['Авито','Руки (Hands)','Лемана Про']);(state.sources||[]).forEach(s=>{const v=window.BOS_ORDER_PAYROLL.sourceLabel({source:s?.source||s});if(v)set.add(v)});(state.orders||[]).forEach(o=>{const v=odSource(o);if(v)set.add(v)});return [...set].sort((a,b)=>a.localeCompare(b,'ru'))}
 function odFilterDefs(){const defs=[['all','Все',(state.orders||[]).length],['avito','Авито',odCount('avito')],['active','Активные',odCount('active')],['overdue','Просроченные',odCount('overdue')]];if(odRescheduleRole())defs.push(['reschedule','Нужно перенести',odCount('reschedule')]);defs.push(['done','Выполненные',odCount('done')],['reclamation','Рекламации',odCount('reclamation')],['cancelled','Отменённые',odCount('cancelled')],['unassigned','Без мастера',odCount('unassigned')],['today','На сегодня',odCount('today')]);return defs}
-function odRender(){const list=odFiltered();return `<div class="row"><div><h2>Заявки</h2><div class="muted">Найдено: ${list.length}</div></div><button class="primary" onclick="openOrderForm()">+ Новая</button></div><div class="bosOrderFilters">${odFilterDefs().map(([v,l,n])=>`<button class="${bosOrderFilter===v?'primary':'secondary'}" onclick="setBosOrderFilter('${v}')">${l} <small>${n}</small></button>`).join('')}</div><div class="bosOpsListTools"><input id="bosOrderSearch" placeholder="Поиск: номер, клиент, телефон, адрес, работа" value="${esc(bosOrderSearch)}" oninput="setBosOrderSearch(this.value)"><button type="button" class="secondary" onclick="openBosOrderFilters()">Фильтры</button></div><section class="card bosOrderFilterBox" hidden><select id="bosOrderMaster" onchange="setBosOrderMaster(this.value)"><option value="">Все мастера</option>${(state.masters||[]).map(m=>`<option value="${esc(m.full_name||'')}" ${bosOrderMaster===String(m.full_name||'')?'selected':''}>${esc(m.full_name||'Мастер')}</option>`).join('')}</select><select id="bosOrderSource" onchange="setBosOrderSource(this.value)"><option value="">Все источники</option>${odSources().map(v=>`<option value="${esc(v)}" ${bosOrderSource===v?'selected':''}>${esc(v)}</option>`).join('')}</select></section><div id="bosOrderList">${list.map(odCard).join('')||'<p class="muted">По выбранному фильтру заявок нет.</p>'}</div>`}
+function odRender(){const list=odFiltered();return `<div class="row"><div><h2>Заявки</h2><div class="muted">Найдено: ${list.length}</div></div><div class="bosOrdersCreateActions"><button class="secondary" onclick="openLemanaImport()">Импорт отчёта Лемана Про</button><button class="primary" onclick="openOrderForm()">+ Новая</button></div></div><div class="bosOrderFilters">${odFilterDefs().map(([v,l,n])=>`<button class="${bosOrderFilter===v?'primary':'secondary'}" onclick="setBosOrderFilter('${v}')">${l} <small>${n}</small></button>`).join('')}</div><div class="bosOpsListTools"><input id="bosOrderSearch" placeholder="Поиск: номер, клиент, телефон, адрес, работа" value="${esc(bosOrderSearch)}" oninput="setBosOrderSearch(this.value)"><button type="button" class="secondary" onclick="openBosOrderFilters()">Фильтры</button></div><section class="card bosOrderFilterBox" hidden><select id="bosOrderMaster" onchange="setBosOrderMaster(this.value)"><option value="">Все мастера</option>${(state.masters||[]).map(m=>`<option value="${esc(m.full_name||'')}" ${bosOrderMaster===String(m.full_name||'')?'selected':''}>${esc(m.full_name||'Мастер')}</option>`).join('')}</select><select id="bosOrderSource" onchange="setBosOrderSource(this.value)"><option value="">Все источники</option>${odSources().map(v=>`<option value="${esc(v)}" ${bosOrderSource===v?'selected':''}>${esc(v)}</option>`).join('')}</select></section><div id="bosOrderList">${list.map(odCard).join('')||'<p class="muted">По выбранному фильтру заявок нет.</p>'}</div>`}
 // Filter dialog mirrors existing selects and invokes their original change listeners.
 // IDs stay in the page; cancel leaves the original values intact.
 window.openBosOrderFilters=function(){
@@ -2918,7 +3078,7 @@ window.openBosOpsOrderQueue=function(filter){bosOrderSearch=bosOrderMaster=bosOr
 window.setBosOrderFilter=function(v){bosOrderFilter=v;bosOrderSearch='';bosOrderMaster='';bosOrderSource='';show('orders')};
 window.setBosOrderSearch=function(v){bosOrderSearch=String(v||'');window.refreshBosOrders()};
 window.setBosOrderMaster=function(v){bosOrderMaster=String(v||'');window.refreshBosOrders()};
-window.setBosOrderSource=function(v){bosOrderSource=String(v||'');window.refreshBosOrders()};
+window.setBosOrderSource=function(v){bosOrderSource=String(v||'');const select=document.getElementById('bosOrderSource');if(select)select.value=bosOrderSource;window.refreshBosOrders()};
 window.refreshBosOrders=function(){const search=document.getElementById('bosOrderSearch'),master=document.getElementById('bosOrderMaster'),source=document.getElementById('bosOrderSource');if(search)bosOrderSearch=String(search.value||'');if(master)bosOrderMaster=String(master.value||'');if(source)bosOrderSource=String(source.value||'');const root=document.getElementById('bosOrderList');if(!root)return;const list=odFiltered();root.innerHTML=list.map(odCard).join('')||'<p class="muted">По выбранному фильтру заявок нет.</p>';const count=document.querySelector('#content h2 + .muted');if(count)count.textContent=`Найдено: ${list.length}`};
 const prevOrders=pages.orders;pages.orders=function(){if(!odMode())return prevOrders();return odRender()};
 const style=document.createElement('style');style.textContent='.bosOrderFilters{display:flex;gap:7px;overflow-x:auto;padding:10px 0 4px;scrollbar-width:none}.bosOrderFilters::-webkit-scrollbar{display:none}.bosOrderFilters button{white-space:nowrap;min-height:40px}.bosOrderFilters small{opacity:.75;margin-left:3px}.bosOrderFilterBox{display:grid;grid-template-columns:minmax(0,1fr) 190px 170px;gap:8px;margin-top:8px}.bosFilteredOrder{cursor:pointer}.bosSourceChip,.bosRescheduleChip{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;background:#273447;color:#c9d5e5;font-size:11px}.bosSourceChip.avito{background:#4b3a14;color:#ffd95c}.bosRescheduleChip{background:rgba(242,176,65,.14);color:#f2b041;border:1px solid rgba(242,176,65,.28)}.opsCompactOrder{padding:9px 11px;margin:6px 0;border-radius:12px}.opsCompactTop,.opsCompactMain,.opsCompactBottom{display:flex;align-items:center;justify-content:space-between;gap:8px}.opsCompactTop b{font-size:14px}.opsCompactTop span{font-size:11px;color:var(--muted,#91a3b7)}.opsCompactMain{margin-top:4px}.opsCompactMain b{font-size:13px}.opsCompactMain strong{font-size:13px}.opsCompactAddress{font-size:12px;color:var(--muted,#91a3b7);margin-top:2px;line-height:1.25}.opsCompactWorks{margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,255,255,.06);font-size:12px;line-height:1.3}.opsCompactWorks div+div{margin-top:2px}.opsCompactWorks small{display:block;color:var(--muted,#91a3b7);margin-top:2px}.opsCompactBottom{justify-content:flex-start;flex-wrap:wrap;margin-top:6px;font-size:11px;color:var(--muted,#91a3b7)}.opsCompactBottom .status{font-size:11px}@media(max-width:760px){.bosOrderFilterBox{grid-template-columns:1fr 1fr}.bosOrderFilterBox input{grid-column:1/-1}}@media(max-width:620px){.bosOrderFilterBox{grid-template-columns:1fr}.bosOrderFilterBox input{grid-column:auto}.bosOrderFilters button{padding-left:10px;padding-right:10px;font-size:12px}.opsCompactOrder{padding:8px 10px}.opsCompactTop{align-items:flex-start}.opsCompactTop span{max-width:50%;text-align:right}}';document.head.appendChild(style);
@@ -3496,7 +3656,7 @@ const st=document.createElement('style');st.textContent='.apiState{padding:5px 9
 if(window.BOS_HANDS_INTEGRATION_V69)return;window.BOS_HANDS_INTEGRATION_V69=true;
 const GATEWAY='https://business-os-api-gateway.netlify.app/api/proxy/hands-api';
 const DIRECT='https://obsropbslfwtanyspjbi.supabase.co/functions/v1/hands-api';
-const handsOrder=o=>String(o?.external_source||'').toLowerCase()==='hands'||String(o?.external_id||'').startsWith('hands:');
+const handsOrder=o=>window.BOS_ORDER_PAYROLL.isHandsLinked(o);
 const extId=o=>String(o?.external_id||'').replace(/^hands:/,'');
 async function deliveryRequest(action,orderId,extra={}){
   const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{};headers['Content-Type']='application/json';
@@ -3581,13 +3741,13 @@ function handsCard(o){
 function injectOrderActions(id){const o=state.orders.find(x=>String(x.id)===String(id));if(!o||!handsOrder(o)||!['owner','manager','dispatcher'].includes(state.user?.role||''))return;const m=document.querySelector('.modal');if(!m||m.querySelector('#handsOrderActions'))return;m.insertAdjacentHTML('beforeend',handsCard(o));refreshDelivery(id,m.querySelector('[data-hands-delivery]'))}
 window.BOS_HANDS_RENDER_ORDER=injectOrderActions;
 const baseOpen=window.openOrder;if(typeof baseOpen==='function')window.openOrder=function(id){const out=baseOpen.apply(this,arguments);setTimeout(()=>injectOrderActions(id),0);return out};
-window.openHandsAssign=function(localId){const o=state.orders.find(x=>String(x.id)===String(localId));if(!o)return;openModal(`<h2>Назначить мастера в Hands</h2><form id="handsAssignForm" class="form"><select name="specialist" required><option value="">Выберите мастера</option>${(state.masters||[]).map(m=>`<option value="${esc(m.full_name||'')}">${esc(m.full_name||'Мастер')}</option>`).join('')}</select><input name="specialist_login" placeholder="Логин мастера в Hands — если требуется"><button class="primary wide">Отправить в Hands</button><p id="handsAssignMsg" class="muted"></p></form>`);const f=document.getElementById('handsAssignForm');manualSubmit(f,'handsAssignMsg',()=>request('assignSpecialist',{order_id:extId(o),specialist:f.elements.specialist.value,specialist_login:f.elements.specialist_login.value}),'Отправляем…','Мастер назначен в Hands',()=>setTimeout(()=>{if(f.isConnected){closeModal();openOrder(localId)}},600))};
+window.openHandsAssign=function(localId){const o=state.orders.find(x=>String(x.id)===String(localId));if(!o||!handsOrder(o))return;openModal(`<h2>Назначить мастера в Hands</h2><form id="handsAssignForm" class="form"><select name="specialist" required><option value="">Выберите мастера</option>${(state.masters||[]).map(m=>`<option value="${esc(m.full_name||'')}">${esc(m.full_name||'Мастер')}</option>`).join('')}</select><input name="specialist_login" placeholder="Логин мастера в Hands — если требуется"><button class="primary wide">Отправить в Hands</button><p id="handsAssignMsg" class="muted"></p></form>`);const f=document.getElementById('handsAssignForm');manualSubmit(f,'handsAssignMsg',()=>request('assignSpecialist',{order_id:extId(o),specialist:f.elements.specialist.value,specialist_login:f.elements.specialist_login.value}),'Отправляем…','Мастер назначен в Hands',()=>setTimeout(()=>{if(f.isConnected){closeModal();openOrder(localId)}},600))};
 const agreedOutcomes=[['SUCCESS','Договорились'],['NOT_YET','Ещё не договорились'],['CLIENT_REFUSED','Клиент отказался'],['CLIENT_REFUSED_FROM_SPECIALIST','Клиент отказался от мастера'],['CLIENT_ASKED_TO_CALL','Клиент просит перезвонить'],['CLIENT_NOT_AVAILABLE','Клиент не отвечает'],['SPECIALIST_REFUSED','Мастер отказался'],['OTHER','Другое']];
 const completedOutcomes=[['SUCCESS','Работа выполнена'],['WORK_CONTINUES','Работы продолжаются'],['TIME_CHANGED','Перенесли дату'],['CLIENT_REFUSED','Клиент отказался'],['CLIENT_REFUSED_FROM_SPECIALIST','Клиент отказался от мастера'],['CLIENT_ASKED_TO_CALL','Клиент просит перезвонить'],['CLIENT_NOT_AVAILABLE','Клиент не отвечает'],['SPECIALIST_REFUSED','Мастер отказался'],['OTHER','Другое']];
 function outcomeOptions(kind){return (kind==='COMPLETED'?completedOutcomes:agreedOutcomes).map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}
 window.refreshHandsReportOutcomes=function(){const kind=document.getElementById('handsReportKind'),out=document.getElementById('handsReportOutcome');if(kind&&out)out.innerHTML=outcomeOptions(kind.value)};
-window.openHandsReport=function(localId){const o=state.orders.find(x=>String(x.id)===String(localId));if(!o)return;openModal(`<h2>Отчёт в Hands</h2><form id="handsReportForm" class="form"><label>Этап<select id="handsReportKind" name="kind" onchange="refreshHandsReportOutcomes()"><option value="AGREED">Договорились о начале работ</option><option value="COMPLETED">Выполнение работы</option></select></label><label>Результат<select id="handsReportOutcome" name="outcome">${outcomeOptions('AGREED')}</select></label><input name="time" placeholder="Время: 2026-09-14 10:00"><textarea name="comment" placeholder="Комментарий"></textarea><textarea name="reason" placeholder="Причина отказа клиента — если требуется"></textarea><textarea name="time_change_reason" placeholder="Причина переноса даты — если требуется"></textarea><button class="primary wide">Отправить отчёт</button><p id="handsReportMsg" class="muted"></p></form>`);const f=document.getElementById('handsReportForm');manualSubmit(f,'handsReportMsg',()=>request('sendReport',{order_id:extId(o),...Object.fromEntries(new FormData(f))}),'Отправляем…','Отчёт принят Hands')};
-window.openHandsFile=function(localId){const o=state.orders.find(x=>String(x.id)===String(localId));if(!o)return;openModal(`<h2>Файл в Hands</h2><form id="handsFileForm" class="form"><input id="handsFileInput" type="file" required><select name="relation"><option value="SPECIALIST_PHOTO">Фото от мастера</option><option value="SPECIALIST_REPORT">Договор от мастера</option><option value="SPECIALIST_ACKNOWLEDGMENT">Расписка от мастера</option><option value="SPECIALIST_CONTRACT">Электронный договор</option><option value="INSTRUCTION_REPORT_PHOTO">Фото в отчёте</option><option value="DEFECT_PHOTO">Фото брака</option><option value="DEFECT_ACT">Акт о браке</option></select><button class="primary wide">Загрузить</button><p id="handsFileMsg" class="muted"></p></form>`);const f=document.getElementById('handsFileForm');manualSubmit(f,'handsFileMsg',async()=>{const file=f.querySelector('#handsFileInput').files?.[0];if(!file)throw new Error('Выберите файл');if(file.size>10*1024*1024)throw new Error('Файл больше 10 МБ');const relation=f.elements.relation.value,buf=new Uint8Array(await file.arrayBuffer());let s='';for(let i=0;i<buf.length;i+=0x8000)s+=String.fromCharCode(...buf.subarray(i,i+0x8000));await request('uploadFile',{order_id:extId(o),file_name:file.name,mime_type:file.type||'application/octet-stream',relation,base64:btoa(s)})},'Загружаем…','Файл загружен в Hands')};
+window.openHandsReport=function(localId){const o=state.orders.find(x=>String(x.id)===String(localId));if(!o||!handsOrder(o))return;openModal(`<h2>Отчёт в Hands</h2><form id="handsReportForm" class="form"><label>Этап<select id="handsReportKind" name="kind" onchange="refreshHandsReportOutcomes()"><option value="AGREED">Договорились о начале работ</option><option value="COMPLETED">Выполнение работы</option></select></label><label>Результат<select id="handsReportOutcome" name="outcome">${outcomeOptions('AGREED')}</select></label><input name="time" placeholder="Время: 2026-09-14 10:00"><textarea name="comment" placeholder="Комментарий"></textarea><textarea name="reason" placeholder="Причина отказа клиента — если требуется"></textarea><textarea name="time_change_reason" placeholder="Причина переноса даты — если требуется"></textarea><button class="primary wide">Отправить отчёт</button><p id="handsReportMsg" class="muted"></p></form>`);const f=document.getElementById('handsReportForm');manualSubmit(f,'handsReportMsg',()=>request('sendReport',{order_id:extId(o),...Object.fromEntries(new FormData(f))}),'Отправляем…','Отчёт принят Hands')};
+window.openHandsFile=function(localId){const o=state.orders.find(x=>String(x.id)===String(localId));if(!o||!handsOrder(o))return;openModal(`<h2>Файл в Hands</h2><form id="handsFileForm" class="form"><input id="handsFileInput" type="file" required><select name="relation"><option value="SPECIALIST_PHOTO">Фото от мастера</option><option value="SPECIALIST_REPORT">Договор от мастера</option><option value="SPECIALIST_ACKNOWLEDGMENT">Расписка от мастера</option><option value="SPECIALIST_CONTRACT">Электронный договор</option><option value="INSTRUCTION_REPORT_PHOTO">Фото в отчёте</option><option value="DEFECT_PHOTO">Фото брака</option><option value="DEFECT_ACT">Акт о браке</option></select><button class="primary wide">Загрузить</button><p id="handsFileMsg" class="muted"></p></form>`);const f=document.getElementById('handsFileForm');manualSubmit(f,'handsFileMsg',async()=>{const file=f.querySelector('#handsFileInput').files?.[0];if(!file)throw new Error('Выберите файл');if(file.size>10*1024*1024)throw new Error('Файл больше 10 МБ');const relation=f.elements.relation.value,buf=new Uint8Array(await file.arrayBuffer());let s='';for(let i=0;i<buf.length;i+=0x8000)s+=String.fromCharCode(...buf.subarray(i,i+0x8000));await request('uploadFile',{order_id:extId(o),file_name:file.name,mime_type:file.type||'application/octet-stream',relation,base64:btoa(s)})},'Загружаем…','Файл загружен в Hands')};
 const baseTools=window.openOwnerTools;if(typeof baseTools==='function')window.openOwnerTools=function(){const out=baseTools.apply(this,arguments);setTimeout(()=>{const modal=document.querySelector('.modal');if(!modal||modal.querySelector('.handsIntegrationBtn'))return;const sections=[...modal.querySelectorAll('section.card')],target=sections.find(s=>s.querySelector('h3')?.textContent.trim()==='Интеграции')||sections.at(-1);if(!target)return;const b=document.createElement('button');b.className='secondary wide ownerToolAction handsIntegrationBtn';b.innerHTML='<span>Hands.ru</span><b>Подключение ›</b>';b.onclick=openHandsIntegration;target.appendChild(b)},0);return out};
 })();
 
@@ -5113,7 +5273,7 @@ function phoneList(o){
  return out;
 }
 const phoneHtml=o=>{const phones=phoneList(o);return phones.length?`<div class="bosCompactPhone bosManagementPhones">${phones.map((item,index)=>`<div class="bosManagementPhoneRow"><a class="masterV126Phone" href="tel:${esc(item.phone)}">${esc(item.label)}</a><a class="secondary bosClientCallAction" href="tel:${esc(item.phone)}" aria-label="Позвонить клиенту ${index+1}">Позвонить</a></div>`).join('')}</div>`:'<small>Телефон не указан</small>'};
-const sourceLabel=o=>String(pick(o,'external_source','source','store','shop','store_name','shop_name')||'').trim();
+const sourceLabel=o=>window.BOS_ORDER_PAYROLL.sourceLabel(o);
 window.openOrder=function(id){
   const role=String(state?.user?.role||'');
   if(masterContext()||!managementRoles.has(role))return typeof previousOpenOrder==='function'?previousOpenOrder.apply(this,arguments):undefined;
@@ -7103,6 +7263,46 @@ let queued=false;
 const observer=new MutationObserver(()=>{if(!queued){queued=true;requestAnimationFrame(()=>{queued=false;decorate()})}});
 for(const id of ['content','modalRoot']){const root=document.getElementById(id);if(root)observer.observe(root,{childList:true,subtree:true})}
 decorate();
+})();
+
+
+;
+// Source: lemana-import-ui.js
+(()=>{
+ 'use strict';
+ const allowed=()=>['owner','manager','dispatcher'].includes(String(state.user?.role||''));
+ const L=window.BOS_LEMANA_IMPORT;
+ window.openLemanaImport=function(){
+  if(!allowed())return;
+  let file=null,preview=null,token='',busy=false,overrides={};
+  openModal(`<h2>Импорт отчёта Лемана Про</h2><div class="lemanaImport"><p class="muted">Создаются только выбранные новые заявки. Совпадения и ошибки будут пропущены.</p><label>Отчёт XLSX · лист Tasks · до 5 МБ<input id="lemanaFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></label><label>Часовой пояс времени в отчёте<select id="lemanaTimezone"><option value="">Выберите часовой пояс</option>${L.timezones.map(t=>`<option value="${t}">${t==='Europe/Moscow'?'Москва · UTC+3':t}</option>`).join('')}</select></label><p class="muted">Уточните часовой пояс в кабинете выгрузки. Время визита будет сохранено как в отчёте; дата создания — с выбранным поясом.</p><button type="button" class="secondary" id="lemanaCheck">Проверить файл</button><p id="lemanaMessage" role="status"></p><div id="lemanaPreview"></div></div>`);
+  const root=document.querySelector('.lemanaImport'),message=root.querySelector('#lemanaMessage'),host=root.querySelector('#lemanaPreview');
+  const setBusy=value=>{busy=value;root.querySelectorAll('button,input,select').forEach(el=>{el.disabled=value||el.dataset.blocked==='1'})};
+  const reset=()=>{preview=null;token='';overrides={};host.innerHTML='';message.textContent=''};
+  root.querySelector('#lemanaFile').onchange=e=>{reset();file=null;const f=e.target.files?.[0];if(!f)return;if(!/\.xlsx$/i.test(f.name)||f.size>5*1024*1024||!f.size){file=null;message.textContent='Нужен файл XLSX размером до 5 МБ';return}file=f};
+  root.querySelector('#lemanaTimezone').onchange=reset;
+  const base64=async file=>{const bytes=new Uint8Array(await file.arrayBuffer());let text='';for(let i=0;i<bytes.length;i+=8192)text+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(text)};
+  async function check(){
+   if(busy)return;if(!file){message.textContent='Выберите файл XLSX';return}const timezone=root.querySelector('#lemanaTimezone').value;if(!timezone){message.textContent='Укажите часовой пояс выгрузки';return}
+   setBusy(true);message.textContent='Проверяем файл и существующие заявки…';
+   try{const d=await api('previewLemanaImport',{file_name:file.name,file_base64:await base64(file),timezone,overrides});if(!d.ok)throw Error(d.error);preview=d.preview;token=d.preview_token;render();message.textContent='Предпросмотр готов. Заявки ещё не созданы.'}catch(e){preview=null;token='';host.innerHTML='';message.textContent=e.message}finally{setBusy(false)}
+  }
+  root.querySelector('#lemanaCheck').onclick=check;
+  function render(){
+   const names={new:'Новая',existing:'Уже существует',possible:'Возможное совпадение',error:'Ошибка'};
+   host.innerHTML=`<div class="lemanaCounts">${[['total','Всего'],['new','Новые'],['existing','Существующие'],['possible','Совпадения'],['error','Ошибки']].map(([k,title])=>`<span>${title}<b>${preview.counts[k]}</b></span>`).join('')}</div><p class="muted">Источник: Лемана Про. Стоимость — за весь заказ. Состав работ не придумывается.</p><div class="lemanaRows">${preview.rows.map(r=>`<article class="card lemanaRow" data-row="${r.row}"><div class="lemanaRowTitle"><label><input type="checkbox" data-import-row="${r.row}" ${r.kind==='new'?'':'disabled data-blocked="1"'}>№ ${esc(r.number||'—')}</label><span>${names[r.kind]}</span></div><b>${esc(r.client)}</b><p>${esc(r.phone)}<br>${esc(r.address)}</p>${r.category?`<p>Категория: ${esc(r.category)}</p>`:''}${r.order?`<p>Стоимость заказа: <b>${money(r.order.amount)}</b></p><p>Поступление: ${esc(r.dates.created)}<br>Визит: ${esc(r.dates.scheduled||'Не назначен')}<br><small>${esc(r.dates.timezone)} · В БД: ${esc(r.order.created_at)}</small></p><p>Статус: ${esc(r.order.status)} · Мастер: ${esc(r.order.master_name||'Не назначен')}</p>`:''}${r.reason?`<p class="newOrderError">${esc(r.reason)}</p>`:''}${r.kind==='error'?`<details><summary>Проверить статус и мастера</summary><p>В отчёте: ${esc(r.rawStatus)} · ${esc(r.rawMaster||'Без мастера')}</p><label>Статус<select data-status-row="${r.row}"><option value="">По правилам сопоставления</option>${L.safeStatuses.map(s=>`<option ${overrides[r.row]?.status===s?'selected':''}>${s}</option>`).join('')}</select></label><label>Мастер<select data-master-row="${r.row}"><option value="auto">Сопоставить по имени</option><option value="" ${overrides[r.row]?.master_id===''?'selected':''}>Без мастера</option>${(state.masters||[]).filter(m=>m.is_active!==false).map(m=>`<option value="${esc(m.id)}" ${String(overrides[r.row]?.master_id)===String(m.id)?'selected':''}>${esc(m.full_name)}</option>`).join('')}</select></label><p class="muted">После выбора нажмите «Проверить файл» снова. Остальные ошибки исправьте в исходном файле.</p></details>`:''}</article>`).join('')}</div><div class="lemanaConfirm"><p id="lemanaSelection">Выбрано: 0</p><button class="primary" id="lemanaConfirm" type="button">Импортировать выбранные</button><p class="muted">Это действие создаст новые заявки. Существующие заявки не обновляются.</p></div>`;
+   host.querySelectorAll('[data-import-row]').forEach(el=>el.onchange=()=>host.querySelector('#lemanaSelection').textContent='Выбрано: '+host.querySelectorAll('[data-import-row]:checked').length);
+   host.querySelectorAll('[data-status-row],[data-master-row]').forEach(el=>el.onchange=()=>{const row=el.dataset.statusRow||el.dataset.masterRow;overrides[row]||={};if(el.dataset.statusRow){if(el.value)overrides[row].status=el.value;else delete overrides[row].status}else if(el.value==='auto')delete overrides[row].master_id;else overrides[row].master_id=el.value;token='';message.textContent='Настройки изменились. Нажмите «Проверить файл» снова.'});
+   host.querySelector('#lemanaConfirm').onclick=async()=>{
+    if(busy)return;const selected=[...host.querySelectorAll('[data-import-row]:checked')].map(el=>Number(el.dataset.importRow));if(!selected.length){message.textContent='Отметьте новые заявки для импорта';return}if(!token){message.textContent='Повторите проверку файла';return}
+    setBusy(true);message.textContent='Импортируем выбранные заявки…';
+    try{const d=await api('confirmLemanaImport',{preview_token:token,selected});if(!d.ok)throw Error(d.error);for(const o of d.orders||[]){if(!state.orders.some(x=>String(x.id)===String(o.id)))state.orders.unshift(o)}token='';host.innerHTML=`<div class="card"><h3>Импорт завершён</h3><p>Создано: <b>${d.created}</b> · Пропущено: <b>${d.skipped}</b> · Ошибки: <b>${d.errors}</b></p>${(d.rows||[]).filter(r=>r.reason).map(r=>`<p>№ ${esc(r.number)}: ${esc(r.reason)}</p>`).join('')}<button class="secondary" id="lemanaBack">К заявкам</button></div>`;host.querySelector('#lemanaBack').onclick=()=>{closeModal();show('orders')};message.textContent=''}catch(e){message.textContent=e.message}finally{setBusy(false)}
+   };
+  }
+ };
+ const previous=window.openOrder;
+ window.openOrder=function(id){const result=previous.apply(this,arguments),o=state.orders.find(x=>String(x.id)===String(id)),modal=document.querySelector('.modal');if(o?.lemana_import_meta&&modal&&!modal.querySelector('.lemanaMeta')){const box=document.createElement('section');box.className='card lemanaMeta';box.innerHTML=`<h3>Лемана Про</h3><p>Категория: ${esc(o.lemana_import_meta.category||'Не указана')}</p><p>Магазин: ${esc(o.lemana_import_meta.shop||'Не указан')}</p>${!o.work?'<p class="muted">Состав работ не указан в отчёте. Его можно добавить при редактировании заявки.</p>':''}`;modal.append(box)}return result};
+ const style=document.createElement('style');style.textContent='.lemanaImport{display:grid;gap:12px;max-width:100%;min-width:0}.lemanaImport>label,.lemanaRow details label{display:grid;gap:6px}.lemanaImport input,.lemanaImport select{max-width:100%;min-width:0}.lemanaCounts{display:flex;flex-wrap:wrap;gap:10px}.lemanaCounts span{display:grid;gap:3px;flex:1;min-width:85px;padding:10px;background:var(--card,#203044);border-radius:10px;font-size:12px}.lemanaCounts b{font-size:20px}.lemanaRow{overflow-wrap:anywhere}.lemanaRow p{font-size:13px;margin:8px 0}.lemanaRowTitle{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}.lemanaRowTitle label{display:flex;align-items:center;gap:8px}.lemanaRowTitle input{width:20px;height:20px}.lemanaRowTitle span{font-size:12px}.lemanaConfirm{padding:10px 0}.bosOrdersCreateActions{display:flex;gap:8px;flex-wrap:wrap}.bosOrdersCreateActions button{white-space:normal;max-width:100%}@media(max-width:520px){.bosOrdersCreateActions{width:100%;flex-direction:column}.bosOrdersCreateActions button{width:100%}}';document.head.append(style);
 })();
 
 ;

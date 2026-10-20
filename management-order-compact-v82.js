@@ -32,7 +32,7 @@ function phoneList(o){
  return out;
 }
 const phoneHtml=o=>{const phones=phoneList(o);return phones.length?`<div class="bosCompactPhone bosManagementPhones">${phones.map((item,index)=>`<div class="bosManagementPhoneRow"><a class="masterV126Phone" href="tel:${esc(item.phone)}">${esc(item.label)}</a><a class="secondary bosClientCallAction" href="tel:${esc(item.phone)}" aria-label="Позвонить клиенту ${index+1}">Позвонить</a></div>`).join('')}</div>`:'<small>Телефон не указан</small>'};
-const sourceLabel=o=>String(pick(o,'external_source','source','store','shop','store_name','shop_name')||'').trim();
+const sourceLabel=o=>window.BOS_ORDER_PAYROLL.sourceLabel(o);
 window.openOrder=function(id){
   const role=String(state?.user?.role||'');
   if(masterContext()||!managementRoles.has(role))return typeof previousOpenOrder==='function'?previousOpenOrder.apply(this,arguments):undefined;

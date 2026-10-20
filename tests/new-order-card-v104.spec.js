@@ -24,7 +24,7 @@ test('dispatcher new order card is grouped and touch friendly on mobile',async({
   await expect(form.locator('#bosPhone')).toHaveCount(1);
   await expect(form.locator('select#bosService.bosWorkSelect')).toHaveCount(1);
   await expect(form.locator('[name=order_type]')).toHaveCount(0);
-  expect(await form.locator('[name=source] option').allTextContents()).toEqual(expect.arrayContaining(['Авито','Руки','VK','Телефон','Рекомендация','Другое','Google Sheets']));
+  expect(await form.locator('[name=source] option').allTextContents()).toEqual(expect.arrayContaining(['Авито','Руки (Hands)','Лемана Про','VK','Телефон','Рекомендация','Другое','Google Sheets']));
   expect(await form.locator('[name=source]').evaluate(el=>el.getBoundingClientRect().height>=44)).toBe(true);
   await expect(form.locator(':scope > label')).toHaveCount(0);
 
@@ -75,10 +75,10 @@ for(const [source,role,width]of [['Авито','dispatcher',390],['Руки','ow
  await form.locator('[name=comment]').fill('Позвонить заранее');
  await form.getByRole('button',{name:'Создать заявку',exact:true}).click();await expect(form).toHaveCount(0);
  const saved=db.tables.orders.find(o=>o.client==='Новая '+source);
- expect(saved).toMatchObject({work,source,original_amount:1000,amount:1000,master_staff_id:'m',master_payout:source==='Руки'?552.5:600,wall_over_3m:true,wall_material:'Кирпич',possible_extra_work:true,comment:'Позвонить заранее'});
+ expect(saved).toMatchObject({work:work+' × 1 шт.',source,original_amount:1000,amount:1000,master_staff_id:'m',master_payout:source==='Руки'?552.5:600,wall_over_3m:true,wall_material:'Кирпич',possible_extra_work:true,comment:'Позвонить заранее'});
  expect(db.tables.orders).toHaveLength(3);
  await page.reload();await expect(page.locator('#authGate')).toBeHidden();
- expect(await page.evaluate(id=>state.orders.find(o=>String(o.id)===String(id)).work,saved.id)).toBe(work);
+ expect(await page.evaluate(id=>state.orders.find(o=>String(o.id)===String(id)).work,saved.id)).toBe(work+' × 1 шт.');
  expect(await page.evaluate(id=>state.orders.find(o=>String(o.id)===String(id)).source,saved.id)).toBe(source);
  await page.evaluate(id=>openOrder(id),saved.id);await expect(page.locator('#modalRoot')).toContainText('Навеска штор <без подрезки>');
 });

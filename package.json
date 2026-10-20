@@ -12,6 +12,9 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.10",
-    "@playwright/test": "1.55.1"
+    "@playwright/test": "1.55.1",
+    "esbuild": "0.25.12",
+    "fast-xml-parser": "5.11.2",
+    "fflate": "0.8.3"
   }
 }

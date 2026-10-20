@@ -51,7 +51,7 @@ for(const workText of ['Установка карниза','Своя работ�
   await order.locator('#bosAddWork').click();await order.locator('.bosWorkSelect').nth(1).selectOption('4');
   await order.locator('#bosAddPhone').click();await order.locator('.bosPhoneInput').nth(1).fill('9211112233');
   await order.getByRole('button',{name:'Создать заявку',exact:true}).click();await expect(order).toHaveCount(0);
-  expect(db.tables.orders.find(o=>o.client==='Клиент Авито')).toMatchObject({work:workText+'\nУстановка декоративного карниза длиной до 2,5 метров',phone:'+79995554433; +79211112233',source:'Авито'});
+  expect(db.tables.orders.find(o=>o.client==='Клиент Авито')).toMatchObject({work:workText+' × 1 шт.\nУстановка декоративного карниза длиной до 2,5 метров × 1 комплект',phone:'+79995554433; +79211112233',source:'Авито'});
   expect(externalCalls).toEqual([]);
   expect(errors).toEqual([]);
 });
