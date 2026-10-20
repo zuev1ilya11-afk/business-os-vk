@@ -86,7 +86,7 @@ function selectManagementDay(date){
  selected=date;document.querySelectorAll('.usTeamDay').forEach(el=>el.classList.toggle('selected',el.dataset.date===date));
 }
 function orderButtons(orders){
- return [...orders].sort((a,b)=>String(a.scheduled_time||a.time_slot||'').localeCompare(String(b.scheduled_time||b.time_slot||''))).map(o=>`<button type="button" class="secondary wide miniOrder" data-schedule-order="${esc(o.id)}">№ ${esc(String(o.external_id||'').startsWith('hands:')?String(o.external_id).slice(6):o.id)} · ${esc(hm(o.scheduled_time||o.time_slot)||'—')} · ${esc(o.work||'Заявка')}${o.client?` · ${esc(o.client)}`:''}</button>`).join('');
+ return [...orders].sort((a,b)=>String(a.scheduled_time||a.time_slot||'').localeCompare(String(b.scheduled_time||b.time_slot||''))).map(o=>`<button type="button" class="secondary wide miniOrder" data-schedule-order="${esc(o.id)}">№ ${esc(o.order_number||(String(o.external_id||'').startsWith('hands:')?String(o.external_id).slice(6):o.id))} · ${esc(hm(o.scheduled_time||o.time_slot)||'—')} · ${esc(o.work||'Заявка')}${o.client?` · ${esc(o.client)}`:''}</button>`).join('');
 }
 function masterDetails(m,date,orders){
  const r=rowFor(m,date),k=kind(r),os=orders.filter(o=>orderFor(o,m));

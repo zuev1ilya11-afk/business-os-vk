@@ -14,7 +14,7 @@ test('dispatcher new order card is grouped and touch friendly on mobile',async({
   const form=page.locator('#orderForm.newOrderForm');
   await expect(form).toBeVisible();
   await expect(page.locator('.newOrderTitle')).toHaveText('Новая заявка');
-  for(const heading of ['1. Клиент','2. Адрес','3. Работы','4. Визит и исполнитель','Стоимость','Комментарий']){
+  for(const heading of ['1. Основная информация','2. Клиент','3. Адрес','4. Работы','5. Дополнительно','Стоимость']){
     await expect(form.getByRole('heading',{name:heading,exact:true})).toBeVisible();
   }
 
@@ -24,21 +24,21 @@ test('dispatcher new order card is grouped and touch friendly on mobile',async({
   await expect(form.locator('#bosPhone')).toHaveCount(1);
   await expect(form.locator('select#bosService.bosWorkSelect')).toHaveCount(1);
   await expect(form.locator('[name=order_type]')).toHaveCount(0);
-  await expect(form.locator('.newOrderChannel')).toHaveCount(6);
-  expect(await form.locator('.newOrderChannel').evaluateAll(els=>els.every(el=>el.getBoundingClientRect().height>=44))).toBe(true);
+  expect(await form.locator('[name=source] option').allTextContents()).toEqual(expect.arrayContaining(['Авито','Руки','VK','Телефон','Рекомендация','Другое','Google Sheets']));
+  expect(await form.locator('[name=source]').evaluate(el=>el.getBoundingClientRect().height>=44)).toBe(true);
   await expect(form.locator(':scope > label')).toHaveCount(0);
 
   const sections=form.locator('.newOrderSection');
   await expect(sections.filter({hasText:'Клиент'}).locator('#bosPhone')).toHaveCount(1);
-  await expect(sections.filter({hasText:'3. Работы'}).locator('#bosService')).toHaveCount(1);
-  await expect(sections.filter({hasText:'4. Визит и исполнитель'}).locator('[name="scheduled_date"]')).toHaveCount(1);
-  await expect(sections.filter({hasText:'Стоимость'}).locator('[name="original_amount"]')).toHaveCount(1);
-  await expect(sections.filter({hasText:'Комментарий'}).locator('[name="comment"]')).toHaveCount(1);
+  await expect(sections.filter({hasText:'4. Работы'}).locator('#bosService')).toHaveCount(1);
+  await expect(sections.filter({has:page.getByRole('heading',{name:'Визит и условия',exact:true})}).last().locator('[name="scheduled_date"]')).toHaveCount(1);
+  await expect(sections.filter({has:page.getByRole('heading',{name:'Стоимость',exact:true})}).last().locator('[name="original_amount"]')).toHaveCount(1);
+  await expect(sections.filter({has:page.getByRole('heading',{name:'5. Дополнительно',exact:true})}).locator('[name="comment"]')).toHaveCount(1);
 
   const layout=await form.evaluate(node=>{
     const vw=document.documentElement.clientWidth;
     const controls=[...node.querySelectorAll('input:not([type="checkbox"]):not([type="radio"]),select,textarea,.newOrderActions button')]
-      .filter(el=>getComputedStyle(el).display!=='none')
+      .filter(el=>el.getClientRects().length&&getComputedStyle(el).visibility!=='hidden')
       .map(el=>{const r=el.getBoundingClientRect();return {height:r.height,left:r.left,right:r.right}});
     const visibleSections=[...node.querySelectorAll('.newOrderSection:not([hidden])')].map(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right}});
     return {
@@ -63,7 +63,7 @@ for(const [source,role,width]of [['Авито','dispatcher',390],['Руки','ow
  await page.evaluate(()=>openOrderForm());const form=page.locator('#orderForm');
  await expect(form).toHaveClass(/newOrderForm/);
  await form.locator('[name=client]').fill('Новая '+source);await form.locator('#bosPhone').fill('9991234567');
- await form.locator('[name=address]').fill('Адрес проверки');await form.getByRole('radio',{name:source,exact:true}).check();
+ await form.locator('[name=address]').fill('Адрес проверки');await form.locator('[name=source]').selectOption(source);
  await form.locator('[name=original_amount]').fill('1000');
  const work='Установка карниза — 2 шт.\nНавеска штор <без подрезки>';
  await form.locator('#bosService').selectOption('custom');await form.locator('.bosCustomWork:visible').fill(work);
@@ -89,9 +89,9 @@ test('empty services cannot save and a failed create preserves the complete draf
  await form.locator('[name=client]').fill('Повтор');await form.locator('#bosPhone').fill('9991234567');await form.locator('[name=address]').fill('Адрес');
  await form.locator('#bosService').selectOption('custom');await form.locator('.bosCustomWork:visible').fill('   ');await form.getByRole('button',{name:'Создать заявку',exact:true}).click();
  await expect(form.locator('#formMsg')).toContainText('Добавьте хотя бы одну работу');expect(db.tables.orders).toHaveLength(2);
- await form.locator('#bosService').selectOption('custom');await form.locator('.bosCustomWork:visible').fill('Нестандартный монтаж');await form.getByRole('radio',{name:'Телефон',exact:true}).check();await form.locator('[name=original_amount]').fill('1200');
+ await form.locator('#bosService').selectOption('custom');await form.locator('.bosCustomWork:visible').fill('Нестандартный монтаж');await form.locator('[name=source]').selectOption('Телефон');await form.locator('[name=original_amount]').fill('1200');
  await page.evaluate(()=>{const previous=window.api;let fail=true;window.api=async function(action,...args){if(action==='createOrder'&&fail){fail=false;return {ok:false,error:'Временная ошибка'}}return previous.call(this,action,...args)}});
  await form.getByRole('button',{name:'Создать заявку',exact:true}).click();await expect(form.locator('#formMsg')).toContainText('Временная ошибка');
- await expect(form.locator('.bosCustomWork:visible')).toHaveValue('Нестандартный монтаж');await expect(form.getByRole('radio',{name:'Телефон',exact:true})).toBeChecked();await expect(form.locator('[name=original_amount]')).toHaveValue('1200');
+ await expect(form.locator('.bosCustomWork:visible')).toHaveValue('Нестандартный монтаж');await expect(form.locator('[name=source]')).toHaveValue('Телефон');await expect(form.locator('[name=original_amount]')).toHaveValue('1200');
  await form.getByRole('button',{name:'Создать заявку',exact:true}).click();await expect(form).toHaveCount(0);expect(db.tables.orders.filter(o=>o.client==='Повтор')).toHaveLength(1);
 });

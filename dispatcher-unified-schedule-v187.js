@@ -33,7 +33,7 @@ function available(m,date,t){const r=scheduleFor(m,date);if(!r)return true;if(r.
 function masterLabel(m,date){const r=scheduleFor(m,date);if(!r)return 'График не задан';if(r.is_working===false)return 'Выходной';return `${String(r.work_start||'09:00').slice(0,5)}–${String(r.work_end||'18:00').slice(0,5)}`}
 function visibleMasters(){const f=document.getElementById('bosOrderMaster')?.value||'',free=document.getElementById('dbV21FreeToggle')?.classList.contains('primary');return (st()?.masters||[]).filter(m=>(!f||String(m.full_name||'')===f)&&(!free||masterStats(m,boardDate()).free>0))}
 function dayAssigned(date){return (st()?.orders||[]).filter(active).filter(o=>dateOf(o)===date&&!unassigned(o))}
-function noOf(o){const x=String(o?.external_id||'');return x.startsWith('hands:')?x.slice(6):String(o?.id||'')}
+function noOf(o){const x=String(o?.external_id||'');return o?.order_number?String(o.order_number):x.startsWith('hands:')?x.slice(6):String(o?.id||'')}
 function statusLabel(o){if(o?.reschedule_requested)return 'Перенос';if(o?.master_workflow_stage==='started')return 'В работе';if(o?.master_workflow_stage==='departed')return 'Выехал';return String(o?.status||'В работе')}
 function orderInterval(o){const r=slotRange(o);return r||{start:mins(timeOf(o))||0,end:(mins(timeOf(o))||0)+60,slots:2}}
 function startsAt(o,t){const start=orderInterval(o).start,x=mins(t);return start>=x&&start<x+STEP}

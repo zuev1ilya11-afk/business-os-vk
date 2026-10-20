@@ -30,7 +30,7 @@ function scheduleTs(o){const d=dateOf(o);return d?Date.parse(`${d}T${timeOf(o)||
 function scheduleEndTs(o){const start=scheduleTs(o),r=window.BOS_SCHEDULE_CONTRACT.range(o);return Number.isFinite(start)&&r?start+r.duration*60000:Infinity}
 const reportOverdue=(o,now=Date.now())=>active(o)&&!reportUploaded(o)&&Number.isFinite(scheduleEndTs(o))&&now>=scheduleEndTs(o)+90*60000;
 const currentPending=(o,now)=>active(o)&&!reportUploaded(o)&&scheduleTs(o)<=now;
-function orderNo(o){const ext=String(o?.external_id||'');return ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')}
+function orderNo(o){const ext=String(o?.external_id||'');return o?.order_number?String(o.order_number):ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')}
 function step(o){
  if(!active(o))return'Заявка завершена';if(reportRejected(o))return'Исправить отчёт';if(reportUploaded(o))return'Отчёт на проверке';
  if(workDone(o))return'Заполнить отчёт';if(agreementDone(o))return stageOf(o)==='departed'?'Начать работу':'Подтвердить выезд';

@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "buildId": "0a232ad522e3c45ddebd",
+  "capturedAt": "2026-10-20T13:39:38.447Z",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "storage": "PGlite/Postgres, real migration and mini-app-api via test adapter",
+  "orderId": 1,
+  "checks": [
+    "create",
+    "reload",
+    "SQL duplicate conflict with preserved form",
+    "assigned master read",
+    "server restart and read from persisted Postgres"
+  ],
+  "pageErrors": []
+}

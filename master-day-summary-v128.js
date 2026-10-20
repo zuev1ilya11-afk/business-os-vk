@@ -10,7 +10,7 @@ const num=v=>{const n=Number(v);return Number.isFinite(n)?n:0};
 const dateOf=o=>String(o?.scheduled_date||'').slice(0,10);
 const localIso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const today=()=>window.BOS_SALARY_PERIODS?.day()||localIso(new Date());
-const orderNo=o=>{const ext=String(o?.external_id||'');return ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')};
+const orderNo=o=>{const ext=String(o?.external_id||'');return o?.order_number?String(o.order_number):ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')};
 const moneyv=v=>typeof money==='function'?money(v):`${Number(v||0).toLocaleString('ru-RU',{maximumFractionDigits:2})} ₽`;
 
 function mine(){

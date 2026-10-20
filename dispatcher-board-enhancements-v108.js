@@ -49,7 +49,7 @@ function sortVisibleList(){
   for(const card of sorted)host.appendChild(card);
 }
 function completedCard(o){
-  const number=String(o?.external_id||'').startsWith('hands:')?String(o.external_id).slice(6):String(o?.id||'');
+  const number=o?.order_number?String(o.order_number):String(o?.external_id||'').startsWith('hands:')?String(o.external_id).slice(6):String(o?.id||'');
   return `<button type="button" class="dbOrderCard compact done bosV108Completed" data-bos-completed="1" data-order-id="${escv(o.id)}" onclick="selectDispatchBoardOrder('${escv(o.id)}')"><span class="dbCardTop"><b>№ ${escv(number)}</b><small>${escv(timeOf(o)||'')}</small></span><strong>${escv(o.client||'Клиент')}</strong><span class="dbCardFlags"><span class="dbFlag">Выполнена</span></span></button>`;
 }
 function injectCompleted(){

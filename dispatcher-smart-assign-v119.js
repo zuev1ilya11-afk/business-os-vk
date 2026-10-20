@@ -138,6 +138,7 @@ function enhanceOrderForm(){
   const refresh=()=>requestAnimationFrame(()=>renderFormSmart(box,form));
   date.addEventListener('change',refresh);slot.addEventListener('change',refresh);
   const work=form.querySelector('#bosWorkStack')||service;
+  form.querySelector('#bosWorkDescription')?.addEventListener('input',refresh);
   work?.addEventListener('change',refresh);work?.addEventListener('input',refresh);
   refresh();
 }

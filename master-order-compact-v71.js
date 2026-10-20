@@ -3,7 +3,7 @@
 if(window.BOS_MASTER_ORDER_COMPACT_V71)return;window.BOS_MASTER_ORDER_COMPACT_V71=true;
 const isMasterMode=()=>String(state.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&isMasterPreview())||(typeof liveMasterMode==='function'&&liveMasterMode());
 const masterOrders=()=>typeof ownOrders==='function'?ownOrders():(state.orders||[]);
-const displayNo=o=>{const ext=String(o?.external_id||'');return ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')};
+const displayNo=o=>{const ext=String(o?.external_id||'');return o?.order_number?String(o.order_number):ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')};
 const dt=o=>{const d=String(o?.scheduled_date||'').slice(0,10)||'Дата не назначена';const t=String(o?.scheduled_time||o?.time_slot||'').slice(0,5)||'Время не назначено';return `${d} · ${t}`};
 const work=o=>String(o?.work||'Работа не указана').trim();
 const pay=o=>window.BOS_ORDER_PAYROLL?.directMaster(o)??Number(o?.master_payout||0);

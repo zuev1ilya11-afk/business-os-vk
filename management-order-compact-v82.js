@@ -5,9 +5,9 @@ const previousOpenOrder=window.openOrder;
 const previousSaveQuickOrder=window.saveQuickOrder;
 const masterContext=()=>String(state?.user?.role||'')==='master'||(typeof isMasterPreview==='function'&&!!isMasterPreview())||(typeof liveMasterMode==='function'&&!!liveMasterMode());
 const pick=(o,...keys)=>{for(const k of keys){const v=o?.[k];if(v!==undefined&&v!==null&&String(v).trim()!=='')return v}return ''};
-const displayNo=o=>{const ext=String(o?.external_id||'');return ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')};
+const displayNo=o=>{const ext=String(o?.external_id||'');return o?.order_number?String(o.order_number):ext.startsWith('hands:')?ext.slice(6):String(o?.id||'')};
 const dateTime=o=>{const d=String(o?.scheduled_date||o?.date||'').slice(0,10);const t=String(o?.scheduled_time||o?.time||o?.time_slot||'').slice(0,5);return [d||'Дата не назначена',t||'Время не назначено'].join(' · ')};
-const received=o=>{const raw=String(o?.created_at||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:'—'};
+const received=o=>{const raw=String(o?.received_date||o?.created_at||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:'—'};
 const unit=u=>({PIECE:'шт.',PCS:'шт.',FIX:'шт.',METER:'м',METERS:'м',KM:'км'}[String(u||'').toUpperCase()]||String(u||''));
 const works=o=>String(o?.work||o?.works||o?.work_description||o?.service||'Работа не указана').split(/\n+/).map(x=>x.trim()).filter(Boolean);
 function parseWork(x){const clean=String(x||'').trim();const m=clean.match(/^(.*?)\s*[×x]\s*([\d.,]+)\s*(.*?)\s*$/i);if(!m)return{title:clean,qty:''};return{title:m[1].trim(),qty:`${m[2]}${m[3]?' '+unit(m[3]):''}`}}
@@ -24,7 +24,7 @@ const visibleComment=o=>{
 const commentHtml=o=>{const text=visibleComment(o);if(!text)return'';const long=text.length>180||text.split('\n').length>3;return `<section class="bosOrderComment"><b>Комментарий</b>${long?`<details><summary><span class="bosCommentPreview">${esc(text.slice(0,180))}…</span><span class="bosExpand">Показать полностью</span><span class="bosCollapse">Свернуть комментарий</span></summary><p>${esc(text)}</p></details>`:`<p>${esc(text)}</p>`}</section>`};
 const routeAddress=o=>{const address=String(o?.address||'').trim();if(!address)return'';const city=String(o?.city||'').trim();return city&&!address.toLowerCase().includes(city.toLowerCase())?`${city}, ${address}`:address};
 const addressHtml=o=>{const address=String(o?.address||'').trim();if(!address)return'<b>Адрес не указан</b>';const href=`https://yandex.ru/maps/?text=${encodeURIComponent(routeAddress(o))}`;return `<b><a class="bosHandsAddressLink" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(address)}</a></b>`};
-const apartmentHtml=o=>{const flat=String(o?.apartment||'').trim().replace(/^(?:квартира|кв\.?)\s*/iu,'');const bits=[flat?'кв. '+flat:'',o?.floor?'этаж '+o.floor:'',o?.entrance?'подъезд '+o.entrance:''].filter(Boolean);return bits.length?`<div class="bosApartment">${bits.map(esc).join(' · ')}</div>`:''};
+const apartmentHtml=o=>{const flat=String(o?.apartment||'').trim().replace(/^(?:квартира|кв\.?)\s*/iu,'');const bits=[flat?'кв. '+flat:'',o?.floor?'этаж '+o.floor:'',o?.entrance?'подъезд '+o.entrance:'',o?.intercom?'домофон '+o.intercom:''].filter(Boolean);return bits.length?`<div class="bosApartment">${bits.map(esc).join(' · ')}</div>`:''};
 function phoneList(o){
  const raw=String(o?.phone||o?.client_phone||'').trim();if(!raw)return[];
  const hits=raw.match(/(?:\+?7|8)?[\s(.-]*\d{3}[\s).-]*\d{3}[\s.-]*\d{2}[\s.-]*\d{2}/g)||[],source=hits.length?hits:[raw],seen=new Set(),out=[];
@@ -45,7 +45,7 @@ window.openOrder=function(id){
   openModal(`<div class="bosManageOrder">
     <div class="bosManageHead">
       <div class="bosManageTitle"><h2 class="bosOpsOrderTitle">№ ${esc(displayNo(o))}</h2><small>Поступила ${esc(received(o))}</small></div>
-      <div class="bosManageMoney"><strong>Сумма: ${money(o.amount)}</strong><span>Мастеру: ${money(pay)}</span></div>
+      <div class="bosManageMoney"><strong>Сумма: ${o.amount_confirmed===false?'Стоимость не указана':money(o.amount)}</strong><span>Мастеру: ${o.amount_confirmed===false?'Не рассчитано':money(pay)}</span></div>
     </div>
     <div class="bosManageMeta"><span class="status info">${esc(o.status||'В работе')}</span>${source?`<span class="bosSourceChip">${esc(source)}</span>`:''}</div>
     ${window.BOS_MANUAL_COMPLETION?.history(o)||''}
@@ -58,8 +58,8 @@ window.openOrder=function(id){
       <h2 class="bosQuickEditLabel">Визит</h2>
       <div class="bosOrderControls"><div><label for="quickScheduledDate">Дата заявки</label><input id="quickScheduledDate" type="date" value="${esc(date)}"></div><div><label for="quickScheduledTime">Время</label><input id="quickScheduledTime" type="time" value="${esc(time)}"></div></div>
       <div class="bosOrderControls"><div><label for="quickStatus">Статус</label><select id="quickStatus">${STATUSES.map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}</select></div><div><label for="quickMaster">Мастер</label><select id="quickMaster"><option value="">Не назначен</option>${state.masters.map(m=>`<option value="${esc(m.vk_user_id)}" ${String(o.master_vk_id||'')===String(m.vk_user_id)?'selected':''}>${esc(m.full_name)}</option>`).join('')}</select></div></div>
-      <div class="bosOrderFinance"><div class="bosOrderMoney"><small>Сумма</small><b>${money(o.amount)}</b></div><div class="bosOrderMoney"><small>Мастеру</small><b id="payoutPreview">${money(pay)}</b></div></div>
-      ${window.BOS_ORDER_PAYROLL?.isDirect(o)?`<div class="bosOrderMoney bosCompanyPool" data-payroll-company><small>${esc(o.manual_completion_history?.length&&!o.report_uploaded_at?window.BOS_ORDER_PAYROLL.label(o).replace('отчёта','заявки'):window.BOS_ORDER_PAYROLL.label(o))} · Компании из основной суммы</small><b>${money(window.BOS_ORDER_PAYROLL.directCompany(o))}</b><p class="muted">Допработы учитываются отдельно. Это доля компании, не чистая прибыль.</p></div>`:''}
+      <div class="bosOrderFinance"><div class="bosOrderMoney"><small>Сумма</small><b>${o.amount_confirmed===false?'Стоимость не указана':money(o.amount)}</b></div><div class="bosOrderMoney"><small>Мастеру</small><b id="payoutPreview">${o.amount_confirmed===false?'Не рассчитано':money(pay)}</b></div></div>
+      ${window.BOS_ORDER_PAYROLL?.isDirect(o)?`<div class="bosOrderMoney bosCompanyPool" data-payroll-company><small>${esc(o.manual_completion_history?.length&&!o.report_uploaded_at?window.BOS_ORDER_PAYROLL.label(o).replace('отчёта','заявки'):window.BOS_ORDER_PAYROLL.label(o))} · Компании из основной суммы</small><b>${o.amount_confirmed===false?'Не рассчитано':money(window.BOS_ORDER_PAYROLL.directCompany(o))}</b><p class="muted">Допработы учитываются отдельно. Это доля компании, не чистая прибыль.</p></div>`:''}
       <button class="primary wide" type="button" onclick="saveQuickOrder('${esc(o.id)}')">Сохранить</button>
     </section>
     <button class="secondary wide bosManageFullEdit" type="button" onclick="openOrderForm('${esc(o.id)}')">Редактировать заявку</button>
@@ -69,7 +69,7 @@ window.openOrder=function(id){
   const modal=document.querySelector('#modalRoot .modal');modal?.classList.add('bosManageOrderModal');
   const close=modal?.querySelector('.modalClose');if(close){close.setAttribute('aria-label','Закрыть заявку');modal.querySelector('.bosManageHead')?.appendChild(close)}
   const master=document.querySelector('#quickMaster');
-  if(master)master.addEventListener('change',()=>{const out=document.querySelector('#payoutPreview');if(out)out.textContent=money(master.value?(window.BOS_ORDER_PAYROLL?.directMaster(o)??(o.master_payout||payout(o.amount))):0)});
+  if(master)master.addEventListener('change',()=>{const out=document.querySelector('#payoutPreview');if(out)out.textContent=o.amount_confirmed===false?'Не рассчитано':money(master.value?(window.BOS_ORDER_PAYROLL?.directMaster(o)??(o.master_payout||payout(o.amount))):0)});
   window.BOS_HANDS_RENDER_ORDER?.(id);
   window.BOS_OPS_CONTACT_STATUS?.refresh?.();
 };

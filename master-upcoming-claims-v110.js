@@ -31,6 +31,7 @@ function linkedOrder(c){
   return (state?.orders||[]).find(o=>String(o?.supabase_id||o?.id)===id)||(state?.supabaseOrders||[]).find(o=>String(o?.id)===id)||null;
 }
 function orderNo(o,c){
+  if(o?.order_number)return String(o.order_number);
   const ext=String(o?.external_id||'');
   if(ext.startsWith('hands:'))return ext.slice(6);
   return String(o?.id||c?.order_id||'');

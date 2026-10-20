@@ -21,7 +21,7 @@ const unassigned=o=>active(o)&&!o?.master_staff_id&&!o?.master_id&&!o?.master_vk
 const mins=t=>{const m=String(t||'').match(/^(\d{1,2}):(\d{2})$/);return m?Number(m[1])*60+Number(m[2]):NaN};
 const hhmm=n=>{n=Math.max(0,Math.min(24*60,n));const h=Math.floor(n/60),m=n%60;return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`};
 const localYmd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-const noOf=o=>{const x=String(o?.external_id||'');return x.startsWith('hands:')?x.slice(6):String(o?.id||'')};
+const noOf=o=>{const x=String(o?.external_id||'');return o?.order_number?String(o.order_number):x.startsWith('hands:')?x.slice(6):String(o?.id||'')};
 const slotRange=o=>window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187?.slotRange(o)||(()=>{const start=mins(timeOf(o));return Number.isFinite(start)?{start,end:start+60,slots:2}:null})();
 const rangeText=(start,slots)=>window.BOS_UNIFIED_DISPATCH_SCHEDULE_V187?.rangeText(start,slots)||`${hhmm(start)}–${hhmm(start+Math.max(1,slots)*STEP)}`;
 const orderInterval=o=>slotRange(o)||{start:0,end:60,slots:2};

@@ -43,7 +43,7 @@ for(const workText of ['Установка карниза','Своя работ�
   await expect(order.locator('#bosPhone')).toHaveValue('9995554433');
   await expect(order.locator('[name="address"]')).toHaveValue('Лиговский 10');
   await expect(order.locator('#bosService option:checked')).toHaveText(workText);
-  await expect(order.getByRole('radio',{name:'Авито',exact:true})).toBeChecked();
+  await expect(order.locator('[name=source]')).toHaveValue('Авито');
   expect(await order.locator('[name="comment"]').inputValue()).toContain('Работа из Авито: '+workText);
   await expect(order.locator('[name="comment"]')).toHaveValue(/Нужно установить завтра/);
 

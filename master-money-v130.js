@@ -47,7 +47,7 @@ function mondayOf(value=new Date()){
 }
 function addDays(iso,n){const d=new Date(`${iso}T12:00:00`);d.setDate(d.getDate()+n);return localIso(d)}
 function periodOrders(done,start,end){return done.filter(o=>{const d=completedDay(o);return d&&d>=start&&d<=end})}
-function orderNo(o){const ext=String(o?.external_id||'');return ext.startsWith('hands:')?ext.slice(6):String(o?.id||'—')}
+function orderNo(o){const ext=String(o?.external_id||'');return o?.order_number?String(o.order_number):ext.startsWith('hands:')?ext.slice(6):String(o?.id||'—')}
 const calendar=window.BOS_SALARY_PERIODS;
 let selection={kind:'week',anchor:null,start:'',end:''},selectionOwner='',periodError='',rollTimer;
 let draftRange={start:'',end:''};

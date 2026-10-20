@@ -25,7 +25,7 @@ function weekStart(){const d=now();d.setHours(12,0,0,0);const day=d.getDay()||7;
 const doneThisWeek=o=>isCompleted(o)&&!isClaim(o)&&(!completionDate(o)||completionDate(o)>=weekStart());
 const archived=o=>!isClaim(o)&&(isCancelled(o)||(isCompleted(o)&&!!completionDate(o)&&completionDate(o)<weekStart()));
 const current=o=>isNew(o)||isWorking(o);
-const orderNo=o=>{const x=String(o?.external_id||'');return x.startsWith('hands:')?x.slice(6):String(o?.id||'')};
+const orderNo=o=>{const x=String(o?.external_id||'');return o?.order_number?String(o.order_number):x.startsWith('hands:')?x.slice(6):String(o?.id||'')};
 const pay=o=>{const direct=window.BOS_ORDER_PAYROLL?.directMaster(o);if(direct!=null)return direct;const raw=o?.amount;if(raw!==null&&raw!==undefined&&raw!==''){const n=Number(raw);if(Number.isFinite(n))return n*.85*.65}const n=Number(o?.master_payout||0);return Number.isFinite(n)?n:0};
 const timeOf=o=>String(o?.scheduled_time||o?.time_slot||'').slice(0,5)||'—';
 function escv(v){return typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -59,8 +59,8 @@ function card(o){
   <div class="masterV125Top"><div class="masterV125When"><strong>${escv(timeOf(o))}</strong><span>${escv(dateLabel(scheduledDate(o)))}</span></div><span class="masterV125Stage">${escv(workflowLabel(o))}</span></div>
   <div class="masterV125Title"><b>№ ${escv(orderNo(o))}</b><strong>${escv(o?.client||'Клиент не указан')}</strong></div>
   <div class="masterV125Work">${escv(workSummary(o))}</div>
-  ${window.BOS_ORDER_PAYROLL?.masterBreakdown(o)?`<div class="masterV125Cost" data-master-order-cost><span>Полная стоимость заявки</span><b>${moneyv(window.BOS_ORDER_PAYROLL.masterBreakdown(o).total)}</b></div>`:''}
-  <div class="masterV125Pay" data-master-order-payout><span>Выплата мастеру</span><b>${moneyv(window.BOS_ORDER_PAYROLL?.masterBreakdown(o)?.masterTotal??pay(o))}</b></div>
+  ${window.BOS_ORDER_PAYROLL?.masterBreakdown(o)?`<div class="masterV125Cost" data-master-order-cost><span>Полная стоимость заявки</span><b>${o.amount_confirmed===false?'Стоимость не указана':moneyv(window.BOS_ORDER_PAYROLL.masterBreakdown(o).total)}</b></div>`:''}
+  <div class="masterV125Pay" data-master-order-payout><span>Выплата мастеру</span><b>${o.amount_confirmed===false?'Не рассчитана':moneyv(window.BOS_ORDER_PAYROLL?.masterBreakdown(o)?.masterTotal??pay(o))}</b></div>
   <div class="masterV125Actions">${href&&!preview?`<a class="secondary" href="tel:${escv(href)}">Позвонить</a>`:''}<button type="button" class="primary" onclick="openOrder('${escv(o.id)}')">Открыть заявку</button></div>
  </article>`;
 }
@@ -70,7 +70,7 @@ function emptyText(){return({current:'Текущих заявок нет',new:'�
 const previousOrders=pages.orders;
 pages.orders=function(){
  if(!masterMode())return previousOrders();
- const all=own().slice(),filtered=sortOrders(all.filter(o=>matches(o))),list=filtered.filter(o=>!search||[o.id,o.external_id,o.address,o.client,o.work,workflowLabel(o)].join(' ').toLowerCase().includes(search.toLowerCase())),c=counts(all);
+ const all=own().slice(),filtered=sortOrders(all.filter(o=>matches(o))),list=filtered.filter(o=>!search||[o.id,o.order_number,o.external_id,o.address,o.client,o.work,workflowLabel(o)].join(' ').toLowerCase().includes(search.toLowerCase())),c=counts(all);
  return `<div class="masterSimple masterOrdersDense masterOrdersV125"><div class="masterV125Header"><div><h2>Мои заявки</h2><div class="muted">Текущие: ${c.current} · Всего: ${all.length}</div></div></div>${filters(all)}<input type="search" id="masterOrdersSearch" aria-label="Поиск в моих заявках" placeholder="Номер, адрес или работа" value="${escv(search)}">${dayFilters(filtered)}${list.length?grouped(list):`<div class="masterEmpty">${search?'По вашему запросу заявок нет':emptyText()}</div>`}</div>`;
 };
 

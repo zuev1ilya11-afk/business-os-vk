@@ -15,7 +15,7 @@
  const format=(k,v)=>v===null?'—':k==='delta'?(v>0?'+':'')+v+'%':['total','completed','cancelled','quantity'].includes(k)?String(v):currency(v);
  const selected=(a,b)=>a===b?' selected':'';
  const button=(attr,value,label,active=false)=>`<button type="button" class="${active?'primary':'secondary'}" ${attr}="${esc(value)}" aria-pressed="${active}">${label}</button>`;
- const name=o=>String(o.external_id||'').startsWith('hands:')?String(o.external_id).slice(6):String(o.id);
+ const name=o=>o?.order_number?String(o.order_number):String(o.external_id||'').startsWith('hands:')?String(o.external_id).slice(6):String(o.id);
  function resetExpenses(){expenseGeneration++;expenseState={key:'',ready:false,rows:[],error:'',loading:false};if(document.querySelector('[data-fin-expense-dialog]'))closeModal()}
  function expenseScope(){const p=range(),previous=F.previous(p,ui.period);return {start:previous?.start||p.start,end:p.end}}
  async function expenseRequest(action,payload){
