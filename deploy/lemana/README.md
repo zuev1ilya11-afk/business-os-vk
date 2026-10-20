@@ -16,6 +16,8 @@ Seven entrypoint hashes and existing payroll hashes are checked. Only mini-app-a
 
 One additive migration: `package/migration.sql`, based on `20261020180000_lemana_import_work_items.sql`, with the RU payout persistence compatibility described above. Adds nullable `orders.work_items` and `lemana_import_meta`, array constraint, identity helper, number guard and create-only service RPC. No backfill, UPDATE, deletion, employee creation, report approval or payment operation.
 
+The number-guard trigger function explicitly revokes direct execution from `service_role` as well as PUBLIC, anon and authenticated. The RU database grants that permission by default on new functions; the original package therefore correctly stopped at `LEMANA_TARGET_MISMATCH` and rolled back. This correction keeps the same strict target fingerprint and changes only the new trigger function's ACL, without altering database-wide default privileges. Regression tests run the installer's complete guarded transaction with the observed default grants in both PGlite and real PostgreSQL.
+
 The installer verifies the exact existing manual-intake schema, PostgreSQL 17, function security/ownership/access grants and all new schema fingerprints. It creates a temporary **persistent write barrier** while switching runtimes (`pause.sql`); after both runtimes pass verification, `resume.sql` removes it. The barrier affects only feature-dependent rows. It stores no customer data.
 
 ## Installation

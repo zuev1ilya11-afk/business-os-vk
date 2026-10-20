@@ -39,7 +39,7 @@ jobs:
         run: python3 -m unittest discover -s deploy/lemana -p 'test_*.py' -v
       - name: SQL and original RU payroll parity
         run: node --test deploy/lemana/test_database.cjs deploy/lemana/test_payroll.cjs deploy/lemana/test_hands_boundary.cjs
-      - name: Independent PostgreSQL sessions and rollback write barrier
+      - name: RU default grants, guarded migration, concurrent sessions and rollback barrier
         env:
           BOS_TEST_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
         run: bash deploy/lemana/test_concurrency.sh

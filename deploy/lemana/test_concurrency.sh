@@ -11,12 +11,16 @@ trap cleanup EXIT
 "${runner[@]}" createdb -U postgres "$dbname"
 psql=("${runner[@]}" psql -X -q -U postgres -d "$dbname" -v ON_ERROR_STOP=1)
 node - <<'JS' > "$tmpdir/setup.sql"
-const fs=require('node:fs'),{schema}=require('./tests/helpers/lemana-schema.cjs');
+const fs=require('node:fs'),{execFileSync}=require('node:child_process'),{schema}=require('./tests/helpers/lemana-schema.cjs');
 console.log(schema.replace(/create role (\w+);/g,(_,role)=>`do $$begin create role ${role}; exception when duplicate_object then null; end$$;`));
 console.log(fs.readFileSync('supabase/migrations/20261020140000_manual_order_intake.sql','utf8'));
-console.log(fs.readFileSync('deploy/lemana/package/migration.sql','utf8'));
+// Reproduce the observed RU defaults in this disposable database only, then run
+// the installer's complete guarded transaction, not just its inner migration.
+console.log('ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO postgres,anon,authenticated,service_role;');
+console.log(execFileSync('python3',['-c',"import sys;sys.path.insert(0,'deploy/lemana/package');import database as d;print(d.migration_transaction(d.resource('migration.sql')))"],{encoding:'utf8',env:{...process.env,PYTHONDONTWRITEBYTECODE:'1'}}));
 JS
 "${psql[@]}" < "$tmpdir/setup.sql"
+echo 'PASS: guarded migration matches exact target schema under RU default function grants'
 node - <<'JS' > "$tmpdir/call.sql"
 const {row,owner}=require('./tests/helpers/lemana-schema.cjs');
 console.log(`begin; select bos_import_lemana_order('${owner}',$row$${JSON.stringify(row())}$row$::jsonb)->>'kind'; select pg_sleep(1); commit;`);

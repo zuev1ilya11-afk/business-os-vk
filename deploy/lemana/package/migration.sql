@@ -35,7 +35,7 @@ begin
  return new;
 end $$;
 -- Trigger must see rows hidden by city RLS; only the trigger invokes it.
-revoke all on function public.bos_lemana_number_guard() from public,anon,authenticated;
+revoke all on function public.bos_lemana_number_guard() from public,anon,authenticated,service_role;
 create trigger aa_bos_lemana_number_guard before insert or update of order_number,source,external_source,external_id
  on public.orders for each row execute function public.bos_lemana_number_guard();
 

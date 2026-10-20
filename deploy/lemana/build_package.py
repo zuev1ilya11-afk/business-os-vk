@@ -49,6 +49,11 @@ def backend_payload():
  for name in ['order-work-items.js','lemana-import.js','vendor/lemana-xlsx.js','vendor/lemana-xlsx-LICENSES.txt','supabase/functions/_shared/lemana-api.ts']:
   data['mini-app-api/'+name]=source(SOURCE,name);before['mini-app-api/'+name]=None
  migration=source(SOURCE,'supabase/migrations/20261020180000_lemana_import_work_items.sql')
+ # RU default privileges grant service_role EXECUTE on new functions. This
+ # trigger-only function must have the same explicit ACL on both DB baselines.
+ migration=replace_once(migration,
+  b'revoke all on function public.bos_lemana_number_guard() from public,anon,authenticated;',
+  b'revoke all on function public.bos_lemana_number_guard() from public,anon,authenticated,service_role;')
  # API calls the original RU shared calculate(); RPC persists that service-only result.
  migration=replace_once(migration,b'v.master_payout,0,0,',b'v.master_payout,v.manager_payout,v.dispatcher_payout,')
  marker=b" then raise exception 'INVALID_IMPORT_ROW' using errcode='22023'; end if;"

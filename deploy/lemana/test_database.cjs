@@ -14,6 +14,19 @@ test('guarded migration preserves every old column/value and requires exact prer
  const after=(await db.query("select to_jsonb(o)-'work_items'-'lemana_import_meta' x from orders o")).rows;assert.deepEqual(after,before);
  await assert.rejects(db.exec(tx),/LEMANA_BASELINE_CHANGED/);await db.exec('ROLLBACK');
 }finally{await db.close()}});
+test('guarded migration and pause retain exact ACLs with RU default function grants',async()=>{const db=await setup();try{
+ await db.exec('ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO postgres,anon,authenticated,service_role');
+ const defaults=(await db.query('select to_jsonb(d) x from pg_default_acl d')).rows;
+ const before=(await db.query('select to_jsonb(o) x from orders o')).rows;
+ await db.exec(tx);
+ assert.deepEqual(await metadata(db,'schema.sql'),JSON.parse(read('schema-expected.json')));
+ const guard=(await db.query("select has_function_privilege('service_role','public.bos_lemana_number_guard()','EXECUTE') allowed")).rows[0];
+ assert.equal(guard.allowed,false);
+ assert.deepEqual((await db.query("select to_jsonb(o)-'work_items'-'lemana_import_meta' x from orders o")).rows,before);
+ await db.exec(read('pause.sql'));assert.deepEqual(await metadata(db,'pause-schema.sql'),JSON.parse(read('pause-expected.json')));
+ await db.exec(read('resume.sql'));assert.deepEqual(await metadata(db,'schema.sql'),JSON.parse(read('schema-expected.json')));
+ assert.deepEqual((await db.query('select to_jsonb(d) x from pg_default_acl d')).rows,defaults);
+}finally{await db.close()}});
 test('partial schema and late failure roll back without touching old rows',async()=>{for(const partial of [true,false]){const db=await setup();try{
  if(partial)await db.exec('ALTER TABLE orders ADD COLUMN work_items jsonb');
  await assert.rejects(db.exec(partial?tx:tx.replace("NOTIFY pgrst, 'reload schema';",'SELECT missing_function();')));await db.exec('ROLLBACK');
