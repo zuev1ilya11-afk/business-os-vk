@@ -1,0 +1,84 @@
+{
+  "columns": [
+    {
+      "name": "lemana_import_meta",
+      "type": "jsonb",
+      "nullable": "YES",
+      "default": null
+    },
+    {
+      "name": "work_items",
+      "type": "jsonb",
+      "nullable": "YES",
+      "default": null
+    }
+  ],
+  "functions": [
+    {
+      "name": "bos_import_lemana_order",
+      "args": "p_actor uuid, p_order jsonb",
+      "result": "jsonb",
+      "md5": "7c670013facb8c63329af4639bb2042f",
+      "language": "plpgsql",
+      "security_definer": true,
+      "volatility": "v",
+      "parallel": "u",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "owner": "postgres",
+      "anon": false,
+      "authenticated": false,
+      "service_role": true
+    },
+    {
+      "name": "bos_lemana_number_guard",
+      "args": "",
+      "result": "trigger",
+      "md5": "5dde63dbd2d923b27d21d4bcec25b9e7",
+      "language": "plpgsql",
+      "security_definer": true,
+      "volatility": "v",
+      "parallel": "u",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "owner": "postgres",
+      "anon": false,
+      "authenticated": false,
+      "service_role": false
+    },
+    {
+      "name": "bos_order_identity_numbers",
+      "args": "o orders",
+      "result": "text[]",
+      "md5": "e0ac61cd00c496ccea03163ee997406e",
+      "language": "sql",
+      "security_definer": false,
+      "volatility": "i",
+      "parallel": "s",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "owner": "postgres",
+      "anon": true,
+      "authenticated": true,
+      "service_role": true
+    }
+  ],
+  "constraints": [
+    {
+      "name": "orders_work_items_array",
+      "valid": true,
+      "definition": "CHECK (((work_items IS NULL) OR ((jsonb_typeof(work_items) = 'array'::text) AND (jsonb_array_length(work_items) <= 100))))"
+    }
+  ],
+  "indexes": [],
+  "triggers": [
+    {
+      "name": "aa_bos_lemana_number_guard",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER aa_bos_lemana_number_guard BEFORE INSERT OR UPDATE OF order_number, source, external_source, external_id ON public.orders FOR EACH ROW EXECUTE FUNCTION bos_lemana_number_guard()"
+    }
+  ]
+}

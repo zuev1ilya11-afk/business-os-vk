@@ -1,0 +1,26 @@
+{
+  "functions": [
+    {
+      "name": "bos_lemana_297_paused_guard",
+      "args": "",
+      "result": "trigger",
+      "md5": "f485a83eff02392a1d9b58415573ceb7",
+      "language": "plpgsql",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "owner": "postgres",
+      "anon": false,
+      "authenticated": false,
+      "service_role": false
+    }
+  ],
+  "triggers": [
+    {
+      "name": "aaa_bos_lemana_297_paused",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER aaa_bos_lemana_297_paused BEFORE INSERT OR UPDATE ON public.orders FOR EACH ROW EXECUTE FUNCTION bos_lemana_297_paused_guard()"
+    }
+  ]
+}

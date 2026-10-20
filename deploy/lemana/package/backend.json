@@ -1,0 +1,49 @@
+{
+  "handlers": [
+    "claims-api",
+    "integration-api",
+    "master-workflow-api",
+    "mini-app-api",
+    "order-lifecycle-api",
+    "profile-self-api",
+    "report-api"
+  ],
+  "before": {
+    "mini-app-api/order-payroll.js": "271ad428d0a8367f77601708675893309b7bf8a685b24c1e4f44bb46b1b0ac89",
+    "master-workflow-api/order-payroll.js": "271ad428d0a8367f77601708675893309b7bf8a685b24c1e4f44bb46b1b0ac89",
+    "order-lifecycle-api/order-payroll.js": "271ad428d0a8367f77601708675893309b7bf8a685b24c1e4f44bb46b1b0ac89",
+    "profile-self-api/order-payroll.js": "a6ca6dadeea92a86b99dcacc06e7aea1d83a23f0e05071539e3f227e33659824",
+    "claims-api/order-payroll.js": "a6ca6dadeea92a86b99dcacc06e7aea1d83a23f0e05071539e3f227e33659824",
+    "report-api/order-payroll.js": "a6ca6dadeea92a86b99dcacc06e7aea1d83a23f0e05071539e3f227e33659824",
+    "integration-api/order-payroll.js": "fbce13e485faa33f00fd28983e5244f9f3d1c5dac00f6709699edec32759da47",
+    "mini-app-api/supabase/functions/mini-app-api/index.ts": "7e57b07bf3e750bb91a292557d63d648ce5541ee82bb41b6e99da16acdc9a272",
+    "master-workflow-api/supabase/functions/master-workflow-api/index.ts": "1bcc5569dd2d1fbd44bd0618acacf110f718fe2949f1f80ac1f6e3f166d43c1d",
+    "order-lifecycle-api/supabase/functions/order-lifecycle-api/index.ts": "2b8f5dd41d2419512c76ad225d38f570d9c95dca8158b5c9e1acff71470a0520",
+    "profile-self-api/supabase/functions/profile-self-api/index.ts": "bf6fc13da5dcdada425eed1b3b83fa39b3da61b0ef2bf8954c7a1befe8dd9bb1",
+    "claims-api/supabase/functions/claims-api/index.ts": "469350c49e4b641d1ffd281e905b5aec1adc860d8237b89166abab38e568adb4",
+    "report-api/supabase/functions/report-api/index.ts": "a41a571c246b72c5210e39832f4473d8dcb8babc1e5e8b0b6e857b73ffd61ad1",
+    "integration-api/supabase/functions/integration-api/index.ts": "5bf02c14f638895ef1624b06bbf0e9d5a9092ed21838c0730586bab235c2524e",
+    "mini-app-api/finance-expenses.js": "eaefd4bae1789c5048e342ff6ec3ce4f9072b4a44d018b81556918e0159ec997",
+    "mini-app-api/supabase/functions/_shared/hands-details.ts": "5e772f8e7c1eb4f8301d567246f3463fb036e7b03c216cbe5e1ba1384c1eb38f",
+    "mini-app-api/order-work-items.js": null,
+    "mini-app-api/lemana-import.js": null,
+    "mini-app-api/vendor/lemana-xlsx.js": null,
+    "mini-app-api/vendor/lemana-xlsx-LICENSES.txt": null,
+    "mini-app-api/supabase/functions/_shared/lemana-api.ts": null
+  },
+  "after": {
+    "mini-app-api/order-payroll.js": "d5b448ae16aa4b2df80b57359cb64169333a7ac9556dad175c2877434122562b",
+    "master-workflow-api/order-payroll.js": "d5b448ae16aa4b2df80b57359cb64169333a7ac9556dad175c2877434122562b",
+    "order-lifecycle-api/order-payroll.js": "d5b448ae16aa4b2df80b57359cb64169333a7ac9556dad175c2877434122562b",
+    "profile-self-api/order-payroll.js": "e88ba635e713cd0eb2b7ebba2c064cada2463f959104d4d2699960490cda8969",
+    "claims-api/order-payroll.js": "e88ba635e713cd0eb2b7ebba2c064cada2463f959104d4d2699960490cda8969",
+    "report-api/order-payroll.js": "e88ba635e713cd0eb2b7ebba2c064cada2463f959104d4d2699960490cda8969",
+    "integration-api/order-payroll.js": "77727a2b7612a10af03cdd426cfb7bca30c134126c341a6d413116f78b5f8176",
+    "mini-app-api/supabase/functions/mini-app-api/index.ts": "cf693700abc30e952492f02e21be4fcc94c990ce8636104cea698fd73548272a",
+    "mini-app-api/order-work-items.js": "f69ab2f910bc7ffa4e5a67c108f55d2d696a8aecaeef5c81dad63484fb42bc58",
+    "mini-app-api/lemana-import.js": "fc20dbb3336b8a4af396661694b841719c9937a5e961d1997eb05ddfeb5ac395",
+    "mini-app-api/vendor/lemana-xlsx.js": "b20cc3727db418ace6d2b4ff6313d1b48652a91023a029547eaf66075a71a0b1",
+    "mini-app-api/vendor/lemana-xlsx-LICENSES.txt": "a7e10dc06603a273e4f086c5965a5072039271f10273e406dca7d4ceeec49e11",
+    "mini-app-api/supabase/functions/_shared/lemana-api.ts": "5f73ac4726c617e1fe91f45c2aa2011dc6972602bad6f8c98a4832b15b58fa62"
+  }
+}

@@ -1,0 +1,4 @@
+SELECT json_build_object(
+ 'functions',(SELECT coalesce(json_agg(json_build_object('name',p.proname,'args',pg_get_function_identity_arguments(p.oid),'result',pg_get_function_result(p.oid),'md5',md5(p.prosrc),'language',l.lanname,'security_definer',p.prosecdef,'config',p.proconfig,'owner',pg_get_userbyid(p.proowner),'anon',has_function_privilege('anon',p.oid,'EXECUTE'),'authenticated',has_function_privilege('authenticated',p.oid,'EXECUTE'),'service_role',has_function_privilege('service_role',p.oid,'EXECUTE')) ORDER BY p.oid),'[]'::json) FROM pg_proc p JOIN pg_language l ON l.oid=p.prolang WHERE p.pronamespace='public'::regnamespace AND p.proname='bos_lemana_297_paused_guard'),
+ 'triggers',(SELECT coalesce(json_agg(json_build_object('name',tgname,'enabled',tgenabled,'definition',pg_get_triggerdef(oid)) ORDER BY tgname),'[]'::json) FROM pg_trigger WHERE tgrelid='public.orders'::regclass AND tgname='aaa_bos_lemana_297_paused')
+)

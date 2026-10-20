@@ -1,0 +1,45 @@
+name: RU Lemana release package
+on:
+  pull_request:
+    branches: [main]
+    paths: ['deploy/lemana/**', '.github/workflows/ru-lemana-release.yml']
+  workflow_dispatch:
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17.6
+        env:
+          POSTGRES_PASSWORD: disposable-test-password
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Reproduce immutable package
+        run: |
+          git fetch origin aeca72a43f90468b1712b48c47064ca97af4e890
+          git show aeca72a43f90468b1712b48c47064ca97af4e890:deploy/order-intake/bos296.pyz > deploy/lemana/bos296.pyz
+          sha256sum deploy/lemana/bos297.pyz > /tmp/lemana-package.sha256
+          python3 deploy/lemana/build_package.py deploy/lemana/bos296.pyz
+          node deploy/lemana/generate_schema.cjs
+          python3 deploy/lemana/build_package.py deploy/lemana/bos296.pyz
+          sha256sum -c /tmp/lemana-package.sha256
+          git diff --exit-code
+      - name: Filesystem backups, interrupted swaps, fail-closed rollback
+        run: python3 -m unittest discover -s deploy/lemana -p 'test_*.py' -v
+      - name: SQL and original RU payroll parity
+        run: node --test deploy/lemana/test_database.cjs deploy/lemana/test_payroll.cjs deploy/lemana/test_hands_boundary.cjs
+      - name: Independent PostgreSQL sessions and rollback write barrier
+        env:
+          BOS_TEST_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: bash deploy/lemana/test_concurrency.sh
