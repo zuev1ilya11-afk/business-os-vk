@@ -92,10 +92,11 @@ test('management full edit keeps separate phones, multiple works and a master co
  expect(db.tables.orders[0].work.split('\n')).toEqual([
   'Установка декоративного карниза (одно, двух, трехрядный) длиной до 2,5 метров × 1 шт.',
   'Минимальная стоимость заказа, светозащита и карнизы × 1 шт.',
-  'Установка декоративного карниза длиной до 2,5 метров'
+  'Установка декоративного карниза длиной до 2,5 метров × 1 комплект'
  ]);
  expect(db.tables.orders[0].comment).toBe('Позвонить клиенту за 30 минут до выезда.');
  expect(db.tables.orders[0].hands_detail_overrides.comment).toBe(true);
+ expect(db.tables.orders[0].work_items).toHaveLength(1);expect(db.tables.orders[0].work_items[0].quantity).toBe(1);expect(db.tables.orders[0].original_amount).toBe(1000);
 
  await page.evaluate(()=>openOrder('11'));
  await expect(page.locator('.bosManagementPhoneRow')).toHaveCount(3);

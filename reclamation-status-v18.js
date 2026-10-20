@@ -3,7 +3,7 @@
 const RECLAMATION='Рекламация';
 try{if(Array.isArray(STATUSES)&&!STATUSES.includes(RECLAMATION))STATUSES.push(RECLAMATION)}catch(_){}
 
-function normalizeStatus(s){const v=String(s||'');return ['В работе','Выполнена','Отменена',RECLAMATION].includes(v)?v:'В работе'}
+function normalizeStatus(s){const v=String(s||'');return ['В работе','Выполнена','Отменена','Новая','Назначена',RECLAMATION].includes(v)?v:'В работе'}
 
 const oldReload=window.reloadData;
 window.reloadData=async function(keepPage=true){

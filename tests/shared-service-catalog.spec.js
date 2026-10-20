@@ -12,7 +12,7 @@ test('dispatcher enters custom work and saves its text and manual price',async({
   await form.locator('[name=client]').fill('Клиент каталога');
   await form.locator('#bosPhone').fill('9991234567');
   await form.locator('[name=address]').fill('Адрес каталога');
-  await form.locator('#bosService').selectOption('custom');await form.locator('.bosCustomWork:visible').fill('Установка карниза — 2 шт.');
+  await form.locator('#bosService').selectOption('custom');await form.locator('.bosCustomWork:visible').fill('Установка карниза');await form.locator('.bosWorkQty').fill('2');
   await form.locator('[name=original_amount]').fill('1699');
   await expect(form.locator('.bosCustomWork:visible')).toHaveAttribute('placeholder','Опишите работу своими словами');
   await expect(form.locator('[name=original_amount]')).toHaveValue('1699');
@@ -20,11 +20,11 @@ test('dispatcher enters custom work and saves its text and manual price',async({
   await form.getByRole('button',{name:'Создать заявку',exact:true}).click();
   await expect(form).toHaveCount(0);
   const saved=db.tables.orders.find(o=>o.client==='Клиент каталога');
-  expect(saved.work).toBe('Установка карниза — 2 шт.');
+  expect(saved.work).toBe('Установка карниза × 2 шт.');
   expect(saved.amount).toBe(1699);
   expect(saved.comment).toBe('Нестандартное крепление согласовать');
   await page.evaluate(id=>openOrder(id),saved.id);
-  await expect(page.locator('#modalRoot')).toContainText(saved.work);
+  await expect(page.locator('#modalRoot .bosHandsWorkRow span')).toHaveText('Установка карниза');await expect(page.locator('#modalRoot .bosHandsWorkRow b')).toHaveText('2 шт.');
 });
 
 test('editing a legacy order preserves work outside the catalog and its amount',async({page})=>{

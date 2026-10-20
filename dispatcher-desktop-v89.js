@@ -71,7 +71,7 @@ function ddQueueCard(o){
   return `<button class="ddQueueCard bosFilteredOrder${selected}" data-order-id="${ddEsc(o.id)}" onclick="selectDispatcherDesktopOrder('${ddEsc(o.id)}')"><div class="ddQueueTop"><b>№ ${ddEsc(ddNo(o))}</b><span>${when}</span></div><div class="ddQueueClient"><strong>${ddEsc(o.client||'Клиент не указан')}</strong><b>${o.amount_confirmed===false?'Стоимость не указана':ddMoney(o.amount||0)}</b></div><div class="ddQueueWork">${ddEsc(o.work||'Работа не указана')}</div><div class="ddQueueAddress">${ddEsc(o.address||'Адрес не указан')}</div><div class="ddQueueBottom"><span>${ddEsc(o.master_name||'Мастер не назначен')}</span><div>${ddFlagHtml(o)}</div></div></button>`;
 }
 function ddMasterOptions(o){return `<option value="">Не назначен</option>${(state.masters||[]).map(m=>{const v=ddMasterVk(m);const selected=(v&&String(o?.master_vk_id||'')===v)||String(o?.master_name||'')===String(m.full_name||'');return `<option value="${ddEsc(v)}" ${selected?'selected':''} ${v?'':'disabled'}>${ddEsc(m.full_name||'Мастер')}</option>`}).join('')}`}
-function ddStatusOptions(o){const items=['В работе','Выполнена','Отменена'];return items.map(s=>`<option ${ddStatus(o)===s?'selected':''}>${s}</option>`).join('')}
+function ddStatusOptions(o){const items=[...new Set([ddStatus(o),'В работе','Выполнена','Отменена'].filter(Boolean))];return items.map(s=>`<option ${ddStatus(o)===s?'selected':''}>${s}</option>`).join('')}
 function ddDetail(o){
   if(!o)return `<section class="ddEmpty"><div><strong>Выберите заявку</strong><span>Слева находится очередь заявок диспетчера.</span></div></section>`;
   const phone=String(o.phone||'').trim(),href=ddPhoneHref(phone),reason=String(o.reschedule_reason||'').trim();

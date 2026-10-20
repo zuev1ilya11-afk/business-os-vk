@@ -34,6 +34,7 @@ async function setup(page,kind,{network=false}={}){
   };
  });
  if(network)await page.addScriptTag({path:path.join(__dirname,'../network-direct-v86.js')});
+ await page.addScriptTag({path:path.join(__dirname,'../order-payroll.js')});
  await page.addScriptTag({path:path.join(__dirname,'../hands-integration-v69.js')});
  await page.evaluate(open=>window[open]('12'),forms[kind].open);
  if(kind==='assign')await page.locator('[name=specialist]').selectOption('Тестовый мастер');

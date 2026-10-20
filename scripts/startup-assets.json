@@ -8,6 +8,8 @@
     "schedule-contract.js",
     "dispatcher-permissions.js",
     "order-payroll.js",
+    "order-work-items.js",
+    "lemana-import.js",
     "service-catalog.js",
     "report-deduction.js",
     "contact-status.js",
@@ -41,6 +43,7 @@
     "launch-fix.js",
     "owner-role-patch.js",
     "auth-ui-patch.js",
+    "order-work-editor.js",
     "business-os-custom-v3.js",
     "master-profile-v4.js",
     "astra-schedule-ui-v5.js",
@@ -102,6 +105,7 @@
     "dispatcher-mobile-dispatch-v107.js",
     "dispatcher-board-enhancements-v108.js",
     "ops-contact-status.js",
-    "master-help-entry.js"
+    "master-help-entry.js",
+    "lemana-import-ui.js"
   ]
 }

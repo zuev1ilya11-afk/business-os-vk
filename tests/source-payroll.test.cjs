@@ -27,29 +27,29 @@ test('source-less legacy records retain the master contract without management p
  for(const value of [0,123,552.5,600])assert.equal(payroll.directMaster({source:'VK',status:'Выполнена',amount:1000,master_payout:value}),value);
 });
 for(const [slug,action] of [['order-lifecycle-api','finalizeMasterReport'],['report-api','finalizeMasterReport'],['report-api','uploadMasterReport']]){
- for(const src of [directSources[0],directSources[1],handsSources[0]])test(`${slug}/${action} source-aware stored payout and role reads: ${src.source}`,async()=>{
+ for(const src of [directSources[0],directSources[1],handsSources[0],{source:'Лемана Про',external_source:'lemana_pro'}])test(`${slug}/${action} source-aware stored payout and role reads: ${src.source}`,async()=>{
   const old={...draft(src),id:'historic',status:'Выполнена',report_review_status:'approved',master_payout:123,extra_work_amount:17,manager_payout:45,dispatcher_payout:67};
   const db=database({business_staff:staff,orders:[draft(src),old]});const before=structuredClone(old);
   db.storage={from:()=>({upload:async()=>({error:null}),createSignedUrl:async p=>({data:{signedUrl:'https://test.invalid/'+p},error:null})})};
   const api=edge(slug,db);const res=await api(report(action),'staff_m');assert.equal(res.status,200);
-  const saved=db.tables.orders[0],hands=payroll.isHands(src),base=hands?442:480;
+  const saved=db.tables.orders[0],hands=!payroll.isDirect(src),base=hands?442:480;
   assert.equal(saved.amount,800);assert.equal(saved.master_payout,base);assert.equal(saved.extra_work_amount,300);
   assert.equal(saved.manager_payout,0);assert.equal(saved.dispatcher_payout,0);
   assert.equal(saved.master_payout+saved.extra_work_amount,hands?742:780);
   assert.equal(res.body.order.amount,hands?undefined:800);assert.equal(res.body.order.original_amount,hands?undefined:1000);assert.equal(res.body.order.manager_payout,undefined);
-  for(const who of ['100','staff_m']){const r=await edge('mini-app-api',db)({action:'bootstrap'},who);assert.equal(r.body.orders[0].master_payout,base);if(!hands)assert.equal(r.body.orders[1].master_payout,123);}
+  for(const who of ['100','staff_m']){const r=await edge('mini-app-api',db)({action:'bootstrap'},who);assert.equal(r.body.orders[0].master_payout,base);if(!payroll.isHands(src))assert.equal(r.body.orders[1].master_payout,123);}
   const writes=db.calls.filter(c=>c.table==='orders'&&c.mode==='update').length;
   assert.equal((await api(report(action),'staff_m')).status,200);assert.equal(db.calls.filter(c=>c.table==='orders'&&c.mode==='update').length,writes,'receipt must not reprice or rewrite');
   assert.deepEqual(db.tables.orders[1],before);
  });
 }
-for(const source of ['Авито','Телефон','VK','Рекомендация','Другое','Руки'])test('create and later assignment use channel '+source,async()=>{
+for(const source of ['Авито','Телефон','VK','Рекомендация','Другое','Руки','Лемана Про'])test('create and later assignment use channel '+source,async()=>{
  const db=database({business_staff:staff});const api=edge('mini-app-api',db);
  let r=await api({action:'createOrder',client:'x',address:'x',work:'x',source,amount:1000,master_vk_id:'staff_m',external_source:'hands',master_payout:999});
- assert.equal(r.status,200);assert.equal(r.body.order.external_source,'mini_app');assert.equal(r.body.order.master_payout,source==='Руки'?552.5:600);
+ assert.equal(r.status,200);assert.equal(r.body.order.external_source,'mini_app');assert.equal(r.body.order.master_payout,['Руки','Лемана Про'].includes(source)?552.5:600);
  assert.equal(r.body.order.manager_payout,0);assert.equal(r.body.order.dispatcher_payout,0);
  r=await api({action:'updateOrder',id:r.body.order.id,master_vk_id:''});assert.equal(r.status,200);assert.equal(r.body.order.master_payout,0);
- r=await api({action:'updateOrder',id:r.body.order.id,master_vk_id:'staff_m'});assert.equal(r.body.order.master_payout,source==='Руки'?552.5:600);
+ r=await api({action:'updateOrder',id:r.body.order.id,master_vk_id:'staff_m'});assert.equal(r.body.order.master_payout,['Руки','Лемана Про'].includes(source)?552.5:600);
 });
 test('source switching reprices drafts but refuses changing submitted report scheme',async()=>{
  const db=database({business_staff:staff,orders:[draft({source:'Руки',external_source:'mini_app'})]});const api=edge('mini-app-api',db);

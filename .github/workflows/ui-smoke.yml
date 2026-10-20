@@ -78,6 +78,7 @@ jobs:
           bash scripts/test-control-tasks.sh
           bash scripts/test-contact-control.sh
           bash scripts/test-finance-expenses.sh
+          bash scripts/test-lemana-concurrency.sh
 
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server

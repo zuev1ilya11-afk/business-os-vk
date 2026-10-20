@@ -5,8 +5,8 @@ test('direct draft amount editing keeps the persisted source and server net amou
  Object.assign(db.tables.orders[0],{source:'Телефон',external_source:'mini_app',original_amount:1000,amount:800,uncompleted_work_amount:200,master_payout:442,phone:'+79991234567',work:'Установка карниза'});
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrderForm('11'));
  const form=page.locator('#orderForm');
- // The existing edit form preserves source; channel selection belongs to creation.
- await expect(form.locator('[name="source"]')).toHaveCount(0);
+ // Source is editable, but saving an unchanged source preserves its stored value.
+ await expect(form.locator('[name="source"]')).toHaveValue('Телефон');
  await expect(form.locator('#bosMasterPay')).toContainText('480');
  await expect(form.locator('#bosPricingRule')).toContainText('Компания 40%');
  await form.locator('#bosPhone').fill('9991234567');
