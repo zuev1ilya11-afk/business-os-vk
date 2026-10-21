@@ -8,7 +8,23 @@ import date_fix as x
 f,b=x.f,x.b
 DATABASE_CHECK=x.database_check
 
+def stage_owner(test,stage,uid=0):
+ # CI runs without root. Simulate only this fixture's ownership; retain real
+ # path, permissions and filesystem operations, and leave production checks intact.
+ original=Path.stat
+ def stat(path,*args,**kwargs):
+  info=original(path,*args,**kwargs)
+  if path!=stage:return info
+  values=list(info);values[4]=uid
+  return os.stat_result(values)
+ p=patch.object(Path,'stat',stat);p.start();test.addCleanup(p.stop)
+
 class PackageTests(unittest.TestCase):
+ def test_stage_rejects_nonroot_owner(self):
+  with tempfile.TemporaryDirectory() as parent:
+   stage=Path(parent)/'stage';stage.mkdir(mode=0o700)
+   stage_owner(self,stage,uid=1001)
+   with self.assertRaisesRegex(f.Stop,'unsafe release stage'):x.safe_stage(stage)
  def test_exact_reviewed_helpers_and_single_changed_source(self):
   baseline=Path(os.environ.get('BOS_LEMANA_BASE_PACKAGE',HERE/'bos297.pyz'))
   self.assertEqual(hashlib.sha256(baseline.read_bytes()).hexdigest(),'3fa6b44e695441a8bda6446cbe6058394feedd9b51113f36d34c39386a8daec3')
@@ -26,6 +42,7 @@ class CoordinatorTests(unittest.TestCase):
  def setUp(self):
   self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
   self.stage=Path(self.temp.name)/'stage';self.events=[]
+  stage_owner(self,self.stage)
   self.previous={'state':'active','container':'edge','fingerprint':'fp','image':'image','roots':{},'after':{'old':'snapshot'}}
   self.web={'state':'active'}
   self.rec={**self.previous,'state':'prepared','main_sha':f.MAIN,'fix_id':x.FIX,'parser_sha256':b.SPEC['after'][x.PARSER],'before':self.previous['after'],'after':{'new':'snapshot'}}
@@ -100,6 +117,7 @@ class FilesystemTests(unittest.TestCase):
  def setUp(self):
   self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup);parent=Path(self.temp.name)
   self.stage=parent/'stage';self.stage.mkdir(mode=0o700);(self.stage/'backup').mkdir();self.roots={}
+  stage_owner(self,self.stage)
   for folder in b.MOUNTS:
    root=parent/'live'/folder;root.mkdir(parents=True);self.roots[folder]=str(root)
    (root/'untouched').write_text('retain')
