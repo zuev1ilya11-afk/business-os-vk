@@ -1,0 +1,32 @@
+name: Lemana date patch
+on:
+  pull_request:
+    branches: [main]
+    paths: ['deploy/lemana-date-fix/**', 'lemana-import.js', 'tests/lemana-import*', '.github/workflows/lemana-date-fix.yml']
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Reproduce pinned patch and verify safe rollback
+        run: |
+          git fetch origin 5ca2043a908ee9d2c46599a2c6f973496ae7ac6e
+          git show 5ca2043a908ee9d2c46599a2c6f973496ae7ac6e:deploy/lemana/bos297.pyz > deploy/lemana-date-fix/bos297.pyz
+          sha256sum deploy/lemana-date-fix/bos-lemana-dates.pyz > /tmp/dates.sha256
+          python3 deploy/lemana-date-fix/build_package.py deploy/lemana-date-fix/bos297.pyz
+          sha256sum -c /tmp/dates.sha256
+          git diff --exit-code
+          python3 -m unittest discover -s deploy/lemana-date-fix -p 'test_*.py' -v
+      - name: Synthetic XLSX, timezone, authorization and real SQL regression
+        run: node --test tests/lemana-import.test.cjs tests/lemana-api.test.cjs tests/lemana-sql.test.cjs deploy/lemana-date-fix/test_rpc.cjs
+      - run: npx playwright install --with-deps chromium
+      - name: Existing RU frontend with patched API
+        run: |
+          python3 deploy/lemana-date-fix/prepare_ui.py
+          npx playwright test --config=deploy/lemana-date-fix/playwright.config.cjs

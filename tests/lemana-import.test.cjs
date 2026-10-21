@@ -42,3 +42,27 @@ test('headers can move and extra columns are ignored; numeric identifiers/dates 
  assert.throws(()=>L.localDate({value:'60',kind:'number'}),/дата/i);
  assert.throws(()=>L.localDate({value:'31.02.2026',kind:'text'}),/дата/i);
 });
+
+test('export timestamps preserve milliseconds and the explicitly selected timezone',()=>{
+ const {X,L}=libs();
+ for(const [text,fraction] of [['2026-01-02T00:30:05.123','123'],['2026-01-02T00:30:05.1','100'],['02.01.2026 00:30:05.01','010'],['2026-01-02T00:30:05.000','000']]){
+  const local=L.localDate({value:text,kind:'text'});
+  assert.equal(local.local,'2026-01-02 00:30:05.'+fraction);
+  assert.equal(L.instant(local,'Europe/Moscow'),'2026-01-01T21:30:05.'+fraction+'Z');
+  assert.equal(L.instant(local,'UTC'),'2026-01-02T00:30:05.'+fraction+'Z');
+ }
+ const row=['fraction-001','Синтетический клиент','+79990000001','Тестовый адрес','Категория',500,'2026-01-02T00:30:05.123','2026-01-03T12:00:00.250','2026-01-04T12:00:00.987','','Подтвержден',''];
+ const out=L.preview(X.read(workbook([row])),[],[],'Europe/Moscow').rows[0];
+ assert.equal(out.kind,'new');assert.equal(out.order.created_at,'2026-01-01T21:30:05.123Z');assert.equal(out.order.received_date,'2026-01-02');
+ assert.equal(out.order.scheduled_time,'12:00:00.250');assert.equal(out.dates.scheduled,'2026-01-03 12:00:00.250');
+ assert.equal(out.order.lemana_import_meta.reported_completed_at,'2026-01-04T09:00:00.987Z');
+});
+
+test('invalid export dates name the column and never silently discard a timezone or precision',()=>{
+ const {X,L}=libs(),row=['date-001','Синтетический клиент','+79990000001','Тестовый адрес','Категория',500,'2026-01-02T10:30:00.123','','','','Подтвержден',''];
+ for(const [column,name] of [[6,'Дата создания заказа'],[7,'Назначенная дата'],[8,'Дата выполнения']]){
+  const input=row.slice();input[column]='2026-02-30T10:30:00.123';const out=L.preview(X.read(workbook([input])),[],[],'Europe/Moscow').rows[0];
+  assert.equal(out.kind,'error');assert.ok(out.reason.startsWith(name+': '));assert.equal(out.order,null);
+ }
+ for(const value of ['2026-01-02T10:30:00.123Z','2026-01-02T10:30:00.123+03:00','2026-01-02T10:30:00.1234','2026-01-02T10:30.123','2026-01-02T24:30:00.123'])assert.throws(()=>L.localDate({value,kind:'text'}),/Дата|дата/);
+});
