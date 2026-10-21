@@ -18,21 +18,24 @@ def save(rec):
  SAVE(rec)
 b.save=save
 
-def load(stage):
+def safe_stage(stage):
  f.require(stage.is_dir() and stage.resolve()==stage and stage.stat().st_uid==0,'Missing or unsafe release stage')
+
+def load(stage):
+ safe_stage(stage)
  path=stage/'journal.json'
  f.require(path.is_file() and not path.is_symlink() and path.stat().st_uid==0,'Missing or unsafe release journal')
  rec=json.loads(path.read_text())
  f.require(rec.get('main_sha')==f.MAIN,'Unexpected release journal')
  return rec
 
-def web_check(web):
+def web_check(web,public=True):
  f.require(web['state']=='active','PR297 frontend is not active')
  f.check_container(web)
  root=Path(web['root'])
  f.require(f.snapshot(root)==web['after_snapshot'],'Frontend changed since PR297')
  f.file_hashes(root,META['after'])
- f.public_verify(META,web['served_after'])
+ if public:f.public_verify(META,web['served_after'])
  return root
 
 def anchor(rec,previous):
@@ -59,19 +62,25 @@ def database_check(previous):
  f.require(state['schema']=='target' and not state['paused'],'PR297 schema is missing or import is paused; complete PR297 first')
 
 def rollback(rec,web):
- web_check(web)
- if rec['state']=='preparing':
+ # A public proxy/TLS outage must not prevent restoring verified local files.
+ web_check(web,public=False)
+ if rec['state'] in ['preparing','preparation_aborted']:
   # No live mutation is possible until preparation and isolated probes finish.
-  b.check(rec,'before');b.cleanup(rec);rec['state']='rolled_back';b.save(rec)
+  b.check(rec,'before');b.cleanup(rec);rec['state']='preparation_aborted';b.save(rec)
  else:
   b.restore(rec)
  f.emit('LEMANA_DATE_ROLLBACK_OK; PR297 retained, database untouched')
 
 def archive(rec):
- f.require(rec['state'] in ['preparing','prepared','rolled_back'],'Interrupted activation: run --rollback')
+ f.require(rec['state'] in ['preparing','preparation_aborted','prepared','rolled_back'],'Interrupted activation: run --rollback')
  b.check(rec,'before')
- if rec['state']!='preparing':b.checked_payload(rec)
+ if rec['state'] not in ['preparing','preparation_aborted']:b.checked_payload(rec)
  b.cleanup(rec)
+ archive_directory()
+
+def archive_directory():
+ safe_stage(b.STAGE)
+ f.require(b.STAGE.stat().st_mode&0o077==0,'Staging directory must remain private')
  target=b.STAGE.with_name(b.STAGE.name+'-history-'+uuid.uuid4().hex[:12])
  f.require(not target.exists(),'Archive path exists')
  os.rename(b.STAGE,target);b.sync_dir(target.parent)
@@ -87,24 +96,33 @@ def resources(info):
 def execute(mode):
  previous,web=load(PREVIOUS),load(WEB)
  f.require(previous['state']=='active','Complete PR297 before this date fix')
- root=web_check(web)
+ root=web_check(web,public=mode!='rollback')
  if mode!='rollback':database_check(previous)
- rec=load(b.STAGE) if b.STAGE.exists() else None
+ orphan=b.STAGE.exists() and not (b.STAGE/'journal.json').exists()
+ if orphan:
+  safe_stage(b.STAGE)
+  f.require(not (b.STAGE/'journal.json').is_symlink(),'Unsafe release journal')
+ rec=load(b.STAGE) if b.STAGE.exists() and not orphan else None
  if rec:
   anchor(rec,previous)
   if mode=='rollback':rollback(rec,web);return
   if rec['state']=='active':
    b.checked_payload(rec);b.check(rec,'after');b.verify_mounts(rec['container'],rec['roots'],rec['after']);b.probe_live(rec)
    f.emit('LEMANA_DATE_FIX_ALREADY_INSTALLED');return
-  f.require(rec['state'] in ['preparing','prepared','rolled_back'],'Interrupted activation: run --rollback')
+  f.require(rec['state'] in ['preparing','preparation_aborted','prepared','rolled_back'],'Interrupted activation: run --rollback')
   b.check(rec,'before')
   if mode=='apply':archive(rec)
- else:f.require(mode!='rollback','No date-fix journal found')
+ else:f.require(mode!='rollback' or orphan,'No date-fix journal found')
  b.check(previous,'after')
  info=b.discover(root)
  f.require(info['before']==previous['after'] and info['fingerprint']==previous['fingerprint'],'PR297 API baseline changed')
- resources(info)
+ if mode!='rollback':resources(info)
  if mode=='check':f.emit('DATE_FIX_CHECK_OK; no files or services changed');return
+ if orphan:
+  # Directory creation precedes the first journal. Only archive after the
+  # complete active PR297 baseline and mounts above prove no live change.
+  archive_directory()
+  if mode=='rollback':f.emit('LEMANA_DATE_ROLLBACK_OK; preparation was never activated');return
  rec=b.prepare(info)
  try:
   b.activate(rec)

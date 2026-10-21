@@ -31,7 +31,7 @@ class CoordinatorTests(unittest.TestCase):
   self.rec={**self.previous,'state':'prepared','main_sha':f.MAIN,'fix_id':x.FIX,'parser_sha256':b.SPEC['after'][x.PARSER],'before':self.previous['after'],'after':{'new':'snapshot'}}
   def load(path):return self.rec if path==self.stage else self.previous if path==x.PREVIOUS else self.web
   info={**self.previous,'before':self.previous['after']}
-  replacements=[(b,'STAGE',self.stage),(x,'load',load),(x,'web_check',lambda _:self.events.append('web') or Path('/synthetic/web')),
+  replacements=[(b,'STAGE',self.stage),(x,'load',load),(x,'web_check',lambda _,**kw:self.events.append('web') or Path('/synthetic/web')),
    (x,'database_check',lambda _:self.events.append('db-read-only')),(x,'resources',lambda _:None),(b,'discover',lambda _:info),
    (b,'check',lambda *a:self.events.append('check')),(b,'checked_payload',lambda _:self.events.append('backup-check')),
    (b,'verify_mounts',lambda *a:self.events.append('mount-check')),(b,'probe_live',lambda _:self.events.append('probe')),
@@ -53,15 +53,35 @@ class CoordinatorTests(unittest.TestCase):
   with patch.object(b,'prepare',side_effect=f.Stop('baseline differs')):
    with self.assertRaises(f.Stop):x.execute('apply')
   self.assertNotIn('activate',self.events);self.assertNotIn('restore',self.events)
+ def test_public_outage_after_activation_does_not_block_local_restore(self):
+  checks=[]
+  def web_check(_,public=True):
+   checks.append(public)
+   if public and len(checks)>1:raise f.Stop('Public endpoint unavailable')
+   return Path('/synthetic/web')
+  with patch.object(x,'web_check',web_check):
+   with self.assertRaisesRegex(f.Stop,'was rolled back'):x.execute('apply')
+  self.assertEqual(checks,[True,True,False]);self.assertEqual(self.events.count('restore'),1)
  def test_already_active_verifies_without_reactivation(self):
-  self.stage.mkdir();self.rec['state']='active';x.execute('apply')
+  self.stage.mkdir(mode=0o700);(self.stage/'journal.json').write_text('{}');self.rec['state']='active';x.execute('apply')
   self.assertIn('mount-check',self.events);self.assertIn('probe',self.events);self.assertNotIn('activate',self.events)
  def test_interrupted_activation_requires_rollback(self):
-  self.stage.mkdir();self.rec['state']='activating'
+  self.stage.mkdir(mode=0o700);(self.stage/'journal.json').write_text('{}');self.rec['state']='activating'
   with self.assertRaisesRegex(f.Stop,'--rollback'):x.execute('apply')
   self.assertNotIn('prepare',self.events)
  def test_rollback_does_not_need_database_or_revert_schema(self):
-  self.stage.mkdir();x.execute('rollback');self.assertIn('restore',self.events);self.assertNotIn('db-read-only',self.events)
+  self.stage.mkdir(mode=0o700);(self.stage/'journal.json').write_text('{}');x.execute('rollback');self.assertIn('restore',self.events);self.assertNotIn('db-read-only',self.events)
+ def test_orphan_stage_is_readonly_on_check_then_archived_on_verified_retry(self):
+  self.stage.mkdir(mode=0o700);(self.stage/'journal.tmp').write_text('interrupted save')
+  x.execute('check');self.assertTrue(self.stage.exists())
+  x.execute('apply');archived=list(self.stage.parent.glob('stage-history-*'))
+  self.assertEqual(len(archived),1);self.assertEqual((archived[0]/'journal.tmp').read_text(),'interrupted save')
+  self.assertIn('activate',self.events)
+ def test_orphan_stage_is_retained_if_active_baseline_changed(self):
+  self.stage.mkdir(mode=0o700)
+  with patch.object(b,'check',side_effect=f.Stop('later deployment')):
+   with self.assertRaises(f.Stop):x.execute('apply')
+  self.assertTrue(self.stage.exists());self.assertNotIn('prepare',self.events)
  def test_wrong_baseline_parser_or_container_journal_is_rejected(self):
   for field,value in [('fix_id','other'),('parser_sha256','other'),('before',{}),('container','other')]:
    rec={**self.rec,field:value}
@@ -79,7 +99,7 @@ class CoordinatorTests(unittest.TestCase):
 class FilesystemTests(unittest.TestCase):
  def setUp(self):
   self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup);parent=Path(self.temp.name)
-  self.stage=parent/'stage';self.stage.mkdir();(self.stage/'backup').mkdir();self.roots={}
+  self.stage=parent/'stage';self.stage.mkdir(mode=0o700);(self.stage/'backup').mkdir();self.roots={}
   for folder in b.MOUNTS:
    root=parent/'live'/folder;root.mkdir(parents=True);self.roots[folder]=str(root)
    (root/'untouched').write_text('retain')
@@ -91,7 +111,7 @@ class FilesystemTests(unittest.TestCase):
    for name in names:(self.stage/folder/name).write_text('after')
   self.edge={'Id':'edge','Config':{},'HostConfig':{},'Mounts':[]}
   self.rec={'state':'prepared','main_sha':f.MAIN,'container':'edge','fingerprint':f.fingerprint(self.edge),'roots':self.roots,'before':before,'after':{k:f.snapshot(self.stage/k) for k in b.MOUNTS}}
-  for obj,key,value in [(b,'STAGE',self.stage),(f,'inspect',lambda _:self.edge),(b,'restart',lambda *a:None),(b,'probe_live',lambda *a,**k:None),(b,'cleanup',lambda _:None),(x,'web_check',lambda _:None),(f,'emit',lambda _:None)]:
+  for obj,key,value in [(b,'STAGE',self.stage),(f,'inspect',lambda _:self.edge),(b,'restart',lambda *a:None),(b,'probe_live',lambda *a,**k:None),(b,'cleanup',lambda _:None),(x,'web_check',lambda _,**kw:None),(f,'emit',lambda _:None)]:
    p=patch.object(obj,key,value);p.start();self.addCleanup(p.stop)
  def test_actual_directory_exchange_and_compatible_rollback(self):
   b.activate(self.rec);b.check(self.rec,'after');x.rollback(self.rec,{})
@@ -109,5 +129,11 @@ class FilesystemTests(unittest.TestCase):
   b.activate(self.rec);(Path(self.roots['sources'])/'untouched').write_text('later change')
   with self.assertRaises(f.Stop):x.rollback(self.rec,{})
   self.assertEqual((Path(self.roots['sources'])/x.PARSER).read_text(),'after')
+ def test_aborted_preparation_with_partial_backup_can_be_archived_and_retried(self):
+  import shutil
+  self.rec['state']='preparing';shutil.rmtree(self.stage/'backup'/'main')
+  x.rollback(self.rec,{});self.assertEqual(self.rec['state'],'preparation_aborted')
+  x.archive(self.rec);self.assertFalse(self.stage.exists());b.check(self.rec,'before')
+  self.assertEqual(len(list(self.stage.parent.glob('stage-history-*'))),1)
 
 if __name__=='__main__':unittest.main(verbosity=2)
