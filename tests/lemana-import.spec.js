@@ -1,4 +1,16 @@
 const {test,expect}=require('@playwright/test');const {fullStack}=require('./helpers/full-stack.cjs');const {workbook}=require('./helpers/lemana-xlsx.cjs');
+test('export dates with milliseconds allow explicit selection and preserve time through confirmation',async({page})=>{
+ const {db}=await fullStack(page,'owner');db.rpc=async(name,{p_order:o})=>{expect(name).toBe('bos_import_lemana_order');const order={id:'901',...o};db.tables.orders.push(order);return {data:{kind:'created',order},error:null}};
+ await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>show('orders'));await page.getByRole('button',{name:'Импорт отчёта Лемана Про',exact:true}).click();const box=page.locator('.lemanaImport');
+ const row=['fraction-001','Синтетический клиент','+79990000001','Тестовый адрес','Категория',500,'2026-01-02T00:30:05.123','','','','Подтвержден',''];
+ const bad=row.slice();bad[0]='invalid-date-001';bad[6]='2026-02-30T00:30:05.123';
+ await box.locator('#lemanaFile').setInputFiles({name:'synthetic.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:Buffer.from(workbook([row,bad]))});
+ await box.locator('#lemanaTimezone').selectOption('Europe/Moscow');await box.locator('#lemanaCheck').click();
+ await expect(box.locator('[data-row="2"]')).toContainText('2026-01-02 00:30:05.123');await expect(box.locator('[data-row="2"]')).toContainText('2026-01-01T21:30:05.123Z');
+ await expect(box.locator('[data-import-row="2"]')).toBeEnabled();await expect(box.locator('[data-import-row="2"]')).not.toBeChecked();
+ await expect(box.locator('[data-import-row="3"]')).toBeDisabled();await expect(box.locator('[data-row="3"]')).toContainText('Дата создания заказа: Некорректная календарная дата');expect(db.tables.orders).toHaveLength(2);
+ await box.locator('[data-import-row="2"]').check();await box.locator('#lemanaConfirm').click();await expect(box).toContainText('Импорт завершён');expect(db.tables.orders).toHaveLength(3);expect(db.tables.orders[2].created_at).toBe('2026-01-01T21:30:05.123Z');expect(db.tables.orders[2].received_date).toBe('2026-01-02');
+});
 test('import requires timezone and explicit selection; repeated confirmation skips, master has no entry',async({page})=>{
  const {db}=await fullStack(page,'owner');db.rpc=async(name,{p_order:o})=>{if(name!=='bos_import_lemana_order')throw Error('Unexpected RPC');const L=require('../lemana-import.js');if(L.classify(o.order_number,db.tables.orders).kind!=='new')return {data:{kind:'skipped'},error:null};const order={id:'900',...o};db.tables.orders.push(order);return {data:{kind:'created',order},error:null}};
  await page.setViewportSize({width:390,height:844});await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>show('orders'));await page.getByRole('button',{name:'Импорт отчёта Лемана Про',exact:true}).click();const box=page.locator('.lemanaImport');
