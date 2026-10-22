@@ -65,7 +65,7 @@ function decorate(){
  add(document.querySelector('#bosMasterWorkCalendar,.bosScheduleEditorTask'),'profile','Как настроить?');
  add(document.querySelector('#masterMoneyV130')||document.querySelector('.bosProfileAccrual'),'money','Как проверить начисления?');
  const card=document.querySelector('#modalRoot .bosCompactMasterCard');
- if(card)add(card,'home','Помощь по заявке');
+ if(card)add(card.querySelector('.bosOrderExtraActions')||card,'home','Помощь по заявке');
 }
 let queued=false;
 const observer=new MutationObserver(()=>{if(!queued){queued=true;requestAnimationFrame(()=>{queued=false;decorate()})}});

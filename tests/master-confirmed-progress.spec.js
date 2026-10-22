@@ -1,5 +1,5 @@
 const {test,expect}=require('@playwright/test');
-async function confirmStage(page,name){const task=page.locator('.bosStageTask');if(!await task.count()){await panel(page).getByRole('button',{name,exact:true}).click();await expect(task).toBeVisible()}await task.getByRole('button',{name,exact:true}).click();}
+async function confirmStage(page,name){const task=page.locator('.bosStageTask');if(!await task.count()){await panel(page).getByRole('button',{name:name==='Подтвердить: начал работу'?'Начать работу':name,exact:true}).click();await expect(task).toBeVisible()}await task.getByRole('button',{name,exact:true}).click();}
 const {fullStack}=require('./helpers/full-stack.cjs');
 const {attachmentUrl}=require('./helpers/edge.cjs');
 const panel=p=>p.locator('.bosMasterWorkflow[data-bos-v179="1"]');
@@ -44,7 +44,7 @@ test('network failure never advances; unknown result locks retries until success
  await page.evaluate(()=>window.fetch=window.progressFetch);await panel(page).getByRole('button',{name:'Проверить состояние',exact:true}).click();await expect(panel(page).locator('.moa179Action')).toBeEnabled();await progress(page,25);
  await confirmStage(page,'Подтвердить: выехал');await progress(page,50);
 });
-for(const [extra,value,label] of [[{master_workflow_stage:'arrived'},50,'Подтвердить: начал работу'],[{master_workflow_stage:'started'},75,'Отправить отчёт'],[{report_review_status:'rejected',scheduled_date:null,scheduled_time:null,time_slot:null},75,'Исправить отчёт']])test(`historical ${JSON.stringify(extra)} needs no retroactive timestamps`,async({page})=>{
+for(const [extra,value,label] of [[{master_workflow_stage:'arrived'},50,'Начать работу'],[{master_workflow_stage:'started'},75,'Отправить отчёт'],[{report_review_status:'rejected',scheduled_date:null,scheduled_time:null,time_slot:null},75,'Исправить отчёт']])test(`historical ${JSON.stringify(extra)} needs no retroactive timestamps`,async({page})=>{
  const {db}=await open(page,extra);await progress(page,value);await expect(panel(page).getByRole('button',{name:label,exact:true})).toBeEnabled();expect(db.tables.orders[0].master_departed_at).toBeUndefined();expect(db.tables.orders[0].master_started_at).toBeUndefined();
 });
 test('agreement stays separate from departure and report confirmation waits for final response',async({page})=>{

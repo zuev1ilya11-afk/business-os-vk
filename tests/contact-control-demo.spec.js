@@ -48,6 +48,6 @@ test('no answer → overdue Control → agreed visit removes the old obligation'
  await session('master');await page.evaluate(()=>openMasterContactResultForOrder('11','agreed'));
  form=page.locator('#masterContactResultForm');await form.locator('[name=scheduled_date]').fill('2026-10-17');await form.locator('[name=scheduled_time]').fill('14:00');
  await form.getByRole('button',{name:'Сохранить итог',exact:true}).click();await expect(form).toHaveCount(0);
- await expect(page.locator('.bosMasterContactSummary')).toContainText('Договорились');await expect(page.locator('.bosMasterContactSummary')).toContainText('14:00');expect(tasks).toHaveLength(0);await capture('03-agreed-visit.png');
+ await expect(page.locator('.bosMasterContactSummary')).toContainText('Договорились');await expect(page.locator('.bosOrderVisit')).toContainText('14:00');expect(tasks).toHaveLength(0);await capture('03-agreed-visit.png');
  await session('owner');await page.evaluate(()=>BOS_ORDER_CONTROL.open());await expect(page.locator('[data-oc-order="11"]')).toHaveCount(0);
 });

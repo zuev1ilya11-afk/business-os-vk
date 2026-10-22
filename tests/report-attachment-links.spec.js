@@ -56,6 +56,7 @@ test('master mobile order card displays saved report photos and closes the viewe
  await page.route('https://example.test/*.jpg',r=>r.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="40" height="30"><rect width="40" height="30" fill="blue"/></svg>'}));
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
  await page.evaluate(()=>openOrder('11'));
+ await page.locator('.bosOrderAdditional>summary').click();
  const modal=page.locator('#modalRoot');
  await expect(modal.locator('.reportPhotoThumb')).toHaveCount(2);
  for(const url of photos){

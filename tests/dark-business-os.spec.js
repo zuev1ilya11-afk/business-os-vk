@@ -68,16 +68,16 @@ for (const role of ['owner', 'dispatcher', 'master']) for (const width of widths
       const depart=workflow.getByRole('button',{name:/Подтвердить: выехал/});
       await expect(depart).toBeEnabled();
       await expect.poll(async () => depart.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
-      await expect(workflow.getByRole('button',{name:/Подтвердить: начал работу/})).toHaveCount(0);
+      await expect(workflow.getByRole('button',{name:/Начать работу/})).toHaveCount(0);
       await expect(workflow.getByRole('button',{name:/Отправить отчёт/})).toHaveCount(0);
       await expect(page.locator('.bosApprovedVisit').getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
       await expect(page.getByRole('button', {name: 'Я на месте', exact: true})).toHaveCount(0);
 
       await confirmStage(page,depart,'departed');
       await expect.poll(()=>targetOrder.master_workflow_stage).toBe('departed');
-      await expect(workflow.getByRole('button',{name:/Подтвердить: начал работу/})).toBeEnabled();
+      await expect(workflow.getByRole('button',{name:/Начать работу/})).toBeEnabled();
 
-      await confirmStage(page,workflow.getByRole('button',{name:/Подтвердить: начал работу/}),'started');
+      await confirmStage(page,workflow.getByRole('button',{name:/Начать работу/}),'started');
       await expect.poll(()=>targetOrder.master_workflow_stage).toBe('started');
       expect(targetOrder.master_payout).toBe(552.5);
       await expect(workflow.getByRole('button',{name:/Отправить отчёт/})).toBeEnabled();

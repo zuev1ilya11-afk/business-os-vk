@@ -12,7 +12,7 @@ for(const width of [360,390,430])test(`${width}: compact card, exact titles, exp
  const {db}=await open(page,width),card=page.locator('.bosCompactMasterCard'),modal=page.locator('.bosCompactOrderModal');
  await expect(card.locator('.bosCompactAddress .bosApartment')).toHaveText('кв. 42');await expect(card.locator('.bosHandsAddressLink')).toHaveAttribute('href',/yandex.ru\/maps/);
  await expect(card.locator('.bosCompactClient').getByRole('link',{name:'Позвонить клиенту',exact:true})).toHaveAttribute('href','tel:+79990000002');
- const payout=card.locator('.bosCompactMoney');await expect(payout).toBeVisible();await expect(payout.locator('span')).toHaveCSS('white-space','nowrap');expect(await payout.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
+ const payout=card.locator('.bosCompactMoney');await expect(payout).toBeVisible();await expect(payout.locator('span')).toContainText('Выплата мастеру:');expect(await payout.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
  await expect(modal.getByText('Связь с клиентом',{exact:true})).toHaveCount(0);await expect(modal.locator('.masterV126Focus,.masterV149Route,.masterV126ReceivedModal')).toHaveCount(0);
  await expect(card.locator('.bosHandsWorkRow:visible')).toHaveCount(4);await expect(card.getByText(work,{exact:true})).toBeVisible();await expect(card.getByText('1,5 м',{exact:true})).toBeVisible();
  await expect(card.getByText('Третья услуга без сокращений',{exact:true})).toBeVisible();await expect(card.getByText('Четвёртая услуга',{exact:true})).toBeVisible();
@@ -27,7 +27,7 @@ for(const width of [360,390,430])test(`${width}: compact card, exact titles, exp
  await confirmStage(page,modal.getByRole('button',{name:'Подтвердить: выехал',exact:true}),'departed');await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','50');
  await modal.evaluate(e=>e.scrollTop=0);
  await modal.screenshot({path:info.outputPath(`card-${width}.png`)});
- await confirmStage(page,modal.getByRole('button',{name:'Подтвердить: начал работу',exact:true}),'started');await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','75');
+ await confirmStage(page,modal.getByRole('button',{name:'Начать работу',exact:true}),'started');await expect(modal.getByRole('progressbar')).toHaveAttribute('aria-valuenow','75');
  await modal.getByRole('button',{name:'Отправить отчёт',exact:true}).click();await expect(page.locator('#masterReportForm')).toBeVisible();await expect(page.getByText('Сделано не всё',{exact:true})).toBeVisible();
 });
 test('master has no edit controls; missing optional data and full unbroken titles fit',async({page})=>{
@@ -39,7 +39,7 @@ for(const role of ['owner','manager','dispatcher'])test(`${role}: edit apartment
  const {db}=await fullStack(page,role);Object.assign(db.tables.orders[0],{phone:'+79990000002',apartment:'8',comment:'От Hands',scheduled_time:'10:00',time_slot:'10:00–11:00'});
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrderForm('11'));const form=page.locator('#orderForm');await expect(form).toBeVisible();await form.locator('[name=apartment]').fill('12А');await form.locator('[name=comment]').fill('Локальный комментарий');await form.locator('button[type=submit]').click();await expect(form).toBeHidden();
  expect(db.tables.orders[0].apartment).toBe('12А');expect(db.tables.orders[0].comment).toBe('Локальный комментарий');expect(db.tables.orders[0].hands_detail_overrides).toEqual({apartment:true,comment:true});
- await page.reload();await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrderForm('11'));await expect(page.locator('[name=apartment]')).toHaveValue('12А');await expect(page.locator('[name=comment]')).toHaveValue('Локальный комментарий');await page.locator('[name=comment]').fill('');await page.locator('#orderForm button[type=submit]').click();await expect(page.locator('#orderForm')).toBeHidden();expect(db.tables.orders[0].comment).toBe('');
+ await page.reload();await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrderForm('11'));await expect(page.locator('[name=apartment]')).toHaveValue('12А');await expect(page.locator('[name=comment]')).toHaveValue('Локальный комментарий');await page.locator('[name=comment]').fill('');await page.locator('#orderForm button[type=submit]').click();await expect(page.locator('#orderForm')).toBeHidden();await expect.poll(()=>db.tables.orders[0].comment).toBe('');
 });
 for(const source of ['Hands','Авито'])test(`${source}: header money and full calculation preserve source rules`,async({page})=>{
  await open(page,390,'master',source);const card=page.locator('.bosCompactMasterCard');if(source==='Hands'){await expect(card).not.toContainText('Стоимость:');await expect(card.locator('.bosCompactCost')).toHaveCount(0);await expect(card.locator('.bosCompactMoney')).toContainText('552,5')}else{await expect(card.locator('.bosCompactMoney')).toContainText('Стоимость: 1');await expect(card.locator('.bosCompactMoney')).toContainText('600');await card.locator('.bosCompactCost>summary').click();await expect(card.locator('[data-cost-total]')).toContainText('1');await expect(card).toContainText('Мастеру — 60% основных работ')}

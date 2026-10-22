@@ -38,7 +38,7 @@ test('master agrees unscheduled order and then enters scheduled workflow',async(
   expect(db.tables.orders.find(o=>String(o.id)==='11')?.master_called_at).toBeTruthy();
   expect(db.tables.orders.find(o=>String(o.id)==='11')?.master_agreed_at).toBeTruthy();
   await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toBeEnabled();
-  await expect(panel.getByRole('button',{name:/Подтвердить: начал работу/})).toHaveCount(0);
+  await expect(panel.getByRole('button',{name:/Начать работу/})).toHaveCount(0);
 });
 
 test('scheduled order uses confirmed reschedule instead of direct date editing',async({page})=>{
@@ -58,7 +58,7 @@ test('scheduled order uses confirmed reschedule instead of direct date editing',
   await expect(panel).toBeVisible();
   await expect(panel.getByRole('button',{name:/Договориться/})).toHaveCount(0);
   await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toBeEnabled();
-  await expect(page.locator('.bosApprovedVisit')).toContainText('Требует подтверждения диспетчера или руководителя');
+  await expect(page.locator('.bosRescheduleHint')).toContainText('Перенос требует подтверждения диспетчера или руководителя');
   await page.locator('.bosApprovedVisit').getByRole('button',{name:'Запросить перенос',exact:true}).click();
   await expect(page.locator('#masterRescheduleForm')).toBeVisible();
 });
