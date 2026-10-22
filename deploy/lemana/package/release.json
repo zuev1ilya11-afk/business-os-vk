@@ -1,0 +1,136 @@
+{
+  "format": 1,
+  "main_sha": "1ff029deaaa08d2d0181fea1826f912b47b19280",
+  "source_sha": "1ff029deaaa08d2d0181fea1826f912b47b19280",
+  "before_build": "f2c8c8ee697f23936ec2",
+  "after_build": "cc4fa850b12dadd27370",
+  "origin": "https://139.100.237.167",
+  "before": {
+    "app-icon.svg": "033e83762b4c7ef4eb9963548cb570a684542df4820841d2530ed0f32a73b9c5",
+    "app-v2.js": "873db6a2b90d819ae81dd11e442828d8161a271c44a8e1d7fa355945dda55b2f",
+    "approved-master-ui.css": "5c7048f4ff9f3635b1ae06e45914094bd05533bd9a9694018c4bc3bc1d41f160",
+    "approved-operations-ui.css": "7039d660480f975472b2dd68668162ec928290604bc812349c59431f3216e447",
+    "approved-ui.css": "9d571fb45c540e8f7e23fae6030eff15feb9021707e702aeeac0ed73e46e584e",
+    "brand-logo.svg": "248869a5b726f505936e5038f823df1dde31523277ec621da31ae8c5b5c837f3",
+    "dark-business-os.css": "6315ef2c63d67720aa11ae82441ace385854ac5f16db26eb75116f7eed434a60",
+    "dispatcher-attention-v123.js": "b3275bac3c189608c36dddc296cca8e512eeca6611e3a8cb36390fba5b5fadd0",
+    "dispatcher-desktop-mobile-v158.js": "1fe7fdd8f1ff3ded1a1fd0d36a7d58c46048bbec743b4b527baf2a1bb4590ac0",
+    "dispatcher-free-slots-v120.js": "c605bbe5479047a155f59da58b82f7a1553772ca591087aec20c85c8ab593c93",
+    "dispatcher-horizontal-schedule-v190-fix.js": "290a9b48c37e5481a2bb033d5e7640f1edf5e85d1fb8a2fe3b0c3f83fa2191b9",
+    "dispatcher-horizontal-schedule-v190.js": "d5187e61b0ec994b970cf9fcda6afd888b95c7ff20cef96ee8c2f71aa66a12c1",
+    "dispatcher-mobile-touch-v101.css": "7b8de5f2accaf78b72afebfacf2fc491a09102e166089eb5bbe69c3eb9d6fc3a",
+    "dispatcher-quick-actions-v159.js": "b98d9eca13962b51db7b9a632f40739a401dfd0f07849ef536ea07147ca6a00b",
+    "dispatcher-responsive-workbench-v157.js": "e716fe727b318e863ec615e92dbb32b706b40e5bd8310154aac8ccfd20d37cb6",
+    "dispatcher-smart-assign-v119.js": "471a6724ae381e5a8bd4f53016e648c92df671e84cf1d6b45d57d4593547cbe6",
+    "dispatcher-smart-dispatch-v121.js": "8f6bf8ba271856c6ad4a35ba4070dd98de2a77f639f3bfa69270b08b38fdd063",
+    "dispatcher-ui-polish-v184.js": "413031256f89d8636959471428f193a7345c35b0b0084c0a333298c28498b373",
+    "dispatcher-ui-redesign-v183-compat.js": "629890f0d8ece86a456720d709b7803064c4fa0e9064e140b552dd7cfdd3f2b4",
+    "dispatcher-ui-redesign-v183.js": "94c0293b795ac270b3b2d4fde5df119de1f2764a462183de604a129d788c0d57",
+    "dispatcher-ui-stability-v185.js": "10a8492b571ea98bc525bf3e998962847df74e5c64de4999668f7f66e6caf389",
+    "dispatcher-unassigned-queue-v122.js": "08f21907928a58e2dcf63a133159c5d8d3ad75fdb5af4023c6281678eb091cd8",
+    "dispatcher-unified-schedule-v187.js": "7be77ad02c0641abd56d429e804990d1f5f9a11575b59a1fc7b84ec923870353",
+    "finance-data.js": "5affa33b6d819ef08f6897c6d68724b90d04047b458dd135ead40af2d4206297",
+    "finance-expenses.js": "eaefd4bae1789c5048e342ff6ec3ce4f9072b4a44d018b81556918e0159ec997",
+    "finance-page.js": "438f7a7f1e14e94ec69c637f483c7975e596607c751b88baad3b118e88e4fb8a",
+    "form-mobile-fix.css": "fc93254a260b4a9c36a6f2f66b0edcce166fdc1a45760581dc13ce5f54c4fbab",
+    "manifest.webmanifest": "6a50340f1a049fd4729cf735831f7aa7aedc78fb8ab8973b35f31b855cd3442b",
+    "master-cabinet-v141.js": "b359af12e9327873a424dd969bc4fa67376634f280a1ff74846f1a743f6c54bc",
+    "master-daily-home-v127.js": "a6dfe44e04be57f7038c7e01dbb33a9fa0b0ed405b378877122e290d585dc271",
+    "master-day-summary-v128.js": "cde93d45cc3976c023ed5cd0c30ad04b247a72689c8359185353bd38f5403324",
+    "master-help-data.js": "8464b00386494bbe94e1aaca80c080515f4541023f6f74c123c9e72efe915f9a",
+    "master-help-editor.js": "1ae3fbedfc221d2ea20400d494651aefb1a851c9d52bc9b224e3fbd824c9be21",
+    "master-help-store.js": "fc447d4887c92ff03ef65242d0b49d21b88d98da81f2e04032e585789ce73ff2",
+    "master-help.css": "bc751b8e891dc299449b30643d97269bf4b1f2328e0e8f94a0c877d784c63390",
+    "master-help.js": "d3eba78df15ed68ab123744ec9dcbb6662e246ab42c68df71791825144a5560e",
+    "master-home-orders-v124.js": "578ea163a86b168f27fa7df4f14d9593ad51f0ee7a334520de366d9e5299a6c1",
+    "master-money-v130.js": "35fad9b4ea580e5e0423667f0209f079755f4f3a83d618285a04f7d2280fceae",
+    "master-order-focus-v126.js": "5b25810fd26c8f5d59fd95c1620d5178bf6416bd5d35963a6dff64f15c474ba1",
+    "master-orders-v125-compat.js": "84a81fa2a970137dd821ee55099e861db85e1e3fc8e8b9e5844d24c6e7c90656",
+    "master-orders-v125.js": "5d98b1342e3402dd00ef0a6b84d47de4fbf390b526d21c2e80f722105cb1e878",
+    "master-profile-summary-v129.js": "cd3688dab9fe5df5d85c5e573e06a39d022463578aa0ee33ce5fe60157b2c4fa",
+    "master-profile-v4-fix.js": "1688aaa2519f38ef155592a3b1f3c9a79a06e335de794bcaa9cd88db1cebdcf0",
+    "master-simple.css": "8cad04ef20ce2e5ae9d227a3d5ee92b829e3b187ba6227c691f7aac0100844be",
+    "master-ui-contract-v42.js": "3c95442dd45427d8b7b7b1ab61809862c33182b1b1bc9c8cceccc1ea35bef378",
+    "order-control.js": "e81e4ec5950ecda0b03aaf9f3e49c02cb36981d3ff720068c4da22648b4a5023",
+    "playwright.config.js": "879521edbad822fbe7096da7f1b960bb43c60a290515c0a397480c9f4fda081f",
+    "pwa-register.js": "5661a234de3e492624bf6c3981b6e9e270ac50d4fb301a37740c48a6e2865480",
+    "report-review.css": "ab14ec5cd0c91aa3bde60b5a00e4d780fe1d8443fe38c12c54a077cf787dec0c",
+    "salary-periods.js": "bf7cd774ae076340bdac1ac53a51885fd7bfb40352934ca4fcf18530689c41a2",
+    "simple-auth-v57.js": "556bcaa9acb9b363f82cc5ee5db49c0432e950233823671cc59361c1e67c3695",
+    "staff-link-patch.js": "8bf36225cb6260f2d2f348ca9cbd3f9589afe6a2509b9434a8f9a58a19a4fbe0",
+    "startup-eager.bundle.js": "8413dc792f5fa5e5d4d8b9c38374c01b9c89f67e1b3128610c83e92eb673b89a",
+    "startup-shell.bundle.js": "f4469ff20a7c535c6b012407492589d5c1a475e96a8365c0df5d471a8c3e2bf2",
+    "styles.css": "4224b199d3c1d098d0d24c2ef682d439a998e85db93c14834617c5c8badbc153",
+    "test-pin-auth.js": "e51901cfefcb0375950cb20d87b4b47bda33857a2c8c6821e05e30ce753a4c49",
+    "ui-refresh-v1.css": "61917b1daa686bc90ed20896cca318fe2157251d22ff3fcff471b3f676b410ec",
+    "ui-v2.css": "e068918f6016cb01a1921707216988cdd1334e97725ad3814e7d98aa1865abf5",
+    "visual-v3.css": "fc16ff8c9a1df5176de3e0109c7202f18f2c0fe80559e11f5846df3de6ea0670",
+    "build-version.js": "fa5110580ed2fab6c288475a1f844fe0f75b50cb549cb8a3b1a8f27b1c2761de",
+    "index.html": "f7c178bebc05709e27f38343fc868d7558dcd0450ceba3f59d757bd651e3c5f9",
+    "sw.js": "f3115eb893dae271c35770199b4d49297056b477f6611ecb28a66aa70ae8bc4b"
+  },
+  "after": {
+    "finance-data.js": "8af510d14a8883236800760d007e00edb222139847f773ff22af2866a287370c",
+    "startup-shell.bundle.js": "50dac1a7366a24f0825f7bed26ce1b49d34ffe3fcfe5b460fe4ba9ad44af86f4",
+    "startup-eager.bundle.js": "bdce58a170b5e6c86d2da9c8e087cec483e34f501f4138ec112bc0dde325ff65",
+    "index.html": "66d1599ee575993a13924f4b54c4a85691eb29b4a2827bb015fb706359ffd227",
+    "sw.js": "993d91fbe38d488bbfcb7fdeb3b085ca2b340b2ea88490e4c339fcacbe4ea9a5",
+    "build-version.js": "c85031f42dcd9f13cafc4c75f4752cc80c469b8dfd76ecebb4093f9bf1689504"
+  },
+  "new_dirs": [],
+  "new_files": [],
+  "optional": {
+    "app-public.js": {
+      "before": "781eefce579202758de54d1dbd906e96438ec4ce791f507083e9ce5d9415f5d3",
+      "after": "3f86c566040aa7be3c992e310323b544341551599f3d380a2cdef4e6cb1f8483"
+    },
+    "astra-schedule-ui-v5.js": {
+      "before": "280ef4680e1ebcf6026a079f38a540a498335da14a82fbf9c8a0adc581bdc4ad",
+      "after": "925620b31b6acf037ec5743a7206f5e13ab957d6981a2c8bfbe978552577e94d"
+    },
+    "business-os-custom-v3.js": {
+      "before": "07707340b0db133a574c367314cf52ed091be4f08b5403ad720017fe161df1d5",
+      "after": "4d1a89692d751acd5b3755cb2665ba47eb93daecb7103a44881983e299d0c19d"
+    },
+    "dispatcher-board-v92.js": {
+      "before": "38d4d49c16c6cc5e1899aa281af7ae77b91278562baf1b01c6af1243c141bb80",
+      "after": "89f5c3c3b6816749f0d0e8dac70d0b560631f0593dc6eba2f1fa2096a1bdeaf1"
+    },
+    "dispatcher-desktop-v89.js": {
+      "before": "9a097febca6ee9a0eba2eca726367b324b69eaff56d54b302245568e498276de",
+      "after": "7eec3ec14cc3792b0990bcdb991484c7b912cd62e9ec826c45bd4d1cd91f2aa3"
+    },
+    "hands-integration-v69.js": {
+      "before": "987edbe2a053172e407cb2ecab54787aa0436086fb420265290e4b972cd6674b",
+      "after": "d43705edb91771ac777ff8bbb028045e56615b98fee907a2dcef5b81fc27e429"
+    },
+    "management-order-compact-v82.js": {
+      "before": "78d80a4422e13d0e72b0342a1689b95c349ca0d61507d5e773d119aea5eb57b6",
+      "after": "eed1102f8c7ff73985513124267b5b41c10fc66ddb8aa0dced491c95cbb4decb"
+    },
+    "new-order-card-v104.js": {
+      "before": "8bb3a19a8d06829f13b361ac6bc607df2c27ce5361b79e28f24618dfe6c182d9",
+      "after": "cc456e81b56ccf9a0ca201e2d4df721671ac3ad0cfbce9e7efa817e825cb9531"
+    },
+    "order-filters-v22.js": {
+      "before": "f6bdda4d25b440e81c9f993461ff94c684c6c99ac57b7cb4514927586b6d2541",
+      "after": "5928eef90d0d2371e91abef701d02761ad40d76409af3315bed3c8ae772612f3"
+    },
+    "order-lifecycle-v106.js": {
+      "before": "d333a8dd875bc8705144ed4cb925e90ea60ac0a6ca4db6e446f6b6f16815d364",
+      "after": "e7203041fee1f2ea33036d00618b12adb3a97e9d087685cb7466078e123c6824"
+    },
+    "order-payroll.js": {
+      "before": "e1a9762fcf242dbb899d201f88528d5c8c9715e472d30f5aa60f8aa2d233ddd1",
+      "after": "ca8e61426843678da4c83aca6d5baa47df5a798b13951b95e4477b18c428d565"
+    },
+    "reclamation-status-v18.js": {
+      "before": "279a8b73b9952587190a7b34e5bdc7688c618d68bf798a32fbd4fe85f5289356",
+      "after": "b3b5c722c30713df4e932326c45da4eddf01cde72c983faacd5f7b27f2eb2b04"
+    }
+  },
+  "api-before.ts_sha256": "7e57b07bf3e750bb91a292557d63d648ce5541ee82bb41b6e99da16acdc9a272",
+  "api-after.ts_sha256": "cf693700abc30e952492f02e21be4fcc94c990ce8636104cea698fd73548272a",
+  "migration.sql_sha256": "4d802069f89cd609f5f64992ecc413216ba8e06bb36a57ac922ab011a692539c",
+  "backend.json_sha256": "b1f6c1e30f620ad483e30235531c1fc4542a9bbcf3ec63695ff63c3118d865b1"
+}

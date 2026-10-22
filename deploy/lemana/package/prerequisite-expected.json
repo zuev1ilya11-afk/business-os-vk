@@ -1,0 +1,109 @@
+{
+  "columns": [
+    {
+      "name": "amount_confirmed",
+      "type": "boolean",
+      "nullable": "YES",
+      "default": null
+    },
+    {
+      "name": "entrance",
+      "type": "text",
+      "nullable": "YES",
+      "default": null
+    },
+    {
+      "name": "floor",
+      "type": "text",
+      "nullable": "YES",
+      "default": null
+    },
+    {
+      "name": "intercom",
+      "type": "text",
+      "nullable": "YES",
+      "default": null
+    },
+    {
+      "name": "order_number",
+      "type": "text",
+      "nullable": "YES",
+      "default": null
+    },
+    {
+      "name": "received_date",
+      "type": "date",
+      "nullable": "YES",
+      "default": null
+    }
+  ],
+  "functions": [
+    {
+      "name": "bos_check_manual_order_number",
+      "args": "",
+      "result": "trigger",
+      "md5": "dbd69d2862a10df5b86967860e4c3a43",
+      "language": "plpgsql",
+      "security_definer": false,
+      "volatility": "v",
+      "parallel": "u",
+      "config": [
+        "search_path=public"
+      ]
+    },
+    {
+      "name": "bos_confirm_order_amount_on_change",
+      "args": "",
+      "result": "trigger",
+      "md5": "f695a1f5ef493a8f80a1365016ab105e",
+      "language": "plpgsql",
+      "security_definer": false,
+      "volatility": "v",
+      "parallel": "u",
+      "config": [
+        "search_path=public"
+      ]
+    },
+    {
+      "name": "bos_order_number_source",
+      "args": "value text",
+      "result": "text",
+      "md5": "a47af370cfe49b50a8e5d8f96630c779",
+      "language": "sql",
+      "security_definer": false,
+      "volatility": "i",
+      "parallel": "s",
+      "config": [
+        "search_path=public"
+      ]
+    }
+  ],
+  "constraints": [
+    {
+      "name": "orders_manual_number_valid",
+      "valid": true,
+      "definition": "CHECK (((order_number IS NULL) OR ((order_number = btrim(order_number)) AND ((char_length(order_number) >= 1) AND (char_length(order_number) <= 80)) AND (order_number !~ '[[:cntrl:]]'::text))))"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "orders_manual_number_unique",
+      "valid": true,
+      "ready": true,
+      "unique": true,
+      "definition": "CREATE UNIQUE INDEX orders_manual_number_unique ON public.orders USING btree (bos_order_number_source(source), order_number) WHERE (order_number IS NOT NULL)"
+    }
+  ],
+  "triggers": [
+    {
+      "name": "orders_check_manual_number",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER orders_check_manual_number BEFORE INSERT OR UPDATE OF order_number, source ON public.orders FOR EACH ROW EXECUTE FUNCTION bos_check_manual_order_number()"
+    },
+    {
+      "name": "zz_bos_confirm_order_amount",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER zz_bos_confirm_order_amount BEFORE UPDATE ON public.orders FOR EACH ROW EXECUTE FUNCTION bos_confirm_order_amount_on_change()"
+    }
+  ]
+}
