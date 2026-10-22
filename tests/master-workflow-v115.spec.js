@@ -23,7 +23,7 @@ test('master follows departed started report sequence for scheduled order',async
   const panel=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(panel).toBeVisible();
   const departed=panel.getByRole('button',{name:/Подтвердить: выехал/});
-  const started=panel.getByRole('button',{name:/Подтвердить: начал работу/});
+  const started=panel.getByRole('button',{name:/Начать работу/});
   const report=panel.getByRole('button',{name:/Отправить отчёт/});
   await expect(departed).toBeEnabled();
   await expect(started).toHaveCount(0);
@@ -90,6 +90,6 @@ test('legacy departed stage maps to completed departed action',async({page})=>{
   const panel=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(panel).toBeVisible();
   await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toHaveCount(0);
-  await expect(panel.getByRole('button',{name:/Подтвердить: начал работу/})).toBeEnabled();
+  await expect(panel.getByRole('button',{name:/Начать работу/})).toBeEnabled();
   await expect(panel.getByRole('button',{name:/Отправить отчёт/})).toHaveCount(0);
 });

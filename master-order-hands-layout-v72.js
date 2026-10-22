@@ -12,6 +12,8 @@ const works=o=>String(o?.work||'Работа не указана').split(/\n+/).
 const pay=o=>{const direct=window.BOS_ORDER_PAYROLL?.directMaster(o);if(direct!=null)return direct;const raw=o?.amount;if(raw!==null&&raw!==undefined&&raw!==''){const amount=Number(raw);if(Number.isFinite(amount))return amount*0.85*0.65}const stored=Number(o?.master_payout||0);return Number.isFinite(stored)?stored:0};
 const breakdown=o=>window.BOS_ORDER_PAYROLL?.masterBreakdown(o);
 const totalPay=o=>{const d=breakdown(o);return d?d.masterTotal:pay(o)};
+// Presentation only: an absent value must not become a zero through Number(null).
+const payoutKnown=o=>o.amount_confirmed!==false&&[o.amount,o.master_payout].some(v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v)));
 function costHtml(o){
   if(o.amount_confirmed===false)return '<section class="masterCostBreakdown" data-master-cost><strong>Стоимость не указана</strong><p class="muted">Сумма и выплата будут рассчитаны после согласования стоимости.</p></section>';
   if(!window.BOS_ORDER_PAYROLL?.isDirect(o))return '';
@@ -25,6 +27,22 @@ const yandexRouteHref=o=>{const destination=routeAddress(o);return destination?`
 const addressHtml=o=>{const address=String(o?.address||'').trim();if(!address)return '<b>Адрес не указан</b>';const href=yandexRouteHref(o);return `<b><a class="bosHandsAddressLink" href="${esc(href)}" target="_blank" rel="noopener noreferrer" aria-label="Открыть адрес в Яндекс Картах: ${esc(routeAddress(o))}">${esc(address)}</a></b>`};
 function parseWork(x){const clean=String(x||'').trim();const m=clean.match(/^(.*?)\s*[×x]\s*([\d.,]+)\s*(.*?)\s*$/i);if(!m)return{title:clean,qty:''};return{title:m[1].trim(),qty:`${m[2]}${m[3]?' '+unit(m[3]):''}`}}
 const workRow=x=>{const w=parseWork(x);return `<div class="bosHandsWorkRow"><span>${esc(w.title)}</span>${w.qty?`<b>${esc(w.qty)}</b>`:''}</div>`};
+function detailWorks(o){
+ const items=Array.isArray(o.work_items)?o.work_items.filter(x=>x&&String(x.name||'').trim()):[];
+ // An explicit empty snapshot is a description-only intake. Legacy imports
+ // without this field retain their existing newline-delimited work list.
+ if(Array.isArray(o.work_items)&&!items.length)return {count:0,html:'',description:String(o.work||'').trim()};
+ if(!items.length){const list=String(o.work||'').trim()?works(o):[];return {count:list.length,html:list.map(workRow).join(''),description:''}}
+ const raw=String(o.work||'').trim(),generated=window.BOS_WORK_ITEMS?.text(items)||'';
+ // Intake stores free description followed by its exact generated item text.
+ // Only remove that exact suffix; never infer quantities from prose.
+ const description=generated&&raw.endsWith(generated)?raw.slice(0,-generated.length).trim():raw===items.map(x=>x.name).join('\n')?'':raw;
+ return {count:items.length,description,html:items.map(x=>{
+  const quantity=x.quantity!==null&&x.quantity!==undefined&&String(x.quantity).trim()!==''?String(x.quantity).replace('.',','):'';
+  const quantityLabel=[quantity,unit(x.unit)].filter(Boolean).join(' ');
+  return `<div class="bosHandsWorkRow"><span>${esc(x.name)}</span>${quantityLabel?`<b>${esc(quantityLabel)}</b>`:''}</div>`;
+ }).join('')};
+}
 const workCount=n=>n%10===1&&n%100!==11?'работа':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'работы':'работ';
 const rows=o=>{const all=works(o);return all.slice(0,2).map(workRow).join('')+(all.length>2?`<details class="bosMoreWorks"><summary><span class="bosExpand">Ещё ${all.length-2} ${workCount(all.length-2)}</span><span class="bosCollapse">Свернуть работы</span></summary>${all.slice(2).map(workRow).join('')}</details>`:'')};
 const apartmentHtml=o=>{const flat=String(o.apartment||'').trim().replace(/^(?:квартира|кв\.?)\s*/iu,'');const bits=[flat?'кв. '+flat:'',o.floor?'этаж '+o.floor:'',o.entrance?'подъезд '+o.entrance:'',o.intercom?'домофон '+o.intercom:''].filter(Boolean);return bits.length?`<div class="bosApartment">${bits.map(esc).join(' · ')}</div>`:''};
@@ -67,13 +85,36 @@ const phoneHtml=o=>{
  return `<div class="bosCompactPhone masterV126PhoneList">${phones.map((item,index)=>`<div class="masterV126PhoneRow"><a class="masterV126Phone" href="tel:${esc(item.tel)}">${esc(item.label)}</a><div class="masterV126PhoneActions"><button type="button" class="secondary masterV126CopyPhone" onclick="copyMasterPhone72('${esc(item.tel)}',this)" aria-label="Скопировать номер ${index+1}">Копировать</button><a class="secondary bosClientCallAction" href="tel:${esc(item.tel)}" aria-label="${index===0?'Позвонить клиенту':'Позвонить клиенту '+(index+1)}">Позвонить</a></div></div>`).join('')}</div>`;
 };
 const contactSummaryHtml=o=>{
- const event=window.BOS_CONTACT_STATUS?.latest?.(o);if(!event)return'';
- const summary=window.BOS_CONTACT_STATUS?.html?.(o)||'';
- const comment=String(event.result==='pending'?o.master_contact_comment||'':event.comment||'').trim();
- const pending=String(event.result||'')==='pending';
- return `<div class="bosMasterContactSummary">${summary}${comment?`<small>${esc(comment)}</small>`:''}${pending?`<button type="button" class="secondary" onclick="openMasterContactResultForOrder('${esc(o.id)}')">Указать итог звонка</button>`:''}</div>`;
+ const event=window.BOS_CONTACT_STATUS?.latest?.(o);if(!event)return'<div class="bosMasterClientActions"></div>';
+ const summary=window.BOS_CONTACT_STATUS?.html?.(o,{includePhone:false,includeVisit:false})||'';
+ const comment=String(event?.result==='pending'?o.master_contact_comment||'':event?.comment||'').trim();
+ return `<div class="bosMasterContactSummary">${summary}${comment?comment.length>140?`<details><summary>Подробнее</summary><p class="bosContactComment">${esc(comment)}</p></details>`:`<p class="bosContactComment">${esc(comment)}</p>`:''}<div class="bosMasterClientActions"></div></div>`;
 };
 const received=o=>{const raw=String(o.received_date||o.created_at||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:'—'};
+function visitHtml(o){
+ const date=String(o.scheduled_date||'').slice(0,10),time=String(o.scheduled_time||o.time_slot||'').trim();
+ const day=offset=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(Date.now()+offset*86400000));
+ const relative=date&&date===day(0)?'Сегодня':date&&date===day(1)?'Завтра':'';
+ const parsed=/^\d{4}-\d{2}-\d{2}$/.test(date)?new Date(date+'T12:00:00Z'):null;
+ const label=parsed&&!Number.isNaN(parsed.getTime())?parsed.toLocaleDateString('ru-RU',{timeZone:'Europe/Moscow',day:'numeric',month:'long',weekday:'short'}):date||'Дата не назначена';
+ const timeLabel=/^\d{2}:\d{2}:\d{2}(?:\.\d+)?$/.test(time)?time.slice(0,5):time;
+ return `<section class="bosOrderVisit" aria-label="Визит и адрес"><div class="bosOrderVisitTime"><div><small>Визит</small><b class="bosVisitDay">${esc(label)}</b><strong class="bosVisitTime">${esc(timeLabel||'Время не назначено')}</strong></div>${relative?`<span class="bosVisitRelative">${relative}</span>`:''}</div><div class="bosHandsBlock bosCompactAddress"><div>${addressHtml(o)}${apartmentHtml(o)}</div></div></section>`;
+}
+function additionalHtml(o){
+ const contactHistory=window.BOS_CONTACT_STATUS?.history?.(o)||[];
+ return `<details class="bosOrderAdditional"><summary>Дополнительно</summary><div class="bosOrderExtraActions"></div><p class="bosCompactReceived">Поступила ${esc(received(o))}</p>${contactHistory.length?`<details class="bosOrderContactHistory"><summary>История контактов (${contactHistory.length})</summary>${window.BOS_CONTACT_STATUS.html(o,{details:true})}</details>`:''}${window.BOS_MANUAL_COMPLETION?.history(o)||''}${typeof reportLinksHtml==='function'?reportLinksHtml(o):''}</details>`;
+}
+const visitSignatures=new WeakMap();
+window.BOS_MASTER_ORDER_REFRESH_DETAILS=function(card,o){
+ const visit=card.querySelector('.bosOrderVisit');
+ const signature=JSON.stringify([o.scheduled_date,o.scheduled_time,o.time_slot,o.address,o.city,o.apartment,o.floor,o.entrance,o.intercom,new Date().toLocaleDateString('en-CA',{timeZone:'Europe/Moscow'})]);
+ if(visit&&visitSignatures.get(visit)!==signature){
+  const template=document.createElement('template');template.innerHTML=visitHtml(o);
+  const next=template.content.firstElementChild;visitSignatures.set(next,signature);visit.replaceWith(next);
+ }
+ const status=card.querySelector('.bosHandsHead>.status'),label=o.status||'Статус не указан';
+ if(status&&status.textContent!==label)status.textContent=label;
+};
 
 const shortRows=o=>works(o).slice(0,3).map(x=>{const w=parseWork(x);return `<div class="bosHandsMiniWork"><span>${esc(w.title)}</span>${w.qty?`<b>${esc(w.qty)}</b>`:''}</div>`}).join('')+(works(o).length>3?`<div class="bosHandsMore">+ ещё ${works(o).length-3}</div>`:'');
 const card=o=>`<button class="bosHandsMiniCard" onclick="openOrder('${esc(o.id)}')"><div class="bosHandsMiniHead"><b>№ ${esc(no(o))}</b><span>${esc(dateTime(o))}</span></div><div class="bosHandsMiniClient"><b>${esc(o.client||'Клиент не указан')}</b><strong>Выплата: ${money(pay(o))}</strong></div><div class="bosHandsMiniAddress">${esc(o.address||'Адрес не указан')}</div><div class="bosHandsMiniWorks">${shortRows(o)}</div></button>`;
@@ -86,7 +127,20 @@ document.addEventListener('click',event=>{const btn=event.target?.closest?.('[da
 const baseOrders=pages.orders;
 pages.orders=function(){if(!masterMode())return baseOrders();const all=(typeof ownOrders==='function'?ownOrders():(state.orders||[])).slice().sort((a,b)=>String((a.scheduled_date||'9999')+(a.scheduled_time||'')).localeCompare(String((b.scheduled_date||'9999')+(b.scheduled_time||''))));return `<div class="masterSimple masterOrdersDense"><div class="masterSectionTitle"><div><h2>Мои заявки</h2><div class="muted">${all.length} шт.</div></div></div>${filters(all)}${all.length?grouped(all):'<div class="masterEmpty">Заявок пока нет</div>'}</div>`};
 const baseOpen=window.openOrder;
-window.openOrder=function(id){if(!masterMode())return baseOpen.apply(this,arguments);const o=(state.orders||[]).find(x=>String(x.id)===String(id));if(!o)return;const d=breakdown(o);openModal(`<div class="bosHandsOrder bosCompactMasterCard"><div class="bosHandsHead"><div class="bosMasterTitle"><b>№ ${esc(no(o))}</b><small class="bosReceivedInline bosCompactReceived">Поступила ${esc(received(o))}</small></div><span class="status info">${esc(o.status||'В работе')}</span></div><div class="bosHandsBlock bosCompactAddress"><div>${addressHtml(o)}${apartmentHtml(o)}</div></div><section class="bosApprovedClient bosApprovedSection"><h3>Клиент</h3><div class="bosHandsBlock bosCompactClient"><div><b>${esc(o.client||'Клиент не указан')}</b>${phoneHtml(o)}${contactSummaryHtml(o)}<div class="bosMasterClientActions"></div></div></div></section><section class="bosHandsWorks bosApprovedSection"><h3 class="bosWorksLabel">Работы</h3><div class="bosHandsWorkList">${works(o).map(workRow).join('')}</div>${commentHtml(o)}${costHtml(o)?`<details class="bosCompactCost"><summary>Расчёт стоимости</summary>${costHtml(o)}</details>`:''}<div class="bosCompactMoney">${d?`<strong>Стоимость: ${o.amount_confirmed===false?'Стоимость не указана':money(d.total)}</strong>`:''}<span>Выплата: ${o.amount_confirmed===false?'Не рассчитана':money(totalPay(o))}</span></div></section><section class="bosApprovedVisit bosApprovedSection"><h3>Визит</h3><div class="bosHandsBlock bosCompactDate"><span>Дата и время</span><b>${esc(dateTime(o))}</b></div><div class="bosTaskRow"><span>Адрес</span><span>${esc(o.address||'Адрес не указан')}</span></div>${apartmentHtml(o)}</section>${window.BOS_MANUAL_COMPLETION?.history(o)||''}${typeof reportLinksHtml==='function'?reportLinksHtml(o):''}</div>`);const modal=document.querySelector('#modalRoot .modal');modal?.classList.add('bosCompactOrderModal');const close=modal?.querySelector('.modalClose');if(close){close.setAttribute('aria-label','Закрыть заявку');modal.querySelector('.bosHandsHead').appendChild(close)}};
+window.openOrder=function(id){
+ if(!masterMode())return baseOpen.apply(this,arguments);
+ const o=(state.orders||[]).find(x=>String(x.id)===String(id));if(!o)return;
+ const d=breakdown(o),work=detailWorks(o);
+ openModal(`<div class="bosHandsOrder bosCompactMasterCard">
+  <div class="bosHandsHead"><div class="bosMasterTitle"><b>№ ${esc(no(o))}</b></div><span class="status info">${esc(o.status||'Статус не указан')}</span></div>
+  ${visitHtml(o)}
+  <section class="bosApprovedClient bosApprovedSection"><h3>Клиент</h3><div class="bosHandsBlock bosCompactClient"><div><b>${esc(o.client||'Клиент не указан')}</b>${phoneHtml(o)}${contactSummaryHtml(o)}</div></div></section>
+  <section class="bosHandsWorks bosApprovedSection"><h3 class="bosWorksLabel">Работы${work.count?' ('+work.count+')':''}</h3><div class="bosHandsWorkList">${work.html||(!work.description?'<p class="muted">Работы не указаны</p>':'')}</div>${work.description?`<p class="bosWorkDescription">${esc(work.description)}</p>`:''}${commentHtml(o)}<div class="bosCompactMoney">${d?`<strong>Стоимость: ${o.amount_confirmed===false?'Стоимость не указана':money(d.total)}</strong>`:''}<span>Выплата мастеру: ${payoutKnown(o)?money(totalPay(o)):'Не рассчитана'}</span></div>${costHtml(o)?`<details class="bosCompactCost"><summary>Расчёт стоимости</summary>${costHtml(o)}</details>`:''}</section>
+  ${additionalHtml(o)}
+ </div>`);
+ const modal=document.querySelector('#modalRoot .modal');modal?.classList.add('bosCompactOrderModal');
+ const close=modal?.querySelector('.modalClose');if(close){close.setAttribute('aria-label','Закрыть заявку');modal.querySelector('.bosHandsHead').appendChild(close)}
+};
 
 function stripStaffManagement(){if(!masterMode())return;document.querySelectorAll('button,a,[role="button"],section,.card').forEach(el=>{const txt=(el.textContent||'').trim().toLowerCase();if(txt==='управление сотрудниками'||txt==='сотрудники'||txt==='команда сотрудников')el.style.display='none'})}
 const baseShow=window.show;window.show=function(){const r=baseShow.apply(this,arguments);setTimeout(stripStaffManagement,0);return r};

@@ -57,7 +57,7 @@ test('an extra callback preserves departure and legacy timestamps advance throug
  const card=page.locator('.masterV127Card[data-order-id="11"]');await expect(card).toContainText('Перезвонить');await expect(card.getByRole('button',{name:'Подтвердить выезд',exact:true})).toBeEnabled();
  Object.assign(order,{master_departed_at:'2026-10-08T14:00:00Z'});
  await page.evaluate(o=>{Object.assign(state.orders.find(x=>x.id===o.id),o);window.BOS_MASTER_DAILY_HOME_V127_API.refresh();},order);
- await card.getByRole('button',{name:'Начать работу',exact:true}).click();await page.locator('.bosStageTask').getByRole('button',{name:'Подтвердить: начал работу',exact:true}).click();await expect(page.locator('.moa179Steps')).toContainText('Отправка отчёта');expect(order.master_started_at).toBeTruthy();
+ await card.getByRole('button',{name:'Начать работу',exact:true}).click();await page.locator('.bosStageTask').getByRole('button',{name:'Подтвердить: начал работу',exact:true}).click();await expect(page.locator('.moa179Step.current')).toContainText('Отчёт');expect(order.master_started_at).toBeTruthy();
 });
 test('home result and agreement move an undated order to its saved day without reload',async({page})=>{
  const {db}=await fixture(page);const home=page.locator('#masterDailyV127');await home.getByRole('tab',{name:/Новые/}).click();

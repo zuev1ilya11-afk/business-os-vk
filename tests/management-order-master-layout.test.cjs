@@ -3,7 +3,6 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 
 const management=fs.readFileSync('management-order-compact-v82.js','utf8');
-const master=fs.readFileSync('master-order-hands-layout-v72.js','utf8');
 const editor=fs.readFileSync('business-os-custom-v3.js','utf8');
 
 test('management order mirrors master information blocks and stays editable',()=>{
@@ -29,8 +28,5 @@ test('leadership editor supports multiple phones, works and a master comment',()
   assert.doesNotMatch(editor,/цена не указана в прайсе/);
 });
 
-test('master received date is shown inline with the order number',()=>{
-  assert.match(master,/bosMasterTitle/);
-  assert.match(master,/bosReceivedInline/);
-  assert.match(master,/bosReceivedInline bosCompactReceived/);
-});
+// Master received-date placement is exercised through the actual modal in
+// master-order-compact-layout.spec.js (collapsed Additional, not the header).

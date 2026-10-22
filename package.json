@@ -8,7 +8,9 @@
     "build": "node scripts/build-version.cjs",
     "build:check": "node scripts/build-version.cjs --check",
     "preview:order-intake": "node scripts/preview-order-intake.cjs",
-    "test:preview-intake": "node scripts/verify-order-intake-preview.cjs"
+    "test:preview-intake": "node scripts/verify-order-intake-preview.cjs",
+    "preview:master-order": "node scripts/preview-master-order.cjs",
+    "test:preview-master-order": "node scripts/capture-master-order.cjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.10",

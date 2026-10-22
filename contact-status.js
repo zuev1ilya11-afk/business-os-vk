@@ -27,13 +27,13 @@ function eventHtml(event){
  const at=time(event?.result_at||event?.at),phone=String(event?.phone||'').trim(),comment=String(event?.comment||'').trim(),author=String(event?.by_name||'').trim(),callback=time(event?.callback_at);
  return `<div class="bosContactEvent ${tone(String(event?.result||''))}"><div class="bosContactEventTop"><b>${escape(label)}</b><span>${escape(at||'—')}</span></div><div class="bosContactEventPhone">${escape(phone||'Номер не указан')}</div>${comment?`<div class="bosContactEventComment">${escape(comment)}</div>`:''}${callback?`<div class="bosContactEventCallback">Перезвонить: ${escape(callback)}</div>`:''}${author?`<small>${escape(author)}</small>`:''}</div>`;
 }
-function html(order,{details=false}={}){
+function html(order,{details=false,includePhone=true,includeVisit=true}={}){
  const event=latest(order);
  if(event){
   const result=String(event.result||'pending'),label=LABELS[result]||'Звонок',at=time(event.result_at||event.at),phone=String(event.phone||'').trim(),comment=String(event.comment||'').trim();
-  const summary=`<span class="bosContactStatus ${tone(result)}">${escape(label)}${at?' · '+escape(at):''}${phone?' · '+escape(phone):''}</span>`;
+  const summary=`<span class="bosContactStatus ${tone(result)}">${escape(label)}${at?' · '+escape(at):''}${includePhone&&phone?' · '+escape(phone):''}</span>`;
   const callback=time(order?.master_contact_callback_at),visit=order?.master_contact_status==='agreed'&&order?.scheduled_date&&order?.scheduled_time?String(order.scheduled_date).slice(0,10)+' · '+String(order.scheduled_time).slice(0,5):'';
-  const next=order?.master_contact_control_active?(visit?`<small class="bosContactLatestComment">Визит: ${escape(visit)} МСК</small>`:callback?`<small class="bosContactLatestComment">Следующий контакт: ${escape(callback)} МСК${!['Выполнена','Отменена'].includes(order.status)&&Date.parse(order.master_contact_callback_at)<Date.now()?' · Просрочено':''}</small>`:''):'';
+  const next=order?.master_contact_control_active?(visit?(includeVisit?`<small class="bosContactLatestComment">Визит: ${escape(visit)} МСК</small>`:''):callback?`<small class="bosContactLatestComment">Следующий контакт: ${escape(callback)} МСК${!['Выполнена','Отменена'].includes(order.status)&&Date.parse(order.master_contact_callback_at)<Date.now()?' · Просрочено':''}</small>`:''):'';
   if(!details)return summary+next;
   const events=history(order).slice(-50).reverse();
   return summary+next+`${comment?`<small class="bosContactLatestComment">${escape(comment)}</small>`:''}<div class="bosContactHistory"><b>История связи</b>${events.map(eventHtml).join('')}</div>`;

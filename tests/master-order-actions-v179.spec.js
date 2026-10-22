@@ -21,16 +21,16 @@ test('scheduled master order shows confirmed sequential progress and confirmed r
   const panel=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(panel).toBeVisible();
   await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toBeEnabled();
-  await expect(panel.getByRole('button',{name:/Подтвердить: начал работу/})).toHaveCount(0);
+  await expect(panel.getByRole('button',{name:/Начать работу/})).toHaveCount(0);
   await expect(panel.getByRole('button',{name:/Отправить отчёт/})).toHaveCount(0);
-  await expect(page.locator('.bosCompactMasterCard')).toContainText('Требует подтверждения диспетчера или руководителя');
+  await expect(page.locator('.bosCompactMasterCard')).toContainText('Перенос требует подтверждения диспетчера или руководителя');
   await expect(page.locator('.bosCompactMasterCard').getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
 
   await panel.getByRole('button',{name:/Подтвердить: выехал/}).click();if(await page.locator('.bosStageTask').count())await page.locator('.bosStageTask').getByRole('button',{name:/Подтвердить: выехал/}).click();
   await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('departed');
-  await expect(panel.getByRole('button',{name:/Подтвердить: начал работу/})).toBeEnabled();
+  await expect(panel.getByRole('button',{name:/Начать работу/})).toBeEnabled();
 
-  await panel.getByRole('button',{name:/Подтвердить: начал работу/}).click();if(await page.locator('.bosStageTask').count())await page.locator('.bosStageTask').getByRole('button',{name:/Подтвердить: начал работу/}).click();
+  await panel.getByRole('button',{name:/Начать работу/}).click();if(await page.locator('.bosStageTask').count())await page.locator('.bosStageTask').getByRole('button',{name:/Подтвердить: начал работу/}).click();
   await expect.poll(()=>order11(db)?.master_workflow_stage).toBe('started');
   await expect(panel.getByRole('button',{name:/Отправить отчёт/})).toBeEnabled();
 
@@ -75,7 +75,7 @@ test('order without date uses agreement form then switches to scheduled workflow
   await expect.poll(()=>order11(db)?.master_called_at).toBeTruthy();
   await expect.poll(()=>order11(db)?.master_agreed_at).toBeTruthy();
   await expect(panel.getByRole('button',{name:/Подтвердить: выехал/})).toBeEnabled();
-  await expect(panel.getByRole('button',{name:/Подтвердить: начал работу/})).toHaveCount(0);
+  await expect(panel.getByRole('button',{name:/Начать работу/})).toHaveCount(0);
 });
 
 test('reschedule action keeps existing approval request form',async({page})=>{

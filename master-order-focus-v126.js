@@ -96,8 +96,8 @@ function decorate(){
   if(!modal||modal.querySelector('.bosStageTask,.bosReportReceipt,#masterReportForm,#masterAgreementForm,#masterOrderAgree179Form,#masterRescheduleForm'))return;
   const compact=modal.querySelector('.bosCompactMasterCard');
   if(compact){
-    const id=String(modal.dataset?.bosMasterOrderId||window.__bosLastMasterOrderId||''),o=orderById(id);
-    if(o)decoratePhone(modal,o);
+    // Compact detail already renders its explicit telephone links. Do not turn
+    // the first unrelated <small> (e.g. agreement status) into a phone action.
     return;
   }
   const panel=modal.querySelector('.bosMasterWorkflow');

@@ -74,6 +74,6 @@ for(const role of ['owner','master'])test(`${role}: manually closed Hands card d
  const x=await fixture(page,role);Object.assign(x.order,{status:'Выполнена',completed_at:doneAt,master_payout:0,manual_completion_history:[event]});
  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();await page.evaluate(()=>openOrder('11'));
  const amount=page.locator(role==='master'?'.bosCompactMoney span':'.bosManageMoney span');
- await expect(amount).toHaveText(/(?:Выплата|Мастеру):\s*0\s*₽/);
- x.order.master_payout=123;await page.evaluate(async()=>{await reloadData(true);openOrder('11')});await expect(amount).toHaveText(/(?:Выплата|Мастеру):\s*123\s*₽/);
+ await expect(amount).toHaveText(/(?:Выплата(?: мастеру)?|Мастеру):\s*0\s*₽/);
+ x.order.master_payout=123;await page.evaluate(async()=>{await reloadData(true);openOrder('11')});await expect(amount).toHaveText(/(?:Выплата(?: мастеру)?|Мастеру):\s*123\s*₽/);
 });

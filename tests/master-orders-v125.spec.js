@@ -51,7 +51,7 @@ test('master orders v125 stays readable on mobile and shows concise real work',a
   const workflow=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(workflow).toBeVisible();
   const received=page.locator('.bosCompactReceived');
-  await expect(received).toBeVisible();
+  await expect(received).toBeHidden();await page.locator('.bosOrderAdditional>summary').click();await expect(received).toBeVisible();
   await expect(received).toContainText('Поступила');
   await expect(received).toContainText('20.09.2026');
   await expect(page.locator('.masterV126PhoneRow')).toHaveCount(2);
