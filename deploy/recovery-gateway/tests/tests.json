@@ -1,0 +1,67 @@
+[
+  {
+    "name": "Check current production API and authorization service",
+    "sanity": true,
+    "viewport": "desktop",
+    "covers": [
+      "diagnostic health workflow",
+      "GET /api/health",
+      "POST /api/forward auth health",
+      "repeatable read-only requests"
+    ],
+    "description": "Shows three real successful API responses and the authorization service status through the recovery route.",
+    "steps": [
+      "Open /?diagnostics=1",
+      "Click Проверить соединение",
+      "Wait for the results",
+      "Click Проверить соединение again"
+    ],
+    "expected": "Both runs show API 1/3: OK, API 2/3: OK, API 3/3: OK and Авторизация: HTTP 200."
+  },
+  {
+    "name": "Preserve production login and deny empty credentials",
+    "viewport": "mobile",
+    "covers": [
+      "GET /api/prod-index",
+      "GET /api/prod/:asset",
+      "production login gate",
+      "required-field validation",
+      "no anonymous business data"
+    ],
+    "description": "Loads the current production sign-in screen and keeps business data inaccessible without credentials.",
+    "steps": [
+      "Open / in a fresh browser session",
+      "Wait for Вход по логину and the login/password fields",
+      "Click Войти with both fields empty"
+    ],
+    "expected": "The login form stays visible with required-field validation. No authenticated dashboard or real order list is shown. Do not supply or guess credentials."
+  },
+  {
+    "name": "Unavailable production stops launch and exposes retry",
+    "viewport": "desktop",
+    "covers": [
+      "health failure handling",
+      "recovery retry",
+      "no false successful launch"
+    ],
+    "description": "An unavailable upstream produces a visible recovery error with a retry action.",
+    "qa_faults": [
+      {
+        "method": "GET",
+        "path": "/api/health",
+        "status": 503,
+        "body_json": {
+          "ok": false,
+          "error": "UPSTREAM_UNAVAILABLE"
+        }
+      }
+    ],
+    "steps": [
+      "Open /",
+      "Wait for the connection check",
+      "Click Повторить"
+    ],
+    "expected": "The page shows Не удалось открыть резервный вход and a Повторить button again, without showing private business data."
+  }
+]
+

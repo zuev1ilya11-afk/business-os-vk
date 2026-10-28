@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { margin: 0; background: #08101b; color: #eef3fa; font-family: system-ui, sans-serif; }
+.recovery { box-sizing: border-box; max-width: 540px; margin: 12vh auto; padding: 24px; }
+.recovery h1 { font-size: 26px; margin-bottom: 16px; }
+.recovery p { margin: 16px 0; line-height: 1.5; }
+.recovery button { padding: 12px 20px; border-radius: 10px; background: #227bdb; color: white; cursor: pointer; }
+.recovery button:disabled { opacity: .5; cursor: wait; }
+.recovery a { color: #88beff; text-decoration: underline; }
+.recovery pre { margin-top: 20px; white-space: pre-wrap; }

@@ -1,0 +1,10 @@
+{
+  "name": "Business OS — резервный вход",
+  "short_name": "Business OS",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#08101b",
+  "theme_color": "#08101b",
+  "icons": [{ "src": "/resources/brand-logo.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" }]
+}
