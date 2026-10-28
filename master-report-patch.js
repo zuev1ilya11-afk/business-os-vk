@@ -1,6 +1,6 @@
 const baseReportOpenOrder=openOrder;
 
-function safeReportHref(value){try{const u=new URL(String(value||''));return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
+function safeReportHref(value){try{const u=new URL(String(value||''));if(!['https:','http:'].includes(u.protocol))return '';const storageOrigin=window.BOS_RU_NETWORK?.origin;return storageOrigin&&u.origin==='https://139.100.237.167'&&u.pathname.startsWith('/storage/v1/')?storageOrigin+u.pathname+u.search+u.hash:u.href}catch{return ''}}
 window.BOS_CLOSE_REPORT_PHOTO=function(){document.querySelector('#reportPhotoViewer')?.remove()};
 window.BOS_OPEN_REPORT_PHOTO=function(value,label='Фото'){const u=safeReportHref(value);if(!u)return;window.BOS_CLOSE_REPORT_PHOTO();const root=document.createElement('div');root.id='reportPhotoViewer';root.className='reportPhotoViewer';root.innerHTML=`<button type="button" class="reportPhotoViewerBackdrop" aria-label="Закрыть фото" onclick="BOS_CLOSE_REPORT_PHOTO()"></button><section class="reportPhotoViewerPanel" role="dialog" aria-modal="true" aria-label="${esc(label)}"><div class="row"><b>${esc(label)}</b><button type="button" class="secondary" onclick="BOS_CLOSE_REPORT_PHOTO()">Закрыть</button></div><img src="${esc(u)}" alt="${esc(label)}"><a class="secondary wide" target="_blank" rel="noopener" href="${esc(u)}">Открыть оригинал</a></section>`;document.body.appendChild(root)};
 window.BOS_REPORT_PHOTO_THUMB=function(value,index){const u=safeReportHref(value);if(!u)return '';const label=`Фото ${Number(index)+1}`,encoded=encodeURIComponent(u);return `<button type="button" class="reportPhotoThumb" data-report-photo="${esc(encoded)}" data-report-photo-label="${esc(label)}" onclick="BOS_OPEN_REPORT_PHOTO(decodeURIComponent(this.dataset.reportPhoto),this.dataset.reportPhotoLabel)"><img src="${esc(u)}" alt="${esc(label)}" loading="lazy"><span>${esc(label)}</span></button>`};
@@ -87,3 +87,4 @@ async function waitForReport(id,token,timeout){
   while(Date.now()-started<timeout){await new Promise(r=>setTimeout(r,1800));const d=await api('bootstrap');if(d.ok){Object.assign(state,{orders:d.orders||state.orders,masters:d.masters||state.masters,users:d.users||state.users,masterSchedule:d.masterSchedule||state.masterSchedule});const o=state.orders.find(x=>String(x.id)===String(id));if(o&&String(o.report_upload_token||'')===String(token)&&o.status==='Выполнена')return o}}
   throw new Error('Отчёт загружается слишком долго. Проверьте соединение и повторите.')
 }
+

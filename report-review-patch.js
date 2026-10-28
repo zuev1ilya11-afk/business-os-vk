@@ -1,5 +1,5 @@
 (()=>{
-  function safeHref(value){try{const u=new URL(String(value||''));return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
+  function safeHref(value){try{const u=new URL(String(value||''));if(!['https:','http:'].includes(u.protocol))return '';const storageOrigin=window.BOS_RU_NETWORK?.origin;return storageOrigin&&u.origin==='https://139.100.237.167'&&u.pathname.startsWith('/storage/v1/')?storageOrigin+u.pathname+u.search+u.hash:u.href}catch{return ''}}
   function actLink(url){
     if(!url)return '';
     const image=/\.(?:jpe?g|png)$/i.test(new URL(url).pathname);
@@ -30,3 +30,4 @@
   const homeBase=pages.home;pages.home=function(){const html=homeBase();if(!canReviewReports())return html;return reviewBlock()+html};
   const ordersBase=pages.orders;pages.orders=function(){const html=ordersBase();if(!canReviewReports())return html;return html.replace(/<section class="card" onclick="openOrder\('([^']+)'\)">/g,(m,id)=>{const o=(state.orders||[]).find(x=>String(x.id)===String(id));return m+(o?.report_uploaded_at?reviewStatus(o):'')})};
 })();
+
