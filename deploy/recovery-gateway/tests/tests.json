@@ -26,15 +26,17 @@
       "GET /api/prod/:asset",
       "production login gate",
       "required-field validation",
-      "no anonymous business data"
+      "no anonymous business data",
+      "production eager and role-loader assets"
     ],
     "description": "Loads the current production sign-in screen and keeps business data inaccessible without credentials.",
     "steps": [
       "Open / in a fresh browser session",
       "Wait for Вход по логину and the login/password fields",
+      "Confirm the production loader pwa-register.js and eager.bundle.js load without failed asset requests.",
       "Click Войти with both fields empty"
     ],
-    "expected": "The login form stays visible with required-field validation. No authenticated dashboard or real order list is shown. Do not supply or guess credentials."
+    "expected": "The login form stays visible with required-field validation. No authenticated dashboard or real order list is shown. Do not supply or guess credentials. The complete production loader is included; do not substitute the startup shell for the full application."
   },
   {
     "name": "Unavailable production stops launch and exposes retry",
@@ -64,4 +66,3 @@
     "expected": "The page shows Не удалось открыть резервный вход and a Повторить button again, without showing private business data."
   }
 ]
-
