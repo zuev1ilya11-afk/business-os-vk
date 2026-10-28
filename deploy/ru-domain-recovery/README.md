@@ -43,3 +43,40 @@ Outstanding separate work: persist the runtime eth1 source-policy routing;
 verify migration of stored attachment/backend URLs before retiring the old IP;
 move employee PWA installations to the stable domain once HTTPS/login work.
 Do not disable the old interface/default route as part of this change.
+
+## Confirmed certificate limit and domain-only ZeroSSL recovery
+
+Production diagnostics confirmed: DNS A resolves to `136.234.17.113`, IP auth
+and the Let's Encrypt directory return verified HTTPS 200, and the first
+deployment journal is `rolled_back` with the original Caddyfile hash matching.
+Let's Encrypt returned HTTP 429: 50 new certificates already issued for the
+shared registered domain `qd.je` in 168 hours. Retry-after was
+2026-10-28 21:54 UTC. The later `context canceled` was caused by rollback.
+
+`connect-zerossl.py` adds a separate domain site using the free ZeroSSL ACME
+directory. Both existing IP sites and their Let's Encrypt short-lived issuer
+remain byte-identical in the original part of the file. The domain copies the
+same application routes. Before activation, actual Caddy adaptation is compared:
+only the new hostname/issuer may differ; upstreams, handlers and other settings
+must match. Generated route group names and Caddy's config-file hiding path are
+normalized for that comparison. The installer refuses an unexpected topology.
+
+Pass the owner's email with `--email`; it is used for Caddy's automatic ZeroSSL
+ACME account/EAB setup, supported by the inspected official Caddy v2.11.7 source.
+No API key or paid plan is required by this workflow. The installer does not
+print credentials or change application authentication secrets.
+
+```sh
+python3 /root/bos-domain-zerossl.py --apply --email OWNER_EMAIL
+python3 /root/bos-domain-zerossl.py --rollback
+```
+
+Private backup/journal: `/root/bos-domain-homemaster-zerossl-20261028`.
+The first attempt's backup is retained. Up to five minutes are allowed for
+certificate issuance, followed by verified domain HTTPS/API checks. Failure or
+interruption rolls back Caddy. Database and runtime networking are untouched.
+
+Validation: nine tests, including real Caddy v2.11.7 adaptation with API/static
+routes, refusal of unrelated changes, rollback, and simulated delayed issuance.
+Run `BOS_TEST_CADDY=/path/to/caddy python3 deploy/ru-domain-recovery/test-zerossl.py -v`.
+Production execution and user login/PWA verification remain separate steps.
