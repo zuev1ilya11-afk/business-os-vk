@@ -80,3 +80,33 @@ Validation: nine tests, including real Caddy v2.11.7 adaptation with API/static
 routes, refusal of unrelated changes, rollback, and simulated delayed issuance.
 Run `BOS_TEST_CADDY=/path/to/caddy python3 deploy/ru-domain-recovery/test-zerossl.py -v`.
 Production execution and user login/PWA verification remain separate steps.
+
+## One-time retry after the CA's advertised limit window
+
+The ZeroSSL attempt failed during EAB account registration because its API
+response could not be decoded as JSON (`invalid character 'A'`). This does not
+establish the response's contents or cause. Production rolled back again; the
+original hash and working IP auth were verified by the user's diagnostic output.
+
+`retry-letsencrypt.py --schedule --email OWNER_EMAIL` prepares a separate domain
+site with normal Let's Encrypt ACME issuance. The existing IP short-lived policy
+and routes remain unchanged. It validates/adapts the candidate now, without
+reloading Caddy, then installs a private immutable script snapshot and creates
+one transient systemd timer for **2026-10-28 21:55 UTC / October 29 00:55 Moscow**.
+If that time has already passed, execution is scheduled five seconds later.
+Both previous attempt journals and original hashes are checked at execution.
+Rate-limit exhaustion can still recur on the shared suffix; this is one attempt,
+not a guarantee of domain readiness at the specified time. HTTPS failure rolls
+back and is recorded. No browser or terminal needs to remain open.
+
+```sh
+python3 /root/bos-domain-le-retry.py --status
+systemctl stop bos-domain-le-20261028.timer
+python3 /root/bos-domain-le-retry.py --rollback
+```
+
+Stopping the timer cancels a future run; rollback applies after activation.
+Scheduled script/journal: `/root/bos-domain-le-scheduled-20261028`.
+Activation backup/journal: `/root/bos-domain-homemaster-le-retry-20261028`.
+Do not reboot before networking is persisted; the timer is also transient.
+Validation: 13 tests, real Caddy adaptation, and systemd calendar normalization.
