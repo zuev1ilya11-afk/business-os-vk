@@ -81,6 +81,16 @@ def changed_files(before, after, allowed):
     return changed
 
 
+def edge_changed_files(rec):
+    allowed = {'main/index.ts','main/bos-report-env.ts','main/bos-report-env.json'}
+    for slug,entry in rec['entrypoints'].items():
+        root = 'sources/'+str(Path(entry).parent)
+        allowed.update(('bundles/'+slug+'.eszip','sources/'+entry,
+                        posixpath.normpath(root+'/../_shared/report-storage.ts'),
+                        root+'/deno.json',root+'/bos-report.lock'))
+    return changed_files(rec['before']['edge'],rec['candidate_edge'],allowed)
+
+
 def capture_file(work, path, data, mode=None, owner=None):
     require(path.resolve()==path and (not path.exists() or path.is_file()), 'INSTALL_PATH_UNSAFE')
     record = {'path':str(path), 'after_sha256':s.sha(data), 'existed':path.exists()}
@@ -399,11 +409,7 @@ def prepare(*, defer_archive=False):
     s.emit('CURRENT_RELEASE_VERIFIED',True)
     gas_verified = archive_preflight(env['BOS_SYNC_KEY'],defer_archive=defer_archive)
     s.emit('GAS_VERSION_AND_SIGNING_VERIFIED',gas_verified)
-    allowed = {'main/index.ts','main/bos-report-env.ts','main/bos-report-env.json'}
-    for slug,entry in rec['entrypoints'].items():
-        allowed.update(('bundles/'+slug+'.eszip','sources/'+entry,
-                        posixpath.normpath('sources/'+str(Path(entry).parent/'../_shared/report-storage.ts'))))
-    edge_names = changed_files(rec['before']['edge'],rec['candidate_edge'],allowed)
+    edge_names = edge_changed_files(rec)
     web_names = changed_files(rec['before']['web'],rec['candidate_web'],rec['frontend']['changed_files'])
     # Publish application assets before the shell and version-discovery files.
     web_names.sort(key=lambda n:({'index.html':1,'sw.js':2,'build-version.js':3}.get(n,0),n))

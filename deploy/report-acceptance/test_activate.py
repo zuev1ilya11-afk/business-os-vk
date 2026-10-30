@@ -47,6 +47,49 @@ class ActivationTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 m.changed_files({'a':'1','keep':'2'},after,{'a'})
 
+    def test_activation_accepts_the_files_produced_by_real_locked_preparation(self):
+        resume = load('activation_locked_prepare_test',ROOT/'resume-stage.py')
+        resume.s = s
+        edge = self.root/'candidate/edge'
+        entries = {}
+        graph = {'npm_roots':{'sdk@1':'sdk@1.0.0'},'npm':{'sdk@1.0.0':{}}}
+        bundles = {}
+        for slug in s.SLUGS:
+            middle = '/supabase/functions/'+slug if slug in ('order-lifecycle-api','report-api') else ''
+            entries[slug] = slug+middle+'/index.ts'
+            source = edge/'sources'/entries[slug]
+            source.parent.mkdir(parents=True)
+            source.write_text('old source')
+            bundle = edge/'bundles'/(slug+'.eszip')
+            bundle.parent.mkdir(exist_ok=True)
+            bundle.write_text('old bundle')
+            bundles[slug] = graph if slug!='gas-bridge-health' else {'npm':{},'npm_roots':{}}
+        (edge/'main').mkdir()
+        (edge/'main/index.ts').write_text('old gateway')
+        existing_config = edge/'sources/push-api/deno.json'
+        existing_config.write_text('{"workspace":[],"imports":{"fixture":"./keep.ts"}}')
+        before = s.tree(edge)
+        with patch.object(resume,'integrity',return_value=('sdk@1.0.0','sha512-fixture-integrity')),\
+             contextlib.redirect_stdout(io.StringIO()):
+            resume.install_locks(self.root,entries,bundles)
+        for slug,entry in entries.items():
+            (edge/'sources'/entry).write_text('new source')
+            (edge/'bundles'/(slug+'.eszip')).write_text('new bundle')
+        for name in ('index.ts','bos-report-env.ts','bos-report-env.json'):
+            (edge/'main'/name).write_text('verified gateway candidate')
+        rec = {'entrypoints':entries,'before':{'edge':before},'candidate_edge':s.tree(edge)}
+        changes = m.edge_changed_files(rec)
+        self.assertIn('sources/order-lifecycle-api/supabase/functions/order-lifecycle-api/bos-report.lock',changes)
+        self.assertIn('sources/report-api/supabase/functions/report-api/deno.json',changes)
+        self.assertIn('sources/push-api/deno.json',changes)
+        self.assertEqual(len([name for name in changes if name.endswith('/bos-report.lock')]),6)
+        self.assertEqual(json.loads(existing_config.read_text())['imports'],{'fixture':'./keep.ts'})
+        for extra in ('sources/unrelated/deno.json','sources/push-api/unreviewed.ts','main/secret.json'):
+            with self.subTest(extra=extra):
+                altered = {**rec,'candidate_edge':{**rec['candidate_edge'],extra:'unexpected-digest'}}
+                with self.assertRaisesRegex(RuntimeError,'CANDIDATE_HAS_UNEXPECTED_CHANGES'):
+                    m.edge_changed_files(altered)
+
     def test_partial_install_can_restore_files_and_permissions(self):
         work = self.root/'work'
         old = self.root/'live/old.ts'
