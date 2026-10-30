@@ -27,6 +27,15 @@ runtime. Исправленные функции собираются с тем 
 Проверка самого staging-скрипта без Docker/сети:
 `python3 -m unittest discover -s deploy/report-acceptance -p 'test_stage.py' -v`.
 
+При `BUNDLE_BASELINE_DIFFERS_order-lifecycle-api` использовать `bundle-diff.py`.
+Он читает уже сохранённые рабочую и пересобранную eszip, показывает совпадение
+кода, путей модулей, графа npm, sourcemaps и дополнительного содержимого.
+Отдельно проверяет, сводятся ли серверные изменения report-модулей клиента к
+URL. Скрипт не меняет критерий допуска выкладки и не запускает сборку/приложение.
+Ему нужен исходный `/tmp/bos-stage.py` с проверяемым SHA-256; результат остаётся
+в приватном каталоге staging. Все тесты helpers:
+`python3 -m unittest discover -s deploy/report-acceptance -p 'test*.py' -v`.
+
 ## Что установлено
 
 Исходная цепочка: `submitReportReview` в `order-lifecycle-v106.js` →
