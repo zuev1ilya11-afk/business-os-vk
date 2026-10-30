@@ -37,6 +37,35 @@ class ResumeTests(unittest.TestCase):
         return {'modules': modules, 'redirects': redirects or {}, 'npm': {'sdk@1.0.0': {}},
                 'npm_roots': {'sdk@1': 'sdk@1.0.0'}}
 
+    def test_server_archive_root_can_move_from_bos_src_to_filesystem_root(self):
+        # Specifier hashes match the server's MODULE_PATH_DIAGNOSTIC output.
+        self.assertEqual(s.sha(b'drive-archive-api/index.ts')[:12], '4f2d80234eb7')
+        self.assertEqual(s.sha(b'bos-src/drive-archive-api/index.ts')[:12], 'b5d1fb0f519d')
+        old = self.bundle({'drive-archive-api/index.ts': (0, b'old')})
+        new = self.bundle({'bos-src/drive-archive-api/index.ts': (0, b'new'),
+                          'bos-src/_shared/report-storage.ts': (0, b'helper')})
+        m.validate_patched(old, new, 'drive-archive-api/index.ts')
+        modules, _, entry = m.executable_modules(new, 'drive-archive-api/index.ts')
+        self.assertEqual(set(modules), {entry, '/bos-src/_shared/report-storage.ts'})
+
+    def test_filesystem_archive_root_preserves_nested_sources_and_redirects(self):
+        relative = 'report-api/supabase/functions/report-api/index.ts'
+        sibling = 'report-api/order-payroll.js'
+        old = self.bundle({relative: (0, b'old'), sibling: (0, b'unchanged')},
+                          {'report-api/alias.js': sibling})
+        new = self.bundle({'bos-src/' + relative: (0, b'new'),
+                          'bos-src/' + sibling: (0, b'unchanged'),
+                          'bos-src/report-api/supabase/functions/_shared/report-storage.ts': (0, b'helper')},
+                         {'bos-src/report-api/alias.js': 'bos-src/' + sibling})
+        m.validate_patched(old, new, relative)
+
+    def test_filesystem_archive_root_still_rejects_modules_outside_source(self):
+        for extra in ('outside.js', 'bos-src/../outside.js', 'bos-src/%2e%2e/outside.js',
+                      'file:///outside.js'):
+            with self.subTest(extra=extra), self.assertRaisesRegex(s.Stop, 'MODULE_OUTSIDE_STAGED_SOURCE'):
+                m.executable_modules(self.bundle({'bos-src/drive-archive-api/index.ts': (0, b'entry'),
+                                                 extra: (0, b'other')}), 'drive-archive-api/index.ts')
+
     def test_shared_import_can_rebase_direct_function_archive_root(self):
         old = self.bundle({'index.ts': (0, b'old entry'), 'vfs://0': (3, b'opaque before')})
         new = self.bundle({'drive-archive-api/index.ts': (0, b'new entry'),

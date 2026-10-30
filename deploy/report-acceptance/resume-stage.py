@@ -287,7 +287,10 @@ def executable_modules(bundle, relative):
         s.require(not entry_name.startswith('/') and all(p not in ('', '.', '..') for p in entry_name.split('/')),
                   'UNSAFE_ARCHIVE_ENTRYPOINT')
         s.require(logical_entry.endswith('/' + entry_name), 'ARCHIVE_ENTRYPOINT_SUFFIX_CHANGED')
-        root = logical_entry[:-len(entry_name)].rstrip('/')
+        # The bundler can choose the filesystem root as the archive root.
+        # For bos-src/<relative>, stripping the separator must preserve '/':
+        # an empty string would turn every subsequent join into a relative path.
+        root = logical_entry[:-len(entry_name)].rstrip('/') or '/'
 
     def canonical(name):
         url = urllib.parse.urlsplit(name)
