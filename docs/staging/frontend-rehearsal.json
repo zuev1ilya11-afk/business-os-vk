@@ -1,0 +1,15 @@
+{
+  "scope": "local-frontend-rehearsal-only",
+  "source_revision": "97c9f7af3065d24f1e1da5067ef622410501123b",
+  "build_a": "1ab939397bb4ff6843a5",
+  "synthetic_build_b": "b819ead6c953d3100140",
+  "successful_release_and_manual_rollback": true,
+  "failed_release_and_automatic_rollback": true,
+  "separate_frontend_restore_hashes_match": true,
+  "post_backup_data_marker_preserved": true,
+  "server_staging_ready": false,
+  "limitations": [
+    "No HTTP/TLS/PWA deployment, server restart or real database recovery exercised.",
+    "Business-data marker is a file; the separate PGlite rehearsal covers only its partial fixture schema."
+  ]
+}

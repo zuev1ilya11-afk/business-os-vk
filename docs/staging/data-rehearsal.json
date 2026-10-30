@@ -1,0 +1,11 @@
+{
+  "scope": "partial-pglite-fixture-only",
+  "rows": 9,
+  "repeated_seed_no_duplicates": true,
+  "cold_backup": true,
+  "restored_into_separate_target": true,
+  "sql_records_equal": true,
+  "synthetic_files_and_config_equal": true,
+  "original_post_backup_change_preserved": true,
+  "real_postgres_auth_storage_restore": false
+}

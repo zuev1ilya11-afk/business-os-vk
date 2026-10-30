@@ -29,11 +29,18 @@ async function createPreviewServer(){
   let attempts=0;const timer=setInterval(()=>{if(++attempts>300){clearInterval(timer);return}if(window.BOS_MASTER_ORDER_ACTIONS_V179&&typeof state!=='undefined'&&state.orders?.length){clearInterval(timer);openOrder('11')}},100);
  })();`;
  const root=path.resolve(__dirname,'..');
+ const publicAssets=new Set(fs.readdirSync(root).filter(n=>/\.(js|css|png|svg|ico|webp|woff2?)$/.test(n)&&n!=='sw.js'&&fs.lstatSync(path.join(root,n)).isFile()));
+ publicAssets.add('index.html');
  const server=http.createServer(async(req,res)=>{
   try{
+   const expectedHost='127.0.0.1:'+server.address().port;
+   if(req.headers.host!==expectedHost||(req.headers.origin&&req.headers.origin!=='http://'+expectedHost)){
+    res.statusCode=403;return res.end('Local preview only');
+   }
    const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
    res.setHeader('Cache-Control','no-store');
-   res.setHeader('Content-Security-Policy',"connect-src 'self'; frame-src 'none'; form-action 'self';");
+   res.setHeader('X-Content-Type-Options','nosniff');
+   res.setHeader('Content-Security-Policy',"default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'none'; manifest-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none';");
    if(pathname==='/preview-bootstrap.js'){res.setHeader('Content-Type','application/javascript');return res.end(bootstrap)}
    if(pathname.startsWith('/preview-api/')){
     let body='';for await(const chunk of req){body+=chunk;if(body.length>2000000)throw Error('Preview request too large')}
@@ -43,9 +50,9 @@ async function createPreviewServer(){
     });
    }
    const relative=pathname==='/'?'index.html':pathname.slice(1),file=path.resolve(root,relative);
-   if(!file.startsWith(root+path.sep)||relative.split('/').some(x=>x.startsWith('.'))||!(/\.(js|css|html|json|png|svg|ico|webmanifest)$/.test(relative))||!fs.existsSync(file)){res.statusCode=404;return res.end('Not found')}
+   if(!publicAssets.has(relative)||path.dirname(file)!==root||!fs.existsSync(file)||!fs.lstatSync(file).isFile()){res.statusCode=404;return res.end('Not found')}
    let bytes=fs.readFileSync(file);
-   if(relative==='index.html')bytes=Buffer.from(bytes.toString().replace(/<script[^>]+src="https:[^"]+"[^>]*><\/script>/g,'').replace('<head>','<head><script src="/preview-bootstrap.js"></script>'));
+   if(relative==='index.html')bytes=Buffer.from(bytes.toString().replace(/<script[^>]+src="https:[^"]+"[^>]*><\/script>/g,'').replace('<head>','<head><script src="/preview-bootstrap.js"></script>').replace('</body>','<aside id="staging-banner" style="position:fixed;top:0;left:0;right:0;z-index:2147483647;padding:4px;background:#facc15;color:#111;font:10px/14px sans-serif;text-align:center;pointer-events:none">ТЕСТОВАЯ СРЕДА — НЕ РАБОЧИЕ ДАННЫЕ · локальный макет</aside></body>'));
    res.setHeader('Content-Type',({'.html':'text/html','.js':'application/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.svg':'image/svg+xml'})[path.extname(file)]||'application/octet-stream');res.end(bytes);
   }catch(error){res.statusCode=500;res.end(error.message)}
  });
