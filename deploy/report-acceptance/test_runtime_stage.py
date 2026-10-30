@@ -1,4 +1,6 @@
 import importlib.util
+from email.message import Message
+import io
 import json
 from pathlib import Path
 import subprocess
@@ -18,6 +20,7 @@ def load(name, path):
 s = load('runtime_stage_base', ROOT/'stage.py')
 m = load('runtime_stage_test', ROOT/'runtime-stage.py')
 m.s = s
+p = load('runtime_probe_test', ROOT/'runtime-probe.py')
 GATEWAY = '''const keys=['SUPABASE_URL','SUPABASE_ANON_KEY','SUPABASE_SERVICE_ROLE_KEY','VK_APP_SECRET','BOS_SYNC_KEY','HANDS_API_KEY'];
 const env=keys.map(k=>[k,Deno.env.get(k)||'']);
 const worker=async(slug,route)=>await EdgeRuntime.userWorkers.create({
@@ -79,6 +82,32 @@ for(const slug of data.slugs){
 
     def test_probe_download_is_pinned_to_reviewed_file_content(self):
         self.assertEqual(s.sha((ROOT/'runtime-probe.py').read_bytes()),m.PROBE_SHA)
+
+    def test_streamed_json_patch_is_read_completely(self):
+        headers = Message()
+        headers['Transfer-Encoding'] = 'chunked'
+        raw = b'5;fixture=yes\r\n{"ok"\r\n6\r\n:true}\r\n0\r\nX-Fixture: end\r\n\r\n'
+        self.assertEqual(json.loads(p.read_body(io.BytesIO(raw),headers)),{'ok':True})
+
+    def test_length_delimited_body_is_read_completely(self):
+        headers = Message()
+        headers['Content-Length'] = '11'
+        self.assertEqual(p.read_body(io.BytesIO(b'{"ok":true}'),headers),b'{"ok":true}')
+
+    def test_invalid_or_oversized_framing_stops(self):
+        for encoding,raw,limit in [('chunked',b'4\r\nab',100),('chunked',b'ffff\r\n',100),
+                                   ('gzip',b'x',100),('chunked',b'0\r\n',100)]:
+            headers = Message()
+            headers['Transfer-Encoding'] = encoding
+            with self.subTest(raw=raw),self.assertRaises(RuntimeError):
+                p.read_body(io.BytesIO(raw),headers,limit)
+
+    def test_diagnostic_drops_urls_and_fixture_credentials(self):
+        value = p.diagnostic_error('Fetch https://private.example/path?token=secret key=private-fixture-secret',
+                                   {'vk_secret':'private-fixture-secret'})
+        self.assertNotIn('private.example',value)
+        self.assertNotIn('token=',value)
+        self.assertNotIn('private-fixture-secret',value)
 
 
 if __name__=='__main__':

@@ -6,6 +6,7 @@ import hashlib
 import hmac
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
+import re
 import socket
 import sys
 import threading
@@ -13,6 +14,53 @@ import time
 from urllib.error import HTTPError
 from urllib.parse import parse_qs, urlsplit
 from urllib.request import build_opener, HTTPRedirectHandler, ProxyHandler, Request
+
+
+def read_body(stream, headers, limit=1_048_576):
+    """Read either HTTP framing used by the real streaming gateway."""
+    transfer = headers.get('Transfer-Encoding', '').lower()
+    if not transfer:
+        size = int(headers.get('Content-Length', 0))
+        if not 0 <= size <= limit:
+            raise RuntimeError('FIXTURE_BODY_SIZE')
+        data = stream.read(size)
+        if len(data) != size:
+            raise RuntimeError('FIXTURE_BODY_TRUNCATED')
+        return data
+    if transfer != 'chunked':
+        raise RuntimeError('FIXTURE_TRANSFER_ENCODING')
+    chunks, total = [], 0
+    while True:
+        line = stream.readline(128)
+        if not line.endswith(b'\r\n'):
+            raise RuntimeError('FIXTURE_CHUNK_HEADER')
+        size = int(line.split(b';', 1)[0].strip(), 16)
+        if size == 0:
+            for _ in range(64):
+                trailer = stream.readline(4096)
+                if trailer == b'\r\n':
+                    return b''.join(chunks)
+                if not trailer.endswith(b'\r\n'):
+                    break
+            raise RuntimeError('FIXTURE_CHUNK_TRAILER')
+        total += size
+        if size < 0 or total > limit:
+            raise RuntimeError('FIXTURE_BODY_SIZE')
+        data = stream.read(size)
+        if len(data) != size or stream.read(2) != b'\r\n':
+            raise RuntimeError('FIXTURE_CHUNK_TRUNCATED')
+        chunks.append(data)
+
+
+def diagnostic_error(value, config):
+    # Only an isolated response is inspected, never headers or production logs.
+    message = str(value or '')
+    for secret in config.values():
+        if isinstance(secret, str) and len(secret) > 8:
+            message = message.replace(secret, '<fixture-secret>')
+    message = re.sub(r'https?://[^\s\"\'<>]+', '<url>', message)
+    message = re.sub(r'[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+', '<jwt>', message)
+    return ''.join(c for c in message if c.isprintable())[:240]
 
 
 def main(config):
@@ -28,6 +76,7 @@ def main(config):
              'report_photo_urls':json.dumps([prefix+'/photo.jpg?token=fixture']),
              'drive_archive_status':'pending','completed_at':None,'master_staff_id':None}
     state = {'order':order,'claims':0,'finishes':[],'storage':0,'gas':0,'unexpected':[], 'patches':0}
+    trace, fixture_errors, last = [], [], {}
 
     def service_authorized(value):
         try:
@@ -49,6 +98,8 @@ def main(config):
             pass
 
         def response(self, data, code=200, content_type='application/json'):
+            if hasattr(self, 'event'):
+                self.event['status'] = code
             body = data if isinstance(data, bytes) else json.dumps(data, ensure_ascii=False).encode()
             self.send_response(code)
             self.send_header('Content-Type', content_type)
@@ -63,7 +114,13 @@ def main(config):
                 if path.startswith(base + '/'):
                     path = path[len(base):]
                     break
-            raw = self.rfile.read(int(self.headers.get('Content-Length', 0)))
+            known = path if path in ('/gas','/business_staff','/orders','/rpc/bos_drive_claim','/rpc/bos_drive_finish') else '/storage-object' if path.startswith('/object/authenticated/') else '/unexpected'
+            self.event = {'method':self.command, 'route':known,
+                          'chunked':self.headers.get('Transfer-Encoding','').lower()=='chunked',
+                          'service_auth':service_authorized(self.headers.get('Authorization',''))}
+            trace.append(self.event)
+            raw = read_body(self.rfile, self.headers)
+            self.event['body_bytes'] = len(raw)
             if path == '/gas':
                 fields = parse_qs(raw.decode())
                 if fields.get('act_data'):
@@ -103,7 +160,14 @@ def main(config):
             state['unexpected'].append(self.command + ' ' + path)
             return self.response({'error':'unexpected fixture route'}, 404)
 
-        do_GET = do_POST = do_PATCH = handle_request
+        def checked_request(self):
+            try:
+                self.handle_request()
+            except Exception as error:
+                fixture_errors.append(type(error).__name__)
+                self.response({'error':'FIXTURE_HANDLER_FAILED'}, 500)
+
+        do_GET = do_POST = do_PATCH = checked_request
 
     server = ThreadingHTTPServer(('127.0.0.1', 19001), Mock)
     threading.Thread(target=server.serve_forever, daemon=True).start()
@@ -126,6 +190,11 @@ def main(config):
                 value = json.loads(data)
             except Exception:
                 value = None
+            last.clear()
+            last.update({'function':slug,'status':response.status,'body_type':type(value).__name__,
+                         'ok':value.get('ok') if isinstance(value,dict) else None,
+                         'health_response':isinstance(value,dict) and value.get('service')=='order-lifecycle-api',
+                         'error':diagnostic_error(value.get('error') if isinstance(value,dict) else '',config)})
             return response.status, value, response.headers
 
     def require(ok, label):
@@ -176,6 +245,12 @@ def main(config):
         require(not state['unexpected'], 'UNEXPECTED_UPSTREAM_REQUEST')
         print(json.dumps({'isolated':True,'auth':True,'cors':True,'approval':True,'retry':True,
                           'storage':True,'archive':True,'empty_queue':True,'gas_config':True}), flush=True)
+    except Exception:
+        print('RUNTIME_PROBE_DIAGNOSTIC='+json.dumps({
+            'last':last,'upstream':trace[-20:],'fixture_errors':fixture_errors[-10:],
+            'effects':{k:state[k] for k in ('patches','claims','storage','gas')}
+        },ensure_ascii=True),flush=True)
+        raise
     finally:
         server.shutdown()
         server.server_close()
@@ -186,7 +261,6 @@ if __name__ == '__main__':
         main(json.load(sys.stdin))
     except Exception as error:
         # This process has only dummy credentials. Still expose fixed labels only.
-        import re
         label = str(error) if isinstance(error, RuntimeError) and re.fullmatch(r'[A-Za-z0-9_-]+', str(error)) else 'PROBE_FAILED'
         print('RUNTIME_PROBE_STOPPED=' + label, flush=True)
         raise SystemExit(1)

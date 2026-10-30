@@ -24,7 +24,7 @@ from urllib.request import urlopen
 import uuid
 
 VERIFY_SHA = '5fe87fe3246e7b4df8928144b1a738d1ac4577baceb02f03e8137abe24348d14'
-PROBE_SHA = 'd9856734ee8ad7276b3e87604fe076267e75a371b121c89be6037c013f355cdf'
+PROBE_SHA = 'e840ff6167757fda57c882e8938f592173284a928784df2f68bf7c430cc2e921'
 PUBLIC = 'https://homemaster.qd.je'
 INTERNAL = 'http://127.0.0.1:9000'
 s = v = None
@@ -141,7 +141,14 @@ def probe_runtime(edge, work, config, keys, probe):
     except s.Stop:
         log = work/'logs/runtime-probe.log'
         if log.is_file():
-            matches = re.findall(rb'RUNTIME_PROBE_STOPPED=([A-Za-z0-9_-]+)',s.read(log))
+            content = s.read(log)
+            diagnostics = re.findall(rb'^RUNTIME_PROBE_DIAGNOSTIC=(.{1,16000})$',content,re.M)
+            if diagnostics:
+                info = json.loads(diagnostics[-1])
+                for key,label in (('last','RUNTIME_HTTP'),('upstream','RUNTIME_UPSTREAM'),
+                                  ('fixture_errors','RUNTIME_FIXTURE_ERRORS'),('effects','RUNTIME_EFFECTS')):
+                    s.emit(label,info[key])
+            matches = re.findall(rb'RUNTIME_PROBE_STOPPED=([A-Za-z0-9_-]+)',content)
             if matches:
                 s.emit('RUNTIME_PROBE_FAILURE',matches[-1].decode())
         raise
