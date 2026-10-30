@@ -10,6 +10,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import posixpath
 import re
 import shutil
 import sys
@@ -264,6 +265,74 @@ def prepare_frontend(parent, work):
     return {'build': build, 'changed_files': {n: s.sha(v) for n, v in changed.items()}}
 
 
+def executable_modules(bundle, relative):
+    """Resolve eszip-relative paths against the known mounted entrypoint.
+
+    Adding ../_shared can move the common archive root up one directory.
+    The source file is still the same /bos-src/<relative>/index.ts.
+    """
+    entries = [name for name, (kind, _) in bundle['modules'].items()
+               if kind == 0 and (name == 'index.ts' or name.endswith('/index.ts'))]
+    s.require(len(entries) == 1, 'PATCHED_ENTRYPOINT_NOT_UNIQUE')
+    s.require(not relative.startswith('/') and all(p not in ('', '.', '..') for p in relative.split('/')), 'UNSAFE_SOURCE_ENTRYPOINT')
+    logical_entry = '/bos-src/' + relative
+    entry_name = entries[0]
+    entry_url = urllib.parse.urlsplit(entry_name)
+    if entry_url.scheme:
+        s.require(entry_url.scheme == 'file' and not entry_url.netloc and not entry_url.query and not entry_url.fragment,
+                  'UNSUPPORTED_ENTRYPOINT_URL')
+        s.require(urllib.parse.unquote(entry_url.path) == logical_entry, 'ABSOLUTE_ENTRYPOINT_CHANGED')
+        root = '/bos-src'
+    else:
+        s.require(not entry_name.startswith('/') and all(p not in ('', '.', '..') for p in entry_name.split('/')),
+                  'UNSAFE_ARCHIVE_ENTRYPOINT')
+        s.require(logical_entry.endswith('/' + entry_name), 'ARCHIVE_ENTRYPOINT_SUFFIX_CHANGED')
+        root = logical_entry[:-len(entry_name)].rstrip('/')
+
+    def canonical(name):
+        url = urllib.parse.urlsplit(name)
+        if url.scheme and url.scheme != 'file':
+            return name
+        if url.scheme == 'file':
+            s.require(not url.netloc and not url.query and not url.fragment, 'UNSAFE_FILE_SPECIFIER')
+            path = urllib.parse.unquote(url.path)
+        else:
+            s.require(not name.startswith('/') and not url.query and not url.fragment, 'UNSAFE_RELATIVE_SPECIFIER')
+            path = posixpath.join(root, urllib.parse.unquote(name))
+        normalized = posixpath.normpath(path)
+        s.require(normalized.startswith('/bos-src/'), 'MODULE_OUTSIDE_STAGED_SOURCE')
+        return normalized
+
+    modules = {}
+    for name, value in bundle['modules'].items():
+        if value[0] == 3:
+            continue
+        key = canonical(name)
+        s.require(key not in modules, 'DUPLICATE_CANONICAL_MODULE')
+        modules[key] = value
+    redirects = {}
+    for name, target in bundle['redirects'].items():
+        key = canonical(name)
+        s.require(key not in redirects, 'DUPLICATE_CANONICAL_REDIRECT')
+        redirects[key] = canonical(target)
+    s.require(logical_entry in modules, 'LOGICAL_ENTRYPOINT_MISSING')
+    return modules, redirects, logical_entry
+
+
+def validate_patched(original, compiled, relative):
+    s.require(compiled['npm'] == original['npm'] and compiled['npm_roots'] == original['npm_roots'], 'PATCHED_NPM_DRIFT')
+    old_modules, old_redirects, entry = executable_modules(original, relative)
+    new_modules, new_redirects, new_entry = executable_modules(compiled, relative)
+    s.require(new_entry == entry, 'PATCHED_ENTRYPOINT_CHANGED')
+    helper = posixpath.normpath(posixpath.join(posixpath.dirname(entry), '../_shared/report-storage.ts'))
+    s.require(not (set(old_modules) - set(new_modules)) and
+              (set(new_modules) - set(old_modules)) <= {helper}, 'PATCHED_MODULE_SET')
+    for name, value in old_modules.items():
+        if name != entry:
+            s.require(new_modules[name] == value, 'PATCHED_DEPENDENCY_DRIFT')
+    s.require(old_redirects == new_redirects, 'PATCHED_REDIRECT_DRIFT')
+
+
 def build(parent, work, rec, bundles):
     builder = 'bos301-locked-' + uuid.uuid4().hex
     output = work / 'output'
@@ -304,22 +373,18 @@ def build(parent, work, rec, bundles):
                        '--output', '/bos-output/' + slug + '.eszip', '--quiet', '--timeout', '90'], work, 'patched-' + slug, 120)
             compiled = d.parse(s.read(output / (slug + '.eszip')))
             original = bundles[slug]
-            s.require(compiled['npm'] == original['npm'] and compiled['npm_roots'] == original['npm_roots'], 'PATCHED_NPM_DRIFT_' + slug)
             # Executable modules must remain identical outside this function
             # and its helper. The compiler may update its opaque VFS metadata.
             # Package bytes were checked in the baseline and its dependency
             # cache is reused with the network physically disconnected.
-            entry_modules = [n for n, (kind, _) in original['modules'].items()
-                             if kind == 0 and (n == 'index.ts' or n.endswith('/index.ts'))]
-            s.require(len(entry_modules) == 1, 'PATCHED_ENTRYPOINT_NOT_UNIQUE_' + slug)
-            removed = set(original['modules']) - set(compiled['modules'])
-            added = set(compiled['modules']) - set(original['modules'])
-            s.require(not any(original['modules'][n][0] != 3 for n in removed) and
-                      all(n == '_shared/report-storage.ts' or n.endswith('/_shared/report-storage.ts') or
-                          compiled['modules'][n][0] == 3 for n in added), 'PATCHED_MODULE_SET_' + slug)
-            for name in set(original['modules']) & set(compiled['modules']):
-                if original['modules'][name][0] != 3 and name != entry_modules[0]:
-                    s.require(compiled['modules'][name] == original['modules'][name], 'PATCHED_DEPENDENCY_DRIFT_' + slug)
+            try:
+                validate_patched(original, compiled, relative)
+            except s.Stop as error:
+                # Report only known source basenames, never arbitrary URLs.
+                s.emit('MODULE_PATH_DIAGNOSTIC', {'function': slug,
+                    'before': [d.module_label(n) for n, v in original['modules'].items() if v[0] != 3],
+                    'after': [d.module_label(n) for n, v in compiled['modules'].items() if v[0] != 3]})
+                raise s.Stop(str(error) + '_' + slug) from None
             shutil.copyfile(output / (slug + '.eszip'), work / 'candidate/edge/bundles' / (slug + '.eszip'))
     finally:
         if created:

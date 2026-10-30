@@ -1,4 +1,5 @@
 import contextlib
+import copy
 import importlib.util
 import io
 import json
@@ -32,6 +33,68 @@ def baseline(name):
 
 
 class ResumeTests(unittest.TestCase):
+    def bundle(self, modules, redirects=None):
+        return {'modules': modules, 'redirects': redirects or {}, 'npm': {'sdk@1.0.0': {}},
+                'npm_roots': {'sdk@1': 'sdk@1.0.0'}}
+
+    def test_shared_import_can_rebase_direct_function_archive_root(self):
+        old = self.bundle({'index.ts': (0, b'old entry'), 'vfs://0': (3, b'opaque before')})
+        new = self.bundle({'drive-archive-api/index.ts': (0, b'new entry'),
+                           '_shared/report-storage.ts': (0, b'new helper'),
+                           'vfs://0': (3, b'opaque after')})
+        m.validate_patched(old, new, 'drive-archive-api/index.ts')
+        before, _, entry = m.executable_modules(old, 'drive-archive-api/index.ts')
+        after, _, _ = m.executable_modules(new, 'drive-archive-api/index.ts')
+        self.assertEqual(entry, '/bos-src/drive-archive-api/index.ts')
+        self.assertEqual(set(after) - set(before), {'/bos-src/_shared/report-storage.ts'})
+
+    def test_nested_function_keeps_its_existing_shared_module_and_payroll(self):
+        relative = 'order-lifecycle-api/supabase/functions/order-lifecycle-api/index.ts'
+        modules = {'supabase/functions/order-lifecycle-api/index.ts': (0, b'entry before'),
+                   'supabase/functions/_shared/hands-details.ts': (0, b'existing helper'),
+                   'order-payroll.js': (0, b'preserved payroll')}
+        old, new = self.bundle(modules), self.bundle(copy.deepcopy(modules))
+        new['modules']['supabase/functions/order-lifecycle-api/index.ts'] = (0, b'entry after')
+        new['modules']['supabase/functions/_shared/report-storage.ts'] = (0, b'new helper')
+        m.validate_patched(old, new, relative)
+        new['modules']['order-payroll.js'] = (0, b'unrelated change')
+        with self.assertRaisesRegex(s.Stop, 'PATCHED_DEPENDENCY_DRIFT'):
+            m.validate_patched(old, new, relative)
+
+    def test_rebased_entry_does_not_authorize_extra_code_or_missing_modules(self):
+        old = self.bundle({'index.ts': (0, b'old'), 'extra.js': (0, b'keep')})
+        new = self.bundle({'drive-archive-api/index.ts': (0, b'new'),
+                           'drive-archive-api/extra.js': (0, b'keep'),
+                           '_shared/report-storage.ts': (0, b'helper')})
+        m.validate_patched(old, new, 'drive-archive-api/index.ts')
+        new['modules']['unexpected.js'] = (0, b'extra unreviewed code')
+        with self.assertRaisesRegex(s.Stop, 'PATCHED_MODULE_SET'):
+            m.validate_patched(old, new, 'drive-archive-api/index.ts')
+        del new['modules']['unexpected.js']
+        del new['modules']['drive-archive-api/extra.js']
+        with self.assertRaisesRegex(s.Stop, 'PATCHED_MODULE_SET'):
+            m.validate_patched(old, new, 'drive-archive-api/index.ts')
+
+    def test_rebased_entry_does_not_authorize_dependency_or_redirect_changes(self):
+        old = self.bundle({'index.ts': (0, b'old')}, {'npm:sdk@1': 'npm:sdk@1.0.0'})
+        new = self.bundle({'drive-archive-api/index.ts': (0, b'new')}, {'npm:sdk@1': 'npm:sdk@2.0.0'})
+        with self.assertRaisesRegex(s.Stop, 'PATCHED_REDIRECT_DRIFT'):
+            m.validate_patched(old, new, 'drive-archive-api/index.ts')
+        new['npm_roots'] = {'sdk@1': 'sdk@1.1.0'}
+        with self.assertRaisesRegex(s.Stop, 'PATCHED_NPM_DRIFT'):
+            m.validate_patched(old, new, 'drive-archive-api/index.ts')
+
+    def test_canonical_paths_cannot_escape_source_or_hide_duplicate_modules(self):
+        for extra in ('../../outside.js', '../drive-archive-api/index.ts'):
+            with self.subTest(extra=extra), self.assertRaises(s.Stop):
+                m.executable_modules(self.bundle({'index.ts': (0, b'entry'), extra: (0, b'other')}),
+                                     'drive-archive-api/index.ts')
+
+    def test_shared_module_can_remain_parent_relative_without_rebasing(self):
+        old = self.bundle({'index.ts': (0, b'old')})
+        new = self.bundle({'index.ts': (0, b'new'), '../_shared/report-storage.ts': (0, b'helper')})
+        m.validate_patched(old, new, 'report-file-upload/index.ts')
+
     def test_lockfile_pins_snapshot_roots_and_transitive_versions(self):
         graph = {'npm_roots': {'@supabase/supabase-js@2': '@supabase/supabase-js@2.117.3'},
                  'npm': {'@supabase/supabase-js@2.117.3': {'tslib': 'tslib@2.8.1'},
