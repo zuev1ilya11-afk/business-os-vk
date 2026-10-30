@@ -31,7 +31,7 @@ test('master orders v125 stays readable on mobile and shows concise real work',a
   await expect(card.locator('.masterV125Stage')).toHaveText('В работе');
   await expect(card).toContainText('Пичуева Анна Пичуева');
   await expect(card.locator('.masterV126Address')).toContainText('Санкт-Петербург, ул. Тестовая, д. 15');
-  await expect(card.locator('.masterV126Received')).toContainText('Дата поступления');
+  await expect(card.locator('.masterV125Title .masterV126Received')).toContainText('Поступила');
   await expect(card.locator('.masterV126Received')).toContainText('20.09.2026');
   await expect(card.locator('.masterV125Work')).toHaveText('Шторы ×2 · Мин. стоимость');
   await expect(card).not.toContainText('Подрезка');

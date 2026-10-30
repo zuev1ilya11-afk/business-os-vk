@@ -90,7 +90,12 @@ const contactSummaryHtml=o=>{
  const comment=String(event?.result==='pending'?o.master_contact_comment||'':event?.comment||'').trim();
  return `<div class="bosMasterContactSummary">${summary}${comment?comment.length>140?`<details><summary>Подробнее</summary><p class="bosContactComment">${esc(comment)}</p></details>`:`<p class="bosContactComment">${esc(comment)}</p>`:''}<div class="bosMasterClientActions"></div></div>`;
 };
-const received=o=>{const raw=String(o.received_date||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`Поступила ${m[3]}.${m[2]}.${m[1]}`:'Дата поступления не указана'};
+const received=o=>{
+ const raw=String(o?.received_date||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+ const valid=m&&Number.isFinite(Date.parse(raw))&&new Date(raw).toISOString().slice(0,10)===raw;
+ return valid?`Поступила ${m[3]}.${m[2]}.${m[1]}`:'Дата поступления не указана';
+};
+window.BOS_MASTER_RECEIVED_DATE=received;
 function visitHtml(o){
  const date=String(o.scheduled_date||'').slice(0,10),time=String(o.scheduled_time||o.time_slot||'').trim();
  const day=offset=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(Date.now()+offset*86400000));

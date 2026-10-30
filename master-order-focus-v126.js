@@ -30,7 +30,6 @@ function phoneList(v){
 const phoneHref=v=>phoneList(v)[0]?.tel||'';
 const routeAddress=o=>{const address=String(o?.address||'').trim();if(!address)return'';const city=String(o?.city||'').trim();return city&&!address.toLowerCase().includes(city.toLowerCase())?`${city}, ${address}`:address};
 const yandexRouteHref=o=>{const destination=routeAddress(o);return destination?`https://yandex.ru/maps/?text=${encodeURIComponent(destination)}`:''};
-const receivedDate=v=>{const raw=String(v||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:(raw||'—')};
 function nextStep(o){
   if(String(o?.status||'')==='Отменена')return{tone:'muted',title:'Заявка отменена',hint:'Дополнительных действий не требуется.'};
   if(reportApproved(o))return{tone:'done',title:'Заявка завершена',hint:'Отчёт принят, работа по заявке закончена.'};
@@ -64,11 +63,10 @@ function decorateRoute(modal,o,panel){const href=yandexRouteHref(o);if(!href)ret
 function decorateCards(){
   document.querySelectorAll('.masterV125Card[data-master-order-id]').forEach(card=>{
     const o=orderById(card.dataset.masterOrderId);if(!o)return;
-    let received=card.querySelector('.masterV126Received');
-    if(!received){received=document.createElement('div');received.className='masterV126Received';const anchor=card.querySelector('.masterV125Title');if(anchor)anchor.insertAdjacentElement('afterend',received);else card.prepend(received)}
-    if(received.innerHTML!==`<span>Дата поступления</span><b>${escv(receivedDate(o?.received_date||o?.created_at))}</b>`)received.innerHTML=`<span>Дата поступления</span><b>${escv(receivedDate(o?.received_date||o?.created_at))}</b>`;
+    const received=card.querySelector('.masterV126Received'),receivedText='· '+window.BOS_MASTER_RECEIVED_DATE(o);
+    if(received&&received.textContent!==receivedText)received.textContent=receivedText;
     let address=card.querySelector('.masterV126Address');
-    if(!address){address=document.createElement('div');address.className='masterV126Address';received.insertAdjacentElement('afterend',address)}
+    if(!address){address=document.createElement('div');address.className='masterV126Address';card.querySelector('.masterV125Title').insertAdjacentElement('afterend',address)}
     const addressText=routeAddress(o)||'Адрес не указан';
     if(!address.querySelector('b'))address.innerHTML='<span aria-hidden="true">⌖</span><b></b>';
     if(address.querySelector('b').textContent!==addressText)address.querySelector('b').textContent=addressText;
@@ -86,7 +84,8 @@ function decorateReceivedModal(modal,o,panel){
     else if(anchor)anchor.insertAdjacentElement('afterend',received);
     else modal.prepend(received);
   }
-  if(received.innerHTML!==`<span>Дата поступления заявки</span><b>${escv(receivedDate(o?.received_date||o?.created_at))}</b>`)received.innerHTML=`<span>Дата поступления заявки</span><b>${escv(receivedDate(o?.received_date||o?.created_at))}</b>`;
+  const receivedText=window.BOS_MASTER_RECEIVED_DATE(o);
+  if(received.textContent!==receivedText)received.textContent=receivedText;
 }
 function decorate(){
   queued=false;

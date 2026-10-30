@@ -57,7 +57,7 @@ function card(o){
  const href=phoneHref(o?.phone||o?.client_phone),preview=!liveMaster();
  return `<article class="masterV125Card ${stageClass(o)}" data-master-order-id="${escv(o.id)}">
   <div class="masterV125Top"><div class="masterV125When"><strong>${escv(timeOf(o))}</strong><span>${escv(dateLabel(scheduledDate(o)))}</span></div><span class="masterV125Stage">${escv(workflowLabel(o))}</span></div>
-  <div class="masterV125Title"><b>№ ${escv(orderNo(o))}</b><strong>${escv(o?.client||'Клиент не указан')}</strong></div>
+  <div class="masterV125Title"><div class="bosMasterOrderIdentity"><b>№ ${escv(orderNo(o))}</b><span class="masterV126Received bosMasterReceived">· ${escv(window.BOS_MASTER_RECEIVED_DATE(o))}</span></div><strong>${escv(o?.client||'Клиент не указан')}</strong></div>
   <div class="masterV125Work">${escv(workSummary(o))}</div>
   ${window.BOS_ORDER_PAYROLL?.masterBreakdown(o)?`<div class="masterV125Cost" data-master-order-cost><span>Полная стоимость заявки</span><b>${o.amount_confirmed===false?'Стоимость не указана':moneyv(window.BOS_ORDER_PAYROLL.masterBreakdown(o).total)}</b></div>`:''}
   <div class="masterV125Pay" data-master-order-payout><span>Выплата мастеру</span><b>${o.amount_confirmed===false?'Не рассчитана':moneyv(window.BOS_ORDER_PAYROLL?.masterBreakdown(o)?.masterTotal??pay(o))}</b></div>
