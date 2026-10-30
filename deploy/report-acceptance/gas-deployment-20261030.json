@@ -1,0 +1,17 @@
+{
+  "observed_at": "2026-10-30",
+  "project_id": "10o4f7Kw_uDXmNqrboAoodkLeMAkifl4W8YpcY-gNntYvnReZQ0UBdxWl",
+  "deployment_id": "AKfycbx6l6V_jjZdbWQGljODcR4Uf4wvMc8hA24Dulzdmi-Ek76QH1mQS0tm3Q_ErI1sWEumzQ",
+  "previous_version": 3,
+  "published_version": 4,
+  "ui_result": "Развертывание обновлено.",
+  "app_revision": "8f1bb32b624c92d07a86dafe2c3196eb29da9903",
+  "report_upload_before_sha256": "a3076143e9868f331b046b5c9d38bbe3a81cc1e17082227a2173ec9c6626e3b0",
+  "report_upload_after_sha256": "bfd5ff0f137dff8ebe3e11749f0f065d0f02ed5dad59824f6a749ae621eaa6d0",
+  "preserved_extra_function": "authorizeDrive",
+  "execute_as_changed": false,
+  "audience_changed": false,
+  "script_properties_changed": false,
+  "other_files_changed": false,
+  "end_to_end_verified": false
+}

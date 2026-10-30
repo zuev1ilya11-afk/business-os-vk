@@ -1,0 +1,11 @@
+[Unit]
+Description=Retry Business OS report archives
+
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=60
+AccuracySec=5
+Unit=bos-drive-archive.service
+
+[Install]
+WantedBy=timers.target

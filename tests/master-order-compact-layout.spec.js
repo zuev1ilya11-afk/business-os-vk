@@ -8,7 +8,7 @@ async function open(page,patch={},width=390){
  const ctx=await fullStack(page,'master');
  Object.assign(ctx.db.tables.orders[0],{
   order_number:'TEST-1022',client:'Тестовый клиент',phone:'+70000000001',address:'Тестовая улица, дом 12',apartment:'8',floor:'3',
-  received_date:'2026-10-20',scheduled_date:'2026-10-23',scheduled_time:'14:00',master_agreed_at:'2026-10-22T10:00:00Z',
+  received_date:'2026-10-20',created_at:'2026-10-22T08:00:00Z',scheduled_date:'2026-10-23',scheduled_time:'14:00',master_agreed_at:'2026-10-22T10:00:00Z',
   master_called_at:'2026-10-22T10:00:00Z',master_called_by_staff_id:ctx.me.id,master_called_by_name:ctx.me.full_name,
   master_contact_status:'agreed',master_contact_history:[{result:'agreed',phone:'+70000000001',at:'2026-10-22T10:00:00Z',comment:'Позвонить у подъезда.'}],
   work:'3 шторы 6 направляющих\nМонтаж шторы × 2 шт.\nПодрезка × 1,5 м',
@@ -23,7 +23,11 @@ for(const width of [360,390,430,1280])test(`compact layout at ${width}: visit, n
  await expect(card.locator('.bosOrderVisit')).toContainText('Сегодня');
  await expect(card.locator('.bosOrderVisit')).toContainText('14:00');
  await expect(card.getByText('Тестовая улица, дом 12',{exact:true})).toHaveCount(1);
- await expect(card.locator('.bosHandsHead')).not.toContainText('Поступила');
+ await expect(card.locator('.bosHandsHead .bosCompactReceived')).toHaveText('· Поступила 20.10.2026');
+ await expect(card.locator('.bosHandsHead .bosCompactReceived')).toBeVisible();
+ await expect(card.locator('.bosOrderAdditional')).not.toContainText('Поступила');
+ await expect(card.locator('.bosCompactClient').getByRole('button',{name:/копировать/i})).toHaveCount(0);
+ await expect(card.locator('.masterV126PhoneActions').locator('>*')).toHaveCount(1);
  await expect(card.locator('.bosOrderAdditional')).not.toHaveAttribute('open','');
  await expect(card.getByRole('button',{name:'Помощь по заявке',exact:true})).toBeHidden();
  const call=card.locator('a[aria-label="Позвонить клиенту"]'),primary=card.getByRole('button',{name:'Подтвердить: выехал',exact:true});
@@ -127,4 +131,38 @@ test('long values and contact comment stay readable without nested scroll',async
  await card.locator('.bosContactHistory').scrollIntoViewIfNeeded();
  expect(await card.locator('.bosContactHistory').evaluate(e=>getComputedStyle(e).overflowY)).toBe('visible');
  expect(await page.locator('.bosCompactOrderModal').evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
+});
+
+for(const width of [360,390,430,1280])for(const received_date of ['2026-08-31',null])test(`header handles long number, receipt ${received_date} at ${width}px`,async({page},info)=>{
+ const number='ЗАЯВКА-1234567890'.repeat(5);
+ const {db}=await open(page,{order_number:number,received_date},width);
+ const before=structuredClone(db.tables.orders[0]),card=page.locator('.bosCompactMasterCard');
+ const header=card.locator('.bosHandsHead'),title=header.locator('.bosMasterTitle');
+ await expect(title.locator('b')).toHaveText('№ '+number);
+ await expect(title.locator('.bosCompactReceived')).toHaveText(received_date?'· Поступила 31.08.2026':'· Дата поступления не указана');
+ await expect(title.locator('.bosCompactReceived')).toBeVisible();
+ const [titleBox,statusBox,closeBox]=await Promise.all([title,header.locator('.status'),header.getByRole('button',{name:'Закрыть заявку'})].map(el=>el.boundingBox()));
+ expect(titleBox.x+titleBox.width).toBeLessThanOrEqual(statusBox.x);
+ expect(statusBox.x+statusBox.width).toBeLessThanOrEqual(closeBox.x);
+ const phone=card.locator('.masterV126Phone'),call=card.locator('.bosClientCallAction');
+ const phoneBox=await phone.boundingBox(),callBox=await call.boundingBox();
+ expect(phoneBox.x+phoneBox.width).toBeLessThanOrEqual(callBox.x);
+ for(const el of [header,title,card.locator('.masterV126PhoneRow'),page.locator('.bosCompactOrderModal')])expect(await el.evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
+ await card.locator('.bosOrderAdditional>summary').click();
+ await expect(card.locator('.bosOrderAdditional')).not.toContainText(/Поступила|Дата поступления/);
+ await expect(card.locator('.bosOrderContactHistory>summary')).toContainText('История контактов (1)');
+ await card.locator('.bosOrderContactHistory>summary').click();
+ await expect(card.locator('.bosContactHistory')).toContainText('Позвонить у подъезда.');
+ expect(db.tables.orders[0]).toEqual(before);
+ await page.locator('.bosCompactOrderModal').evaluate(e=>e.scrollTop=0);
+ await page.screenshot({path:info.outputPath(`header-${received_date?'date':'no-date'}-${width}.png`)});
+});
+
+test('phone and call action retain tel target and existing contact handler',async({page})=>{
+ await open(page);
+ const client=page.locator('.bosCompactClient');
+ for(const link of [client.locator('.masterV126Phone'),client.locator('.bosClientCallAction')])await expect(link).toHaveAttribute('href','tel:+70000000001');
+ // The existing handler skips native dialing for synthetic clicks.
+ await client.getByRole('link',{name:'Позвонить клиенту',exact:true}).dispatchEvent('click');
+ await expect(page.locator('#masterContactResultForm')).toBeVisible();
 });

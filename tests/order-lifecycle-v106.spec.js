@@ -4,12 +4,12 @@ const fs=require('fs');
 const path=require('path');
 const {fullStack}=require('./helpers/full-stack.cjs');
 
-test('lifecycle service keeps submitted reports pending and archives before approval',()=>{
+test('lifecycle service keeps submitted reports pending and saves approval without waiting for archive',()=>{
   const source=fs.readFileSync(path.join(__dirname,'..','supabase','functions','order-lifecycle-api','index.ts'),'utf8');
   expect(source).toContain("status:'В работе'");
   expect(source).toContain("report_review_status:'pending'");
   expect(source).toContain('completed_at:null');
-  expect(source).toContain('archiveBeforeApproval(req,order)');
+  expect(source).not.toContain('archiveBeforeApproval');
   expect(source).toContain("status:decision==='approved'?'Выполнена':'В работе'");
   expect(source).toContain("String(prev.data?.report_review_status||'')==='approved'");
 });

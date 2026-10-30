@@ -47,7 +47,7 @@ test('reject, resubmit and approve retain one deduction and one extra payment',a
  assert.equal((await api(body('finalizeMasterReport',c,'report-2'),'staff_m')).status,200);
  assert.equal(db.tables.orders[0].amount,800);assert.equal(db.tables.orders[0].master_payout,442);assert.equal(db.tables.orders[0].extra_work_amount,300);
  assert.equal((await api({action:'reviewReport',id:'new',expected_report_token:db.tables.orders[0].report_upload_token,expected_report_uploaded_at:db.tables.orders[0].report_uploaded_at,decision:'approved'},'staff_d')).status,200);
- assert.equal(archived,1);assert.equal(db.tables.orders[0].status,'Выполнена');
+ assert.equal(archived,0);assert.equal(db.tables.orders[0].status,'Выполнена');
  assert.equal(money(db.tables.orders[0].master_payout+db.tables.orders[0].extra_work_amount),742);
  assert.deepEqual(db.tables.orders[1],historical);
 });

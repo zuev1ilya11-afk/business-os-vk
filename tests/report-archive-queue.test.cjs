@@ -1,0 +1,45 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const {PGlite}=require('@electric-sql/pglite');
+test('real PostgreSQL approval/queue transaction, retry, lease, isolation and permissions',async()=>{
+ const pg=new PGlite();
+ try{
+  await pg.exec('create role anon; create role authenticated; create role service_role;');
+  await pg.exec(fs.readFileSync('tests/sql/order-guards-schema.sql','utf8'));
+  await pg.exec(fs.readFileSync('supabase/migrations/20260929160000_capture_live_order_guards.sql','utf8'));
+  const migration=fs.readFileSync('supabase/migrations/20261030090000_report_archive_queue.sql','utf8');
+  await pg.exec(migration);await pg.exec(migration);
+  await pg.exec(`insert into orders(id,status,report_review_status,report_upload_token,report_uploaded_at,report_type,report_act_url,report_photo_urls,drive_archive_status) values (1,'В работе','pending','r1',now(),'work','act','["photo"]','pending'),(2,'В работе','pending','r2',now(),'work','act','["photo"]','pending');`);
+  const val=async sql=>(await pg.query(sql)).rows[0];
+  await pg.exec('savepoint accept;');
+  await pg.exec("update orders set status='Выполнена',report_review_status='approved' where id=1");
+  assert.equal((await val('select count(*)::int as n from bos_drive_private.jobs')).n,1);
+  await pg.exec('rollback to accept;');
+  assert.equal((await val('select count(*)::int as n from bos_drive_private.jobs')).n,0);
+  await pg.exec("update orders set status='Выполнена',report_review_status='approved' where id=1");
+  await pg.exec("update orders set report_review_status='approved' where id=1");
+  assert.equal((await val('select count(*)::int as n from bos_drive_private.jobs')).n,1);
+  const job=(await val('select bos_drive_claim() as j')).j;
+  assert.equal(job.state,'processing');assert.equal((await val('select bos_drive_claim() as j')).j,null);
+  const finish=async(result,error,lease=job.lease)=>(await pg.query('select bos_drive_finish($1,$2,$3,$4,$5,$6) as ok',[1,'r1',job.report_uploaded_at,lease,result,error])).rows[0].ok;
+  assert.equal(await finish(null,'NETWORK_ERROR'),true);
+  assert.equal((await val('select state from bos_drive_private.jobs')).state,'failed');
+  assert.equal((await val('select report_review_status from orders where id=1')).report_review_status,'approved');
+  assert.equal((await val('select report_review_status from orders where id=2')).report_review_status,'pending');
+  assert.equal((await val('select bos_drive_claim() as j')).j,null,'backoff prevents retry storms');
+  await pg.exec("update bos_drive_private.jobs set next_attempt_at=now()-interval '1 second'");
+  const next=(await val('select bos_drive_claim() as j')).j;
+  assert.notEqual(next.lease,job.lease);assert.equal(await finish({drive_folder_url:'https://drive.google.com/drive/folders/1'},null),false,'stale lease fenced');
+  assert.equal(await finish({drive_folder_url:'https://drive.google.com/drive/folders/1'},null,next.lease),true);
+  assert.equal((await val('select drive_archive_status from orders where id=1')).drive_archive_status,'archived');
+  assert.equal((await val('select bos_drive_claim() as j')).j,null);
+  await pg.exec("update orders set status='Выполнена',report_review_status='approved' where id=2");
+  const second=(await val('select bos_drive_claim() as j')).j;
+  await pg.exec("update orders set status='В работе' where id=2");
+  await pg.query('select bos_drive_finish($1,$2,$3,$4,$5,null)',[2,'r2',second.report_uploaded_at,second.lease,{drive_folder_url:'https://drive.google.com/drive/folders/2'}]);
+  assert.equal((await val('select drive_archive_url from orders where id=2')).drive_archive_url,null,'old worker cannot modify reopened report');
+  for(const role of ['anon','authenticated'])assert.equal((await val(`select has_function_privilege('${role}','public.bos_drive_claim()','execute') as allowed`)).allowed,false);
+  assert.equal((await val("select has_function_privilege('service_role','public.bos_drive_claim()','execute') as allowed")).allowed,true);
+ }finally{await pg.close()}
+});

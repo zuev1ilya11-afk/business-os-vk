@@ -82,7 +82,7 @@ window.copyMasterPhone72=async function(phone,button){
 const phoneHtml=o=>{
  const phones=phoneList72(o.phone||o.client_phone);
  if(!phones.length)return'<small>Телефон не указан</small>';
- return `<div class="bosCompactPhone masterV126PhoneList">${phones.map((item,index)=>`<div class="masterV126PhoneRow"><a class="masterV126Phone" href="tel:${esc(item.tel)}">${esc(item.label)}</a><div class="masterV126PhoneActions"><button type="button" class="secondary masterV126CopyPhone" onclick="copyMasterPhone72('${esc(item.tel)}',this)" aria-label="Скопировать номер ${index+1}">Копировать</button><a class="secondary bosClientCallAction" href="tel:${esc(item.tel)}" aria-label="${index===0?'Позвонить клиенту':'Позвонить клиенту '+(index+1)}">Позвонить</a></div></div>`).join('')}</div>`;
+ return `<div class="bosCompactPhone masterV126PhoneList">${phones.map((item,index)=>`<div class="masterV126PhoneRow"><a class="masterV126Phone" href="tel:${esc(item.tel)}">${esc(item.label)}</a><div class="masterV126PhoneActions"><a class="secondary bosClientCallAction" href="tel:${esc(item.tel)}" aria-label="${index===0?'Позвонить клиенту':'Позвонить клиенту '+(index+1)}">Позвонить</a></div></div>`).join('')}</div>`;
 };
 const contactSummaryHtml=o=>{
  const event=window.BOS_CONTACT_STATUS?.latest?.(o);if(!event)return'<div class="bosMasterClientActions"></div>';
@@ -90,7 +90,7 @@ const contactSummaryHtml=o=>{
  const comment=String(event?.result==='pending'?o.master_contact_comment||'':event?.comment||'').trim();
  return `<div class="bosMasterContactSummary">${summary}${comment?comment.length>140?`<details><summary>Подробнее</summary><p class="bosContactComment">${esc(comment)}</p></details>`:`<p class="bosContactComment">${esc(comment)}</p>`:''}<div class="bosMasterClientActions"></div></div>`;
 };
-const received=o=>{const raw=String(o.received_date||o.created_at||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:'—'};
+const received=o=>{const raw=String(o.received_date||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`Поступила ${m[3]}.${m[2]}.${m[1]}`:'Дата поступления не указана'};
 function visitHtml(o){
  const date=String(o.scheduled_date||'').slice(0,10),time=String(o.scheduled_time||o.time_slot||'').trim();
  const day=offset=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(Date.now()+offset*86400000));
@@ -102,7 +102,7 @@ function visitHtml(o){
 }
 function additionalHtml(o){
  const contactHistory=window.BOS_CONTACT_STATUS?.history?.(o)||[];
- return `<details class="bosOrderAdditional"><summary>Дополнительно</summary><div class="bosOrderExtraActions"></div><p class="bosCompactReceived">Поступила ${esc(received(o))}</p>${contactHistory.length?`<details class="bosOrderContactHistory"><summary>История контактов (${contactHistory.length})</summary>${window.BOS_CONTACT_STATUS.html(o,{details:true})}</details>`:''}${window.BOS_MANUAL_COMPLETION?.history(o)||''}${typeof reportLinksHtml==='function'?reportLinksHtml(o):''}</details>`;
+ return `<details class="bosOrderAdditional"><summary>Дополнительно</summary><div class="bosOrderExtraActions"></div>${contactHistory.length?`<details class="bosOrderContactHistory"><summary>История контактов (${contactHistory.length})</summary>${window.BOS_CONTACT_STATUS.html(o,{details:true})}</details>`:''}${window.BOS_MANUAL_COMPLETION?.history(o)||''}${typeof reportLinksHtml==='function'?reportLinksHtml(o):''}</details>`;
 }
 const visitSignatures=new WeakMap();
 window.BOS_MASTER_ORDER_REFRESH_DETAILS=function(card,o){
@@ -132,7 +132,7 @@ window.openOrder=function(id){
  const o=(state.orders||[]).find(x=>String(x.id)===String(id));if(!o)return;
  const d=breakdown(o),work=detailWorks(o);
  openModal(`<div class="bosHandsOrder bosCompactMasterCard">
-  <div class="bosHandsHead"><div class="bosMasterTitle"><b>№ ${esc(no(o))}</b></div><span class="status info">${esc(o.status||'Статус не указан')}</span></div>
+  <div class="bosHandsHead"><div class="bosMasterTitle"><b>№ ${esc(no(o))}</b><span class="bosCompactReceived">· ${esc(received(o))}</span></div><span class="status info">${esc(o.status||'Статус не указан')}</span></div>
   ${visitHtml(o)}
   <section class="bosApprovedClient bosApprovedSection"><h3>Клиент</h3><div class="bosHandsBlock bosCompactClient"><div><b>${esc(o.client||'Клиент не указан')}</b>${phoneHtml(o)}${contactSummaryHtml(o)}</div></div></section>
   <section class="bosHandsWorks bosApprovedSection"><h3 class="bosWorksLabel">Работы${work.count?' ('+work.count+')':''}</h3><div class="bosHandsWorkList">${work.html||(!work.description?'<p class="muted">Работы не указаны</p>':'')}</div>${work.description?`<p class="bosWorkDescription">${esc(work.description)}</p>`:''}${commentHtml(o)}<div class="bosCompactMoney">${d?`<strong>Стоимость: ${o.amount_confirmed===false?'Стоимость не указана':money(d.total)}</strong>`:''}<span>Выплата мастеру: ${payoutKnown(o)?money(totalPay(o)):'Не рассчитана'}</span></div>${costHtml(o)?`<details class="bosCompactCost"><summary>Расчёт стоимости</summary>${costHtml(o)}</details>`:''}</section>

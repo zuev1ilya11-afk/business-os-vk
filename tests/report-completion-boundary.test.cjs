@@ -35,21 +35,21 @@ test('reviewing a real report after manual closure preserves completion time, hi
  const db=fixture({status:'Выполнена',completed_at:history[0].at,manual_completion_history:history}),{lifecycle,calls}=linked(db);
  const before=structuredClone(db.tables.orders[0]);
  const r=await lifecycle({action:'reviewReport',id:'o',decision:'approved',expected_report_token:'r1',expected_report_uploaded_at:'2026-01-01'});
- assert.equal(r.status,200);assert.deepEqual(calls,['archive']);assert.equal(db.tables.orders[0].completed_at,before.completed_at);
+ assert.equal(r.status,200);assert.deepEqual(calls,[]);assert.equal(db.tables.orders[0].completed_at,before.completed_at);
  assert.deepEqual(db.tables.orders[0].manual_completion_history,history);
  for(const key of ['master_payout','manager_payout','dispatcher_payout','amount','original_amount','report_act_url','report_photo_urls','report_upload_token'])assert.equal(db.tables.orders[0][key],before[key],key);
 });
-for(const uid of ['100','staff_d','staff_mgr'])test(`${uid}: legacy review archives through the real lifecycle and duplicate keeps receipt`,async()=>{
+for(const uid of ['100','staff_d','staff_mgr'])test(`${uid}: legacy review saves through the real lifecycle and duplicate keeps receipt`,async()=>{
  const db=fixture(),{mini,calls}=linked(db);
  const b={action:'reviewReport',id:'o',expected_report_token:'r1',expected_report_uploaded_at:'2026-01-01',decision:'approved',reviewer_name:'spoofed'};
- assert.equal((await mini(b,uid)).status,200);assert.deepEqual(calls,['lifecycle','archive']);
+ assert.equal((await mini(b,uid)).status,200);assert.deepEqual(calls,['lifecycle']);
  assert.equal(db.tables.orders[0].status,'Выполнена');assert.equal(db.tables.orders[0].report_review_status,'approved');assert.notEqual(db.tables.orders[0].report_reviewed_by,'spoofed');
- const before=structuredClone(db.tables.orders);assert.equal((await mini(b,uid)).status,200);assert.deepEqual(db.tables.orders,before);assert.deepEqual(calls,['lifecycle','archive','lifecycle']);
+ const before=structuredClone(db.tables.orders);assert.equal((await mini(b,uid)).status,200);assert.deepEqual(db.tables.orders,before);assert.deepEqual(calls,['lifecycle','lifecycle']);
 });
-for(const result of [{ok:false,error:'Drive unavailable'},{ok:true},{ok:true,order:{drive_archive_status:'archived',drive_archive_url:null}}])test(`archive failure or incomplete receipt cannot complete: ${JSON.stringify(result)}`,async()=>{
+for(const result of [{ok:false,error:'Drive unavailable'},{ok:true},{ok:true,order:{drive_archive_status:'archived',drive_archive_url:null}}])test(`archive failure or incomplete receipt cannot block acceptance: ${JSON.stringify(result)}`,async()=>{
  const db=fixture(),{mini}=linked(db,()=>result);
  const r=await mini({action:'reviewReport',id:'o',expected_report_token:'r1',expected_report_uploaded_at:'2026-01-01',decision:'approved'});
- assert.equal(r.status,500);assert.equal(db.tables.orders[0].status,'В работе');assert.equal(db.tables.orders[0].report_review_status,'pending');assert.equal(db.tables.orders[0].completed_at,undefined);
+ assert.equal(r.status,200);assert.equal(db.tables.orders[0].status,'Выполнена');assert.equal(db.tables.orders[0].report_review_status,'approved');assert.ok(db.tables.orders[0].completed_at);
 });
 test('legacy review keeps master authorization and pending-only conflict response',async()=>{
  const db=fixture({status:'Отменена'}),{mini,calls}=linked(db);

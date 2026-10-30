@@ -3,6 +3,7 @@
     "app-build-runtime.js",
     "mobile-viewport.js",
     "vk-init.js",
+    "report-origin.js",
     "network-direct-v86.js",
     "config.js",
     "schedule-contract.js",

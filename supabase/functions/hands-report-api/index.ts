@@ -1,3 +1,4 @@
+import { reportObjectPath } from "../_shared/report-storage.ts";
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 
 // Machine-only worker. Browser actions use the existing signed-session lifecycle API.
@@ -11,16 +12,11 @@ const TYPES:Record<string,string>={'application/pdf':'pdf','image/jpeg':'jpg','i
 type Step={kind:'file',path:string,relation:string,label:string}|{kind:'report',body:Record<string,string>};
 
 function objectPath(raw:unknown,o:any){
-  try{
-    if(typeof raw!=='string'||raw.length>8192)throw 0;
-    const u=new URL(raw),base=new URL(Deno.env.get('SUPABASE_URL')||'');
-    const token=clean(o.report_upload_token).replace(/[^a-zA-Z0-9._-]+/g,'_').slice(-120);
-    const prefix=`/storage/v1/object/sign/business-os-vk-files/orders/${o.id}/${token}/`;
-    const path=decodeURIComponent(u.pathname),file=path.slice(prefix.length);
-    if(!token||u.protocol!=='https:'||u.origin!==base.origin||u.username||u.password||u.hash||!u.searchParams.get('token')||!path.startsWith(prefix)||!file||/[\\/\x00-\x1f]/.test(file)||['.','..'].includes(file))throw 0;
-    return path.slice('/storage/v1/object/sign/business-os-vk-files/'.length);
-  }catch{throw new DeliveryError('Некорректное вложение принятого отчёта. Проверьте файлы заявки.')}
+ const path=reportObjectPath(raw,o.id,o.report_upload_token);
+ if(!path)throw new DeliveryError('Некорректное вложение принятого отчёта. Проверьте файлы заявки.');
+ return path;
 }
+
 function steps(o:any):Step[]{
   const result:Step[]=[];
   if(!['work','measurement'].includes(o.report_type))throw new DeliveryError('Неизвестный тип принятого отчёта.');

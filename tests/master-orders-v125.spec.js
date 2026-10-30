@@ -3,14 +3,14 @@ const {fullStack}=require('./helpers/full-stack.cjs');
 
 test('master orders v125 stays readable on mobile and shows concise real work',async({page})=>{
   const {db,master}=await fullStack(page,'master');
-  await page.addInitScript(()=>{Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async value=>{window.__copiedPhone=value}}})});
   const order=db.tables.orders.find(o=>String(o.id)==='11');
   master.phone='+79990000001';
   Object.assign(order,{
     phone:'+79990000002; +79990000003',
     client:'Пичуева Анна Пичуева',
     address:'Санкт-Петербург, ул. Тестовая, д. 15',
-    created_at:'2026-09-20T08:15:00.000Z',
+    created_at:'2026-09-21T08:15:00.000Z',
+    received_date:'2026-09-20',
     scheduled_date:'2099-09-10',
     scheduled_time:'10:00',
     master_workflow_stage:'started',
@@ -51,15 +51,15 @@ test('master orders v125 stays readable on mobile and shows concise real work',a
   const workflow=page.locator('.bosMasterWorkflow[data-bos-v179="1"]');
   await expect(workflow).toBeVisible();
   const received=page.locator('.bosCompactReceived');
-  await expect(received).toBeHidden();await page.locator('.bosOrderAdditional>summary').click();await expect(received).toBeVisible();
+  await expect(received).toBeVisible();
+  await expect(page.locator('.bosHandsHead .bosCompactReceived')).toHaveCount(1);
+  await expect(page.locator('.bosOrderAdditional .bosCompactReceived')).toHaveCount(0);
   await expect(received).toContainText('Поступила');
   await expect(received).toContainText('20.09.2026');
   await expect(page.locator('.masterV126PhoneRow')).toHaveCount(2);
-  const copyButtons=page.locator('.masterV126CopyPhone');
-  await copyButtons.nth(0).click();
-  await expect.poll(()=>page.evaluate(()=>window.__copiedPhone)).toBe('+79990000002');
-  await copyButtons.nth(1).click();
-  await expect.poll(()=>page.evaluate(()=>window.__copiedPhone)).toBe('+79990000003');
+  await expect(page.locator('.masterV126CopyPhone')).toHaveCount(0);
+  await expect(page.locator('.bosClientCallAction').nth(0)).toHaveAttribute('href','tel:+79990000002');
+  await expect(page.locator('.bosClientCallAction').nth(1)).toHaveAttribute('href','tel:+79990000003');
   await expect(page.locator('.bosApprovedVisit').getByRole('button',{name:'Запросить перенос',exact:true})).toBeVisible();
   await expect(workflow.getByRole('button',{name:/Отправить отчёт/})).toBeEnabled();
 });

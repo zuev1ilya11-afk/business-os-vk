@@ -1,13 +1,11 @@
 const {test,expect}=require('@playwright/test');
 const {fullStack}=require('./helpers/full-stack.cjs');
 const {token,attachmentUrl}=require('./helpers/edge.cjs');
-test('real handlers create, assign, work, reject, repeat, approve and preserve finance receipts',async({page})=>{
+test('real handlers preserve finance receipts and approve independently of unavailable Drive',async({page})=>{
  let archiveCalls=0;
- const {db,master}=await fullStack(page,'owner',{productionOrderGuards:true,archive:async(body,db)=>{
-  archiveCalls++;const o=db.tables.orders.find(o=>o.id===body.order_id);
-  expect(body.expected_report_token).toBe(o.report_upload_token);expect(body.expected_report_uploaded_at).toBe(o.report_uploaded_at);
-  Object.assign(o,{drive_archive_status:'archived',drive_archive_url:'https://drive.test/fixture'});
-  return new Response(JSON.stringify({ok:true,order:o}));
+ const {db,master}=await fullStack(page,'owner',{productionOrderGuards:true,archive:async()=>{
+  archiveCalls++;
+  return new Response(JSON.stringify({ok:false,error:'DRIVE_UNAVAILABLE'}),{status:503});
  }});
  await page.clock.install({time:new Date('2026-10-01T08:00:00Z')});await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
  const request=(service,body,uid='100')=>page.evaluate(async({service,body,session})=>{
@@ -27,8 +25,8 @@ test('real handlers create, assign, work, reject, repeat, approve and preserve f
  expect((await request('order-lifecycle-api',{action:'reviewReport',id,...snapshot(second.body.order),decision:'approved'},master.external_id)).status).toBe(403);
  expect((await request('mini-app-api',{action:'reviewReport',id,...snapshot(first.body.order),decision:'approved'})).status).toBe(409);
  const approve={action:'reviewReport',id,...snapshot(second.body.order),decision:'approved'};
- const done=await request('mini-app-api',approve);expect(done.status).toBe(200);expect(done.body.order).toMatchObject({status:'Выполнена',report_review_status:'approved',master_payout:540,extra_work_amount:50});
- const before=structuredClone(db.tables.orders.find(o=>o.id===id));expect((await request('mini-app-api',approve)).status).toBe(200);expect(db.tables.orders.find(o=>o.id===id)).toEqual(before);expect(archiveCalls).toBe(1);
+ const done=await request('mini-app-api',approve);expect(done.status).toBe(200);expect(done.body.order).toMatchObject({status:'Выполнена',report_review_status:'approved',drive_archive_status:'pending',master_payout:540,extra_work_amount:50});
+ const before=structuredClone(db.tables.orders.find(o=>o.id===id));expect((await request('mini-app-api',approve)).status).toBe(200);expect(db.tables.orders.find(o=>o.id===id)).toEqual(before);expect(archiveCalls).toBe(0);
  expect((await request('order-lifecycle-api',submission('cycle2'),master.external_id)).status).toBe(200);expect(db.tables.orders.find(o=>o.id===id)).toEqual(before);
  expect((await request('order-lifecycle-api',submission('cycle3'),master.external_id)).status).toBe(409);
 });

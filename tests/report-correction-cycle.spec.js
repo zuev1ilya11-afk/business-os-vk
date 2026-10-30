@@ -81,8 +81,8 @@ for(const [role,width] of [['owner',390],['dispatcher',390],['owner',1280]]){
    await expect(page.locator('#reviewForm')).toHaveAttribute('data-report-token',order.report_upload_token);
    await page.locator('#approveReportBtn').click();
    await expect(page.locator('#reviewForm')).toHaveCount(0);
-   expect(order).toMatchObject({status:'Выполнена',report_review_status:'approved',drive_archive_status:'archived',master_payout:552.5});
-   expect(archiveCalls).toBe(1);
+   expect(order).toMatchObject({status:'Выполнена',report_review_status:'approved',master_payout:552.5});
+   expect(archiveCalls).toBe(0);
    await masterPage.evaluate(async()=>{await reloadData(true);window.BOS_MASTER_ORDER_ACTIONS_V179_REFRESH?.()});
    await masterPage.evaluate(()=>openOrder('11'));
    await expect(panel.locator('.moa179Review.approved')).toContainText('Отчёт принят');
@@ -93,7 +93,7 @@ for(const [role,width] of [['owner',390],['dispatcher',390],['owner',1280]]){
    await expect(masterPage.locator('#authGate')).toBeHidden();
    await masterPage.evaluate(()=>openOrder('11'));
    await expect(panel.locator('.moa179Review.approved')).toContainText('Отчёт принят');
-   expect(archiveCalls).toBe(1);
+   expect(archiveCalls).toBe(0);
   }finally{await masterContext.close()}
  });
 }

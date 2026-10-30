@@ -1,0 +1,15 @@
+[Unit]
+Description=Business OS durable report archive worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/business-os/drive-worker.env
+ExecStart=/usr/bin/python3 /opt/business-os/report-acceptance/archive-worker.py
+TimeoutStartSec=95
+DynamicUser=yes
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
