@@ -99,7 +99,12 @@ def main():
     roots = {target: mount(edge, target) for target in ('/bos-src', '/bos-bundles', '/bos-main')}
     emit('EDGE_ROOT', str(roots['/bos-src'].parent))
     for slug in ('order-lifecycle-api', 'drive-archive-api', 'report-api', 'report-file-upload', 'hands-report-api', 'push-api'):
-        data = read_file(roots['/bos-src'], slug + '/index.ts')
+        candidates = [slug + '/index.ts', slug + '/supabase/functions/' + slug + '/index.ts']
+        matches = [(path, read_file(roots['/bos-src'], path)) for path in candidates]
+        matches = [(path, data) for path, data in matches if data is not None]
+        if len(matches) > 1:
+            raise Stop('SOURCE_ENTRYPOINT_NOT_UNIQUE')
+        data = matches[0][1] if matches else None
         emit('SOURCE_' + slug, hashlib.sha256(data).hexdigest() if data is not None else 'MISSING')
     mains = sorted(p for p in roots['/bos-main'].glob('*.ts') if p.is_file())
     emit('GATEWAY_FILES', [p.name for p in mains])
