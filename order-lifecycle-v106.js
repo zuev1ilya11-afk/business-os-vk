@@ -68,16 +68,30 @@ window.fetch=async function(input,init){
 };
 
 window.submitReportReview=async function(id,decision){
-  if(state.busy)return;const msg=document.querySelector('#reviewMsg'),comment=document.querySelector('#reviewComment')?.value||'';
-  if(decision==='rejected'&&!comment.trim()){if(msg)msg.textContent='Укажите причину отклонения.';return}
-  state.busy=true;if(msg)msg.textContent=decision==='approved'?'Сохраняем отчёт в папку заявки на Google Диске…':'Сохраняем решение…';
-  try{
-    const role=(typeof isDispatcherPreview==='function'&&isDispatcherPreview())?'dispatcher':String(state.user?.role||'owner');
-    const reviewerName=(role==='dispatcher'&&typeof dispatcherPreviewUser!=='undefined'&&dispatcherPreviewUser?.full_name)?dispatcherPreviewUser.full_name:(state.user?.full_name||'Сотрудник');
-    const d=await lifecycle('reviewReport',{id,decision,comment,...(window.BOS_REVIEW_SNAPSHOT?window.BOS_REVIEW_SNAPSHOT(id):{}),reviewer_role:role,reviewer_name:reviewerName});
-    const i=state.orders.findIndex(x=>String(x.id)===String(id));if(i>=0)state.orders[i]={...state.orders[i],...d.order};
-    closeModal();show('home');
-  }catch(e){if(msg)msg.textContent=decision==='approved'?`Приём не выполнен: ${e.message}`:e.message}finally{state.busy=false}
+ if(state.busy)return;
+ const msg=document.querySelector('#reviewMsg'),comment=document.querySelector('#reviewComment')?.value||'';
+ const buttons=[...document.querySelectorAll('#approveReportBtn,#rejectReportBtn')];
+ if(decision==='rejected'&&!comment.trim()){if(msg)msg.textContent='Укажите причину отклонения.';return}
+ const snapshot=window.BOS_REVIEW_SNAPSHOT?window.BOS_REVIEW_SNAPSHOT(id):{};
+ state.busy=true;buttons.forEach(b=>b.disabled=true);if(msg)msg.textContent='Сохраняем решение…';
+ function confirmed(o){return o&&o.status!=='Отменена'&&o.report_review_status===decision&&(decision==='rejected'||(String(o.report_upload_token)===snapshot.expected_report_token&&String(o.report_uploaded_at)===snapshot.expected_report_uploaded_at))}
+ function finish(o){
+  const i=state.orders.findIndex(x=>String(x.id)===String(id));if(i>=0)state.orders[i]={...state.orders[i],...o};
+  closeModal();show('home');
+  document.getElementById('reportReviewNotice')?.remove();
+  const out=document.createElement('p');out.id='reportReviewNotice';out.className='card';out.setAttribute('role','status');
+  out.textContent=decision==='rejected'?'Отчёт отклонён.':(['archived','completed'].includes(o.drive_archive_status)?'Отчёт принят и сохранён. Архив Google Drive создан.':'Отчёт принят. Архивация в Google Drive будет повторена автоматически');
+  document.getElementById('content')?.prepend(out);
+ }
+ try{
+  const d=await lifecycle('reviewReport',{id,decision,comment,...snapshot});
+  if(!confirmed(d.order))throw new Error('Решение не подтверждено сервером');
+  finish(d.order);
+ }catch(e){
+  // A lost response is not evidence that the database write failed. Re-read before allowing a retry.
+  try{await reloadData(true);const fresh=state.orders.find(o=>String(o.id)===String(id));if(confirmed(fresh)){finish(fresh);return}}catch(_){}
+  if(msg)msg.textContent='Результат сохранения не подтверждён. Обновите заявку перед повтором. '+e.message;
+ }finally{state.busy=false;buttons.forEach(b=>b.disabled=false)}
 };
 
 window.openReopenClaimForm=function(orderId){

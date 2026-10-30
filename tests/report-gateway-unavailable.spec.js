@@ -30,9 +30,9 @@ for(const role of ['owner','dispatcher'])for(const decision of ['rejected','appr
  expect(writes[0]).toMatchObject({action:'reviewReport',decision,comment,expected_report_token:'r1',expected_report_uploaded_at:'2026-01-01T10:00:00Z'});
  const order=db.tables.orders.find(o=>o.id==='11');
  expect(order).toMatchObject({report_review_status:decision,report_review_comment:comment,master_payout:552.5});
- expect(archives).toBe(decision==='approved'?1:0);
+ expect(archives).toBe(0);
  if(decision==='rejected')expect(order).toMatchObject({status:'В работе',master_workflow_stage:'assigned',report_uploaded_at:null,report_upload_token:null,completed_at:null});
- else expect(order).toMatchObject({status:'Выполнена',drive_archive_status:'archived'});
+ else expect(order).toMatchObject({status:'Выполнена'});
  await page.reload();await expect(page.locator('#authGate')).toBeHidden();
  expect(await page.evaluate(()=>state.orders.find(o=>o.id==='11').report_review_status)).toBe(decision);
 });

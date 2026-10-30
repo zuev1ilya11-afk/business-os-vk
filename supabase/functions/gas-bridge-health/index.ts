@@ -1,4 +1,4 @@
-const GAS='https://script.google.com/macros/s/AKfycbx6l6V_jjZdbWQGljODcR4Uf4wvMc8hA24Dulzdmi-Ek76QH1mQS0tm3Q_ErI1sWEumzQ/exec';
+const GAS=Deno.env.get('BOS_DRIVE_GAS_URL')||'https://script.google.com/macros/s/AKfycbx6l6V_jjZdbWQGljODcR4Uf4wvMc8hA24Dulzdmi-Ek76QH1mQS0tm3Q_ErI1sWEumzQ/exec';
 async function archiveSecret(){const key=Deno.env.get('BOS_SYNC_KEY')||'';if(!key)throw new Error('BOS_SYNC_KEY is not configured');const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(key));return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 function b64u(a:Uint8Array){let s='';for(const b of a)s+=String.fromCharCode(b);return btoa(s).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_')}
 async function hmac(msg:string,secret:string){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);return b64u(new Uint8Array(await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(msg))))}

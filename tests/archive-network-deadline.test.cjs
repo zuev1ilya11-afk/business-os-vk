@@ -41,28 +41,16 @@ test('attachment time consumes one shared archive budget; expired work never rea
  assert.equal(r.status,504);assert.equal(files,2);assert.equal(sends,0);assert.deepEqual(db.tables.orders,before);
 });
 
-for(const phase of ['headers','body'])test('approval '+phase+' timeout cannot complete or replay the report',async()=>{
- const db=fixture(),before=structuredClone(db.tables.orders);let calls=0,signal,deadline;
- const r=await edge('order-lifecycle-api',db,{
-  setTimeout:(fn,ms)=>{deadline=ms;return setTimeout(fn,5)},
-  fetch:async(url,init)=>{calls++;signal=init.signal;assert.ok(signal,'approval fetch must be cancellable');
-   if(phase==='headers')return new Promise((resolve,reject)=>signal.addEventListener('abort',()=>reject(new Error('aborted')),{once:true}));
-   return new Response(new ReadableStream({start(c){signal.addEventListener('abort',()=>c.error(new Error('aborted')),{once:true})}}));
-  }
- })(review,'staff_d');
- assert.equal(r.status,504);assert.equal(deadline,75000);assert.equal(calls,1);assert.equal(signal.aborted,true);assert.deepEqual(db.tables.orders,before);
+test('approval performs no archive HTTP request or timer, even while Drive is unavailable',async()=>{
+ const db=fixture();let calls=0;
+ const r=await edge('order-lifecycle-api',db,{setTimeout:()=>{throw Error('Unexpected timer')},fetch:async()=>{calls++;throw Error('Drive unavailable')}})(review,'staff_d');
+ assert.equal(r.status,200);assert.equal(calls,0);assert.equal(db.tables.orders[0].report_review_status,'approved');
 });
 
 test('rejection and archived approval do not start archive requests or deadline timers',async()=>{
  for(const decision of ['rejected','approved']){
   const db=fixture();if(decision==='approved')Object.assign(db.tables.orders[0],{drive_archive_status:'archived',drive_archive_url:'https://drive.test/report'});
-  const r=await edge('order-lifecycle-api',db,{setTimeout:()=>{throw new Error('Unexpected timer')},fetch:()=>{throw new Error('Unexpected fetch')}})({...review,decision},'staff_d');
+  const r=await edge('order-lifecycle-api',db,{setTimeout:()=>{throw new Error('Unexpected timer')},fetch:()=>{throw new Error('Unexpected fetch')}})({...review,decision,comment:'Проверьте акт'},'staff_d');
   assert.equal(r.status,200);assert.equal(db.tables.orders[0].report_review_status,decision);
  }
-});
-
-test('archive timeout response reaches approval without a second send or a completion write',async()=>{
- const db=fixture(),before=structuredClone(db.tables.orders);let sends=0;
- const r=await edge('order-lifecycle-api',db,{fetch:async()=>{sends++;return Response.json({ok:false,error:'archive timeout'},{status:504})}})(review,'staff_d');
- assert.equal(r.status,504);assert.equal(sends,1);assert.deepEqual(db.tables.orders,before);
 });
