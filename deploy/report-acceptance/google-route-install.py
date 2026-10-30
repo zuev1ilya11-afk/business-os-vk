@@ -2,9 +2,10 @@
 """Install the verified Google route and enable the existing durable archive.
 
 The installed --ensure mode needs no /tmp helpers or signing keys. It maintains
-only the owned hosts line before each archive worker invocation. No container
+only the owned hosts lines before each archive worker invocation. No container
 restart, application replacement, database restore, or historical backfill.
 """
+from contextlib import contextmanager
 import fcntl
 import hashlib
 import importlib.util
@@ -13,22 +14,28 @@ import json
 import os
 from pathlib import Path
 import re
+import socket
 import stat
 import subprocess
 import sys
 import tempfile
+from urllib.error import URLError
+from urllib.parse import urlsplit
+from urllib.request import HTTPSHandler, build_opener
 
 ROUTE_SHA = '6ac01dcff33250e022cd3179743b8df9f09d0e676e1818473c90889ebc13bf87'
-ADDRESS = '142.251.143.142'
+PREVIOUS_ADDRESS = '142.251.143.142'
+SOURCE = 'script.google.com'
 TARGET = 'script.googleusercontent.com'
-MARKER = 'BOS_GOOGLE_ROUTE_V1'
+GOOGLE_HOSTS = (SOURCE,TARGET)
+MARKER = 'BOS_GOOGLE_ROUTE_V2'
 SCRIPT = Path('/opt/business-os/report-acceptance/google-route.py')
 CONFIG = Path('/etc/business-os/google-route.json')
 UNIT = Path('/etc/systemd/system/bos-google-route.service')
 DROPIN = Path('/etc/systemd/system/bos-drive-archive.service.d/google-route.conf')
 MOUNTS = (('sources','/bos-src'),('bundles','/bos-bundles'),('main','/bos-main'))
 MAX_HOSTS = 1048576
-UNIT_DATA = b'''# BOS_GOOGLE_ROUTE_V1
+UNIT_DATA = b'''# BOS_GOOGLE_ROUTE_V2
 [Unit]
 Description=Maintain verified Google route for Business OS archives
 After=docker.service network-online.target
@@ -42,7 +49,7 @@ UMask=0077
 NoNewPrivileges=yes
 ProtectHome=yes
 '''
-DROPIN_DATA = b'''# BOS_GOOGLE_ROUTE_V1
+DROPIN_DATA = b'''# BOS_GOOGLE_ROUTE_V2
 [Unit]
 Requires=bos-google-route.service
 After=bos-google-route.service
@@ -64,6 +71,88 @@ def command(args):
     return result.stdout
 
 
+@contextmanager
+def routed_google(address):
+    # Use the tested IPv4 route for both the POST and redirected GET. URL, Host
+    # and certificate/SNI hostname are untouched; unrelated lookups are untouched.
+    original = socket.getaddrinfo
+    def routed(host,*args,**kwargs):
+        return original(address if host in GOOGLE_HOSTS else host,*args,**kwargs)
+    socket.getaddrinfo = routed
+    try:
+        yield
+    finally:
+        socket.getaddrinfo = original
+
+
+def error_info(error):
+    inner = error.reason if isinstance(error,URLError) and isinstance(error.reason,BaseException) else error
+    result = {'type':type(inner).__name__}
+    for source,target in (('errno','errno'),('verify_code','certificate_code')):
+        value = getattr(inner,source,None)
+        if isinstance(value,int):
+            result[target] = value
+    return result
+
+
+class TraceHTTPS(HTTPSHandler):
+    def https_open(self,req):
+        host = urlsplit(req.full_url).hostname
+        require(host in GOOGLE_HOSTS,'UNEXPECTED_GAS_HOST')
+        emit('GAS_HOP_START',{'host':host,'method':req.get_method()})
+        try:
+            response = super().https_open(req)
+        except Exception as error:
+            emit('GAS_HOP_ERROR',{'host':host,**error_info(error)})
+            raise
+        emit('GAS_HOP_HTTP',{'host':host,'status':response.status})
+        return response
+
+
+def candidate_addresses():
+    addresses = []
+    try:
+        answers = socket.getaddrinfo(SOURCE,443,family=socket.AF_INET,type=socket.SOCK_STREAM)
+        addresses = [a[4][0] for a in answers if ipaddress.ip_address(a[4][0]).is_global]
+    except OSError as error:
+        emit('GOOGLE_DNS_ERROR',error_info(error))
+    return list(dict.fromkeys(addresses))[:6]+([] if PREVIOUS_ADDRESS in addresses else [PREVIOUS_ADDRESS])
+
+
+def probe_address(app,sync,address):
+    emit('GOOGLE_ROUTE_IP',address)
+    original_opener,original_request = app.build_opener,app.request
+    def bounded_request(*args,**kwargs):
+        kwargs['timeout'] = min(kwargs.get('timeout',20),20)
+        try:
+            return original_request(*args,**kwargs)
+        except Exception as error:
+            emit('GAS_RESPONSE_ERROR',error_info(error))
+            raise
+    app.build_opener = lambda *handlers:build_opener(*handlers,TraceHTTPS())
+    app.request = bounded_request
+    try:
+        with routed_google(address):
+            app.verify_gas(sync)
+    except Exception as error:
+        label = str(error)
+        emit('GOOGLE_ROUTE_ERROR',label if re.fullmatch(r'[A-Z_]{1,100}',label) else 'PROBE_FAILED')
+        return False
+    finally:
+        app.build_opener,app.request = original_opener,original_request
+    emit('GAS_ROUTE_SIGNED_CHECK',True)
+    return True
+
+
+def select_address(app,sync):
+    addresses = candidate_addresses()
+    emit('GOOGLE_ROUTE_CANDIDATES',len(addresses))
+    for address in addresses:
+        if probe_address(app,sync,address):
+            return address
+    raise RuntimeError('SIGNED_GOOGLE_ROUTE_UNAVAILABLE')
+
+
 def hosts_content(before, address):
     ip = ipaddress.ip_address(address)
     require(ip.version==4 and ip.is_global,'PUBLIC_IPV4_REQUIRED')
@@ -71,7 +160,7 @@ def hosts_content(before, address):
     for line in before.decode('utf-8').splitlines(keepends=True):
         body,_,comment = line.partition('#')
         fields = body.split()
-        target = any(f.lower().rstrip('.')==TARGET for f in fields[1:])
+        target = any(f.lower().rstrip('.') in GOOGLE_HOSTS for f in fields[1:])
         if comment.strip()==MARKER:
             require(target and len(fields)==2,'MANAGED_HOST_LINE_CHANGED')
             continue
@@ -80,7 +169,7 @@ def hosts_content(before, address):
     text = ''.join(lines)
     if text and not text.endswith('\n'):
         text += '\n'
-    return (text+str(ip)+' '+TARGET+' # '+MARKER+'\n').encode()
+    return (text+''.join(str(ip)+' '+host+' # '+MARKER+'\n' for host in GOOGLE_HOSTS)).encode()
 
 
 def write_all(fd, data):
@@ -163,7 +252,7 @@ def ensure():
     info = CONFIG.stat()
     require(info.st_uid==0 and stat.S_IMODE(info.st_mode)==0o600,'ROUTE_CONFIG_UNSAFE')
     config = json.loads(CONFIG.read_bytes())
-    require(config.get('version')==1,'ROUTE_CONFIG_VERSION')
+    require(config.get('version')==2,'ROUTE_CONFIG_VERSION')
     with open('/run/lock/bos-google-route.lock','a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         apply_hosts(hosts_plan(route_paths(config),config['address']))
@@ -224,9 +313,21 @@ def install():
         require(app.s.sha(app.s.read(runtime))==journal['runtime_journal_sha256'],'RUNTIME_JOURNAL_CHANGED')
         rec = json.loads(app.s.read(runtime))
         edge = app.s.inspect(journal['edge_id'])
-        config = {'version':1,'address':ADDRESS,'edge_name':edge['Name'].lstrip('/'),
+        config = {'version':2,'edge_name':edge['Name'].lstrip('/'),
                   'image':rec['image'],'live':journal['live']}
         host_paths = route_paths(config)
+        if journal['phase']=='complete':
+            require(CONFIG.is_file(),'ROUTE_INSTALL_INCOMPLETE')
+            config['address'] = json.loads(app.s.read(CONFIG))['address']
+        else:
+            work = Path(tempfile.mkdtemp(prefix='google-route-',dir=path.parent))
+            if journal['phase']=='enabling_archive':
+                app.pause_archive(work)
+                app.save(path.parent,journal,'complete_archive_pending')
+            app.archive_inactive()
+            sync = app.v.environment(edge).get('BOS_SYNC_KEY','')
+            require(0<len(sync)<=4096,'SIGNING_KEY_MISSING')
+            config['address'] = select_address(app,sync)
         config_data = (json.dumps(config,indent=2,sort_keys=True)+'\n').encode()
         files = [(SCRIPT,Path(__file__).resolve().read_bytes(),0o755),
                  (CONFIG,config_data,0o600),(UNIT,UNIT_DATA,0o644),(DROPIN,DROPIN_DATA,0o644)]
@@ -242,16 +343,7 @@ def install():
                     'ARCHIVE_TIMER_NOT_ACTIVE')
             app.report_result(journal)
             return
-        # Recover only archive state after an interrupted activation; acceptance stays installed.
-        work = Path(tempfile.mkdtemp(prefix='google-route-',dir=path.parent))
-        if journal['phase']=='enabling_archive':
-            app.pause_archive(work)
-            app.save(path.parent,journal,'complete_archive_pending')
-        app.archive_inactive()
-        sync = app.v.environment(edge).get('BOS_SYNC_KEY','')
-        require(0<len(sync)<=4096,'SIGNING_KEY_MISSING')
-        require(route.probe(app,sync,ADDRESS),'SIGNED_GOOGLE_ROUTE_UNAVAILABLE')
-        plan = hosts_plan(host_paths,ADDRESS)
+        plan = hosts_plan(host_paths,config['address'])
         records = [app.capture_file(work,dest,data,mode,(0,0)) for dest,data,mode in files]
         host_records = []
         for index,(host,before,after) in enumerate(plan):

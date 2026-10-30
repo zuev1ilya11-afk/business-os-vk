@@ -4,6 +4,13 @@ import hashlib
 import importlib.util
 import io
 import json
+import socket
+import ssl
+import subprocess
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.error import URLError
+from urllib.request import HTTPSHandler, ProxyHandler, build_opener
 from pathlib import Path
 import tempfile
 import unittest
@@ -22,10 +29,11 @@ class HostsTests(unittest.TestCase):
         after = m.hosts_content(before, '142.251.143.142')
         self.assertTrue(after.startswith(before))
         self.assertEqual(after.count(m.TARGET.encode()), 1)
+        self.assertEqual(after.count(m.SOURCE.encode()), 1)
         self.assertEqual(m.hosts_content(after, '142.251.143.142'), after)
 
     def test_refuses_unmanaged_override_including_alias_or_case(self):
-        for line in ('1.2.3.4 '+m.TARGET, '1.2.3.4 alias '+m.TARGET.upper()+'.'):
+        for line in ('1.2.3.4 '+m.TARGET, '1.2.3.4 alias '+m.TARGET.upper()+'.', '1.2.3.4 '+m.SOURCE):
             with self.subTest(line=line), self.assertRaisesRegex(RuntimeError, 'UNMANAGED_GOOGLE_HOST'):
                 m.hosts_content((line+'\n').encode(), '142.251.143.142')
 
@@ -38,7 +46,7 @@ class HostsTests(unittest.TestCase):
         before = ('127.0.0.1 localhost\n1.2.3.4 '+m.TARGET+' # '+m.MARKER+'\n').encode()
         after = m.hosts_content(before, '142.251.143.142')
         self.assertNotIn(b'1.2.3.4', after)
-        self.assertEqual(after.count(m.MARKER.encode()), 1)
+        self.assertEqual(after.count(m.MARKER.encode()), 2)
 
     def test_write_preserves_inode_mode_and_open_reader(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -137,6 +145,89 @@ class IdentityTests(unittest.TestCase):
         self.assertEqual(m.ROUTE_SHA, hashlib.sha256((ROOT/'gas-route-check.py').read_bytes()).hexdigest())
 
 
+class SelectionTests(unittest.TestCase):
+    def test_both_google_hops_use_ipv4_and_other_hosts_are_unchanged(self):
+        calls=[]
+        def resolve(host,*args,**kwargs):
+            calls.append(host)
+            return []
+        with patch.object(socket,'getaddrinfo',side_effect=resolve) as resolver:
+            with self.assertRaisesRegex(RuntimeError,'fixture'):
+                with m.routed_google('142.251.143.142'):
+                    socket.getaddrinfo(m.SOURCE,443)
+                    socket.getaddrinfo(m.TARGET,443)
+                    socket.getaddrinfo('unrelated.example',443)
+                    raise RuntimeError('fixture')
+            self.assertIs(socket.getaddrinfo,resolver)
+        self.assertEqual(calls,['142.251.143.142','142.251.143.142','unrelated.example'])
+
+    def test_both_routed_hostnames_keep_certificate_verification(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)
+            cert,key=path/'cert.pem',path/'key.pem'
+            subprocess.run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-days','1',
+                '-subj','/CN='+m.SOURCE,'-addext','subjectAltName=DNS:'+m.SOURCE+',DNS:'+m.TARGET,
+                '-keyout',str(key),'-out',str(cert)],check=True,capture_output=True)
+            class Handler(BaseHTTPRequestHandler):
+                def do_GET(self):
+                    self.send_response(200)
+                    self.end_headers()
+                    self.wfile.write(b'confirmed')
+                def log_message(self,*args):
+                    pass
+            server=HTTPServer(('127.0.0.1',0),Handler)
+            context=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            context.load_cert_chain(cert,key)
+            server.socket=context.wrap_socket(server.socket,server_side=True)
+            thread=threading.Thread(target=server.serve_forever,daemon=True)
+            thread.start()
+            try:
+                opener=build_opener(ProxyHandler({}),HTTPSHandler(context=ssl.create_default_context(cafile=str(cert))))
+                with m.routed_google('127.0.0.1'):
+                    for host in m.GOOGLE_HOSTS:
+                        with opener.open('https://'+host+':'+str(server.server_port),timeout=3) as response:
+                            self.assertEqual(response.read(),b'confirmed')
+                    with self.assertRaises(URLError):
+                        opener.open('https://127.0.0.1:'+str(server.server_port),timeout=3)
+            finally:
+                server.shutdown()
+                server.server_close()
+                thread.join(timeout=3)
+
+    def test_current_dns_is_tried_before_old_verified_address(self):
+        app=object()
+        addresses=['142.251.1.10','142.251.1.11','142.251.143.142']
+        with patch.object(m,'candidate_addresses',return_value=addresses), \
+             patch.object(m,'probe_address',side_effect=[False,True]) as probe, \
+             contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(m.select_address(app,'fixture-key'),'142.251.1.11')
+        self.assertEqual([c.args[2] for c in probe.call_args_list],addresses[:2])
+
+    def test_no_route_does_not_fall_back_without_signed_confirmation(self):
+        with patch.object(m,'candidate_addresses',return_value=['142.251.1.10']), \
+             patch.object(m,'probe_address',return_value=False), \
+             contextlib.redirect_stdout(io.StringIO()), \
+             self.assertRaisesRegex(RuntimeError,'SIGNED_GOOGLE_ROUTE_UNAVAILABLE'):
+            m.select_address(object(),'fixture-key')
+
+    def test_transport_errors_reveal_no_request_url_or_credentials(self):
+        from urllib.error import URLError
+        error=URLError(OSError(101,'https://secret-url/?token=fixture-secret'))
+        result=m.error_info(error)
+        self.assertEqual(result,{'type':'OSError','errno':101})
+        self.assertNotIn('secret',json.dumps(result))
+
+    def test_probe_restores_app_transport_after_failure(self):
+        opener=Mock()
+        request=Mock()
+        app=SimpleNamespace(build_opener=opener,request=request,
+                            verify_gas=Mock(side_effect=RuntimeError('GAS_CONNECTION_FAILED')))
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertFalse(m.probe_address(app,'fixture-key','142.251.143.142'))
+        self.assertIs(app.build_opener,opener)
+        self.assertIs(app.request,request)
+
+
 class InstallationTests(unittest.TestCase):
     def run_fixture(self, bridge_works):
         directory = tempfile.TemporaryDirectory()
@@ -182,6 +273,7 @@ class InstallationTests(unittest.TestCase):
                 stack.enter_context(patch.object(m,name,dest))
             stack.enter_context(patch.object(m,'load_route',return_value=route))
             stack.enter_context(patch.object(m,'route_paths',return_value=hosts))
+            stack.enter_context(patch.object(m,'select_address',return_value='142.251.143.142'))
             stack.enter_context(patch.object(m,'queue_status',side_effect=[(counts,[]),(complete,[])]))
             output = stack.enter_context(contextlib.redirect_stdout(io.StringIO()))
             if bridge_works:
