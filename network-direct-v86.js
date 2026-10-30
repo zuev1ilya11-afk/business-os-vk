@@ -1,4 +1,5 @@
 (()=>{
+  if(window.BOS_RU_NETWORK)return;
   const GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
   const BACKUP_GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-ukp6ew';
   const LEGACY_GATEWAY='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai';

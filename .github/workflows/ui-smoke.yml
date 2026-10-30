@@ -47,6 +47,8 @@ jobs:
           supabase/functions/master-workflow-api/index.ts
           supabase/functions/order-lifecycle-api/index.ts
           supabase/functions/report-api/index.ts
+          supabase/functions/report-file-upload/index.ts
+          supabase/functions/drive-archive-api/index.ts
           supabase/functions/profile-self-api/index.ts
       - name: Frozen push sender dependencies and TypeScript
         working-directory: supabase/functions/push-api

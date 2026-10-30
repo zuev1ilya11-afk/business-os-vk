@@ -1,3 +1,4 @@
+import { validAttachmentUrl } from "../_shared/report-storage.ts";
 import { handsDetailsPatch, handsWorkText, updateAcceptedHandsDetails } from "../_shared/hands-details.ts";
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import "../../../order-payroll.js";
@@ -14,17 +15,6 @@ const cors={
 const json=(x:any,s=200)=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'Content-Type':'application/json'}});
 const masterOrder=(o:any)=>orderPayroll.masterView(o);
 
-// Only signed objects for this exact order/report may cross the attachment boundary.
-function validAttachmentUrl(raw:any,orderId:any,token:any){
-  try{
-    if(typeof raw!=='string'||raw.length>8192)return false;
-    const u=new URL(raw),base=new URL(Deno.env.get('SUPABASE_URL')||'');
-    const reportToken=String(token||'').replace(/[^a-zA-Z0-9._-]+/g,'_').slice(-120);
-    const prefix=`/storage/v1/object/sign/business-os-vk-files/orders/${orderId}/${reportToken}/`;
-    const path=decodeURIComponent(u.pathname),file=path.slice(prefix.length);
-    return !!reportToken&&u.protocol==='https:'&&u.origin===base.origin&&!u.username&&!u.password&&!u.hash&&!!u.searchParams.get('token')&&path.startsWith(prefix)&&!!file&&!file.includes('/')&&!['.','..'].includes(file);
-  }catch{return false}
-}
 
 const round=(n:any)=>Math.round(Number(n||0)*100)/100;
 // Approved master contract: 65% of the base after 15%, no 6% withholding; extras stay separate.
@@ -68,8 +58,6 @@ function reportWrite(db:any, order:any, patch:any){
   for(const k of ['updated_at','status','master_staff_id','report_review_status','report_upload_token','report_uploaded_at','master_workflow_stage','master_started_at','external_source','external_id','source'])q=order[k]==null?q.is(k,null):q.eq(k,order[k]);
   return q.select().maybeSingle();
 }
-class ReviewConflict extends Error{}
-class ArchiveTimeout extends Error{constructor(){super('Архивирование не подтверждено вовремя. Обновите заявку перед повтором.')}}
 const matchesDisplayedReport=(o:any,b:any)=>!!b.expected_report_token&&!!b.expected_report_uploaded_at&&String(o.report_upload_token||'')===String(b.expected_report_token)&&String(o.report_uploaded_at||'')===String(b.expected_report_uploaded_at);
 const reportConflict=()=>json({ok:false,error:'REPORT_CHANGED',message:'Отчёт или заявка уже изменены. Обновите заявку.'},409);
 const reportReceipt=(o:any,token:string)=>o.status!=='Отменена'&&o.report_uploaded_at&&['pending','approved'].includes(o.report_review_status)&&String(o.report_upload_token||'')===token;
@@ -104,34 +92,25 @@ let deduction:any;try{deduction=reportDeduction.normalize(body,q.data)}catch(e){
   return json({ok:true,order:masterOrder(r.data),drive_archive_status:'pending'});
 }
 
-async function archiveBeforeApproval(req:Request,order:any){
-  if(String(order.drive_archive_status||'')==='archived'&&order.drive_archive_url)return order;
-  const base=Deno.env.get('SUPABASE_URL')||'';if(!base)throw new Error('Server configuration missing');
-  const headers:any={'Content-Type':'application/json'};for(const h of ['x-bos-session','x-vk-launch-params']){const v=req.headers.get(h);if(v)headers[h]=v}
-  // The archiver has a 60s network budget; leave room for database work and return before the client's 90s deadline.
-  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),75000);
-  try{
-    const r=await fetch(`${base}/functions/v1/drive-archive-api`,{method:'POST',headers,body:JSON.stringify({order_id:String(order.id),expected_report_token:order.report_upload_token,expected_report_uploaded_at:order.report_uploaded_at}),signal:controller.signal});
-    const d=await r.json().catch(()=>({}));if(r.status===409)throw new ReviewConflict();if(r.status===504)throw new ArchiveTimeout();if(!r.ok||!d.ok)throw new Error(d.message||d.error||'Не удалось сохранить отчёт на Google Диске');
-    if(d.order?.drive_archive_status!=='archived'||!d.order?.drive_archive_url)throw new Error('Архив отчёта не подтверждён');
-    return d.order;
-  }catch(e){if(controller.signal.aborted)throw new ArchiveTimeout();throw e}
-  finally{controller.abort();clearTimeout(timer)}
-}
 async function reviewReport(db:any,req:Request,body:any){
   const actor=await currentActor(db,req);if(!actor)return json({ok:false,error:'Доступ не подтверждён'},401);if(!ops(String(actor.role||'')))return json({ok:false,error:'Недостаточно прав'},403);
   const decision=String(body.decision||'');if(!['approved','rejected'].includes(decision))return json({ok:false,error:'Неверное решение'},400);
   const q=await db.from('orders').select('*').eq('id',body.id).single();if(q.error)throw q.error;
   // Rejection clears report pointers in the existing DB trigger; an unchanged rejected row is a read-only receipt.
   if(!(decision==='rejected'&&q.data.report_review_status==='rejected')&&!matchesDisplayedReport(q.data,body))return reportConflict();
-  if(q.data.report_review_status===decision&&q.data.status!=='Отменена')return json({ok:true,order:q.data,archived:decision==='approved'});
+  if(q.data.report_review_status===decision&&q.data.status!=='Отменена')return json({ok:true,order:q.data,archived:['archived','completed'].includes(String(q.data.drive_archive_status))});
   if(q.data.status==='Отменена'||q.data.report_review_status!=='pending')return reportConflict();
   if(!q.data.report_uploaded_at)return json({ok:false,error:'Отчёт ещё не загружен'},400);
-  let order=q.data;if(decision==='approved')order=await archiveBeforeApproval(req,order);
-  if(order.report_upload_token!==q.data.report_upload_token||order.report_uploaded_at!==q.data.report_uploaded_at||order.report_review_status!=='pending'||order.status==='Отменена')return reportConflict();
-  const now=new Date().toISOString(),patch:any={report_review_status:decision,report_reviewed_by:String(actor.full_name||actor.external_id),report_reviewed_at:now,report_review_comment:String(body.comment||''),status:decision==='approved'?'Выполнена':'В работе',completed_at:decision==='approved'?(order.completed_at||now):null,sync_status:'pending_sheet',updated_at:now};
-  const u=await reportWrite(db,order,patch);if(u.error)throw u.error;if(!u.data)return reportConflict();
-  return json({ok:true,order:u.data,archived:decision==='approved'});
+  const order=q.data;
+  if(decision==='rejected'&&!String(body.comment||'').trim())return json({ok:false,error:'Укажите причину отклонения.'},400);
+  const now=new Date().toISOString(),patch:any={report_review_status:decision,report_reviewer_staff_id:actor.id,report_reviewed_by:String(actor.full_name||actor.external_id),report_reviewed_at:now,report_review_comment:String(body.comment||''),status:decision==='approved'?'Выполнена':'В работе',completed_at:decision==='approved'?(order.completed_at||now):null,sync_status:'pending_sheet',updated_at:now};
+  const u=await reportWrite(db,order,patch);if(u.error)throw u.error;if(!u.data){
+    const fresh=await db.from('orders').select('*').eq('id',order.id).maybeSingle();
+    if(fresh.error)throw fresh.error;
+    if(!fresh.data||!matchesDisplayedReport(fresh.data,body)||fresh.data.report_review_status!==decision||fresh.data.status==='Отменена')return reportConflict();
+    return json({ok:true,order:fresh.data,archived:['archived','completed'].includes(String(fresh.data.drive_archive_status))});
+  }
+  return json({ok:true,order:u.data,archived:['archived','completed'].includes(String(u.data.drive_archive_status))});
 }
 
 // Queue details contain no provider credentials or attachment URLs. Only active operations staff may read/retry.
@@ -199,5 +178,5 @@ Deno.serve(async(req:Request)=>{
     if(action==='getHandsReportDelivery'||action==='retryHandsReportDelivery')return await handsReportDelivery(db,req,body);
     if(action==='syncHandsOrders')return await syncHandsOrders(db,req,body);
     return json({ok:false,error:'UNKNOWN_ACTION'},404);
-  }catch(e){if(e instanceof ReviewConflict)return reportConflict();return json({ok:false,error:e instanceof Error?e.message:String(e)},e instanceof ArchiveTimeout?504:500)}
+  }catch(e){return json({ok:false,error:e instanceof Error?e.message:String(e)},500)}
 });

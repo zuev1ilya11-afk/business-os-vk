@@ -5,7 +5,7 @@ const VERSION='web-push-v211-control-v2';
 // Match password-session-api login/refresh issuance, with one minute of clock skew.
 const MAX_SESSION_TTL_SECONDS=60*60*24*365+60;
 const encoder=new TextEncoder();
-const origins=new Set(['https://139.100.237.167','https://zuev1ilya11-afk.github.io','https://business-os-public-xo8i66.v2.appdeploy.ai','https://business-os-api-gateway.netlify.app']);
+const origins=new Set(['https://homemaster.qd.je','https://136.234.17.113','https://139.100.237.167','https://zuev1ilya11-afk.github.io','https://business-os-public-xo8i66.v2.appdeploy.ai','https://business-os-api-gateway.netlify.app']);
 const roles=new Set(['owner','manager','dispatcher','master']);
 function headers(req:Request){
   const origin=req.headers.get('origin')||'';

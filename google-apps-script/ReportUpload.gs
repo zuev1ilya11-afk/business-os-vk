@@ -5,7 +5,9 @@ function doPost(e){
     const p=e&&e.parameter?e.parameter:{};
     if(String(p.action||'')!=='archiveReport') return reportText_({ok:false,error:'UNKNOWN_ACTION'});
     verifyArchiveRequest_(p);
-    return reportText_(archiveReport_(p));
+    const lock=LockService.getScriptLock();
+    if(!lock.tryLock(5000))throw new Error('ARCHIVE_BUSY');
+    try{return reportText_(archiveReport_(p))}finally{lock.releaseLock()}
   }catch(err){
     return reportText_({ok:false,error:String(err&&err.message||err)});
   }
@@ -48,7 +50,11 @@ function archiveReport_(p){
   let photos=[];try{photos=JSON.parse(String(p.photos_json||'[]'))}catch(_){photos=[]}
   if(!Array.isArray(photos)||!photos.length) throw new Error('PHOTO_REQUIRED');
 
-  const folder=reportOrderFolder_(orderNo,orderId);
+  const parent=reportOrderFolder_(orderNo,orderId);
+  const digest=Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,orderId+'|'+String(p.upload_token||''),Utilities.Charset.UTF_8).map(b=>('0'+((b+256)%256).toString(16)).slice(-2)).join('');
+  if(!p.upload_token)throw new Error('UPLOAD_TOKEN_REQUIRED');
+  const versionName='Отчёт '+digest,versions=parent.getFoldersByName(versionName);
+  const folder=versions.hasNext()?versions.next():parent.createFolder(versionName);
   const act=saveNamedReportBlob_(folder,'Акт выполненных работ',p.act_name,p.act_mime,p.act_data);
   let measurement=null;
   if(reportType==='measurement') measurement=saveNamedReportBlob_(folder,'Лист замера',p.measurement_name,p.measurement_mime,p.measurement_data);
@@ -77,7 +83,8 @@ function reportOrderFolder_(orderNo,legacyOrderId){
 function saveNamedReportBlob_(folder,prefix,originalName,mime,data){
   const ext=fileExt_(String(originalName||''));
   const name=prefix+(ext?'.'+ext:'');
-  const existing=folder.getFilesByName(name);while(existing.hasNext())existing.next().setTrashed(true);
+  const existing=folder.getFilesByName(name);
+  if(existing.hasNext())return existing.next();
   const raw=String(data||'').replace(/^data:[^;]+;base64,/, '');
   const bytes=Utilities.base64Decode(raw);
   return folder.createFile(Utilities.newBlob(bytes,String(mime||'application/octet-stream'),name));

@@ -1,5 +1,6 @@
 (()=>{
   const PRIMARY_GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
+  const API=window.BOS_RU_NETWORK?.origin?window.BOS_RU_NETWORK.origin+'/functions/v1/mini-app-api':PRIMARY_GATEWAY+'/api/proxy/mini-app-api';
   const SECONDARY_GATEWAY='https://business-os-api-gateway.netlify.app';
   const SUPABASE='https://obsropbslfwtanyspjbi.supabase.co';
   const GAS='https://script.google.com';
@@ -7,8 +8,8 @@
   window.BUSINESS_OS_CONFIG={
     VK_APP_ID:54758847,
     AVITO_API_ENABLED:true,
-    API_URL:PRIMARY_GATEWAY+'/api/proxy/mini-app-api',
-    GAS_WEB_APP_URL:PRIMARY_GATEWAY+'/api/proxy/mini-app-api',
+    API_URL:API,
+    GAS_WEB_APP_URL:API,
     REPORT_GAS_WEB_APP_URL:PRIMARY_GATEWAY+'/api/gas-report'
   };
 

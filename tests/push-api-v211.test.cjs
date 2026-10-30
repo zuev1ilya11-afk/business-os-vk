@@ -129,3 +129,11 @@ test('push: migrated application origin can preflight and read authenticated res
  const other=await f.invoke('', '',{method:'OPTIONS',headers:{Origin:untrusted}});
  assert.notEqual(other.headers.get('access-control-allow-origin'),untrusted);
 });
+
+test('push accepts the new public origin without opening CORS to arbitrary sites',async()=>{
+ const f=fixture();
+ const r=await f.invoke({action:'status'},token('100'),{headers:{Origin:'https://homemaster.qd.je'}});
+ assert.equal(r.status,200);assert.equal(r.headers.get('access-control-allow-origin'),'https://homemaster.qd.je');
+ const bad=await f.invoke({action:'status'},token('100'),{headers:{Origin:'https://evil.test'}});
+ assert.notEqual(bad.headers.get('access-control-allow-origin'),'https://evil.test');
+});

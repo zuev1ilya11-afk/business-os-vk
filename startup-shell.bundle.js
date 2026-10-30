@@ -139,8 +139,37 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 
 ;
+// Source: report-origin.js
+(()=>{
+'use strict';
+// Only the self-hosted deployment uses a same-origin API. Preview/cloud builds retain their routes.
+const hosts=['homemaster.qd.je','139.100.237.167','136.234.17.113'];
+const active=window.BOS_RU_NETWORK?.origin||(hosts.includes(location.hostname)?location.origin:'');
+const storageHosts=['obsropbslfwtanyspjbi.supabase.co',...hosts];
+window.BOS_REPORT_URL=value=>{
+ try{if(!value)return '';const u=new URL(String(value),active||location.href);if(!['https:','http:'].includes(u.protocol))return '';
+  return active&&storageHosts.includes(u.hostname)&&u.pathname.startsWith('/storage/v1/')?active+u.pathname+u.search+u.hash:u.href;
+ }catch{return ''}
+};
+if(!active||window.BOS_RU_NETWORK||typeof window.fetch!=='function')return;
+const base=window.fetch.bind(window);
+const gateways=['api-v2.appdeploy.ai','business-os-api-gateway.netlify.app','business-os-api-gateway-3y8h7e.v2.appdeploy.ai'];
+function rewrite(raw){
+ try{const u=new URL(raw,location.href);
+  if(storageHosts.includes(u.hostname)&&/^\/(functions|storage|auth|rest|realtime)\/v1\//.test(u.pathname))return active+u.pathname+u.search;
+  if(gateways.includes(u.hostname)){const m=u.pathname.match(/\/api\/proxy\/([a-z0-9-]+)$/);if(m)return active+'/functions/v1/'+m[1]+u.search}
+ }catch{}return raw;
+}
+window.fetch=(input,init)=>{const raw=typeof input==='string'?input:input instanceof URL?input.href:input.url,next=rewrite(raw);return base(next===raw?input:input instanceof Request?new Request(next,input):next,init)};
+window.BOS_RU_NETWORK={origin:active,rewrite};
+window.BOS_NETWORK_GATEWAY_V85=true;
+})();
+
+
+;
 // Source: network-direct-v86.js
 (()=>{
+  if(window.BOS_RU_NETWORK)return;
   const GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
   const BACKUP_GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-ukp6ew';
   const LEGACY_GATEWAY='https://business-os-api-gateway-3y8h7e.v2.appdeploy.ai';
@@ -455,6 +484,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 // Source: config.js
 (()=>{
   const PRIMARY_GATEWAY='https://api-v2.appdeploy.ai/app/business-os-api-gateway-3y8h7e';
+  const API=window.BOS_RU_NETWORK?.origin?window.BOS_RU_NETWORK.origin+'/functions/v1/mini-app-api':PRIMARY_GATEWAY+'/api/proxy/mini-app-api';
   const SECONDARY_GATEWAY='https://business-os-api-gateway.netlify.app';
   const SUPABASE='https://obsropbslfwtanyspjbi.supabase.co';
   const GAS='https://script.google.com';
@@ -462,8 +492,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   window.BUSINESS_OS_CONFIG={
     VK_APP_ID:54758847,
     AVITO_API_ENABLED:true,
-    API_URL:PRIMARY_GATEWAY+'/api/proxy/mini-app-api',
-    GAS_WEB_APP_URL:PRIMARY_GATEWAY+'/api/proxy/mini-app-api',
+    API_URL:API,
+    GAS_WEB_APP_URL:API,
     REPORT_GAS_WEB_APP_URL:PRIMARY_GATEWAY+'/api/gas-report'
   };
 
@@ -1356,7 +1386,7 @@ if(enterMasterPreviewBase)enterMasterPreview=async function(id){const u=state.us
 // Source: master-report-patch.js
 const baseReportOpenOrder=openOrder;
 
-function safeReportHref(value){try{const u=new URL(String(value||''));return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
+function safeReportHref(value){if(window.BOS_REPORT_URL)return window.BOS_REPORT_URL(value);try{const u=new URL(String(value||''));return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
 window.BOS_CLOSE_REPORT_PHOTO=function(){document.querySelector('#reportPhotoViewer')?.remove()};
 window.BOS_OPEN_REPORT_PHOTO=function(value,label='Фото'){const u=safeReportHref(value);if(!u)return;window.BOS_CLOSE_REPORT_PHOTO();const root=document.createElement('div');root.id='reportPhotoViewer';root.className='reportPhotoViewer';root.innerHTML=`<button type="button" class="reportPhotoViewerBackdrop" aria-label="Закрыть фото" onclick="BOS_CLOSE_REPORT_PHOTO()"></button><section class="reportPhotoViewerPanel" role="dialog" aria-modal="true" aria-label="${esc(label)}"><div class="row"><b>${esc(label)}</b><button type="button" class="secondary" onclick="BOS_CLOSE_REPORT_PHOTO()">Закрыть</button></div><img src="${esc(u)}" alt="${esc(label)}"><a class="secondary wide" target="_blank" rel="noopener" href="${esc(u)}">Открыть оригинал</a></section>`;document.body.appendChild(root)};
 window.BOS_REPORT_PHOTO_THUMB=function(value,index){const u=safeReportHref(value);if(!u)return '';const label=`Фото ${Number(index)+1}`,encoded=encodeURIComponent(u);return `<button type="button" class="reportPhotoThumb" data-report-photo="${esc(encoded)}" data-report-photo-label="${esc(label)}" onclick="BOS_OPEN_REPORT_PHOTO(decodeURIComponent(this.dataset.reportPhoto),this.dataset.reportPhotoLabel)"><img src="${esc(u)}" alt="${esc(label)}" loading="lazy"><span>${esc(label)}</span></button>`};
@@ -1746,7 +1776,7 @@ const baseHome=pages.home;pages.home=function(){if(!(typeof isMasterPreview==='f
 ;
 // Source: report-review-patch.js
 (()=>{
-  function safeHref(value){try{const u=new URL(String(value||''));return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
+  function safeHref(value){if(window.BOS_REPORT_URL)return window.BOS_REPORT_URL(value);try{const u=new URL(String(value||''));return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
   function actLink(url){
     if(!url)return '';
     const image=/\.(?:jpe?g|png)$/i.test(new URL(url).pathname);
@@ -1766,13 +1796,14 @@ const baseHome=pages.home;pages.home=function(){if(!(typeof isMasterPreview==='f
   function canReviewReports(){return !(typeof isMasterPreview==='function'&&isMasterPreview())&&((typeof isDispatcherPreview==='function'&&isDispatcherPreview())||['owner','manager','dispatcher'].includes(String(state.user?.role||'')))}
   function pendingReports(){return (state.orders||[]).filter(o=>o.report_uploaded_at&&String(o.report_review_status||'pending')==='pending')}
   function reviewStatus(o){const s=String(o.report_review_status||'');if(!o.report_uploaded_at)return '';if(s==='approved')return '<span class="reviewBadge approved">✅ Отчёт принят</span>';if(s==='rejected')return '<span class="reviewBadge rejected">↩️ Отчёт отклонён</span>';return '<span class="reviewBadge pending">⏳ На проверке</span>'}
-  function archiveStatus(o){if(!o.report_uploaded_at)return '';if(String(o.drive_archive_status||'')==='archived')return `<span class="reviewBadge approved">☁️ Архивирован${o.drive_archive_url?' · Google Drive':''}</span>`;return `<span class="reviewBadge pending">☁️ Ожидает архивации</span>`}
+  function archiveStatus(o){if(!o.report_uploaded_at)return '';if(['archived','completed'].includes(String(o.drive_archive_status||'')))return `<span class="reviewBadge approved">☁️ Архивирован${o.drive_archive_url?' · Google Drive':''}</span>`;return `<span class="reviewBadge pending">☁️ ${o.drive_archive_status==='failed'?'Архивация будет повторена':o.drive_archive_status==='processing'?'Архивируется':'Ожидает архивации'}</span>`}
   function reportReviewCard(o){return `<button class="reportReviewCard" onclick="openReportReview('${esc(o.id)}')"><div><b>${esc(o.id)} · ${esc(o.work||'Заявка')}</b><span>${esc(o.master_name||'Мастер')} · ${esc(o.address||'')}</span></div><div>${reviewStatus(o)} ${archiveStatus(o)}</div><span class="dashArrow">›</span></button>`}
   function reviewBlock(){if(!canReviewReports())return '';const list=pendingReports();return `<section class="card reportQueue"><div class="row"><div><div class="eyebrow">КОНТРОЛЬ ОТЧЁТОВ</div><h3>Отчёты на проверку</h3></div><span class="softChip">${list.length}</span></div>${list.length?list.slice(0,5).map(reportReviewCard).join(''):'<p class="muted">Новых отчётов на проверку нет.</p>'}${safeHref(state.settings?.reports_drive_folder_url)?`<a class="secondary wide" target="_blank" rel="noopener" href="${esc(safeHref(state.settings.reports_drive_folder_url))}">Открыть архив отчётов на Google Диске</a>`:''}</section>`}
   function parsePhotos(o){try{const a=JSON.parse(o.report_photo_urls||'[]');return Array.isArray(a)?a.map(safeHref).filter(Boolean):[]}catch(_){return []}}
   window.BOS_REVIEW_SNAPSHOT=function(id){const f=$('#reviewForm');return f&&f.dataset.orderId===String(id)?{expected_report_token:f.dataset.reportToken||'',expected_report_uploaded_at:f.dataset.reportUploadedAt||''}:{}};
-  window.retryDriveArchive=async function(id){const msg=$('#archiveMsg');if(msg)msg.textContent='Архивируем…';try{const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{'Content-Type':'application/json'};const r=await fetch('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/drive-archive-api',{method:'POST',headers,body:JSON.stringify({order_id:id,...BOS_REVIEW_SNAPSHOT(id)})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.message||d.error||'Не удалось архивировать отчёт');const i=state.orders.findIndex(x=>String(x.id)===String(id));if(i>=0)state.orders[i]=d.order;if(msg)msg.textContent='Отчёт сохранён на Google Диске';setTimeout(()=>openReportReview(id),400)}catch(e){if(msg)msg.textContent=e.message}}
-  window.openReportReview=function(id){const raw=(state.orders||[]).find(x=>String(x.id)===String(id));if(!raw||!canReviewReports())return;const o={...raw,report_act_url:safeHref(raw.report_act_url),report_measurement_url:safeHref(raw.report_measurement_url),drive_archive_url:safeHref(raw.drive_archive_url)};const photos=parsePhotos(o);const links=[actLink(o.report_act_url),o.report_measurement_url?`<a class="secondary wide" target="_blank" rel="noopener" href="${esc(o.report_measurement_url)}">📐 Открыть лист замера</a>`:''].join('');const photoGrid=photos.length?`<div class="reportPhotoGrid">${photos.map((u,i)=>window.BOS_REPORT_PHOTO_THUMB?window.BOS_REPORT_PHOTO_THUMB(u,i):`<a class="secondary wide" target="_blank" rel="noopener" href="${esc(u)}">📷 Фото ${i+1}</a>`).join('')}</div>`:'';const documents=links+photoGrid;const drive=o.drive_archive_url?`<a class="primary wide" target="_blank" rel="noopener" href="${esc(o.drive_archive_url)}">☁️ Открыть папку заявки на Google Диске</a>`:`<button type="button" class="secondary wide" onclick="retryDriveArchive('${esc(o.id)}')">☁️ Повторить архивацию в Google Drive</button><p id="archiveMsg" class="muted">${o.drive_archive_error?esc(o.drive_archive_error):'Архив будет создан автоматически.'}</p>`;openModal(`<h2>Проверка отчёта ${esc(o.id)}</h2>${intakeHeader(o)}<section class="card"><h3>Результат</h3><p><b>${esc(o.work||'')}</b></p><p class="muted">${esc(o.master_name||'Мастер')} · ${esc(o.address||'')}</p>${reviewStatus(o)} ${archiveStatus(o)}${Number(o.extra_work_amount||0)>0?`<p>Допработы: <b>+${money(o.extra_work_amount)}</b></p>`:''}${Number(o.uncompleted_work_amount||0)>0?`<p>Невыполненные работы: <b>−${money(o.uncompleted_work_amount)}</b></p>`:''}</section><section class="card"><h3>Документы</h3>${documents||'<p class="muted">Документы не найдены.</p>'}</section><section class="card"><h3>Архив Google Drive</h3>${drive}</section><form id="reviewForm" class="form" data-order-id="${esc(o.id)}" data-report-token="${esc(o.report_upload_token||'')}" data-report-uploaded-at="${esc(o.report_uploaded_at||'')}"><label for="reviewComment">Комментарий проверяющего<textarea id="reviewComment" placeholder="Причина обязательна при отклонении"></textarea></label><div class="two"><button type="button" class="secondary" id="rejectReportBtn">Отклонить</button><button type="button" class="primary" id="approveReportBtn">Принять</button></div><p id="reviewMsg" class="muted"></p></form>`);$('#approveReportBtn').onclick=()=>submitReportReview(id,'approved');$('#rejectReportBtn').onclick=()=>submitReportReview(id,'rejected')}
+  const archiveBusy=new Set();
+  window.retryDriveArchive=async function(id){if(archiveBusy.has(String(id)))return;archiveBusy.add(String(id));const msg=$('#archiveMsg');if(msg)msg.textContent='Архивируем…';try{const headers=window.BOS_AUTH_HEADERS?await window.BOS_AUTH_HEADERS():{'Content-Type':'application/json'};const r=await fetch('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/drive-archive-api',{method:'POST',headers,body:JSON.stringify({order_id:id,...BOS_REVIEW_SNAPSHOT(id)})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.message||d.error||'Не удалось архивировать отчёт');const i=state.orders.findIndex(x=>String(x.id)===String(id));if(i>=0)state.orders[i]=d.order;if(msg)msg.textContent='Отчёт сохранён на Google Диске';setTimeout(()=>openReportReview(id),400)}catch(e){if(msg)msg.textContent=e.message}finally{archiveBusy.delete(String(id))}}
+  window.openReportReview=function(id){const raw=(state.orders||[]).find(x=>String(x.id)===String(id));if(!raw||!canReviewReports())return;const o={...raw,report_act_url:safeHref(raw.report_act_url),report_measurement_url:safeHref(raw.report_measurement_url),drive_archive_url:safeHref(raw.drive_archive_url)};const photos=parsePhotos(o);const links=[actLink(o.report_act_url),o.report_measurement_url?`<a class="secondary wide" target="_blank" rel="noopener" href="${esc(o.report_measurement_url)}">📐 Открыть лист замера</a>`:''].join('');const photoGrid=photos.length?`<div class="reportPhotoGrid">${photos.map((u,i)=>window.BOS_REPORT_PHOTO_THUMB?window.BOS_REPORT_PHOTO_THUMB(u,i):`<a class="secondary wide" target="_blank" rel="noopener" href="${esc(u)}">📷 Фото ${i+1}</a>`).join('')}</div>`:'';const documents=links+photoGrid;const drive=o.drive_archive_url?`<a class="primary wide" target="_blank" rel="noopener" href="${esc(o.drive_archive_url)}">☁️ Открыть папку заявки на Google Диске</a>`:`<button type="button" class="secondary wide" onclick="retryDriveArchive('${esc(o.id)}')">☁️ Повторить архивацию в Google Drive</button><p id="archiveMsg" class="muted">${o.drive_archive_error?esc(o.drive_archive_error):'Архив будет создан автоматически.'}</p>`;openModal(`<h2>Проверка отчёта ${esc(o.id)}</h2>${intakeHeader(o)}<section class="card"><h3>Результат</h3><p><b>${esc(o.work||'')}</b></p><p class="muted">${esc(o.master_name||'Мастер')} · ${esc(o.address||'')}</p>${reviewStatus(o)} ${archiveStatus(o)}${Number(o.extra_work_amount||0)>0?`<p>Допработы: <b>+${money(o.extra_work_amount)}</b></p>`:''}${Number(o.uncompleted_work_amount||0)>0?`<p>Невыполненные работы: <b>−${money(o.uncompleted_work_amount)}</b></p>`:''}</section><section class="card"><h3>Документы</h3>${documents||'<p class="muted">Документы не найдены.</p>'}</section><section class="card"><h3>Архив Google Drive</h3>${drive}</section><form id="reviewForm" class="form" data-order-id="${esc(o.id)}" data-report-token="${esc(o.report_upload_token||'')}" data-report-uploaded-at="${esc(o.report_uploaded_at||'')}"><label for="reviewComment">Комментарий проверяющего<textarea id="reviewComment" placeholder="Причина обязательна при отклонении"></textarea></label><div class="two"><button type="button" class="secondary" id="rejectReportBtn">Отклонить</button><button type="button" class="primary" id="approveReportBtn">Принять</button></div><p id="reviewMsg" class="muted"></p></form>`);$('#approveReportBtn').onclick=()=>submitReportReview(id,'approved');$('#rejectReportBtn').onclick=()=>submitReportReview(id,'rejected');if(o.report_review_status!=='pending'){$('#approveReportBtn').disabled=true;$('#rejectReportBtn').disabled=true;$('#reviewComment').value=o.report_review_comment||''}}
   window.submitReportReview=async function(id,decision){if(state.busy)return;const msg=$('#reviewMsg');const comment=$('#reviewComment')?.value||'';if(decision==='rejected'&&!comment.trim()){msg.textContent='Укажите причину отклонения.';return}state.busy=true;msg.textContent='Сохраняем решение…';try{const role=(typeof isDispatcherPreview==='function'&&isDispatcherPreview())?'dispatcher':String(state.user?.role||'owner');const reviewerName=(role==='dispatcher'&&typeof dispatcherPreviewUser!=='undefined'&&dispatcherPreviewUser?.full_name)?dispatcherPreviewUser.full_name:(state.user?.full_name||'Сотрудник');const d=await api('reviewReport',{id,decision,comment,...BOS_REVIEW_SNAPSHOT(id),reviewer_role:role,reviewer_name:reviewerName});if(!d.ok)throw new Error(d.message||d.error||'Не удалось сохранить решение');const i=state.orders.findIndex(x=>String(x.id)===String(id));if(i>=0)state.orders[i]=d.order;closeModal();show('home')}catch(e){msg.textContent=e.message}finally{state.busy=false}}
   const homeBase=pages.home;pages.home=function(){const html=homeBase();if(!canReviewReports())return html;return reviewBlock()+html};
   const ordersBase=pages.orders;pages.orders=function(){const html=ordersBase();if(!canReviewReports())return html;return html.replace(/<section class="card" onclick="openOrder\('([^']+)'\)">/g,(m,id)=>{const o=(state.orders||[]).find(x=>String(x.id)===String(id));return m+(o?.report_uploaded_at?reviewStatus(o):'')})};
@@ -4982,7 +5013,7 @@ window.copyMasterPhone72=async function(phone,button){
 const phoneHtml=o=>{
  const phones=phoneList72(o.phone||o.client_phone);
  if(!phones.length)return'<small>Телефон не указан</small>';
- return `<div class="bosCompactPhone masterV126PhoneList">${phones.map((item,index)=>`<div class="masterV126PhoneRow"><a class="masterV126Phone" href="tel:${esc(item.tel)}">${esc(item.label)}</a><div class="masterV126PhoneActions"><button type="button" class="secondary masterV126CopyPhone" onclick="copyMasterPhone72('${esc(item.tel)}',this)" aria-label="Скопировать номер ${index+1}">Копировать</button><a class="secondary bosClientCallAction" href="tel:${esc(item.tel)}" aria-label="${index===0?'Позвонить клиенту':'Позвонить клиенту '+(index+1)}">Позвонить</a></div></div>`).join('')}</div>`;
+ return `<div class="bosCompactPhone masterV126PhoneList">${phones.map((item,index)=>`<div class="masterV126PhoneRow"><a class="masterV126Phone" href="tel:${esc(item.tel)}">${esc(item.label)}</a><div class="masterV126PhoneActions"><a class="secondary bosClientCallAction" href="tel:${esc(item.tel)}" aria-label="${index===0?'Позвонить клиенту':'Позвонить клиенту '+(index+1)}">Позвонить</a></div></div>`).join('')}</div>`;
 };
 const contactSummaryHtml=o=>{
  const event=window.BOS_CONTACT_STATUS?.latest?.(o);if(!event)return'<div class="bosMasterClientActions"></div>';
@@ -4990,7 +5021,7 @@ const contactSummaryHtml=o=>{
  const comment=String(event?.result==='pending'?o.master_contact_comment||'':event?.comment||'').trim();
  return `<div class="bosMasterContactSummary">${summary}${comment?comment.length>140?`<details><summary>Подробнее</summary><p class="bosContactComment">${esc(comment)}</p></details>`:`<p class="bosContactComment">${esc(comment)}</p>`:''}<div class="bosMasterClientActions"></div></div>`;
 };
-const received=o=>{const raw=String(o.received_date||o.created_at||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:'—'};
+const received=o=>{const raw=String(o.received_date||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`Поступила ${m[3]}.${m[2]}.${m[1]}`:'Дата поступления не указана'};
 function visitHtml(o){
  const date=String(o.scheduled_date||'').slice(0,10),time=String(o.scheduled_time||o.time_slot||'').trim();
  const day=offset=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(Date.now()+offset*86400000));
@@ -5002,7 +5033,7 @@ function visitHtml(o){
 }
 function additionalHtml(o){
  const contactHistory=window.BOS_CONTACT_STATUS?.history?.(o)||[];
- return `<details class="bosOrderAdditional"><summary>Дополнительно</summary><div class="bosOrderExtraActions"></div><p class="bosCompactReceived">Поступила ${esc(received(o))}</p>${contactHistory.length?`<details class="bosOrderContactHistory"><summary>История контактов (${contactHistory.length})</summary>${window.BOS_CONTACT_STATUS.html(o,{details:true})}</details>`:''}${window.BOS_MANUAL_COMPLETION?.history(o)||''}${typeof reportLinksHtml==='function'?reportLinksHtml(o):''}</details>`;
+ return `<details class="bosOrderAdditional"><summary>Дополнительно</summary><div class="bosOrderExtraActions"></div>${contactHistory.length?`<details class="bosOrderContactHistory"><summary>История контактов (${contactHistory.length})</summary>${window.BOS_CONTACT_STATUS.html(o,{details:true})}</details>`:''}${window.BOS_MANUAL_COMPLETION?.history(o)||''}${typeof reportLinksHtml==='function'?reportLinksHtml(o):''}</details>`;
 }
 const visitSignatures=new WeakMap();
 window.BOS_MASTER_ORDER_REFRESH_DETAILS=function(card,o){
@@ -5032,7 +5063,7 @@ window.openOrder=function(id){
  const o=(state.orders||[]).find(x=>String(x.id)===String(id));if(!o)return;
  const d=breakdown(o),work=detailWorks(o);
  openModal(`<div class="bosHandsOrder bosCompactMasterCard">
-  <div class="bosHandsHead"><div class="bosMasterTitle"><b>№ ${esc(no(o))}</b></div><span class="status info">${esc(o.status||'Статус не указан')}</span></div>
+  <div class="bosHandsHead"><div class="bosMasterTitle"><b>№ ${esc(no(o))}</b><span class="bosCompactReceived">· ${esc(received(o))}</span></div><span class="status info">${esc(o.status||'Статус не указан')}</span></div>
   ${visitHtml(o)}
   <section class="bosApprovedClient bosApprovedSection"><h3>Клиент</h3><div class="bosHandsBlock bosCompactClient"><div><b>${esc(o.client||'Клиент не указан')}</b>${phoneHtml(o)}${contactSummaryHtml(o)}</div></div></section>
   <section class="bosHandsWorks bosApprovedSection"><h3 class="bosWorksLabel">Работы${work.count?' ('+work.count+')':''}</h3><div class="bosHandsWorkList">${work.html||(!work.description?'<p class="muted">Работы не указаны</p>':'')}</div>${work.description?`<p class="bosWorkDescription">${esc(work.description)}</p>`:''}${commentHtml(o)}<div class="bosCompactMoney">${d?`<strong>Стоимость: ${o.amount_confirmed===false?'Стоимость не указана':money(d.total)}</strong>`:''}<span>Выплата мастеру: ${payoutKnown(o)?money(totalPay(o)):'Не рассчитана'}</span></div>${costHtml(o)?`<details class="bosCompactCost"><summary>Расчёт стоимости</summary>${costHtml(o)}</details>`:''}</section>

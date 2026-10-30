@@ -10,13 +10,10 @@ for(const decision of ['approved','rejected'])test(`${decision}: an old or missi
   assert.equal(r.status,409);assert.match(r.body.message,/Обновите/);assert.equal(fetches,0);assert.deepEqual(db.tables.orders,before);
  }
 });
-test('approval sends the displayed version to the archiver and stale archive conflict stays 409',async()=>{
- const db=fixture(),before=structuredClone(db.tables.orders);
- const r=await edge('order-lifecycle-api',db,{fetch:async(url,init)=>{
-  assert.deepEqual(JSON.parse(init.body),{order_id:'o',...snapshot});
-  return Response.json({ok:false,error:'REPORT_CHANGED',message:'Отчёт изменён. Обновите заявку.'},{status:409});
- }})({action:'reviewReport',id:'o',decision:'approved',...snapshot});
- assert.equal(r.status,409);assert.deepEqual(db.tables.orders,before);
+test('approval atomically saves the displayed version without calling Drive',async()=>{
+ const db=fixture();let fetches=0;
+ const r=await edge('order-lifecycle-api',db,{fetch:async()=>{fetches++;throw Error('Drive unavailable')}})({action:'reviewReport',id:'o',decision:'approved',...snapshot});
+ assert.equal(r.status,200);assert.equal(fetches,0);assert.equal(db.tables.orders[0].report_review_status,'approved');
 });
 test('approved receipt also requires the displayed version and leaves completion time untouched',async()=>{
  const db=fixture({status:'Выполнена',report_review_status:'approved',completed_at:'2026-01-02'}),before=structuredClone(db.tables.orders),api=edge('order-lifecycle-api',db);
