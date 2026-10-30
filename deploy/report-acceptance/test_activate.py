@@ -156,25 +156,29 @@ class ActivationTests(unittest.TestCase):
                    'timer_before':{'UnitFileState':'disabled'},'build':'fixture-build'}
         return work,journal,contents,{'candidate_web':after['web']},{},payload,{}
 
-    def run_install(self,fail=False):
+    def run_install(self,fail=False,defer_archive=False):
         fixture = self.install_fixture()
+        fixture[1].update(gas_signing_verified=not defer_archive,archive_deferred=defer_archive)
         calls = []
         def run(args,*unused,**kwargs):
             calls.append(args)
             return b''
         fake_v = SimpleNamespace(run=run,sql=lambda *args:b't\n')
-        states = lambda unit: {'LoadState':'loaded','ActiveState':'active','UnitFileState':'enabled'}
+        states = lambda unit: {'LoadState':'loaded','ActiveState':'inactive' if defer_archive else 'active',
+                               'UnitFileState':'disabled' if defer_archive else 'enabled'}
+        output = io.StringIO()
         with patch.object(m,'prepare',return_value=fixture),patch.object(m,'check_saved_files'),\
              patch.object(m,'fresh_backup',return_value={'path':'fixture','sha256':'fixture'}),\
              patch.object(m,'v',fake_v),patch.object(s,'command',return_value=b'Result=success\nExecMainStatus=0\n'),\
              patch.object(m,'unit_state',side_effect=states),patch.object(m,'wait_health'),\
              patch.object(m,'smoke',side_effect=RuntimeError('SMOKE_FAILED') if fail else None),\
-             contextlib.redirect_stdout(io.StringIO()):
+             contextlib.redirect_stdout(output):
             if fail:
                 with self.assertRaisesRegex(RuntimeError,'SMOKE_FAILED'):
-                    m.activate()
+                    m.activate(defer_archive=defer_archive)
             else:
-                m.activate()
+                m.activate(defer_archive=defer_archive)
+        self.output = output.getvalue()
         return fixture,calls
 
     def test_failed_live_check_restores_code_but_never_restores_database(self):
@@ -195,6 +199,154 @@ class ActivationTests(unittest.TestCase):
         enabled = calls.index(['systemctl','enable','--now',m.UNITS[1]])
         self.assertLess(calls.index(['docker','start','fixture-edge']),first)
         self.assertLess(first,enabled)
+
+    def test_deferred_install_keeps_verified_files_and_never_starts_archive(self):
+        fixture,calls = self.run_install(defer_archive=True)
+        work,journal = fixture[:2]
+        result = json.loads((work/'activation.json').read_text())
+        self.assertEqual(result['phase'],'complete_archive_pending')
+        self.assertFalse(result['gas_signing_verified'])
+        self.assertEqual(s.tree(Path(journal['live'])/'web'),journal['after']['web'])
+        self.assertEqual(s.tree(Path(journal['live'])/'edge'),journal['after']['edge'])
+        self.assertIn(['systemctl','disable','--now',m.UNITS[1]],calls)
+        self.assertFalse(any(args[:2]==['systemctl','start'] or args[:2]==['systemctl','enable'] for args in calls))
+        self.assertIn('GAS_DEPLOYMENT_VERIFIED=false',self.output)
+        self.assertIn('ARCHIVE_TIMER_ENABLED=false',self.output)
+        self.assertIn('PRODUCTION_UPDATED=true',self.output)
+
+    def test_deferred_install_still_rolls_back_failed_application_checks(self):
+        fixture,calls = self.run_install(fail=True,defer_archive=True)
+        work,journal = fixture[:2]
+        self.assertEqual(json.loads((work/'activation.json').read_text())['phase'],'rolled_back')
+        self.assertEqual(s.tree(Path(journal['live'])/'web'),journal['before']['web'])
+        self.assertFalse(any('pg_restore' in args for args in calls))
+
+    def test_only_explicit_deferral_avoids_external_gas_preflight(self):
+        with patch.object(m,'request',side_effect=OSError('unreachable')),contextlib.redirect_stdout(io.StringIO()):
+            with self.assertRaisesRegex(RuntimeError,'GAS_CONNECTION_FAILED'):
+                m.archive_preflight('fixture-key')
+            self.assertFalse(m.archive_preflight('fixture-key',defer_archive=True))
+
+    def test_deferred_smoke_checks_auth_rest_cors_and_build_without_gas(self):
+        calls = []
+        def api(base,slug,body=None,method='POST',headers=None):
+            calls.append((base,slug,method))
+            if slug=='gas-bridge-health':
+                raise RuntimeError('GAS_UNREACHABLE')
+            if body=={'action':'health'}:
+                return 200,b'{"ok":true,"service":"order-lifecycle-api"}',{}
+            if method=='OPTIONS':
+                return 204,b'',{'Access-Control-Allow-Origin':m.PUBLIC}
+            return 401,b'{"ok":false}',{}
+        def request(url,**kwargs):
+            if '/rest/v1/' in url:
+                return 200,b'[]',{}
+            self.assertIn('/build-version.js?',url)
+            return 200,b'fixture-build',{}
+        with patch.object(m,'api',side_effect=api),patch.object(m,'request',side_effect=request):
+            m.smoke('http://127.0.0.1:19000',{'SUPABASE_SERVICE_ROLE_KEY':'fixture'},
+                    {'build-version.js':s.sha(b'fixture-build')},defer_archive=True)
+            self.assertEqual(len([c for c in calls if c[2]=='OPTIONS']),1)
+            self.assertEqual(len([c for c in calls if c[1]=='report-api']),1)
+            with self.assertRaisesRegex(RuntimeError,'GAS_UNREACHABLE'):
+                m.smoke('http://127.0.0.1:19000',{'SUPABASE_SERVICE_ROLE_KEY':'fixture'},
+                        {'build-version.js':s.sha(b'fixture-build')})
+
+    def test_enable_archive_requires_gas_success_and_preserves_installed_code_on_failure(self):
+        fixture,_ = self.run_install(defer_archive=True)
+        work,journal = fixture[:2]
+        runtime = work/'runtime.json'
+        runtime.write_text('{"image":"fixture-image"}')
+        journal.update(runtime_journal=str(runtime),runtime_journal_sha256=s.sha(runtime.read_bytes()))
+        m.save(work,journal,'complete_archive_pending')
+        edge = {'State':{'Running':True},'Image':'fixture-image','NetworkSettings':{
+            'Ports':{'9000/tcp':[{'HostIp':'127.0.0.1','HostPort':'19000'}]}}}
+        states = {m.UNITS[0]:{'ActiveState':'inactive','UnitFileState':'static'},
+                  m.UNITS[1]:{'ActiveState':'inactive','UnitFileState':'disabled'}}
+        calls = []
+        def run(args,*unused,**kwargs):
+            calls.append(args)
+            if args[:3]==['systemctl','enable','--now']:
+                states[m.UNITS[1]].update(ActiveState='active',UnitFileState='enabled')
+            if args[:3]==['systemctl','disable','--now']:
+                states[m.UNITS[1]].update(ActiveState='inactive',UnitFileState='disabled')
+            return b''
+        mounts = {'/bos-src':'sources','/bos-bundles':'bundles','/bos-main':'main'}
+        fake_v = SimpleNamespace(run=run,environment=lambda e:{'BOS_SYNC_KEY':'fixture',
+                                                              'SUPABASE_SERVICE_ROLE_KEY':'fixture'})
+        response = lambda valid:(200,json.dumps({'ok':False,'error':'ACT_REQUIRED' if valid else 'INVALID_ORDER_NUMBER_SIGNATURE'}).encode(),{})
+        with patch.object(m,'v',fake_v),patch.object(s,'inspect',return_value=edge),\
+             patch.object(s,'mount',side_effect=lambda e,p:Path(journal['live'])/'edge'/mounts[p]),\
+             patch.object(m,'unit_state',side_effect=lambda unit:states[unit]),\
+             contextlib.redirect_stdout(io.StringIO()):
+            with patch.object(m,'request',side_effect=OSError('no route')):
+                with self.assertRaisesRegex(RuntimeError,'GAS_CONNECTION_FAILED'):
+                    m.enable_archive(work,journal)
+            self.assertFalse(any(args[:2]==['systemctl','start'] for args in calls))
+            self.assertEqual(json.loads((work/'activation.json').read_text())['phase'],'complete_archive_pending')
+            with patch.object(m,'request',side_effect=[response(False),response(True)]),\
+                 patch.object(m,'smoke',side_effect=RuntimeError('LIVE_GAS_BRIDGE_FAILED')):
+                with self.assertRaisesRegex(RuntimeError,'LIVE_GAS_BRIDGE_FAILED'):
+                    m.enable_archive(work,journal)
+            self.assertFalse(any(args[:2]==['systemctl','start'] for args in calls))
+            with patch.object(m,'request',side_effect=[response(False),response(True)]),\
+                 patch.object(m,'smoke'),patch.object(s,'command',return_value=b'Result=failed\nExecMainStatus=1\n'):
+                with self.assertRaisesRegex(RuntimeError,'WORKER_FIRST_RUN_FAILED'):
+                    m.enable_archive(work,journal)
+            self.assertEqual(json.loads((work/'activation.json').read_text())['phase'],'complete_archive_pending')
+            self.assertFalse(journal['gas_signing_verified'])
+            self.assertEqual(states[m.UNITS[1]]['UnitFileState'],'disabled')
+            self.assertEqual(s.tree(Path(journal['live'])/'web'),journal['after']['web'])
+            with patch.object(m,'request',side_effect=[response(False),response(True)]),\
+                 patch.object(m,'smoke'),patch.object(s,'command',return_value=b'Result=success\nExecMainStatus=0\n'):
+                m.enable_archive(work,journal)
+            self.assertEqual(json.loads((work/'activation.json').read_text())['phase'],'complete')
+            self.assertEqual(states[m.UNITS[1]]['UnitFileState'],'enabled')
+            self.assertTrue(journal['gas_signing_verified'])
+            self.assertFalse(any(args[0]=='docker' for args in calls))
+
+    def test_repeated_deferred_command_does_not_reapply_migration_or_enable_timer(self):
+        fixture,_ = self.run_install(defer_archive=True)
+        work,journal = fixture[:2]
+        parent = self.root/'report-acceptance-stage-fixture/locked-fixture/runtime-fixture/activate-fixture'
+        parent.mkdir(parents=True)
+        (parent/'activation.json').write_bytes((work/'activation.json').read_bytes())
+        with patch.object(s,'PARENT',self.root),patch.object(m,'load_helpers',return_value=(s,m.v,m.r)),\
+             patch.object(m.os,'geteuid',return_value=0),patch.object(m,'archive_inactive'),\
+             patch.object(m,'activate',side_effect=AssertionError('must not redeploy')),\
+             patch.object(m.sys,'argv',['activate.py','--defer-archive']),contextlib.redirect_stdout(io.StringIO()) as output:
+            m.main()
+        self.assertIn('ALREADY_ACTIVATED=true',output.getvalue())
+        self.assertIn('ARCHIVE_TIMER_ENABLED=false',output.getvalue())
+
+    def test_enable_rejects_modified_installed_files_before_touching_worker(self):
+        fixture,_ = self.run_install(defer_archive=True)
+        work,journal = fixture[:2]
+        (Path(journal['live'])/'edge/index').write_bytes(b'concurrent change')
+        with self.assertRaisesRegex(RuntimeError,'ACTIVE_RELEASE_CHANGED'):
+            m.enable_archive(work,journal)
+
+    def test_paused_worker_may_have_failed_but_must_not_be_running_or_enabled(self):
+        def state(unit):
+            return {'ActiveState':'failed' if unit.endswith('.service') else 'inactive',
+                    'UnitFileState':'static' if unit.endswith('.service') else 'disabled'}
+        with patch.object(m,'unit_state',side_effect=state):
+            m.archive_inactive()
+        for active,enabled in (('active','disabled'),('inactive','enabled')):
+            with patch.object(m,'unit_state',return_value={'ActiveState':active,'UnitFileState':enabled}):
+                with self.assertRaises(RuntimeError):
+                    m.archive_inactive()
+
+    def test_retry_pause_keeps_separate_logs_after_worker_failure(self):
+        verify = load('pause_verify_test',ROOT/'verify-stage.py')
+        verify.s = s
+        state = {'ActiveState':'inactive','UnitFileState':'disabled'}
+        result = subprocess.CompletedProcess([],0,b'',b'')
+        with patch.object(m,'v',verify),patch.object(m,'unit_state',return_value=state),\
+             patch.object(verify.subprocess,'run',return_value=result):
+            m.pause_archive(self.root)
+            m.pause_archive(self.root)
+        self.assertEqual(len(list(self.root.rglob('*.log'))),4)
 
 
 if __name__=='__main__':

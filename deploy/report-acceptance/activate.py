@@ -3,6 +3,8 @@
 
 Never restores an old production database or deletes archive jobs. --rollback
 restores only files from this installer's last journal and stops its worker.
+--defer-archive installs report acceptance with the archive timer disabled.
+--enable-archive later verifies GAS and enables that timer without redeploying.
 """
 import argparse
 import base64
@@ -185,6 +187,14 @@ def verify_gas(sync_key):
         require(status==200 and value.get('ok') is False and code==expected,'GAS_VERSION_OR_SIGNING_CHECK_FAILED')
 
 
+def archive_preflight(sync_key, *, defer_archive=False):
+    if defer_archive:
+        s.emit('GAS_CHECK_DEFERRED',True)
+        return False
+    verify_gas(sync_key)
+    return True
+
+
 def loopback(edge):
     ports = edge['NetworkSettings']['Ports'].get('9000/tcp') or []
     require(len(ports)==1 and ports[0]['HostIp']=='127.0.0.1' and
@@ -263,7 +273,7 @@ def check_saved_files(journal, env, config, work):
     s.emit('REAL_REPORT_FILES_CHECKED',2)
 
 
-def smoke(base, env, candidate):
+def smoke(base, env, candidate, *, defer_archive=False):
     health(base)
     service = {'Authorization':'Bearer '+env['SUPABASE_SERVICE_ROLE_KEY'],
                'apikey':env['SUPABASE_SERVICE_ROLE_KEY']}
@@ -279,10 +289,11 @@ def smoke(base, env, candidate):
         'Access-Control-Request-Method':'POST','Access-Control-Request-Headers':'content-type,x-bos-session'})
     require(status in (200,204) and headers.get('Access-Control-Allow-Origin') in ('*',PUBLIC),'PUBLIC_PUSH_CORS_FAILED')
     health(PUBLIC)
-    status,raw,_ = api(base,'gas-bridge-health',method='GET')
-    outer = json.loads(raw)
-    inner = json.loads(outer.get('body','{}'))
-    require(status==200 and outer.get('ok') is True and inner.get('error')=='ACT_REQUIRED','LIVE_GAS_BRIDGE_FAILED')
+    if not defer_archive:
+        status,raw,_ = api(base,'gas-bridge-health',method='GET')
+        outer = json.loads(raw)
+        inner = json.loads(outer.get('body','{}'))
+        require(status==200 and outer.get('ok') is True and inner.get('error')=='ACT_REQUIRED','LIVE_GAS_BRIDGE_FAILED')
     public_build(candidate['build-version.js'])
 
 
@@ -333,7 +344,7 @@ def rollback(work, journal):
     s.emit('ARCHIVE_TIMER_ENABLED',journal['timer_before'].get('UnitFileState')=='enabled')
 
 
-def prepare():
+def prepare(*, defer_archive=False):
     journals = list(s.PARENT.glob('report-acceptance-stage-*/locked-*/runtime-*/runtime-journal.json'))
     require(bool(journals),'SUCCESSFUL_RUNTIME_JOURNAL_MISSING')
     path = max(journals,key=lambda p:p.stat().st_mtime_ns)
@@ -386,8 +397,8 @@ def prepare():
     health(base)
     public_build(rec['before']['web']['build-version.js'])
     s.emit('CURRENT_RELEASE_VERIFIED',True)
-    verify_gas(env['BOS_SYNC_KEY'])
-    s.emit('GAS_VERSION_AND_SIGNING_VERIFIED',True)
+    gas_verified = archive_preflight(env['BOS_SYNC_KEY'],defer_archive=defer_archive)
+    s.emit('GAS_VERSION_AND_SIGNING_VERIFIED',gas_verified)
     allowed = {'main/index.ts','main/bos-report-env.ts','main/bos-report-env.json'}
     for slug,entry in rec['entrypoints'].items():
         allowed.update(('bundles/'+slug+'.eszip','sources/'+entry,
@@ -415,13 +426,86 @@ def prepare():
                'live':str(live),'edge_id':edge['Id'],'database_id':db['Id'],'database':database,
                'loopback':base,'before':rec['before'],'after':{'edge':rec['candidate_edge'],'web':rec['candidate_web']},
                'build':rec['frontend']['build'],'files':files,'timer_before':units[UNITS[1]],
-               'gas_deployment_version':4,'gas_signing_verified':True,'database_migration_applied':False}
+               'gas_deployment_version':4 if gas_verified else None,'gas_signing_verified':gas_verified,
+               'archive_deferred':defer_archive,'database_migration_applied':False}
     save(work,journal,'prepared')
     return work,journal,contents,rec,env,payload,config
 
 
-def activate():
-    work,journal,contents,rec,env,payload,config = prepare()
+def archive_inactive():
+    for unit in UNITS:
+        state = unit_state(unit)
+        allowed = ('inactive','failed') if unit.endswith('.service') else ('inactive',)
+        require(state.get('ActiveState') in allowed,'ARCHIVE_WORKER_NOT_STOPPED')
+        if unit.endswith('.timer'):
+            require(state.get('UnitFileState')=='disabled','ARCHIVE_TIMER_NOT_DISABLED')
+
+
+def pause_archive(work):
+    logs = Path(tempfile.mkdtemp(prefix='pause-archive-',dir=work))
+    v.run(['systemctl','disable','--now',UNITS[1]],logs,'timer-pause',timeout=110)
+    v.run(['systemctl','stop',UNITS[0]],logs,'worker-pause',timeout=110)
+    archive_inactive()
+
+
+def start_archive(work):
+    v.run(['systemctl','start',UNITS[0]],work,'worker-first-run',timeout=110)
+    result = s.command(['systemctl','show',UNITS[0],'--property=Result,ExecMainStatus']).decode()
+    require('Result=success' in result and 'ExecMainStatus=0' in result,'WORKER_FIRST_RUN_FAILED')
+    v.run(['systemctl','enable','--now',UNITS[1]],work,'timer-enable')
+    timer = unit_state(UNITS[1])
+    require(timer.get('ActiveState')=='active' and timer.get('UnitFileState')=='enabled','TIMER_NOT_ACTIVE')
+
+
+def installed_files(journal):
+    require(all(s.tree(Path(journal['live'])/f)==journal['after'][f] for f in ('edge','web')),'ACTIVE_RELEASE_CHANGED')
+    require(all(s.sha(s.read(Path(item['path'])))==item['after_sha256'] for item in journal['files']),
+            'ACTIVE_WORKER_FILES_CHANGED')
+
+
+def report_result(journal):
+    enabled = journal['phase']=='complete'
+    s.emit('BUILD',journal['build'])
+    s.emit('GAS_DEPLOYMENT_VERIFIED',enabled and journal.get('gas_signing_verified',False))
+    s.emit('ARCHIVE_TIMER_ENABLED',enabled)
+    s.emit('ARCHIVE_DEFERRED',not enabled)
+    s.emit('PRODUCTION_UPDATED',True)
+
+
+def enable_archive(work, journal):
+    require(journal['phase'] in ('complete_archive_pending','enabling_archive'),'DEFERRED_RELEASE_REQUIRED')
+    installed_files(journal)
+    path = Path(journal['runtime_journal'])
+    require(s.sha(s.read(path))==journal['runtime_journal_sha256'],'RUNTIME_JOURNAL_CHANGED')
+    rec = json.loads(s.read(path))
+    edge = s.inspect(journal['edge_id'])
+    require(edge['State']['Running'] and edge['Image']==rec['image'] and loopback(edge)==journal['loopback'],'EDGE_CHANGED')
+    for folder,target in (('sources','/bos-src'),('bundles','/bos-bundles'),('main','/bos-main')):
+        require(s.mount(edge,target)==Path(journal['live'])/'edge'/folder,'EDGE_MOUNT_CHANGED')
+    logs = Path(tempfile.mkdtemp(prefix='enable-archive-',dir=work))
+    # Also makes a retry after interruption safe: never leave a half-enabled timer.
+    pause_archive(logs)
+    env = v.environment(edge)
+    require(bool(env.get('BOS_SYNC_KEY')) and bool(env.get('SUPABASE_SERVICE_ROLE_KEY')),'REQUIRED_ENV_MISSING')
+    archive_preflight(env['BOS_SYNC_KEY'])
+    smoke(journal['loopback'],env,journal['after']['web'])
+    journal.update(gas_deployment_version=4,gas_signing_verified=True)
+    save(work,journal,'enabling_archive')
+    try:
+        start_archive(logs)
+        journal['archive_deferred'] = False
+        save(work,journal,'complete')
+    except (Exception,KeyboardInterrupt):
+        pause_archive(logs)
+        journal.update(archive_deferred=True,gas_signing_verified=False)
+        save(work,journal,'complete_archive_pending')
+        s.emit('REPORT_ACCEPTANCE_REMAINS_INSTALLED',True)
+        raise
+    report_result(journal)
+
+
+def activate(*, defer_archive=False):
+    work,journal,contents,rec,env,payload,config = prepare(defer_archive=defer_archive)
     s.emit('ACTIVATION_DIR',str(work))
     check_saved_files(journal,env,config,work)
     journal['fresh_backup'] = fresh_backup(journal['database_id'],journal['database'],work)
@@ -447,7 +531,7 @@ def activate():
         wait_health(journal['loopback'])
         save(work,journal,'checking_release')
         s.emit('VERIFIED_FILES_INSTALLED',True)
-        smoke(journal['loopback'],env,rec['candidate_web'])
+        smoke(journal['loopback'],env,rec['candidate_web'],defer_archive=defer_archive)
         # Read-only schema checks. No synthetic orders or staff are written.
         check = v.sql(journal['database_id'],journal['database'],
             "SELECT (to_regprocedure('public.bos_drive_claim()') is not null) AND "
@@ -457,14 +541,13 @@ def activate():
         require(check.strip()==b't','LIVE_SCHEMA_CHECK_FAILED')
         s.emit('LIVE_HTTP_AND_SCHEMA_CHECKS_OK',True)
         v.run(['systemctl','daemon-reload'],work,'worker-daemon-reload')
-        save(work,journal,'starting_worker')
-        v.run(['systemctl','start',UNITS[0]],work,'worker-first-run',timeout=110)
-        result = s.command(['systemctl','show',UNITS[0],'--property=Result,ExecMainStatus']).decode()
-        require('Result=success' in result and 'ExecMainStatus=0' in result,'WORKER_FIRST_RUN_FAILED')
-        v.run(['systemctl','enable','--now',UNITS[1]],work,'timer-enable')
-        timer = unit_state(UNITS[1])
-        require(timer.get('ActiveState')=='active' and timer.get('UnitFileState')=='enabled','TIMER_NOT_ACTIVE')
-        save(work,journal,'complete')
+        if defer_archive:
+            pause_archive(work)
+            save(work,journal,'complete_archive_pending')
+        else:
+            save(work,journal,'starting_worker')
+            start_archive(work)
+            save(work,journal,'complete')
     except (Exception,KeyboardInterrupt):
         try:
             rollback(work,journal)
@@ -472,10 +555,7 @@ def activate():
             s.emit('ROLLBACK_REQUIRES_ATTENTION',True)
             s.emit('ACTIVATION_DIR',str(work))
         raise
-    s.emit('BUILD',journal['build'])
-    s.emit('GAS_DEPLOYMENT_VERIFIED',True)
-    s.emit('ARCHIVE_TIMER_ENABLED',True)
-    s.emit('PRODUCTION_UPDATED',True)
+    report_result(journal)
 
 
 def main():
@@ -483,7 +563,10 @@ def main():
     os.umask(0o077)
     sys.dont_write_bytecode = True
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--rollback',action='store_true')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--rollback',action='store_true')
+    mode.add_argument('--defer-archive',action='store_true')
+    mode.add_argument('--enable-archive',action='store_true')
     args = parser.parse_args()
     require(os.geteuid()==0,'ROOT_REQUIRED')
     s,v,r = load_helpers()
@@ -498,21 +581,27 @@ def main():
                 rollback(path.parent,journal)
                 return
             if journal['phase']=='complete':
-                require(all(s.tree(Path(journal['live'])/f)==journal['after'][f] for f in ('edge','web')),'ACTIVE_RELEASE_CHANGED')
-                require(all(s.sha(s.read(Path(item['path'])))==item['after_sha256'] for item in journal['files']),
-                        'ACTIVE_WORKER_FILES_CHANGED')
+                require(not args.defer_archive,'ARCHIVE_ALREADY_ENABLED')
+                installed_files(journal)
                 timer = unit_state(UNITS[1])
                 require(timer.get('ActiveState')=='active' and timer.get('UnitFileState')=='enabled','TIMER_NOT_ACTIVE')
-                s.emit('BUILD',journal['build'])
                 s.emit('ALREADY_ACTIVATED',True)
-                s.emit('ARCHIVE_TIMER_ENABLED',True)
-                s.emit('PRODUCTION_UPDATED',True)
+                report_result(journal)
+                return
+            if args.enable_archive:
+                enable_archive(path.parent,journal)
+                return
+            if journal['phase']=='complete_archive_pending':
+                installed_files(journal)
+                archive_inactive()
+                s.emit('ALREADY_ACTIVATED',True)
+                report_result(journal)
                 return
             require(journal['phase'] in ('prepared','backup_ready','migration_applied','rolled_back'),
                     'INCOMPLETE_ACTIVATION_USE_ROLLBACK')
         else:
-            require(not args.rollback,'ACTIVATION_JOURNAL_MISSING')
-        activate()
+            require(not args.rollback and not args.enable_archive,'ACTIVATION_JOURNAL_MISSING')
+        activate(defer_archive=args.defer_archive)
 
 
 if __name__=='__main__':

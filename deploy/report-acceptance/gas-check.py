@@ -12,7 +12,7 @@ from urllib.error import URLError
 from urllib.parse import urlsplit
 from urllib.request import HTTPSHandler, build_opener
 
-ACTIVATE_SHA = '4714d2e0b351d663648b48dbac29de184f5b58b328500cbe913a51a5c9d3f5ef'
+ACTIVATE_SHA = 'e6cf6d826ab606892dd20141ce300c976557f5c9015b33f587be3ea2f0f1cf77'
 HOSTS = ('script.google.com','script.googleusercontent.com')
 
 
