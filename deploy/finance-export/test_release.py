@@ -219,6 +219,40 @@ class CleanupTests(unittest.TestCase):
 
 
 class GatewayTests(unittest.TestCase):
+    def test_runtime_keeps_verified_upstream_names_loopback_and_dummy_credentials(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            main, work = Path(tmp) / 'production-main', Path(tmp) / 'probe'
+            write(main / 'index.ts', b"const keys=['SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','VK_APP_SECRET'];")
+            write(main / 'routes.json', json.dumps({'mini-app-api': self.hashed_route()}).encode())
+            work.mkdir(); before = common.tree(main)
+            edge = {'Image': 'sha256:fixture', 'Config': {'Entrypoint': ['edge-runtime'],
+                    'Cmd': ['start', '--main-service', '/bos-main'],
+                    'Env': ['VK_APP_SECRET=real-production-secret', 'BOS_REST_ORIGIN=http://live-rest:3000']}}
+            result = {'xlsx': True, 'totals': True, 'roles': True, 'sessions': True,
+                      'filters': True, 'empty': True, 'writes': False}
+            def run(args, *pos, **kwargs):
+                return json.dumps(result).encode() if args[0] == 'nsenter' else b''
+            with patch.object(backend, 'run', side_effect=run) as command, \
+                 patch.object(backend, 'isolate', return_value=123) as isolation, patch.object(backend, 'emit'):
+                backend.test_runtime(work, edge, main, {'probe.py': b'# fixture', 'fixture.json': b'{}'})
+            args = command.call_args_list[0].args[0]
+            env = dict(args[i+1].split('=', 1) for i, value in enumerate(args) if value == '-e')
+            hosts = {args[i+1] for i, value in enumerate(args) if value == '--add-host'}
+            self.assertEqual(hosts, {f'bos-release-probe-{suffix}:127.0.0.1' for suffix in ('rest', 'auth', 'storage')})
+            for suffix in ('rest', 'auth', 'storage'):
+                self.assertEqual(env[f'BOS_{suffix.upper()}_ORIGIN'], f'http://bos-release-probe-{suffix}:19001')
+            self.assertEqual(env['SUPABASE_URL'], 'http://127.0.0.1:9000')
+            self.assertIn('--network=none', args); self.assertNotIn('-p', args)
+            self.assertNotIn('--network=host', args)
+            self.assertNotIn('real-production-secret', str(command.call_args_list))
+            self.assertNotIn('live-rest', str(command.call_args_list))
+            for i, value in enumerate(args):
+                if value == '--mount':
+                    self.assertIn('src=' + str(work) + '/', args[i+1])
+                    self.assertTrue(args[i+1].endswith(',readonly'))
+            isolation.assert_called_once()
+            self.assertEqual(common.tree(main), before)
+
     def hashed_route(self):
         return {'bundle_sha256': 'a' * 64, 'entrypoint': backend.API,
                 'import_map': None, 'source_sha256': {

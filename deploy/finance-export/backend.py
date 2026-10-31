@@ -17,6 +17,10 @@ from common import require, read, atomic, run, inspect, emit, Stop
 ENTRY = 'mini-app-api/supabase/functions/mini-app-api/index.ts'
 NEW_HELPERS = ('supabase/functions/_shared/finance-export.ts', 'supabase/functions/_shared/finance-export-models.mjs')
 API = 'supabase/functions/mini-app-api/index.ts'
+# The unchanged RU gateway accepts release service names. Reuse the aliases
+# verified by the report runtime probe; each resolves only inside network=none.
+PROBE_UPSTREAMS = {f'BOS_{suffix.upper()}_ORIGIN': 'bos-release-probe-' + suffix
+                   for suffix in ('rest', 'auth', 'storage')}
 
 
 def register(work, name):
@@ -181,15 +185,14 @@ def test_runtime(work, edge, main, package):
                 'SUPABASE_URL': 'http://127.0.0.1:9000'})
     env['SUPABASE_ANON_KEY'] = jwt('anon', env['JWT_SECRET'])
     env['SUPABASE_SERVICE_ROLE_KEY'] = jwt('service_role', env['JWT_SECRET'])
-    for key, suffix in [('BOS_REST_ORIGIN', 'rest'), ('BOS_AUTH_ORIGIN', 'auth'), ('BOS_STORAGE_ORIGIN', 'storage')]:
-        env[key] = 'http://bos-finance-probe-' + suffix + ':19001'
+    env.update({key: 'http://' + hostname + ':19001' for key, hostname in PROBE_UPSTREAMS.items()})
     name = 'bos-finance-test-' + uuid.uuid4().hex
     entry = edge['Config'].get('Entrypoint') or []
     require(len(entry) <= 1 and isinstance(edge['Config'].get('Cmd'), list), 'RUNTIME_COMMAND_UNSUPPORTED')
     args = ['docker', 'run', '-d', '--pull=never', '--network=none', '--name', name,
             '--label', 'bos.finance.stage=' + str(work),
             '--memory=768m', '--memory-swap=768m', '--cpus=1', '--pids-limit=256', '--user=0:0']
-    for suffix in ('rest', 'auth', 'storage'): args += ['--add-host', 'bos-finance-probe-' + suffix + ':127.0.0.1']
+    for hostname in PROBE_UPSTREAMS.values(): args += ['--add-host', hostname + ':127.0.0.1']
     for key, value in env.items(): args += ['-e', key + '=' + value]
     for source, dest in [(work / 'compiler', '/bos-src'), (work / 'output', '/bos-bundles'), (target, '/bos-main')]:
         args += ['--mount', 'type=bind,src=' + str(source) + ',dst=' + dest + ',readonly']
