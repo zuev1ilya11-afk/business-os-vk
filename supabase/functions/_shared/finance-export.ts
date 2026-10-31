@@ -1,10 +1,4 @@
-import '../../../salary-periods.js';
-import '../../../order-work-items.js';
-import '../../../service-catalog.js';
-import '../../../report-deduction.js';
-import '../../../finance-data.js';
-import '../../../finance-export-data.js';
-import './finance-xlsx.js';
+import { projections, workbook } from './finance-export-models.mjs';
 
 type ExportRow=Record<string,unknown>;
 interface ExportQuery extends PromiseLike<{data:ExportRow[]|null;error:unknown}>{
@@ -49,7 +43,7 @@ export async function financeExport(db:ExportDatabase,body:Record<string,unknown
  const json=(value:unknown,status=200)=>new Response(JSON.stringify(value),{status,headers:{...headers,'Content-Type':'application/json'}});
  if(!me||!me.is_active)return json({ok:false,error:'Доступ не подтверждён'},401);
  if(!['owner','manager'].includes(me.role||''))return json({ok:false,error:'Недостаточно прав для просмотра финансов'},403);
- const globals=globalThis as unknown as ExportGlobals,X=globals.BOS_FINANCE_EXPORT_DATA,W=globals.BOS_FINANCE_XLSX;
+ const X=projections as ExportGlobals['BOS_FINANCE_EXPORT_DATA'],W=workbook as ExportGlobals['BOS_FINANCE_XLSX'];
  let filters:ExportFilters;
  try{filters=X.filters(body.filters)}catch{return json({ok:false,error:'Некорректные фильтры выгрузки',code:'INVALID_FILTERS'},400)}
  try{
