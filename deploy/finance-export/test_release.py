@@ -218,4 +218,44 @@ class CleanupTests(unittest.TestCase):
                 self.assertEqual(command.call_count, 1)
 
 
+class GatewayTests(unittest.TestCase):
+    def test_probe_keeps_mini_route_shape_and_drops_unrelated_values(self):
+        for route in (backend.ENTRY, {'entrypoint': '/bos-src/' + backend.ENTRY,
+                                    'servicePath': '/bos-src/mini-app-api', 'verify_jwt': False,
+                                    'bundle': '/bos-bundles/mini-app-api.eszip'}):
+            raw = json.dumps({'mini-app-api': route, 'other-api': {'token': 'real-private-value'}}).encode()
+            prepared = backend.probe_routes(raw)
+            self.assertEqual(json.loads(prepared), {'mini-app-api': route})
+            self.assertNotIn(b'real-private-value', prepared)
+
+    def test_route_credentials_remote_urls_and_path_escapes_are_rejected(self):
+        for value in ('secret-value', 'https://internal/?token=secret', '/bos-src/../private', ['unknown']):
+            with self.subTest(value=value), self.assertRaisesRegex(common.Stop, 'GATEWAY_ROUTE_VALUE_UNSUPPORTED'):
+                backend.probe_routes(json.dumps({'mini-app-api': {'entrypoint': value}}))
+        with self.assertRaisesRegex(common.Stop, 'GATEWAY_MINI_ROUTE_MISSING'):
+            backend.probe_routes('{}')
+
+    def test_disposable_gateway_sanitizes_only_copies_and_preserves_production(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            main, target = Path(tmp) / 'production', Path(tmp) / 'probe'
+            write(main / 'index.ts', b'const routes=JSON.parse(await Deno.readTextFile("/bos-main/routes.json"));')
+            write(main / 'routes.json', json.dumps({'mini-app-api': {'entrypoint': backend.ENTRY, 'verify_jwt': False}}).encode())
+            write(main / 'bos-report-env.json', b'{"workerKey":"production-secret"}')
+            before = common.tree(main)
+            backend.prepare_gateway(main, target)
+            self.assertEqual(common.tree(main), before)
+            self.assertEqual((target / 'index.ts').read_bytes(), (main / 'index.ts').read_bytes())
+            self.assertNotIn('production-secret', (target / 'bos-report-env.json').read_text())
+            self.assertGreaterEqual(len(json.loads((target / 'bos-report-env.json').read_bytes())['workerKey']), 32)
+            self.assertEqual(json.loads((target / 'routes.json').read_bytes())['mini-app-api']['verify_jwt'], False)
+
+    def test_unknown_gateway_json_still_stops_before_worker_start(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            main, target = Path(tmp) / 'production', Path(tmp) / 'probe'
+            write(main / 'index.ts', b'// fixture')
+            write(main / 'unknown.json', b'{"token":"secret"}')
+            with self.assertRaisesRegex(common.Stop, 'UNKNOWN_GATEWAY_PRIVATE_CONFIG'):
+                backend.prepare_gateway(main, target)
+
+
 if __name__ == '__main__': unittest.main()

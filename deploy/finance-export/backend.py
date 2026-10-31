@@ -111,9 +111,48 @@ def jwt(role, secret):
     return text + '.' + base64.urlsafe_b64encode(hmac.new(secret.encode(), text.encode(), hashlib.sha256).digest()).rstrip(b'=').decode()
 
 
+def probe_routes(data):
+    """Retain the real mini-app route shape without copying unrelated config."""
+    routes = json.loads(data)
+    require(isinstance(routes, dict) and 'mini-app-api' in routes, 'GATEWAY_MINI_ROUTE_MISSING')
+    paths = {'mini-app-api', ENTRY, API, 'index.ts', 'mini-app-api.eszip',
+             '/bos-src/mini-app-api', '/bos-src/' + ENTRY, '/bos-bundles/mini-app-api.eszip'}
+    paths |= {'file://' + value for value in paths if value.startswith('/')}
+
+    def validate(value, depth=0):
+        require(depth <= 4, 'GATEWAY_ROUTE_DEPTH')
+        if isinstance(value, dict):
+            require(len(value) <= 30 and all(re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]{0,63}', key) for key in value), 'GATEWAY_ROUTE_FIELDS')
+            for child in value.values(): validate(child, depth + 1)
+        elif isinstance(value, str):
+            require(value in paths, 'GATEWAY_ROUTE_VALUE_UNSUPPORTED')
+        else:
+            require(value is None or type(value) is bool or type(value) is int and 0 <= value <= 1000000000, 'GATEWAY_ROUTE_VALUE_UNSUPPORTED')
+    route = routes['mini-app-api']
+    require(isinstance(route, (str, dict)), 'GATEWAY_ROUTE_FORMAT')
+    validate(route)
+    return json.dumps({'mini-app-api': route}).encode()
+
+
+def prepare_gateway(main, target):
+    shutil.copytree(main, target)
+    # Production paths are only read. The disposable gateway gets one validated
+    # local route and dummy report credentials; no other JSON is accepted.
+    for config in target.rglob('*.json'):
+        if config == target / 'routes.json':
+            atomic(config, probe_routes(read(config, limit=1_000_000)))
+        elif config == target / 'bos-report-env.json':
+            atomic(config, json.dumps({'version': 1, 'internal': 'http://127.0.0.1:9000',
+                'public': 'https://homemaster.qd.je', 'legacy': '', 'workerKey': 'isolated-worker-key-not-production',
+                'gas': 'http://127.0.0.1:19001/gas'}).encode())
+        else:
+            raise Stop('UNKNOWN_GATEWAY_PRIVATE_CONFIG')
+    return read(target / 'index.ts').decode()
+
+
 def test_runtime(work, edge, main, package):
-    target = work / 'probe-main'; shutil.copytree(main, target)
-    gateway = read(target / 'index.ts').decode()
+    target = work / 'probe-main'
+    gateway = prepare_gateway(main, target)
     lists = re.findall(r'\bconst\s+keys\s*=\s*(\[[^\]]*\])\s*;', gateway)
     require(len(lists) == 1, 'GATEWAY_KEYS_UNSUPPORTED')
     keys = []
@@ -128,12 +167,6 @@ def test_runtime(work, edge, main, package):
     env['SUPABASE_SERVICE_ROLE_KEY'] = jwt('service_role', env['JWT_SECRET'])
     for key, suffix in [('BOS_REST_ORIGIN', 'rest'), ('BOS_AUTH_ORIGIN', 'auth'), ('BOS_STORAGE_ORIGIN', 'storage')]:
         env[key] = 'http://bos-finance-probe-' + suffix + ':19001'
-    # No real archived-report credentials enter the disposable runtime.
-    for config in target.rglob('*.json'):
-        require(config == target / 'bos-report-env.json', 'UNKNOWN_GATEWAY_PRIVATE_CONFIG')
-        atomic(config, json.dumps({'version': 1, 'internal': 'http://127.0.0.1:9000',
-            'public': 'https://homemaster.qd.je', 'legacy': '', 'workerKey': 'isolated-worker-key-not-production',
-            'gas': 'http://127.0.0.1:19001/gas'}).encode())
     name = 'bos-finance-test-' + uuid.uuid4().hex
     entry = edge['Config'].get('Entrypoint') or []
     require(len(entry) <= 1 and isinstance(edge['Config'].get('Cmd'), list), 'RUNTIME_COMMAND_UNSUPPORTED')
