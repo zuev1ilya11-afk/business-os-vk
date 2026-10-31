@@ -5,6 +5,8 @@ No database writes, downloads, restarts, report attachments or customer contacts
 Docker environment values are used privately to resolve the active DB route.
 """
 import json
+import gzip
+import hashlib
 import os
 from pathlib import Path
 import re
@@ -75,7 +77,7 @@ def resolve(source, hostname, containers):
     return matches[0]
 
 
-def read_report():
+def database():
     ids = command(['docker', 'ps', '-q']).decode().split()
     if not ids:
         raise Stop('CONTAINERS_NOT_FOUND')
@@ -97,7 +99,12 @@ def read_report():
     if not re.fullmatch(r'[A-Za-z0-9_-]{1,63}', name):
         raise Stop('DATABASE_NAME_UNSUPPORTED')
     db = resolve(rest, uri.hostname, containers)
-    data = json.loads(command(['docker', 'exec', db['Id'], 'psql', '-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', name, '-c', SQL]))
+    return db['Id'], name
+
+
+def read_report():
+    db, name = database()
+    data = json.loads(command(['docker', 'exec', db, 'psql', '-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', name, '-c', SQL]))
     if len(data['orders']) != 1:
         raise Stop('ORDER_NOT_UNIQUE_' + str(len(data['orders'])))
     return data
@@ -120,6 +127,8 @@ def main():
     try:
         if sys.argv[1:]==['--backups']:
             backups()
+        elif sys.argv[1:]==['--recover']:
+            recover()
         elif sys.argv[1:]:
             raise Stop('UNKNOWN_OPTION')
         else:
@@ -159,6 +168,126 @@ def backups():
     for i,item in enumerate(found):
         stamp=datetime.fromtimestamp(item['mtime'],timezone.utc).strftime('%m-%d %H:%M')
         print(str(i)+' '+stamp+' '+str(round(item['size']/1048576,1))+'MB '+Path(item['path']).name[:65])
+    print('PRODUCTION_CHANGED=false')
+
+
+FINANCIAL_FIELDS = frozenset('id order_number external_id external_source source status completed_at report_reviewed_at scheduled_date created_at received_date master_agreed_at master_staff_id master_id master_name address city amount original_amount master_payout extra_work_amount extra_work_description uncompleted_work_amount uncompleted_work_description uncompleted_work_items work work_items manual_completion_history'.split())
+JSON_FIELDS = frozenset(('work_items', 'uncompleted_work_items', 'manual_completion_history'))
+NUMBER_FIELDS = frozenset(('id', 'amount', 'original_amount', 'master_payout', 'extra_work_amount', 'uncompleted_work_amount'))
+
+
+def copy_value(value):
+    if value == r'\N':
+        return None
+    escapes = {'b': '\b', 'f': '\f', 'n': '\n', 'r': '\r', 't': '\t', 'v': '\v', '\\': '\\'}
+    return re.sub(r'\\([0-7]{1,3}|x[0-9a-fA-F]{1,2}|.)',
+                  lambda m: chr(int(m[1][1:], 16)) if m[1].startswith('x') and len(m[1]) > 1 else
+                  chr(int(m[1], 8)) if m[1][0] in '01234567' else escapes.get(m[1], m[1]), value)
+
+
+def target_from_copy(stream):
+    columns = None
+    matches = []
+    total = 0
+    while True:
+        raw = stream.readline(32 * 1024 * 1024 + 1)
+        if not raw:
+            break
+        total += len(raw)
+        if len(raw) > 32 * 1024 * 1024 or total > 512 * 1024 * 1024:
+            raise Stop('BACKUP_READ_LIMIT')
+        line = raw.decode('utf-8').rstrip('\r\n')
+        header = re.fullmatch(r'COPY (?:public\.)?orders \(([^)]+)\) FROM stdin;', line)
+        if header:
+            columns = [c.strip().strip('"') for c in header[1].split(',')]
+            continue
+        if line == r'\.':
+            columns = None
+            continue
+        if columns is None:
+            continue
+        values = line.split('\t')
+        if len(values) != len(columns):
+            raise Stop('BACKUP_COPY_COLUMNS')
+        row = dict(zip(columns, values))
+        if row.get('id') != '1769':
+            continue
+        row = {key: copy_value(value) for key, value in row.items()}
+        if row.get('order_number') != '7395762' and row.get('external_id') not in ('7395762', 'hands:7395762'):
+            raise Stop('BACKUP_ORDER_ID_MISMATCH')
+        snapshot = {key: value for key, value in row.items() if key in FINANCIAL_FIELDS}
+        for key in JSON_FIELDS & snapshot.keys():
+            if snapshot[key] is not None:
+                snapshot[key] = json.loads(snapshot[key])
+        for key in NUMBER_FIELDS & snapshot.keys():
+            if snapshot[key] is not None:
+                snapshot[key] = int(snapshot[key]) if key == 'id' else float(snapshot[key])
+        matches.append({'snapshot': snapshot, 'is_claim': row.get('is_claim') in ('t', 'true'), 'claim_opened_at': row.get('claim_opened_at')})
+    if len(matches) > 1:
+        raise Stop('BACKUP_ORDER_NOT_UNIQUE')
+    return matches[0] if matches else None
+
+
+def recover():
+    # pg_restore is used only as an archive decoder, without -d or a connection.
+    # Never execute SQL from a backup or copy it into the production database.
+    live = read_report()
+    if live['orders'][0]['id'] != 1769:
+        raise Stop('CURRENT_ORDER_ID_MISMATCH')
+    db, _ = database()
+    inventory = json.loads(Path('/tmp/bos-claim-backups.json').read_text())
+    recovered = []
+    print('CLAIM_RECOVERY_READ_ONLY=true', flush=True)
+    for index, item in enumerate(inventory[:12]):
+        path = Path(item['path'])
+        if not path.name.lower().endswith(('.dump', '.dump.gz', '.sql', '.sql.gz', '.backup')):
+            continue
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+        with os.fdopen(fd, 'rb') as handle:
+            st = os.fstat(handle.fileno())
+            if any(getattr(st, 'st_' + key) != item[key] for key in ('size', 'mtime', 'ino', 'dev')):
+                raise Stop('BACKUP_CHANGED_RESCAN')
+            if st.st_size > 256 * 1024 * 1024:
+                print('BACKUP=' + str(index) + ' SKIP=SIZE', flush=True)
+                continue
+            digest = hashlib.file_digest(handle, 'sha256').hexdigest()
+            handle.seek(0)
+            stream = gzip.GzipFile(fileobj=handle) if path.name.endswith('.gz') else handle
+            magic = stream.read(5)
+            stream.seek(0)
+            if magic == b'PGDMP':
+                # Temporary output has mode 0600, only orders, and is always deleted.
+                import tempfile
+                with tempfile.TemporaryFile() as output, tempfile.TemporaryFile() as archive:
+                    while True:
+                        block = stream.read(1024 * 1024)
+                        if not block:
+                            break
+                        if archive.tell() + len(block) > 512 * 1024 * 1024:
+                            raise Stop('BACKUP_EXPANDED_LIMIT')
+                        archive.write(block)
+                    archive.seek(0)
+                    result = subprocess.run(['docker', 'exec', '-i', db, 'pg_restore', '--data-only', '--schema=public', '--table=orders', '--no-owner', '--no-privileges', '--file=-'], stdin=archive, stdout=output, stderr=subprocess.PIPE, timeout=60)
+                    if result.returncode:
+                        print('BACKUP=' + str(index) + ' SKIP=DECODER', flush=True)
+                        continue
+                    output.seek(0)
+                    match = target_from_copy(output)
+            else:
+                match = target_from_copy(stream)
+        if not match:
+            print('BACKUP=' + str(index) + ' ORDER=ABSENT', flush=True)
+            continue
+        snapshot = match['snapshot']
+        recovered.append({'backup': index, 'sha256': digest, 'mtime': item['mtime'], **match})
+        print('BACKUP=' + str(index) + ' STATUS=' + str(snapshot.get('status')) + ' CLAIM=' + str(match['is_claim']).lower(), flush=True)
+        print('DATE=' + str(snapshot.get('completed_at')) + ' PAY=' + str(snapshot.get('master_payout')), flush=True)
+    target = '/tmp/bos-claim-recovery.json'
+    fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, 'w') as output:
+        os.fchmod(output.fileno(), 0o600)
+        json.dump({'current': live['orders'][0], 'candidates': recovered}, output, ensure_ascii=False)
+    print('CANDIDATES=' + str(len(recovered)))
     print('PRODUCTION_CHANGED=false')
 
 
