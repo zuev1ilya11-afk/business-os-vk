@@ -15,9 +15,7 @@ import frozen
 from common import require, read, atomic, run, inspect, emit, Stop
 
 ENTRY = 'mini-app-api/supabase/functions/mini-app-api/index.ts'
-MODEL_FILES = ('order-payroll.js', 'order-work-items.js', 'finance-expenses.js', 'salary-periods.js',
-               'service-catalog.js', 'report-deduction.js', 'finance-data.js', 'finance-export-data.js')
-NEW_HELPERS = ('supabase/functions/_shared/finance-export.ts', 'supabase/functions/_shared/finance-xlsx.js')
+NEW_HELPERS = ('supabase/functions/_shared/finance-export.ts', 'supabase/functions/_shared/finance-export-models.mjs')
 API = 'supabase/functions/mini-app-api/index.ts'
 
 
@@ -98,7 +96,7 @@ def compile_api(work, image, patched):
         before, redirects, logical = frozen.executable_modules(graph, ENTRY)
         after, next_redirects, next_logical = frozen.executable_modules(compiled, ENTRY)
         require(logical == next_logical and redirects == next_redirects, 'MODULE_ROUTING_DRIFT')
-        additions = {'/bos-src/mini-app-api/' + p for p in (*MODEL_FILES, *NEW_HELPERS, API)}
+        additions = {'/bos-src/mini-app-api/' + p for p in (*NEW_HELPERS, API)}
         require(not (set(before) - set(after)) and (set(after) - set(before)) <= additions, 'UNEXPECTED_NEW_MODULE')
         for key, value in before.items():
             if key != logical: require(after[key] == value, 'EXISTING_DEPENDENCY_CHANGED')

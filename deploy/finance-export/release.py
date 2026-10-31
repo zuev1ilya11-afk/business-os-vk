@@ -15,18 +15,18 @@ import check
 import web
 from common import Stop, require, read, sha, item, tree, atomic, sync, run, inspect, fingerprint, safe_relative, emit
 
-APP = '54f9b0b32e675b3305cde9aa36221dd6841f88b7'
+APP = '480c31453ba71efa25c8feca6b47af08ed548f62'
 BEFORE_BUILD = 'bb0d9be565e2393c447f'
 PARENT = Path('/opt/business-os/deploy')
 ROOT = PARENT / 'release-to2wblxf'
-STAGE = PARENT / 'finance-xlsx-54f9b0b'
+STAGE = PARENT / ('finance-xlsx-' + APP[:8])
 EDGE = 'bos-release-to2wblxf-edge'
 WEB = 'bos-release-to2wblxf-https'
 ORIGIN = 'https://homemaster.qd.je'
 SOURCE_PREFIX = 'edge/sources/mini-app-api/'
 BUNDLE = 'edge/bundles/mini-app-api.eszip'
 ALLOWED = set('web/' + name for name in (*web.EDITED, *web.ADDED, *web.VERSIONS)) | {BUNDLE} | {
-    SOURCE_PREFIX + name for name in (*backend.MODEL_FILES, *backend.NEW_HELPERS, backend.API)}
+    SOURCE_PREFIX + name for name in (*backend.NEW_HELPERS, backend.API)}
 
 
 def package(path):
@@ -62,7 +62,9 @@ def inventory():
 def desired_api(payload):
     source = ROOT / SOURCE_PREFIX
     changes = {backend.API: web.transform(payload['before/' + backend.API], read(source / backend.API), payload['after/' + backend.API])}
-    for filename in (*backend.MODEL_FILES, *backend.NEW_HELPERS):
+    # The UI and live API have different payroll module versions. The export's
+    # generated ESM uses private UI read models; existing API modules stay intact.
+    for filename in backend.NEW_HELPERS:
         after = payload['after/' + filename]
         target = source / filename
         if target.exists() or target.is_symlink():

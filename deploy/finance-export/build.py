@@ -8,13 +8,12 @@ import zipfile
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
-APP = '54f9b0b32e675b3305cde9aa36221dd6841f88b7'
+APP = '480c31453ba71efa25c8feca6b47af08ed548f62'
+BASE = '80a97b374357706a5e1a1ca4f16d9bfdaaf773aa'
 API = 'supabase/functions/mini-app-api/index.ts'
 FRONT = ['finance-page.js', 'pwa-register.js', 'approved-operations-ui.css']
-MODELS = ['order-payroll.js', 'order-work-items.js', 'finance-expenses.js', 'salary-periods.js',
-          'service-catalog.js', 'report-deduction.js', 'finance-data.js', 'finance-export-data.js']
 NEW = ['finance-export-data.js', 'finance-export-ui.js',
-       'supabase/functions/_shared/finance-export.ts', 'supabase/functions/_shared/finance-xlsx.js']
+       'supabase/functions/_shared/finance-export.ts', 'supabase/functions/_shared/finance-export-models.mjs']
 
 
 def git_file(revision, name):
@@ -22,8 +21,8 @@ def git_file(revision, name):
 
 
 def build():
-    payload = {'before/' + n: git_file(APP + '^', n) for n in [*FRONT, API]}
-    payload.update({'after/' + n: git_file(APP, n) for n in set([*FRONT, API, *MODELS, *NEW])})
+    payload = {'before/' + n: git_file(BASE, n) for n in [*FRONT, API]}
+    payload.update({'after/' + n: git_file(APP, n) for n in set([*FRONT, API, *NEW])})
     payload['probe.py'] = (HERE / 'probe.py').read_bytes()
     payload['fixture.json'] = subprocess.check_output(['node', '-e',
         "process.stdout.write(JSON.stringify(require('./tests/helpers/finance-export-fixture.cjs').fixture()))"], cwd=ROOT)
