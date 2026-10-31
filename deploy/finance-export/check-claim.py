@@ -5,8 +5,12 @@ No database writes, downloads, restarts, report attachments or customer contacts
 Docker environment values are used privately to resolve the active DB route.
 """
 import json
+import os
+from pathlib import Path
 import re
 import subprocess
+import sys
+from datetime import datetime, timezone
 from urllib.parse import unquote, urlsplit
 
 EDGE = 'bos-release-to2wblxf-edge'
@@ -114,12 +118,48 @@ def emit(data):
 
 def main():
     try:
-        emit(read_report())
+        if sys.argv[1:]==['--backups']:
+            backups()
+        elif sys.argv[1:]:
+            raise Stop('UNKNOWN_OPTION')
+        else:
+            emit(read_report())
     except Exception as error:
         # Never emit database errors, command stderr, credentials or internal routes.
         print('CLAIM_CHECK_STOPPED=' + (str(error) if isinstance(error, Stop) else type(error).__name__))
         return 1
     return 0
+
+
+def backups():
+    found=[]
+    roots=[Path('/opt/business-os'),Path('/var/backups'),Path('/root')]
+    for root in roots:
+        for current, dirs, files in os.walk(root, followlinks=False):
+            here=Path(current)
+            dirs[:]=[d for d in dirs if not d.startswith('.') and d not in ('web','edge','node_modules','postgres','data','storage') and len(here.relative_to(root).parts)<5]
+            for name in files:
+                if not re.search(r'\.(sql(?:\.gz)?|dump(?:\.gz)?|backup|bak)$',name,re.I):
+                    continue
+                p=here/name
+                if p.is_symlink():
+                    continue
+                st=p.stat()
+                if st.st_size<10000:
+                    continue
+                found.append({'path':str(p),'size':st.st_size,'mtime':st.st_mtime,'ino':st.st_ino,'dev':st.st_dev})
+    found.sort(key=lambda r:r['mtime'],reverse=True)
+    found=found[:30]
+    path='/tmp/bos-claim-backups.json'
+    fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_TRUNC|os.O_NOFOLLOW,0o600)
+    with os.fdopen(fd,'w') as handle:
+        os.chmod(path,0o600)
+        json.dump(found,handle)
+    print('BACKUPS_FOUND='+str(len(found)))
+    for i,item in enumerate(found):
+        stamp=datetime.fromtimestamp(item['mtime'],timezone.utc).strftime('%m-%d %H:%M')
+        print(str(i)+' '+stamp+' '+str(round(item['size']/1048576,1))+'MB '+Path(item['path']).name[:65])
+    print('PRODUCTION_CHANGED=false')
 
 
 if __name__ == '__main__':
