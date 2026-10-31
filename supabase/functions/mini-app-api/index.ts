@@ -5,6 +5,7 @@ import "../../../lemana-import.js";
 import "../../../vendor/lemana-xlsx.js";
 import { lemanaApi } from "../_shared/lemana-api.ts";
 import "../../../finance-expenses.js";
+import { financeExport } from "../_shared/finance-export.ts";
 const expenseRules=(globalThis as any).BOS_FINANCE_EXPENSES;
 import { manualDetailsPatch } from "../_shared/hands-details.ts";
 const orderPayroll=(globalThis as any).BOS_ORDER_PAYROLL;
@@ -81,10 +82,12 @@ function canManage(a:string,t:string){if(t==='owner')return false;if(a==='owner'
 
 Deno.serve(async r=>{
   if(r.method==='OPTIONS')return new Response('ok',{headers:cors});
+  let financeRequest=false;
   try{
     const db=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
     const b=await r.json().catch(()=>({}));
     const a=String(b.action||'health');
+    financeRequest=['previewFinanceExport','downloadFinanceExport'].includes(a);
     if(a==='health')return j({ok:true,version:'2026-09-12-team-critical-v13',payroll_version:orderPayroll.version});
 
     if(a==='registerByPhone')return j({ok:false,error:'Регистрация по телефону отключена. Используйте код приглашения владельца.'},410);
@@ -92,6 +95,8 @@ Deno.serve(async r=>{
     const me=await actor(db,r);
     if(!me)return j({ok:false,error:'Доступ не подтверждён'},401);
     const role=String(me.role||'');
+
+    if(financeRequest)return financeExport(db,b,me,cors);
 
     if(['previewLemanaImport','confirmLemanaImport'].includes(a)){
       const result=await lemanaApi(db,b,me,s=>hmac(s,Deno.env.get('VK_APP_SECRET')||''));
@@ -296,6 +301,7 @@ Deno.serve(async r=>{
 
     return j({ok:false,error:'UNKNOWN_ACTION'},404);
   }catch(e){
+    if(financeRequest){console.error('finance-export',{code:'AUTH_OR_REQUEST_FAILED'});return j({ok:false,error:'Не удалось сформировать финансовую детализацию. Повторите попытку.',code:'EXPORT_FAILED'},500)}
     return j({ok:false,error:e instanceof Error?e.message:String(e)},500);
   }
 });

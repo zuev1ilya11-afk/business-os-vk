@@ -396,3 +396,8 @@ body.bos-approved-ui .bosPushStates dd{margin:0;color:#edf2f8;text-align:right;f
  .bos-approved-ui #ownerDashboard.odOwnerOverview .odDay{min-height:28px}
  .bos-approved-ui #ownerDashboard.odOwnerOverview .odOrderText b small{display:inline;margin:0 0 0 4px}
 }
+
+/* Finance download stays inside the existing wrapping filter toolbar. */
+#financePage .finExportButton{flex:0 1 auto;white-space:normal;max-width:100%;min-height:40px}
+[data-fin-export-dialog]{overflow-wrap:anywhere}
+@media(max-width:480px){#financePage .finExportButton{flex-basis:100%;width:100%}}

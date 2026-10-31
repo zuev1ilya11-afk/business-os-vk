@@ -50,7 +50,7 @@ async function fullStack(page,role='owner',options={}){
   const slug=new URL(r.request().url()).pathname.split('/').pop();const h=handlers[slug];
   if(!h)return r.fulfill({headers:fixtureCors,status:404,contentType:'application/json',body:'{"ok":false,"error":"unsupported test service"}'});
   const result=await h(r.request().postDataJSON()||{},me.external_id,r.request().headers()['x-bos-session']||'');
-  await r.fulfill({headers:fixtureCors,status:result.status,contentType:'application/json',body:JSON.stringify(result.body)});
+  await r.fulfill({headers:{...fixtureCors,...(result.headers||{})},status:result.status,contentType:result.binary?result.headers['content-type']:'application/json',body:result.binary?result.body:JSON.stringify(result.body)});
  });
  return {db,me,master};
 }

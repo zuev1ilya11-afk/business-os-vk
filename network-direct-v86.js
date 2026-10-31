@@ -202,9 +202,9 @@
   function attemptInput(input){return input instanceof Request?input.clone():input}
   function attemptInit(target,passwordAuth,input,init){return target.kind==='edge'&&passwordAuth?directPasswordInit(input,init):init}
 
-  async function safeFetch(info,input,init,outer,passwordAuth){
+  async function safeFetch(info,input,init,outer,passwordAuth,financeExport=false){
     const targets=orderedTargets(info);
-    const requestEnd=Date.now()+15000;
+    const requestEnd=Date.now()+(financeExport?120000:15000);
     let lastError=null;
     let lastResponse=null;
     for(let i=0;i<targets.length;i++){
@@ -212,7 +212,10 @@
       const target=targets[i];
       const currentInput=attemptInput(input);
       try{
-        const response=await fetchAt(targetUrl(target,info),currentInput,attemptInit(target,passwordAuth,currentInput,init),deadlineFor(target,passwordAuth),outer,true,passwordAuth,requestEnd);
+        // Exports are authenticated reads. A proxy timeout can safely fall back,
+        // while the direct server gets the remaining larger generation budget.
+        const deadline=financeExport?(target.kind==='edge'?120000:25000):deadlineFor(target,passwordAuth);
+        const response=await fetchAt(targetUrl(target,info),currentInput,attemptInit(target,passwordAuth,currentInput,init),deadline,outer,true,passwordAuth,requestEnd);
         lastResponse=response;
         const deterministicMiss=await serviceNotAllowed(response);
         const transient=ROUTE_FAILURE_STATUSES.has(response.status);
@@ -288,9 +291,10 @@
 
     const outer=outerSignal(input,init);
     const passwordAuth=info.slug==='password-session-api';
-    const canReplay=await replayAllowed(info,input,init);
+    const financeExport=info.slug==='mini-app-api'&&['previewFinanceExport','downloadFinanceExport'].includes(await requestAction(input,init));
+    const canReplay=financeExport||await replayAllowed(info,input,init);
     try{return await (canReplay
-      ?safeFetch(info,input,init,outer,passwordAuth)
+      ?safeFetch(info,input,init,outer,passwordAuth,financeExport)
       :singleWriteFetch(info,input,init,outer,passwordAuth));
     }catch(error){
       if(!canReplay&&!outer?.aborted&&retryable(error))throw new Error('Ответ на сохранение не получен. Обновите заявку и проверьте результат перед повторной отправкой.');
