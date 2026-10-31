@@ -47,7 +47,8 @@
   const aliases=new Map(),names=new Map();
   for(const m of masters||[]){for(const id of ids(m))aliases.set(id,m);const name=exactName(m.full_name||m.name);if(name)names.set(name,names.has(name)?null:m)}
   const seen=new Set();
-  return (orders||[]).filter(o=>o&&text(o.id)&&!seen.has(text(o.id))&&seen.add(text(o.id))).map(o=>{
+  return (orders||[]).filter(o=>o&&text(o.id)&&!seen.has(text(o.id))&&seen.add(text(o.id))).map(original=>{
+   const o=D.financialOrder(original);
    const oi=orderIds(o),master=oi.length?oi.map(id=>aliases.get(id)).find(Boolean):names.get(exactName(o.master_name));
    const masterKey=master?ids(master)[0]:oi[0]||(text(o.master_name)?'legacy:'+text(o.master_name):'unassigned');
    const completed=o.status==='Выполнена',cancelled=o.status==='Отменена';
@@ -59,7 +60,7 @@
    const company=completed?(storedPay!==null?P.companyShare(o):null):0;
    const ws=works(o),allLines=text(o.work).split(/\n+/).filter(Boolean);
    const date=completed?D.completedDay(o):D.valid(text(o.scheduled_date).slice(0,10))?text(o.scheduled_date).slice(0,10):o.created_at?D.day(o.created_at):'';
-   return {order:o,id:text(o.id),date,master:masterKey,name:text(master?.full_name||master?.name||o.master_name)||'Без мастера',inactive:!master||master.is_active===false,source:P.sourceLabel(o)||'Источник не указан',city:text(o.city)||'Город не указан',works:ws,workKnown:ws.length===allLines.length&&ws.length>0,completed,cancelled,base:completed?base:0,revenue,pay,company,extras:completed?extra:0};
+   return {order:o,id:text(o.id),date,master:masterKey,name:text(master?.full_name||master?.name||o.master_name)||'Без мастера',inactive:!master||master.is_active===false,source:P.sourceLabel(o)||'Источник не указан',city:text(o.city)||'Город не указан',works:ws,workKnown:ws.length===allLines.length&&ws.length>0,completed,cancelled,base:completed?base:0,revenue,pay,company,extras:completed?extra:0,financialUnresolved:!!o.financial_unresolved};
   });
  }
  function select(rows,f={}){return rows.filter(r=>(!f.period?.start||(r.date&&r.date>=f.period.start&&r.date<=f.period.end))&&(!f.master||r.master===f.master)&&(!f.source||r.source===f.source)&&(!f.city||r.city===f.city)&&(!f.work||(f.work==='unknown'?!r.workKnown:r.works.some(w=>w.key===f.work))))}

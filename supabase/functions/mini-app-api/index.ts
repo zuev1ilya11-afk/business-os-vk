@@ -6,6 +6,7 @@ import "../../../vendor/lemana-xlsx.js";
 import { lemanaApi } from "../_shared/lemana-api.ts";
 import "../../../finance-expenses.js";
 import { financeExport } from "../_shared/finance-export.ts";
+import { readClaimFinancialSnapshots, withClaimFinancialSnapshot } from "../_shared/claim-finance.ts";
 const expenseRules=(globalThis as any).BOS_FINANCE_EXPENSES;
 import { manualDetailsPatch } from "../_shared/hands-details.ts";
 const orderPayroll=(globalThis as any).BOS_ORDER_PAYROLL;
@@ -106,17 +107,24 @@ Deno.serve(async r=>{
     if(a==='bootstrap'){
       let oq=db.from('orders').select('*').order('created_at',{ascending:false}).order('id',{ascending:false});
       if(role==='master')oq=oq.eq('master_staff_id',me.id);
-      const [or,st,sr,cl]=await Promise.all([
+      const [or,st,sr,cl,financialSnapshots]=await Promise.all([
         allRows(oq),
         allRows(db.from('business_staff').select('*').eq('is_active',true).order('full_name').order('id')),
         allRows(db.from('staff_schedule').select('*').order('staff_id').order('work_date')),
-        allRows(db.from('order_claims').select('*').order('opened_at',{ascending:false}).order('id'))
+        allRows(db.from('order_claims').select('*').order('opened_at',{ascending:false}).order('id')),
+        ['owner','manager','master'].includes(role)?readClaimFinancialSnapshots(db):Promise.resolve(new Map())
       ]);
       for(const q of [or,st,sr,cl])if(q.error)throw q.error;
       const all=st.data||[],vis=role==='master'?all.filter((x:any)=>x.id===me.id):all,map=new Map<string,any>(all.map((x:any)=>[String(x.id),x]));
       let orders=(or.data||[]).map((o:any)=>({...o,id:String(o.id),master_vk_id:map.get(String(o.master_staff_id))?.external_id||'',master_name:o.master_name||map.get(String(o.master_staff_id))?.full_name||''}));
       if(role==='master')orders=orders.map(masterOrder);
-      return j({ok:true,user:out(me,role==='owner'),orders,users:vis.map((x:any)=>out(x,role==='owner')),masters:(role==='master'?vis:all.filter((x:any)=>x.role==='master')).map((x:any)=>out(x,role==='owner')),masterSchedule:(sr.data||[]).filter((x:any)=>role!=='master'||x.staff_id===me.id),claims:(cl.data||[]).filter((x:any)=>role!=='master'||x.master_staff_id===me.id),sources:[{source:'VK'},{source:'Google Sheets'},{source:'Авито'},{source:'Руки'},{source:'Лемана Про'}],settings:{permissions:{can_manage_orders:ops(role),can_manage_schedule:ops(role),can_manage_staff:['owner','manager'].includes(role),can_review_reports:ops(role),can_view_finance:['owner','manager'].includes(role)}}});
+      orders=orders.map((o:any)=>withClaimFinancialSnapshot(o,financialSnapshots,role==='master'?[String(me.id),String(me.external_id)]:undefined));
+      const user=out(me,role==='owner');
+      if(role==='master'){
+        const visibleIds=new Set(orders.map((o:any)=>String(o.id)));
+        user.financial_history=[...financialSnapshots.keys()].filter(id=>!visibleIds.has(id)).map(id=>withClaimFinancialSnapshot({id},financialSnapshots,[String(me.id),String(me.external_id)]).financial_snapshot).filter(Boolean);
+      }
+      return j({ok:true,user,orders,users:vis.map((x:any)=>out(x,role==='owner')),masters:(role==='master'?vis:all.filter((x:any)=>x.role==='master')).map((x:any)=>out(x,role==='owner')),masterSchedule:(sr.data||[]).filter((x:any)=>role!=='master'||x.staff_id===me.id),claims:(cl.data||[]).filter((x:any)=>role!=='master'||x.master_staff_id===me.id),sources:[{source:'VK'},{source:'Google Sheets'},{source:'Авито'},{source:'Руки'},{source:'Лемана Про'}],settings:{permissions:{can_manage_orders:ops(role),can_manage_schedule:ops(role),can_manage_staff:['owner','manager'].includes(role),can_review_reports:ops(role),can_view_finance:['owner','manager'].includes(role)}}});
     }
 
     if(['listExpenses','createExpense','updateExpense','deleteExpense'].includes(a)){

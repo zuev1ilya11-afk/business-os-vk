@@ -36,6 +36,7 @@
   const nameMatch=name=>!f.search||name.toLocaleLowerCase('ru-RU').includes(f.search.toLocaleLowerCase('ru-RU'));
   const scopeMatch=r=>(!f.selected||r.master===f.selected)&&nameMatch(r.name);
   const rows=F.select(all,f).filter(r=>scopeMatch(r)&&(f.format!=='master'||r.completed));
+  const unresolved=F.select(all,{...f,period:{start:'',end:''}}).filter(r=>r.financialUnresolved&&scopeMatch(r));
   const staffNames=new Map(staff.map(s=>[String(s.id),text(s.full_name)])),activeNames=new Map([...active].map(([key,s])=>[key,text(s.full_name)]));
   const expenseRows=(f.format==='master'?[]:E.select(expenses,f,all)).filter(e=>{
    const order=allMap.get(String(e.order_id)),key=String(e.employee_id||order?.master||'unassigned');
@@ -52,7 +53,7 @@
   const claimRows=claims===null?null:claims.filter(c=>{const d=D.day(c.opened_at);return c.id&&!seenClaims.has(String(c.id))&&selectedIds.has(String(c.order_id))&&(!f.period.start||(d>=f.period.start&&d<=f.period.end))&&seenClaims.add(String(c.id))});
   const masterName=rows[0]?.name||staffNames.get(f.selected||f.master)||'Мастер';
   const fileName=masterName.replace(/[^\p{L}\p{N} _-]/gu,'').trim().slice(0,60)||'Мастер';
-  return {filters:f,rows,allMap,masters,staffNames,activeNames,claims:claimRows,expenses:expenseRows,total:{...total,...E.summary(expenseRows,total.company)},period,masterName,filename:`business-os-${f.format==='master'?'master-'+fileName:'finance'}-${period.start}_${period.end}.xlsx`};
+  return {filters:f,rows,unresolved,allMap,masters,staffNames,activeNames,claims:claimRows,expenses:expenseRows,total:{...total,...E.summary(expenseRows,total.company)},period,masterName,filename:`business-os-${f.format==='master'?'master-'+fileName:'finance'}-${period.start}_${period.end}.xlsx`};
  }
  function grouped(s,kind){
   const map=new Map(F.groups(s.rows,kind).map(g=>[g.key,{...g,expenseRows:[]}]));
@@ -139,6 +140,7 @@
    ['Прибыль','Аналитическая доля компании минус расходы; не остаток денег на счёте.'],
    ['Возвраты или исправления','Количество сохранённых претензий order_claims по выбранным заявкам, открытых в периоде; мастер — назначенный в претензии. Это не число возвратов денег.'],
   ];
+  if(s.unresolved.length)summary.push(['Рекламации без восстановленного исходного начисления',s.unresolved.length],['Неполные данные','Первоначальная дата или сумма начисления не восстановлена. Повторный визит не включён в начисления периода.']);
   for(const [key,label] of [['master','Мастер'],['selected','Открытая детализация мастера'],['search','Поиск мастера'],['source','Источник'],['city','Город'],['work','Работа']])if(s.filters[key])summary.push([`Фильтр: ${label}`,s.filters[key]==='unknown'?'Без точного соответствия каталогу':s.staffNames.get(s.filters[key])||F.catalog.find(w=>w.id===s.filters[key])?.name||s.filters[key]]);
   for(const [label,groups] of [['Источник',sources],['Мастер',masters]])for(const g of groups)for(const [key,title] of [['total','Заявок'],['completed','Выполнено'],['revenue','Выручка'],['pay','Начислено мастерам'],['expenses','Расходы'],['company','Доля компании'],['net','Прибыль'],['average','Средний чек']])summary.push([`${label}: ${g.name} — ${title}`,['total','completed'].includes(key)?g[key]:money(g[key])]);
   const result=[

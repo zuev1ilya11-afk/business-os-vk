@@ -250,9 +250,17 @@ def recover():
             if st.st_size > 256 * 1024 * 1024:
                 print('BACKUP=' + str(index) + ' SKIP=SIZE', flush=True)
                 continue
-            digest = hashlib.file_digest(handle, 'sha256').hexdigest()
+            hasher = hashlib.sha256()
+            while True:
+                block = handle.read(1024 * 1024)
+                if not block:
+                    break
+                hasher.update(block)
+            digest = hasher.hexdigest()
             handle.seek(0)
-            stream = gzip.GzipFile(fileobj=handle) if path.name.endswith('.gz') else handle
+            compressed = handle.read(2) == b'\x1f\x8b'
+            handle.seek(0)
+            stream = gzip.GzipFile(fileobj=handle) if compressed else handle
             magic = stream.read(5)
             stream.seek(0)
             if magic == b'PGDMP':

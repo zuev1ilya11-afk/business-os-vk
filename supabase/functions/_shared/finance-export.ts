@@ -1,4 +1,5 @@
 import { projections, workbook } from './finance-export-models.mjs';
+import { readClaimFinancialSnapshots, withClaimFinancialSnapshot } from './claim-finance.ts';
 
 type ExportRow=Record<string,unknown>;
 interface ExportQuery extends PromiseLike<{data:ExportRow[]|null;error:unknown}>{
@@ -11,6 +12,7 @@ interface ExportDatabase{from(table:string):{select(columns:string):ExportQuery}
 interface ExportFilters{period:{start:string;end:string};format:string}
 interface ExportSnapshot{
  rows:{id:string;order:ExportRow}[];
+ unresolved:{id:string}[];
  allMap:Map<string,{order:ExportRow}>;
  claims:ExportRow[]|null;
  expenses:ExportRow[];
@@ -25,7 +27,7 @@ interface ExportGlobals{
 }
 const EXPORT_ERROR='Не удалось сформировать финансовую детализацию. Повторите попытку.';
 // Explicit projection: never read photo arrays, signed attachment URLs, raw provider payloads or credentials.
-const EXPORT_ORDER_COLUMNS='id,order_number,external_id,external_source,source,created_at,received_date,master_agreed_at,scheduled_date,completed_at,report_reviewed_at,status,client,phone,address,city,master_staff_id,master_id,master_name,amount,original_amount,extra_work_amount,extra_work_description,uncompleted_work_amount,uncompleted_work_description,uncompleted_work_items,master_payout,comment,report_upload_token,report_review_status,report_uploaded_at,manual_completion_history,work,work_items';
+const EXPORT_ORDER_COLUMNS='id,order_number,external_id,external_source,source,created_at,received_date,master_agreed_at,scheduled_date,completed_at,report_reviewed_at,status,is_claim,client,phone,address,city,master_staff_id,master_id,master_name,amount,original_amount,extra_work_amount,extra_work_description,uncompleted_work_amount,uncompleted_work_description,uncompleted_work_items,master_payout,comment,report_upload_token,report_review_status,report_uploaded_at,manual_completion_history,work,work_items';
 const EXPORT_STAFF_COLUMNS='id,external_id,full_name,role,is_active,city';
 const EXPORT_EXPENSE_COLUMNS='id,expense_date,category,comment,amount,order_id,employee_id,city,created_by_name,created_at,updated_at';
 async function exportRows(query:ExportQuery){
@@ -53,27 +55,29 @@ export async function financeExport(db:ExportDatabase,body:Record<string,unknown
   // rather than SQL approximations that lose completed-at fallbacks or expenses on older orders.
   let cq=db.from('order_claims').select('id,order_id,master_staff_id,opened_at').order('id');
   if(filters.period.start)cq=cq.gte('opened_at',filters.period.start+'T00:00:00+03:00').lte('opened_at',filters.period.end+'T23:59:59.999999+03:00');
-  const [staff,expenses,claims]=await Promise.all([
+  const [staff,expenses,claims,financialSnapshots]=await Promise.all([
    exportRows(db.from('business_staff').select(EXPORT_STAFF_COLUMNS).order('id')),
    filters.format==='master'?Promise.resolve([]):exportRows(eq),
    filters.format==='master'?Promise.resolve([]):exportRows(cq),
+   readClaimFinancialSnapshots(db),
   ]);
   const linked=new Set(expenses.filter(e=>e.order_id).map(e=>String(e.order_id))),orders:ExportRow[]=[];
   for(let offset=0;;offset+=1000){
    const page=await db.from('orders').select(EXPORT_ORDER_COLUMNS).order('id').range(offset,offset+999);
    if(page.error)throw page.error;
-   const data=page.data||[],selected=new Set(X.snapshot(data,staff,[],filters).rows.map(r=>r.id));
+   const data=(page.data||[]).map(o=>withClaimFinancialSnapshot(o,financialSnapshots)),pageSnapshot=X.snapshot(data,staff,[],filters),selected=new Set([...pageSnapshot.rows,...pageSnapshot.unresolved].map(r=>r.id));
    orders.push(...data.filter(o=>selected.has(String(o.id))||linked.has(String(o.id))));
    if(orders.length>50000)throw Error('EXPORT_LIMIT');
    if(data.length<1000)break;
   }
   const s=X.snapshot(orders,staff,expenses,filters,claims),empty=!s.rows.length&&!s.expenses.length;
+  if(filters.format==='master'&&s.unresolved.length)return json({ok:false,error:'По рекламациям не восстановлено исходное начисление. Обратитесь к руководителю.',code:'CLAIM_HISTORY_REQUIRED'},409);
   if(body.expected){
    const keys=['total','completed','revenue','pay','company','expenses','net'];
    const expected=body.expected as Record<string,unknown>;
    if(keys.some(k=>expected[k]!==s.total[k]))return json({ok:false,error:'Данные изменились. Обновите раздел «Финансы» и повторите скачивание.',code:'STALE_VIEW'},409);
   }
-  const serialized=JSON.stringify({filters,orders:s.rows.map(r=>r.order).sort((a,b)=>String(a.id).localeCompare(String(b.id))),staff,claims:s.claims,expenses:s.expenses,links:s.expenses.map(e=>s.allMap.get(String(e.order_id))?.order||null)});
+  const serialized=JSON.stringify({filters,orders:s.rows.map(r=>r.order).sort((a,b)=>String(a.id).localeCompare(String(b.id))),unresolved:s.unresolved.map(r=>r.id).sort(),staff,claims:s.claims,expenses:s.expenses,links:s.expenses.map(e=>s.allMap.get(String(e.order_id))?.order||null)});
   const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(serialized));
   const revision=Array.from(new Uint8Array(hash),n=>n.toString(16).padStart(2,'0')).join('');
   if(body.action==='previewFinanceExport')return json({ok:true,empty,count:s.rows.length,expenseCount:s.expenses.length,period:s.period,allTime:!filters.period.start,filename:s.filename,total:s.total,revision});

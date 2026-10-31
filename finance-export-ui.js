@@ -3,7 +3,7 @@
  'use strict';
  if(globalThis.BOS_FINANCE_EXPORT_UI)return;
  const failure='Не удалось сформировать финансовую детализацию. Повторите попытку.';
- const messages={STALE_VIEW:'Данные изменились. Обновите раздел «Финансы» и повторите скачивание.',STALE_EXPORT:'Данные изменились. Повторите подготовку детализации.',EMPTY_EXPORT:'За выбранный период данных для выгрузки нет',EXPORT_LIMIT:'Слишком большой объём данных. Выберите меньший период.'};
+ const messages={STALE_VIEW:'Данные изменились. Обновите раздел «Финансы» и повторите скачивание.',STALE_EXPORT:'Данные изменились. Повторите подготовку детализации.',EMPTY_EXPORT:'За выбранный период данных для выгрузки нет',EXPORT_LIMIT:'Слишком большой объём данных. Выберите меньший период.',CLAIM_HISTORY_REQUIRED:'По рекламациям не восстановлено исходное начисление. Для корректной детализации сначала нужно восстановить историю.'};
  const date=s=>String(s).split('-').reverse().join('.');
  let current=null;
  function cancel(){const job=current;if(!job)return;current=null;job.controller.abort();if(job.node?.isConnected)closeModal();job.refresh()}

@@ -62,7 +62,36 @@ var require_salary_periods = __commonJS({
         d.setUTCMonth(d.getUTCMonth() + amount);
         return d.toISOString().slice(0, 10);
       }
+      function financialOrder(order) {
+        const o = order || {}, s = o.financial_snapshot;
+        if (s && typeof s === "object" && !Array.isArray(s) && String(s.id) === String(o.id) && s.status === "Выполнена") {
+          const result = { ...o };
+          for (const key of ["completed_at", "report_reviewed_at", "scheduled_date", "created_at", "received_date", "master_agreed_at", "master_staff_id", "master_id", "master_vk_id", "master_external_id", "master_name", "source", "external_source", "external_id", "lead_source", "order_number", "address", "city", "amount", "original_amount", "master_payout", "extra_work_amount", "extra_work_description", "uncompleted_work_amount", "uncompleted_work_description", "uncompleted_work_items", "work", "work_items", "manual_completion_history", "master_paid_amount", "master_payment_amount", "master_payout_paid_amount", "master_paid", "master_payment_status"]) delete result[key];
+          const knownPay = s.master_payout !== null && s.master_payout !== void 0 && s.master_payout !== "" && Number.isFinite(Number(s.master_payout));
+          const knownDate = [s.completed_at, s.report_reviewed_at].some((v) => v && day(v)) || valid(String(s.scheduled_date || "").slice(0, 10));
+          Object.assign(result, s, { is_claim: false, financial_origin_claim: true, financial_unresolved: !knownPay || !knownDate });
+          delete result.financial_snapshot;
+          return result;
+        }
+        if (o.financial_snapshot_status === "other_master") return { ...o, status: "Рекламация", report_review_status: null, completed_at: null, report_reviewed_at: null, scheduled_date: null, master_payout: 0, extra_work_amount: 0 };
+        if (o.is_claim === true || o.status === "Рекламация") return { ...o, status: "Выполнена", completed_at: null, report_reviewed_at: null, scheduled_date: null, amount: null, master_payout: null, extra_work_amount: 0, financial_unresolved: true };
+        return o;
+      }
+      function masterFinancialOrders(orders, user, assigned = orders) {
+        const ids = new Set([user?.id, user?.staff_id, user?.master_id, user?.vk_user_id, user?.external_id].filter((v) => v !== null && v !== void 0 && v !== "").map(String));
+        const belongs = (o) => [o?.master_staff_id, o?.master_id, o?.master_vk_id].some((id) => id !== null && id !== void 0 && ids.has(String(id)));
+        const result = /* @__PURE__ */ new Map();
+        for (const raw of assigned || []) {
+          const o = financialOrder(raw);
+          if (!o.financial_origin_claim || belongs(o)) result.set(String(o.id), o);
+        }
+        const snapshots = [...Array.isArray(user?.financial_history) ? user.financial_history : [], ...(orders || []).map((o) => o.financial_snapshot).filter(Boolean)];
+        for (const snapshot of snapshots) if (snapshot.status === "Выполнена" && belongs(snapshot)) result.set(String(snapshot.id), financialOrder({ id: snapshot.id, financial_snapshot: snapshot }));
+        return [...result.values()];
+      }
       function completedDay(order) {
+        order = financialOrder(order);
+        if (order.financial_unresolved) return "";
         for (const value of [order?.completed_at, order?.report_reviewed_at]) {
           if (value) {
             const result = day(value);
@@ -78,7 +107,7 @@ var require_salary_periods = __commonJS({
       function nextMidnight(now = Date.now()) {
         return Date.parse(`${addDays(day(now), 1)}T00:00:00+03:00`);
       }
-      const api = { ZONE, day, valid, addDays, bounds, shift, completedDay, contains, nextMidnight };
+      const api = { ZONE, day, valid, addDays, bounds, shift, completedDay, contains, nextMidnight, financialOrder, masterFinancialOrders };
       if (typeof module === "object" && module.exports) module.exports = api;
       else root.BOS_SALARY_PERIODS = api;
     })(globalThis);
@@ -374,7 +403,8 @@ var require_finance_data = __commonJS({
           if (name) names.set(name, names.has(name) ? null : m);
         }
         const seen = /* @__PURE__ */ new Set();
-        return (orders || []).filter((o) => o && text(o.id) && !seen.has(text(o.id)) && seen.add(text(o.id))).map((o) => {
+        return (orders || []).filter((o) => o && text(o.id) && !seen.has(text(o.id)) && seen.add(text(o.id))).map((original) => {
+          const o = D.financialOrder(original);
           const oi = orderIds(o), master = oi.length ? oi.map((id) => aliases.get(id)).find(Boolean) : names.get(exactName(o.master_name));
           const masterKey = master ? ids(master)[0] : oi[0] || (text(o.master_name) ? "legacy:" + text(o.master_name) : "unassigned");
           const completed = o.status === "Выполнена", cancelled = o.status === "Отменена";
@@ -384,7 +414,7 @@ var require_finance_data = __commonJS({
           const company = completed ? storedPay !== null ? P.companyShare(o) : null : 0;
           const ws = works(o), allLines = text(o.work).split(/\n+/).filter(Boolean);
           const date = completed ? D.completedDay(o) : D.valid(text(o.scheduled_date).slice(0, 10)) ? text(o.scheduled_date).slice(0, 10) : o.created_at ? D.day(o.created_at) : "";
-          return { order: o, id: text(o.id), date, master: masterKey, name: text(master?.full_name || master?.name || o.master_name) || "Без мастера", inactive: !master || master.is_active === false, source: P.sourceLabel(o) || "Источник не указан", city: text(o.city) || "Город не указан", works: ws, workKnown: ws.length === allLines.length && ws.length > 0, completed, cancelled, base: completed ? base : 0, revenue, pay, company, extras: completed ? extra : 0 };
+          return { order: o, id: text(o.id), date, master: masterKey, name: text(master?.full_name || master?.name || o.master_name) || "Без мастера", inactive: !master || master.is_active === false, source: P.sourceLabel(o) || "Источник не указан", city: text(o.city) || "Город не указан", works: ws, workKnown: ws.length === allLines.length && ws.length > 0, completed, cancelled, base: completed ? base : 0, revenue, pay, company, extras: completed ? extra : 0, financialUnresolved: !!o.financial_unresolved };
         });
       }
       function select(rows, f = {}) {
@@ -628,6 +658,7 @@ var require_finance_export_data = __commonJS({
         const nameMatch = (name) => !f.search || name.toLocaleLowerCase("ru-RU").includes(f.search.toLocaleLowerCase("ru-RU"));
         const scopeMatch = (r) => (!f.selected || r.master === f.selected) && nameMatch(r.name);
         const rows = F.select(all, f).filter((r) => scopeMatch(r) && (f.format !== "master" || r.completed));
+        const unresolved = F.select(all, { ...f, period: { start: "", end: "" } }).filter((r) => r.financialUnresolved && scopeMatch(r));
         const staffNames = new Map(staff.map((s) => [String(s.id), text(s.full_name)])), activeNames = new Map([...active].map(([key, s]) => [key, text(s.full_name)]));
         const expenseRows = (f.format === "master" ? [] : E.select(expenses, f, all)).filter((e) => {
           const order = allMap.get(String(e.order_id)), key = String(e.employee_id || order?.master || "unassigned");
@@ -644,7 +675,7 @@ var require_finance_export_data = __commonJS({
         });
         const masterName = rows[0]?.name || staffNames.get(f.selected || f.master) || "Мастер";
         const fileName = masterName.replace(/[^\p{L}\p{N} _-]/gu, "").trim().slice(0, 60) || "Мастер";
-        return { filters: f, rows, allMap, masters, staffNames, activeNames, claims: claimRows, expenses: expenseRows, total: { ...total, ...E.summary(expenseRows, total.company) }, period, masterName, filename: `business-os-${f.format === "master" ? "master-" + fileName : "finance"}-${period.start}_${period.end}.xlsx` };
+        return { filters: f, rows, unresolved, allMap, masters, staffNames, activeNames, claims: claimRows, expenses: expenseRows, total: { ...total, ...E.summary(expenseRows, total.company) }, period, masterName, filename: `business-os-${f.format === "master" ? "master-" + fileName : "finance"}-${period.start}_${period.end}.xlsx` };
       }
       function grouped(s, kind) {
         const map = new Map(F.groups(s.rows, kind).map((g) => [g.key, { ...g, expenseRows: [] }]));
@@ -745,6 +776,7 @@ var require_finance_export_data = __commonJS({
           ["Прибыль", "Аналитическая доля компании минус расходы; не остаток денег на счёте."],
           ["Возвраты или исправления", "Количество сохранённых претензий order_claims по выбранным заявкам, открытых в периоде; мастер — назначенный в претензии. Это не число возвратов денег."]
         ];
+        if (s.unresolved.length) summary.push(["Рекламации без восстановленного исходного начисления", s.unresolved.length], ["Неполные данные", "Первоначальная дата или сумма начисления не восстановлена. Повторный визит не включён в начисления периода."]);
         for (const [key, label] of [["master", "Мастер"], ["selected", "Открытая детализация мастера"], ["search", "Поиск мастера"], ["source", "Источник"], ["city", "Город"], ["work", "Работа"]]) if (s.filters[key]) summary.push([`Фильтр: ${label}`, s.filters[key] === "unknown" ? "Без точного соответствия каталогу" : s.staffNames.get(s.filters[key]) || F.catalog.find((w) => w.id === s.filters[key])?.name || s.filters[key]]);
         for (const [label, groups] of [["Источник", sources], ["Мастер", masters]]) for (const g of groups) for (const [key, title] of [["total", "Заявок"], ["completed", "Выполнено"], ["revenue", "Выручка"], ["pay", "Начислено мастерам"], ["expenses", "Расходы"], ["company", "Доля компании"], ["net", "Прибыль"], ["average", "Средний чек"]]) summary.push([`${label}: ${g.name} — ${title}`, ["total", "completed"].includes(key) ? g[key] : money(g[key])]);
         const result = [

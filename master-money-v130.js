@@ -22,6 +22,7 @@ function mine(){
 }
 function completedDay(o){return window.BOS_SALARY_PERIODS.completedDay(o)}
 function payout(o){
+  if(o?.financial_origin_claim)return num(o.master_payout);
   const direct=window.BOS_ORDER_PAYROLL?.directMaster(o);if(direct!=null)return direct;
   if(window.BOS_MASTER_PROFILE_SUMMARY_V129_API?.payout)return num(window.BOS_MASTER_PROFILE_SUMMARY_V129_API.payout(o));
   const raw=o?.amount;
@@ -73,9 +74,11 @@ function periodSnapshot(){
   resetForMaster();
   const today=calendar.day(),current=calendar.bounds(selection.kind==='custom'?'week':selection.kind,today);
   const range=selection.kind==='custom'?{start:selection.start,end:selection.end}:calendar.bounds(selection.kind,selection.anchor||today);
-  const allDone=mine().filter(completed),done=allDone.filter(o=>calendar.contains(range,completedDay(o))).sort((a,b)=>completedDay(b).localeCompare(completedDay(a))||String(b.id).localeCompare(String(a.id),'ru',{numeric:true}));
+  const user=typeof isMasterPreview==='function'&&isMasterPreview()&&typeof previewUser!=='undefined'?previewUser:state?.user;
+  const financial=calendar.masterFinancialOrders(state?.orders||[],user,mine()),unresolvedCount=financial.filter(o=>o.financial_unresolved).length;
+  const allDone=financial.filter(o=>completed(o)&&!o.financial_unresolved),done=allDone.filter(o=>calendar.contains(range,completedDay(o))).sort((a,b)=>completedDay(b).localeCompare(completedDay(a))||String(b.id).localeCompare(String(a.id),'ru',{numeric:true}));
   const base=done.reduce((a,o)=>a+payout(o),0),extras=done.reduce((a,o)=>a+extra(o),0),deductions=done.reduce((a,o)=>a+deduction(o),0);
-  return {...paymentTotals(done),done,allDone,base,extras,deductions,range,current,today,kind:selection.kind,isCurrent:selection.kind!=='custom'&&!selection.anchor};
+  return {...paymentTotals(done),done,allDone,base,extras,deductions,range,current,today,kind:selection.kind,unresolvedCount,isCurrent:selection.kind!=='custom'&&!selection.anchor};
 }
 function snapshot(){return periodSnapshot()}
 function rowsFor(kind,s=snapshot()){
@@ -101,7 +104,7 @@ function summaryHtml(s){
   const controls=s.kind==='custom'?`<form class="salaryCustom" id="salaryPeriodForm"><label>С<input type="date" name="start" data-money-field="start" value="${escv(draftRange.start)}" max="${s.today}" required></label><label>По<input type="date" name="end" data-money-field="end" value="${escv(draftRange.end)}" max="${s.today}" required></label><button type="submit" class="primary">Показать</button></form>`:`<div class="salaryPeriodNav"><button type="button" data-money-action="previous" aria-label="Предыдущий период">‹</button><label class="salaryPeriodPicker"><span>${escv(periodLabel(s.kind,s.range))}</span><i aria-hidden="true">⌄</i><input type="${periodType}" data-money-field="anchor" aria-label="Выбрать период" value="${s.kind==='month'?s.range.start.slice(0,7):s.range.start}" max="${s.kind==='month'?s.today.slice(0,7):s.today}"></label><button type="button" data-money-action="next" aria-label="Следующий период" ${s.isCurrent?'disabled':''}>›</button></div>`;
   const next=calendar.addDays(s.range.end,1),note=s.isCurrent?`Следующий период — с ${dateLabel(next)}. Прошлые останутся в истории.`:'Просмотр выбранного периода.';
   const paymentNote=s.tracking?'':s.hasPayments?'Выплаты отмечены только по части заявок. Полного итога пока нет.':'Выплаты пока не отмечаются в приложении.';
-  return `<section id="masterMoneyV130" class="masterMoneyV130 salaryPeriods"><h3>Мои начисления</h3><div class="salaryTabs" role="group" aria-label="Период зарплаты">${Object.entries(periodNames).map(([key,label])=>`<button type="button" data-money-action="kind" data-kind="${key}" aria-pressed="${key===s.kind}">${label}</button>`).join('')}</div>${controls}<p class="salaryError" role="alert" ${periodError?'':'hidden'}>${escv(periodError)}</p><div class="salaryRange"><span data-salary-range>${escv(rangeText)}</span><span class="salaryBadge ${s.isCurrent?'current':''}">${s.isCurrent?currentName[s.kind]:s.kind==='custom'?'Свои даты':'Прошлый период'}</span>${!s.isCurrent?'<button type="button" data-money-action="current" class="secondary">К текущему</button>':''}</div><p class="salaryHint">${escv(note)} <span>Время Москвы.</span></p>
+  return `<section id="masterMoneyV130" class="masterMoneyV130 salaryPeriods"><h3>Мои начисления</h3><div class="salaryTabs" role="group" aria-label="Период зарплаты">${Object.entries(periodNames).map(([key,label])=>`<button type="button" data-money-action="kind" data-kind="${key}" aria-pressed="${key===s.kind}">${label}</button>`).join('')}</div>${controls}<p class="salaryError" role="alert" ${periodError?'':'hidden'}>${escv(periodError)}</p><div class="salaryRange"><span data-salary-range>${escv(rangeText)}</span><span class="salaryBadge ${s.isCurrent?'current':''}">${s.isCurrent?currentName[s.kind]:s.kind==='custom'?'Свои даты':'Прошлый период'}</span>${!s.isCurrent?'<button type="button" data-money-action="current" class="secondary">К текущему</button>':''}</div><p class="salaryHint">${escv(note)} <span>Время Москвы.</span></p>${s.unresolvedCount?`<p role="status" class="salaryHint">У ${s.unresolvedCount} рекламаций требуется восстановить исходное начисление. Повторный выезд не начисляется заново; обратитесь к руководителю.</p>`:''}
   <button type="button" class="salaryHero" data-master-money-kind="accrued"><span>Начислено за период</span><strong>${escv(moneyv(s.accrued))}</strong><small>Выполненных заявок: ${s.done.length}</small></button>
   <div class="salaryBreakdown">${[['base','По заявкам',moneyv(s.base),''],['extras','Допработы',`+ ${moneyv(s.extras)}`,'positive'],['deductions','Вычеты',moneyv(s.deductions),'negative']].map(([kind,label,value,cls])=>`<button type="button" data-master-money-kind="${kind}" class="${cls}"><span>${label}</span><strong>${escv(value)}</strong></button>`).join('')}</div>
   <div class="salaryPayments"><button type="button" data-master-money-kind="paid"><span>Выплачено</span><strong>${s.tracking?escv(moneyv(s.paid)):'Нет данных'}</strong></button><button type="button" data-master-money-kind="balance"><span>Остаток</span><strong>${s.tracking?escv(moneyv(s.balance)):'—'}</strong></button>${paymentNote?`<p>${paymentNote}</p>`:''}</div>
@@ -162,7 +165,7 @@ window.openMasterAccrualsV130=function(){
 function render(){
   queued=false;if(!masterMode()||String(state?.page||'')!=='team')return;
   const panel=document.querySelector('.bosPayoutContents');if(!panel)return;
-  const s=snapshot(),sig=JSON.stringify({selection,owner:selectionOwner,today:s.today,error:periodError,orders:s.allDone.map(o=>[o.id,completedDay(o),o.amount,o.master_payout,o.extra_work_amount,o.uncompleted_work_amount,o.work,o.description,o.service_name,o.client,o.client_name,o.address,o.external_id,o.master_paid_amount,o.master_payment_amount,o.master_payout_paid_amount,o.master_paid,o.master_payment_status])});
+  const s=snapshot(),sig=JSON.stringify({selection,owner:selectionOwner,today:s.today,error:periodError,unresolved:s.unresolvedCount,orders:s.allDone.map(o=>[o.id,completedDay(o),o.amount,o.master_payout,o.extra_work_amount,o.uncompleted_work_amount,o.work,o.description,o.service_name,o.client,o.client_name,o.address,o.external_id,o.master_paid_amount,o.master_payment_amount,o.master_payout_paid_amount,o.master_paid,o.master_payment_status])});
   const box=document.getElementById('masterMoneyV130');if(box?.dataset.sig===sig)return;
   const active=document.activeElement,focused=box?.contains(active)?{...active.dataset}:null;
   const wrap=document.createElement('div');wrap.innerHTML=summaryHtml(s);const next=wrap.firstElementChild;next.dataset.sig=sig;
