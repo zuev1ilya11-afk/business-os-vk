@@ -34,14 +34,17 @@
   if(current||!options.allowed())return;
   const job={...options,filters:structuredClone(options.filters),who:options.identity(),controller:new AbortController(),node:null};
   current=job;job.refresh();
-  openModal('<section data-fin-export-dialog><h2>Скачать детализацию</h2><div data-fin-export-body><p role="status">Подготавливаем детализацию…</p><button type="button" class="secondary" data-fin-export-close>Отмена</button></div></section>');
+  const master=job.filters.format==='master';
+  openModal(`<section data-fin-export-dialog><h2>${master?'Детализация для мастера':'Скачать детализацию'}</h2><div data-fin-export-body><p role="status">Подготавливаем детализацию…</p><button type="button" class="secondary" data-fin-export-close>Отмена</button></div></section>`);
   job.node=document.querySelector('[data-fin-export-dialog]');job.node.querySelector('[data-fin-export-close]').onclick=cancel;
   try{
    const preview=await request(job,'previewFinanceExport',{expected:job.expected});if(!valid(job))return;
    const body=job.node.querySelector('[data-fin-export-body]');
    if(preview.empty){body.innerHTML='<p role="status">За выбранный период данных для выгрузки нет</p>';return}
-   if(!/^business-os-finance-\d{4}-\d{2}-\d{2}_\d{4}-\d{2}-\d{2}\.xlsx$/.test(preview.filename))throw Error('INVALID_FILENAME');
-   body.innerHTML=`<p>Выгружается период: <strong>${preview.allTime?'Всё время':`${esc(date(preview.period.start))}–${esc(date(preview.period.end))}`}</strong></p><p>Заявок: <strong>${Number(preview.count)}</strong></p><p>Расходных операций: ${Number(preview.expenseCount)}</p>${job.labels.length?`<p class="muted">${job.labels.map(esc).join(' · ')}</p>`:''}<p class="muted">Сводка, заявки, работы, мастера, источники${preview.expenseCount?', расходы':''} — отдельные листы Excel.</p><p role="status" data-fin-export-status></p><button type="button" class="primary wide" data-fin-export-confirm>Скачать Excel</button>`;
+   const validName=master?/^business-os-master-[\p{L}\p{N} _-]{1,60}-\d{4}-\d{2}-\d{2}_\d{4}-\d{2}-\d{2}\.xlsx$/u:/^business-os-finance-\d{4}-\d{2}-\d{2}_\d{4}-\d{2}-\d{2}\.xlsx$/;
+   if(!validName.test(preview.filename))throw Error('INVALID_FILENAME');
+   const pay=preview.total.pay===null?'Есть заявки без сохранённого начисления':Number(preview.total.pay).toLocaleString('ru-RU',{style:'currency',currency:'RUB'});
+   body.innerHTML=`<p>Выгружается период: <strong>${preview.allTime?'Всё время':`${esc(date(preview.period.start))}–${esc(date(preview.period.end))}`}</strong></p><p>Заявок: <strong>${Number(preview.count)}</strong></p>${master?`<p>Начислено: <strong>${esc(pay)}</strong></p>`:`<p>Расходных операций: ${Number(preview.expenseCount)}</p>`}${job.labels.length?`<p class="muted">${job.labels.map(esc).join(' · ')}</p>`:''}<p class="muted">${master?'Один лист: выполненные заявки, адреса, работы и начисления. Можно отправить мастеру.':`Сводка, заявки, работы, мастера, источники${preview.expenseCount?', расходы':''} — отдельные листы Excel.`}</p><p role="status" data-fin-export-status></p><button type="button" class="primary wide" data-fin-export-confirm>Скачать Excel</button>`;
    const button=body.querySelector('[data-fin-export-confirm]');let downloading=false;
    button.onclick=async()=>{
     if(downloading||!valid(job))return;downloading=true;button.disabled=true;

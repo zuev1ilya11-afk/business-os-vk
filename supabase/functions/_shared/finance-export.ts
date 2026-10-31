@@ -8,7 +8,7 @@ interface ExportQuery extends PromiseLike<{data:ExportRow[]|null;error:unknown}>
  lte(column:string,value:string):ExportQuery;
 }
 interface ExportDatabase{from(table:string):{select(columns:string):ExportQuery}}
-interface ExportFilters{period:{start:string;end:string}}
+interface ExportFilters{period:{start:string;end:string};format:string}
 interface ExportSnapshot{
  rows:{id:string;order:ExportRow}[];
  allMap:Map<string,{order:ExportRow}>;
@@ -55,8 +55,8 @@ export async function financeExport(db:ExportDatabase,body:Record<string,unknown
   if(filters.period.start)cq=cq.gte('opened_at',filters.period.start+'T00:00:00+03:00').lte('opened_at',filters.period.end+'T23:59:59.999999+03:00');
   const [staff,expenses,claims]=await Promise.all([
    exportRows(db.from('business_staff').select(EXPORT_STAFF_COLUMNS).order('id')),
-   exportRows(eq),
-   exportRows(cq),
+   filters.format==='master'?Promise.resolve([]):exportRows(eq),
+   filters.format==='master'?Promise.resolve([]):exportRows(cq),
   ]);
   const linked=new Set(expenses.filter(e=>e.order_id).map(e=>String(e.order_id))),orders:ExportRow[]=[];
   for(let offset=0;;offset+=1000){
@@ -81,8 +81,9 @@ export async function financeExport(db:ExportDatabase,body:Record<string,unknown
   if(body.revision!==revision)return json({ok:false,error:'Данные изменились. Повторите подготовку детализации.',code:'STALE_EXPORT'},409);
   const sheets=X.sheets(s);
   // Check the expensive sheet before sending headers; never send a silently truncated workbook.
-  let workRows=0;for(const _row of sheets[2].rows())if(++workRows>250000)throw Error('EXPORT_LIMIT');
-  return new Response(W.stream(sheets),{headers:{...headers,'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':`attachment; filename="${s.filename}"`,'Access-Control-Expose-Headers':'Content-Disposition'}});
+  let workRows=0;for(const _row of sheets[filters.format==='master'?0:2].rows())if(++workRows>250000)throw Error('EXPORT_LIMIT');
+  const disposition=filters.format==='master'?`attachment; filename="business-os-master-${s.period.start}_${s.period.end}.xlsx"; filename*=UTF-8''${encodeURIComponent(s.filename)}`:`attachment; filename="${s.filename}"`;
+  return new Response(W.stream(sheets),{headers:{...headers,'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':disposition,'Access-Control-Expose-Headers':'Content-Disposition'}});
  }catch(error){
   const limit=error instanceof Error&&error.message==='EXPORT_LIMIT';
   // Only structured diagnostics. Never log customer fields, tokens, SQL or upstream error messages.

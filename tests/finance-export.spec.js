@@ -29,6 +29,22 @@ test('source/master/work filters reach the server; no data never downloads an em
  await page.locator('.finPeriodControl').evaluate(n=>n.open=true);await page.locator('[data-fin-period="yesterday"]').click();
  await page.getByRole('button',{name:'Скачать детализацию',exact:true}).click();await expect(page.locator('[data-fin-export-dialog]')).toContainText('За выбранный период данных для выгрузки нет');await expect(page.getByRole('button',{name:'Скачать Excel'})).toHaveCount(0);
 });
+test('selected master downloads a compact shareable statement on mobile',async({page},info)=>{
+ const {master}=await ready(page);await page.setViewportSize({width:390,height:844});
+ await expect(page.getByRole('button',{name:'Скачать для мастера',exact:true})).toHaveCount(0);
+ await page.locator('.finFilters').evaluate(n=>n.open=true);
+ await page.locator('[data-fin-filter="master"]').selectOption(master.id);
+ await page.getByRole('button',{name:'Скачать для мастера',exact:true}).click();
+ const dialog=page.locator('[data-fin-export-dialog]');await expect(dialog).toContainText('Один лист');
+ await expect(dialog).toContainText('Начислено:');await expect(dialog).not.toContainText('Расходных операций');
+ const pending=page.waitForEvent('download');await dialog.getByRole('button',{name:'Скачать Excel'}).click();const file=await pending;
+ expect(file.suggestedFilename()).toMatch(/^business-os-master-/);
+ const out=info.outputPath('master-statement.xlsx');await file.saveAs(out);const entries=unzipSync(fs.readFileSync(out));
+ expect(Object.keys(entries).filter(k=>/^xl\/worksheets\/sheet\d+\.xml$/.test(k))).toHaveLength(1);
+ expect(strFromU8(entries['xl/worksheets/sheet1.xml'])).toContain('<v>700</v>');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+ await page.screenshot({path:info.outputPath('master-statement-mobile.png'),fullPage:true});
+});
 test('stale totals and late database failures are safe and release the download button',async({page})=>{
  const {db}=await ready(page);await expect(page.getByRole('button',{name:'Скачать детализацию',exact:true})).toBeEnabled();
  db.tables.orders[0].amount=2222;

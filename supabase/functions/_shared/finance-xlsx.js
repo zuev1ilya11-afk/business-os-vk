@@ -27,14 +27,18 @@
   return `<c r="${ref}" s="${style}" t="inlineStr"><is><t xml:space="preserve">${cellText(value)}</t></is></c>`;
  }
  function* worksheet(sheet){
-  yield declaration+`<worksheet xmlns="${NS}"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A2" sqref="A2"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="18"/><cols>`+sheet.columns.map((c,i)=>`<col min="${i+1}" max="${i+1}" width="${c.width||20}" customWidth="1"/>`).join('')+'</cols><sheetData>';
-  yield '<row r="1" ht="42" customHeight="1">'+sheet.columns.map((c,i)=>cell(c.name,column(i)+'1','text',true)).join('')+'</row>';
-  let row=1;
+  const preamble=sheet.preamble||[],heading=preamble.length+1,next=heading+1;
+  yield declaration+`<worksheet xmlns="${NS}"><sheetViews><sheetView workbookViewId="0"><pane ySplit="${heading}" topLeftCell="A${next}" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A${next}" sqref="A${next}"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="18"/><cols>`+sheet.columns.map((c,i)=>`<col min="${i+1}" max="${i+1}" width="${c.width||20}" customWidth="1"/>`).join('')+'</cols><sheetData>';
+  for(const [i,values] of preamble.entries())yield `<row r="${i+1}" ht="30" customHeight="1">`+values.map((v,j)=>cell(v,column(j)+(i+1),'text')).join('')+'</row>';
+  yield `<row r="${heading}" ht="42" customHeight="1">`+sheet.columns.map((c,i)=>cell(c.name,column(i)+heading,'text',true)).join('')+'</row>';
+  let row=heading;
   for(const values of sheet.rows()){
    if(++row>1048576)throw Error('XLSX_ROW_LIMIT');
-   yield `<row r="${row}">`+sheet.columns.map((c,i)=>cell(values[i],column(i)+row,c.type)).join('')+'</row>';
+   const height=preamble.length?` ht="${Math.min(409,Math.max(30,15*Math.max(...values.map((v,i)=>typeof v==='string'?v.split('\n').reduce((n,line)=>n+Math.max(1,Math.ceil(line.length/(sheet.columns[i].width||20))),0):1))))}" customHeight="1"`:'';
+   yield `<row r="${row}"${height}>`+sheet.columns.map((c,i)=>cell(values[i],column(i)+row,c.type)).join('')+'</row>';
   }
-  yield `</sheetData><autoFilter ref="A1:${column(sheet.columns.length-1)}${row}"/><pageMargins left="0.25" right="0.25" top="0.5" bottom="0.5" header="0.2" footer="0.2"/></worksheet>`;
+  const merges=sheet.preambleMerges||[];
+  yield `</sheetData><autoFilter ref="A${heading}:${column(sheet.columns.length-1)}${row}"/>`+(merges.length?`<mergeCells count="${merges.length}">${merges.map(ref=>`<mergeCell ref="${escape(ref)}"/>`).join('')}</mergeCells>`:'')+`<pageMargins left="0.25" right="0.25" top="0.5" bottom="0.5" header="0.2" footer="0.2"/></worksheet>`;
  }
  const styles=declaration+`<styleSheet xmlns="${NS}"><numFmts count="3"><numFmt numFmtId="164" formatCode="#,##0.00 &quot;₽&quot;;[Red]-#,##0.00 &quot;₽&quot;"/><numFmt numFmtId="165" formatCode="dd.mm.yyyy"/><numFmt numFmtId="166" formatCode="dd.mm.yyyy hh:mm:ss"/></numFmts><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><color rgb="FFFFFFFF"/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF243D52"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"><alignment vertical="top" wrapText="1"/></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFill="1" applyFont="1"><alignment vertical="center" wrapText="1"/></xf>${[164,165,166].map(id=>`<xf numFmtId="${id}" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"><alignment vertical="top"/></xf>`).join('')}</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
  function* entries(sheets){

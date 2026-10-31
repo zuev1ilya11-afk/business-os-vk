@@ -607,7 +607,7 @@ var require_finance_export_data = __commonJS({
       const money = (v) => v === null ? null : { type: "money", value: v };
       const orderNumber = (o) => text(o.order_number) || (text(o.external_id).startsWith("hands:") ? text(o.external_id).slice(6) : text(o.id));
       function filters(input = {}) {
-        if (!input || typeof input !== "object" || Array.isArray(input) || Object.keys(input).some((k) => !["period", "master", "source", "city", "work", "selected", "search"].includes(k))) throw Error("INVALID_FILTER");
+        if (!input || typeof input !== "object" || Array.isArray(input) || Object.keys(input).some((k) => !["period", "master", "source", "city", "work", "selected", "search", "format"].includes(k))) throw Error("INVALID_FILTER");
         const p = input.period || { start: "", end: "" };
         if (!p || typeof p !== "object" || Object.keys(p).some((k) => !["start", "end"].includes(k)) || typeof p.start !== "string" || typeof p.end !== "string" || (p.start || p.end) && (!E.validDate(p.start) || !E.validDate(p.end) || p.start > p.end)) throw Error("INVALID_PERIOD");
         const result = { period: { start: p.start, end: p.end } };
@@ -615,6 +615,9 @@ var require_finance_export_data = __commonJS({
           if (input[k] !== void 0 && (typeof input[k] !== "string" || input[k].length > 500)) throw Error("INVALID_FILTER");
           result[k] = input[k] || "";
         }
+        if (input.format !== void 0 && !["full", "master"].includes(input.format)) throw Error("INVALID_FILTER");
+        result.format = input.format || "full";
+        if (result.format === "master" && (!(result.selected || result.master) || result.selected && result.master && result.selected !== result.master || (result.selected || result.master) === "unassigned")) throw Error("MASTER_REQUIRED");
         return result;
       }
       function snapshot(orders, staff, expenses, input, claims = null) {
@@ -624,9 +627,9 @@ var require_finance_export_data = __commonJS({
         const all = F.records(normalized, masters), allMap = new Map(all.map((r) => [r.id, r]));
         const nameMatch = (name) => !f.search || name.toLocaleLowerCase("ru-RU").includes(f.search.toLocaleLowerCase("ru-RU"));
         const scopeMatch = (r) => (!f.selected || r.master === f.selected) && nameMatch(r.name);
-        const rows = F.select(all, f).filter(scopeMatch);
+        const rows = F.select(all, f).filter((r) => scopeMatch(r) && (f.format !== "master" || r.completed));
         const staffNames = new Map(staff.map((s) => [String(s.id), text(s.full_name)])), activeNames = new Map([...active].map(([key, s]) => [key, text(s.full_name)]));
-        const expenseRows = E.select(expenses, f, all).filter((e) => {
+        const expenseRows = (f.format === "master" ? [] : E.select(expenses, f, all)).filter((e) => {
           const order = allMap.get(String(e.order_id)), key = String(e.employee_id || order?.master || "unassigned");
           const filterName = activeNames.get(key) || (order?.master === key ? order.name : "") || "Без мастера";
           return (!f.selected || key === f.selected) && nameMatch(filterName);
@@ -639,7 +642,9 @@ var require_finance_export_data = __commonJS({
           const d = D.day(c.opened_at);
           return c.id && !seenClaims.has(String(c.id)) && selectedIds.has(String(c.order_id)) && (!f.period.start || d >= f.period.start && d <= f.period.end) && seenClaims.add(String(c.id));
         });
-        return { filters: f, rows, allMap, masters, staffNames, activeNames, claims: claimRows, expenses: expenseRows, total: { ...total, ...E.summary(expenseRows, total.company) }, period, filename: `business-os-finance-${period.start}_${period.end}.xlsx` };
+        const masterName = rows[0]?.name || staffNames.get(f.selected || f.master) || "Мастер";
+        const fileName = masterName.replace(/[^\p{L}\p{N} _-]/gu, "").trim().slice(0, 60) || "Мастер";
+        return { filters: f, rows, allMap, masters, staffNames, activeNames, claims: claimRows, expenses: expenseRows, total: { ...total, ...E.summary(expenseRows, total.company) }, period, masterName, filename: `business-os-${f.format === "master" ? "master-" + fileName : "finance"}-${period.start}_${period.end}.xlsx` };
       }
       function grouped(s, kind) {
         const map = new Map(F.groups(s.rows, kind).map((g) => [g.key, { ...g, expenseRows: [] }]));
@@ -691,6 +696,24 @@ var require_finance_export_data = __commonJS({
       }
       const cols = (names, types = {}) => names.map((name, i) => ({ name, type: types[i] || "text", width: types[i] === "money" ? 19 : types[i] === "date" ? 16 : Math.min(45, Math.max(18, name.length + 3)) }));
       function sheets(s, now = /* @__PURE__ */ new Date()) {
+        if (s.filters.format === "master") return [{
+          name: "Начисления",
+          preambleMerges: ["A1:F1", "B2:F2", "A5:F5"],
+          preamble: [[s.masterName + " — начисления"], ["Период", s.filters.period.start ? `${s.period.start} — ${s.period.end}` : "Всё время"], ["Выполненных заявок", s.rows.length], ["Начислено за период", money(s.total.pay)], ["Начисления, не подтверждение фактической выплаты."]],
+          columns: [{ name: "Дата выполнения", type: "date", width: 16 }, { name: "№ заявки", width: 16 }, { name: "Источник", width: 20 }, { name: "Адрес", width: 42 }, { name: "Работы", width: 80 }, { name: "Начислено мастеру", type: "money", width: 22 }],
+          rows: function* () {
+            for (const r of s.rows) {
+              const lines = [];
+              for (const w of works({ ...s, rows: [r] })) {
+                lines.push((w[6] === "дополнительная" ? "Дополнительно: " : w[6] === "невыполненная" ? "Не выполнено: " : "") + w[5] + (w[7] === null ? "" : ` — ${String(w[7]).replace(".", ",")}${w[8] ? " " + w[8] : ""}`));
+                if (lines.length > 25e4) throw Error("EXPORT_LIMIT");
+              }
+              const description = lines.join("\n");
+              if (description.length > 32767) throw Error("EXPORT_LIMIT");
+              yield [date(r.date), orderNumber(r.order), r.source, text(r.order.address), description, r.pay];
+            }
+          }
+        }];
         const orderExpenses = /* @__PURE__ */ new Map();
         for (const e of s.expenses) if (e.order_id) orderExpenses.set(String(e.order_id), (orderExpenses.get(String(e.order_id)) || 0) + Math.round(Number(e.amount) * 100));
         const masters = grouped(s, "master"), sources = grouped(s, "source");
@@ -793,14 +816,18 @@ var require_finance_xlsx = __commonJS({
         return `<c r="${ref}" s="${style}" t="inlineStr"><is><t xml:space="preserve">${cellText(value)}</t></is></c>`;
       }
       function* worksheet(sheet) {
-        yield declaration + `<worksheet xmlns="${NS}"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A2" sqref="A2"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="18"/><cols>` + sheet.columns.map((c, i) => `<col min="${i + 1}" max="${i + 1}" width="${c.width || 20}" customWidth="1"/>`).join("") + "</cols><sheetData>";
-        yield '<row r="1" ht="42" customHeight="1">' + sheet.columns.map((c, i) => cell(c.name, column(i) + "1", "text", true)).join("") + "</row>";
-        let row = 1;
+        const preamble = sheet.preamble || [], heading = preamble.length + 1, next = heading + 1;
+        yield declaration + `<worksheet xmlns="${NS}"><sheetViews><sheetView workbookViewId="0"><pane ySplit="${heading}" topLeftCell="A${next}" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A${next}" sqref="A${next}"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="18"/><cols>` + sheet.columns.map((c, i) => `<col min="${i + 1}" max="${i + 1}" width="${c.width || 20}" customWidth="1"/>`).join("") + "</cols><sheetData>";
+        for (const [i, values] of preamble.entries()) yield `<row r="${i + 1}" ht="30" customHeight="1">` + values.map((v, j) => cell(v, column(j) + (i + 1), "text")).join("") + "</row>";
+        yield `<row r="${heading}" ht="42" customHeight="1">` + sheet.columns.map((c, i) => cell(c.name, column(i) + heading, "text", true)).join("") + "</row>";
+        let row = heading;
         for (const values of sheet.rows()) {
           if (++row > 1048576) throw Error("XLSX_ROW_LIMIT");
-          yield `<row r="${row}">` + sheet.columns.map((c, i) => cell(values[i], column(i) + row, c.type)).join("") + "</row>";
+          const height = preamble.length ? ` ht="${Math.min(409, Math.max(30, 15 * Math.max(...values.map((v, i) => typeof v === "string" ? v.split("\n").reduce((n, line) => n + Math.max(1, Math.ceil(line.length / (sheet.columns[i].width || 20))), 0) : 1))))}" customHeight="1"` : "";
+          yield `<row r="${row}"${height}>` + sheet.columns.map((c, i) => cell(values[i], column(i) + row, c.type)).join("") + "</row>";
         }
-        yield `</sheetData><autoFilter ref="A1:${column(sheet.columns.length - 1)}${row}"/><pageMargins left="0.25" right="0.25" top="0.5" bottom="0.5" header="0.2" footer="0.2"/></worksheet>`;
+        const merges = sheet.preambleMerges || [];
+        yield `</sheetData><autoFilter ref="A${heading}:${column(sheet.columns.length - 1)}${row}"/>` + (merges.length ? `<mergeCells count="${merges.length}">${merges.map((ref) => `<mergeCell ref="${escape(ref)}"/>`).join("")}</mergeCells>` : "") + `<pageMargins left="0.25" right="0.25" top="0.5" bottom="0.5" header="0.2" footer="0.2"/></worksheet>`;
       }
       const styles = declaration + `<styleSheet xmlns="${NS}"><numFmts count="3"><numFmt numFmtId="164" formatCode="#,##0.00 &quot;₽&quot;;[Red]-#,##0.00 &quot;₽&quot;"/><numFmt numFmtId="165" formatCode="dd.mm.yyyy"/><numFmt numFmtId="166" formatCode="dd.mm.yyyy hh:mm:ss"/></numFmts><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><color rgb="FFFFFFFF"/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF243D52"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"><alignment vertical="top" wrapText="1"/></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFill="1" applyFont="1"><alignment vertical="center" wrapText="1"/></xf>${[164, 165, 166].map((id) => `<xf numFmtId="${id}" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"><alignment vertical="top"/></xf>`).join("")}</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
       function* entries(sheets) {

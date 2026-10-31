@@ -14,7 +14,7 @@
  const money=v=>v===null?null:{type:'money',value:v};
  const orderNumber=o=>text(o.order_number)||(text(o.external_id).startsWith('hands:')?text(o.external_id).slice(6):text(o.id));
  function filters(input={}){
-  if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!['period','master','source','city','work','selected','search'].includes(k)))throw Error('INVALID_FILTER');
+  if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!['period','master','source','city','work','selected','search','format'].includes(k)))throw Error('INVALID_FILTER');
   const p=input.period||{start:'',end:''};
   if(!p||typeof p!=='object'||Object.keys(p).some(k=>!['start','end'].includes(k))||typeof p.start!=='string'||typeof p.end!=='string'||((p.start||p.end)&&(!E.validDate(p.start)||!E.validDate(p.end)||p.start>p.end)))throw Error('INVALID_PERIOD');
   const result={period:{start:p.start,end:p.end}};
@@ -22,6 +22,9 @@
    if(input[k]!==undefined&&(typeof input[k]!=='string'||input[k].length>500))throw Error('INVALID_FILTER');
    result[k]=input[k]||'';
   }
+  if(input.format!==undefined&&!['full','master'].includes(input.format))throw Error('INVALID_FILTER');
+  result.format=input.format||'full';
+  if(result.format==='master'&&(!(result.selected||result.master)||(result.selected&&result.master&&result.selected!==result.master)||(result.selected||result.master)==='unassigned'))throw Error('MASTER_REQUIRED');
   return result;
  }
  function snapshot(orders,staff,expenses,input,claims=null){
@@ -32,9 +35,9 @@
   const all=F.records(normalized,masters),allMap=new Map(all.map(r=>[r.id,r]));
   const nameMatch=name=>!f.search||name.toLocaleLowerCase('ru-RU').includes(f.search.toLocaleLowerCase('ru-RU'));
   const scopeMatch=r=>(!f.selected||r.master===f.selected)&&nameMatch(r.name);
-  const rows=F.select(all,f).filter(scopeMatch);
+  const rows=F.select(all,f).filter(r=>scopeMatch(r)&&(f.format!=='master'||r.completed));
   const staffNames=new Map(staff.map(s=>[String(s.id),text(s.full_name)])),activeNames=new Map([...active].map(([key,s])=>[key,text(s.full_name)]));
-  const expenseRows=E.select(expenses,f,all).filter(e=>{
+  const expenseRows=(f.format==='master'?[]:E.select(expenses,f,all)).filter(e=>{
    const order=allMap.get(String(e.order_id)),key=String(e.employee_id||order?.master||'unassigned');
    // Bootstrap exposes active staff only. Historical names used for selection must
    // not change when the server also knows a renamed inactive employee.
@@ -47,7 +50,9 @@
   const period=f.period.start?f.period:{start:days[0]||D.day(),end:days.at(-1)||D.day()};
   const selectedIds=new Set(rows.map(r=>r.id)),seenClaims=new Set();
   const claimRows=claims===null?null:claims.filter(c=>{const d=D.day(c.opened_at);return c.id&&!seenClaims.has(String(c.id))&&selectedIds.has(String(c.order_id))&&(!f.period.start||(d>=f.period.start&&d<=f.period.end))&&seenClaims.add(String(c.id))});
-  return {filters:f,rows,allMap,masters,staffNames,activeNames,claims:claimRows,expenses:expenseRows,total:{...total,...E.summary(expenseRows,total.company)},period,filename:`business-os-finance-${period.start}_${period.end}.xlsx`};
+  const masterName=rows[0]?.name||staffNames.get(f.selected||f.master)||'Мастер';
+  const fileName=masterName.replace(/[^\p{L}\p{N} _-]/gu,'').trim().slice(0,60)||'Мастер';
+  return {filters:f,rows,allMap,masters,staffNames,activeNames,claims:claimRows,expenses:expenseRows,total:{...total,...E.summary(expenseRows,total.company)},period,masterName,filename:`business-os-${f.format==='master'?'master-'+fileName:'finance'}-${period.start}_${period.end}.xlsx`};
  }
  function grouped(s,kind){
   const map=new Map(F.groups(s.rows,kind).map(g=>[g.key,{...g,expenseRows:[]}]));
@@ -97,6 +102,21 @@
  }
  const cols=(names,types={})=>names.map((name,i)=>({name,type:types[i]||'text',width:types[i]==='money'?19:types[i]==='date'?16:Math.min(45,Math.max(18,name.length+3))}));
  function sheets(s,now=new Date()){
+  if(s.filters.format==='master')return [{
+   name:'Начисления',
+   preambleMerges:['A1:F1','B2:F2','A5:F5'],
+   preamble:[[s.masterName+' — начисления'],['Период',s.filters.period.start?`${s.period.start} — ${s.period.end}`:'Всё время'],['Выполненных заявок',s.rows.length],['Начислено за период',money(s.total.pay)],['Начисления, не подтверждение фактической выплаты.']],
+   columns:[{name:'Дата выполнения',type:'date',width:16},{name:'№ заявки',width:16},{name:'Источник',width:20},{name:'Адрес',width:42},{name:'Работы',width:80},{name:'Начислено мастеру',type:'money',width:22}],
+   rows:function*(){for(const r of s.rows){
+    const lines=[];
+    for(const w of works({...s,rows:[r]})){
+     lines.push((w[6]==='дополнительная'?'Дополнительно: ':w[6]==='невыполненная'?'Не выполнено: ':'')+w[5]+(w[7]===null?'':` — ${String(w[7]).replace('.',',')}${w[8]?' '+w[8]:''}`));
+     if(lines.length>250000)throw Error('EXPORT_LIMIT');
+    }
+    const description=lines.join('\n');if(description.length>32767)throw Error('EXPORT_LIMIT');
+    yield [date(r.date),orderNumber(r.order),r.source,text(r.order.address),description,r.pay];
+   }}
+  }];
   const orderExpenses=new Map();for(const e of s.expenses)if(e.order_id)orderExpenses.set(String(e.order_id),(orderExpenses.get(String(e.order_id))||0)+Math.round(Number(e.amount)*100));
   const masters=grouped(s,'master'),sources=grouped(s,'source');
   const completed=s.rows.filter(r=>r.completed),deduction=rows=>sum(rows.filter(r=>r.completed).map(r=>number(r.order.uncompleted_work_amount)));
