@@ -54,6 +54,32 @@ def read(root, relative, optional=False):
     return path.read_bytes()
 
 
+def bundle_digest(root, relative, limit=128 * 1024 * 1024):
+    """Compiled eszip includes libraries/maps and is not a 4 MB source file."""
+    path = root / relative
+    if path.is_symlink() or path.resolve() != path or not path.is_relative_to(root):
+        raise Stop('BUNDLE_PATH_UNSAFE')
+    if not path.is_file():
+        raise Stop('BUNDLE_MISSING')
+    before = path.stat()
+    if before.st_size > limit:
+        raise Stop('BUNDLE_SIZE_LIMIT')
+    hasher, size = hashlib.sha256(), 0
+    with path.open('rb') as handle:
+        while True:
+            chunk = handle.read(64 * 1024)
+            if not chunk:
+                break
+            size += len(chunk)
+            if size > limit:
+                raise Stop('BUNDLE_SIZE_LIMIT')
+            hasher.update(chunk)
+    after = path.stat()
+    if (before.st_ino, before.st_mtime_ns, before.st_size) != (after.st_ino, after.st_mtime_ns, size):
+        raise Stop('BUNDLE_CHANGED_DURING_CHECK')
+    return hasher.hexdigest(), size
+
+
 def name(container):
     return container['Name'].lstrip('/')
 
@@ -185,7 +211,15 @@ def inspect_host(containers):
     emit('API_ENTRY', entry)
     emit('API_BASELINE_MATCH', source_hash(source) == BASELINE['api'])
     emit('API_SOURCE_SHA256', digest(source))
-    emit('API_BUNDLE_SHA256', digest(read(roots['bundles'], 'mini-app-api.eszip')))
+    try:
+        bundle_hash, bundle_bytes = bundle_digest(roots['bundles'], 'mini-app-api.eszip')
+        emit('API_BUNDLE_SHA256', bundle_hash)
+        emit('API_BUNDLE_BYTES', bundle_bytes)
+    except Stop as error:
+        # Independent diagnostics: report the artifact issue and inspect schema.
+        # CHECK_COMPLETE never means compatibility or installation approval.
+        emit('API_BUNDLE_ERROR', str(error))
+        emit('API_BUNDLE_FILES', [p.name for p in sorted(roots['bundles'].glob('mini-app-api*'))[:10]])
     anchors = [b'import "../../../finance-expenses.js";', b"Deno.serve(async r=>{",
                b"const a=String(b.action||'health');", b"const role=String(me.role||'');"]
     emit('API_PATCH_ANCHORS', [source.count(anchor) for anchor in anchors])

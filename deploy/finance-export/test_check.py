@@ -37,6 +37,22 @@ class CheckTests(unittest.TestCase):
                                {'Destination': '/srv/nested', 'Type': 'bind', 'Source': folder}]}
             with self.assertRaisesRegex(c.Stop, 'NESTED_MOUNT'): c.mount(data, '/srv')
 
+    def test_large_compiled_bundle_uses_separate_streamed_limit(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder); data = b'x' * 5_000_000
+            (root / 'mini-app-api.eszip').write_bytes(data)
+            self.assertEqual(c.bundle_digest(root, 'mini-app-api.eszip'), (c.digest(data), len(data)))
+            with self.assertRaises(c.Stop): c.read(root, 'mini-app-api.eszip')
+
+    def test_bundle_missing_link_and_oversize_are_distinct(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            with self.assertRaisesRegex(c.Stop, '^BUNDLE_MISSING$'): c.bundle_digest(root, 'missing.eszip')
+            (root / 'actual.eszip').write_bytes(b'12345')
+            (root / 'link.eszip').symlink_to(root / 'actual.eszip')
+            with self.assertRaisesRegex(c.Stop, '^BUNDLE_PATH_UNSAFE$'): c.bundle_digest(root, 'link.eszip')
+            with self.assertRaisesRegex(c.Stop, '^BUNDLE_SIZE_LIMIT$'): c.bundle_digest(root, 'actual.eszip', limit=4)
+
     def test_shared_network_required_for_database_resolution(self):
         a = container('edge'); b = container('rest', ['rest'])
         b['NetworkSettings']['Networks'] = {'another': {'Aliases': ['rest']}}
@@ -110,6 +126,13 @@ class CheckTests(unittest.TestCase):
             self.assertIn('CHECK_COMPLETE=true', text)
             self.assertNotIn('PRIVATE_TOKEN', text)
             self.assertNotIn('synthetic API source', text)
+            (bundles / 'mini-app-api.eszip').unlink()
+            output = io.StringIO()
+            with patch.object(c, 'BASELINE', baseline), patch.object(c, 'schema', return_value=['orders.master_id']) as schema, contextlib.redirect_stdout(output):
+                c.inspect_host([e, w])
+            schema.assert_called_once()
+            self.assertIn('API_BUNDLE_ERROR="BUNDLE_MISSING"', output.getvalue())
+            self.assertIn('MISSING_COLUMNS=["orders.master_id"]', output.getvalue())
 
 
 if __name__ == '__main__': unittest.main()
