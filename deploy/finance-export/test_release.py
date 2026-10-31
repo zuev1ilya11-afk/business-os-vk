@@ -219,6 +219,36 @@ class CleanupTests(unittest.TestCase):
 
 
 class GatewayTests(unittest.TestCase):
+    def hashed_route(self):
+        return {'bundle_sha256': 'a' * 64, 'entrypoint': backend.API,
+                'import_map': None, 'source_sha256': {
+                    'finance-expenses.js': 'b' * 64,
+                    'order-payroll.js': 'c' * 64,
+                    'supabase/functions/_shared/hands-details.ts': 'd' * 64,
+                    backend.API: 'e' * 64}, 'verify_jwt': False}
+
+    def test_observed_route_hash_metadata_is_preserved_without_rewriting(self):
+        route = self.hashed_route()
+        raw = json.dumps({'mini-app-api': route, 'other-api': {'token': 'private'}})
+        self.assertEqual(json.loads(backend.probe_routes(raw)), {'mini-app-api': route})
+
+    def test_hash_metadata_rejects_secrets_unknown_sources_and_wrong_shapes(self):
+        cases = []
+        for value in ('secret', 'https://private/?token=secret', 'a' * 63, ['a' * 64], None):
+            route = self.hashed_route(); route['bundle_sha256'] = value; cases.append(route)
+            route = self.hashed_route(); route['source_sha256'][backend.API] = value; cases.append(route)
+        for filename in ('../private.ts', '/bos-src/private.ts', '.env', 'unknown.ts'):
+            route = self.hashed_route(); route['source_sha256'][filename] = 'a' * 64; cases.append(route)
+        for value in ('secret', [], None, {}, {'order-payroll.js': 'a' * 64}):
+            route = self.hashed_route(); route['source_sha256'] = value; cases.append(route)
+        for key, value in (('entrypoint', '/private'), ('import_map', 'https://private'),
+                           ('verify_jwt', 'false'), ('extra', 'a' * 64)):
+            route = self.hashed_route(); route[key] = value; cases.append(route)
+        route = self.hashed_route(); del route['bundle_sha256']; cases.append(route)
+        for route in cases:
+            with self.subTest(route=route), self.assertRaises(common.Stop):
+                backend.probe_routes(json.dumps({'mini-app-api': route}))
+
     def test_probe_keeps_mini_route_shape_and_drops_unrelated_values(self):
         for route in (backend.ENTRY, {'entrypoint': '/bos-src/' + backend.ENTRY,
                                     'servicePath': '/bos-src/mini-app-api', 'verify_jwt': False,
@@ -239,7 +269,8 @@ class GatewayTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             main, target = Path(tmp) / 'production', Path(tmp) / 'probe'
             write(main / 'index.ts', b'const routes=JSON.parse(await Deno.readTextFile("/bos-main/routes.json"));')
-            write(main / 'routes.json', json.dumps({'mini-app-api': {'entrypoint': backend.ENTRY, 'verify_jwt': False}}).encode())
+            route = self.hashed_route()
+            write(main / 'routes.json', json.dumps({'mini-app-api': route}).encode())
             write(main / 'bos-report-env.json', b'{"workerKey":"production-secret"}')
             before = common.tree(main)
             backend.prepare_gateway(main, target)
@@ -247,7 +278,7 @@ class GatewayTests(unittest.TestCase):
             self.assertEqual((target / 'index.ts').read_bytes(), (main / 'index.ts').read_bytes())
             self.assertNotIn('production-secret', (target / 'bos-report-env.json').read_text())
             self.assertGreaterEqual(len(json.loads((target / 'bos-report-env.json').read_bytes())['workerKey']), 32)
-            self.assertEqual(json.loads((target / 'routes.json').read_bytes())['mini-app-api']['verify_jwt'], False)
+            self.assertEqual(json.loads((target / 'routes.json').read_bytes()), {'mini-app-api': route})
 
     def test_unknown_gateway_json_still_stops_before_worker_start(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -130,7 +130,23 @@ def probe_routes(data):
             require(value is None or type(value) is bool or type(value) is int and 0 <= value <= 1000000000, 'GATEWAY_ROUTE_VALUE_UNSUPPORTED')
     route = routes['mini-app-api']
     require(isinstance(route, (str, dict)), 'GATEWAY_ROUTE_FORMAT')
-    validate(route)
+    if isinstance(route, dict) and {'bundle_sha256', 'source_sha256'} & route.keys():
+        # This is the observed release manifest schema. Its hashes are retained
+        # exactly, so the isolated test exercises the same metadata as production.
+        # They are not an integrity baseline: compile_api compares the live bytes.
+        require(set(route) == {'bundle_sha256', 'entrypoint', 'import_map', 'source_sha256', 'verify_jwt'},
+                'GATEWAY_HASH_ROUTE_FIELDS')
+        require(route['entrypoint'] == API and route['import_map'] is None and type(route['verify_jwt']) is bool,
+                'GATEWAY_HASH_ROUTE_OPTIONS')
+        digest = lambda value: isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) is not None
+        require(digest(route['bundle_sha256']), 'GATEWAY_BUNDLE_HASH_FORMAT')
+        sources = route['source_sha256']
+        known = {API, 'finance-expenses.js', 'order-payroll.js', 'supabase/functions/_shared/hands-details.ts'}
+        require(isinstance(sources, dict) and API in sources and set(sources) <= known,
+                'GATEWAY_SOURCE_HASH_FILES')
+        require(all(digest(value) for value in sources.values()), 'GATEWAY_SOURCE_HASH_FORMAT')
+    else:
+        validate(route)
     return json.dumps({'mini-app-api': route}).encode()
 
 
