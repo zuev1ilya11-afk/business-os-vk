@@ -7,7 +7,7 @@ test('master order client address is clickable and opens exact address in Yandex
   Object.assign(order,{
     id:'11',
     status:'В работе',
-    address:'Невский проспект, 28',
+    address:'Невский проспект, 28, кв. 15',
     city:'Санкт-Петербург',
     master_workflow_stage:'assigned'
   });
@@ -24,10 +24,11 @@ test('master order client address is clickable and opens exact address in Yandex
 
   const address=page.locator('.bosHandsAddressLink');
   await expect(address).toBeVisible();
-  await expect(address).toHaveText('Невский проспект, 28');
+  await expect(address).toHaveText('Невский проспект, 28, кв. 15');
   const href=await address.getAttribute('href');
-  expect(href).toContain('https://yandex.ru/maps/?text=');
-  expect(decodeURIComponent(href)).toContain('Санкт-Петербург, Невский проспект, 28');
+  expect(href).toContain('https://yandex.ru/maps/?mode=search&text=');
+  expect(decodeURIComponent(href)).toContain('Невский проспект, 28, Санкт-Петербург');
+  expect(decodeURIComponent(href)).not.toContain('кв. 15');
   await expect(page.locator('.masterV149Route')).toBeHidden();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
