@@ -1,0 +1,24 @@
+(node:13) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ persistent client/staff journey and hostile API boundaries
+  ✔ OTP creates separate normalized client, requires current documents, has no HTTP code (167.371524ms)
+  ✔ catalog management and quote reject client prices and negative quantities (16.027499ms)
+  ✔ same shared order is idempotent, public-safe and initially unconfirmed (67.401286ms)
+  ✔ A/B ownership applies to reads, writes, messages, requests and uploads (43.86058ms)
+  ✔ catalog and saved address changes do not rewrite order snapshots (46.724334ms)
+  ✔ master and visit sync with explicit public card; optimistic conflicts rejected (31.528488ms)
+  ✔ client accepts exact estimate version; stale estimate cannot be accepted (53.241668ms)
+  ✔ messages persist, retries deduplicate, general threads and unread stay isolated (107.18659ms)
+  ✔ private upload decodes actual image and denies foreign or executable attachment (202.261694ms)
+  ✔ request workflows never imply a confirmed reschedule or create paid warranty order (159.027479ms)
+  ✔ split native master report finalizes, archives files, and closes the same order (165.275147ms)
+  ✔ custom order works without catalog; logout and used/expired OTPs fail closed (48.318167ms)
+✔ persistent client/staff journey and hostile API boundaries (6096.211588ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6287.07811

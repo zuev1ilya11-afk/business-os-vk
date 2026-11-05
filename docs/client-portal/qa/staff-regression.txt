@@ -1,0 +1,20 @@
+(node:12) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ unknown active staff roles cannot read bootstrap or mutate orders (1108.669654ms)
+✔ opaque client session cannot authenticate with the existing staff API (37.961882ms)
+✔ claims bootstrap rejects unknown staff roles and opaque client sessions (12.749275ms)
+✔ recognized employee roles retain their bootstrap visibility (252.965514ms)
+(node:13) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ client portal inherits existing direct payroll and preserves accepted snapshots (3.693467ms)
+✔ original staff bootstrap, assignment and ownership work with the same client order (800.915718ms)
+✔ portal integration is inert unless explicitly enabled, with no credential or network access (8.823445ms)
+✔ portal staff refuses an off-origin credential destination before touching DOM (3.102888ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2047.977023

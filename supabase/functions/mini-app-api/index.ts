@@ -96,6 +96,8 @@ Deno.serve(async r=>{
     const me=await actor(db,r);
     if(!me)return j({ok:false,error:'Доступ не подтверждён'},401);
     const role=String(me.role||'');
+    // A signed session identifies a staff record, not a default permission set.
+    if(!['owner','manager','dispatcher','master'].includes(role))return j({ok:false,error:'Недостаточно прав'},403);
 
     if(financeRequest)return financeExport(db,b,me,cors);
 

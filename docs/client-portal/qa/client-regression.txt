@@ -1,0 +1,61 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> test:client
+> node --test --test-concurrency=1 client-portal/tests/*.test.cjs
+
+(node:25) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ persistent client/staff journey and hostile API boundaries
+  ✔ OTP creates separate normalized client, requires current documents, has no HTTP code (1234.676885ms)
+  ✔ catalog management and quote reject client prices and negative quantities (77.472702ms)
+  ✔ same shared order is idempotent, public-safe and initially unconfirmed (126.435535ms)
+  ✔ A/B ownership applies to reads, writes, messages, requests and uploads (74.566869ms)
+  ✔ catalog and saved address changes do not rewrite order snapshots (65.805683ms)
+  ✔ master and visit sync with explicit public card; optimistic conflicts rejected (86.185099ms)
+  ✔ client accepts exact estimate version; stale estimate cannot be accepted (63.002246ms)
+  ✔ messages persist, retries deduplicate, general threads and unread stay isolated (156.342715ms)
+  ✔ private upload decodes actual image and denies foreign or executable attachment (97.89739ms)
+  ✔ request workflows never imply a confirmed reschedule or create paid warranty order (257.326373ms)
+  ✔ split native master report finalizes, archives files, and closes the same order (195.901375ms)
+  ✔ custom order works without catalog; logout and used/expired OTPs fail closed (54.449549ms)
+✔ persistent client/staff journey and hostile API boundaries (10547.790488ms)
+✔ client PWA stays below /client and only caches an explicit public asset allowlist (2.379349ms)
+✔ staff and client entry points are separate documents (0.349916ms)
+✔ real queue delivers only to private test outbox and survives delivery/ack crash without duplicate files (6391.045597ms)
+✔ concurrent workers do not deliver the same leased notification twice (34.744853ms)
+✔ delivery failure backs off, exhausts retries and never loses the saved order or logs secrets (39.897765ms)
+✔ timeout aborts a test adapter and clears the lease for a later retry (35.527639ms)
+✔ active lease is respected and expired worker lease can be recovered (18.809419ms)
+✔ a stale worker cannot overwrite a replacement lease acknowledgement (17.520539ms)
+✔ production with no provider fails visibly, and test/suppression transports cannot be used there (20.616167ms)
+✔ test outbox refuses a reused event key with different content (17.822103ms)
+✔ general conversation notifications without order events each retain a unique delivery identity (20.139449ms)
+✔ a crash on the last attempt becomes an explicit unconfirmed failure (9.562215ms)
+✔ closed synthetic staging database and private files restore into a separate directory (7704.469467ms)
+✔ OTP is private, normalized, random, expires and cannot be reused (3778.819458ms)
+✔ OTP wrong attempts and resend delay persist even when the API rejects requests (39.566261ms)
+✔ cookie is scoped and HttpOnly; state changes require matching origin and CSRF (26.580749ms)
+✔ client body cannot create staff privileges, set final price or rewrite verified phone (35.572472ms)
+✔ staff endpoint denies unknown/inactive roles and does not trust a body role (5.545474ms)
+✔ logout all devices revokes both stored sessions and rejects old mutations (53.033519ms)
+✔ a stale client session cannot initiate phone change; profile route never bypasses reauthentication (19.929917ms)
+✔ client tables are not directly available to anonymous or generic authenticated database roles (5.006653ms)
+✔ production refuses test delivery, draft documents and missing operator details (0.560123ms)
+✔ production requires the complete document set and actual text, not only a readiness flag (0.746834ms)
+✔ accepted document text cannot be silently replaced under its existing version (6.822606ms)
+✔ images are decoded, reencoded without metadata, and downloadable only by their owner or staff (202.308893ms)
+✔ legacy staff price edits invalidate the effective agreement without erasing accepted history (118.864218ms)
+✔ manual linking retains old source and finance while excluding internal notes and metadata (52.927956ms)
+✔ general chat photos cannot cross accounts or threads, and attaching them is one-time and idempotent (118.758274ms)
+✔ a privacy response appears only for its owner and contributes to general unread count (69.284455ms)
+✔ paid repeat recalculates current catalog and preserves work constraints without carrying assignment or old price (69.547111ms)
+✔ storage quota covers sent general photos and upload retry never creates a duplicate file (64.310041ms)
+✔ trusted client IP rate limits survive failures and spoofed forwarding headers do not reset them (15.175732ms)
+ℹ tests 45
+ℹ suites 0
+ℹ pass 45
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 30947.704968

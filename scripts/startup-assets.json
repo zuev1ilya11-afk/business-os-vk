@@ -106,6 +106,7 @@
     "dispatcher-board-enhancements-v108.js",
     "ops-contact-status.js",
     "master-help-entry.js",
-    "lemana-import-ui.js"
+    "lemana-import-ui.js",
+    "client-portal-staff.js"
   ]
 }

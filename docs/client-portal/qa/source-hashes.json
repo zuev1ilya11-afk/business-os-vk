@@ -1,0 +1,14 @@
+{
+  "client-portal/server/api.cjs": "a2dcbe0201cb3fc0b99ee4f90c5d3bf064358d316a206bcf16ab1bcd627aad14",
+  "client-portal/server/database.cjs": "2ed7e8632b2313bdee35c0cbeab3a2a77bc0a4c188b7d2201b0083717a7b04d6",
+  "client-portal/staging/setup.cjs": "c8e9491e84a85401c35b83c5179890a71a792ad43d79d2f52c0ed5978b543455",
+  "client-portal/staging/integrated.cjs": "bd51b253f677260bc1b9d71bbe4edab537fa5e6f814daeed0ca06699a21e8b1b",
+  "client-portal/public/app.js": "7048d710b2e3fedaf3bb1c448b93f7997205ac33f21eae1e1bb56a068a7b6b7d",
+  "client-portal/public/styles.css": "bf18266115cccab149bb18bfd445e06238d0cd1494e3cb96c3b18713fb782fdc",
+  "supabase/migrations/20261105150000_client_portal.sql": "de62e9d7238445dbbd3664c8697958712061f4664317d6aa3aff6ba21b998d41",
+  "supabase/migrations/20261105153000_client_documents.sql": "d4d16f425c916da61ebf9f1064e4fb1d070b3e5502a4606fa9bd0627cee8bc25",
+  "supabase/migrations/20261105154000_client_notification_leases.sql": "b47b2a55791ca20901bf3bb8ea2d72a49c998332c0577b4f2af4d9f82dc03356",
+  "supabase/migrations/20261105155000_client_price_events.sql": "8493ccd16c70a8112018516886f467d168b0d877aa02c875109fcd61174f7d5a",
+  "supabase/migrations/20261105160000_client_message_attachments.sql": "a95f684437061d6ce071088ac2a3d536ef22984898a0ebade954da7163b3c817",
+  "client-portal-staff.js": "6bdc43a86e3680024a1006d87865f3bae9bb4040981301d8e2f78cc607388bb4"
+}
