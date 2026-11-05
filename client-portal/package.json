@@ -1,0 +1,9 @@
+{
+  "name": "business-os-client-portal",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Separate client API sharing existing Business OS orders",
+  "engines": { "node": ">=22.16" },
+  "scripts": { "start": "node server/start.cjs", "staging": "node staging/start.cjs", "test": "node --test tests/*.test.cjs" },
+  "dependencies": { "pg": "8.16.3", "sharp": "0.35.5" }
+}

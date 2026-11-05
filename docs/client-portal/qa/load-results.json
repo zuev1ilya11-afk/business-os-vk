@@ -1,0 +1,69 @@
+{
+  "scope": "local synthetic PGlite; not production capacity",
+  "concurrency": 5,
+  "rounds": 6,
+  "duration_ms": 1995,
+  "requests": 155,
+  "errors": [],
+  "routes": {
+    "dashboard": {
+      "count": 30,
+      "p50_ms": 48.9,
+      "p95_ms": 102.8,
+      "max_ms": 159.6
+    },
+    "create_order": {
+      "count": 30,
+      "p50_ms": 64.5,
+      "p95_ms": 154.4,
+      "max_ms": 170.6
+    },
+    "orders": {
+      "count": 30,
+      "p50_ms": 65.9,
+      "p95_ms": 96.1,
+      "max_ms": 105.3
+    },
+    "message": {
+      "count": 30,
+      "p50_ms": 59.9,
+      "p95_ms": 114.4,
+      "max_ms": 147.5
+    },
+    "messages": {
+      "count": 30,
+      "p50_ms": 52.9,
+      "p95_ms": 88.1,
+      "max_ms": 92.2
+    },
+    "upload": {
+      "count": 5,
+      "p50_ms": 82.7,
+      "p95_ms": 120.7,
+      "max_ms": 120.7
+    }
+  },
+  "resources": {
+    "before": {
+      "rss_mb": 699.7,
+      "heap_used_mb": 40.8,
+      "cpu_user_ms": 7028.6,
+      "cpu_system_ms": 7071.3
+    },
+    "after": {
+      "rss_mb": 516.1,
+      "heap_used_mb": 36.1,
+      "cpu_user_ms": 9566.7,
+      "cpu_system_ms": 7098.9
+    },
+    "peak_sampled_rss_mb": 704.1,
+    "workload_cpu_user_ms": 2538.1,
+    "workload_cpu_system_ms": 27.6
+  },
+  "persisted_rows": {
+    "clients": 5,
+    "orders": 30,
+    "messages": 30,
+    "attachments": 5
+  }
+}

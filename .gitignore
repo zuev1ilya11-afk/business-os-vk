@@ -8,3 +8,8 @@ supabase/.temp/
 !.env.example
 
 .preview-intake-data/
+
+# Isolated client staging state (never publish)
+.client-portal-stage/
+client-portal/node_modules/
+**/__pycache__/
