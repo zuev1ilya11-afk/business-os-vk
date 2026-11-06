@@ -124,13 +124,10 @@ async function start() {
             "/categories/" + s.category_slug + "/" + s.subcategory_slug,
           );
         }
-        // Keep article paths derived from the same content module through the build export.
-        const content = await fs.readFile(
-          path.join(appDir, "lib/content.ts"),
-          "utf8",
-        );
-        for (const match of content.matchAll(/slug:'([a-z0-9-]+)'/g))
-          paths.push("/articles/" + match[1]);
+        // Pages and sitemap consume the same structured publication metadata.
+        const articles = require("./lib/content-data.json");
+        for (const article of articles)
+          if (article.published) paths.push("/articles/" + article.slug);
         res.setHeader("content-type", "application/xml");
         res.setHeader("cache-control", "public, max-age=60");
         res.end(

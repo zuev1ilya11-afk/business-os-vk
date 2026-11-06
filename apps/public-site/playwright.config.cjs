@@ -27,6 +27,7 @@ module.exports = defineConfig({
       NODE_ENV: "production",
       WEBSITE_INTERNAL_API_ORIGIN: "http://127.0.0.1:4191",
       WEBSITE_ENV: "staging",
+      NEXT_PUBLIC_SITE_URL: "https://website-stage.invalid",
       NEXT_TELEMETRY_DISABLED: "1",
       WEBSITE_STAGE_STATE: process.env.WEBSITE_E2E_STATE,
     },

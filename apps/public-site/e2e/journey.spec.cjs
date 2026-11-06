@@ -465,6 +465,14 @@ test("404, staged robots, noindex and CSP", async ({ request, page }) => {
   expect(await (await request.get(origin + "/robots.txt")).text()).toContain(
     "Disallow: /",
   );
+  const sitemap = await request.get(origin + "/sitemap.xml");
+  expect(sitemap.status()).toBe(200);
+  const xml = await sitemap.text();
+  for (const article of require("../lib/content-data.json"))
+    if (article.published)
+      expect(xml).toContain(
+        "https://website-stage.invalid/articles/" + article.slug,
+      );
   await page.goto("/login");
   await expect(page.locator("meta[name=robots]")).toHaveAttribute(
     "content",
