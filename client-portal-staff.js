@@ -81,6 +81,40 @@
     // merging its DTO into a financial/internal staff row.
     if(typeof reloadData==='function')await reloadData(true);
   }
+
+  async function openWebsiteLeads(){
+    const root=modal('Обращения бизнеса с сайта'),status=busy(root);
+    try{const {leads}=await call('website/leads');status.textContent='Новых обращений: '+leads.filter(x=>x.status==='new').length;
+      for(const lead of leads){const form=e('form',{class:'card cpStaffSection'},[
+        e('h3',{text:lead.company}),notice(date(lead.created_at)+' · '+lead.contact_name),e('p',{text:lead.description}),
+        e('p',{text:'Объектов: '+lead.objects_count+(lead.comment?' · '+lead.comment:'')}),
+        e('a',{href:'tel:'+lead.phone,text:lead.phone}),lead.email?e('p',{text:lead.email}):null,
+        select('Статус','status',[['new','Новое'],['contacted','Связались'],['closed','Закрыто']],lead.status),
+        e('button',{type:'submit',class:'primary',text:'Сохранить'})]);const message=busy(form,'');
+        form.onsubmit=event=>{event.preventDefault();run(form,message,async()=>{await call('website/leads/'+id(lead.id),'PATCH',{version:lead.version,status:new FormData(form).get('status')});await openWebsiteLeads();});};root.append(form);
+      }if(!leads.length)root.append(notice('Обращений пока нет.'));
+    }catch(error){status.textContent=error.message;}
+  }
+  async function openWebsiteCatalog(){
+    const root=modal('Публикации сайта'),status=busy(root);
+    try{const {pages}=await call('website/catalog');status.textContent='Цена берётся из общего прайса. Подтверждайте только согласованные для сайта тарифы.';
+      for(const page of pages){const form=e('form',{class:'card cpStaffSection'},[e('h3',{text:page.public_title}),notice(page.source_ref),
+        select('Отображение цены','price_display_mode',[['after_inspection','После уточнения'],['from','От'],['fixed','Фиксированная'],['range','Диапазон']],page.price_display_mode),
+        e('label',{},[e('input',{type:'checkbox',name:'published',checked:page.published}),' Опубликовать услугу']),
+        e('label',{},[e('input',{type:'checkbox',name:'approve_price'}),' Подтверждаю текущую цену общего прайса для сайта']),e('button',{type:'submit',class:'primary',text:'Сохранить публикацию'})]);const message=busy(form,'');
+        form.onsubmit=event=>{event.preventDefault();run(form,message,async()=>{const f=new FormData(form);await call('website/catalog/'+id(page.service_id),'PATCH',{version:page.version,published:f.has('published'),approve_price:f.has('approve_price'),price_display_mode:f.get('price_display_mode')});await openWebsiteCatalog();});};root.append(form);
+      }
+    }catch(error){status.textContent=error.message;}
+  }
+  async function openWebsiteReviews(){
+    const root=modal('Отзывы после выполненных работ'),status=busy(root);
+    try{const {reviews}=await call('website/reviews');status.textContent='Публикация возможна только с отдельным согласием клиента.';
+      for(const review of reviews){const box=section('Заявка №'+review.order_id,[e('p',{text:review.rating+'/5 · '+review.public_name}),e('p',{text:review.body}),notice(review.publication_consent?'Согласие есть':'Согласия на публикацию нет')]);
+        if(leadership()&&(review.publication_consent||review.published))box.append(button(review.published?'Скрыть':'Опубликовать',async()=>{try{await call('website/reviews/'+id(review.order_id),'PATCH',{published:!review.published});await openWebsiteReviews();}catch(error){box.append(notice(error.message));}}));root.append(box);
+      }
+    }catch(error){status.textContent=error.message;}
+  }
+
   window.openClientPortalInbox=async function(offset=0){
     if(!allowed())return;
     const root=modal('Кабинет клиента'),status=busy(root);
@@ -89,6 +123,7 @@
       button('Обращения',()=>openRequests()),
       button('Сообщения компании',()=>openThreads())
     ]);
+    if(config.websiteEnabled){actions.append(button('Заявки бизнеса',()=>openWebsiteLeads()));if(leadership())actions.append(button('Публикации сайта',()=>openWebsiteCatalog()),button('Отзывы',()=>openWebsiteReviews()));}
     if(leadership())actions.append(button('Каталог услуг',()=>openCatalog()),button('Карточки мастеров',()=>openMasters()));
     actions.append(button('Привязать заявку',()=>openLink()));root.append(actions);
     try{
@@ -297,9 +332,9 @@
   }
   async function openMasters(){
     if(!leadership())return;
-    const root=modal('Публичные карточки мастеров'),status=busy(root);root.append(notice('Клиент увидит только выбранные имя, специализацию и фотографию. Личные телефоны не публикуются.'),button('К заявкам',()=>window.openClientPortalInbox()));
+    const root=modal('Публичные карточки мастеров'),status=busy(root);root.append(notice(config.websiteEnabled?'Клиент увидит выбранные имя, специализацию, фото и отдельно указанный публичный номер.':'Клиент увидит только выбранные имя, специализацию и фотографию. Личные телефоны не публикуются.'),button('К заявкам',()=>window.openClientPortalInbox()));
     try{const data=await call('masters');if(!root.isConnected)return;status.remove();for(const master of data.masters||[]){
-      const form=e('form',{class:'cpStaffForm'},[field('Имя для клиента','name',master.name||'',{required:true,maxlength:120}),field('Специализация','specialization',master.specialization||'',{maxlength:300}),field('Фото: защищённый HTTPS-адрес','photo_url',master.photo_url||'',{type:'url',maxlength:2000}),e('button',{type:'submit',class:'primary',text:'Сохранить карточку'})]),message=busy(form,'');form.onsubmit=event=>{event.preventDefault();run(form,message,()=>call('masters/'+id(master.id)+'/public-profile','POST',Object.fromEntries(new FormData(form))))};root.append(section(master.name||'Мастер',[form]));
+      const form=e('form',{class:'cpStaffForm'},[field('Имя для клиента','name',master.name||'',{required:true,maxlength:120}),field('Специализация','specialization',master.specialization||'',{maxlength:300}),field('Фото: защищённый HTTPS-адрес','photo_url',master.photo_url||'',{type:'url',maxlength:2000}),e('button',{type:'submit',class:'primary',text:'Сохранить карточку'})]),message=busy(form,'');if(config.websiteEnabled)form.prepend(field('Публичный номер для клиентов','public_phone',master.public_phone||'',{type:'tel',maxlength:12,placeholder:'+79990000000'}));form.onsubmit=event=>{event.preventDefault();run(form,message,async()=>{const {public_phone,...profile}=Object.fromEntries(new FormData(form));await call('masters/'+id(master.id)+'/public-profile','POST',profile);if(config.websiteEnabled)await call('website/masters/'+id(master.id)+'/phone','PATCH',{phone:public_phone||''});})};root.append(section(master.name||'Мастер',[form]));
     }}catch(error){status.textContent=error.message}
   }
   function openLink(){
@@ -334,8 +369,12 @@
     if(!allowed()||!['orders','home','dispatch'].includes(state.page)){existing?.remove();return}
     if(existing)return;
     const bar=e('div',{'data-client-portal-toolbar':'',class:'cpStaffToolbar'},[button('Кабинет клиента · сообщения и заявки',()=>window.openClientPortalInbox())]);
+    if(config.websiteEnabled){const leads=button('Обращения бизнеса',()=>openWebsiteLeads());leads.dataset.websiteLeads='';leads.setAttribute('aria-live','polite');bar.append(leads);}
     host.prepend(bar);
+    if(config.websiteEnabled)void refreshWebsiteNotice();
   }
+  async function refreshWebsiteNotice(){if(!allowed()||document.hidden)return;const target=document.querySelector('[data-website-leads]');if(!target)return;try{const s=await call('website/summary');const text=s.new_business_leads?'Новые обращения бизнеса: '+s.new_business_leads:'Обращения бизнеса';if(target.textContent!==text)target.textContent=text;}catch{/* Main employee work stays available when website API is offline. */}}
+  if(config.websiteEnabled)setInterval(()=>void refreshWebsiteNotice(),60000);
   let queued=false;
   const observer=new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(()=>{queued=false;toolbar()})});
   const app=document.getElementById('app');if(app)observer.observe(app,{childList:true,subtree:true});toolbar();

@@ -1,0 +1,51 @@
+name: Public website staging checks
+on:
+  push:
+    branches: [feat/public-site-client-integration-20261106]
+  pull_request:
+    branches: [main, feat/client-portal-20261105]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: public-site-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm ci --prefix client-portal
+      - run: npm ci --prefix apps/public-site
+      - run: npm run build:check
+      - run: npm run test:server
+      - run: npm run test:client
+      - run: npm run test:website
+      - run: npm --prefix apps/public-site run build
+      - run: npx playwright install chromium
+      - name: Public website browser journey
+        run: npx playwright test --config apps/public-site/playwright.config.cjs
+      - name: Existing employee browser suite with network isolation
+        run: bash scripts/test-ui-offline.sh --workers=2
+      - name: Validate isolated Compose configuration
+        run: docker compose -f apps/public-site/compose.staging.yml config --quiet
+      - name: Build and boot synthetic staging only
+        run: |
+          docker compose -f apps/public-site/compose.staging.yml up --build -d --wait
+          node apps/public-site/tests/container-smoke.cjs
+      - name: Build separate public-only production image
+        run: docker build -f apps/public-site/Dockerfile -t bos-public-site-build-check .
+      - name: Check nginx template syntax
+        run: docker run --rm -v "$PWD/apps/public-site/ops/nginx.conf.example:/etc/nginx/conf.d/default.conf:ro" nginx:1.28 nginx -t
+      - name: Stop disposable staging containers
+        if: always()
+        run: docker compose -f apps/public-site/compose.staging.yml down
+      # Never upload private/OTP state or browser traces as CI artifacts.

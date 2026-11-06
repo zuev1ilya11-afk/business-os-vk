@@ -11,7 +11,7 @@ const migrations=[
  '20261020140000_manual_order_intake.sql','20261020180000_lemana_import_work_items.sql',
  '20261031180000_claim_financial_snapshots.sql'
 ];
-async function setupStaging({dataDir,privateDir,origin='http://127.0.0.1:4180'}){
+async function setupStaging({dataDir,privateDir,origin='http://127.0.0.1:4180',websiteEnabled=false}){
  if(!dataDir||!privateDir)throw Error('Explicit isolated data and private directories required');
  await fs.mkdir(privateDir,{recursive:true,mode:0o700});
  let credentials;const file=path.join(privateDir,'access.json');
@@ -21,6 +21,7 @@ async function setupStaging({dataDir,privateDir,origin='http://127.0.0.1:4180'})
  if(!exists.rows[0].name){const other=await db.query("SELECT count(*)::int AS n FROM information_schema.tables WHERE table_schema='public'");if(other.rows[0].n)throw Error('Refusing to initialize nonempty database without isolated marker');await db.exec(await fs.readFile(path.join(__dirname,'base.sql'),'utf8'))}
  for(const name of migrations){if((await db.query('SELECT 1 FROM stage_migrations WHERE name=$1',[name])).rows.length)continue;await db.exec(await fs.readFile(path.join(root,'supabase/migrations',name),'utf8'));await db.query('INSERT INTO stage_migrations(name) VALUES($1)',[name])}
  await migrate(db);
+ if(websiteEnabled){await require('../server/website-migrate.cjs').migrateWebsite(db);await require('../server/website-seed.cjs').seedWebsite(db);}
  await db.exec('GRANT USAGE ON SCHEMA public TO service_role;GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO service_role;');
  const names={owner:'Тестовый владелец',manager:'Тестовый руководитель',dispatcher:'Тестовый диспетчер',master:'Алексей · тестовый мастер'};const ids={};
  for(const [i,role]of ['owner','manager','dispatcher','master'].entries()){
@@ -30,7 +31,7 @@ async function setupStaging({dataDir,privateDir,origin='http://127.0.0.1:4180'})
  const catalog=[['curtain_rod','Карнизы и шторы','Установка карниза','Монтаж с учётом длины, материала стены и высоты.','пог. м'],['curtains','Карнизы и шторы','Навеска штор','Проверим комплектность и согласуем объём работ.','шт.'],['plumbing','Сантехника','Установка сантехники','Опишите оборудование и состояние коммуникаций.','шт.'],['electrical','Электрика','Мелкие электромонтажные работы','Состав работ и стоимость после осмотра.','шт.'],['handyman','Мелкий ремонт','Помощь по дому','Крепления, сборка и другие небольшие задачи.','час']];
  for(const [id,category,name,description,unit]of catalog)await db.query("INSERT INTO client_catalog(id,category,name,description,unit,price_type,price,conditions,city,published,confirmed,available) VALUES($1,$2,$3,$4,$5,'clarify',NULL,'Стоимость после уточнения задачи','Санкт-Петербург',true,false,true) ON CONFLICT(id) DO NOTHING",[id,category,name,description,unit]);
  await db.query('INSERT INTO client_public_masters(staff_id,name,specialization) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[ids.master,'Алексей · тестовый мастер','Карнизы, мелкий ремонт']);
- const config={environment:'staging',origin,isolated:true,managedPreview:process.cwd()==='/site'&&origin==='http://terminal.local:4173',otpPepper:credentials.otpPepper,staffSecret:credentials.secret,smsTransport:'test',privateDir,operator:null,legalDocuments:JSON.parse(await fs.readFile(path.join(root,'client-portal/legal/documents.json'),'utf8')).documents};
+ const config={websiteEnabled,environment:'staging',origin,isolated:true,managedPreview:process.cwd()==='/site'&&origin==='http://terminal.local:4173',otpPepper:credentials.otpPepper,staffSecret:credentials.secret,smsTransport:'test',privateDir,operator:null,legalDocuments:JSON.parse(await fs.readFile(path.join(root,'client-portal/legal/documents.json'),'utf8')).documents};
  return {db,config,credentials,staffIds:ids,close:()=>db.close()};
 }
 module.exports={setupStaging,migrations};

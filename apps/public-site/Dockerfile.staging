@@ -1,0 +1,15 @@
+FROM node:24-bookworm-slim AS staging
+ENV NODE_ENV=production WEBSITE_ENV=staging WEBSITE_CONTAINER=1 HOST=0.0.0.0 PORT=4173 NEXT_TELEMETRY_DISABLED=1
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts --no-audit --no-fund
+COPY apps/public-site/package.json apps/public-site/package-lock.json ./apps/public-site/
+RUN npm ci --prefix apps/public-site --ignore-scripts --no-audit --no-fund
+COPY client-portal/package.json client-portal/package-lock.json ./client-portal/
+RUN npm ci --prefix client-portal --no-audit --no-fund
+COPY . .
+RUN npm --prefix apps/public-site run build && mkdir -p .public-site-stage && chown node:node .public-site-stage
+USER node
+EXPOSE 4173
+HEALTHCHECK --interval=30s --timeout=5s CMD node -e "fetch('http://127.0.0.1:4173/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["node","apps/public-site/server.cjs"]
