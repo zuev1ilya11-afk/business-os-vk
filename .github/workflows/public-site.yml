@@ -33,8 +33,6 @@ jobs:
       - run: npx playwright install chromium
       - name: Public website browser journey
         run: npx playwright test --config apps/public-site/playwright.config.cjs
-      - name: Existing employee browser suite with network isolation
-        run: bash scripts/test-ui-offline.sh --workers=2
       - name: Validate isolated Compose configuration
         run: docker compose -f apps/public-site/compose.staging.yml config --quiet
       - name: Build and boot synthetic staging only
@@ -45,6 +43,8 @@ jobs:
         run: docker build -f apps/public-site/Dockerfile -t bos-public-site-build-check .
       - name: Check nginx template syntax
         run: docker run --rm -v "$PWD/apps/public-site/ops/nginx.conf.example:/etc/nginx/conf.d/default.conf:ro" nginx:1.28 nginx -t
+      - name: Existing employee browser suite with network isolation
+        run: bash scripts/test-ui-offline.sh --workers=2
       - name: Stop disposable staging containers
         if: always()
         run: docker compose -f apps/public-site/compose.staging.yml down

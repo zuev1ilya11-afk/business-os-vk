@@ -7445,7 +7445,7 @@ decorate();
     return e('label',{class:'cpStaffField'},[e('span',{text:label}),input]);
   }
   function select(label,name,choices,value){
-    const input=e('select',{name},choices.map(([key,text])=>e('option',{value:key,text})));
+    const input=e('select',{name,'aria-label':label},choices.map(([key,text])=>e('option',{value:key,text})));
     input.value=String(value??'');return e('label',{class:'cpStaffField'},[e('span',{text:label}),input]);
   }
   function section(title,children=[]){return e('section',{class:'card cpStaffSection'},[e('h3',{text:title}),...children])}
