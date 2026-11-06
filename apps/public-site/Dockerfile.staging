@@ -2,9 +2,9 @@ FROM node:24-bookworm-slim AS staging
 ENV NODE_ENV=production WEBSITE_ENV=staging WEBSITE_CONTAINER=1 HOST=0.0.0.0 PORT=4173 NEXT_TELEMETRY_DISABLED=1
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts --no-audit --no-fund
+RUN npm ci --include=dev --ignore-scripts --no-audit --no-fund
 COPY apps/public-site/package.json apps/public-site/package-lock.json ./apps/public-site/
-RUN npm ci --prefix apps/public-site --ignore-scripts --no-audit --no-fund
+RUN npm ci --prefix apps/public-site --include=dev --ignore-scripts --no-audit --no-fund
 COPY client-portal/package.json client-portal/package-lock.json ./client-portal/
 RUN npm ci --prefix client-portal --no-audit --no-fund
 COPY . .
