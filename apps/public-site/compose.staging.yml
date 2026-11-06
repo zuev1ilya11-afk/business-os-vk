@@ -9,7 +9,7 @@ services:
       - "127.0.0.1:4185:4173"
     environment:
       WEBSITE_ENV: staging
-      WEBSITE_STAGING_ORIGIN: http://127.0.0.1:4185
+      WEBSITE_STAGING_ORIGIN: ${WEBSITE_STAGING_ORIGIN:-http://127.0.0.1:4185}
       NODE_ENV: production
       WEBSITE_CONTAINER: "1"
       NEXT_TELEMETRY_DISABLED: "1"

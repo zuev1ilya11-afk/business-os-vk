@@ -1,0 +1,160 @@
+import importlib.util
+import json
+import os
+from pathlib import Path
+import tempfile
+import unittest
+from unittest.mock import patch
+
+spec = importlib.util.spec_from_file_location("publisher", Path(__file__).parents[1] / "ops/publish.py")
+p = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(p)
+HASH = "$2a$14$" + "A" * 53
+
+
+class Files(unittest.TestCase):
+    def test_origin_preserves_other_settings(self):
+        data = b"# owner settings\nCONTACT=hello\nWEBSITE_STAGING_ORIGIN=old\nKEEP=value\n"
+        changed = p.origin_env(data)
+        self.assertIn(b"CONTACT=hello\n", changed)
+        self.assertIn(b"KEEP=value\n", changed)
+        self.assertEqual(changed.count(b"WEBSITE_STAGING_ORIGIN="), 1)
+        self.assertTrue(changed.endswith((p.ORIGIN + "\n").encode()))
+
+    def test_unexpected_env_syntax_is_rejected(self):
+        with self.assertRaises(RuntimeError):
+            p.origin_env(b"export WEBSITE_STAGING_ORIGIN=foo\n")
+
+    def test_config_requires_hash_and_protects_entire_host(self):
+        with self.assertRaises(RuntimeError):
+            p.site_block("plaintext\n}")
+        block = p.site_block(HASH).decode()
+        self.assertIn("basic_auth {", block)
+        self.assertIn("header_up -Authorization", block)
+        self.assertIn("noindex, nofollow", block)
+        self.assertNotIn("/healthz", block)  # no unauthenticated exceptions
+
+    def test_atomic_write_preserves_permissions_and_rejects_symlinks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "config"
+            path.write_bytes(b"old")
+            path.chmod(0o640)
+            p.write_atomic(path, b"new")
+            self.assertEqual(path.stat().st_mode & 0o777, 0o640)
+            link = Path(directory) / "link"
+            link.symlink_to(path)
+            with self.assertRaises(RuntimeError):
+                p.write_atomic(link, b"bad")
+            self.assertEqual(path.read_bytes(), b"new")
+
+    def test_restore_does_not_overwrite_concurrent_edit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "config"
+            path.write_bytes(b"someone else's edit")
+            with self.assertRaises(RuntimeError):
+                p.restore_owned(path, b"our change", b"old")
+            self.assertEqual(path.read_bytes(), b"someone else's edit")
+
+
+class Transaction(unittest.TestCase):
+    def exercise(self, failure=None, existing_env=False):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            obj = p.Publisher.__new__(p.Publisher)
+            obj.container = "fixture-caddy"
+            obj.config = root / "Caddyfile"
+            obj.old_config = b"# original employee configuration\n"
+            obj.config.write_bytes(obj.old_config)
+            obj.old_active = {"old": True}
+            obj.env = root / ".env"
+            obj.old_env = b"CONTACT=keep\n" if existing_env else None
+            if existing_env:
+                obj.env.write_bytes(obj.old_env)
+            obj.new_env = p.origin_env(obj.old_env or b"")
+            obj.changed_env = obj.changed_config = False
+            events = []
+            stage = {
+                "Image": "sha256:unchanged", "Config": {
+                    "Image": "synthetic:fixture",
+                    "Labels": {"com.docker.compose.project": p.PROJECT}},
+                "HostConfig": {"PortBindings": {
+                    "4173/tcp": [{"HostIp": "127.0.0.1", "HostPort": "4185"}]}}}
+            effective = {"name": p.PROJECT, "services": {p.SERVICE: {
+                "environment": {"WEBSITE_ENV": "staging", "WEBSITE_STAGING_ORIGIN": p.ORIGIN},
+                "ports": [{"host_ip": "127.0.0.1", "published": "4185", "target": 4173}],
+                "volumes": [{"type": "volume", "source": "public-site-synthetic-data",
+                             "target": "/app/.public-site-stage"}]}}}
+            if failure == "ports":
+                effective["services"][p.SERVICE]["ports"][0]["host_ip"] = "0.0.0.0"
+            def compose(*args):
+                if args[0] == "ps":
+                    return "fixture-stage\n"
+                if args[0] == "config":
+                    return json.dumps(effective)
+                self.fail("Unexpected compose mutation")
+            def caddy(*args, **kwargs):
+                if args[0] == "hash-password":
+                    self.assertNotIn(kwargs["data"].strip(), args)
+                    return HASH
+                self.assertEqual(args[0], "validate")
+                if failure == "validation":
+                    raise RuntimeError("injected invalid Caddyfile")
+                return ""
+            def reload():
+                events.append("reload")
+                if failure == "reload" and len(events) == 2:
+                    raise RuntimeError("injected reload failure")
+            def https(password):
+                self.assertGreater(len(password), 20)
+                if failure == "https":
+                    raise RuntimeError("injected HTTPS failure")
+            obj.compose = compose
+            obj.caddy = caddy
+            obj.adapt = lambda path: {"new": True}
+            obj.verify_stage = lambda: None
+            obj.staff_fingerprint = lambda: "staff-page-fingerprint"
+            obj.restart_stage = lambda: events.append("stage-up")
+            obj.reload = reload
+            obj.verify_https = https
+            access = root / "access.txt"
+            with patch.object(p, "BACKUPS", root / "backups"), patch.object(p, "ACCESS", access), \
+                    patch.object(p, "active_config", lambda: {"new": True} if obj.changed_config else obj.old_active), \
+                    patch.object(p, "run", return_value=json.dumps([stage])):
+                if failure:
+                    with self.assertRaises(RuntimeError):
+                        obj.apply()
+                    self.assertEqual(obj.config.read_bytes(), obj.old_config)
+                    self.assertEqual(obj.env.read_bytes() if obj.env.exists() else None, obj.old_env)
+                    self.assertFalse(access.exists())
+                    if failure in ("https", "reload"):
+                        self.assertEqual(events.count("reload"), 2)
+                        self.assertEqual(events.count("stage-up"), 2)
+                    if failure == "validation":
+                        self.assertEqual(events, [])
+                else:
+                    obj.apply()
+                    self.assertTrue(obj.config.read_bytes().startswith(obj.old_config))
+                    self.assertEqual(obj.env.read_bytes(), obj.new_env)
+                    self.assertEqual(access.stat().st_mode & 0o777, 0o600)
+                    self.assertEqual(events, ["stage-up", "reload"])
+                    self.assertIn("Login: preview", access.read_text())
+            self.assertFalse(list(root.glob("Caddyfile.preview-*")))
+
+    def test_success(self):
+        self.exercise()
+
+    def test_failed_validation_never_changes_live_files(self):
+        self.exercise("validation")
+
+    def test_failed_reload_restores_both_files(self):
+        self.exercise("reload", existing_env=True)
+
+    def test_failed_https_removes_new_env_and_restores_caddy(self):
+        self.exercise("https")
+
+    def test_exposed_port_is_rejected_before_restart(self):
+        self.exercise("ports")
+
+
+if __name__ == "__main__":
+    unittest.main()
