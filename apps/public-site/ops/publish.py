@@ -35,6 +35,12 @@ BACKUPS = Path("/var/backups/bos-public-site")
 MARKER = "# BEGIN BOS PUBLIC SITE PREVIEW"
 
 
+class CommandError(RuntimeError):
+    def __init__(self, args, result):
+        super().__init__(f"Command failed (exit {result.returncode}): " + " ".join(args))
+        self.output = result.stdout + "\n" + result.stderr
+
+
 def require(condition, message):
     if not condition:
         raise RuntimeError(message)
@@ -44,8 +50,8 @@ def run(args, *, data=None, cwd=None, timeout=35):
     result = subprocess.run(args, input=data, text=True, capture_output=True,
                             cwd=cwd, timeout=timeout)
     # Do not print Docker inspect, configs, password hashes or process output.
-    require(result.returncode == 0,
-            f"Command failed (exit {result.returncode}): " + " ".join(args))
+    if result.returncode:
+        raise CommandError(args, result)
     return result.stdout
 
 
@@ -78,10 +84,12 @@ def active_config():
 
 def origin_env(original):
     lines = original.decode().splitlines()
-    require(not any(re.match(r"\s*export\s+WEBSITE_STAGING_ORIGIN", x) for x in lines),
+    keys = "WEBSITE_STAGING_(?:HTTPS_)?ORIGIN"
+    require(not any(re.match(r"\s*export\s+" + keys, x) for x in lines),
             "Unexpected exported origin in .env; inspect before changing it.")
-    lines = [x for x in lines if not re.match(r"\s*WEBSITE_STAGING_ORIGIN\s*=", x)]
-    return ("\n".join(lines + ["WEBSITE_STAGING_ORIGIN=" + ORIGIN]) + "\n").encode()
+    lines = [x for x in lines if not re.match(r"\s*" + keys + r"\s*=", x)]
+    return ("\n".join(lines + ["WEBSITE_STAGING_ORIGIN=" + ORIGIN,
+                             "WEBSITE_STAGING_HTTPS_ORIGIN=" + ORIGIN]) + "\n").encode()
 
 
 def site_block(password_hash):
@@ -263,7 +271,8 @@ class Publisher:
             effective = json.loads(self.compose("config", "--format", "json"))
             service = effective["services"][SERVICE]
             require(effective["name"] == PROJECT and service["environment"]["WEBSITE_ENV"] == "staging"
-                    and service["environment"]["WEBSITE_STAGING_ORIGIN"] == ORIGIN,
+                    and service["environment"]["WEBSITE_STAGING_ORIGIN"] == ORIGIN
+                    and service["environment"]["WEBSITE_STAGING_HTTPS_ORIGIN"] == ORIGIN,
                     "Unexpected effective Compose origin/project/environment.")
             ports = service.get("ports", [])
             require(len(ports) == 1 and ports[0].get("host_ip") == "127.0.0.1"
@@ -292,7 +301,15 @@ class Publisher:
             self.verify_https(password)
             require(self.staff_fingerprint() == before, "Employee homepage changed; restoring configuration.")
             write_atomic(ACCESS, (f"URL: {ORIGIN}\nLogin: preview\nPassword: {password}\n").encode())
-        except BaseException:
+        except BaseException as error:
+            if isinstance(error, CommandError):
+                try:
+                    write_atomic(backup / "failed-command.log", error.output.encode())
+                    logs = self.compose("logs", "--no-color", "--tail", "40", SERVICE)
+                    write_atomic(backup / "staging-start.log", logs.encode())
+                    print("PRIVATE_DIAGNOSTICS=" + str(backup), flush=True)
+                except Exception:
+                    pass  # Diagnostic collection must never prevent rollback.
             print("APPLY_FAILED: restoring the previous proxy and website origin", flush=True)
             self.rollback()
             print("ROLLBACK_OK", flush=True)

@@ -25,6 +25,10 @@ async function start() {
   const origin = managed
     ? "http://terminal.local:4173"
     : process.env.WEBSITE_STAGING_ORIGIN || `http://127.0.0.1:${port}`;
+  const stagingHttpsOrigin = process.env.WEBSITE_STAGING_HTTPS_ORIGIN || "";
+  if (stagingHttpsOrigin && (environment !== "staging" ||
+      process.env.WEBSITE_CONTAINER !== "1" || managed || stagingHttpsOrigin !== origin))
+    throw Error("HTTPS preview requires an explicit staging container and matching origin");
   let stage;
   if (environment === "staging") {
     const state = process.env.WEBSITE_STAGE_STATE
@@ -36,6 +40,7 @@ async function start() {
           dataDir: path.join(state, "db"),
           privateDir: path.join(state, "private"),
           origin,
+          stagingHttpsOrigin,
           websiteEnabled: true,
         },
       );

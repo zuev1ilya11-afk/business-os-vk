@@ -43,7 +43,15 @@ function configCheck(c){
   if(!Number.isInteger(c.smsDailyLimit)||c.smsDailyLimit<1||!Number.isInteger(c.smsBudgetKopecks)||!Number.isInteger(c.smsCostKopecks)||c.smsCostKopecks<1||c.smsBudgetKopecks<c.smsDailyLimit*c.smsCostKopecks)throw Error('Explicit daily SMS spending budget required');
   for(const origin of [...c.staffOrigins||[],...c.clientOrigins||[]]){const su=new URL(origin);if(su.protocol!=='https:'||su.origin!==origin)throw Error('Exact HTTPS staff origin required')}
   if(!c.operator?.legal_name||!c.operator?.inn||!c.operator?.address||!c.operator?.privacy_email)throw Error('Verified operator details required');
- }else if(!c.isolated||c.smsTransport!=='test'||!(['localhost','127.0.0.1','[::1]'].includes(u.hostname)||(c.managedPreview===true&&c.origin==='http://terminal.local:4173'&&process.cwd()==='/site')))throw Error('Test transport is restricted to isolated loopback staging');
+ }else {
+  // Explicit opt-in for a website preview behind a protected HTTPS proxy.
+  // This does not relax production, isolation, SMS transport or Origin checks.
+  const protectedPreview=c.environment==='staging'&&c.websiteEnabled===true&&
+   c.stagingHttpsOrigin===c.origin&&u.origin===c.origin&&u.protocol==='https:'&&!u.hostname.includes('*');
+  if(!c.isolated||c.smsTransport!=='test'||!(['localhost','127.0.0.1','[::1]'].includes(u.hostname)||
+   (c.managedPreview===true&&c.origin==='http://terminal.local:4173'&&process.cwd()==='/site')||protectedPreview))
+   throw Error('Test transport requires isolated loopback or explicitly allowed HTTPS website staging');
+ }
 }
 async function loadSharp(){try{return require('sharp')}catch{const roots=[process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES,'/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules'].filter(Boolean);for(const r of roots){try{return createRequire(path.join(r,'_portal_loader.cjs'))('sharp')}catch{}}throw Error('Image decoder sharp is unavailable')}}
 async function createPortal({db,config}){

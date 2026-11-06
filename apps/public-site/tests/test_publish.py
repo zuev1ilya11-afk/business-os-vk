@@ -1,6 +1,7 @@
 import importlib.util
 import json
 import os
+import subprocess
 from pathlib import Path
 import tempfile
 import unittest
@@ -19,6 +20,7 @@ class Files(unittest.TestCase):
         self.assertIn(b"CONTACT=hello\n", changed)
         self.assertIn(b"KEEP=value\n", changed)
         self.assertEqual(changed.count(b"WEBSITE_STAGING_ORIGIN="), 1)
+        self.assertEqual(changed.count(b"WEBSITE_STAGING_HTTPS_ORIGIN="), 1)
         self.assertTrue(changed.endswith((p.ORIGIN + "\n").encode()))
 
     def test_unexpected_env_syntax_is_rejected(self):
@@ -80,7 +82,8 @@ class Transaction(unittest.TestCase):
                 "HostConfig": {"PortBindings": {
                     "4173/tcp": [{"HostIp": "127.0.0.1", "HostPort": "4185"}]}}}
             effective = {"name": p.PROJECT, "services": {p.SERVICE: {
-                "environment": {"WEBSITE_ENV": "staging", "WEBSITE_STAGING_ORIGIN": p.ORIGIN},
+                "environment": {"WEBSITE_ENV": "staging", "WEBSITE_STAGING_ORIGIN": p.ORIGIN,
+                                "WEBSITE_STAGING_HTTPS_ORIGIN": p.ORIGIN},
                 "ports": [{"host_ip": "127.0.0.1", "published": "4185", "target": 4173}],
                 "volumes": [{"type": "volume", "source": "public-site-synthetic-data",
                              "target": "/app/.public-site-stage"}]}}}
@@ -91,6 +94,8 @@ class Transaction(unittest.TestCase):
                     return "fixture-stage\n"
                 if args[0] == "config":
                     return json.dumps(effective)
+                if args[0] == "logs":
+                    return "synthetic startup diagnostic\n"
                 self.fail("Unexpected compose mutation")
             def caddy(*args, **kwargs):
                 if args[0] == "hash-password":
@@ -108,12 +113,17 @@ class Transaction(unittest.TestCase):
                 self.assertGreater(len(password), 20)
                 if failure == "https":
                     raise RuntimeError("injected HTTPS failure")
+            def restart():
+                events.append("stage-up")
+                if failure == "stage-up" and len(events) == 1:
+                    raise p.CommandError(["docker", "compose", "up"],
+                                         subprocess.CompletedProcess([], 1, "", "synthetic unhealthy state"))
             obj.compose = compose
             obj.caddy = caddy
             obj.adapt = lambda path: {"new": True}
             obj.verify_stage = lambda: None
             obj.staff_fingerprint = lambda: "staff-page-fingerprint"
-            obj.restart_stage = lambda: events.append("stage-up")
+            obj.restart_stage = restart
             obj.reload = reload
             obj.verify_https = https
             access = root / "access.txt"
@@ -131,6 +141,11 @@ class Transaction(unittest.TestCase):
                         self.assertEqual(events.count("stage-up"), 2)
                     if failure == "validation":
                         self.assertEqual(events, [])
+                    if failure == "stage-up":
+                        self.assertEqual(events, ["stage-up", "stage-up"])
+                        diagnostic = list((root / "backups").glob("*/staging-start.log"))
+                        self.assertEqual(len(diagnostic), 1)
+                        self.assertEqual(diagnostic[0].stat().st_mode & 0o777, 0o600)
                 else:
                     obj.apply()
                     self.assertTrue(obj.config.read_bytes().startswith(obj.old_config))
@@ -154,6 +169,9 @@ class Transaction(unittest.TestCase):
 
     def test_exposed_port_is_rejected_before_restart(self):
         self.exercise("ports")
+
+    def test_failed_stage_boot_restores_origin_without_touching_caddy(self):
+        self.exercise("stage-up")
 
 
 if __name__ == "__main__":

@@ -49,6 +49,13 @@ jobs:
         run: |
           docker compose -f apps/public-site/compose.staging.yml up --build -d --wait
           node apps/public-site/tests/container-smoke.cjs
+      - name: Restart the persisted staging container with explicit HTTPS preview origin
+        env:
+          WEBSITE_STAGING_ORIGIN: https://preview.example.invalid
+          WEBSITE_STAGING_HTTPS_ORIGIN: https://preview.example.invalid
+        run: |
+          docker compose -f apps/public-site/compose.staging.yml up -d --no-build --wait
+          node apps/public-site/tests/container-https-origin.cjs
       - name: Build separate public-only production image
         run: docker build -f apps/public-site/Dockerfile -t bos-public-site-build-check .
       - name: Check nginx template syntax
