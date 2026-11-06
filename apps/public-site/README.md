@@ -24,13 +24,13 @@
 
 Для браузерных тестов в `apps/public-site`: `npx playwright test --config playwright.config.cjs`. Предварительно собрать сайт и установить Chromium командой `npx playwright install chromium` из корня. Тестовый HTTP-порт — 4191. Порт 4190 не использовать: он запрещён стандартным fetch.
 
-Полный прежний UI-набор запускается только через `scripts/test-ui-offline.sh`: он изолирует сеть и не допускает обращения к production. В текущей среде sudo/unshare недоступны; обходить изоляцию нельзя. Подготовлен отдельный CI без деплоя и production secrets.
+Полный прежний UI-набор запускается только через `scripts/test-ui-offline.sh`: он изолирует сеть и не допускает обращения к production. В локальной среде sudo/unshare недоступны; обходить изоляцию нельзя. Набор исполняется в CI на Ubuntu 24.04 без деплоя и production secrets. Фактический результат записан в `docs/public-site/report.md`.
 
 ## Docker и nginx
 
 `Dockerfile` содержит только публичный Next runtime. `Dockerfile.staging` содержит интегрированный синтетический стенд. `compose.staging.yml` — отдельный проект и отдельный volume, порт привязан к 127.0.0.1:4185, а не ко всем интерфейсам. Не добавлять его автоматически в существующий production Compose.
 
-Из этой директории команда проверки: `docker compose -f compose.staging.yml config --quiet`. Сборка/запуск: `docker compose -f compose.staging.yml up -d --build`. Локально Docker отсутствует, поэтому выполнение этих команд ещё не подтверждено. Автоматический container smoke и nginx syntax check включены в CI.
+Из этой директории команда проверки: `docker compose -f compose.staging.yml config --quiet`. Сборка/запуск: `docker compose -f compose.staging.yml up -d --build`. Локально Docker отсутствует. В CI успешно выполнены сборка и запуск синтетического контейнера, HTTP smoke, отдельная production-сборка и nginx syntax check; результаты и ссылка на прогон — в `docs/public-site/report.md`.
 
 `ops/nginx.conf.example` — шаблон отдельного виртуального хоста. До применения проверить свободные порты и действующую конфигурацию, добавить согласованный HTTPS-вход. Он направляет `/client/` к существующему PWA, `/client-api/` — к существующему API, блокирует публичный `/client-api/staff/`. Сотрудники продолжают работать на своём техническом origin. Адреса 4173, 4181, 4185 и 8086 — предложенные, на RU они не измерены.
 
