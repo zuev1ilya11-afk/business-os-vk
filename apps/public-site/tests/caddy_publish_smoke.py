@@ -165,14 +165,16 @@ def ip_preview_smoke(root, password_hash):
         (location / (name + ".json")).write_text(json.dumps({"sans": names}))
     context_factory = ssl.create_default_context
     container = "bos-caddy-ip-" + uuid.uuid4().hex[:10]
-    base = ("{\n admin 127.0.0.1:12019\n default_sni 127.0.0.2\n}\n"
-            "https://127.0.0.2, https://127.0.0.3, https://employee.test {\n"
+    base = ("{\n admin 127.0.0.1:12019\n default_sni 127.0.0.3\n}\n"
+            "https://127.0.0.2, https://127.0.0.3 {\n"
             " tls {\n"
             " issuer acme https://acme-v02.api.letsencrypt.org/directory {\n"
-            " profile shortlived\n }\n }\n respond STAFF_IP_FIXTURE\n}\n")
+            " profile shortlived\n }\n }\n respond STAFF_IP_FIXTURE\n}\n"
+            "employee.test {\n tls {\n issuer acme https://acme-v02.api.letsencrypt.org/directory {\n"
+            " email staff-owner@example.com\n }\n }\n respond STAFF_IP_FIXTURE\n}\n")
     config = root / "Caddyfile"
     config.write_text(base)
-    with patch.object(p, "PUBLIC_IP", "127.0.0.2"), patch.object(p, "STAFF", "employee.test"), \
+    with patch.object(p, "PUBLIC_IP", "127.0.0.3"), patch.object(p, "STAFF", "employee.test"), \
             patch.object(ssl, "create_default_context", side_effect=lambda: context_factory(cafile=str(root / "ca.pem"))):
         try:
             p.run(["docker", "run", "-d", "--name", container, "--network", "host", "-v",
@@ -193,9 +195,9 @@ def ip_preview_smoke(root, password_hash):
             original = p.active_config()
             fingerprint = p.existing_ip_certificate()
             routes_before = p.ip_route_fingerprints()
-            p.existing_ip_issuer(original)
+            issuer = p.existing_ip_issuer(original)
             p.require_free_ip_port()
-            config.write_bytes(base.encode() + p.ip_site_block(password_hash))
+            config.write_bytes(base.encode() + p.ip_site_block(password_hash, issuer))
             obj.caddy("validate", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile")
             desired = obj.adapt("/etc/caddy/Caddyfile")
             p.verify_ip_isolation(original, desired)
@@ -206,6 +208,7 @@ def ip_preview_smoke(root, password_hash):
             assert p.existing_ip_certificate(p.IP_PORT) == fingerprint
             assert p.ip_route_fingerprints() == routes_before
             assert p.probe(p.PUBLIC_IP, tls=True, port=p.IP_PORT, auth="wrong-password")[0] == 401
+            assert p.probe("employee.test", tls=True, port=p.IP_PORT, auth=PASSWORD)[0] == 404
             assert p.probe("employee.test", tls=True)[2] == b"STAFF_IP_FIXTURE"
             assert p.probe(p.PUBLIC_IP, tls=True, port=p.IP_PORT, auth=PASSWORD)[1]["x-robots-tag"] == "noindex, nofollow"
             # The saved Caddyfile must also survive a full restart in this

@@ -151,15 +151,14 @@ def existing_ip_issuer(config):
     return issuer
 
 
-def ip_site_block(password_hash):
-    # The IP already has an explicit automation policy. Do not declare a
-    # second one for the same identifier: Caddy rejects that as ambiguous.
-    # This listener uses the existing shared certificate and renewal policy.
-    block = site_block(password_hash).decode()
-    block, removed = re.subn(r"\n\ttls \{.*?\n\t\}", "", block, count=1, flags=re.S)
-    require(removed == 1, "Expected exactly one TLS block to replace with the existing policy.")
+def ip_site_block(password_hash, issuer):
+    # Exactly matching issuer settings consolidate into the existing policy.
+    # Do not add `bind`: Caddy also changes the ACME challenge bind host, making
+    # the two policies for the same IP conflict. The route matches only our IP.
+    block = site_block(password_hash, issuer.get("email")).decode()
     block = block.replace(SITE + " {", ip_origin() + " {", 1)
-    block = block.replace(ip_origin() + " {\n", ip_origin() + f" {{\n\tbind 127.0.0.1 {PUBLIC_IP}\n", 1)
+    block = block.replace("\t\tissuer acme " + ACME_DIRECTORY + " {\n",
+                          "\t\tissuer acme " + ACME_DIRECTORY + " {\n\t\t\tprofile shortlived\n", 1)
     return block.encode()
 
 
@@ -190,13 +189,22 @@ def verify_ip_isolation(before, after):
     old, new = copy.deepcopy(before), copy.deepcopy(after)
     old_servers = old["apps"]["http"].pop("servers")
     new_servers = new["apps"]["http"].pop("servers")
-    listeners = {f"127.0.0.1:{IP_PORT}", f"{PUBLIC_IP}:{IP_PORT}"}
+    listeners = {f":{IP_PORT}"}
     additions = [name for name, server in new_servers.items() if set(server.get("listen", [])) == listeners]
     require(len(additions) == 1, "Expected exactly the isolated IP preview listener.")
     preview = new_servers.pop(additions[0])
+    require(len(preview.get("routes", [])) == 1
+            and preview["routes"][0].get("match") == [{"host": [PUBLIC_IP]}],
+            "IP preview must match only the inspected IP hostname.")
     require(any(policy.get("default_sni") == PUBLIC_IP for policy in preview.get("tls_connection_policies", [])),
             "IP preview must use the existing default SNI.")
     canonical = lambda servers: sorted(json.dumps(server, sort_keys=True) for server in servers.values())
+    # Consolidation may reorder subjects inside an otherwise identical policy;
+    # these are a set. Keep policy order itself strict (wildcards may overlap).
+    for config in (old, new):
+        for policy in config.get("apps", {}).get("tls", {}).get("automation", {}).get("policies", []):
+            if "subjects" in policy:
+                policy["subjects"].sort()
     require(old == new and canonical(old_servers) == canonical(new_servers),
             "IP preview would change existing proxy servers or certificate settings; refusing to apply.")
 
@@ -336,7 +344,7 @@ class Publisher:
                 "Unexpected Caddy admin address.")
         self.acme_email = certificate_email(self.old_active) if not ip_preview else None
         if ip_preview:
-            existing_ip_issuer(self.old_active)
+            self.ip_issuer = existing_ip_issuer(self.old_active)
             require(not any(f":{IP_PORT}" in listener for server in
                     self.old_active.get("apps", {}).get("http", {}).get("servers", {}).values()
                     for listener in server.get("listen", [])), "IP preview port already configured.")
@@ -447,7 +455,7 @@ class Publisher:
         image = stage["Image"]
         password = secrets.token_urlsafe(24)
         password_hash = self.caddy("hash-password", "--algorithm", "bcrypt", data=password + "\n").strip()
-        block = ip_site_block(password_hash) if self.ip_preview else site_block(password_hash, self.acme_email)
+        block = ip_site_block(password_hash, self.ip_issuer) if self.ip_preview else site_block(password_hash, self.acme_email)
         self.new_config = self.old_config + block
         # Place candidate beside the real file so relative imports retain their meaning.
         candidate = self.config.parent / ("Caddyfile.preview-" + secrets.token_hex(6))

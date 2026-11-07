@@ -247,7 +247,7 @@ class IPPreview(unittest.TestCase):
     def after(self, before):
         after = copy.deepcopy(before)
         after["apps"]["http"]["servers"]["srv1"] = {
-            "listen": ["127.0.0.1:8443", p.PUBLIC_IP + ":8443"],
+            "listen": [":8443"], "routes": [{"match": [{"host": [p.PUBLIC_IP]}]}],
             "tls_connection_policies": [{"default_sni": p.PUBLIC_IP}]}
         return after
 
@@ -271,7 +271,7 @@ class IPPreview(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             p.verify_ip_isolation(before, changed)
         changed = copy.deepcopy(after)
-        changed["apps"]["http"]["servers"]["srv1"]["listen"] = [":8443"]
+        changed["apps"]["http"]["servers"]["srv1"]["routes"] = []
         with self.assertRaises(RuntimeError):
             p.verify_ip_isolation(before, changed)
 
