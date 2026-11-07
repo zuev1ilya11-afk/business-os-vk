@@ -46,7 +46,9 @@ def main():
         (root / "Caddyfile.validate").write_text(production + block)
         p.run(["docker", "run", "--rm", "-v", f"{root}:/etc/caddy:ro", IMAGE,
                "caddy", "validate", "--config", "/etc/caddy/Caddyfile.validate", "--adapter", "caddyfile"])
-        base = "{\n admin 127.0.0.1:12019\n}\nhttp://employee.test:18480 {\n respond STAFF_FIXTURE\n}\n"
+        # Use the real file_server mechanism: its hide list embeds config filename.
+        (root / "index.html").write_text("STAFF_FIXTURE")
+        base = "{\n admin 127.0.0.1:12019\n}\nhttp://employee.test:18480 {\n root * /etc/caddy\n file_server\n}\n"
         config = root / "Caddyfile"
         config.write_text(base)
         try:
@@ -62,11 +64,24 @@ def main():
                     time.sleep(0.2)
             else:
                 raise RuntimeError("Fixture did not start")
-            assert p.active_config() == obj.adapt("/etc/caddy/Caddyfile")
-            config.write_text(base + block.replace(p.SITE + " {", "http://site.test:18480 {"))
+            old_active = p.active_config()
+            assert old_active == obj.adapt("/etc/caddy/Caddyfile")
+            combined = base + block.replace(p.SITE + " {", "http://site.test:18480 {")
+            candidate = root / "Caddyfile.preview-fixture"
+            candidate.write_text(combined)
+            candidate_json = obj.adapt("/etc/caddy/" + candidate.name)
+            config.write_text(combined)
             obj.caddy("validate", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile")
-            obj.reload()
-            assert p.active_config() == obj.adapt("/etc/caddy/Caddyfile")
+            desired = obj.adapt("/etc/caddy/Caddyfile")
+            # Reproduce the installer failure without exposing secrets in logs.
+            assert candidate_json != desired, "Fixture must reproduce filename-dependent adaptation"
+            assert "/etc/caddy/Caddyfile.preview-fixture" in json.dumps(candidate_json)
+            assert "/etc/caddy/Caddyfile.preview-fixture" not in json.dumps(desired)
+            candidate.unlink()
+            print("CADDY_FILENAME_MISMATCH_REPRODUCED")
+            obj.reload(desired)
+            assert p.active_config() == desired
+            assert p.probe("employee.test", "/Caddyfile", port=18480)[0] == 404
             assert p.probe("employee.test", port=18480)[2] == b"STAFF_FIXTURE"
             for route in ("/", "/healthz", "/client/", "/staff/", "/client-api/health"):
                 code, headers, _ = p.probe("site.test", route, port=18480)
@@ -77,7 +92,8 @@ def main():
             assert p.probe("site.test", port=18480, auth="wrong-password")[0] == 401
             # Exact old file restoration, through the same graceful reload.
             config.write_text(base)
-            obj.reload()
+            obj.reload(old_active)
+            assert p.active_config() == old_active
             assert p.probe("employee.test", port=18480)[2] == b"STAFF_FIXTURE"
             assert p.probe("site.test", port=18480)[2] != b"WEBSITE_FIXTURE"
             print("CADDY_PUBLISH_SMOKE_OK: validate, auth, headers, isolation, reload and rollback")

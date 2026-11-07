@@ -174,9 +174,11 @@ class Publisher:
     def restart_stage(self):
         self.compose("up", "-d", "--no-build", "--no-deps", "--wait", "--wait-timeout", "90", SERVICE)
 
-    def reload(self):
-        self.caddy("reload", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile",
-                   "--address", ADMIN)
+    def reload(self, config):
+        # Load exactly the native JSON that will be checked after activation.
+        # Compiling another filename changes file_server's implicit hide list.
+        self.caddy("reload", "--config", "-", "--address", ADMIN,
+                   data=json.dumps(config))
 
     def staff_fingerprint(self):
         code, _, body = probe(STAFF, tls=True)
@@ -215,7 +217,8 @@ class Publisher:
         if self.changed_config:
             try:
                 restore_owned(self.config, self.new_config, self.old_config)
-                self.reload()
+                self.reload(self.old_active)
+                require(active_config() == self.old_active, "Previous Caddy JSON was not restored.")
             except BaseException:
                 failures.append("Caddy restore failed; use the saved backup")
         if self.changed_env:
@@ -246,7 +249,6 @@ class Publisher:
         try:
             write_atomic(candidate, self.new_config, 0o644)
             self.caddy("validate", "--adapter", "caddyfile", "--config", "/etc/caddy/" + candidate.name)
-            desired = self.adapt("/etc/caddy/" + candidate.name)
         finally:
             candidate.unlink(missing_ok=True)
         backup_root = BACKUPS
@@ -254,6 +256,7 @@ class Publisher:
         backup = Path(tempfile.mkdtemp(prefix=time.strftime("%Y%m%d-%H%M%S-"), dir=backup_root))
         shutil.copy2(self.config, backup / "Caddyfile")
         os.chmod(backup / "Caddyfile", 0o600)
+        write_atomic(backup / "active-before.json", json.dumps(self.old_active).encode())
         if self.old_env is not None:
             write_atomic(backup / "website.env", self.old_env)
         write_atomic(backup / "state.json", json.dumps({
@@ -294,8 +297,16 @@ class Publisher:
                     "Caddy changed while staging restarted; nothing applied to Caddy.")
             write_atomic(self.config, self.new_config)
             self.changed_config = True
-            self.reload()
-            require(active_config() == desired, "Caddy did not activate the expected configuration.")
+            # Compile the final pathname while the old runtime is still serving.
+            # The candidate was validated earlier; validate this actual file too.
+            self.caddy("validate", "--adapter", "caddyfile", "--config", "/etc/caddy/Caddyfile")
+            desired = self.adapt("/etc/caddy/Caddyfile")
+            write_atomic(backup / "expected-after.json", json.dumps(desired).encode())
+            self.reload(desired)
+            actual = active_config()
+            if actual != desired:
+                write_atomic(backup / "unexpected-active.json", json.dumps(actual).encode())
+                raise RuntimeError("Caddy did not activate the expected configuration; private JSON saved in backup.")
             require(self.staff_fingerprint() == before, "Employee homepage changed; restoring configuration.")
             print("HTTPS_CHECK=waiting for certificate and authenticated website", flush=True)
             self.verify_https(password)

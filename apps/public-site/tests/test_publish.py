@@ -75,6 +75,7 @@ class Transaction(unittest.TestCase):
             obj.new_env = p.origin_env(obj.old_env or b"")
             obj.changed_env = obj.changed_config = False
             events = []
+            runtime = dict(obj.old_active)
             stage = {
                 "Image": "sha256:unchanged", "Config": {
                     "Image": "synthetic:fixture",
@@ -104,11 +105,15 @@ class Transaction(unittest.TestCase):
                 self.assertEqual(args[0], "validate")
                 if failure == "validation":
                     raise RuntimeError("injected invalid Caddyfile")
+                if failure == "final-validation" and "/etc/caddy/Caddyfile" in args:
+                    raise RuntimeError("injected final-path validation failure")
                 return ""
-            def reload():
+            def reload(config):
+                nonlocal runtime
                 events.append("reload")
                 if failure == "reload" and len(events) == 2:
                     raise RuntimeError("injected reload failure")
+                runtime = {"unexpected": True} if failure == "active-mismatch" and config == {"new": True} else config
             def https(password):
                 self.assertGreater(len(password), 20)
                 if failure == "https":
@@ -120,7 +125,10 @@ class Transaction(unittest.TestCase):
                                          subprocess.CompletedProcess([], 1, "", "synthetic unhealthy state"))
             obj.compose = compose
             obj.caddy = caddy
-            obj.adapt = lambda path: {"new": True}
+            def adapt(path):
+                self.assertEqual(path, "/etc/caddy/Caddyfile", "Must compile the actual filename")
+                return {"new": True}
+            obj.adapt = adapt
             obj.verify_stage = lambda: None
             obj.staff_fingerprint = lambda: "staff-page-fingerprint"
             obj.restart_stage = restart
@@ -128,7 +136,7 @@ class Transaction(unittest.TestCase):
             obj.verify_https = https
             access = root / "access.txt"
             with patch.object(p, "BACKUPS", root / "backups"), patch.object(p, "ACCESS", access), \
-                    patch.object(p, "active_config", lambda: {"new": True} if obj.changed_config else obj.old_active), \
+                    patch.object(p, "active_config", lambda: runtime), \
                     patch.object(p, "run", return_value=json.dumps([stage])):
                 if failure:
                     with self.assertRaises(RuntimeError):
@@ -136,9 +144,14 @@ class Transaction(unittest.TestCase):
                     self.assertEqual(obj.config.read_bytes(), obj.old_config)
                     self.assertEqual(obj.env.read_bytes() if obj.env.exists() else None, obj.old_env)
                     self.assertFalse(access.exists())
-                    if failure in ("https", "reload"):
+                    self.assertEqual(runtime, obj.old_active)
+                    if failure in ("https", "reload", "active-mismatch"):
                         self.assertEqual(events.count("reload"), 2)
                         self.assertEqual(events.count("stage-up"), 2)
+                    if failure == "active-mismatch":
+                        diagnostic = list((root / "backups").glob("*/unexpected-active.json"))
+                        self.assertEqual(len(diagnostic), 1)
+                        self.assertEqual(diagnostic[0].stat().st_mode & 0o777, 0o600)
                     if failure == "validation":
                         self.assertEqual(events, [])
                     if failure == "stage-up":
@@ -152,6 +165,7 @@ class Transaction(unittest.TestCase):
                     self.assertEqual(obj.env.read_bytes(), obj.new_env)
                     self.assertEqual(access.stat().st_mode & 0o777, 0o600)
                     self.assertEqual(events, ["stage-up", "reload"])
+                    self.assertEqual(runtime, {"new": True})
                     self.assertIn("Login: preview", access.read_text())
             self.assertFalse(list(root.glob("Caddyfile.preview-*")))
 
@@ -172,6 +186,12 @@ class Transaction(unittest.TestCase):
 
     def test_failed_stage_boot_restores_origin_without_touching_caddy(self):
         self.exercise("stage-up")
+
+    def test_final_path_validation_failure_restores_both_files(self):
+        self.exercise("final-validation")
+
+    def test_actual_configuration_mismatch_still_triggers_rollback(self):
+        self.exercise("active-mismatch")
 
 
 if __name__ == "__main__":
