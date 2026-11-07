@@ -208,7 +208,11 @@ def ip_preview_smoke(root, password_hash):
             assert p.existing_ip_certificate(p.IP_PORT) == fingerprint
             assert p.ip_route_fingerprints() == routes_before
             assert p.probe(p.PUBLIC_IP, tls=True, port=p.IP_PORT, auth="wrong-password")[0] == 401
-            assert p.probe("employee.test", tls=True, port=p.IP_PORT, auth=PASSWORD)[0] == 404
+            # With no matching route Caddy returns an empty 200 response.
+            # Even valid preview credentials must not expose either app here.
+            for credentials in (None, PASSWORD):
+                wrong_host = p.probe("employee.test", tls=True, port=p.IP_PORT, auth=credentials)
+                assert wrong_host[0] == 200 and wrong_host[2] == b"", (wrong_host[0], wrong_host[2])
             assert p.probe("employee.test", tls=True)[2] == b"STAFF_IP_FIXTURE"
             assert p.probe(p.PUBLIC_IP, tls=True, port=p.IP_PORT, auth=PASSWORD)[1]["x-robots-tag"] == "noindex, nofollow"
             # The saved Caddyfile must also survive a full restart in this
