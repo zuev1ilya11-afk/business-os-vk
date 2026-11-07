@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 spec = importlib.util.spec_from_file_location("publisher", Path(__file__).parents[1] / "ops/publish.py")
 p = importlib.util.module_from_spec(spec)
@@ -43,12 +43,10 @@ class Files(unittest.TestCase):
         ]}}}}
         with patch.dict(os.environ, {}, clear=True):
             self.assertEqual(p.certificate_email(config), EMAIL)
-            with self.assertRaises(RuntimeError):
-                p.certificate_email({})
+            self.assertIsNone(p.certificate_email({}))
             config["apps"]["tls"]["automation"]["policies"].append(
                 {"issuers": [{"module": "acme", "email": "other@example.com"}]})
-            with self.assertRaises(RuntimeError):
-                p.certificate_email(config)
+            self.assertIsNone(p.certificate_email(config))
         with patch.dict(os.environ, {"WEBSITE_ACME_EMAIL": EMAIL}, clear=True):
             self.assertEqual(p.certificate_email(config), EMAIL)
 
@@ -56,6 +54,12 @@ class Files(unittest.TestCase):
         for invalid in ("", "owner@example.com\n}", "{env.EMAIL}", "owner@example.com {"):
             with self.subTest(email=invalid), self.assertRaises(RuntimeError):
                 p.site_block(HASH, invalid)
+
+    def test_letsencrypt_can_reuse_existing_account_without_email_override(self):
+        block = p.site_block(HASH).decode()
+        self.assertIn("issuer acme https://acme-v02.api.letsencrypt.org/directory", block)
+        self.assertNotIn("email ", block)
+        self.assertNotIn("zerossl", block)
 
     def test_atomic_write_preserves_permissions_and_rejects_symlinks(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -159,6 +163,7 @@ class Transaction(unittest.TestCase):
             access = root / "access.txt"
             with patch.object(p, "BACKUPS", root / "backups"), patch.object(p, "ACCESS", access), \
                     patch.object(p, "active_config", lambda: runtime), \
+                    patch.object(p, "certificate_events", return_value=[]), \
                     patch.object(p, "run", return_value=json.dumps([stage])):
                 if failure:
                     with self.assertRaises(RuntimeError):
@@ -214,6 +219,78 @@ class Transaction(unittest.TestCase):
 
     def test_actual_configuration_mismatch_still_triggers_rollback(self):
         self.exercise("active-mismatch")
+
+
+class Certificates(unittest.TestCase):
+    def quota(self, **changes):
+        event = {"ts": 100, "level": "error", "logger": "tls.obtain", "identifier": p.SITE,
+                 "issuer": "acme-v02.api.letsencrypt.org-directory",
+                 "msg": "could not get certificate from issuer",
+                 "error": 'HTTP 429 urn:ietf:params:acme:error:rateLimited - too many certificates '
+                          '(50) already issued for "qd.je"; retry after 2026-11-07 12:07:44 UTC'}
+        return dict(event, **changes)
+
+    def test_quota_guard_respects_ca_timestamp_and_moscow_time(self):
+        events = [self.quota()]
+        retry = p.certificate_retry_at(events)
+        with patch.object(p.time, "time", return_value=retry.timestamp() - 1):
+            with self.assertRaisesRegex(RuntimeError, "2026-11-07 15:07:44 MSK"):
+                p.require_certificate_quota(events)
+        with patch.object(p.time, "time", return_value=retry.timestamp()):
+            p.require_certificate_quota(events)
+
+    def test_obtained_certificate_clears_old_quota_and_other_ca_does_not_set_it(self):
+        success = self.quota(ts=101, msg="certificate obtained successfully", error="")
+        self.assertIsNone(p.certificate_retry_at([self.quota(), success]))
+        self.assertIsNone(p.certificate_retry_at([self.quota(issuer="acme.zerossl.com-v2-DV90")]))
+
+    def test_collects_only_this_site_and_sorts_both_docker_streams(self):
+        early, late = self.quota(ts=101), self.quota(ts=102)
+        other = self.quota(identifier="other.example.com")
+        result = subprocess.CompletedProcess([], 0,
+            json.dumps(late) + "\n" + json.dumps(other) + "\nnot JSON\n[]",
+            json.dumps(early))
+        with patch.object(p.subprocess, "run", return_value=result) as docker:
+            self.assertEqual(p.certificate_events("fixture"), [early, late])
+            self.assertEqual(docker.call_args.args[0][:2], ["docker", "logs"])
+
+    def test_log_failure_does_not_block_recovery(self):
+        with patch.object(p.subprocess, "run", side_effect=OSError("log unavailable")):
+            self.assertEqual(p.certificate_events("fixture"), [])
+
+    def test_known_quota_stops_before_any_deployment_actions(self):
+        obj = p.Publisher.__new__(p.Publisher)
+        obj.container = "fixture"
+        obj.verify_stage = Mock()
+        with patch.object(p, "certificate_events", return_value=[self.quota()]), \
+                patch.object(p.time, "time", return_value=0):
+            with self.assertRaisesRegex(RuntimeError, "LE_RATE_LIMIT"):
+                obj.apply()
+        obj.verify_stage.assert_not_called()
+
+    def test_new_quota_stops_https_wait_without_sleep(self):
+        obj = p.Publisher.__new__(p.Publisher)
+        obj.container = "fixture"
+        obj.https_started = 0
+        with patch.object(p, "probe", side_effect=OSError("TLS alert")), \
+                patch.object(p, "certificate_events", return_value=[self.quota()]), \
+                patch.object(p.time, "time", return_value=0), patch.object(p.time, "sleep") as sleep:
+            with self.assertRaisesRegex(RuntimeError, "LE_RATE_LIMIT"):
+                obj.verify_https("never printed")
+        sleep.assert_not_called()
+
+    def test_timeout_shows_ca_error_without_contact_or_query_secrets(self):
+        obj = p.Publisher.__new__(p.Publisher)
+        obj.container = "fixture"
+        obj.https_started = 0
+        event = self.quota(error="Registration failed for owner@example.com https://ca.example/error?key=secret")
+        with patch.object(p, "probe", side_effect=OSError("TLS alert")), \
+                patch.object(p, "certificate_events", return_value=[event]), \
+                patch.object(p.time, "monotonic", side_effect=[0, 301]):
+            with self.assertRaisesRegex(RuntimeError, "CA_ERROR: Registration failed") as raised:
+                obj.verify_https("never printed")
+        self.assertNotIn("owner@example.com", str(raised.exception))
+        self.assertNotIn("secret", str(raised.exception))
 
 
 if __name__ == "__main__":

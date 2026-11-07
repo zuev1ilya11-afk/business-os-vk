@@ -68,7 +68,8 @@ def main():
         assert len(staff_policy) == 1
         assert staff_policy[0]["issuers"] == [{"module": "acme",
             "ca": "https://acme-v02.api.letsencrypt.org/directory", "email": "staff-owner@example.com"}]
-        print("CADDY_SITE_ONLY_ZEROSSL_POLICY_OK")
+        assert "zerossl" not in json.dumps(adapted)
+        print("CADDY_SITE_ONLY_LE_POLICY_OK")
         # TLS was validated above. The HTTP-only route/rollback fixture must not
         # contact a real CA or create accounts while CI exercises authentication.
         http_block, removed = re.subn(r"\n\ttls \{.*?\n\t\}", "", block, flags=re.S)

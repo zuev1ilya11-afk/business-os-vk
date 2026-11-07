@@ -6,6 +6,7 @@ restarts production containers, changes employee files, or connects to its DB.
 """
 import argparse
 import base64
+from datetime import datetime, timedelta, timezone
 import fcntl
 import hashlib
 import http.client
@@ -33,7 +34,7 @@ APP = Path(__file__).resolve().parents[1]
 ACCESS = Path("/root/bos-site-access.txt")
 BACKUPS = Path("/var/backups/bos-public-site")
 MARKER = "# BEGIN BOS PUBLIC SITE PREVIEW"
-ACME_DIRECTORY = "https://acme.zerossl.com/v2/DV90"
+ACME_DIRECTORY = "https://acme-v02.api.letsencrypt.org/directory"
 
 
 class CommandError(RuntimeError):
@@ -107,25 +108,92 @@ def certificate_email(config):
     policies = config.get("apps", {}).get("tls", {}).get("automation", {}).get("policies", [])
     emails = {issuer["email"] for policy in policies for issuer in policy.get("issuers", [])
               if issuer.get("module") == "acme" and issuer.get("email")}
-    require(len(emails) == 1, "Set WEBSITE_ACME_EMAIL; no unique existing ACME contact was found.")
-    return validate_email(emails.pop())
+    # Let's Encrypt permits an omitted contact. Never invent one or choose
+    # another site's contact when several different owners are configured.
+    return validate_email(emails.pop()) if len(emails) == 1 else None
 
 
-def site_block(password_hash, email):
+def site_block(password_hash, email=None):
     require(re.fullmatch(r"\$2[aby]\$\d\d\$[./A-Za-z0-9]{53}", password_hash),
             "Caddy returned an unexpected password hash.")
-    validate_email(email)
+    contact = f"\t\t\temail {validate_email(email)}\n" if email is not None else ""
     return (f"\n{MARKER}\n{SITE} {{\n"
-            # qd.je hit Let's Encrypt's shared registered-domain quota. Use the
-            # free ACME endpoint only for this hostname. Caddy 2.11.7 negotiates
-            # ZeroSSL EAB automatically from this email; no paid API key needed.
+            # Explicitly retain Let's Encrypt. ZeroSSL restricts service in RU
+            # and its automatic registration failed on the inspected server.
             f"\ttls {{\n\t\tissuer acme {ACME_DIRECTORY} {{\n"
-            f"\t\t\temail {email}\n\t\t}}\n\t}}\n"
+            + contact + "\t\t}\n\t}\n"
             "\theader X-Robots-Tag \"noindex, nofollow\"\n"
             "\tbasic_auth {\n\t\tpreview " + password_hash + "\n\t}\n"
             "\treverse_proxy 127.0.0.1:4185 {\n"
             "\t\theader_up -Authorization\n\t}\n}\n"
             "# END BOS PUBLIC SITE PREVIEW\n").encode()
+
+
+def certificate_events(container, since="24h"):
+    # Caddy writes JSON to stderr; retain both streams, but only expose errors
+    # concerning this preview hostname. Never print the complete proxy log.
+    try:
+        result = subprocess.run(["docker", "logs", "--since", str(since), "--tail", "1500", container],
+                                capture_output=True, text=True, timeout=8)
+        if result.returncode:
+            return []
+        events = []
+        for line in (result.stdout + "\n" + result.stderr).splitlines():
+            try:
+                item = json.loads(line)
+            except ValueError:
+                continue
+            if not isinstance(item, dict) or not isinstance(item.get("ts"), (int, float)):
+                continue
+            if item.get("identifier") == SITE and item.get("logger") == "tls.obtain":
+                events.append(item)
+        return sorted(events, key=lambda item: item["ts"])
+    except (OSError, subprocess.SubprocessError):
+        return []  # Diagnostics must never prevent the existing rollback.
+
+
+def certificate_retry_at(events):
+    retry = None
+    for event in events:
+        if event.get("msg") == "certificate obtained successfully":
+            retry = None
+            continue
+        error = event.get("error", "")
+        issuer = event.get("issuer", "")
+        if not isinstance(error, str) or not isinstance(issuer, str):
+            continue
+        if "letsencrypt.org" not in issuer or "rateLimited" not in error:
+            continue
+        match = re.search(r"retry after (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) UTC", error)
+        if match:
+            try:
+                candidate = datetime.strptime(match[1], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+            except ValueError:
+                continue
+            if retry is None or candidate > retry:
+                retry = candidate
+    return retry
+
+
+def require_certificate_quota(events):
+    retry = certificate_retry_at(events)
+    if retry is not None and retry.timestamp() > time.time():
+        moscow = retry.astimezone(timezone(timedelta(hours=3)))
+        raise RuntimeError("LE_RATE_LIMIT: retry after " + moscow.strftime("%Y-%m-%d %H:%M:%S MSK")
+                           + ". Shared domain quota; availability at that time is not guaranteed.")
+
+
+def certificate_diagnostic(events):
+    for event in reversed(events):
+        if event.get("level") != "error" or not isinstance(event.get("error"), str):
+            continue
+        # Keep the console short and remove contact emails, URL query strings
+        # and terminal control characters before displaying a CA error.
+        error = re.sub(r"[\w.+-]+@[\w.-]+", "[email]", event["error"])
+        error = re.sub(r"(https?://[^\s?]+)\?[^\s]+", r"\1?[redacted]", error)
+        error = " ".join("".join(c for c in error if c.isprintable() or c.isspace()).split())
+        return error[:500]
+    return "No matching certificate error in the recent Caddy log."
 
 
 def write_atomic(path, content, mode=0o600):
@@ -234,8 +302,13 @@ class Publisher:
                 require(code == 404, "Private path is not blocked.")
                 return
             except (OSError, RuntimeError, http.client.HTTPException) as error:
+                events = certificate_events(self.container, self.https_started)
+                # A stated retry-after is authoritative: do not keep polling
+                # TLS for five minutes when issuance has already been refused.
+                require_certificate_quota(events)
                 if time.monotonic() >= deadline:
-                    raise RuntimeError("HTTPS/website check timed out. Last check: " + str(error)) from None
+                    raise RuntimeError("HTTPS/website check timed out. Last check: " + str(error)
+                                       + "\nCA_ERROR: " + certificate_diagnostic(events)) from None
                 time.sleep(4)
 
     def rollback(self):
@@ -256,6 +329,9 @@ class Publisher:
         require(not failures, "; ".join(failures))
 
     def apply(self):
+        # Read-only guard before backups, password generation, origin changes,
+        # staging restart or proxy reload. A known active quota means no changes.
+        require_certificate_quota(certificate_events(self.container))
         self.verify_stage()
         before = self.staff_fingerprint()
         ids = self.compose("ps", "-q", SERVICE).split()
@@ -328,13 +404,14 @@ class Publisher:
             self.caddy("validate", "--adapter", "caddyfile", "--config", "/etc/caddy/Caddyfile")
             desired = self.adapt("/etc/caddy/Caddyfile")
             write_atomic(backup / "expected-after.json", json.dumps(desired).encode())
+            self.https_started = time.time()
             self.reload(desired)
             actual = active_config()
             if actual != desired:
                 write_atomic(backup / "unexpected-active.json", json.dumps(actual).encode())
                 raise RuntimeError("Caddy did not activate the expected configuration; private JSON saved in backup.")
             require(self.staff_fingerprint() == before, "Employee homepage changed; restoring configuration.")
-            print("HTTPS_CHECK=ZeroSSL certificate and authenticated website (up to 5 minutes)", flush=True)
+            print("HTTPS_CHECK=Let's Encrypt certificate and authenticated website (up to 5 minutes)", flush=True)
             self.verify_https(password)
             require(self.staff_fingerprint() == before, "Employee homepage changed; restoring configuration.")
             write_atomic(ACCESS, (f"URL: {ORIGIN}\nLogin: preview\nPassword: {password}\n").encode())
