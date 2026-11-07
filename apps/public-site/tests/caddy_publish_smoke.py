@@ -151,11 +151,22 @@ def ip_preview_smoke(root, password_hash):
     p.run(["openssl", "x509", "-req", "-in", str(root / "ip.csr"), "-CA", str(root / "ca.pem"),
            "-CAkey", str(root / "ca.key"), "-CAcreateserial", "-days", "2", "-extfile", str(root / "ip.ext"),
            "-out", str(root / "ip.pem")])
+    # Model an already-managed certificate in CertMagic's storage, just like
+    # the RU server. A manual `tls cert key` loader adds certificate selection
+    # tags and is not equivalent to the existing ACME-managed configuration.
+    names = ["127.0.0.2", "127.0.0.3", "employee.test"]
+    data = root / "data"
+    for name in names:
+        location = data / "caddy/certificates/acme-v02.api.letsencrypt.org-directory" / name
+        location.mkdir(parents=True, exist_ok=True)
+        (location / (name + ".crt")).write_bytes((root / "ip.pem").read_bytes())
+        (location / (name + ".key")).write_bytes((root / "ip.key").read_bytes())
+        (location / (name + ".json")).write_text(json.dumps({"sans": names}))
     context_factory = ssl.create_default_context
     container = "bos-caddy-ip-" + uuid.uuid4().hex[:10]
     base = ("{\n admin 127.0.0.1:12019\n default_sni 127.0.0.2\n}\n"
             "https://127.0.0.2, https://127.0.0.3, https://employee.test {\n"
-            " tls /etc/caddy/ip.pem /etc/caddy/ip.key {\n"
+            " tls {\n"
             " issuer acme https://acme-v02.api.letsencrypt.org/directory {\n"
             " profile shortlived\n }\n }\n respond STAFF_IP_FIXTURE\n}\n")
     config = root / "Caddyfile"
@@ -164,7 +175,8 @@ def ip_preview_smoke(root, password_hash):
             patch.object(ssl, "create_default_context", side_effect=lambda: context_factory(cafile=str(root / "ca.pem"))):
         try:
             p.run(["docker", "run", "-d", "--name", container, "--network", "host", "-v",
-                   f"{root}:/etc/caddy:ro", IMAGE, "caddy", "run", "--config", "/etc/caddy/Caddyfile"])
+                   f"{root}:/etc/caddy:ro", "-v", f"{data}:/data", IMAGE,
+                   "caddy", "run", "--config", "/etc/caddy/Caddyfile"])
             obj = p.Publisher.__new__(p.Publisher)
             obj.container = container
             obj.ip_preview = True
@@ -218,10 +230,14 @@ def ip_preview_smoke(root, password_hash):
             assert p.ip_route_fingerprints() == routes_before
             p.require_free_ip_port()
             print("CADDY_IP_REUSE_OK: trusted TLS, same certificate, unchanged policy/routes, auth, restart and rollback")
-        except Exception:
+        except Exception as error:
             # These are synthetic test values only; aid diagnosis without any
             # server access or production configuration in CI.
-            print(p.run(["docker", "exec", container, "caddy", "adapt", "--config", "/etc/caddy/Caddyfile"]))
+            if isinstance(error, p.CommandError):
+                print(error.output)
+            result = subprocess.run(["docker", "exec", container, "caddy", "adapt", "--config", "/etc/caddy/Caddyfile"],
+                                    capture_output=True, text=True)
+            print(result.stdout + result.stderr)
             raise
         finally:
             subprocess.run(["docker", "rm", "-fv", container], check=False, capture_output=True)
