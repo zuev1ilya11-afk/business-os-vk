@@ -11,16 +11,6 @@ concurrency:
   group: public-site-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 jobs:
-  proxy:
-    name: Caddy preview publisher
-    runs-on: ubuntu-24.04
-    timeout-minutes: 7
-    steps:
-      - uses: actions/checkout@v4
-      - name: Test publisher and failed-deployment recovery
-        run: python3 -m unittest discover -s apps/public-site/tests -p 'test_publish.py' -v
-      - name: Test actual Caddy configuration, auth and graceful rollback
-        run: python3 apps/public-site/tests/caddy_publish_smoke.py
   verify:
     runs-on: ubuntu-24.04
     timeout-minutes: 30

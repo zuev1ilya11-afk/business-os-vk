@@ -1,0 +1,26 @@
+name: Public site publisher checks
+on:
+  push:
+    branches: [main, feat/public-site-client-integration-20261106]
+    paths:
+      - apps/public-site/ops/publish.py
+      - apps/public-site/tests/test_publish.py
+      - apps/public-site/tests/caddy_publish_smoke.py
+      - .github/workflows/public-site-publisher.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: public-site-publisher-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  proxy:
+    name: Caddy preview publisher
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test publisher and failed-deployment recovery
+        run: python3 -m unittest discover -s apps/public-site/tests -p 'test_publish.py' -v
+      - name: Test actual Caddy configuration, auth and graceful rollback
+        run: python3 apps/public-site/tests/caddy_publish_smoke.py
