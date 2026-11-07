@@ -6,6 +6,7 @@ restarts production containers, changes employee files, or connects to its DB.
 """
 import argparse
 import base64
+import copy
 from datetime import datetime, timedelta, timezone
 import fcntl
 import hashlib
@@ -27,6 +28,7 @@ SITE = "site.homemaster.qd.je"
 ORIGIN = "https://" + SITE
 STAFF = "homemaster.qd.je"
 PUBLIC_IP = "139.100.237.167"
+IP_PORT = 8443
 ADMIN = "127.0.0.1:12019"
 SERVICE = "public-site-staging"
 PROJECT = "bos-public-site-staging"
@@ -62,12 +64,13 @@ def probe(host, path="/", *, tls=False, auth=None, port=None):
     # No proxy, external credential transmission or DNS-dependent health checks.
     connection = http.client.HTTPConnection("127.0.0.1", port or (443 if tls else 80),
                                             timeout=8)
-    connection.connect()
-    if tls:
-        connection.sock = ssl.create_default_context().wrap_socket(
-            connection.sock, server_hostname=host)
     try:
-        headers = {"Host": host}
+        connection.connect()
+        if tls:
+            connection.sock = ssl.create_default_context().wrap_socket(
+                connection.sock, server_hostname=host)
+        authority = f"{host}:{port}" if port not in (None, 80, 443) and ":" not in host else host
+        headers = {"Host": authority}
         if auth:
             headers["Authorization"] = "Basic " + base64.b64encode(
                 ("preview:" + auth).encode()).decode()
@@ -84,14 +87,14 @@ def active_config():
     return json.loads(body)
 
 
-def origin_env(original):
+def origin_env(original, origin=ORIGIN):
     lines = original.decode().splitlines()
     keys = "WEBSITE_STAGING_(?:HTTPS_)?ORIGIN"
     require(not any(re.match(r"\s*export\s+" + keys, x) for x in lines),
             "Unexpected exported origin in .env; inspect before changing it.")
     lines = [x for x in lines if not re.match(r"\s*" + keys + r"\s*=", x)]
-    return ("\n".join(lines + ["WEBSITE_STAGING_ORIGIN=" + ORIGIN,
-                             "WEBSITE_STAGING_HTTPS_ORIGIN=" + ORIGIN]) + "\n").encode()
+    return ("\n".join(lines + ["WEBSITE_STAGING_ORIGIN=" + origin,
+                             "WEBSITE_STAGING_HTTPS_ORIGIN=" + origin]) + "\n").encode()
 
 
 def validate_email(email):
@@ -127,6 +130,82 @@ def site_block(password_hash, email=None):
             "\treverse_proxy 127.0.0.1:4185 {\n"
             "\t\theader_up -Authorization\n\t}\n}\n"
             "# END BOS PUBLIC SITE PREVIEW\n").encode()
+
+
+def ip_origin():
+    return f"https://{PUBLIC_IP}:{IP_PORT}"
+
+
+def existing_ip_issuer(config):
+    policies = config.get("apps", {}).get("tls", {}).get("automation", {}).get("policies", [])
+    matches = [policy for policy in policies if PUBLIC_IP in policy.get("subjects", [])]
+    require(len(matches) == 1, "Expected one existing explicit IP certificate policy.")
+    issuers = matches[0].get("issuers", [])
+    require(len(issuers) == 1, "Unexpected existing IP certificate issuers.")
+    issuer = issuers[0]
+    require(set(issuer) <= {"module", "ca", "profile", "email"}
+            and issuer.get("module") == "acme" and issuer.get("ca") == ACME_DIRECTORY
+            and issuer.get("profile") == "shortlived", "Existing IP certificate policy differs from inspected setup.")
+    if "email" in issuer:
+        validate_email(issuer["email"])
+    return issuer
+
+
+def ip_site_block(password_hash, issuer):
+    # Match the already configured IP issuer exactly, so Caddy keeps the same
+    # managed certificate and renewal policy. No certificate/key is copied.
+    block = site_block(password_hash, issuer.get("email")).decode()
+    block = block.replace(SITE + " {", ip_origin() + " {", 1)
+    block = block.replace("\ttls {", f"\tbind 127.0.0.1 {PUBLIC_IP}\n\ttls {{", 1)
+    block = block.replace("\t\tissuer acme " + ACME_DIRECTORY + " {\n",
+                          "\t\tissuer acme " + ACME_DIRECTORY + " {\n\t\t\tprofile shortlived\n", 1)
+    return block.encode()
+
+
+def existing_ip_certificate(port=443):
+    # Numeric server_hostname checks the IP SAN without sending an invalid IP
+    # SNI. The inspected Caddy default_sni selects this existing certificate.
+    with socket.create_connection(("127.0.0.1", port), timeout=8) as connection:
+        with ssl.create_default_context().wrap_socket(connection, server_hostname=PUBLIC_IP) as secure:
+            certificate = secure.getpeercert()
+            expires = ssl.cert_time_to_seconds(certificate["notAfter"])
+            require(expires > time.time() + 3600, "Existing IP certificate expires within one hour; inspect renewal first.")
+            return hashlib.sha256(secure.getpeercert(binary_form=True)).hexdigest()
+
+
+def require_free_ip_port():
+    for kind in (socket.SOCK_STREAM, socket.SOCK_DGRAM):
+        with socket.socket(socket.AF_INET, kind) as check:
+            try:
+                check.bind(("0.0.0.0", IP_PORT))
+            except OSError as error:
+                raise RuntimeError(f"Port {IP_PORT} is occupied; nothing changed.") from error
+
+
+def verify_ip_isolation(before, after):
+    # Caddy may renumber servers when appending a listener. Compare their full
+    # contents, not those generated names. Every existing server and all other
+    # app settings (including certificate automation/storage) must be identical.
+    old, new = copy.deepcopy(before), copy.deepcopy(after)
+    old_servers = old["apps"]["http"].pop("servers")
+    new_servers = new["apps"]["http"].pop("servers")
+    listeners = {f"127.0.0.1:{IP_PORT}", f"{PUBLIC_IP}:{IP_PORT}"}
+    additions = [name for name, server in new_servers.items() if set(server.get("listen", [])) == listeners]
+    require(len(additions) == 1, "Expected exactly the isolated IP preview listener.")
+    preview = new_servers.pop(additions[0])
+    require(any(policy.get("default_sni") == PUBLIC_IP for policy in preview.get("tls_connection_policies", [])),
+            "IP preview must use the existing default SNI.")
+    canonical = lambda servers: sorted(json.dumps(server, sort_keys=True) for server in servers.values())
+    require(old == new and canonical(old_servers) == canonical(new_servers),
+            "IP preview would change existing proxy servers or certificate settings; refusing to apply.")
+
+
+def ip_route_fingerprints():
+    results = []
+    for host, tls in ((PUBLIC_IP, True), (PUBLIC_IP, False), (STAFF, False), ("136.234.17.113", False)):
+        code, headers, body = probe(host, tls=tls)
+        results.append((code, headers.get("location"), hashlib.sha256(body).hexdigest()))
+    return results
 
 
 def certificate_events(container, since="24h"):
@@ -224,7 +303,15 @@ def restore_owned(path, expected, original):
 
 
 class Publisher:
-    def __init__(self):
+    ip_preview = False
+    hostname = SITE
+    https_port = 443
+    origin = ORIGIN
+
+    def __init__(self, *, ip_preview=False):
+        self.ip_preview = ip_preview
+        if ip_preview:
+            self.hostname, self.https_port, self.origin = PUBLIC_IP, IP_PORT, ip_origin()
         ids = run(["docker", "ps", "-q", "--filter", "name=https"]).split()
         require(len(ids) == 1, "Expected exactly one existing HTTPS container.")
         self.container = ids[0]
@@ -246,11 +333,16 @@ class Publisher:
                 "Running Caddy configuration differs from Caddyfile. Nothing changed.")
         require(self.old_active.get("admin", {}).get("listen") == ADMIN,
                 "Unexpected Caddy admin address.")
-        self.acme_email = certificate_email(self.old_active)
+        self.acme_email = certificate_email(self.old_active) if not ip_preview else None
+        if ip_preview:
+            self.ip_issuer = existing_ip_issuer(self.old_active)
+            require(not any(f":{IP_PORT}" in listener for server in
+                    self.old_active.get("apps", {}).get("http", {}).get("servers", {}).values()
+                    for listener in server.get("listen", [])), "IP preview port already configured.")
         self.env = APP / ".env"
         require(not self.env.is_symlink(), "Unexpected .env symlink.")
         self.old_env = self.env.read_bytes() if self.env.exists() else None
-        self.new_env = origin_env(self.old_env or b"")
+        self.new_env = origin_env(self.old_env or b"", self.origin)
         require(not ACCESS.exists() and not ACCESS.is_symlink(), "Access file already exists; inspect previous deployment.")
         self.changed_env = self.changed_config = False
 
@@ -287,22 +379,26 @@ class Publisher:
                 require(json.loads(body).get("environment") == "staging", "Expected synthetic staging only.")
 
     def verify_https(self, password):
-        deadline = time.monotonic() + 300
+        deadline = time.monotonic() + (45 if self.ip_preview else 300)
         while True:
             try:
-                code, headers, _ = probe(SITE, tls=True)
+                code, headers, _ = probe(self.hostname, tls=True, port=self.https_port)
                 require(code == 401 and "Basic" in headers.get("www-authenticate", ""),
                         "Website must require preview authentication.")
                 for route in ("/healthz", "/", "/services", "/client-api/health", "/client/"):
-                    code, _, body = probe(SITE, route, tls=True, auth=password)
+                    code, _, body = probe(self.hostname, route, tls=True, auth=password, port=self.https_port)
                     require(code == 200, "Authenticated website check failed: " + route)
                     if route == "/healthz":
                         require(json.loads(body).get("environment") == "staging", "Wrong website backend.")
-                code, _, _ = probe(SITE, "/.public-site-stage/private/access.json", tls=True, auth=password)
+                code, _, _ = probe(self.hostname, "/.public-site-stage/private/access.json", tls=True,
+                                   auth=password, port=self.https_port)
                 require(code == 404, "Private path is not blocked.")
+                if self.ip_preview:
+                    require(existing_ip_certificate(self.https_port) == existing_ip_certificate(),
+                            "IP preview is not serving the same certificate as the existing IP endpoint.")
                 return
             except (OSError, RuntimeError, http.client.HTTPException) as error:
-                events = certificate_events(self.container, self.https_started)
+                events = [] if self.ip_preview else certificate_events(self.container, self.https_started)
                 # A stated retry-after is authoritative: do not keep polling
                 # TLS for five minutes when issuance has already been refused.
                 require_certificate_quota(events)
@@ -331,7 +427,12 @@ class Publisher:
     def apply(self):
         # Read-only guard before backups, password generation, origin changes,
         # staging restart or proxy reload. A known active quota means no changes.
-        require_certificate_quota(certificate_events(self.container))
+        if self.ip_preview:
+            require_free_ip_port()
+            existing_ip_certificate()
+            ip_before = ip_route_fingerprints()
+        else:
+            require_certificate_quota(certificate_events(self.container))
         self.verify_stage()
         before = self.staff_fingerprint()
         ids = self.compose("ps", "-q", SERVICE).split()
@@ -345,7 +446,8 @@ class Publisher:
         image = stage["Image"]
         password = secrets.token_urlsafe(24)
         password_hash = self.caddy("hash-password", "--algorithm", "bcrypt", data=password + "\n").strip()
-        self.new_config = self.old_config + site_block(password_hash, self.acme_email)
+        block = ip_site_block(password_hash, self.ip_issuer) if self.ip_preview else site_block(password_hash, self.acme_email)
+        self.new_config = self.old_config + block
         # Place candidate beside the real file so relative imports retain their meaning.
         candidate = self.config.parent / ("Caddyfile.preview-" + secrets.token_hex(6))
         try:
@@ -376,8 +478,8 @@ class Publisher:
             effective = json.loads(self.compose("config", "--format", "json"))
             service = effective["services"][SERVICE]
             require(effective["name"] == PROJECT and service["environment"]["WEBSITE_ENV"] == "staging"
-                    and service["environment"]["WEBSITE_STAGING_ORIGIN"] == ORIGIN
-                    and service["environment"]["WEBSITE_STAGING_HTTPS_ORIGIN"] == ORIGIN,
+                    and service["environment"]["WEBSITE_STAGING_ORIGIN"] == self.origin
+                    and service["environment"]["WEBSITE_STAGING_HTTPS_ORIGIN"] == self.origin,
                     "Unexpected effective Compose origin/project/environment.")
             ports = service.get("ports", [])
             require(len(ports) == 1 and ports[0].get("host_ip") == "127.0.0.1"
@@ -403,6 +505,8 @@ class Publisher:
             # The candidate was validated earlier; validate this actual file too.
             self.caddy("validate", "--adapter", "caddyfile", "--config", "/etc/caddy/Caddyfile")
             desired = self.adapt("/etc/caddy/Caddyfile")
+            if self.ip_preview:
+                verify_ip_isolation(self.old_active, desired)
             write_atomic(backup / "expected-after.json", json.dumps(desired).encode())
             self.https_started = time.time()
             self.reload(desired)
@@ -411,10 +515,13 @@ class Publisher:
                 write_atomic(backup / "unexpected-active.json", json.dumps(actual).encode())
                 raise RuntimeError("Caddy did not activate the expected configuration; private JSON saved in backup.")
             require(self.staff_fingerprint() == before, "Employee homepage changed; restoring configuration.")
-            print("HTTPS_CHECK=Let's Encrypt certificate and authenticated website (up to 5 minutes)", flush=True)
+            print("HTTPS_CHECK=" + ("existing IP certificate (up to 45 seconds)" if self.ip_preview
+                                   else "Let's Encrypt certificate and authenticated website (up to 5 minutes)"), flush=True)
             self.verify_https(password)
             require(self.staff_fingerprint() == before, "Employee homepage changed; restoring configuration.")
-            write_atomic(ACCESS, (f"URL: {ORIGIN}\nLogin: preview\nPassword: {password}\n").encode())
+            if self.ip_preview:
+                require(ip_route_fingerprints() == ip_before, "Existing IP pages or HTTP redirects changed; restoring configuration.")
+            write_atomic(ACCESS, (f"URL: {self.origin}\nLogin: preview\nPassword: {password}\n").encode())
         except BaseException as error:
             if isinstance(error, CommandError):
                 try:
@@ -428,7 +535,7 @@ class Publisher:
             self.rollback()
             print("ROLLBACK_OK", flush=True)
             raise
-        print("SITE_READY=" + ORIGIN)
+        print("SITE_READY=" + self.origin)
         print("STAFF_HOME_UNCHANGED=OK")
         print("ACCESS_FILE=" + str(ACCESS))
 
@@ -436,16 +543,18 @@ class Publisher:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--apply", action="store_true", help="Enable the password-protected synthetic preview")
+    parser.add_argument("--ip", action="store_true", help="Reuse the inspected IP certificate on port 8443")
     args = parser.parse_args()
     require(args.apply, "Use --apply to publish the isolated preview.")
     require(os.geteuid() == 0, "Run as root on the inspected server.")
     require("${WEBSITE_STAGING_ORIGIN:-" in (APP / "compose.staging.yml").read_text(),
             "Update the prepared Compose file before running the publisher.")
-    addresses = {r[4][0] for r in socket.getaddrinfo(SITE, 443, type=socket.SOCK_STREAM)}
-    require(addresses == {PUBLIC_IP}, "DNS must point only to the inspected IP " + PUBLIC_IP)
+    if not args.ip:
+        addresses = {r[4][0] for r in socket.getaddrinfo(SITE, 443, type=socket.SOCK_STREAM)}
+        require(addresses == {PUBLIC_IP}, "DNS must point only to the inspected IP " + PUBLIC_IP)
     with open("/run/bos-public-site-publish.lock", "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        Publisher().apply()
+        Publisher(ip_preview=args.ip).apply()
 
 
 if __name__ == "__main__":

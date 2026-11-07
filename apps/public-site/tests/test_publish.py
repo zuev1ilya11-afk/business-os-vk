@@ -1,4 +1,5 @@
 import importlib.util
+import copy
 import json
 import os
 import subprocess
@@ -84,7 +85,7 @@ class Files(unittest.TestCase):
 
 
 class Transaction(unittest.TestCase):
-    def exercise(self, failure=None, existing_env=False):
+    def exercise(self, failure=None, existing_env=False, ip=False):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             obj = p.Publisher.__new__(p.Publisher)
@@ -94,11 +95,15 @@ class Transaction(unittest.TestCase):
             obj.config.write_bytes(obj.old_config)
             obj.old_active = {"old": True}
             obj.acme_email = EMAIL
+            obj.ip_preview = ip
+            if ip:
+                obj.hostname, obj.https_port, obj.origin = p.PUBLIC_IP, p.IP_PORT, p.ip_origin()
+                obj.ip_issuer = {"module": "acme", "ca": p.ACME_DIRECTORY, "profile": "shortlived"}
             obj.env = root / ".env"
             obj.old_env = b"CONTACT=keep\n" if existing_env else None
             if existing_env:
                 obj.env.write_bytes(obj.old_env)
-            obj.new_env = p.origin_env(obj.old_env or b"")
+            obj.new_env = p.origin_env(obj.old_env or b"", obj.origin)
             obj.changed_env = obj.changed_config = False
             events = []
             runtime = dict(obj.old_active)
@@ -109,8 +114,8 @@ class Transaction(unittest.TestCase):
                 "HostConfig": {"PortBindings": {
                     "4173/tcp": [{"HostIp": "127.0.0.1", "HostPort": "4185"}]}}}
             effective = {"name": p.PROJECT, "services": {p.SERVICE: {
-                "environment": {"WEBSITE_ENV": "staging", "WEBSITE_STAGING_ORIGIN": p.ORIGIN,
-                                "WEBSITE_STAGING_HTTPS_ORIGIN": p.ORIGIN},
+                "environment": {"WEBSITE_ENV": "staging", "WEBSITE_STAGING_ORIGIN": obj.origin,
+                                "WEBSITE_STAGING_HTTPS_ORIGIN": obj.origin},
                 "ports": [{"host_ip": "127.0.0.1", "published": "4185", "target": 4173}],
                 "volumes": [{"type": "volume", "source": "public-site-synthetic-data",
                              "target": "/app/.public-site-stage"}]}}}
@@ -164,6 +169,10 @@ class Transaction(unittest.TestCase):
             with patch.object(p, "BACKUPS", root / "backups"), patch.object(p, "ACCESS", access), \
                     patch.object(p, "active_config", lambda: runtime), \
                     patch.object(p, "certificate_events", return_value=[]), \
+                    patch.object(p, "require_free_ip_port"), \
+                    patch.object(p, "existing_ip_certificate", return_value="certificate"), \
+                    patch.object(p, "verify_ip_isolation"), \
+                    patch.object(p, "ip_route_fingerprints", return_value=["unchanged"]), \
                     patch.object(p, "run", return_value=json.dumps([stage])):
                 if failure:
                     with self.assertRaises(RuntimeError):
@@ -194,6 +203,7 @@ class Transaction(unittest.TestCase):
                     self.assertEqual(events, ["stage-up", "reload"])
                     self.assertEqual(runtime, {"new": True})
                     self.assertIn("Login: preview", access.read_text())
+                    self.assertIn("URL: " + obj.origin, access.read_text())
             self.assertFalse(list(root.glob("Caddyfile.preview-*")))
 
     def test_success(self):
@@ -219,6 +229,70 @@ class Transaction(unittest.TestCase):
 
     def test_actual_configuration_mismatch_still_triggers_rollback(self):
         self.exercise("active-mismatch")
+
+    def test_ip_success_and_exact_origin(self):
+        self.exercise(ip=True)
+
+    def test_ip_https_failure_restores_both_files(self):
+        self.exercise("https", existing_env=True, ip=True)
+
+
+class IPPreview(unittest.TestCase):
+    def before(self):
+        return {"admin": {"listen": p.ADMIN}, "apps": {
+            "http": {"servers": {"srv0": {"listen": [":443"], "routes": [{"fixture": "staff"}]}}},
+            "tls": {"automation": {"policies": [{"subjects": [p.PUBLIC_IP], "issuers": [
+                {"module": "acme", "ca": p.ACME_DIRECTORY, "profile": "shortlived"}]}]}}}}
+
+    def after(self, before):
+        after = copy.deepcopy(before)
+        after["apps"]["http"]["servers"]["srv1"] = {
+            "listen": ["127.0.0.1:8443", p.PUBLIC_IP + ":8443"],
+            "tls_connection_policies": [{"default_sni": p.PUBLIC_IP}]}
+        return after
+
+    def test_existing_issuer_must_match_observed_managed_ip_policy(self):
+        before = self.before()
+        self.assertEqual(p.existing_ip_issuer(before)["profile"], "shortlived")
+        before["apps"]["tls"]["automation"]["policies"][0]["issuers"][0]["module"] = "internal"
+        with self.assertRaises(RuntimeError):
+            p.existing_ip_issuer(before)
+
+    def test_new_listener_cannot_change_old_routes_or_certificate_automation(self):
+        before = self.before()
+        after = self.after(before)
+        p.verify_ip_isolation(before, after)
+        changed = copy.deepcopy(after)
+        changed["apps"]["http"]["servers"]["srv0"]["routes"] = []
+        with self.assertRaises(RuntimeError):
+            p.verify_ip_isolation(before, changed)
+        changed = copy.deepcopy(after)
+        changed["apps"]["tls"]["automation"]["policies"][0]["issuers"][0]["profile"] = "different"
+        with self.assertRaises(RuntimeError):
+            p.verify_ip_isolation(before, changed)
+        changed = copy.deepcopy(after)
+        changed["apps"]["http"]["servers"]["srv1"]["listen"] = [":8443"]
+        with self.assertRaises(RuntimeError):
+            p.verify_ip_isolation(before, changed)
+
+    def test_port_collision_stops_before_staging_or_caddy_changes(self):
+        obj = p.Publisher.__new__(p.Publisher)
+        obj.ip_preview = True
+        obj.verify_stage = Mock()
+        with patch.object(p, "require_free_ip_port", side_effect=RuntimeError("port occupied")):
+            with self.assertRaisesRegex(RuntimeError, "port occupied"):
+                obj.apply()
+        obj.verify_stage.assert_not_called()
+
+    def test_untrusted_existing_certificate_stops_before_changes(self):
+        obj = p.Publisher.__new__(p.Publisher)
+        obj.ip_preview = True
+        obj.verify_stage = Mock()
+        with patch.object(p, "require_free_ip_port"), \
+                patch.object(p, "existing_ip_certificate", side_effect=p.ssl.SSLError("untrusted")):
+            with self.assertRaises(p.ssl.SSLError):
+                obj.apply()
+        obj.verify_stage.assert_not_called()
 
 
 class Certificates(unittest.TestCase):

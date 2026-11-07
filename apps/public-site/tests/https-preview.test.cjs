@@ -27,7 +27,8 @@ test("HTTPS preview requires exact opt-in and cannot weaken production or isolat
   assert.doesNotThrow(() => configCheck({ ...base, origin: "http://127.0.0.1:4185", stagingHttpsOrigin: "" }));
 });
 
-test("persisted staging restarts with HTTPS origin, accepts its forms and issues Secure cookies", async () => {
+for (const origin of ["https://preview.example.invalid", "https://139.100.237.167:8443"])
+test(`persisted staging restarts at ${origin}, accepts its forms and issues Secure cookies`, async () => {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), "bos-https-preview-"));
   const options = { dataDir: path.join(directory, "db"), privateDir: path.join(directory, "private"), websiteEnabled: true };
   let stage;
@@ -47,7 +48,8 @@ test("persisted staging restarts with HTTPS origin, accepts its forms and issues
     assert.equal(health.environment, "staging");
     assert.equal(health.delivery, "test");
     const payload = { phone: "+79990009971" };
-    for (const badOrigin of ["https://other.example.invalid", "http://127.0.0.1:4185", ""])
+    for (const badOrigin of ["https://other.example.invalid", "https://139.100.237.167",
+      "https://139.100.237.167:9443", "http://127.0.0.1:4185", ""])
       assert.equal((await call("/client-api/auth/request", payload, badOrigin)).status, 403);
     const challenge = await call("/client-api/auth/request", payload);
     assert.equal(challenge.status, 200);

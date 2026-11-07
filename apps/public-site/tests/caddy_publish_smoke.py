@@ -4,11 +4,13 @@ import importlib.util
 import json
 from pathlib import Path
 import re
+import ssl
 import subprocess
 import tempfile
 import threading
 import time
 import uuid
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location("publish", Path(__file__).parents[1] / "ops/publish.py")
 p = importlib.util.module_from_spec(spec)
@@ -20,9 +22,9 @@ PASSWORD = "synthetic-ci-preview-password"
 class Upstream(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         assert self.headers.get("Authorization") is None, "Gateway credential leaked upstream"
-        self.send_response(200)
+        self.send_response(404 if self.path.startswith("/.public-site-stage/") else 200)
         self.end_headers()
-        self.wfile.write(b"WEBSITE_FIXTURE")
+        self.wfile.write(b'{"environment":"staging"}' if self.path == "/healthz" else b"WEBSITE_FIXTURE")
 
     def log_message(self, *args):
         pass
@@ -115,7 +117,8 @@ def main():
                 code, headers, _ = p.probe("site.test", route, port=18480)
                 assert code == 401 and "Basic" in headers["www-authenticate"]
                 code, headers, body = p.probe("site.test", route, port=18480, auth=PASSWORD)
-                assert code == 200 and body == b"WEBSITE_FIXTURE"
+                expected = b'{"environment":"staging"}' if route == "/healthz" else b"WEBSITE_FIXTURE"
+                assert code == 200 and body == expected
                 assert headers["x-robots-tag"] == "noindex, nofollow"
             assert p.probe("site.test", port=18480, auth="wrong-password")[0] == 401
             # Exact old file restoration, through the same graceful reload.
@@ -127,8 +130,101 @@ def main():
             print("CADDY_PUBLISH_SMOKE_OK: validate, auth, headers, isolation, reload and rollback")
         finally:
             subprocess.run(["docker", "rm", "-fv", container], check=False, capture_output=True)
+        try:
+            ip_preview_smoke(root, password_hash)
+        finally:
             upstream.shutdown()
             upstream.server_close()
+
+
+def ip_preview_smoke(root, password_hash):
+    # A disposable test CA and existing IP certificate are loaded before the
+    # preview listener is added. Python trusts only this CA during the fixture;
+    # neither system trust stores nor any external CA are touched.
+    p.run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
+           "-subj", "/CN=BOS disposable CI CA", "-addext", "basicConstraints=critical,CA:TRUE",
+           "-keyout", str(root / "ca.key"), "-out", str(root / "ca.pem")])
+    p.run(["openssl", "req", "-newkey", "rsa:2048", "-nodes", "-subj", "/CN=existing-ip-fixture",
+           "-keyout", str(root / "ip.key"), "-out", str(root / "ip.csr")])
+    (root / "ip.ext").write_text("subjectAltName=IP:127.0.0.2,IP:127.0.0.3,DNS:employee.test\n"
+                                 "extendedKeyUsage=serverAuth\nbasicConstraints=CA:FALSE\n")
+    p.run(["openssl", "x509", "-req", "-in", str(root / "ip.csr"), "-CA", str(root / "ca.pem"),
+           "-CAkey", str(root / "ca.key"), "-CAcreateserial", "-days", "2", "-extfile", str(root / "ip.ext"),
+           "-out", str(root / "ip.pem")])
+    context_factory = ssl.create_default_context
+    container = "bos-caddy-ip-" + uuid.uuid4().hex[:10]
+    base = ("{\n admin 127.0.0.1:12019\n default_sni 127.0.0.2\n}\n"
+            "https://127.0.0.2, https://127.0.0.3, https://employee.test {\n"
+            " tls /etc/caddy/ip.pem /etc/caddy/ip.key {\n"
+            " issuer acme https://acme-v02.api.letsencrypt.org/directory {\n"
+            " profile shortlived\n }\n }\n respond STAFF_IP_FIXTURE\n}\n")
+    config = root / "Caddyfile"
+    config.write_text(base)
+    with patch.object(p, "PUBLIC_IP", "127.0.0.2"), patch.object(p, "STAFF", "employee.test"), \
+            patch.object(ssl, "create_default_context", side_effect=lambda: context_factory(cafile=str(root / "ca.pem"))):
+        try:
+            p.run(["docker", "run", "-d", "--name", container, "--network", "host", "-v",
+                   f"{root}:/etc/caddy:ro", IMAGE, "caddy", "run", "--config", "/etc/caddy/Caddyfile"])
+            obj = p.Publisher.__new__(p.Publisher)
+            obj.container = container
+            obj.ip_preview = True
+            obj.hostname, obj.https_port, obj.origin = p.PUBLIC_IP, p.IP_PORT, p.ip_origin()
+            for attempt in range(100):
+                try:
+                    assert p.probe(p.PUBLIC_IP, tls=True)[2] == b"STAFF_IP_FIXTURE"
+                    break
+                except OSError:
+                    time.sleep(0.2)
+            else:
+                raise RuntimeError("IP fixture did not start")
+            original = p.active_config()
+            fingerprint = p.existing_ip_certificate()
+            routes_before = p.ip_route_fingerprints()
+            issuer = p.existing_ip_issuer(original)
+            p.require_free_ip_port()
+            config.write_bytes(base.encode() + p.ip_site_block(password_hash, issuer))
+            obj.caddy("validate", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile")
+            desired = obj.adapt("/etc/caddy/Caddyfile")
+            p.verify_ip_isolation(original, desired)
+            obj.https_started = time.time()
+            obj.reload(desired)
+            assert p.active_config() == desired
+            obj.verify_https(PASSWORD)
+            assert p.existing_ip_certificate(p.IP_PORT) == fingerprint
+            assert p.ip_route_fingerprints() == routes_before
+            assert p.probe(p.PUBLIC_IP, tls=True, port=p.IP_PORT, auth="wrong-password")[0] == 401
+            assert p.probe("employee.test", tls=True)[2] == b"STAFF_IP_FIXTURE"
+            assert p.probe(p.PUBLIC_IP, tls=True, port=p.IP_PORT, auth=PASSWORD)[1]["x-robots-tag"] == "noindex, nofollow"
+            # The saved Caddyfile must also survive a full restart in this
+            # disposable test. Deployment itself only uses graceful reload.
+            p.run(["docker", "restart", container])
+            for attempt in range(100):
+                try:
+                    if p.probe(p.PUBLIC_IP, tls=True, port=p.IP_PORT)[0] == 401:
+                        break
+                except OSError:
+                    pass
+                time.sleep(0.2)
+            else:
+                raise RuntimeError("Persisted IP preview did not restart")
+            obj.verify_https(PASSWORD)
+            assert p.existing_ip_certificate(p.IP_PORT) == fingerprint
+            assert p.ip_route_fingerprints() == routes_before
+            logs = p.subprocess.run(["docker", "logs", container], capture_output=True, text=True, check=True)
+            assert '"logger":"tls.obtain"' not in logs.stdout + logs.stderr, "No certificate issuance should be attempted"
+            config.write_text(base)
+            obj.reload(original)
+            assert p.active_config() == original
+            assert p.ip_route_fingerprints() == routes_before
+            p.require_free_ip_port()
+            print("CADDY_IP_REUSE_OK: trusted TLS, same certificate, unchanged policy/routes, auth, restart and rollback")
+        except Exception:
+            # These are synthetic test values only; aid diagnosis without any
+            # server access or production configuration in CI.
+            print(p.run(["docker", "exec", container, "caddy", "adapt", "--config", "/etc/caddy/Caddyfile"]))
+            raise
+        finally:
+            subprocess.run(["docker", "rm", "-fv", container], check=False, capture_output=True)
 
 
 if __name__ == "__main__":
