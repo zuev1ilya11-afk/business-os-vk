@@ -33,6 +33,7 @@ APP = Path(__file__).resolve().parents[1]
 ACCESS = Path("/root/bos-site-access.txt")
 BACKUPS = Path("/var/backups/bos-public-site")
 MARKER = "# BEGIN BOS PUBLIC SITE PREVIEW"
+ACME_DIRECTORY = "https://acme.zerossl.com/v2/DV90"
 
 
 class CommandError(RuntimeError):
@@ -92,10 +93,34 @@ def origin_env(original):
                              "WEBSITE_STAGING_HTTPS_ORIGIN=" + ORIGIN]) + "\n").encode()
 
 
-def site_block(password_hash):
+def validate_email(email):
+    # Restrict to a single literal token: no Caddyfile placeholders or syntax.
+    require(isinstance(email, str) and re.fullmatch(r"[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", email),
+            "Set WEBSITE_ACME_EMAIL to the owner's certificate contact email.")
+    return email
+
+
+def certificate_email(config):
+    explicit = os.environ.get("WEBSITE_ACME_EMAIL")
+    if explicit is not None:
+        return validate_email(explicit)
+    policies = config.get("apps", {}).get("tls", {}).get("automation", {}).get("policies", [])
+    emails = {issuer["email"] for policy in policies for issuer in policy.get("issuers", [])
+              if issuer.get("module") == "acme" and issuer.get("email")}
+    require(len(emails) == 1, "Set WEBSITE_ACME_EMAIL; no unique existing ACME contact was found.")
+    return validate_email(emails.pop())
+
+
+def site_block(password_hash, email):
     require(re.fullmatch(r"\$2[aby]\$\d\d\$[./A-Za-z0-9]{53}", password_hash),
             "Caddy returned an unexpected password hash.")
+    validate_email(email)
     return (f"\n{MARKER}\n{SITE} {{\n"
+            # qd.je hit Let's Encrypt's shared registered-domain quota. Use the
+            # free ACME endpoint only for this hostname. Caddy 2.11.7 negotiates
+            # ZeroSSL EAB automatically from this email; no paid API key needed.
+            f"\ttls {{\n\t\tissuer acme {ACME_DIRECTORY} {{\n"
+            f"\t\t\temail {email}\n\t\t}}\n\t}}\n"
             "\theader X-Robots-Tag \"noindex, nofollow\"\n"
             "\tbasic_auth {\n\t\tpreview " + password_hash + "\n\t}\n"
             "\treverse_proxy 127.0.0.1:4185 {\n"
@@ -153,6 +178,7 @@ class Publisher:
                 "Running Caddy configuration differs from Caddyfile. Nothing changed.")
         require(self.old_active.get("admin", {}).get("listen") == ADMIN,
                 "Unexpected Caddy admin address.")
+        self.acme_email = certificate_email(self.old_active)
         self.env = APP / ".env"
         require(not self.env.is_symlink(), "Unexpected .env symlink.")
         self.old_env = self.env.read_bytes() if self.env.exists() else None
@@ -193,7 +219,7 @@ class Publisher:
                 require(json.loads(body).get("environment") == "staging", "Expected synthetic staging only.")
 
     def verify_https(self, password):
-        deadline = time.monotonic() + 120
+        deadline = time.monotonic() + 300
         while True:
             try:
                 code, headers, _ = probe(SITE, tls=True)
@@ -207,9 +233,9 @@ class Publisher:
                 code, _, _ = probe(SITE, "/.public-site-stage/private/access.json", tls=True, auth=password)
                 require(code == 404, "Private path is not blocked.")
                 return
-            except (OSError, RuntimeError, http.client.HTTPException):
+            except (OSError, RuntimeError, http.client.HTTPException) as error:
                 if time.monotonic() >= deadline:
-                    raise RuntimeError("HTTPS/website check timed out; certificate may still be pending.") from None
+                    raise RuntimeError("HTTPS/website check timed out. Last check: " + str(error)) from None
                 time.sleep(4)
 
     def rollback(self):
@@ -243,7 +269,7 @@ class Publisher:
         image = stage["Image"]
         password = secrets.token_urlsafe(24)
         password_hash = self.caddy("hash-password", "--algorithm", "bcrypt", data=password + "\n").strip()
-        self.new_config = self.old_config + site_block(password_hash)
+        self.new_config = self.old_config + site_block(password_hash, self.acme_email)
         # Place candidate beside the real file so relative imports retain their meaning.
         candidate = self.config.parent / ("Caddyfile.preview-" + secrets.token_hex(6))
         try:
@@ -308,7 +334,7 @@ class Publisher:
                 write_atomic(backup / "unexpected-active.json", json.dumps(actual).encode())
                 raise RuntimeError("Caddy did not activate the expected configuration; private JSON saved in backup.")
             require(self.staff_fingerprint() == before, "Employee homepage changed; restoring configuration.")
-            print("HTTPS_CHECK=waiting for certificate and authenticated website", flush=True)
+            print("HTTPS_CHECK=ZeroSSL certificate and authenticated website (up to 5 minutes)", flush=True)
             self.verify_https(password)
             require(self.staff_fingerprint() == before, "Employee homepage changed; restoring configuration.")
             write_atomic(ACCESS, (f"URL: {ORIGIN}\nLogin: preview\nPassword: {password}\n").encode())

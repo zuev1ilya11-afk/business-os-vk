@@ -11,6 +11,7 @@ spec = importlib.util.spec_from_file_location("publisher", Path(__file__).parent
 p = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(p)
 HASH = "$2a$14$" + "A" * 53
+EMAIL = "owner@example.com"
 
 
 class Files(unittest.TestCase):
@@ -29,12 +30,32 @@ class Files(unittest.TestCase):
 
     def test_config_requires_hash_and_protects_entire_host(self):
         with self.assertRaises(RuntimeError):
-            p.site_block("plaintext\n}")
-        block = p.site_block(HASH).decode()
+            p.site_block("plaintext\n}", EMAIL)
+        block = p.site_block(HASH, EMAIL).decode()
         self.assertIn("basic_auth {", block)
         self.assertIn("header_up -Authorization", block)
         self.assertIn("noindex, nofollow", block)
         self.assertNotIn("/healthz", block)  # no unauthenticated exceptions
+
+    def test_certificate_contact_is_private_configuration_not_embedded(self):
+        config = {"apps": {"tls": {"automation": {"policies": [
+            {"issuers": [{"module": "acme", "email": EMAIL}]}
+        ]}}}}
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(p.certificate_email(config), EMAIL)
+            with self.assertRaises(RuntimeError):
+                p.certificate_email({})
+            config["apps"]["tls"]["automation"]["policies"].append(
+                {"issuers": [{"module": "acme", "email": "other@example.com"}]})
+            with self.assertRaises(RuntimeError):
+                p.certificate_email(config)
+        with patch.dict(os.environ, {"WEBSITE_ACME_EMAIL": EMAIL}, clear=True):
+            self.assertEqual(p.certificate_email(config), EMAIL)
+
+    def test_certificate_contact_cannot_inject_configuration(self):
+        for invalid in ("", "owner@example.com\n}", "{env.EMAIL}", "owner@example.com {"):
+            with self.subTest(email=invalid), self.assertRaises(RuntimeError):
+                p.site_block(HASH, invalid)
 
     def test_atomic_write_preserves_permissions_and_rejects_symlinks(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -68,6 +89,7 @@ class Transaction(unittest.TestCase):
             obj.old_config = b"# original employee configuration\n"
             obj.config.write_bytes(obj.old_config)
             obj.old_active = {"old": True}
+            obj.acme_email = EMAIL
             obj.env = root / ".env"
             obj.old_env = b"CONTACT=keep\n" if existing_env else None
             if existing_env:

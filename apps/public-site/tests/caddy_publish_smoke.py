@@ -3,6 +3,7 @@ import http.server
 import importlib.util
 import json
 from pathlib import Path
+import re
 import subprocess
 import tempfile
 import threading
@@ -31,7 +32,7 @@ def main():
     subprocess.run(["docker", "pull", IMAGE], check=True)
     password_hash = p.run(["docker", "run", "--rm", "-i", IMAGE, "caddy", "hash-password"],
                           data=PASSWORD + "\n").strip()
-    block = p.site_block(password_hash).decode()
+    block = p.site_block(password_hash, "owner@example.com").decode()
     container = "bos-caddy-test-" + uuid.uuid4().hex[:10]
     upstream = http.server.ThreadingHTTPServer(("127.0.0.1", 4185), Upstream)
     thread = threading.Thread(target=upstream.serve_forever, daemon=True)
@@ -42,10 +43,36 @@ def main():
         production = ("{\n admin 127.0.0.1:12019\n default_sni 139.100.237.167\n}\n"
                       "https://139.100.237.167, https://136.234.17.113 {\n"
                       " tls {\n issuer acme https://acme-v02.api.letsencrypt.org/directory {\n"
-                      " profile shortlived\n }\n }\n respond STAFF_FIXTURE\n}\n")
+                      " profile shortlived\n }\n }\n respond STAFF_FIXTURE\n}\n"
+                      "homemaster.qd.je {\n tls {\n"
+                      " issuer acme https://acme-v02.api.letsencrypt.org/directory {\n"
+                      " email staff-owner@example.com\n }\n }\n respond STAFF_DOMAIN_FIXTURE\n}\n")
         (root / "Caddyfile.validate").write_text(production + block)
         p.run(["docker", "run", "--rm", "-v", f"{root}:/etc/caddy:ro", IMAGE,
                "caddy", "validate", "--config", "/etc/caddy/Caddyfile.validate", "--adapter", "caddyfile"])
+        # Adapt the full real TLS configuration without requesting certificates.
+        adapted = json.loads(p.run(["docker", "run", "--rm", "-v", f"{root}:/etc/caddy:ro", IMAGE,
+                                    "caddy", "adapt", "--config", "/etc/caddy/Caddyfile.validate",
+                                    "--adapter", "caddyfile"]))
+        policies = adapted["apps"]["tls"]["automation"]["policies"]
+        site_policy = [item for item in policies if item.get("subjects") == [p.SITE]]
+        assert len(site_policy) == 1
+        assert site_policy[0]["issuers"] == [{"module": "acme", "ca": p.ACME_DIRECTORY,
+                                               "email": "owner@example.com"}]
+        ip_policy = [item for item in policies if "139.100.237.167" in item.get("subjects", [])]
+        assert len(ip_policy) == 1
+        assert set(ip_policy[0]["subjects"]) == {"139.100.237.167", "136.234.17.113"}
+        assert ip_policy[0]["issuers"] == [{"module": "acme",
+            "ca": "https://acme-v02.api.letsencrypt.org/directory", "profile": "shortlived"}]
+        staff_policy = [item for item in policies if item.get("subjects") == [p.STAFF]]
+        assert len(staff_policy) == 1
+        assert staff_policy[0]["issuers"] == [{"module": "acme",
+            "ca": "https://acme-v02.api.letsencrypt.org/directory", "email": "staff-owner@example.com"}]
+        print("CADDY_SITE_ONLY_ZEROSSL_POLICY_OK")
+        # TLS was validated above. The HTTP-only route/rollback fixture must not
+        # contact a real CA or create accounts while CI exercises authentication.
+        http_block, removed = re.subn(r"\n\ttls \{.*?\n\t\}", "", block, flags=re.S)
+        assert removed == 1
         # Use the real file_server mechanism: its hide list embeds config filename.
         (root / "index.html").write_text("STAFF_FIXTURE")
         base = "{\n admin 127.0.0.1:12019\n}\nhttp://employee.test:18480 {\n root * /etc/caddy\n file_server\n}\n"
@@ -66,7 +93,7 @@ def main():
                 raise RuntimeError("Fixture did not start")
             old_active = p.active_config()
             assert old_active == obj.adapt("/etc/caddy/Caddyfile")
-            combined = base + block.replace(p.SITE + " {", "http://site.test:18480 {")
+            combined = base + http_block.replace(p.SITE + " {", "http://site.test:18480 {")
             candidate = root / "Caddyfile.preview-fixture"
             candidate.write_text(combined)
             candidate_json = obj.adapt("/etc/caddy/" + candidate.name)
