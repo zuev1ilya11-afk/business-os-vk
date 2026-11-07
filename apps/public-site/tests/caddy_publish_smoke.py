@@ -2,6 +2,7 @@
 import http.server
 import importlib.util
 import json
+import os
 from pathlib import Path
 import re
 import ssl
@@ -192,9 +193,9 @@ def ip_preview_smoke(root, password_hash):
             original = p.active_config()
             fingerprint = p.existing_ip_certificate()
             routes_before = p.ip_route_fingerprints()
-            issuer = p.existing_ip_issuer(original)
+            p.existing_ip_issuer(original)
             p.require_free_ip_port()
-            config.write_bytes(base.encode() + p.ip_site_block(password_hash, issuer))
+            config.write_bytes(base.encode() + p.ip_site_block(password_hash))
             obj.caddy("validate", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile")
             desired = obj.adapt("/etc/caddy/Caddyfile")
             p.verify_ip_isolation(original, desired)
@@ -241,6 +242,10 @@ def ip_preview_smoke(root, password_hash):
             raise
         finally:
             subprocess.run(["docker", "rm", "-fv", container], check=False, capture_output=True)
+            # Restore ownership only of this disposable fixture's bind mount.
+            subprocess.run(["docker", "run", "--rm", "-v", f"{data}:/data", "--entrypoint", "chown",
+                            IMAGE, "-R", f"{os.getuid()}:{os.getgid()}", "/data"],
+                           check=False, capture_output=True)
 
 
 if __name__ == "__main__":

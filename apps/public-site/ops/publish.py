@@ -151,14 +151,15 @@ def existing_ip_issuer(config):
     return issuer
 
 
-def ip_site_block(password_hash, issuer):
-    # Match the already configured IP issuer exactly, so Caddy keeps the same
-    # managed certificate and renewal policy. No certificate/key is copied.
-    block = site_block(password_hash, issuer.get("email")).decode()
+def ip_site_block(password_hash):
+    # The IP already has an explicit automation policy. Do not declare a
+    # second one for the same identifier: Caddy rejects that as ambiguous.
+    # This listener uses the existing shared certificate and renewal policy.
+    block = site_block(password_hash).decode()
+    block, removed = re.subn(r"\n\ttls \{.*?\n\t\}", "", block, count=1, flags=re.S)
+    require(removed == 1, "Expected exactly one TLS block to replace with the existing policy.")
     block = block.replace(SITE + " {", ip_origin() + " {", 1)
-    block = block.replace("\ttls {", f"\tbind 127.0.0.1 {PUBLIC_IP}\n\ttls {{", 1)
-    block = block.replace("\t\tissuer acme " + ACME_DIRECTORY + " {\n",
-                          "\t\tissuer acme " + ACME_DIRECTORY + " {\n\t\t\tprofile shortlived\n", 1)
+    block = block.replace(ip_origin() + " {\n", ip_origin() + f" {{\n\tbind 127.0.0.1 {PUBLIC_IP}\n", 1)
     return block.encode()
 
 
@@ -335,7 +336,7 @@ class Publisher:
                 "Unexpected Caddy admin address.")
         self.acme_email = certificate_email(self.old_active) if not ip_preview else None
         if ip_preview:
-            self.ip_issuer = existing_ip_issuer(self.old_active)
+            existing_ip_issuer(self.old_active)
             require(not any(f":{IP_PORT}" in listener for server in
                     self.old_active.get("apps", {}).get("http", {}).get("servers", {}).values()
                     for listener in server.get("listen", [])), "IP preview port already configured.")
@@ -446,7 +447,7 @@ class Publisher:
         image = stage["Image"]
         password = secrets.token_urlsafe(24)
         password_hash = self.caddy("hash-password", "--algorithm", "bcrypt", data=password + "\n").strip()
-        block = ip_site_block(password_hash, self.ip_issuer) if self.ip_preview else site_block(password_hash, self.acme_email)
+        block = ip_site_block(password_hash) if self.ip_preview else site_block(password_hash, self.acme_email)
         self.new_config = self.old_config + block
         # Place candidate beside the real file so relative imports retain their meaning.
         candidate = self.config.parent / ("Caddyfile.preview-" + secrets.token_hex(6))
