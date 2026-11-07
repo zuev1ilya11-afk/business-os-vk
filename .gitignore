@@ -13,3 +13,10 @@ supabase/.temp/
 .client-portal-stage/
 client-portal/node_modules/
 **/__pycache__/
+
+# Public SSR build and isolated synthetic data
+apps/public-site/.next/
+apps/public-site/tsconfig.tsbuildinfo
+.public-site-stage/
+
+apps/public-site/.next-dev/

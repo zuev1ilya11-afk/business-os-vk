@@ -1,0 +1,28 @@
+# Standalone isolated project. Never merge into the production stack implicitly.
+name: bos-public-site-staging
+services:
+  public-site-staging:
+    build:
+      context: ../..
+      dockerfile: apps/public-site/Dockerfile.staging
+    ports:
+      - "127.0.0.1:4185:4173"
+    environment:
+      WEBSITE_ENV: staging
+      WEBSITE_STAGING_ORIGIN: ${WEBSITE_STAGING_ORIGIN:-http://127.0.0.1:4185}
+      WEBSITE_STAGING_HTTPS_ORIGIN: ${WEBSITE_STAGING_HTTPS_ORIGIN:-}
+      NODE_ENV: production
+      WEBSITE_CONTAINER: "1"
+      NEXT_TELEMETRY_DISABLED: "1"
+    volumes:
+      - public-site-synthetic-data:/app/.public-site-stage
+    read_only: true
+    # Next cache is disposable; business data stays in the named volume.
+    tmpfs:
+      - /tmp:size=128m
+      - /app/apps/public-site/.next/cache:size=128m
+    mem_limit: 1536m
+    cpus: 1.5
+    restart: unless-stopped
+volumes:
+  public-site-synthetic-data:

@@ -11,6 +11,7 @@ async function createIntegratedStaging(options){
  const {createPortal}=require('../server/api.cjs');const portal=await createPortal({db,config});
  const storageOrigin='https://stage.invalid';
  const staffDb=createSqlAdapter(db,{privateDir:options.privateDir,origin:storageOrigin,secret:credentials.secret});
+ if(options.websiteEnabled)config.reportAssetReader=async raw=>{const u=new URL(raw);if(u.origin!==storageOrigin||!u.pathname.startsWith('/storage/v1/object/sign/'))return null;return staffDb.readStorage(u)};
  const env={VK_APP_SECRET:credentials.secret,BOS_SYNC_KEY:credentials.secret,SUPABASE_URL:storageOrigin,SUPABASE_SERVICE_ROLE_KEY:'isolated-not-an-external-key'};
  const edgeHandlers={};
  // External Google Drive is replaced by an explicit isolated disk archive transport.
@@ -30,7 +31,7 @@ async function createIntegratedStaging(options){
   if(q.error)throw Error(q.error.message);return Response.json({ok:true,order:q.data,transport:'isolated-disk'});
  }
  for(const slug of ['mini-app-api','password-session-api','profile-self-api','order-meta-api','claims-api','master-memo-api','master-workflow-api','order-lifecycle-api','report-api'])edgeHandlers[slug]=edge(slug,staffDb,{env,fetch:archiveTransport});
- const bootstrap=`(()=>{window.BOS_CLIENT_PORTAL_CONFIG={enabled:true,apiBase:'/client-api/'};window.vkBridge={send:async()=>({})};const native=window.fetch.bind(window);window.fetch=(input,init)=>{const raw=typeof input==='string'?input:input.url,url=new URL(raw,location.href);if(/functions\\/v1|api\\/proxy/.test(url.pathname)){const local='/stage-api/'+url.pathname.split('/').pop();return native(typeof input==='string'?local:new Request(new URL(local,location.origin),input),init)}if(url.origin!==location.origin)return Promise.reject(new Error('В тестовой среде внешние сервисы отключены'));return native(input,init)};if(navigator.serviceWorker)navigator.serviceWorker.register=async()=>{throw Error('Staff service worker disabled only in isolated staging')};const rewrite=()=>document.querySelectorAll('[href],[src]').forEach(el=>{for(const a of ['href','src']){const v=el.getAttribute(a);if(v&&v.startsWith('https://stage.invalid/storage/'))el.setAttribute(a,v.replace('https://stage.invalid',location.origin))}});new MutationObserver(rewrite).observe(document,{subtree:true,childList:true,attributes:true,attributeFilter:['href','src']});})();`;
+ const bootstrap=`(()=>{window.BOS_CLIENT_PORTAL_CONFIG={enabled:true,websiteEnabled:${!!options.websiteEnabled},apiBase:'/client-api/'};window.vkBridge={send:async()=>({})};const native=window.fetch.bind(window);window.fetch=(input,init)=>{const raw=typeof input==='string'?input:input instanceof URL?input.href:input.url,url=new URL(raw,location.href);if(/functions\\/v1|api\\/proxy/.test(url.pathname)){const local='/stage-api/'+url.pathname.split('/').pop();return native(typeof input==='string'?local:new Request(new URL(local,location.origin),input),init)}if(url.origin!==location.origin)return Promise.reject(new Error('В тестовой среде внешние сервисы отключены'));return native(input,init)};if(navigator.serviceWorker)navigator.serviceWorker.register=async()=>{throw Error('Staff service worker disabled only in isolated staging')};const rewrite=()=>document.querySelectorAll('[href],[src]').forEach(el=>{for(const a of ['href','src']){const v=el.getAttribute(a);if(v&&v.startsWith('https://stage.invalid/storage/'))el.setAttribute(a,v.replace('https://stage.invalid',location.origin))}});new MutationObserver(rewrite).observe(document,{subtree:true,childList:true,attributes:true,attributeFilter:['href','src']});})();`;
  async function handle(request){
   const url=new URL(request.url),p=decodeURIComponent(url.pathname);
   if(p.startsWith('/client-api/'))return portal.handle(request);
@@ -59,7 +60,7 @@ async function createIntegratedStaging(options){
   else {
    let rel=p.startsWith('/staff/')?p.slice(7):p.slice(1);if(!rel)rel='index.html';
    // Explicit asset boundary; no docs, SQL, .env, runtime private dirs or source maps.
-   if(!/^(?:[a-zA-Z0-9_-]+\.(?:js|css|svg|png|ico|html|webmanifest)|(?:assets|icons|vendor)\/[a-zA-Z0-9_./-]+\.(?:js|css|svg|png|ico))$/.test(rel)||rel.includes('..'))return new Response('Not found',{status:404});
+   if(!/^(?:[a-zA-Z0-9_-][a-zA-Z0-9_.-]*\.(?:js|css|svg|png|ico|html|webmanifest)|(?:assets|icons|vendor)\/[a-zA-Z0-9_./-]+\.(?:js|css|svg|png|ico))$/.test(rel)||rel.includes('..'))return new Response('Not found',{status:404});
    staff=rel==='index.html';file=path.join(root,rel);
   }
   try{let bytes=await fs.readFile(file);if(staff)bytes=Buffer.from(bytes.toString().replace(/<script[^>]+src="https:[^"]+"[^>]*><\/script>/g,'').replace('<head>','<head><script src="/stage-bootstrap.js"></script>'));
