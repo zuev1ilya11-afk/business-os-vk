@@ -85,7 +85,7 @@ class Files(unittest.TestCase):
 
 
 class Transaction(unittest.TestCase):
-    def exercise(self, failure=None, existing_env=False, ip=False):
+    def exercise(self, failure=None, existing_env=False, ip=False, switch=False):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             obj = p.Publisher.__new__(p.Publisher)
@@ -95,10 +95,20 @@ class Transaction(unittest.TestCase):
             obj.config.write_bytes(obj.old_config)
             obj.old_active = {"old": True}
             obj.acme_email = EMAIL
-            obj.ip_preview = ip
-            if ip:
+            obj.ip_preview = ip or switch
+            obj.switch_ip = switch
+            if obj.ip_preview:
                 obj.hostname, obj.https_port, obj.origin = p.PUBLIC_IP, p.IP_PORT, p.ip_origin()
                 obj.ip_issuer = {"module": "acme", "ca": p.ACME_DIRECTORY, "profile": "shortlived"}
+            if switch:
+                obj.old_config += p.ip_site_block(HASH, obj.ip_issuer)
+                obj.config.write_bytes(obj.old_config)
+                obj.hostname = obj.connect_host = p.SECONDARY_IP
+                obj.origin = p.ip_origin(p.SECONDARY_IP)
+                obj.password = "S" * 32
+                obj.old_access = (f"URL: {p.ip_origin()}\nLogin: preview\nPassword: {obj.password}\n").encode()
+                obj.new_access = obj.old_access.replace(p.ip_origin().encode(), obj.origin.encode(), 1)
+                obj.new_config = obj.old_config.replace(p.ip_origin().encode(), obj.origin.encode(), 1)
             obj.env = root / ".env"
             obj.old_env = b"CONTACT=keep\n" if existing_env else None
             if existing_env:
@@ -131,6 +141,7 @@ class Transaction(unittest.TestCase):
                 self.fail("Unexpected compose mutation")
             def caddy(*args, **kwargs):
                 if args[0] == "hash-password":
+                    self.assertFalse(switch, "Switch must preserve the existing password/hash")
                     self.assertNotIn(kwargs["data"].strip(), args)
                     return HASH
                 self.assertEqual(args[0], "validate")
@@ -166,12 +177,18 @@ class Transaction(unittest.TestCase):
             obj.reload = reload
             obj.verify_https = https
             access = root / "access.txt"
+            if switch:
+                access.write_bytes(obj.old_access)
+                access.chmod(0o600)
             with patch.object(p, "BACKUPS", root / "backups"), patch.object(p, "ACCESS", access), \
                     patch.object(p, "active_config", lambda: runtime), \
                     patch.object(p, "certificate_events", return_value=[]), \
                     patch.object(p, "require_free_ip_port"), \
+                    patch.object(p, "require_local_secondary_ip"), \
+                    patch.object(p, "probe", return_value=(200, {}, b'{"environment":"staging"}')), \
                     patch.object(p, "existing_ip_certificate", return_value="certificate"), \
                     patch.object(p, "verify_ip_isolation"), \
+                    patch.object(p, "verify_ip_switch_isolation"), \
                     patch.object(p, "ip_route_fingerprints", return_value=["unchanged"]), \
                     patch.object(p, "run", return_value=json.dumps([stage])):
                 if failure:
@@ -179,7 +196,10 @@ class Transaction(unittest.TestCase):
                         obj.apply()
                     self.assertEqual(obj.config.read_bytes(), obj.old_config)
                     self.assertEqual(obj.env.read_bytes() if obj.env.exists() else None, obj.old_env)
-                    self.assertFalse(access.exists())
+                    if switch:
+                        self.assertEqual(access.read_bytes(), obj.old_access)
+                    else:
+                        self.assertFalse(access.exists())
                     self.assertEqual(runtime, obj.old_active)
                     if failure in ("https", "reload", "active-mismatch"):
                         self.assertEqual(events.count("reload"), 2)
@@ -197,13 +217,16 @@ class Transaction(unittest.TestCase):
                         self.assertEqual(diagnostic[0].stat().st_mode & 0o777, 0o600)
                 else:
                     obj.apply()
-                    self.assertTrue(obj.config.read_bytes().startswith(obj.old_config))
+                    self.assertEqual(obj.config.read_bytes(), obj.new_config)
                     self.assertEqual(obj.env.read_bytes(), obj.new_env)
                     self.assertEqual(access.stat().st_mode & 0o777, 0o600)
                     self.assertEqual(events, ["stage-up", "reload"])
                     self.assertEqual(runtime, {"new": True})
                     self.assertIn("Login: preview", access.read_text())
                     self.assertIn("URL: " + obj.origin, access.read_text())
+                    if switch:
+                        self.assertEqual(access.read_bytes(), obj.new_access)
+                        self.assertIn(HASH.encode(), obj.config.read_bytes())
             self.assertFalse(list(root.glob("Caddyfile.preview-*")))
 
     def test_success(self):
@@ -235,6 +258,15 @@ class Transaction(unittest.TestCase):
 
     def test_ip_https_failure_restores_both_files(self):
         self.exercise("https", existing_env=True, ip=True)
+
+    def test_switch_success_preserves_password_and_hash(self):
+        self.exercise(existing_env=True, switch=True)
+
+    def test_switch_failed_https_restores_previous_preview_and_access(self):
+        self.exercise("https", existing_env=True, switch=True)
+
+    def test_switch_failed_reload_restores_previous_preview_and_access(self):
+        self.exercise("reload", existing_env=True, switch=True)
 
 
 class IPPreview(unittest.TestCase):
@@ -274,6 +306,48 @@ class IPPreview(unittest.TestCase):
         changed["apps"]["http"]["servers"]["srv1"]["routes"] = []
         with self.assertRaises(RuntimeError):
             p.verify_ip_isolation(before, changed)
+
+    def test_switch_only_replaces_owned_block_and_preserves_employee_config(self):
+        active = self.before()
+        active["apps"]["tls"]["automation"]["policies"][0]["subjects"].append(p.SECONDARY_IP)
+        issuer = p.existing_ip_issuer(active)
+        original = b"# employee config must remain byte-identical\n" + p.ip_site_block(HASH, issuer)
+        updated = p.switch_preview_config(original, active)
+        self.assertEqual(updated, b"# employee config must remain byte-identical\n"
+                         + p.ip_site_block(HASH, issuer, p.SECONDARY_IP))
+        for invalid in (original.replace(b"4185", b"9999"), original + b"# another edit\n",
+                        original + p.ip_site_block(HASH, issuer)):
+            with self.assertRaises(RuntimeError):
+                p.switch_preview_config(invalid, active)
+
+    def test_switch_isolation_rejects_auth_upstream_staff_and_issuer_changes(self):
+        before = self.after(self.before())
+        preview = before["apps"]["http"]["servers"]["srv1"]
+        preview["routes"][0]["handle"] = [{"auth": HASH, "upstream": "127.0.0.1:4185"}]
+        preview["tls_connection_policies"][0]["match"] = {"sni": ["", p.PUBLIC_IP]}
+        after = copy.deepcopy(before)
+        after["apps"]["http"]["servers"]["srv1"]["routes"][0]["match"] = [{"host": [p.SECONDARY_IP]}]
+        after["apps"]["http"]["servers"]["srv1"]["tls_connection_policies"][0]["match"]["sni"] = ["", p.SECONDARY_IP]
+        p.verify_ip_switch_isolation(before, after)
+        for field in ("auth", "upstream"):
+            altered = copy.deepcopy(after)
+            altered["apps"]["http"]["servers"]["srv1"]["routes"][0]["handle"][0][field] = "changed"
+            with self.assertRaises(RuntimeError):
+                p.verify_ip_switch_isolation(before, altered)
+        altered = copy.deepcopy(after)
+        altered["apps"]["http"]["servers"]["srv0"]["routes"] = []
+        with self.assertRaises(RuntimeError):
+            p.verify_ip_switch_isolation(before, altered)
+        altered = copy.deepcopy(after)
+        altered["apps"]["tls"]["automation"]["policies"][0]["issuers"][0]["profile"] = "changed"
+        with self.assertRaises(RuntimeError):
+            p.verify_ip_switch_isolation(before, altered)
+
+    def test_existing_credentials_must_match_previous_ip_and_remain_private(self):
+        original = f"URL: {p.ip_origin()}\nLogin: preview\nPassword: {'S' * 32}\n".encode()
+        self.assertEqual(p.read_preview_access(original), "S" * 32)
+        with self.assertRaises(RuntimeError):
+            p.read_preview_access(original.replace(p.PUBLIC_IP.encode(), p.SECONDARY_IP.encode()))
 
     def test_port_collision_stops_before_staging_or_caddy_changes(self):
         obj = p.Publisher.__new__(p.Publisher)

@@ -17,7 +17,7 @@ spec = importlib.util.spec_from_file_location("publish", Path(__file__).parents[
 p = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(p)
 IMAGE = "caddy:2.11.7"
-PASSWORD = "synthetic-ci-preview-password"
+PASSWORD = "S" * 32
 
 
 class Upstream(http.server.BaseHTTPRequestHandler):
@@ -145,24 +145,26 @@ def ip_preview_smoke(root, password_hash):
     p.run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
            "-subj", "/CN=BOS disposable CI CA", "-addext", "basicConstraints=critical,CA:TRUE",
            "-keyout", str(root / "ca.key"), "-out", str(root / "ca.pem")])
-    p.run(["openssl", "req", "-newkey", "rsa:2048", "-nodes", "-subj", "/CN=existing-ip-fixture",
-           "-keyout", str(root / "ip.key"), "-out", str(root / "ip.csr")])
-    (root / "ip.ext").write_text("subjectAltName=IP:127.0.0.2,IP:127.0.0.3,DNS:employee.test\n"
-                                 "extendedKeyUsage=serverAuth\nbasicConstraints=CA:FALSE\n")
-    p.run(["openssl", "x509", "-req", "-in", str(root / "ip.csr"), "-CA", str(root / "ca.pem"),
-           "-CAkey", str(root / "ca.key"), "-CAcreateserial", "-days", "2", "-extfile", str(root / "ip.ext"),
-           "-out", str(root / "ip.pem")])
     # Model an already-managed certificate in CertMagic's storage, just like
     # the RU server. A manual `tls cert key` loader adds certificate selection
     # tags and is not equivalent to the existing ACME-managed configuration.
     names = ["127.0.0.2", "127.0.0.3", "employee.test"]
     data = root / "data"
     for name in names:
+        # Separate SANs prove the secondary-IP probe uses its real local
+        # destination, rather than silently matching the default certificate.
+        p.run(["openssl", "req", "-newkey", "rsa:2048", "-nodes", "-subj", "/CN=" + name,
+               "-keyout", str(root / "ip.key"), "-out", str(root / "ip.csr")])
+        san = ("DNS:" if name == "employee.test" else "IP:") + name
+        (root / "ip.ext").write_text("subjectAltName=" + san + "\nextendedKeyUsage=serverAuth\nbasicConstraints=CA:FALSE\n")
+        p.run(["openssl", "x509", "-req", "-in", str(root / "ip.csr"), "-CA", str(root / "ca.pem"),
+               "-CAkey", str(root / "ca.key"), "-CAcreateserial", "-days", "2", "-extfile", str(root / "ip.ext"),
+               "-out", str(root / "ip.pem")])
         location = data / "caddy/certificates/acme-v02.api.letsencrypt.org-directory" / name
         location.mkdir(parents=True, exist_ok=True)
         (location / (name + ".crt")).write_bytes((root / "ip.pem").read_bytes())
         (location / (name + ".key")).write_bytes((root / "ip.key").read_bytes())
-        (location / (name + ".json")).write_text(json.dumps({"sans": names}))
+        (location / (name + ".json")).write_text(json.dumps({"sans": [name]}))
     context_factory = ssl.create_default_context
     container = "bos-caddy-ip-" + uuid.uuid4().hex[:10]
     base = ("{\n admin 127.0.0.1:12019\n default_sni 127.0.0.3\n}\n"
@@ -174,7 +176,8 @@ def ip_preview_smoke(root, password_hash):
             " email staff-owner@example.com\n }\n }\n respond STAFF_IP_FIXTURE\n}\n")
     config = root / "Caddyfile"
     config.write_text(base)
-    with patch.object(p, "PUBLIC_IP", "127.0.0.3"), patch.object(p, "STAFF", "employee.test"), \
+    with patch.object(p, "PUBLIC_IP", "127.0.0.3"), patch.object(p, "SECONDARY_IP", "127.0.0.2"), \
+            patch.object(p, "STAFF", "employee.test"), \
             patch.object(ssl, "create_default_context", side_effect=lambda: context_factory(cafile=str(root / "ca.pem"))):
         try:
             p.run(["docker", "run", "-d", "--name", container, "--network", "host", "-v",
@@ -230,6 +233,34 @@ def ip_preview_smoke(root, password_hash):
             obj.verify_https(PASSWORD)
             assert p.existing_ip_certificate(p.IP_PORT) == fingerprint
             assert p.ip_route_fingerprints() == routes_before
+            # Move the already installed protected preview, preserving the
+            # password and every employee route/automation policy.
+            old_preview = config.read_bytes()
+            primary_config = p.active_config()
+            secondary_certificate = p.existing_ip_certificate(host=p.SECONDARY_IP, connect_host=p.SECONDARY_IP)
+            assert secondary_certificate != fingerprint
+            assert p.probe(p.SECONDARY_IP, tls=True, port=p.IP_PORT, connect_host=p.SECONDARY_IP)[2] == b""
+            config.write_bytes(p.switch_preview_config(old_preview, primary_config))
+            obj.caddy("validate", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile")
+            switched = obj.adapt("/etc/caddy/Caddyfile")
+            p.verify_ip_switch_isolation(primary_config, switched)
+            obj.reload(switched)
+            obj.hostname = obj.connect_host = p.SECONDARY_IP
+            obj.origin = p.ip_origin(p.SECONDARY_IP)
+            obj.verify_https(PASSWORD)
+            assert p.existing_ip_certificate(p.IP_PORT, host=p.SECONDARY_IP, connect_host=p.SECONDARY_IP) == secondary_certificate
+            assert p.ip_route_fingerprints() == routes_before
+            assert p.probe(p.PUBLIC_IP, tls=True, port=p.IP_PORT, auth=PASSWORD)[2] == b""
+            assert p.probe(p.SECONDARY_IP, tls=True, port=p.IP_PORT, connect_host=p.SECONDARY_IP, auth="wrong")[0] == 401
+            p.run(["docker", "restart", container])
+            obj.verify_https(PASSWORD)
+            assert p.ip_route_fingerprints() == routes_before
+            config.write_bytes(old_preview)
+            obj.reload(primary_config)
+            obj.hostname, obj.connect_host, obj.origin = p.PUBLIC_IP, "127.0.0.1", p.ip_origin()
+            obj.verify_https(PASSWORD)
+            assert p.ip_route_fingerprints() == routes_before
+            print("CADDY_IP_SWITCH_OK: distinct trusted certificates, same password, staff routes, restart and rollback")
             logs = p.subprocess.run(["docker", "logs", container], capture_output=True, text=True, check=True)
             assert '"logger":"tls.obtain"' not in logs.stdout + logs.stderr, "No certificate issuance should be attempted"
             config.write_text(base)
