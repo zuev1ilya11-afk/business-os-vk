@@ -218,6 +218,24 @@ def verify_ip_switch_isolation(before, after):
     def canonical(config):
         config = copy.deepcopy(config)
         servers = config["apps"]["http"].pop("servers")
+        for server in servers.values():
+            if server.get("listen") != [f":{IP_PORT}"]:
+                continue
+            policies = server.get("tls_connection_policies", [])
+            if policies and "match" not in policies[-1]:
+                # Caddy may remove a redundant IP matcher when its complete
+                # TLS settings equal the following catch-all. Normalize only
+                # that exact case on this preview server; never discard TLS
+                # settings or change any employee listener.
+                fallback = policies[-1]
+                normalized = []
+                for policy in policies[:-1]:
+                    matcher = policy.get("match", {})
+                    redundant = (set(matcher) == {"sni"} and set(matcher["sni"]) == {"", SECONDARY_IP}
+                                 and {k: v for k, v in policy.items() if k != "match"} == fallback)
+                    if not redundant:
+                        normalized.append(policy)
+                server["tls_connection_policies"] = normalized + [fallback]
         for policy in config.get("apps", {}).get("tls", {}).get("automation", {}).get("policies", []):
             if "subjects" in policy:
                 policy["subjects"].sort()

@@ -338,6 +338,21 @@ class IPPreview(unittest.TestCase):
         altered["apps"]["http"]["servers"]["srv0"]["routes"] = []
         with self.assertRaises(RuntimeError):
             p.verify_ip_switch_isolation(before, altered)
+
+    def test_switch_accepts_only_identical_redundant_preview_tls_policy(self):
+        before = self.after(self.before())
+        preview = before["apps"]["http"]["servers"]["srv1"]
+        preview["tls_connection_policies"] = [
+            {"match": {"sni": ["", p.PUBLIC_IP]}, "default_sni": p.PUBLIC_IP},
+            {"default_sni": p.PUBLIC_IP}]
+        after = copy.deepcopy(before)
+        updated = after["apps"]["http"]["servers"]["srv1"]
+        updated["routes"][0]["match"] = [{"host": [p.SECONDARY_IP]}]
+        updated["tls_connection_policies"] = [{"default_sni": p.PUBLIC_IP}]
+        p.verify_ip_switch_isolation(before, after)
+        updated["tls_connection_policies"][0]["protocol_min"] = "tls1.0"
+        with self.assertRaises(RuntimeError):
+            p.verify_ip_switch_isolation(before, after)
         altered = copy.deepcopy(after)
         altered["apps"]["tls"]["automation"]["policies"][0]["issuers"][0]["profile"] = "changed"
         with self.assertRaises(RuntimeError):
