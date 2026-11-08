@@ -1,0 +1,16 @@
+.git
+**/node_modules
+**/.next
+**/.env
+**/.env.*
+!**/.env.example
+.client-portal-stage
+.public-site-stage
+playwright-report
+test-results
+docs/**/screenshots
+**/__pycache__
+
+**/.next-dev
+**/test-results
+**/playwright-report

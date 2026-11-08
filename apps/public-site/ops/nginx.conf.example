@@ -1,0 +1,41 @@
+# TEMPLATE ONLY. Include rate zones in http{}, server fragment in a reviewed TLS vhost.
+# Do not replace the employee vhost. This public vhost never proxies staff API routes.
+limit_req_zone $binary_remote_addr zone=website_forms:10m rate=10r/m;
+limit_req_zone $binary_remote_addr zone=website_reads:10m rate=15r/s;
+server {
+    listen 127.0.0.1:8086;
+    server_name _;
+    client_max_body_size 8m;
+    # Put this fragment behind your approved TLS entrypoint.
+    location ^~ /client-api/staff/ { return 404; }
+    location /client-api/ {
+        limit_req zone=website_reads burst=30 nodelay;
+        proxy_pass http://127.0.0.1:4181;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For "";
+        proxy_hide_header Access-Control-Allow-Origin;
+        add_header X-Robots-Tag "noindex, nofollow" always;
+        proxy_no_cache 1;
+        proxy_cache_bypass 1;
+    }
+    location ~ ^/client-api/(auth/|website/business-leads) {
+        limit_req zone=website_forms burst=5 nodelay;
+        proxy_pass http://127.0.0.1:4181;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For "";
+        proxy_no_cache 1;
+    }
+    location /client/ {
+        alias /opt/business-os/client-portal/public/;
+        add_header X-Robots-Tag "noindex, nofollow" always;
+        add_header Cache-Control "no-store" always;
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'" always;
+    }
+    location / {
+        proxy_pass http://127.0.0.1:4173;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
