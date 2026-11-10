@@ -1,0 +1,80 @@
+{
+  "environment": "synthetic role sessions; current API handlers; PGlite PostgreSQL 18.6; Storage and Drive fixtures",
+  "before": {
+    "id": "11",
+    "status": "Назначена",
+    "master_workflow_stage": "started",
+    "master_agreed_at": "2026-11-10T09:00:00+01:00",
+    "report_review_status": "not_submitted",
+    "report_uploaded_at": null,
+    "has_report_token": false,
+    "has_act": false,
+    "has_photos": false
+  },
+  "requests": [
+    {
+      "action": "uploadReportFile",
+      "kind": "act",
+      "http_status": 200,
+      "ok": true
+    },
+    {
+      "action": "uploadReportFile",
+      "kind": "photo",
+      "http_status": 200,
+      "ok": true
+    },
+    {
+      "action": "finalizeMasterReport",
+      "role": "master",
+      "http_status": 200,
+      "ok": true
+    },
+    {
+      "action": "bootstrap",
+      "role": "master",
+      "http_status": 200,
+      "ok": true
+    },
+    {
+      "action": "reviewReport",
+      "role": "manager",
+      "http_status": 200,
+      "ok": true
+    }
+  ],
+  "after_submit": {
+    "id": "11",
+    "status": "В работе",
+    "master_workflow_stage": "started",
+    "master_agreed_at": "2026-11-10T09:00:00+01:00",
+    "report_review_status": "pending",
+    "report_uploaded_at": "2026-11-10T15:36:36.601+01:00",
+    "has_report_token": true,
+    "has_act": true,
+    "has_photos": true
+  },
+  "fresh_api_order": {
+    "id": "11",
+    "status": "В работе",
+    "master_workflow_stage": "started",
+    "master_agreed_at": "2026-11-10T09:00:00+01:00",
+    "report_review_status": "pending",
+    "report_uploaded_at": "2026-11-10T15:36:36.601+01:00",
+    "has_report_token": true,
+    "has_act": true,
+    "has_photos": true
+  },
+  "after_review": {
+    "id": "11",
+    "status": "Выполнена",
+    "master_workflow_stage": "started",
+    "master_agreed_at": "2026-11-10T09:00:00+01:00",
+    "report_review_status": "approved",
+    "report_uploaded_at": "2026-11-10T15:36:36.601+01:00",
+    "has_report_token": true,
+    "has_act": true,
+    "has_photos": true
+  },
+  "storage_objects": 2
+}

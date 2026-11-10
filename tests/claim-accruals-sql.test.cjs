@@ -12,6 +12,7 @@ test('database keeps one immutable accrual before a reclamation resets dates, an
   for(const column of ['report_uploaded_at','master_called_at','master_agreed_at','master_departed_at','master_arrived_at','master_started_at','drive_archived_at'])await db.exec(`ALTER TABLE orders ADD COLUMN ${column} timestamptz`);
   const guard=fs.readFileSync('supabase/migrations/20261004100840_manual_order_completion.sql','utf8').match(/CREATE OR REPLACE FUNCTION public.guard_order_completion\(\)[\s\S]*?\$function\$;/)[0];
   await db.exec(guard+"\nCREATE TRIGGER guard_order_completion BEFORE UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION guard_order_completion();");
+  await db.exec(fs.readFileSync('supabase/migrations/20261110140000_preserve_submitted_report.sql','utf8'));
   const path='supabase/migrations/20261031180000_claim_financial_snapshots.sql';
   if(fs.existsSync(path))await db.exec(fs.readFileSync(path,'utf8'));
   assert.equal((await db.query("SELECT count(*)::int n FROM information_schema.tables WHERE table_schema='public' AND table_name='order_financial_snapshots'")).rows[0].n,1);

@@ -39,7 +39,7 @@ test('master report uploads through gateway and finalizes through lifecycle API'
     if(body.action==='finalizeMasterReport'){
       finalizeCalls++;
       finalizePayload=body;
-      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:{id:'M-1',status:'В работе',report_review_status:'pending',completed_at:null,master_payout:552.5},drive_archive_status:'pending'})});
+      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:{id:'M-1',status:'В работе',report_review_status:'pending',report_upload_token:body.upload_token,report_uploaded_at:'2026-11-10T09:00:00Z',completed_at:null,master_payout:552.5},drive_archive_status:'pending'})});
     }
     return route.fulfill({status:400,contentType:'application/json',body:'{"ok":false,"error":"unexpected lifecycle action"}'});
   });
