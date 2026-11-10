@@ -57,11 +57,12 @@ def clean_code(text):
 
 
 def features(text):
+    declaration = lambda name: r'\b(?:function\s+'+name+r'\s*\(|(?:const|let|var)\s+'+name+r'\s*=)'
     patterns = {
-        'receipt': r'\bfunction\s+reportReceipt\s*\(',
-        'write': r'\bfunction\s+reportWriteReceipt\s*\(',
-        'started': r'\bfunction\s+reportWorkStarted\s*\(',
-        'locked': r'\bfunction\s+reportLocked\s*\(',
+        'receipt': declaration('reportReceipt'),
+        'write': declaration('reportWriteReceipt'),
+        'started': declaration('reportWorkStarted'),
+        'locked': declaration('reportLocked'),
         'not_saved': r'\bREPORT_NOT_SAVED\b',
     }
     return ' '.join(key + ':' + str(len(re.findall(pattern, text)))
