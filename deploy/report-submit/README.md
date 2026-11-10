@@ -62,3 +62,69 @@ main. Сохранить текущие домен/порт и настройк�
 
 Установщик проверен с PostgreSQL/PGlite. На действующем российском runtime он в
 этой сессии не запускался; фактическое подключение и дрейф кода остаются preflight.
+
+
+## RU runtime package, 11 November 2026
+
+`inspect_runtime.py` compares the active sources and ESZIP source maps. The
+observed sources match the report-acceptance deployment at `800b057`, including
+its public-storage helper and asynchronous manager-approval logic. Their hashes
+are pinned in `overlay.py`. Do not replace these files wholesale with the
+canonical API files from this branch.
+
+From the separate checkout, run each command separately:
+
+```sh
+python3 deploy/report-submit/release.py stage
+```
+
+Staging verifies the live Docker mounts and the frontend manifest, snapshots
+sources/bundles/web assets, reproduces both existing bundles with frozen
+dependency versions, disconnects the build network, and compiles only the three
+receipt-check additions. It preserves the current gateway and shared helpers.
+The isolated runtime has dummy credentials, loopback-only mock PostgREST and
+Storage, and no connection to production services. It tests uploads and public
+URLs, master/manager permissions, submission, review, repeated submissions,
+one-time deductions, false-success rejection, and readback after an empty write
+response. This is a real Edge runtime with synthetic services, not a production
+end-to-end test. The SQL regression was validated separately.
+
+The frontend overlay changes only the report upload module plus its existing
+build/version files. Other deployed modules, origins, financial code and the
+service worker's behavior are preserved. Unknown source or bundle drift stops
+staging. Successful staging prints `STAGE_READY=true` and
+`PRODUCTION_CHANGED=false`.
+
+After successful staging and the user's deployment authorization:
+
+```sh
+python3 deploy/report-submit/release.py apply
+```
+
+Apply rechecks snapshots, backups, candidate checksums and the public baseline,
+installs the two API bundles and frontend overlay, restarts only the Edge
+container, and verifies health, unauthenticated access rejection and public
+asset checksums. On failure it attempts to restore the exact saved files. It
+does not run database migrations or change historical orders.
+
+```sh
+python3 deploy/report-submit/release.py rollback
+```
+
+Rollback refuses to overwrite a touched file changed by another release.
+Backups, logs and the release journal stay private in
+`/root/bos-report-runtime/stage-*`. This rollback covers API/frontend only;
+the separate SQL function backup remains managed by `database.py`.
+
+Local validation: eight deployment regression tests passed, including unknown
+baseline refusal, preservation of unrelated bytes/origins, manifest integrity,
+idempotent installation, and rollback on health/public-check failures. Python
+syntax and the existing uploader JavaScript syntax checks passed. The actual
+host build/runtime stage remains pending until the operator runs `stage`.
+
+```sh
+python3 -m unittest discover -s deploy/report-submit
+```
+
+The fixture sources in `fixtures.json` contain repository code, not business
+records: API baseline `800b057`, uploader baseline `390fff7`.
