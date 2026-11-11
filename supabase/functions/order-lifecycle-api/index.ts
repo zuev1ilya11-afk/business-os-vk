@@ -127,6 +127,7 @@ async function reviewReport(db:any,req:Request,body:any){
   if(q.data.report_review_status===decision&&q.data.status!=='Отменена')return json({ok:true,order:q.data,archived:decision==='approved'});
   if(q.data.status==='Отменена'||q.data.report_review_status!=='pending')return reportConflict();
   if(!q.data.report_uploaded_at)return json({ok:false,error:'Отчёт ещё не загружен'},400);
+  if(decision==='rejected'&&(typeof body.comment!=='string'||!body.comment.trim()))return json({ok:false,error:'REJECTION_REASON_REQUIRED',message:'Укажите причину отклонения.'},400);
   let order=q.data;if(decision==='approved')order=await archiveBeforeApproval(req,order);
   if(order.report_upload_token!==q.data.report_upload_token||order.report_uploaded_at!==q.data.report_uploaded_at||order.report_review_status!=='pending'||order.status==='Отменена')return reportConflict();
   const now=new Date().toISOString(),patch:any={report_review_status:decision,report_reviewed_by:String(actor.full_name||actor.external_id),report_reviewed_at:now,report_review_comment:String(body.comment||''),status:decision==='approved'?'Выполнена':'В работе',completed_at:decision==='approved'?(order.completed_at||now):null,sync_status:'pending_sheet',updated_at:now};
