@@ -4,6 +4,9 @@ on:
     branches: [feat/lemana-price-20261111]
 permissions:
   contents: read
+concurrency:
+  group: lemana-price-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   lemana-price:
     runs-on: ubuntu-latest
@@ -16,7 +19,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:check
-      - run: node --test tests/lemana-*.test.cjs tests/report-deduction.test.cjs tests/master-price-memo-v131.test.cjs
+      - run: node --test tests/lemana-*.test.cjs tests/report-deduction.test.cjs tests/master-price-memo-v131.test.cjs tests/finance-data.test.cjs tests/finance-export*.test.cjs
+      - run: python3 -m unittest discover -s deploy/lemana-price -p test_release.py
       - run: npx playwright install chromium
       - run: bash scripts/test-ui-offline.sh tests/lemana-price.spec.js tests/lemana-quantity.spec.js tests/shared-service-catalog.spec.js --workers=1
       - uses: actions/upload-artifact@v4
