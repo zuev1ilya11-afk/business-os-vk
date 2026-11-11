@@ -17,6 +17,17 @@ BASELINES = json.loads(read(Path(__file__).parent/'baselines.json'))
 WEB = tuple(n for n in BASELINES if '/' not in n)
 
 
+def web_target(meta, name):
+    routes = meta.get('assetBundles', {})
+    if name in routes:
+        target = routes[name]
+        require(target in ('startup-shell.bundle.js', 'startup-eager.bundle.js'), 'PRICE_MODULE_BUNDLE_'+name)
+    else:
+        target = name
+    require(target in meta['assets'], 'PRICE_MODULE_NOT_IN_MANIFEST_'+name)
+    return target
+
+
 def api_ready(name, current):
     if name in previous.APIS:
         require(sha(current) == previous.AFTER[name], 'REPORT_FIX_REQUIRED_OR_API_CHANGED_'+name)
@@ -59,8 +70,10 @@ def frontend(web, repo):
         require(sha(read(web/name)) == digest,'ASSET_HASH_CHANGED_'+name)
     edited = {}
     for name in WEB:
-        bundle = meta.get('assetBundles',{}).get(name)
-        require(bundle in ('startup-shell.bundle.js','startup-eager.bundle.js'),'PRICE_MODULE_BUNDLE_'+name)
+        bundle = web_target(meta, name)
+        if bundle == name:
+            edited['web/'+name] = module(name, read(web/name), repo)
+            continue
         data = edited.get('web/'+bundle,read(web/bundle))
         marker = b'// Source: '+name.encode()+b'\n'
         require(data.count(marker) == 1,'PRICE_MODULE_COUNT_'+name)
