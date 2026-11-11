@@ -1,4 +1,4 @@
-"""Only the seven reviewed price modules; preserve deployed endpoint mappings."""
+"""Only the reviewed price modules; preserve deployed endpoint mappings."""
 import copy
 import importlib.util
 import json
