@@ -27,7 +27,13 @@ export async function lemanaApi(db:any,body:any,me:any,sign:(s:string)=>Promise<
    const o=row.order;
    // Rate is calculated here by the same library as reports; SQL never copies the formula.
    const order={...o,...P.calculate(o.amount,o,!!o.master_staff_id&&o.status!=='Отменена'),city:o.city||me.city||'',created_by_vk_id:me.external_id};
-   const q=await db.rpc('bos_import_lemana_order',{p_actor:me.id,p_order:order});
+   let q;
+   try{q=await db.rpc('bos_import_lemana_order',{p_actor:me.id,p_order:order})}
+   catch{
+    // A transport failure can happen after SQL committed. Keep earlier outcomes,
+    // do not claim this row failed to save, and let the create-only RPC dedupe a retry.
+    result.errors++;result.rows.push({row:row.row,number:o.order_number,kind:'error',reason:'Результат сохранения строки не подтверждён. Повторите предпросмотр'});continue;
+   }
    if(q.error){result.errors++;result.rows.push({row:row.row,number:o.order_number,kind:'error',reason:'Не удалось сохранить строку. Проверьте данные и повторите предпросмотр'});continue}
    if(q.data?.kind==='created'){result.created++;result.orders.push({...q.data.order,id:String(q.data.order.id),master_vk_id:staff.find((m:any)=>String(m.id)===String(q.data.order.master_staff_id))?.external_id||''});result.rows.push({row:row.row,number:o.order_number,kind:'created',reason:''})}
    else {result.skipped++;result.rows.push({row:row.row,number:o.order_number,kind:'skipped',reason:q.data?.reason||'Уже существует или требует повторной проверки'})}
