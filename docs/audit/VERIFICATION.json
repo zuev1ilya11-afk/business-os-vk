@@ -16,41 +16,11 @@
     }
   },
   "final_server": {
-    "functional_commit": "3941400",
-    "pass": 915,
+    "functional_commit": "abcd1d42011e4396c86a1c559c59af42e70164d0",
+    "pass": 916,
     "fail": 0,
     "skipped": 0,
     "method": "npm run test:server; synthetic handlers and selected PGlite SQL"
-  },
-  "final_ui": {
-    "functional_commit": "3941400",
-    "statistics": {
-      "startTime": "2026-11-11T17:32:59.423Z",
-      "duration": 430773.779,
-      "expected": 888,
-      "skipped": 4,
-      "unexpected": 1,
-      "flaky": 0
-    },
-    "full_run_status": "one_failure_not_green",
-    "failed": "master-compact-card.spec.js: owner edit apartment/comment after reload",
-    "isolated_retry": {
-      "runs": 10,
-      "pass": 10,
-      "cause": "not_established"
-    },
-    "exclusions": [
-      "tests/gas-archive-health.spec.js",
-      "tests/gas-bridge-health.spec.js"
-    ],
-    "runtime": "Playwright 1.55.1 / Chromium Headless Shell 140.0.7339.186 build1193",
-    "isolation": "deny proxy http://127.0.0.1:9 at browser launch and context; mock Edge fetch rejects external requests",
-    "adjacent_retry": {
-      "runs": 33,
-      "pass": 33,
-      "workers": 2,
-      "cause": "not_established"
-    }
   },
   "additional": {
     "portal_client_website_https": {
@@ -101,8 +71,6 @@
   },
   "not_verified": [
     "Russian live BUILD_ID, exact source/runtime, service images, RLS/grants/schema and applied migrations",
-    "Real PostgreSQL17.6 concurrency suites (Docker and psql unavailable)",
-    "Frozen Deno lockfile runtime suites",
     "Production notification/integration delivery and real report files",
     "Actual claim7395762 and real payouts",
     "Physical iPhone/Huawei",
@@ -113,10 +81,103 @@
   "log_sha256": {
     "baseline-server.log": "856eb662089726d0ad213e93d9bb90c1c3d4c2836eaa96abe7fb878a6aadb741",
     "baseline-ui.json": "d0aaff7c54e5d8e57d4ac009bfa031384eb4a13e7457743edf88f19e58423be5",
-    "final-server.log": "0e21cee3f5bee6fe5d9b0b1b5d4bbaf5810aba037cf9c826840b72730aa84e76",
+    "final-server.log": "838596b4997969f451cd4603b9dc8d9553ad252f8065fb1e5490275a38bb1964",
     "final-ui.json": "2439d0f506a5a004ee5128426274f13b21cdbcd8c4c751a9c9739231f70f76bd",
     "final-deno.log": "2ba440ce1a058d52e2e442315873d78a4bd2176f336d503971ef21878483e4b5",
     "portal-status-after.log": "7eb3ff1df2635664712256fd2f3cdbd508cfd4bef867bb8c85f2d31289c6e241",
-    "manual-create-lost-response.log": "3598c0625eb9c315e36ff31ebe22b84e55d15bb8e4e839ab4f1706013ce1b669"
+    "manual-create-lost-response.log": "3598c0625eb9c315e36ff31ebe22b84e55d15bb8e4e839ab4f1706013ce1b669",
+    "trace-full-ui.json": "855264d350e307aee4e70d5283fe806b0ac654c6bdd7b24a93a2cc974ede6970",
+    "trace-full-ui.log": "ed43383076e0471cabb1e706254f2fd2396d4baa9ed3f0b97291d9cafde2f559",
+    "deno-import-final.log": "d50d970c38ff43dc574eed82a1c27b8106a71e8dea89cae175afef7472a04c05"
+  },
+  "previous_ui_with_failure": {
+    "functional_commit": "3941400",
+    "statistics": {
+      "startTime": "2026-11-11T17:32:59.423Z",
+      "duration": 430773.779,
+      "expected": 888,
+      "skipped": 4,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "full_run_status": "one_failure_not_green",
+    "failed": "master-compact-card.spec.js: owner edit apartment/comment after reload",
+    "isolated_retry": {
+      "runs": 10,
+      "pass": 10,
+      "cause": "not_established"
+    },
+    "exclusions": [
+      "tests/gas-archive-health.spec.js",
+      "tests/gas-bridge-health.spec.js"
+    ],
+    "runtime": "Playwright 1.55.1 / Chromium Headless Shell 140.0.7339.186 build1193",
+    "isolation": "deny proxy http://127.0.0.1:9 at browser launch and context; mock Edge fetch rejects external requests",
+    "adjacent_retry": {
+      "runs": 33,
+      "pass": 33,
+      "workers": 2,
+      "cause": "not_established"
+    }
+  },
+  "final_ui": {
+    "functional_commit": "ff4266094075f99ded1dbc369b809302b9eb6c0b",
+    "statistics": {
+      "startTime": "2026-11-11T17:43:22.846Z",
+      "duration": 531746.37,
+      "expected": 890,
+      "skipped": 4,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "full_run_status": "passed",
+    "exclusions": [
+      "tests/gas-archive-health.spec.js",
+      "tests/gas-bridge-health.spec.js"
+    ],
+    "runtime": "Playwright 1.55.1 / Chromium Headless Shell 140.0.7339.186 build1193",
+    "isolation": "deny proxy http://127.0.0.1:9 at browser launch and context; mock Edge fetch rejects external requests",
+    "note": "Later Lemana SDK error refinement and CI OS pin are covered by final server and remote CI.",
+    "earlier_intermittent_failure_cause": "not_established"
+  },
+  "github_verification": {
+    "run_id": 43071557158,
+    "url": "https://github.com/zuev1ilya11-afk/business-os-vk/actions/runs/43071557158",
+    "remote_commit": "a243741efd86f1148732d2c843c9d3ba48bca459",
+    "local_commit": "8fb2bb518b4fc34c1676f1eb0d7b9659a905f920",
+    "identical_tree": "5fcb35724286712a74614eb942992317962c6a9d",
+    "status": "completed",
+    "passed_steps": [
+      "build:check",
+      "10 API Deno TypeScript checks",
+      "frozen push, Avito, Hands dependencies and push runtime tests",
+      "8 SQL scripts on disposable PostgreSQL17.6 including Lemana concurrency",
+      "read-only collector safety",
+      "server regressions",
+      "complete offline Playwright suite"
+    ],
+    "conclusion": "success",
+    "node": {
+      "passed": 916,
+      "failed": 0,
+      "skipped": 0
+    },
+    "ui": {
+      "passed": 890,
+      "skipped": 6,
+      "failed": 0,
+      "flaky": 0,
+      "duration": "9.0m"
+    },
+    "checked_out_merge_commit": "76ec462d7ce19258e687c35a1c162399c1d24d6b",
+    "skipped_ui_tests": [
+      "gas-archive-health.spec.js: live archive health opt-in",
+      "gas-bridge-health.spec.js: offline mode",
+      "master-help-capture.spec.js: order screenshot opt-in",
+      "master-help-capture.spec.js: report screenshot opt-in",
+      "master-help-capture.spec.js: profile screenshot opt-in",
+      "master-help-visual.spec.js: help screenshot opt-in"
+    ],
+    "note": "Successful run checks final code. Subsequent documentation-only commit records the results; it does not change code, tests or workflow."
   }
 }
