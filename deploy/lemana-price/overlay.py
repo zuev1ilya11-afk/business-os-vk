@@ -26,6 +26,24 @@ def module(name, current, repo):
     pair = BASELINES[name]
     after = read(repo/name)
     require(after == pair['after'].encode(), 'PRICE_CHECKOUT_CHANGED_'+name)
+    if name == 'employee-profile-patch.js':
+        # Only the self-contained price-tab presentation belongs to this release.
+        # Production has a different employee-finance implementation; retain it
+        # byte for byte, and reject any drift inside the price-tab section itself.
+        before = pair['before'].encode()
+        begin = b"  const catalog=modal.querySelector('.bosSharedCatalog'),"
+        end = b"\n  const toolsHead=modal.querySelector('.ownerToolsHead');"
+        def bounds(data):
+            require(data.count(begin) == data.count(end) == 1, 'PROFILE_PRICE_SECTION_COUNT')
+            first, last = data.index(begin), data.index(end)
+            require(first < last, 'PROFILE_PRICE_SECTION_ORDER')
+            return first, last
+        a, b = bounds(before)
+        c, d = bounds(after)
+        require(before[:a] == after[:c] and before[b:] == after[d:], 'PROFILE_PATCH_SCOPE')
+        i, j = bounds(current)
+        require(current[i:j] == before[a:b], 'PROFILE_PRICE_SECTION_CHANGED')
+        return current[:i] + after[c:d] + current[j:]
     return previous.preserve_origins(pair['before'].encode(), current, after, 'price:'+name)
 
 
