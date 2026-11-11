@@ -10,11 +10,7 @@
     "preview:order-intake": "node scripts/preview-order-intake.cjs",
     "test:preview-intake": "node scripts/verify-order-intake-preview.cjs",
     "preview:master-order": "node scripts/preview-master-order.cjs",
-    "test:preview-master-order": "node scripts/capture-master-order.cjs",
-    "dev": "node apps/public-site/server.cjs",
-    "test:client": "node --test --test-concurrency=1 client-portal/tests/*.test.cjs",
-    "dev:client": "node client-portal/staging/start.cjs",
-    "test:website": "node --test --test-concurrency=1 apps/public-site/tests/*.test.cjs"
+    "test:preview-master-order": "node scripts/capture-master-order.cjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.10",
