@@ -20,7 +20,8 @@ WEB_AFTER = '4d18c8a3c9ac5f3a51a80b984713e3933352d610d5c514052af4ec5ef5a142ed'
 CLIENT_GUARD = "if(!d.order||String(d.order.id)!==String(id)||String(d.order.report_upload_token||'')!==token||!d.order.report_uploaded_at||!['pending','approved'].includes(d.order.report_review_status)||d.order.status==='Отменена'){const error=new Error('Сервер не подтвердил сохранение отчёта. Данные формы сохранены.');error.code='REPORT_NOT_SAVED';throw error}"
 REQUEST_OLD = "if(e?.status===500){clearReportRoute();if(url===REPORT_PROXY)break}if(body.action==='finalizeMasterReport'||!retryable(e,e?.status))throw e;"
 REQUEST_NEW = "if(body.action==='finalizeMasterReport')throw e;if(e?.status===500){clearReportRoute();if(url===REPORT_PROXY)break}if(!retryable(e,e?.status))throw e;"
-ORIGINS = ('https://obsropbslfwtanyspjbi.supabase.co', 'https://139.100.237.167',
+ORIGINS = ('https://obsropbslfwtanyspjbi.supabase.co',
+           'https://business-os-api-gateway.netlify.app', 'https://139.100.237.167',
            'https://136.234.17.113', 'https://homemaster.qd.je')
 
 
