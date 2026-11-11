@@ -2,8 +2,8 @@ name: UI smoke
 on:
   push:
     branches: [main, feat/web-push-v211]
+  # Stacked fixes target feature branches while the RU release diverges from main.
   pull_request:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -79,6 +79,9 @@ jobs:
           bash scripts/test-contact-control.sh
           bash scripts/test-finance-expenses.sh
           bash scripts/test-lemana-concurrency.sh
+
+      - name: Read-only production collector safety
+        run: python3 tests/audit-production-readonly.test.py
 
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server
