@@ -41,11 +41,27 @@ class PriceOverlayTests(unittest.TestCase):
 
     def test_unknown_live_changes_and_unfixed_report_api_are_blocked(self):
         for n,pair in overlay.BASELINES.items():
+            if n=='employee-profile-patch.js':continue
             with contextlib.redirect_stdout(io.StringIO()),self.assertRaises(r.Stop):
                 overlay.module(n,pair['before'].encode()+b'\nconst unknown=1;',r.REPO)
         for name in overlay.previous.APIS:
             with self.assertRaises(r.Stop):
                 overlay.api_ready(name,b'unknown')
+
+    def test_profile_price_patch_preserves_deployed_finance_and_rejects_tab_drift(self):
+        name='employee-profile-patch.js'
+        pair=overlay.BASELINES[name]
+        before,after=(pair[k].encode() for k in ('before','after'))
+        change=lambda data:data.replace(b'const financial=',b'const retainedFinancial=')+b'\n// deployed-only profile change\n'
+        current=change(before)
+        self.assertEqual(overlay.module(name,current,r.REPO),change(after))
+        for invalid in (
+            current.replace(b'const sections={catalog,avito,materials};',b'const sections={catalog,avito};'),
+            current+current,
+            after,
+        ):
+            with self.assertRaises(r.Stop):
+                overlay.module(name,invalid,r.REPO)
 
 
 class InstallTests(unittest.TestCase):
