@@ -490,6 +490,18 @@ test("website shares persistent orders, safe public price and isolated business 
         },
         "master",
       );
+      // Read the saved report through the client API before staff accepts it.
+      // A new read must leave the completed work awaiting confirmation, not in progress.
+      for (let read = 0; read < 2; read++) {
+        const pending = (await f.good(alice, "/orders/" + order.id)).order;
+        assert.equal(pending.status, "awaiting_confirmation");
+        assert.equal(pending.status_label, "Ожидается подтверждение");
+      }
+      const pendingList = (await f.good(alice, "/orders")).orders;
+      assert.equal(
+        pendingList.find((entry) => entry.id === order.id).status,
+        "awaiting_confirmation",
+      );
       await call(
         "order-lifecycle-api",
         {
