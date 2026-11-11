@@ -14,6 +14,7 @@ APIS = (*previous.APIS, 'mini-app-api')
 def dependencies(name):
     return ('supabase/functions/_shared/finance-export-models.mjs',) if name == 'mini-app-api' else ('service-catalog.js', 'report-deduction.js')
 BASELINES = json.loads(read(Path(__file__).parent/'baselines.json'))
+LEGACY_FINANCE = json.loads(read(Path(__file__).parent/'legacy-finance.json'))['files']
 WEB = tuple(n for n in BASELINES if '/' not in n)
 
 
@@ -37,6 +38,12 @@ def module(name, current, repo):
     pair = BASELINES[name]
     after = read(repo/name)
     require(after == pair['after'].encode(), 'PRICE_CHECKOUT_CHANGED_'+name)
+    if name in LEGACY_FINANCE:
+        legacy = LEGACY_FINANCE[name]
+        pattern = re.compile(b'|'.join(re.escape(x.encode()) for x in previous.ORIGINS))
+        normalize = lambda value: pattern.sub(b'@ORIGIN@', value).rstrip()
+        if normalize(current) == normalize(legacy['before'].encode()):
+            return previous.preserve_origins(legacy['before'].encode(),current,legacy['after'].encode(),'price-legacy:'+name)
     if name == 'employee-profile-patch.js':
         # Only the self-contained price-tab presentation belongs to this release.
         # Production has a different employee-finance implementation; retain it
