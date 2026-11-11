@@ -34,7 +34,9 @@ export async function lemanaApi(db:any,body:any,me:any,sign:(s:string)=>Promise<
     // do not claim this row failed to save, and let the create-only RPC dedupe a retry.
     result.errors++;result.rows.push({row:row.row,number:o.order_number,kind:'error',reason:'Результат сохранения строки не подтверждён. Повторите предпросмотр'});continue;
    }
-   if(q.error){result.errors++;result.rows.push({row:row.row,number:o.order_number,kind:'error',reason:'Не удалось сохранить строку. Проверьте данные и повторите предпросмотр'});continue}
+   // PostgREST also resolves fetch failures as {error,status:0}; error alone
+   // cannot prove the database did not commit before the response was lost.
+   if(q.error){result.errors++;result.rows.push({row:row.row,number:o.order_number,kind:'error',reason:'Результат сохранения строки не подтверждён. Проверьте данные и повторите предпросмотр'});continue}
    if(q.data?.kind==='created'){result.created++;result.orders.push({...q.data.order,id:String(q.data.order.id),master_vk_id:staff.find((m:any)=>String(m.id)===String(q.data.order.master_staff_id))?.external_id||''});result.rows.push({row:row.row,number:o.order_number,kind:'created',reason:''})}
    else {result.skipped++;result.rows.push({row:row.row,number:o.order_number,kind:'skipped',reason:q.data?.reason||'Уже существует или требует повторной проверки'})}
   }

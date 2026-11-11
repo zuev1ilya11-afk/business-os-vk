@@ -20,7 +20,7 @@ test('oversized signed preview is rejected before offering confirmation',async()
  const r=await api({...file(),file_base64:Buffer.from(workbook(rows)).toString('base64')});assert.equal(r.status,400);assert.match(r.body.error,/Разделите/);assert.equal(r.body.preview_token,undefined);
 });
 
-test('a lost RPC response keeps prior row results and a retry skips committed rows',async()=>{
+for(const failure of ['throw','resolved error'])test(`a lost RPC response (${failure}) keeps prior row results and a retry skips committed rows`,async()=>{
  const {db,api}=setup(),saved=new Map();
  const rows=['00051','00052','00053'].map(number=>[number,'Синтетический клиент','+79990000001','Тестовый адрес','Тестовая категория',1000,'20.10.2026','','','','Подтвержден','']);
  const preview=await api({...file(),file_base64:Buffer.from(workbook(rows)).toString('base64')});
@@ -30,7 +30,11 @@ test('a lost RPC response keeps prior row results and a retry skips committed ro
   const key=p.p_order.order_number;
   if(saved.has(key))return {data:{kind:'skipped',reason:'Уже существует'},error:null};
   const order={...p.p_order,id:key};saved.set(key,order);
-  if(key==='00052'&&loseResponse){loseResponse=false;throw Error('NETWORK private-database-host SECRET')}
+  if(key==='00052'&&loseResponse){
+   loseResponse=false;
+   if(failure==='throw')throw Error('NETWORK private-database-host SECRET');
+   return {data:null,error:{message:'NETWORK private-database-host SECRET',code:''},status:0,statusText:''};
+  }
   return {data:{kind:'created',order},error:null};
  };
  const confirm={action:'confirmLemanaImport',preview_token:preview.body.preview_token,selected:[2,3,4]};
