@@ -1,0 +1,26 @@
+name: Lemana price checks
+on:
+  push:
+    branches: [feat/lemana-price-20261111]
+permissions:
+  contents: read
+jobs:
+  lemana-price:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build:check
+      - run: node --test tests/lemana-*.test.cjs tests/report-deduction.test.cjs tests/master-price-memo-v131.test.cjs
+      - run: npx playwright install chromium
+      - run: bash scripts/test-ui-offline.sh tests/lemana-price.spec.js tests/lemana-quantity.spec.js tests/shared-service-catalog.spec.js --workers=1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lemana-price-ui
+          path: test-results/
