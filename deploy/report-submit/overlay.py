@@ -1,0 +1,141 @@
+"""Exact source overlays; keep the deployed RU transport and unrelated changes."""
+import copy
+import difflib
+import json
+import re
+from common import read, sha, require
+
+APIS = ('order-lifecycle-api', 'report-api')
+BEFORE = {
+    'order-lifecycle-api':'7c679156ba09fa1c99d44eaa9f45adaa08724ec5b6220f20957fc3bea19943dc',
+    'report-api':'5624a7d9b7b11b882c63b1d1b22eaf3d1afa8a4ecbb3954481d1cb8b58e3c7a3'}
+AFTER = {
+    'order-lifecycle-api':'a47631721646934989cb9c48a764de6e9e63afe0fd0c39beabd1fa2a83abbe05',
+    'report-api':'8039985e987b91f5f89beeeeba141fcb8cd770f04713c25ffd18460bc00d3d20'}
+GUARD = "if(!reportReceipt(r.data,token))return json({ok:false,error:'REPORT_NOT_SAVED',message:'Сервер не подтвердил сохранение отчёта. Данные формы сохранены; проверьте состояние перед повтором.'},409);"
+ANCHOR = 'const r=await reportWriteReceipt(db,q.data,patch,token);if(r.error)throw r.error;if(!r.data)return reportConflict();'
+NAME = 'report-chunk-upload-v23.js'
+WEB_BEFORE = '39371e05ab2bfec29cef3fc102634416bfeb297b46856112c29e760255bb6a3e'
+WEB_AFTER = '4d18c8a3c9ac5f3a51a80b984713e3933352d610d5c514052af4ec5ef5a142ed'
+CLIENT_GUARD = "if(!d.order||String(d.order.id)!==String(id)||String(d.order.report_upload_token||'')!==token||!d.order.report_uploaded_at||!['pending','approved'].includes(d.order.report_review_status)||d.order.status==='Отменена'){const error=new Error('Сервер не подтвердил сохранение отчёта. Данные формы сохранены.');error.code='REPORT_NOT_SAVED';throw error}"
+REQUEST_OLD = "if(e?.status===500){clearReportRoute();if(url===REPORT_PROXY)break}if(body.action==='finalizeMasterReport'||!retryable(e,e?.status))throw e;"
+REQUEST_NEW = "if(body.action==='finalizeMasterReport')throw e;if(e?.status===500){clearReportRoute();if(url===REPORT_PROXY)break}if(!retryable(e,e?.status))throw e;"
+ORIGINS = ('https://obsropbslfwtanyspjbi.supabase.co',
+           'https://business-os-api-gateway.netlify.app', 'https://139.100.237.167',
+           'https://136.234.17.113', 'https://homemaster.qd.je')
+
+
+def api(name, current):
+    require(sha(current) == BEFORE[name], 'API_BASELINE_CHANGED_'+name)
+    text = current.decode()
+    require(text.count(ANCHOR) == (2 if name == 'report-api' else 1), 'API_ANCHOR_COUNT')
+    changed = text.replace(ANCHOR, ANCHOR+GUARD).encode()
+    require(sha(changed) == AFTER[name], 'API_CANDIDATE_HASH')
+    return changed
+
+
+def web_versions(repo):
+    after = read(repo / NAME)
+    require(sha(after) == WEB_AFTER, 'CHECKOUT_WEB_CHANGED')
+    text = after.decode()
+    require(text.count(CLIENT_GUARD) == text.count(REQUEST_NEW) == 1, 'WEB_PATCH_ANCHOR')
+    before = text.replace(CLIENT_GUARD, '').replace(REQUEST_NEW, REQUEST_OLD).encode()
+    require(sha(before) == WEB_BEFORE, 'WEB_BASELINE_RECONSTRUCTION')
+    return before, after
+
+
+def describe_drift(before, current, location):
+    # Static-code diagnostics only. Never print literal values or raw source.
+    print('UPLOAD_SOURCE='+location, flush=True)
+    print('UPLOAD_EXPECTED_SHA='+sha(before.rstrip()), flush=True)
+    print('UPLOAD_ACTUAL_SHA='+sha(current.rstrip()), flush=True)
+    pattern = r'''(?s)'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|[^`\\])*`|/\*.*?\*/|//[^\n]*|[A-Za-z_$][\w$]*|\d+|[^\s]'''
+    tokenize = lambda data: re.findall(pattern, data.decode('utf-8', errors='replace'))
+    a, b = tokenize(before), tokenize(current)
+    groups = [(i,j,u,v) for tag,i,j,u,v in difflib.SequenceMatcher(None,a,b,autojunk=False).get_opcodes()
+              if tag != 'equal']
+    print('UPLOAD_DIFF_GROUPS='+str(len(groups)), flush=True)
+    def safe(tokens):
+        result = []
+        for token in tokens:
+            if token.startswith(('"', "'", '`', '//', '/*')) or len(token)>32 or token.isdigit():
+                result.append('<value:'+sha(token.encode())[:8]+'>')
+            else:
+                result.append(token)
+        return ' '.join(result)[:140]
+    for count,(i,j,u,v) in enumerate(groups[:3],1):
+        print('DIFF'+str(count)+'_BEFORE='+safe(a[max(0,i-5):min(len(a),j+5)]), flush=True)
+        print('DIFF'+str(count)+'_ACTUAL='+safe(b[max(0,u-5):min(len(b),v+5)]), flush=True)
+    print('UPLOAD_TARGET_ANCHORS='+json.dumps({
+        'retry_before':current.count(REQUEST_OLD.encode()),
+        'retry_after':current.count(REQUEST_NEW.encode()),
+        'receipt_after':current.count(CLIENT_GUARD.encode()),
+    }, separators=(',',':')), flush=True)
+
+
+def preserve_origins(before, current, after, location='module'):
+    pattern = re.compile(b'|'.join(re.escape(x.encode()) for x in ORIGINS))
+    normalize = lambda x: pattern.sub(b'@ORIGIN@', x).rstrip()
+    if normalize(before) != normalize(current):
+        describe_drift(before, current, location)
+        require(False, 'LIVE_UPLOAD_MODULE_CHANGED')
+    mapping = {}
+    old, new = pattern.findall(before), pattern.findall(current)
+    require(len(old) == len(new), 'ORIGIN_COUNT_CHANGED')
+    for a, b in zip(old, new):
+        require(a not in mapping or mapping[a] == b, 'ORIGIN_MAPPING_AMBIGUOUS')
+        mapping[a] = b
+    apply = lambda x: pattern.sub(lambda m: mapping.get(m[0], m[0]), x)
+    require(apply(before).rstrip() == current.rstrip(), 'ORIGIN_TRANSFORM_FAILED')
+    return apply(after)
+
+
+def frontend(web, repo):
+    raw = read(web / 'build-version.js')
+    match = re.fullmatch(rb'// Generated by npm run build\. Do not edit\.\nself\.BOS_BUILD=(\{.*\});\n', raw, re.S)
+    require(match is not None, 'MANIFEST_FORMAT')
+    meta = json.loads(match[1])
+    require(re.fullmatch('[a-f0-9]{20}', meta['id']), 'BUILD_FORMAT')
+    require(sha(read(web / 'index.html')) == meta['shell'], 'SHELL_HASH_CHANGED')
+    for name, digest in meta['assets'].items():
+        require(re.fullmatch('[A-Za-z0-9_.-]+', name) and name not in ('.', '..'), 'ASSET_PATH')
+        require(sha(read(web / name)) == digest, 'ASSET_HASH_CHANGED_'+name)
+    before, after = web_versions(repo)
+    marker = b'// Source: '+NAME.encode()+b'\n'
+    edited = {}
+    locations = []
+    for name in meta['assets']:
+        if not name.endswith('.bundle.js'):
+            continue
+        data = read(web / name)
+        if marker not in data:
+            continue
+        require(data.count(marker) == 1, 'UPLOAD_MODULE_DUPLICATED')
+        start = data.index(marker)+len(marker)
+        end = data.find(b'\n;\n// Source:', start)
+        require(end > start, 'UPLOAD_MODULE_BOUNDARY')
+        original = data[start:end]
+        changed = preserve_origins(before, original, after, 'bundle:'+name).rstrip()
+        trailing = original[len(original.rstrip()):]
+        edited['web/'+name] = data[:start]+changed+trailing+data[end:]
+        locations.append(name)
+    require(len(locations) == 1, 'ACTIVE_UPLOAD_MODULE_NOT_UNIQUE')
+    if (web / NAME).exists():
+        edited['web/'+NAME] = preserve_origins(before, read(web / NAME), after, 'standalone:'+NAME)
+    build = sha((meta['id']+''.join(n+sha(edited[n]) for n in sorted(edited))).encode())[:20]
+    html = read(web / 'index.html')
+    require(meta['id'].encode() in html, 'HTML_VERSION_MISSING')
+    edited['web/index.html'] = html.replace(meta['id'].encode(), build.encode())
+    worker = read(web / 'sw.js')
+    old = ("const BUILD_ID='"+meta['id']+"';").encode()
+    require(worker.count(old) == 1, 'WORKER_VERSION_MISSING')
+    edited['web/sw.js'] = worker.replace(old, ("const BUILD_ID='"+build+"';").encode())
+    new_meta = copy.deepcopy(meta)
+    new_meta['id'], new_meta['shell'] = build, sha(edited['web/index.html'])
+    for name, data in edited.items():
+        key = name.removeprefix('web/')
+        if key in new_meta['assets']:
+            new_meta['assets'][key] = sha(data)
+    edited['web/build-version.js'] = (b'// Generated by npm run build. Do not edit.\nself.BOS_BUILD='+
+        json.dumps(new_meta, ensure_ascii=False, separators=(',', ':')).encode()+b';\n')
+    return edited, build, meta['id']

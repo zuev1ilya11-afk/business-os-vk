@@ -1,0 +1,42 @@
+{
+  "environment": "disposable PGlite/PostgreSQL; synthetic master session; API source 390fff7",
+  "request": {
+    "action": "finalizeMasterReport",
+    "actor_role": "master"
+  },
+  "before": {
+    "id": "11",
+    "status": "Назначена",
+    "master_workflow_stage": "started",
+    "master_agreed_at": "2026-11-10T09:00:00+01:00",
+    "report_review_status": "not_submitted",
+    "report_uploaded_at": null,
+    "has_report_token": false,
+    "has_act": false,
+    "has_photos": false
+  },
+  "http_status": 200,
+  "api_ok": true,
+  "api_order": {
+    "id": "11",
+    "status": "В работе",
+    "master_workflow_stage": "assigned",
+    "master_agreed_at": null,
+    "report_review_status": "not_submitted",
+    "report_uploaded_at": null,
+    "has_report_token": false,
+    "has_act": false,
+    "has_photos": false
+  },
+  "after": {
+    "id": "11",
+    "status": "В работе",
+    "master_workflow_stage": "assigned",
+    "master_agreed_at": null,
+    "report_review_status": "not_submitted",
+    "report_uploaded_at": null,
+    "has_report_token": false,
+    "has_act": false,
+    "has_photos": false
+  }
+}

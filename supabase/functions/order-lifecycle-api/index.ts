@@ -100,7 +100,7 @@ let deduction:any;try{deduction=reportDeduction.normalize(body,q.data)}catch(e){
   const original=deduction.original_amount,unfinished=deduction.uncompleted_work_amount;
   const amount=round(original-unfinished),now=new Date().toISOString();
   const patch:any={status:'В работе',amount,extra_work_done:!!body.extra_work_done,extra_work_description:String(body.extra_work_description||''),extra_work_amount:round(body.extra_work_amount||0),uncompleted_work_done:!!body.uncompleted_work_done,uncompleted_work_description:String(body.uncompleted_work_description||''),uncompleted_work_amount:round(unfinished),...deduction,report_type:'work',report_act_url:act,report_measurement_url:null,report_photo_urls:JSON.stringify(photos),report_uploaded_at:now,report_upload_token:token,report_review_status:'pending',report_reviewed_by:null,report_reviewed_at:null,report_review_comment:'',drive_archive_status:'pending',drive_archive_error:null,completed_at:null,sync_status:'pending_sheet',updated_at:now,...payouts(amount,q.data)};
-  const r=await reportWriteReceipt(db,q.data,patch,token);if(r.error)throw r.error;if(!r.data)return reportConflict();
+  const r=await reportWriteReceipt(db,q.data,patch,token);if(r.error)throw r.error;if(!r.data)return reportConflict();if(!reportReceipt(r.data,token))return json({ok:false,error:'REPORT_NOT_SAVED',message:'Сервер не подтвердил сохранение отчёта. Данные формы сохранены; проверьте состояние перед повтором.'},409);
   return json({ok:true,order:masterOrder(r.data),drive_archive_status:'pending'});
 }
 
