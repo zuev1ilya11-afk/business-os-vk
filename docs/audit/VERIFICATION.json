@@ -1,0 +1,122 @@
+{
+  "date": "2026-11-11",
+  "timezone": "Europe/Moscow",
+  "baseline_commit": "d2ac9ef89d00663c6151a0d40990921b8d27bb88",
+  "frontend_build_id": "4f012805a30ee6b7d8ba",
+  "baseline": {
+    "build_check": "passed",
+    "server": {
+      "pass": 860,
+      "fail": 0
+    },
+    "ui": {
+      "pass": 889,
+      "fail": 0,
+      "skipped": 4
+    }
+  },
+  "final_server": {
+    "functional_commit": "3941400",
+    "pass": 915,
+    "fail": 0,
+    "skipped": 0,
+    "method": "npm run test:server; synthetic handlers and selected PGlite SQL"
+  },
+  "final_ui": {
+    "functional_commit": "3941400",
+    "statistics": {
+      "startTime": "2026-11-11T17:32:59.423Z",
+      "duration": 430773.779,
+      "expected": 888,
+      "skipped": 4,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "full_run_status": "one_failure_not_green",
+    "failed": "master-compact-card.spec.js: owner edit apartment/comment after reload",
+    "isolated_retry": {
+      "runs": 10,
+      "pass": 10,
+      "cause": "not_established"
+    },
+    "exclusions": [
+      "tests/gas-archive-health.spec.js",
+      "tests/gas-bridge-health.spec.js"
+    ],
+    "runtime": "Playwright 1.55.1 / Chromium Headless Shell 140.0.7339.186 build1193",
+    "isolation": "deny proxy http://127.0.0.1:9 at browser launch and context; mock Edge fetch rejects external requests",
+    "adjacent_retry": {
+      "runs": 33,
+      "pass": 33,
+      "workers": 2,
+      "cause": "not_established"
+    }
+  },
+  "additional": {
+    "portal_client_website_https": {
+      "pass": 60,
+      "fail": 0,
+      "local_commit": "d83e95b",
+      "remote_commit": "7b1b8ad4f732e99281c63c8aa169a65c2822c5c3",
+      "identical_tree": "ed44728635937d97e139d1f2dd0df2cfa50c8cf0"
+    },
+    "manual_create_committed_response_loss": {
+      "pass": 1,
+      "fail": 0,
+      "scope": "same open form only"
+    },
+    "read_only_collector": {
+      "pass": 8,
+      "fail": 0
+    },
+    "original_price": {
+      "rows": 40,
+      "matched_prices_units": 40,
+      "selectable_services": 39,
+      "minimum_visit_condition": 2800,
+      "sha256": "a63de7adb26dbee73af829d665d6df4fdbc580ed7909f4c02ec8f3c7aa5cbbaf"
+    },
+    "deno": {
+      "version": "2.9.7",
+      "pass": 7,
+      "fail": 0,
+      "entries": [
+        "mini-app-api",
+        "report-api",
+        "report-file-upload",
+        "order-lifecycle-api",
+        "claims-api",
+        "master-memo-api",
+        "drive-archive-api"
+      ],
+      "method": "official binary checksum verified; npm-prefetched exact dependencies with temporary manual nodeModulesDir; registry fetch in native Deno failed Connection refused",
+      "limitation": "not the CI frozen lockfile suites"
+    },
+    "type_only_followup": {
+      "local_commit": "f5d557e",
+      "baseline_errors": 3,
+      "claims_auth_tests_passed": 121,
+      "runtime_javascript": "byte-identical after TypeScript erasure"
+    }
+  },
+  "not_verified": [
+    "Russian live BUILD_ID, exact source/runtime, service images, RLS/grants/schema and applied migrations",
+    "Real PostgreSQL17.6 concurrency suites (Docker and psql unavailable)",
+    "Frozen Deno lockfile runtime suites",
+    "Production notification/integration delivery and real report files",
+    "Actual claim7395762 and real payouts",
+    "Physical iPhone/Huawei",
+    "Backup restoration and permanent staging parity"
+  ],
+  "production_writes": false,
+  "real_messages_sent": false,
+  "log_sha256": {
+    "baseline-server.log": "856eb662089726d0ad213e93d9bb90c1c3d4c2836eaa96abe7fb878a6aadb741",
+    "baseline-ui.json": "d0aaff7c54e5d8e57d4ac009bfa031384eb4a13e7457743edf88f19e58423be5",
+    "final-server.log": "0e21cee3f5bee6fe5d9b0b1b5d4bbaf5810aba037cf9c826840b72730aa84e76",
+    "final-ui.json": "2439d0f506a5a004ee5128426274f13b21cdbcd8c4c751a9c9739231f70f76bd",
+    "final-deno.log": "2ba440ce1a058d52e2e442315873d78a4bd2176f336d503971ef21878483e4b5",
+    "portal-status-after.log": "7eb3ff1df2635664712256fd2f3cdbd508cfd4bef867bb8c85f2d31289c6e241",
+    "manual-create-lost-response.log": "3598c0625eb9c315e36ff31ebe22b84e55d15bb8e4e839ab4f1706013ce1b669"
+  }
+}
