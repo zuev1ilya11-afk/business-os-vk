@@ -1,5 +1,6 @@
 """Exact source overlays; keep the deployed RU transport and unrelated changes."""
 import copy
+import difflib
 import json
 import re
 from common import read, sha, require
@@ -42,10 +43,41 @@ def web_versions(repo):
     return before, after
 
 
-def preserve_origins(before, current, after):
+def describe_drift(before, current, location):
+    # Static-code diagnostics only. Never print literal values or raw source.
+    print('UPLOAD_SOURCE='+location, flush=True)
+    print('UPLOAD_EXPECTED_SHA='+sha(before.rstrip()), flush=True)
+    print('UPLOAD_ACTUAL_SHA='+sha(current.rstrip()), flush=True)
+    pattern = r'''(?s)'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|[^`\\])*`|/\*.*?\*/|//[^\n]*|[A-Za-z_$][\w$]*|\d+|[^\s]'''
+    tokenize = lambda data: re.findall(pattern, data.decode('utf-8', errors='replace'))
+    a, b = tokenize(before), tokenize(current)
+    groups = [(i,j,u,v) for tag,i,j,u,v in difflib.SequenceMatcher(None,a,b,autojunk=False).get_opcodes()
+              if tag != 'equal']
+    print('UPLOAD_DIFF_GROUPS='+str(len(groups)), flush=True)
+    def safe(tokens):
+        result = []
+        for token in tokens:
+            if token.startswith(('"', "'", '`', '//', '/*')) or len(token)>32 or token.isdigit():
+                result.append('<value:'+sha(token.encode())[:8]+'>')
+            else:
+                result.append(token)
+        return ' '.join(result)[:140]
+    for count,(i,j,u,v) in enumerate(groups[:3],1):
+        print('DIFF'+str(count)+'_BEFORE='+safe(a[max(0,i-5):min(len(a),j+5)]), flush=True)
+        print('DIFF'+str(count)+'_ACTUAL='+safe(b[max(0,u-5):min(len(b),v+5)]), flush=True)
+    print('UPLOAD_TARGET_ANCHORS='+json.dumps({
+        'retry_before':current.count(REQUEST_OLD.encode()),
+        'retry_after':current.count(REQUEST_NEW.encode()),
+        'receipt_after':current.count(CLIENT_GUARD.encode()),
+    }, separators=(',',':')), flush=True)
+
+
+def preserve_origins(before, current, after, location='module'):
     pattern = re.compile(b'|'.join(re.escape(x.encode()) for x in ORIGINS))
     normalize = lambda x: pattern.sub(b'@ORIGIN@', x).rstrip()
-    require(normalize(before) == normalize(current), 'LIVE_UPLOAD_MODULE_CHANGED')
+    if normalize(before) != normalize(current):
+        describe_drift(before, current, location)
+        require(False, 'LIVE_UPLOAD_MODULE_CHANGED')
     mapping = {}
     old, new = pattern.findall(before), pattern.findall(current)
     require(len(old) == len(new), 'ORIGIN_COUNT_CHANGED')
@@ -82,13 +114,13 @@ def frontend(web, repo):
         end = data.find(b'\n;\n// Source:', start)
         require(end > start, 'UPLOAD_MODULE_BOUNDARY')
         original = data[start:end]
-        changed = preserve_origins(before, original, after).rstrip()
+        changed = preserve_origins(before, original, after, 'bundle:'+name).rstrip()
         trailing = original[len(original.rstrip()):]
         edited['web/'+name] = data[:start]+changed+trailing+data[end:]
         locations.append(name)
     require(len(locations) == 1, 'ACTIVE_UPLOAD_MODULE_NOT_UNIQUE')
     if (web / NAME).exists():
-        edited['web/'+NAME] = preserve_origins(before, read(web / NAME), after)
+        edited['web/'+NAME] = preserve_origins(before, read(web / NAME), after, 'standalone:'+NAME)
     build = sha((meta['id']+''.join(n+sha(edited[n]) for n in sorted(edited))).encode())[:20]
     html = read(web / 'index.html')
     require(meta['id'].encode() in html, 'HTML_VERSION_MISSING')
