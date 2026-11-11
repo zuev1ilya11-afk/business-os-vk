@@ -29,16 +29,22 @@
  const ids=m=>[m?.id,m?.staff_id,m?.external_id,m?.vk_user_id].filter(v=>v!==null&&v!==undefined&&v!=='').map(String);
  const orderIds=o=>[o.master_staff_id,o.master_id,o.master_vk_id,o.master_external_id].filter(v=>v!==null&&v!==undefined&&v!=='').map(String);
  const exactName=s=>text(s).replace(/\s+/g,' ').toLocaleLowerCase('ru-RU');
- const byName=new Map(catalog.map(x=>[exactName(x.name),x]));
+ // Preserve historical text-only identities; structured rows use saved IDs.
+ const byName=new Map(catalog.filter(x=>x.source!=='lemana_pro').map(x=>[exactName(x.name),x]));
+ const byId=new Map(catalog.map(x=>[x.id,x]));
+ for(const item of catalog)if(!byName.has(exactName(item.name)))byName.set(exactName(item.name),item);
  function works(o){
   // `work` is the persisted catalogue name / Hands serialized name × quantity.
   // Do not use comments, category guesses or today's catalogue prices.
-  const result=[];
+  const result=[],saved=Array.isArray(o.work_items)?o.work_items:[],used=new Set();
   for(const line of text(o.work).split(/\n+/).filter(Boolean)){
-   const match=line.match(/^(.*?)\s*[×x]\s*([\d.,]+)(?:\s+.*)?$/iu),name=text(match?match[1]:line),item=byName.get(exactName(name));
-   if(!item)continue;
+   const match=line.match(/^(.*?)\s*[×x]\s*([\d.,]+)(?:\s+.*)?$/iu),name=text(match?match[1]:line);
    const quantity=match?Number(match[2].replace(',','.')):1;
    if(!Number.isFinite(quantity)||quantity<=0)continue;
+   const index=saved.findIndex((row,i)=>!used.has(i)&&exactName(row.name)===exactName(name)&&Number(row.quantity)===quantity&&byId.has(row.service_id));
+   const item=index>=0?byId.get(saved[index].service_id):byName.get(exactName(name));
+   if(!item)continue;
+   if(index>=0)used.add(index);
    result.push({key:item.id,name:item.name,quantity,unit:item.unit});
   }
   return result;
