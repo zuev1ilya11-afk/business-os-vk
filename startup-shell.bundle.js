@@ -787,7 +787,12 @@ const standard=[
 {id:'standard_034',n:'Средство подмащивания для высоты от 3 метров',u:'шт.',p:830}
 ];
 const avito={"version":"2026-09-30","title":"Авито — Санкт-Петербург и Ленинградская область","currency":"RUB","regions":["Санкт-Петербург","Ленинградская область"],"priceMode":"from","minimumVisitPrice":null,"travelFee":null,"materialsIncluded":null,"categories":[{"id":"plumbing","name":"Сантехника"},{"id":"electrical","name":"Электрика"},{"id":"handyman","name":"Мастер на час"}],"services":[{"id":"dishwasher_washer","category":"plumbing","name":"Установка и подключение посудомойки, стиральной машины","fromPrice":1500},{"id":"water_heater","category":"plumbing","name":"Установка водонагревателя","fromPrice":2000},{"id":"mixer","category":"plumbing","name":"Установка и замена смесителя","fromPrice":1000},{"id":"toilet","category":"plumbing","name":"Установка и подключение унитаза","fromPrice":2000},{"id":"bath","category":"plumbing","name":"Установка и подключение ванны","fromPrice":3500},{"id":"shower_cabin","category":"plumbing","name":"Сборка и установка душевой кабины","fromPrice":5000},{"id":"installation_frame","category":"plumbing","name":"Сборка и установка каркаса инсталляции","fromPrice":2500,"note":"Цена указана за 2,5 м, далее каждый 1 м + 500 ₽. Размер и применимость расчёта уточнить.","requiresReview":true},{"id":"tap","category":"plumbing","name":"Замена крана","fromPrice":700},{"id":"flexible_hose","category":"plumbing","name":"Монтаж и демонтаж гибкой подводки","fromPrice":700},{"id":"shower_switch","category":"plumbing","name":"Ремонт переключателя душа","fromPrice":500},{"id":"shower_rail","category":"plumbing","name":"Установка штанги для душа","fromPrice":700},{"id":"sealant","category":"plumbing","name":"Герметизация ванны, мойки-раковины, душевой кабины или поддона","fromPrice":2000},{"id":"shower_tray","category":"plumbing","name":"Демонтаж и монтаж душевого поддона","fromPrice":2100},{"id":"filter","category":"plumbing","name":"Замена фильтра грубой и тонкой очистки","fromPrice":1500},{"id":"tee","category":"plumbing","name":"Установка тройника","fromPrice":1000},{"id":"manifold","category":"plumbing","name":"Установка коллектора","fromPrice":3000},{"id":"socket_install","category":"electrical","name":"Установка розеток и выключателей","fromPrice":300},{"id":"data_socket","category":"electrical","name":"Установка компьютерной, антенной, телефонной розетки","fromPrice":500},{"id":"cable_channel","category":"electrical","name":"Установка кабель-каналов","fromPrice":400},{"id":"chandelier","category":"electrical","name":"Сборка и установка люстры","fromPrice":1200},{"id":"light_fixture","category":"electrical","name":"Сборка и установка настенных и потолочных светильников, бра","fromPrice":1200},{"id":"breaker","category":"electrical","name":"Установка и подключение автомата","fromPrice":500},{"id":"electrical_panel","category":"electrical","name":"Установка и монтаж распределительного щита","fromPrice":2000},{"id":"panel_niche","category":"electrical","name":"Устройство ниши под электрощит","fromPrice":2000},{"id":"socket_replace","category":"electrical","name":"Замена розетки/выключателя","fromPrice":300},{"id":"switch_block","category":"electrical","name":"Замена блока выключателей туалет/ванна/кухня","fromPrice":850},{"id":"curtain_rod","category":"handyman","name":"Установка карнизов","fromPrice":1500},{"id":"tv_bracket","category":"handyman","name":"Монтаж кронштейнов для ТВ","fromPrice":800},{"id":"pull_up_bar","category":"handyman","name":"Установка турников","fromPrice":1000},{"id":"shelf","category":"handyman","name":"Навеска полок на стену","fromPrice":500},{"id":"wall_cabinet","category":"handyman","name":"Установка навесных шкафов","fromPrice":800},{"id":"mirror","category":"handyman","name":"Установка зеркала на стену","fromPrice":500},{"id":"dryer","category":"handyman","name":"Установка сушилки для белья","fromPrice":500},{"id":"vent_grille","category":"handyman","name":"Установка вентиляционных решёток","fromPrice":500},{"id":"drilling","category":"handyman","name":"Сверление отверстий","fromPrice":200},{"id":"plumbing_general","category":"handyman","name":"Установка унитаза, раковин, смесителей, ванн","fromPrice":1000,"note":"Общая позиция. Для конкретной услуги используйте соответствующую цену раздела «Сантехника».","requiresReview":true},{"id":"furniture","category":"handyman","name":"Ремонт, сборка мебели","fromPrice":1000}]};
-return {version:'2026-10-01',standard,avito};
+// BEGIN LEMANA CATALOG
+const lemana={"version":"2026-11-11","title":"Лемана Про — Карнизы и светозащита","currency":"RUB","vatIncluded":true,"source":{"filename":"12 Карнизы и светозащита_11.11..26.xlsx","sha256":"a63de7adb26dbee73af829d665d6df4fdbc580ed7909f4c02ec8f3c7aa5cbbaf","sheet":"Sheet1"},"services":[{"id":"lemana_20261111_003","n":"Замер для установки карниза","u":"выезд","p":1500,"group":"Выезд и замер","note":"Выезд на объект, составление обмерного плана.\nВ тариф включен замер от 1 до 4 оконных проёмов.","kind":"service","sourceRange":"A3:C4"},{"id":"lemana_20261111_005","n":"Выезд за пределы города (в одну сторону за каждый км) до ХХ км","u":"км","p":70,"group":"Выезд и замер","note":"","kind":"service","sourceRange":"A5:C5"},{"id":"lemana_20261111_006","n":"Минимальная стоимость выезда мастера","u":"","p":2800,"group":"Выезд и замер","note":"","kind":"minimum","sourceRange":"A6:C6"},{"id":"lemana_20261111_007","n":"Повторный выезд по вине магазина","u":"выезд","p":1200,"group":"Выезд и замер","note":"","kind":"service","sourceRange":"A7:C7"},{"id":"lemana_20261111_010","n":"Установка декоративного карниза (одно, двух, трехрядный) длиной до 2,5 метров","u":"комплект","p":1850,"group":"Основные услуги","note":"Установка любого готового или сборного карниза из пластика, металла или дерева, длинной до 2,5 метров на 3 точки крепления. В услугу входит сборка карниза, разметка мест крепления, сверление отверстий, монтаж на стену\\потолок. В данную услугу не входит установка карнизов на металлические конструкции. Работы производятся на высоте не более 3-х метров. Инструмент и средства подмащивания исполнителя. Время выполнения не более 1 часа.","kind":"service","sourceRange":"A10:C11"},{"id":"lemana_20261111_012","n":"Установка декоративного карниза (одно, двух, трехрядный) длиной до 3,5 метров","u":"комплект","p":2350,"group":"Основные услуги","note":"Установка любого готового или сборного карниза из пластика, металла или дерева, длинной до 3,5 метров, на 5 точек крепления. В услугу входит сборка карниза, разметка мест крепления, сверление отверстий, монтаж на стену\\потолок. В данную услугу не входит установка карнизов на металлические конструкции. Работы производятся на высоте не более 3-х метров. Инструмент и средства подмащивания исполнителя. Время выполнения не более 1 часа.","kind":"service","sourceRange":"A12:C13"},{"id":"lemana_20261111_014","n":"Установка декоративного карниза длиной более 3,5 метров","u":"пог. м","p":950,"group":"Основные услуги","note":"Установка любого готового или сборного карниза из пластика, металла или дерева длинной более 3,5 метров, точки крепления идут каждые 0,7 метра.\nСборка карниза, разметка мест крепления, сверление отверстий, монтаж на стену/потолок.\nВ данную услугу не входит установка карнизов на металлические конструкции.\nРаботы производятся на высоте не более 3-х метров.\nСредства подмащивания исполнителя.\nИнструмент исполнителя.\nВремя выполнения зависит от объема работ, не менее 1 часа.","kind":"service","sourceRange":"A14:C21"},{"id":"lemana_20261111_022","n":"Установка горизонтальных жалюзи на створку окна","u":"комплект","p":950,"group":"Основные услуги","note":"Установка горизонтальных жалюзи (алюминий, пластик) на створку окна. Сборка жалюзи, разметка места крепления, монтаж на створку с помощью саморезов и\\или двустороннего скотча. Работы производятся на высоте не более 3-х метров. Инструмент и средства подмащивания исполнителя. Время выполнения не более 1 часа.","kind":"service","sourceRange":"A22:C23"},{"id":"lemana_20261111_024","n":"Монтаж рулонной шторы, рулонной шторы день-ночь на стену\\потолок или в оконный проем","u":"комплект","p":1450,"group":"Основные услуги","note":"Монтаж рулонной шторы, рулонной шторы день-ночь на стену\\потолок или в оконный проем. Сборка рулонной шторы, разметка места крепления, сверление отверстий, монтаж на стену\\потолок. Работы производятся на высоте не более 3-х метров. Инструмент и средства подмащивания исполнителя. Время выполнения не более 1 часа.","kind":"service","sourceRange":"A24:C25"},{"id":"lemana_20261111_026","n":"Установка рулонной шторы, рулонной шторы день-ночь на створку окна","u":"комплект","p":1000,"group":"Основные услуги","note":"Монтаж рулонной шторы\\рулонной шторы день-ночь на створку окна. Сборка рулонной шторы, разметка места крепления, монтаж на створку окна с помощью саморезов и\\или двустороннего скотча. Работы производятся на высоте не более 3-х метров. Инструмент и средства подмащивания исполнителя. Время выполнения не более 1 часа.","kind":"service","sourceRange":"A26:C27"},{"id":"lemana_20261111_028","n":"Монтаж римской шторы на стену\\потолок","u":"комплект","p":1450,"group":"Основные услуги","note":"Сборка карниза для римской шторы, разметка места крепления, сверление отверстий, монтаж карниза и римской шторы. Работы производятся на высоте не более 3-х метров. Инструмент и средства подмащивания исполнителя. Время выполнения не более 1 часа.","kind":"service","sourceRange":"A28:C29"},{"id":"lemana_20261111_030","n":"Монтаж горизонтальных жалюзи на стену\\потолок","u":"п.м.","p":1350,"group":"Основные услуги","note":"Монтаж горизонтальных (алюминий, пластик) или вертикальных жалюзи на стену\\потолок. Сборка жалюзи, разметка места крепления, сверление отверстий и монтаж жалюзи. Работы производятся на высоте не более 3-х метров. Инструмент и средства подмащивания исполнителя. Время выполнения не более 1 часа.","kind":"service","sourceRange":"A30:C31"},{"id":"lemana_20261111_032","n":"Монтаж вертикальных жалюзи на стену\\потолок","u":"п.м.","p":1350,"group":"Основные услуги","note":"Монтаж вертикальных (алюминий, пластик) жалюзи на стену\\потолок. Сборка жалюзи, разметка места крепления, сверление отверстий и монтаж жалюзи. Работы производятся на высоте не более 3-х метров. Инструмент и средства подмащивания исполнителя. Время выполнения не более 1 часа.","kind":"service","sourceRange":"A32:C33"},{"id":"lemana_20261111_034","n":"Монтаж шторы плиссе","u":"комплект","p":1290,"group":"Основные услуги","note":"Монтаж шторы плиссе. Сборка шторы, разметка места крепления, сверление отверстий, монтаж шторы плиссе. Работы производятся на высоте не более 3- метров. Инструмент и средства подмащивания исполнителя. Время выполнения не более 1 часа.","kind":"service","sourceRange":"A34:C35"},{"id":"lemana_20261111_036","n":"Установка электрокарниза длиной до 3-х метров","u":"шт","p":3800,"group":"Основные услуги","note":"Состав услуги:\nРазметка мест креплений (расстояние между точками крепления 500 мм). Сборка и подгонка профиля под нужный размер. Сверление отверстий, монтаж на стену\\потолок. Навеска электропривода и его подключение к электросети. Настройка концевых положений и проверка работы с пульта. В данную услугу не входит установка электрокарнизов на металлические конструкции. Работы производятся на высоте не более 3-х метров. Инструмент, средства подмащивания исполнителя.","kind":"service","sourceRange":"A36:C38"},{"id":"lemana_20261111_039","n":"Установка электрокарниза длиной более 3-х метров","u":"п.м.","p":1230,"group":"Основные услуги","note":"Состав услуги:\nРазметка мест креплений (расстояние между точками крепления 500 мм). Сборка и подгонка профиля под нужный размер. Сверление отверстий, монтаж на стену\\потолок. Навеска электропривода и его подключение к электросети. Настройка концевых положений и проверка работы с пульта. В данную услугу не входит установка электрокарнизов на металлические конструкции. Работы производятся на высоте не более 3-х метров. Инструмент, средства подмащивания исполнителя.","kind":"service","sourceRange":"A39:C41"},{"id":"lemana_20261111_043","n":"Монтаж розетки без штробления","u":"шт","p":560,"group":"Дополнительные работы к установке электрокарнизов","note":"Установка монтажной коробки, розетки, подключение к электричеству.","kind":"service","sourceRange":"A43:C43"},{"id":"lemana_20261111_044","n":"Подвод электричества к точке с прокладкой провода до 5 метров","u":"шт","p":1000,"group":"Дополнительные работы к установке электрокарнизов","note":"Монтаж наружной проводки 1-5 метра. Подключение проводов.","kind":"service","sourceRange":"A44:C44"},{"id":"lemana_20261111_045","n":"Прокладка кабель-канал","u":"п.м.","p":200,"group":"Дополнительные работы к установке электрокарнизов","note":"","kind":"service","sourceRange":"A45:C45"},{"id":"lemana_20261111_046","n":"Настройка приложения","u":"шт","p":1100,"group":"Дополнительные работы к установке электрокарнизов","note":"","kind":"service","sourceRange":"A46:C46"},{"id":"lemana_20261111_049","n":"Установка крючка\\подхвата декоративного","u":"шт","p":180,"group":"Дополнительные работы","note":"Разметка места крепления, сверление отверстия, монтаж. Материалы заказчика.","kind":"service","sourceRange":"A49:C49"},{"id":"lemana_20261111_050","n":"Установка бленды","u":"п.м.","p":300,"group":"Дополнительные работы","note":"Подрезка и монтаж бленды на карниз. Материалы заказчика.","kind":"service","sourceRange":"A50:C50"},{"id":"lemana_20261111_051","n":"Демонтаж декоративного крючка или подхвата","u":"шт","p":80,"group":"Дополнительные работы","note":"Без заделки отверстия","kind":"service","sourceRange":"A51:C51"},{"id":"lemana_20261111_052","n":"Демонтаж карниза","u":"шт","p":400,"group":"Дополнительные работы","note":"Без заделки отверстия.","kind":"service","sourceRange":"A52:C52"},{"id":"lemana_20261111_053","n":"Демонтаж рулонных штор, римских штор и жалюзи всех видов","u":"шт","p":250,"group":"Дополнительные работы","note":"Без заделки отверстия","kind":"service","sourceRange":"A53:C53"},{"id":"lemana_20261111_054","n":"Подрезка гладкой рулонной шторы светопроницаемой","u":"шт","p":750,"group":"Дополнительные работы","note":"Разметка и подрезка готовой гладкой светопроницаемой рулонной шторы по ширине, по размерам клиента. В услугу включена подрезка полотна, пластикового\\металлического каркаса и утяжелителя. Упаковка рулонной шторы. Погрешность подрезки может составлять 3-4 мм. Сборка и обработка края полотна в услугу не входит.","kind":"service","sourceRange":"A54:C54"},{"id":"lemana_20261111_055","n":"Подрезка рулонной шторы Блэкаут","u":"шт","p":750,"group":"Дополнительные работы","note":"Разметка и подрезка готовой рулонной шторы Блэкаут по ширине по размерам клиента. В услугу включена подрезка полотна, пластикового\\металлического каркаса и утяжелителя. Упаковка рулонной шторы. Погрешность подрезки может составлять 3-4 мм. Обработка края полотна в услугу не входит.","kind":"service","sourceRange":"A55:C55"},{"id":"lemana_20261111_056","n":"Подрезка рулонной шторы день-ночь","u":"шт","p":750,"group":"Дополнительные работы","note":"Разметка и подрезка двойного полотна рулонной шторы День-Ночь по ширине по размерам клиента. В услугу включена подрезка полотна, пластикового\\металлического каркаса и утяжелителя, подрезка верхней планки. Упаковка рулонной шторы. Погрешность подрезки может составлять 3-4 мм. Обработка края полотна в услугу не входит.","kind":"service","sourceRange":"A56:C56"},{"id":"lemana_20261111_057","n":"Подрезка ламелей вертикальных жалюзи","u":"шт","p":50,"group":"Дополнительные работы","note":"Разметка длины с последующей подрезкой ламели (в состав работ не входит подрез утяжелителя и верхнего механизма).","kind":"service","sourceRange":"A57:C57"},{"id":"lemana_20261111_058","n":"Монтаж ламелей","u":"шт","p":150,"group":"Дополнительные работы","note":"Крепление ламели на механизме.","kind":"service","sourceRange":"A58:C58"},{"id":"lemana_20261111_059","n":"Монтаж декоративного короба рулонной шторы","u":"шт","p":550,"group":"Дополнительные работы","note":"Разметка и крепеж короба рулонной шторы саморезами к створке окна.","kind":"service","sourceRange":"A59:C59"},{"id":"lemana_20261111_060","n":"Подрезка декоративного короба рулонной шторы","u":"пил","p":440,"group":"Дополнительные работы","note":"Разметка длины с последующей подрезкой декоративного короба.","kind":"service","sourceRange":"A60:C60"},{"id":"lemana_20261111_061","n":"Монтаж внешнего угла-поворота для карниза","u":"шт","p":380,"group":"Дополнительные работы","note":"Сборка элементов конструкции с использованием поворотных элементов.","kind":"service","sourceRange":"A61:C61"},{"id":"lemana_20261111_062","n":"Подрезка карниза по длине","u":"пил","p":200,"group":"Дополнительные работы","note":"Подрезка карниза: одно, двух, трехрядного.","kind":"service","sourceRange":"A62:C62"},{"id":"lemana_20261111_063","n":"Эркерное соединение карниза","u":"шт","p":250,"group":"Дополнительные работы","note":"Монтаж эркера на карниз (при пластиковом карнизе без подрезки самого эркера). Материалы заказчика.","kind":"service","sourceRange":"A63:C63"},{"id":"lemana_20261111_064","n":"Монтаж направляющих для рулонной шторы","u":"комплект","p":580,"group":"Дополнительные работы","note":"Разметка места крепления, монтаж производится на двусторонний скотч (входит в комплект). Материалы заказчика.","kind":"service","sourceRange":"A64:C64"},{"id":"lemana_20261111_065","n":"Монтаж дополнительной точки крепления декоративного карниза к стене\\потолку","u":"шт","p":380,"group":"Дополнительные работы","note":"Разметка места крепления, сверление отверстий с последующим монтажом. Материалы заказчика.","kind":"service","sourceRange":"A65:C65"},{"id":"lemana_20261111_066","n":"Средство подмащивания для высоты от 3х метров","u":"шт","p":830,"group":"Дополнительные работы","note":"При отсутствии средств подмащивания у клиента предоставляются исполнителем.","kind":"service","sourceRange":"A66:C66"},{"id":"lemana_20261111_067","n":"Доплата за работы на высоте более 3 метров","u":"п.м.","p":550,"group":"Дополнительные работы","note":"С использованием высотной лестницы. Средства подмащивания исполнителя.","kind":"service","sourceRange":"A67:C67"},{"id":"lemana_20261111_068","n":"Установка магнита для нижней фиксации рулонной шторы/жалюзи","u":"точка","p":200,"group":"Дополнительные работы","note":"Разметка места крепления, сверление отверстия, монтаж. Материалы клиента.","kind":"service","sourceRange":"A68:C68"}]};
+// END LEMANA CATALOG
+const isLemana=order=>['лемана про','lemana_pro'].includes(String(typeof order==='string'?order:order?.source||'').trim().toLowerCase())||order?.external_source==='lemana_pro';
+const forSource=order=>isLemana(order)?lemana.services.filter(s=>s.kind!=='minimum'):standard;
+return {version:'2026-10-01',standard,avito,lemana,isLemana,forSource};
 });
 
 
@@ -802,18 +807,20 @@ return {version:'2026-10-01',standard,avito};
   const round=n=>Math.round((Number(n)+Number.EPSILON)*100)/100;
   const fractional=unit=>['км','пог. м','п.м.','м','м²','м2','час'].includes(unit);
   const catalog=[...prices.standard.map(s=>({id:s.id,name:s.n,unit:s.u,price:s.p,mode:s.p==null?'agreed':'fixed',group:'Основной прайс'})),
+    ...prices.lemana.services.filter(s=>s.kind!=='minimum').map(s=>({id:s.id,name:s.n,unit:s.u,price:s.p,mode:'fixed',group:'Лемана Про · '+s.group,note:s.note,source:'lemana_pro',version:prices.lemana.version})),
     ...prices.avito.services.map(s=>({id:'avito_'+s.id,name:s.name,unit:s.unit||'',price:s.fromPrice,mode:'from',group:'Прайс Авито',note:s.note||''}))];
   const fail=message=>{throw new Error(message)};
   function number(v,label,max=1e9){
     if(typeof v!=='number'||!Number.isFinite(v)||v<0||v>max)fail(label+': укажите конечное неотрицательное число');
     return v;
   }
-  function items(input){
+  function items(input,order){
     if(!Array.isArray(input)||!input.length||input.length>100)fail('Добавьте от 1 до 100 невыполненных работ из прайса');
     const seen=new Set();
     return input.map(row=>{
       const s=catalog.find(s=>s.id===row?.service_id);
       if(!s||seen.has(s.id))fail('Неизвестная или повторяющаяся работа в вычете');
+      if(s.source==='lemana_pro'&&!prices.isLemana(order))fail('Прайс Лемана Про доступен только для заявок этого источника');
       seen.add(s.id);
       const qty=number(row.quantity,'Количество',10000);
       if(qty<=0||Math.abs(qty*1000-Math.round(qty*1000))>1e-7||(!fractional(s.unit)&&!Number.isInteger(qty)))fail('Количество должно быть положительным и соответствовать единице прайса');
@@ -824,7 +831,7 @@ return {version:'2026-10-01',standard,avito};
       const amount=round(price*qty);
       if(!Number.isSafeInteger(Math.round(amount*100))||amount>1e9)fail('Сумма позиции слишком велика');
       if(row.amount!==undefined&&row.amount!==amount)fail('Сумма позиции не соответствует цене и количеству');
-      return {service_id:s.id,name:s.name,unit:s.unit,quantity:qty,unit_price:price,amount,price_mode:s.mode,price_confirmed:s.mode==='fixed'?false:true,catalog_version:prices.version};
+      return {service_id:s.id,name:s.name,unit:s.unit,quantity:qty,unit_price:price,amount,price_mode:s.mode,price_confirmed:s.mode==='fixed'?false:true,catalog_version:s.version||prices.version};
     });
   }
   function original(order){
@@ -839,13 +846,14 @@ return {version:'2026-10-01',standard,avito};
     if(!enabled)return {original_amount:base,uncompleted_work_done:false,uncompleted_work_items:[],uncompleted_work_amount:0,uncompleted_work_description:''};
     const comment=String(body.uncompleted_work_description||'').trim();
     if(comment.length>4000)fail('Комментарий: не более 4000 символов');
-    const rows=detailed?items(body.uncompleted_work_items):[];
+    const rows=detailed?items(body.uncompleted_work_items,order):[];
     const total=detailed?round(rows.reduce((sum,s)=>sum+s.amount,0)):round(Number(body.uncompleted_work_amount||0));
     if(!Number.isFinite(total)||total<0||total>base)fail('Невыполненные работы не могут превышать исходную сумму заявки');
     if(detailed&&body.uncompleted_work_amount!==undefined&&body.uncompleted_work_amount!==total)fail('Сумма вычета не соответствует выбранным работам');
     return {original_amount:base,uncompleted_work_done:true,uncompleted_work_items:rows,uncompleted_work_amount:total,uncompleted_work_description:comment};
   }
-  return {catalog,fractional,items,normalize,original,round};
+  const forOrder=order=>prices.isLemana(order)?catalog.filter(s=>s.source==='lemana_pro'||order?.uncompleted_work_items?.some(r=>r.service_id===s.id)):catalog.filter(s=>s.source!=='lemana_pro');
+  return {catalog,forOrder,fractional,items,normalize,original,round};
 });
 
 
@@ -1166,8 +1174,8 @@ pages.team=function(){const html=profileTeamBase();return html.replace(/<section
   const catalog=modal.querySelector('.bosSharedCatalog'),avito=modal.querySelector('.bosAvitoCatalog'),materials=modal.querySelector('.bosPriceMaterials');
   if(catalog&&avito&&!modal.querySelector('.bosPriceTabs')){
    modal.classList.add('bosSharedScreen');const tabs=document.createElement('div');tabs.className='bosPriceTabs';tabs.setAttribute('role','group');tabs.setAttribute('aria-label','Разделы прайса');
-   const sections={catalog,avito,materials};
-   for(const [key,title] of [['catalog','Каталог работ'],['avito','Прайс Авито'],['materials','Материалы']]){if(!sections[key])continue;const b=document.createElement('button');b.type='button';b.dataset.priceTab=key;b.textContent=title;b.onclick=()=>{for(const [name,section] of Object.entries(sections)){if(section)section.hidden=name!==key;}tabs.querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button===b)));if(key==='materials')materials.open=true;};tabs.appendChild(b);}
+   const sections={catalog,lemana:modal.querySelector('.bosLemanaCatalog'),avito,materials};
+   for(const [key,title] of [['catalog','Каталог работ'],['lemana','Лемана Про'],['avito','Прайс Авито'],['materials','Материалы']]){if(!sections[key])continue;const b=document.createElement('button');b.type='button';b.dataset.priceTab=key;b.textContent=title;b.onclick=()=>{for(const [name,section] of Object.entries(sections)){if(section)section.hidden=name!==key;}tabs.querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button===b)));if(key==='materials')materials.open=true;};tabs.appendChild(b);}
    avito.before(tabs);tabs.querySelector('[data-price-tab=catalog]').click();
   }
   const toolsHead=modal.querySelector('.ownerToolsHead');
@@ -1982,6 +1990,7 @@ const baseHome=pages.home;pages.home=function(){if(!(typeof isMasterPreview==='f
   const units=['шт.','комплект','выезд','пил.','точка','м','пог. м','п.м.','км','м²','час',''];
   function enhance(row,saved){
    if(row.querySelector('.bosWorkNumbers'))return;
+   row.bosSavedServiceId=saved?.service_id;
    const item=selectedWork(row.querySelector('select')),unit=saved?.unit??item?.u??'шт.';
    const quantity=saved?.quantity??(row.bosOriginalLegacy?'':1),price=saved?.unit_price??(order?null:item?.p);
    row.insertAdjacentHTML('beforeend',`<div class="bosWorkNumbers"><label>Количество<input class="bosWorkQty" inputmode="decimal" value="${esc(String(quantity).replace('.',','))}" placeholder="Не указано" aria-label="Количество"></label><label>Единица<select class="bosWorkUnit" aria-label="Единица измерения">${[...new Set([unit,...units])].map(u=>`<option value="${esc(u)}" ${u===unit?'selected':''}>${esc(u||'без единицы')}</option>`).join('')}</select></label><label>Цена за единицу, ₽<input class="bosWorkPrice" inputmode="decimal" value="${esc(price??'')}" placeholder="Не указана" aria-label="Цена за единицу"></label><div>Сумма позиции<strong class="bosWorkLineTotal">—</strong></div></div>`);
@@ -1994,14 +2003,14 @@ const baseHome=pages.home;pages.home=function(){if(!(typeof isMasterPreview==='f
   rows().forEach((row,i)=>{row.bosOriginalLegacy=!!order&&!order.work_items?.length&&!!selectedWork(row.querySelector('.bosWorkSelect'));enhance(row,order?.work_items?.[i])});
   function collect(){return W.normalize(rows().map(row=>{
    const s=selectedWork(row.querySelector('.bosWorkSelect'));if(!s||row.bosOriginalLegacy&&!row.bosTouched)return null;
-   return {name:s.n,service_id:s.id,quantity:row.querySelector('.bosWorkQty').value,unit:row.querySelector('.bosWorkUnit').value,unit_price:row.querySelector('.bosWorkPrice').value};
+   return {name:s.n,service_id:row.bosSavedServiceId||s.id,quantity:row.querySelector('.bosWorkQty').value,unit:row.querySelector('.bosWorkUnit').value,unit_price:row.querySelector('.bosWorkPrice').value};
   }).filter(Boolean));}
   const footer=document.createElement('div');footer.className='bosWorkSum';footer.innerHTML='<p class="muted">Общая стоимость сохраняется отдельно. Чтобы взять сумму позиций, нажмите кнопку.</p><button type="button" class="secondary bosUseWorkTotal">Использовать сумму позиций</button><p class="bosWorkError newOrderError" role="status"></p>';stack.append(footer);
   function paint(){rows().forEach(row=>{enhance(row);const s=selectedWork(row.querySelector('select'));try{const [v]=W.normalize([{name:s?.n||'Позиция',quantity:row.querySelector('.bosWorkQty').value,unit:row.querySelector('.bosWorkUnit').value,unit_price:row.querySelector('.bosWorkPrice').value}]);row.querySelector('.bosWorkLineTotal').textContent=v.amount==null?'Не указана':money(v.amount)}catch(_){row.querySelector('.bosWorkLineTotal').textContent='—'}})}
   stack.addEventListener('click',e=>{if(e.target.closest('#bosAddWork,.bosRemoveWork')){rows().forEach(row=>enhance(row));dirty=true;paint()}});
   stack.addEventListener('change',e=>{
    const changed=e.target.closest('.bosWorkEditRow');if(changed)changed.bosTouched=true;
-   if(e.target.matches('.bosWorkSelect')){const row=e.target.closest('.bosWorkEditRow'),item=selectedWork(e.target);enhance(row);row.querySelector('.bosWorkQty').value='1';const u=row.querySelector('.bosWorkUnit');if(item?.u&&!Array.from(u.options).some(x=>x.value===item.u))u.add(new Option(item.u,item.u));u.value=item?.u??'шт.';row.querySelector('.bosWorkPrice').value=item?.p??'';}
+   if(e.target.matches('.bosWorkSelect')){e.target.closest('.bosWorkEditRow').bosSavedServiceId=null;const row=e.target.closest('.bosWorkEditRow'),item=selectedWork(e.target);enhance(row);row.querySelector('.bosWorkQty').value='1';const u=row.querySelector('.bosWorkUnit');if(item?.u&&!Array.from(u.options).some(x=>x.value===item.u))u.add(new Option(item.u,item.u));u.value=item?.u??'шт.';row.querySelector('.bosWorkPrice').value=item?.p??'';}
    dirty=true;paint();
   });
   stack.addEventListener('input',e=>{const changed=e.target.closest('.bosWorkEditRow');if(changed)changed.bosTouched=true;dirty=true;paint()});
@@ -2041,17 +2050,19 @@ function phoneDigitsList(value){
 const phoneEditRow=(value='',primary=false)=>`<div class="bosPhoneEditRow"><input ${primary?'id="bosPhone" ':''}class="bosPhoneInput" inputmode="numeric" maxlength="10" value="${esc(value)}" placeholder="9991234567" aria-label="Номер телефона"><button class="bosRemoveField bosRemovePhone" type="button" aria-label="Удалить номер">×</button></div>`;
 const phoneEditor=value=>`<div class="bosPhoneEditor"><div class="bosPhonePrefix">+7</div><div class="bosPhoneStack" id="bosPhoneStack">${phoneDigitsList(value).map((phone,index)=>phoneEditRow(phone,index===0)).join('')}<button id="bosAddPhone" class="secondary bosAddField" type="button">+ Добавить телефон</button></div></div>`;
 const workLines=value=>String(value||'').split(/\n+/).map(x=>x.trim()).filter(Boolean);
-function workOptions(selected=''){
- const exact=SERVICES.findIndex(s=>s.n===selected);
- return '<option value="">Выберите работу</option>'+(selected&&exact<0?`<option value="legacy" data-work="${esc(selected)}" selected>${esc(selected)}</option>`:'')+SERVICES.map((item,index)=>`<option value="${index}" ${index===exact?'selected':''}>${esc(item.n)}${item.p!=null?' — '+money(item.p):''}${item.u?' / '+esc(item.u):''}</option>`).join('');
+function workOptions(selected='',source){
+ const items=window.BOS_PRICE_CATALOG.forSource(source??document.querySelector('#orderForm')?.elements.source?.value);
+ const exact=items.findIndex(s=>s.n===selected);
+ return '<option value="">Выберите работу</option>'+(selected&&exact<0?`<option value="legacy" data-work="${esc(selected)}" selected>${esc(selected)}</option>`:'')+items.map((item,index)=>`<option value="${index}" data-service-id="${esc(item.id)}" ${index===exact?'selected':''}>${esc(item.n)}${item.p!=null?' — '+money(item.p):''}${item.u?' / '+esc(item.u):''}</option>`).join('');
 }
-const workEditRow=(value='',primary=false,allowCustom=false)=>`<div class="bosWorkEditRow"><select ${primary?'id="bosService" ':''}class="bosWorkSelect" aria-label="Работа">${workOptions(value)}${allowCustom?'<option value="custom">Своя работа</option>':''}</select><button class="bosRemoveField bosRemoveWork" type="button" aria-label="Удалить работу">×</button>${value&&!SERVICES.some(s=>s.n===value)?`<textarea class="bosLegacyWork" rows="2" maxlength="10000" aria-label="Описание работы из заявки">${esc(value)}</textarea>`:''}${allowCustom?'<textarea class="bosCustomWork" rows="2" hidden aria-label="Своя работа" placeholder="Опишите работу своими словами"></textarea>':''}</div>`;
-const workEditor=(value,allowCustom=false)=>{const rows=workLines(value);return `<div class="bosWorkStack" id="bosWorkStack">${(rows.length?rows:['']).map((work,index)=>workEditRow(work,index===0,allowCustom)).join('')}<button id="bosAddWork" class="secondary bosAddField" type="button">+ Добавить работу</button></div>`};
+const workEditRow=(value='',primary=false,allowCustom=false,source)=>`<div class="bosWorkEditRow"><select ${primary?'id="bosService" ':''}class="bosWorkSelect" aria-label="Работа">${workOptions(value,source)}${allowCustom?'<option value="custom">Своя работа</option>':''}</select><button class="bosRemoveField bosRemoveWork" type="button" aria-label="Удалить работу">×</button>${value&&!window.BOS_PRICE_CATALOG.forSource(source??document.querySelector('#orderForm')?.elements.source?.value).some(s=>s.n===value)?`<textarea class="bosLegacyWork" rows="2" maxlength="10000" aria-label="Описание работы из заявки">${esc(value)}</textarea>`:''}${allowCustom?'<textarea class="bosCustomWork" rows="2" hidden aria-label="Своя работа" placeholder="Опишите работу своими словами"></textarea>':''}</div>`;
+const workEditor=(value,allowCustom=false,source)=>{const rows=workLines(value);return `<div class="bosWorkStack" id="bosWorkStack">${(rows.length?rows:['']).map((work,index)=>workEditRow(work,index===0,allowCustom,source)).join('')}<button id="bosAddWork" class="secondary bosAddField" type="button">+ Добавить работу</button></div>`};
 function selectedWork(select){
  if(!select||!select.value)return null;
  if(select.value==='custom'){const name=select.closest('.bosWorkEditRow')?.querySelector('.bosCustomWork')?.value.trim();return name?{n:name,p:null}:null}
- if(select.value==='legacy')return {n:String(select.closest('.bosWorkEditRow')?.querySelector('.bosLegacyWork')?.value??select.selectedOptions?.[0]?.dataset?.work??select.selectedOptions?.[0]?.textContent??'').trim(),p:null};
- return SERVICES[Number(select.value)]||null;
+ if(select.value==='legacy')return {n:String(select.closest('.bosWorkEditRow')?.querySelector('.bosLegacyWork')?.value??select.selectedOptions?.[0]?.dataset?.work??select.selectedOptions?.[0]?.textContent??'').trim(),p:null,id:select.selectedOptions?.[0]?.dataset?.serviceId};
+ const key=select.selectedOptions?.[0]?.dataset?.serviceId;
+ return [...SERVICES,...window.BOS_PRICE_CATALOG.lemana.services].find(s=>s.id===key)||null;
 }
 function authHeaders(){return window.BOS_AUTH_HEADERS?window.BOS_AUTH_HEADERS():Promise.resolve({'Content-Type':'application/json'})}
 async function saveOrderType(id,type){const headers=await authHeaders();const r=await fetch('https://obsropbslfwtanyspjbi.supabase.co/functions/v1/order-meta-api',{method:'POST',headers,body:JSON.stringify({action:'setOrderType',id,order_type:type})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось сохранить тип заявки');return d.order}
@@ -2069,7 +2080,7 @@ window.openOrderForm=function(id){
  <label for="orderApartment">Квартира</label><input id="orderApartment" name="apartment" maxlength="120" value="${esc(o?.apartment||'')}" placeholder="Номер квартиры">
  ${['entrance','floor','intercom'].map((key,i)=>`<label>${['Подъезд','Этаж','Домофон'][i]}</label><input name="${key}" maxlength="120" value="${esc(o?.[key]||'')}">`).join('')}
  ${o?`<label>Тип заявки</label><select name="order_type"><option value="work" ${(o?.order_type||'work')==='work'?'selected':''}>Обычная заявка</option><option value="measurement" ${o?.order_type==='measurement'?'selected':''}>Замер</option></select>
- `:''}<label>Описание работ</label><textarea id="bosWorkDescription" name="work_description" maxlength="10000" rows="4" placeholder="Опишите, что нужно сделать"></textarea><small id="workDescriptionHint" class="muted">Опишите работы вручную или добавьте из списка</small><label>${o?'Работа':'Быстрые варианты'}</label>${workEditor(o?.work||'',true)}<div id="bosServiceInfo" class="muted"></div>
+ `:''}<label>Описание работ</label><textarea id="bosWorkDescription" name="work_description" maxlength="10000" rows="4" placeholder="Опишите, что нужно сделать"></textarea><small id="workDescriptionHint" class="muted">Опишите работы вручную или добавьте из списка</small><label>${o?'Работа':'Быстрые варианты'}</label>${workEditor(o?.work||'',true,o||'Авито')}<div id="bosServiceInfo" class="muted"></div>
  <label>Дата и время</label><div class="two"><input type="date" name="scheduled_date" value="${esc(o?.scheduled_date||'')}"><select name="time_slot">${slotOptions(slot)}</select></div>
  <label>Статус заявки</label><select name="status">${[...new Set([o?.status,...STATUSES].filter(Boolean))].map(s=>`<option ${String(o?.status||'В работе')===s?'selected':''}>${s}</option>`).join('')}</select>
  <section class="card"><h3 style="margin-top:0">Условия на объекте</h3><label class="checkRow"><input type="checkbox" name="wall_over_3m" ${o?.wall_over_3m?'checked':''}><span>Высота более 3 метров</span></label><label>Материал стены</label><select name="wall_material">${WALLS.map(w=>`<option value="${w==='Не указан'?'':esc(w)}" ${(o?.wall_material||'')===(w==='Не указан'?'':w)?'selected':''}>${esc(w)}</option>`).join('')}</select>${o?'':'<label class="checkRow"><input type="checkbox" name="possible_extra_work"><span>Возможны допработы</span></label>'}</section>
@@ -2084,7 +2095,16 @@ window.openOrderForm=function(id){
  if(phoneStack){phoneStack.addEventListener('input',event=>{if(event.target.classList.contains('bosPhoneInput'))event.target.value=event.target.value.replace(/\D/g,'').slice(0,10)});phoneStack.addEventListener('click',event=>{const remove=event.target.closest('.bosRemovePhone');if(remove){const rows=phoneStack.querySelectorAll('.bosPhoneEditRow');if(rows.length>1)remove.closest('.bosPhoneEditRow').remove();syncPhoneButtons()}});$('#bosAddPhone').onclick=()=>{const add=$('#bosAddPhone'),holder=document.createElement('div');holder.innerHTML=phoneEditRow('');add.insertAdjacentElement('beforebegin',holder.firstElementChild);syncPhoneButtons();phoneStack.querySelector('.bosPhoneEditRow:last-of-type .bosPhoneInput')?.focus()}}else if(phoneEl)phoneEl.oninput=()=>phoneEl.value=phoneEl.value.replace(/\D/g,'').slice(0,10);
  if(workStack){workStack.addEventListener('click',event=>{const remove=event.target.closest('.bosRemoveWork');if(remove){const rows=workStack.querySelectorAll('.bosWorkEditRow');if(rows.length>1)remove.closest('.bosWorkEditRow').remove();syncWorkButtons();workStack.dispatchEvent(new Event('change',{bubbles:true}))}});workStack.addEventListener('change',event=>{if(!event.target.classList.contains('bosWorkSelect'))return;const legacy=event.target.closest('.bosWorkEditRow').querySelector('.bosLegacyWork');if(legacy)legacy.hidden=event.target.value!=='legacy';const custom=event.target.closest('.bosWorkEditRow').querySelector('.bosCustomWork');if(custom){custom.hidden=event.target.value!=='custom';if(!custom.hidden)custom.focus()}});$('#bosAddWork').onclick=()=>{const add=$('#bosAddWork'),holder=document.createElement('div');holder.innerHTML=workEditRow('',false,true);add.insertAdjacentElement('beforebegin',holder.firstElementChild);syncWorkButtons();workStack.querySelector('.bosWorkEditRow:last-of-type select')?.focus()}}
  syncPhoneButtons();syncWorkButtons();
- const showService=()=>{info.textContent='';recalc()};
+ const sourceHint=()=>{info.textContent=window.BOS_PRICE_CATALOG.isLemana(form.elements.source.value)?'Прайс Лемана Про от 11.11.2026 · цены включают НДС. Минимальная стоимость выезда — 2 800 ₽; согласованная сумма заявки задаётся отдельно.':''};
+ form.elements.source.addEventListener('change',()=>{
+  for(const select of workStack.querySelectorAll('.bosWorkSelect')){
+   if(select.value==='custom'){const text=select.closest('.bosWorkEditRow').querySelector('.bosCustomWork').value;select.innerHTML=workOptions('')+'<option value="custom" selected>Своя работа</option>';select.closest('.bosWorkEditRow').querySelector('.bosCustomWork').value=text;continue;}
+   const saved=selectedWork(select);select.innerHTML=workOptions('')+'<option value="custom">Своя работа</option>';
+   if(saved){const option=new Option(saved.n+' — сохранённая работа','legacy',true,true);option.dataset.work=saved.n;if(saved.id)option.dataset.serviceId=saved.id;select.add(option);}
+  }
+  sourceHint();
+ });
+ const showService=()=>{sourceHint();recalc()};
  form.bosWorkText=()=>[...new Set([form.querySelector('#bosWorkDescription').value.trim(),...[...workStack.querySelectorAll('.bosWorkSelect')].map(selectedWork).filter(Boolean).map(item=>item.n)].filter(Boolean))].join('\n');
  form.bosSetWork=value=>{form.querySelector('#bosWorkDescription').value='';workStack.querySelectorAll('.bosWorkEditRow').forEach(row=>row.remove());const rows=workLines(value);$('#bosAddWork').insertAdjacentHTML('beforebegin',(rows.length?rows:['']).map((work,index)=>workEditRow(work,index===0,true)).join(''));syncWorkButtons();workStack.dispatchEvent(new Event('change',{bubbles:true}))};
  const recalc=()=>{
@@ -2686,12 +2706,12 @@ window.BOS_INIT_REPORT_DEDUCTION=function(form,order){
   }
   function search(){
     const q=$('mrCatalogSearch').value.trim().toLocaleLowerCase('ru');
-    const found=D.catalog.filter(s=>(s.name+' '+s.group).toLocaleLowerCase('ru').includes(q));
+    const found=D.forOrder(order).filter(s=>(s.name+' '+s.group).toLocaleLowerCase('ru').includes(q));
     $('mrCatalogResults').innerHTML=found.length?found.map(s=>`<button type="button" class="secondary deductionCatalogItem" data-service="${s.id}" ${rows.some(r=>r.service_id===s.id)?'disabled':''}><span><b>${escape(s.name)}</b><small>${escape(s.group)}${s.unit?' · '+escape(s.unit):''}</small></span><strong>${s.mode==='fixed'?money(s.price):s.mode==='from'?'от '+money(s.price):'По согласованию'}</strong></button>`).join(''):'<p class="muted">Работы не найдены</p>';
   }
   function payload(){
     if(!enabled())return {uncompleted_work_done:false,uncompleted_work_items:[],uncompleted_work_amount:0,uncompleted_work_description:''};
-    const items=D.items(rows.map(r=>({service_id:r.service_id,quantity:r.quantity,unit_price:r.unit_price,price_confirmed:r.price_confirmed})));
+    const items=D.items(rows.map(r=>({service_id:r.service_id,quantity:r.quantity,unit_price:r.unit_price,price_confirmed:r.price_confirmed})),order);
     const sum=D.round(items.reduce((v,r)=>v+r.amount,0));
     if(visibleCost&&sum>base)throw new Error('Сумма вычета превышает исходную сумму заявки');
     return {uncompleted_work_done:true,uncompleted_work_items:items,uncompleted_work_amount:sum,uncompleted_work_description:$('mrDeductionComment').value.trim()};
@@ -2983,6 +3003,18 @@ function bindAvitoCatalog(){
  });
 }
 
+function lemanaCatalogHtml(){
+ const catalog=window.BOS_PRICE_CATALOG.lemana;
+ const groups=[...new Set(catalog.services.map(s=>s.group))];
+ return `<section class="card bosLemanaCatalog"><h3>Прайс Лемана Про</h3><p class="muted">Карнизы и светозащита · 11.11.2026 · цены в рублях, включая НДС.</p><p class="muted">Минимальная стоимость выезда — 2 800 ₽. Это условие стоимости, а не дополнительная работа. В строке выезда за город предельное расстояние не заполнено в документе («до ХХ км»); уточните его при согласовании.</p><label for="bosLemanaPriceSearch">Найти услугу Лемана Про</label><input id="bosLemanaPriceSearch" type="search" placeholder="Например, электрокарниз или высота" autocomplete="off">${groups.map(group=>`<details class="bosLemanaGroup" open><summary>${esc(group)}</summary>${catalog.services.filter(s=>s.group===group).map(s=>`<div class="bosPriceRow bosLemanaRow" data-service-id="${esc(s.id)}"><span>${esc(s.n)}${s.note?`<details class="bosLemanaConditions"><summary>Состав и условия услуги</summary><p>${esc(s.note)}</p></details>`:''}</span><b>${esc(money(s.p))}${s.u?`<small>за ${esc(s.u)}</small>`:''}</b></div>`).join('')}</details>`).join('')}<p id="bosLemanaPriceEmpty" class="muted" hidden>Услуги не найдены.</p></section>`;
+}
+function bindLemanaCatalog(){
+ const search=document.getElementById('bosLemanaPriceSearch');if(!search)return;
+ search.addEventListener('input',()=>{const q=search.value.trim().toLocaleLowerCase('ru');let count=0;
+  document.querySelectorAll('.bosLemanaGroup').forEach(group=>{let found=0;group.querySelectorAll('.bosLemanaRow').forEach(row=>{row.hidden=!row.textContent.toLocaleLowerCase('ru').includes(q);if(!row.hidden)found++});group.hidden=!found;if(q&&found)group.open=true;count+=found;});
+  document.getElementById('bosLemanaPriceEmpty').hidden=count>0;
+ });
+}
 function catalogHtml(){
  const items=window.BOS_SERVICE_CATALOG||[];
  return `<section class="card bosSharedCatalog"><h3>Каталог работ и цен</h3><p class="muted">Базовые цены из каталога заявок. Допработы согласуйте и укажите в отчёте отдельно.</p><label for="bosCatalogSearch">Найти работу</label><input id="bosCatalogSearch" type="search" placeholder="Название работы" autocomplete="off"><div id="bosCatalogRows">${items.map(s=>`<div class="bosPriceRow bosCatalogRow"><span>${esc(s.n)}${/доплата|дополнительн/i.test(s.n)?'<small class="bosCatalogExtra">Дополнительная работа / доплата</small>':''}</span><b>${s.p!=null?esc(money(s.p)):'По согласованию'}${s.u?`<small>за ${esc(s.u)}</small>`:''}</b></div>`).join('')}</div><p id="bosCatalogEmpty" class="muted" ${items.length?'hidden':''}>Работы не найдены.</p></section>`;
@@ -2998,8 +3030,8 @@ function bindCatalog(){
 }
 window.openMasterMemoItem=async function(kind){
  if(kind!=='price')return typeof previous==='function'?previous(kind):undefined;
- openModal(`<h2>Прайс услуг</h2><p class="muted bosPriceLead">Выберите вид работы — цена указана справа.</p>${avitoCatalogHtml()}${catalogHtml()}<details class="bosPriceMaterials"><summary>Материалы руководителя</summary><div id="bosMasterPrice" aria-live="polite" aria-busy="true"><p class="muted" role="status">Загружаем…</p></div></details><button class="secondary wide" onclick="closeModal()">Закрыть</button>`);
- bindCatalog();bindAvitoCatalog();const root=document.getElementById('bosMasterPrice');
+ openModal(`<h2>Прайс услуг</h2><p class="muted bosPriceLead">Выберите вид работы — цена указана справа.</p>${avitoCatalogHtml()}${lemanaCatalogHtml()}${catalogHtml()}<details class="bosPriceMaterials"><summary>Материалы руководителя</summary><div id="bosMasterPrice" aria-live="polite" aria-busy="true"><p class="muted" role="status">Загружаем…</p></div></details><button class="secondary wide" onclick="closeModal()">Закрыть</button>`);
+ bindCatalog();bindAvitoCatalog();bindLemanaCatalog();const root=document.getElementById('bosMasterPrice');
  try{
    const items=(await list()).filter(x=>x.category==='price').sort((a,b)=>String(a.title||'').localeCompare(String(b.title||''),'ru',{numeric:true}));
    if(!root?.isConnected)return;
@@ -3012,8 +3044,9 @@ window.openMasterMemoItem=async function(kind){
    }
  }finally{if(root?.isConnected)root.setAttribute('aria-busy','false')}
 };
-const style=document.createElement('style');style.textContent=`.bosSharedCatalog,.bosAvitoCatalog{min-width:0}.bosAvitoCatalog input{width:100%;box-sizing:border-box;font-size:16px}.bosAvitoPriceGroup summary{cursor:pointer;min-height:44px;padding:12px 0;box-sizing:border-box;font-weight:650}.bosAvitoPriceRow[hidden],.bosAvitoPriceGroup[hidden]{display:none}.bosAvitoPriceRow small{display:block;font-size:12px;font-weight:400;margin-top:4px;color:var(--muted,#91a3b7)}.bosSharedCatalog input{width:100%;box-sizing:border-box;font-size:16px}.bosCatalogRow[hidden]{display:none}.bosCatalogRow span{overflow-wrap:anywhere}.bosCatalogRow small{display:block;font-size:11px;font-weight:400;margin-top:4px}.bosCatalogExtra{color:var(--muted,#91a3b7)}.bosPriceMaterials summary{cursor:pointer;min-height:44px;padding:12px 0;box-sizing:border-box}.bosPriceLead{margin:-4px 0 12px}.bosPriceCard{padding:14px;margin:10px 0}.bosPriceCard h3{margin:0 0 8px;font-size:17px}.bosPriceRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start;padding:10px 0;border-top:1px solid rgba(255,255,255,.08)}.bosPriceRow:first-of-type{border-top:0}.bosPriceRow span{min-width:0;line-height:1.35}.bosPriceRow b{text-align:right;white-space:nowrap;color:#6fb1ff}.bosPriceNote{padding:8px 0;line-height:1.45}.bosPriceImportant{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.08)}.bosPriceImportantText{white-space:pre-line;line-height:1.5}.bosPriceFiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.bosPriceFiles a{text-align:center;text-decoration:none}@media(max-width:520px){.bosPriceRow{grid-template-columns:minmax(0,1fr) minmax(110px,42%);gap:10px}.bosPriceRow b{white-space:normal}.bosPriceFiles{grid-template-columns:1fr}}`;document.head.appendChild(style);
+const style=document.createElement('style');style.textContent=`body.bos-approved-ui .bosPriceTabs{flex-wrap:wrap;gap:6px 16px}.bosLemanaCatalog{min-width:0}.bosLemanaCatalog input{width:100%;box-sizing:border-box;font-size:16px}.bosLemanaCatalog[hidden],.bosLemanaRow[hidden],.bosLemanaGroup[hidden]{display:none}.bosLemanaRow span{overflow-wrap:anywhere}.bosLemanaRow small{display:block;font-size:12px;font-weight:400;margin-top:4px}.bosLemanaGroup>summary{cursor:pointer;padding:12px 0;font-weight:650}.bosLemanaConditions{font-size:12px;margin-top:8px}.bosLemanaConditions summary{cursor:pointer;color:var(--muted,#91a3b7)}.bosLemanaConditions p{white-space:pre-line;line-height:1.5}.bosLemanaRow b{white-space:nowrap!important}.bosSharedCatalog,.bosAvitoCatalog{min-width:0}.bosAvitoCatalog input{width:100%;box-sizing:border-box;font-size:16px}.bosAvitoPriceGroup summary{cursor:pointer;min-height:44px;padding:12px 0;box-sizing:border-box;font-weight:650}.bosAvitoPriceRow[hidden],.bosAvitoPriceGroup[hidden]{display:none}.bosAvitoPriceRow small{display:block;font-size:12px;font-weight:400;margin-top:4px;color:var(--muted,#91a3b7)}.bosSharedCatalog input{width:100%;box-sizing:border-box;font-size:16px}.bosCatalogRow[hidden]{display:none}.bosCatalogRow span{overflow-wrap:anywhere}.bosCatalogRow small{display:block;font-size:11px;font-weight:400;margin-top:4px}.bosCatalogExtra{color:var(--muted,#91a3b7)}.bosPriceMaterials summary{cursor:pointer;min-height:44px;padding:12px 0;box-sizing:border-box}.bosPriceLead{margin:-4px 0 12px}.bosPriceCard{padding:14px;margin:10px 0}.bosPriceCard h3{margin:0 0 8px;font-size:17px}.bosPriceRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start;padding:10px 0;border-top:1px solid rgba(255,255,255,.08)}.bosPriceRow:first-of-type{border-top:0}.bosPriceRow span{min-width:0;line-height:1.35}.bosPriceRow b{text-align:right;white-space:nowrap;color:#6fb1ff}.bosPriceNote{padding:8px 0;line-height:1.45}.bosPriceImportant{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.08)}.bosPriceImportantText{white-space:pre-line;line-height:1.5}.bosPriceFiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.bosPriceFiles a{text-align:center;text-decoration:none}@media(max-width:520px){.bosPriceRow{grid-template-columns:minmax(0,1fr) minmax(110px,42%);gap:10px}.bosPriceRow b{white-space:normal}.bosPriceFiles{grid-template-columns:1fr}}`;document.head.appendChild(style);
 })();
+
 
 ;
 // Source: order-filters-v22.js
@@ -7366,6 +7399,394 @@ decorate();
  const previous=window.openOrder;
  window.openOrder=function(id){const result=previous.apply(this,arguments),o=state.orders.find(x=>String(x.id)===String(id)),modal=document.querySelector('.modal');if(o?.lemana_import_meta&&modal&&!modal.querySelector('.lemanaMeta')){const box=document.createElement('section');box.className='card lemanaMeta';box.innerHTML=`<h3>Лемана Про</h3><p>Категория: ${esc(o.lemana_import_meta.category||'Не указана')}</p><p>Магазин: ${esc(o.lemana_import_meta.shop||'Не указан')}</p>${!o.work?'<p class="muted">Состав работ не указан в отчёте. Его можно добавить при редактировании заявки.</p>':''}`;modal.append(box)}return result};
  const style=document.createElement('style');style.textContent='.lemanaImport{display:grid;gap:12px;max-width:100%;min-width:0}.lemanaImport>label,.lemanaRow details label{display:grid;gap:6px}.lemanaImport input,.lemanaImport select{max-width:100%;min-width:0}.lemanaCounts{display:flex;flex-wrap:wrap;gap:10px}.lemanaCounts span{display:grid;gap:3px;flex:1;min-width:85px;padding:10px;background:var(--card,#203044);border-radius:10px;font-size:12px}.lemanaCounts b{font-size:20px}.lemanaRow{overflow-wrap:anywhere}.lemanaRow p{font-size:13px;margin:8px 0}.lemanaRowTitle{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}.lemanaRowTitle label{display:flex;align-items:center;gap:8px}.lemanaRowTitle input{width:20px;height:20px}.lemanaRowTitle span{font-size:12px}.lemanaConfirm{padding:10px 0}.bosOrdersCreateActions{display:flex;gap:8px;flex-wrap:wrap}.bosOrdersCreateActions button{white-space:normal;max-width:100%}@media(max-width:520px){.bosOrdersCreateActions{width:100%;flex-direction:column}.bosOrdersCreateActions button{width:100%}}';document.head.append(style);
+})();
+
+
+;
+// Source: client-portal-staff.js
+/* Client messages extend the existing staff app; disabled until the separate API is configured. */
+(()=>{
+  'use strict';
+  if(window.BOS_CLIENT_PORTAL_CONFIG?.enabled!==true||window.BOS_CLIENT_PORTAL_STAFF)return;
+  const config=window.BOS_CLIENT_PORTAL_CONFIG;
+  let base;try{base=new URL(config.apiBase||'/client-api/',location.origin)}catch{return}
+  // Never send an employee credential to a configurable third-party host.
+  if(base.origin!==location.origin||!base.pathname.startsWith('/client-api/'))return;
+  const role=()=>String(typeof state==='undefined'?'':state.user?.role||'');
+  const allowed=()=>['owner','manager','dispatcher'].includes(role());
+  const leadership=()=>['owner','manager'].includes(role());
+  const e=(tag,props={},children=[])=>{
+    const node=document.createElement(tag);
+    for(const [key,value] of Object.entries(props)){
+      if(key==='text')node.textContent=String(value??'');
+      else if(key==='class')node.className=value;
+      else if(key.startsWith('on'))node.addEventListener(key.slice(2),value);
+      else if(key==='checked'||key==='disabled'||key==='hidden')node[key]=!!value;
+      else if(value!==undefined&&value!==null)node.setAttribute(key,String(value));
+    }
+    for(const child of [].concat(children))if(child!=null)node.append(child?.nodeType?child:document.createTextNode(String(child)));
+    return node;
+  };
+  const button=(text,action,kind='secondary')=>e('button',{type:'button',class:kind,text,onclick:action});
+  const notice=text=>e('p',{class:'muted cpStaffNote',text});
+  const date=value=>value?new Date(value).toLocaleString('ru-RU',{timeZone:'Europe/Moscow',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+  const rub=value=>value==null?'После уточнения':new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:2}).format(Number(value));
+  const id=value=>encodeURIComponent(String(value));
+  const newKey=()=>{
+    if(typeof crypto.randomUUID==='function')return crypto.randomUUID();
+    const bytes=crypto.getRandomValues(new Uint8Array(16));bytes[6]=(bytes[6]&15)|64;bytes[8]=(bytes[8]&63)|128;
+    const hex=Array.from(bytes,x=>x.toString(16).padStart(2,'0')).join('');return hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20);
+  };
+  async function call(path,method='GET',body){
+    if(!allowed())throw Error('Доступ разрешён руководителю или диспетчеру.');
+    const headers={'Accept':'application/json'};
+    // Use only the employee credential. The customer cookie cannot authorize a staff operation.
+    let token='';try{token=sessionStorage.getItem('bos_vk_session_v2')||localStorage.getItem('bos_vk_session_v2')||''}catch{}
+    if(!token)throw Error('Войдите в приложение сотрудников повторно.');
+    headers['X-BOS-Session']=token;
+    if(body!==undefined)headers['Content-Type']='application/json';
+    const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),20000);
+    try{
+      const response=await fetch(new URL('staff/'+path.replace(/^\//,''),base),{method,headers,body:body===undefined?undefined:JSON.stringify(body),credentials:'omit',cache:'no-store',signal:controller.signal});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||data.ok===false)throw Object.assign(Error(typeof data.error==='string'?data.error:'Не удалось получить ответ. Повторите позже.'),{status:response.status});
+      return data;
+    }catch(error){if(error.name==='AbortError')throw Error('Сервер не ответил. Обновите данные перед повтором.');throw error}
+    finally{clearTimeout(timeout)}
+  }
+  function modal(title){
+    openModal('<div id="cpStaffRoot" class="cpStaffRoot"></div>');
+    const root=document.getElementById('cpStaffRoot');
+    root.append(e('h2',{text:title}));
+    return root;
+  }
+  function busy(root,text='Загружаем…'){
+    const message=e('p',{role:'status',class:'cpStaffStatus',text});root.append(message);
+    return message;
+  }
+  async function run(form,message,action){
+    if(form.dataset.busy==='1')return;
+    // Keep form fields successful controls while FormData is being read below.
+    form.dataset.busy='1';const controls=[...form.querySelectorAll('button')];controls.forEach(x=>x.disabled=true);message.textContent='Сохраняем…';
+    try{await action();if(message.isConnected)message.textContent='Сохранено.'}
+    catch(error){if(message.isConnected)message.textContent=error.message}
+    finally{delete form.dataset.busy;controls.forEach(x=>x.disabled=false)}
+  }
+  function field(label,name,value='',props={}){
+    const input=e(props.tag||'input',{name,value,...props});
+    if(props.tag==='textarea')input.value=value;
+    return e('label',{class:'cpStaffField'},[e('span',{text:label}),input]);
+  }
+  function select(label,name,choices,value){
+    const input=e('select',{name,'aria-label':label},choices.map(([key,text])=>e('option',{value:key,text})));
+    input.value=String(value??'');return e('label',{class:'cpStaffField'},[e('span',{text:label}),input]);
+  }
+  function section(title,children=[]){return e('section',{class:'card cpStaffSection'},[e('h3',{text:title}),...children])}
+  async function refreshStaff(){
+    // Portal status is public vocabulary. Refresh the original bootstrap instead of
+    // merging its DTO into a financial/internal staff row.
+    if(typeof reloadData==='function')await reloadData(true);
+  }
+
+  async function openWebsiteLeads(){
+    const root=modal('Обращения бизнеса с сайта'),status=busy(root);
+    try{const {leads}=await call('website/leads');status.textContent='Новых обращений: '+leads.filter(x=>x.status==='new').length;
+      for(const lead of leads){const form=e('form',{class:'card cpStaffSection'},[
+        e('h3',{text:lead.company}),notice(date(lead.created_at)+' · '+lead.contact_name),e('p',{text:lead.description}),
+        e('p',{text:'Объектов: '+lead.objects_count+(lead.comment?' · '+lead.comment:'')}),
+        e('a',{href:'tel:'+lead.phone,text:lead.phone}),lead.email?e('p',{text:lead.email}):null,
+        select('Статус','status',[['new','Новое'],['contacted','Связались'],['closed','Закрыто']],lead.status),
+        e('button',{type:'submit',class:'primary',text:'Сохранить'})]);const message=busy(form,'');
+        form.onsubmit=event=>{event.preventDefault();run(form,message,async()=>{await call('website/leads/'+id(lead.id),'PATCH',{version:lead.version,status:new FormData(form).get('status')});await openWebsiteLeads();});};root.append(form);
+      }if(!leads.length)root.append(notice('Обращений пока нет.'));
+    }catch(error){status.textContent=error.message;}
+  }
+  async function openWebsiteCatalog(){
+    const root=modal('Публикации сайта'),status=busy(root);
+    try{const {pages}=await call('website/catalog');status.textContent='Цена берётся из общего прайса. Подтверждайте только согласованные для сайта тарифы.';
+      for(const page of pages){const form=e('form',{class:'card cpStaffSection'},[e('h3',{text:page.public_title}),notice(page.source_ref),
+        select('Отображение цены','price_display_mode',[['after_inspection','После уточнения'],['from','От'],['fixed','Фиксированная'],['range','Диапазон']],page.price_display_mode),
+        e('label',{},[e('input',{type:'checkbox',name:'published',checked:page.published}),' Опубликовать услугу']),
+        e('label',{},[e('input',{type:'checkbox',name:'approve_price'}),' Подтверждаю текущую цену общего прайса для сайта']),e('button',{type:'submit',class:'primary',text:'Сохранить публикацию'})]);const message=busy(form,'');
+        form.onsubmit=event=>{event.preventDefault();run(form,message,async()=>{const f=new FormData(form);await call('website/catalog/'+id(page.service_id),'PATCH',{version:page.version,published:f.has('published'),approve_price:f.has('approve_price'),price_display_mode:f.get('price_display_mode')});await openWebsiteCatalog();});};root.append(form);
+      }
+    }catch(error){status.textContent=error.message;}
+  }
+  async function openWebsiteReviews(){
+    const root=modal('Отзывы после выполненных работ'),status=busy(root);
+    try{const {reviews}=await call('website/reviews');status.textContent='Публикация возможна только с отдельным согласием клиента.';
+      for(const review of reviews){const box=section('Заявка №'+review.order_id,[e('p',{text:review.rating+'/5 · '+review.public_name}),e('p',{text:review.body}),notice(review.publication_consent?'Согласие есть':'Согласия на публикацию нет')]);
+        if(leadership()&&(review.publication_consent||review.published))box.append(button(review.published?'Скрыть':'Опубликовать',async()=>{try{await call('website/reviews/'+id(review.order_id),'PATCH',{published:!review.published});await openWebsiteReviews();}catch(error){box.append(notice(error.message));}}));root.append(box);
+      }
+    }catch(error){status.textContent=error.message;}
+  }
+
+  window.openClientPortalInbox=async function(offset=0){
+    if(!allowed())return;
+    const root=modal('Кабинет клиента'),status=busy(root);
+    const actions=e('div',{class:'cpStaffActions'},[
+      button('Обновить',()=>window.openClientPortalInbox(offset)),
+      button('Обращения',()=>openRequests()),
+      button('Сообщения компании',()=>openThreads())
+    ]);
+    if(config.websiteEnabled){actions.append(button('Заявки бизнеса',()=>openWebsiteLeads()));if(leadership())actions.append(button('Публикации сайта',()=>openWebsiteCatalog()),button('Отзывы',()=>openWebsiteReviews()));}
+    if(leadership())actions.append(button('Каталог услуг',()=>openCatalog()),button('Карточки мастеров',()=>openMasters()));
+    actions.append(button('Привязать заявку',()=>openLink()));root.append(actions);
+    try{
+      const data=await call('orders?limit=20&offset='+Math.max(0,Number(offset)||0));if(!root.isConnected)return;
+      status.textContent=`Заявок: ${data.total||0}. Назначение и выполнение доступны в обычной карточке заявки.`;
+      const list=e('div',{class:'cpStaffList'});root.append(list);
+      for(const order of data.orders||[]){
+        const card=e('article',{class:'card cpStaffOrder'},[
+          e('strong',{text:'№ '+(order.number||order.id)+' · '+(order.status_label||order.internal_status||'')}),
+          e('p',{text:order.address}),notice((order.client?.name||'Клиент')+' · '+date(order.created_at)),
+          notice((order.unread_count?`Новых сообщений: ${order.unread_count}. `:'')+(order.visit?`Визит: ${order.visit.date} ${order.visit.interval||order.visit.time}`:'Визит ещё не подтверждён')),
+          button('Открыть переписку и согласование',()=>openDetail(order.id),'primary')
+        ]);list.append(card);
+      }
+      if(!data.orders?.length)list.append(notice('Клиентских заявок пока нет. Новые появятся здесь и в общем списке заявок.'));
+      const pager=e('div',{class:'cpStaffActions'});
+      if(offset>0)pager.append(button('Назад',()=>window.openClientPortalInbox(Math.max(0,offset-20))));
+      if(offset+(data.orders?.length||0)<Number(data.total))pager.append(button('Следующие',()=>window.openClientPortalInbox(offset+20)));
+      root.append(pager);
+    }catch(error){status.textContent=error.message}
+  };
+  async function openDetail(orderId){
+    if(!allowed())return;
+    const root=modal('Заявка клиента'),status=busy(root);
+    try{
+      const [{order},masterData]=await Promise.all([call('orders/'+id(orderId)),call('masters')]);
+      if(!root.isConnected)return;status.remove();root.querySelector('h2').textContent='Клиент · заявка № '+(order.number||order.id);
+      root.append(e('div',{class:'cpStaffActions'},[
+        button('Все клиентские заявки',()=>window.openClientPortalInbox()),
+        button('Обычная карточка заявки',async()=>{try{await refreshStaff();closeModal();window.openOrder(String(order.id))}catch(error){alert(error.message)}})
+      ]));
+      root.append(section('Заявка',[
+        e('p',{text:(order.client?.name||'Клиент')+' · '+(order.client?.phone||'')}),e('p',{text:order.address}),
+        e('p',{text:order.description||''}),notice('Пожелание по времени: '+(order.desired_date||'дата не указана')+' '+(order.desired_interval||'')),
+        notice('Предварительная стоимость: '+rub(order.preliminary?.total))
+      ]));
+      const visit=e('form',{class:'cpStaffForm'},[
+        select('Назначенный мастер','master_staff_id',[['','Не назначен'],...(masterData.masters||[]).map(m=>[m.id,m.name])],order.master_staff_id),
+        field('Согласованная дата (МСК)','date',order.visit?.date||'',{type:'date'}),
+        field('Начало визита (МСК)','time',(order.visit?.time||'').slice(0,5),{type:'time'}),
+        field('Согласованный интервал','interval',order.visit?.interval||'',{placeholder:'Например, 12:00–14:00',maxlength:100}),
+        notice('Заполняйте дату и время только после договорённости с клиентом. Пожелание клиента само по себе не бронирует визит.'),
+        e('button',{type:'submit',class:'primary',text:'Сохранить назначение и визит'})
+      ]),visitMessage=busy(visit,'');
+      visit.onsubmit=event=>{event.preventDefault();run(visit,visitMessage,async()=>{
+        const values=Object.fromEntries(new FormData(visit)),payload={version:order.version,master_staff_id:values.master_staff_id||null};
+        if(values.date||values.time||values.interval){if(!values.date||!values.time)throw Error('Для подтверждения визита укажите дату и время.');payload.visit={date:values.date,time:values.time,interval:values.interval}}
+        await call('orders/'+id(order.id),'PATCH',payload);await refreshStaff();await openDetail(order.id);
+      })};root.append(section('Мастер и согласованный визит',[visit]));
+      root.append(estimateEditor(order));
+      const files=section('Фотографии клиента');
+      if(!order.attachments?.length)files.append(notice('Фотографий пока нет.'));
+      for(const file of order.attachments||[])files.append(button(file.name||'Открыть фото',()=>openAttachment(file.id,file.name)));
+      root.append(files);
+      const requests=section('Запросы клиента');
+      for(const request of order.requests||[])requests.append(requestCard(request,()=>openDetail(order.id)));
+      if(!order.requests?.length)requests.append(notice('Запросов переноса, отмены или гарантии нет.'));root.append(requests);
+      const messages=section('Переписка с клиентом');root.append(messages);await mountMessages(messages,{order_id:String(order.id)});
+    }catch(error){if(root.isConnected){status.textContent=error.message;if(!status.isConnected)root.append(status)}}
+  }
+  function estimateEditor(order){
+    const current=order.estimate,host=section('Согласование стоимости');
+    if(current)host.append(notice(`Версия ${current.version} · ${rub(current.total)} · ${current.accepted_at?'принята клиентом '+date(current.accepted_at):'ожидает подтверждения клиента'}`));
+    if(order.price_review_required||current?.current===false)host.append(notice('Стоимость заявки изменилась. Подготовьте новую смету для подтверждения клиентом.'));
+    const form=e('form',{class:'cpStaffForm'}),rows=e('div',{class:'cpStaffEstimateRows'});
+    function row(item={}){
+      const box=e('div',{class:'cpStaffEstimateRow'},[
+        field('Работа','name',item.name||'',{required:true,maxlength:300}),
+        field('Ед.','unit',item.unit||'шт.',{required:true,maxlength:30}),
+        field('Кол-во','quantity',item.quantity||1,{required:true,type:'number',min:'0.001',step:'0.001'}),
+        field('Цена за единицу, ₽','unit_price',item.unit_price??'',{required:true,type:'number',min:'0',step:'0.01'})
+      ]);box.append(button('Убрать',()=>box.remove()));rows.append(box);
+    }
+    const initial=current?.items?.length?current.items:order.work_items?.length?order.work_items:[];initial.forEach(row);if(!initial.length)row();
+    form.append(rows,button('Добавить работу',()=>row()),field('Условия сметы','conditions',current?.conditions||'',{tag:'textarea',maxlength:3000,rows:3}),notice('Это предложение клиенту. Итог пересчитает сервер, клиент подтвердит именно эту версию.'),e('button',{type:'submit',class:'primary',text:'Отправить смету на согласование'}));
+    const message=busy(form,'');form.onsubmit=event=>{event.preventDefault();run(form,message,async()=>{
+      const items=[...rows.children].map(box=>Object.fromEntries(['name','unit','quantity','unit_price'].map(key=>[key,box.querySelector('[name="'+key+'"]').value]))).map(item=>({...item,quantity:Number(item.quantity),unit_price:Number(item.unit_price)}));
+      if(!items.length)throw Error('Добавьте хотя бы одну работу.');
+      await call('orders/'+id(order.id)+'/estimates','POST',{version:order.version,items,conditions:form.elements.conditions.value});await openDetail(order.id);
+    })};host.append(form);return host;
+  }
+  async function mountMessages(host,thread){
+    const query=new URLSearchParams(thread),history=e('div',{class:'cpStaffMessages'}),status=busy(host,'Загружаем сообщения…');host.append(history);
+    let after='0';
+    async function readMore(){
+      const data=await call('messages?'+query+'&after='+id(after));if(!host.isConnected)return;
+      for(const message of data.messages||[]){
+        const bubble=e('article',{class:'cpStaffBubble '+(message.sender==='company'?'company':'client')},[e('strong',{text:message.sender==='company'?'Компания':'Клиент'}),e('p',{text:message.body}),e('small',{text:date(message.created_at)})]);
+        for(const file of message.attachments||[])bubble.append(button('Фото · '+(file.name||'Открыть'),()=>openAttachment(file.id,file.name)));
+        history.append(bubble);
+      }
+      if(data.messages?.length){after=String(data.messages.at(-1).id);await call('messages/read','POST',{...thread,through_id:after})}
+      status.textContent=data.messages?.length?'':'Сообщений пока нет.';
+      more.hidden=(data.messages?.length||0)<100;
+    }
+    const more=button('Загрузить следующие сообщения',()=>readMore().catch(error=>status.textContent=error.message));more.hidden=true;host.append(more);
+    const fileField=field('Фотографии к сообщению','photos','',{type:'file',accept:'image/jpeg,image/png,image/webp',multiple:true}),uploads=e('div',{class:'cpStaffUploadList'});
+    const form=e('form',{class:'cpStaffForm'},[field('Ответ клиенту','body','',{tag:'textarea',rows:3,maxlength:4000,placeholder:'Это сообщение увидит клиент.'}),fileField,notice('JPEG, PNG или WebP · до 5 МБ каждый. Фото загрузятся после нажатия «Отправить клиенту».'),uploads,e('button',{type:'submit',class:'primary',text:'Отправить клиенту'})]);
+    const sending=busy(form,'');let requestKey=newKey(),pendingPayload='',photos=[],composing=false;
+    function renderUploads(){
+      uploads.replaceChildren();for(const photo of photos){
+        const remove=button('Убрать',()=>{if(composing)return;photos=photos.filter(x=>x!==photo);renderUploads()});remove.disabled=composing;
+        uploads.append(e('div',{class:'cpStaffUpload'},[e('span',{text:photo.file.name}),notice(photo.error||photo.status||(photo.attachment?'Загружено; сообщение ещё не отправлено':'Готово к загрузке')),remove]));
+      }
+    }
+    form.elements.photos.onchange=()=>{
+      if(composing)return;
+      for(const file of form.elements.photos.files||[]){
+        if(photos.length>=10){sending.textContent='Можно выбрать до 10 фотографий. Лишние файлы не добавлены.';break}
+        const error=!['image/jpeg','image/png','image/webp'].includes(file.type)?'Нужна фотография JPEG, PNG или WebP.':!file.size||file.size>5*1024*1024?'Размер фотографии должен быть от 1 байта до 5 МБ.':'';
+        photos.push({file,error,invalid:!!error,uploadKey:newKey(),attachment:null,status:''});
+      }
+      form.elements.photos.value='';renderUploads();
+    };
+    async function dataBase64(file){const bytes=new Uint8Array(await file.arrayBuffer());let binary='';for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(binary)}
+    form.onsubmit=event=>{event.preventDefault();run(form,sending,async()=>{
+      const body=form.elements.body.value.trim();if(!body&&!photos.length)throw Error('Введите сообщение или добавьте фотографию.');
+      if(photos.some(photo=>photo.invalid))throw Error('Уберите неподходящие файлы перед отправкой.');
+      composing=true;form.elements.photos.disabled=true;form.elements.body.readOnly=true;renderUploads();
+      try{
+        for(const photo of photos){
+          if(photo.attachment)continue;photo.error='';photo.status='Загружаем…';renderUploads();
+          try{const data=await call('attachments','POST',{...thread,name:photo.file.name,mime:photo.file.type,data_base64:await dataBase64(photo.file),request_id:photo.uploadKey});if(!data.attachment?.id)throw Error('Сервер не подтвердил загрузку.');photo.attachment=data.attachment;photo.status='Загружено; сообщение ещё не отправлено';renderUploads()}
+          catch(error){photo.error=error.message;photo.status='';renderUploads();throw Error('Фото «'+photo.file.name+'»: '+error.message+' Сообщение пока не отправлено.')}
+        }
+        const attachment_ids=photos.map(photo=>photo.attachment.id),payload=JSON.stringify({body,attachment_ids});
+        if(pendingPayload&&pendingPayload!==payload)requestKey=newKey();pendingPayload=payload;
+        await call('messages','POST',{...thread,body,attachment_ids,request_id:requestKey});requestKey=newKey();pendingPayload='';form.elements.body.value='';photos=[];renderUploads();await readMore();
+      }finally{composing=false;form.elements.photos.disabled=false;form.elements.body.readOnly=false;renderUploads()}
+    })};host.append(form,button('Обновить переписку',()=>readMore().catch(error=>status.textContent=error.message)));
+    await readMore();
+  }
+  async function openAttachment(attachmentId,name){
+    if(!allowed())return;
+    try{
+      let token='';try{token=sessionStorage.getItem('bos_vk_session_v2')||localStorage.getItem('bos_vk_session_v2')||''}catch{}
+      if(!token)throw Error('Войдите повторно.');
+      const response=await fetch(new URL('staff/attachments/'+id(attachmentId),base),{headers:{'X-BOS-Session':token},credentials:'omit',cache:'no-store'});
+      if(!response.ok)throw Error('Фото недоступно. Обновите заявку.');
+      const blob=await response.blob();if(!['image/png','image/jpeg','image/webp'].includes(blob.type))throw Error('Неподдерживаемый формат фотографии.');
+      const url=URL.createObjectURL(blob),dialog=e('dialog',{class:'cpStaffAttachmentDialog','aria-label':name||'Фотография'});
+      const close=()=>{dialog.remove();URL.revokeObjectURL(url)};
+      dialog.append(button('Закрыть фотографию',close),e('img',{src:url,alt:name||'Фотография',class:'cpStaffPhoto'}));
+      dialog.addEventListener('cancel',event=>{event.preventDefault();close()});dialog.addEventListener('click',event=>{if(event.target===dialog)close()});
+      document.body.append(dialog);if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');
+    }catch(error){alert(error.message)}
+  }
+  function requestCard(request,refresh){
+    const types={reschedule:'Перенос',cancel:'Отмена',warranty:'Гарантийное обращение',privacy_access:'Доступ к персональным данным',privacy_delete:'Удаление персональных данных',privacy_correction:'Исправление персональных данных',access:'Доступ к персональным данным',delete:'Удаление персональных данных',correction:'Исправление персональных данных'};
+    const box=e('article',{class:'card cpStaffRequest'},[e('strong',{text:types[request.type||request.kind]||'Обращение'}),e('p',{text:request.text||''}),notice('Статус: '+(request.status||'pending')+' · '+date(request.created_at))]);
+    if(request.client)box.append(notice((request.client.name||'Клиент')+' · '+(request.client.phone||'')));
+    if(request.order_id)box.append(button('Открыть заявку № '+request.order_id,()=>openDetail(request.order_id)));
+    if(request.desired_date||request.desired_interval)box.append(notice('Пожелание: '+(request.desired_date||'')+' '+(request.desired_interval||'')));
+    if(request.response)box.append(e('p',{text:'Ответ: '+request.response}));
+    if(!['accepted','declined','resolved'].includes(request.status)){
+      const form=e('form',{class:'cpStaffForm'},[
+        field('Ответ клиенту','response','',{tag:'textarea',rows:2,required:true,maxlength:3000}),
+        select('Решение','status',[['accepted','Принять'],['declined','Отклонить']],'accepted'),
+        notice(request.type==='reschedule'?'После принятия переноса отдельно подтвердите новую дату и время.':request.type==='warranty'?'Гарантийное обращение не создаёт новый заказ и не начисляет зарплату повторно.':request.type==='cancel'?'Принятие отмены отменяет активную заявку.':'Сохранится решение и ответ клиенту.'),
+        e('button',{type:'submit',class:'primary',text:'Сохранить решение'})
+      ]),status=busy(form,'');form.onsubmit=event=>{event.preventDefault();run(form,status,async()=>{await call('requests/'+id(request.id)+'/resolve','POST',{version:request.version,status:form.elements.status.value,response:form.elements.response.value.trim()});await refreshStaff();await refresh()})};box.append(form);
+    }
+    return box;
+  }
+  async function openRequests(){
+    const root=modal('Обращения клиентов'),status=busy(root);root.append(button('К заявкам',()=>window.openClientPortalInbox()));
+    try{const data=await call('requests');if(!root.isConnected)return;status.remove();for(const request of data.requests||[])root.append(requestCard(request,openRequests));if(!data.requests?.length)root.append(notice('Открытых обращений нет.'))}catch(error){status.textContent=error.message}
+  }
+  async function openThreads(){
+    const root=modal('Сообщения компании'),status=busy(root);root.append(button('К заявкам',()=>window.openClientPortalInbox()));
+    try{
+      const data=await call('threads');if(!root.isConnected)return;status.remove();
+      for(const thread of data.threads||[])root.append(button((thread.client_name||'Клиент')+(thread.unread_count?' · новых: '+thread.unread_count:''),async()=>{
+        const messages=modal('Переписка · '+(thread.client_name||'Клиент'));messages.append(button('Все сообщения',openThreads));try{await mountMessages(messages,thread.order_id?{order_id:String(thread.order_id)}:{client_id:String(thread.client_id)})}catch(error){messages.append(notice(error.message))}
+      }));
+      if(!data.threads?.length)root.append(notice('Общих обращений пока нет. Переписка по работам находится в карточках заявок.'));
+    }catch(error){status.textContent=error.message}
+  }
+  async function openCatalog(){
+    if(!leadership())return;
+    const root=modal('Каталог услуг'),status=busy(root);root.append(e('div',{class:'cpStaffActions'},[button('К заявкам',()=>window.openClientPortalInbox()),button('Добавить услугу',()=>editService(), 'primary')]));
+    try{
+      const data=await call('catalog');if(!root.isConnected)return;status.remove();
+      for(const service of data.services||[])root.append(section(service.name,[notice(service.category+' · '+(service.published?'Опубликовано':'Черновик')),e('p',{text:service.description||''}),notice((service.price_type==='clarify'?'После уточнения':(service.price_type==='from'?'От ':'')+rub(service.price))+' / '+service.unit),button('Изменить',()=>editService(service))]));
+      if(!data.services?.length)root.append(notice('Добавьте услугу. Неподтверждённые цены сохраняйте черновиками или выбирайте «После уточнения».'));
+    }catch(error){status.textContent=error.message}
+  }
+  function editService(service={}){
+    if(!leadership())return;
+    const root=modal(service.id?'Изменить услугу':'Новая услуга'),form=e('form',{class:'cpStaffForm'},[
+      field('Название','name',service.name||'',{required:true,maxlength:200}),field('Категория','category',service.category||'',{required:true,maxlength:100}),
+      field('Описание','description',service.description||'',{tag:'textarea',rows:3,maxlength:3000}),field('Единица','unit',service.unit||'шт.',{required:true,maxlength:30}),
+      select('Тип цены','price_type',[['clarify','После уточнения'],['fixed','Фиксированная'],['from','От указанной суммы'],['unit','За единицу']],service.price_type||'clarify'),
+      field('Цена, ₽','price',service.price??'',{type:'number',min:'0',step:'.01'}),field('Условия','conditions',service.conditions||'',{tag:'textarea',rows:3,maxlength:3000}),
+      field('Город','city',service.city||'Санкт-Петербург',{required:true,maxlength:120}),
+      e('label',{class:'cpStaffCheck'},[e('input',{name:'available',type:'checkbox',checked:service.available!==false}),e('span',{text:'Услуга доступна'})]),
+      e('label',{class:'cpStaffCheck'},[e('input',{name:'confirmed',type:'checkbox',checked:service.confirmed===true}),e('span',{text:'Цена сверена и подтверждена'})]),
+      e('label',{class:'cpStaffCheck'},[e('input',{name:'published',type:'checkbox',checked:service.published===true}),e('span',{text:'Опубликовать в клиентском каталоге'})]),
+      notice('Изменение цены не пересчитывает ранее созданные заявки.'),e('button',{type:'submit',class:'primary',text:'Сохранить услугу'}),button('Назад',openCatalog)
+    ]),status=busy(form,'');root.append(form);
+    form.onsubmit=event=>{event.preventDefault();run(form,status,async()=>{
+      const fields=Object.fromEntries(new FormData(form));for(const key of ['available','confirmed','published'])fields[key]=form.elements[key].checked;
+      fields.price=fields.price_type==='clarify'?null:Number(fields.price);if(fields.price_type!=='clarify'&&form.elements.price.value==='')throw Error('Укажите цену или выберите «После уточнения».');
+      if(service.id)fields.version=service.version;await call('catalog'+(service.id?'/'+id(service.id):''),service.id?'PATCH':'POST',fields);await openCatalog();
+    })};
+  }
+  async function openMasters(){
+    if(!leadership())return;
+    const root=modal('Публичные карточки мастеров'),status=busy(root);root.append(notice(config.websiteEnabled?'Клиент увидит выбранные имя, специализацию, фото и отдельно указанный публичный номер.':'Клиент увидит только выбранные имя, специализацию и фотографию. Личные телефоны не публикуются.'),button('К заявкам',()=>window.openClientPortalInbox()));
+    try{const data=await call('masters');if(!root.isConnected)return;status.remove();for(const master of data.masters||[]){
+      const form=e('form',{class:'cpStaffForm'},[field('Имя для клиента','name',master.name||'',{required:true,maxlength:120}),field('Специализация','specialization',master.specialization||'',{maxlength:300}),field('Фото: защищённый HTTPS-адрес','photo_url',master.photo_url||'',{type:'url',maxlength:2000}),e('button',{type:'submit',class:'primary',text:'Сохранить карточку'})]),message=busy(form,'');if(config.websiteEnabled)form.prepend(field('Публичный номер для клиентов','public_phone',master.public_phone||'',{type:'tel',maxlength:12,placeholder:'+79990000000'}));form.onsubmit=event=>{event.preventDefault();run(form,message,async()=>{const {public_phone,...profile}=Object.fromEntries(new FormData(form));await call('masters/'+id(master.id)+'/public-profile','POST',profile);if(config.websiteEnabled)await call('website/masters/'+id(master.id)+'/phone','PATCH',{phone:public_phone||''});})};root.append(section(master.name||'Мастер',[form]));
+    }}catch(error){status.textContent=error.message}
+  }
+  function openLink(){
+    if(!allowed())return;
+    const root=modal('Привязать существующую заявку'),search=e('form',{class:'cpStaffForm'},[field('Поиск клиента по телефону или имени','query','',{required:true,minlength:3,maxlength:100}),e('button',{type:'submit',class:'secondary',text:'Найти клиента'})]),results=e('div',{class:'cpStaffList'}),status=busy(search,'');
+    root.append(notice('Привязывайте конкретную заявку только после проверки принадлежности. Совпадения телефона недостаточно. Источник, выплаты и финансовые снимки заявки сохраняются.'),search,results,button('Назад',()=>window.openClientPortalInbox()));
+    search.onsubmit=event=>{event.preventDefault();run(search,status,async()=>{
+      const data=await call('clients?q='+id(search.elements.query.value.trim()));results.replaceChildren();
+      for(const client of data.clients||[])results.append(button((client.name||'Клиент')+' · '+client.phone,()=>{
+        const form=e('form',{class:'cpStaffForm'},[e('strong',{text:(client.name||'Клиент')+' · '+client.phone}),field('Внутренний ID заявки','order_id','',{required:true,maxlength:80}),field('Как проверена принадлежность заявки','verification_note','',{tag:'textarea',required:true,minlength:10,maxlength:2000,rows:3}),e('label',{class:'cpStaffCheck'},[e('input',{name:'verified',type:'checkbox',required:true}),e('span',{text:'Принадлежность этой заявки проверена вручную'})]),e('button',{type:'submit',class:'primary',text:'Привязать эту заявку'})]),message=busy(form,'');results.replaceChildren(form);
+        form.onsubmit=event=>{event.preventDefault();run(form,message,async()=>{
+          if(!form.elements.verified.checked)throw Error('Подтвердите ручную проверку.');
+          const orderId=form.elements.order_id.value.trim(),{order}=await call('orders/'+id(orderId));
+          await call('orders/'+id(orderId)+'/link','POST',{client_id:client.id,version:order.version,verification_note:form.elements.verification_note.value.trim()});await refreshStaff();await openDetail(orderId);
+        })};
+      }));if(!data.clients?.length)results.append(notice('Клиент не найден. Сначала он должен подтвердить телефон в кабинете.'));
+    })};
+  }
+  const priorOpen=window.openOrder;
+  if(typeof priorOpen==='function')window.openOrder=function(orderId){
+    const result=priorOpen.apply(this,arguments);
+    if(!allowed())return result;
+    const order=(state.orders||[]).find(x=>String(x.id)===String(orderId));
+    if(!order||!(order.client_account_id||order.client_id||order.external_source==='client_portal'))return result;
+    const host=document.querySelector('#modalRoot .modal');
+    if(host&&!host.querySelector('.cpStaffEntry'))host.append(e('section',{class:'card cpStaffEntry'},[e('h3',{text:'Кабинет клиента'}),notice('Переписка, фотографии, согласование цены и времени.'),button('Открыть кабинет заявки',()=>openDetail(order.id),'primary')]));
+    return result;
+  };
+  function toolbar(){
+    const host=document.getElementById('content');if(!host)return;
+    const existing=host.querySelector('[data-client-portal-toolbar]');
+    if(!allowed()||!['orders','home','dispatch'].includes(state.page)){existing?.remove();return}
+    if(existing)return;
+    const bar=e('div',{'data-client-portal-toolbar':'',class:'cpStaffToolbar'},[button('Кабинет клиента · сообщения и заявки',()=>window.openClientPortalInbox())]);
+    if(config.websiteEnabled){const leads=button('Обращения бизнеса',()=>openWebsiteLeads());leads.dataset.websiteLeads='';leads.setAttribute('aria-live','polite');bar.append(leads);}
+    host.prepend(bar);
+    if(config.websiteEnabled)void refreshWebsiteNotice();
+  }
+  async function refreshWebsiteNotice(){if(!allowed()||document.hidden)return;const target=document.querySelector('[data-website-leads]');if(!target)return;try{const s=await call('website/summary');const text=s.new_business_leads?'Новые обращения бизнеса: '+s.new_business_leads:'Обращения бизнеса';if(target.textContent!==text)target.textContent=text;}catch{/* Main employee work stays available when website API is offline. */}}
+  if(config.websiteEnabled)setInterval(()=>void refreshWebsiteNotice(),60000);
+  let queued=false;
+  const observer=new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(()=>{queued=false;toolbar()})});
+  const app=document.getElementById('app');if(app)observer.observe(app,{childList:true,subtree:true});toolbar();
+  const style=e('style',{text:'.cpStaffRoot{display:grid;gap:14px;min-width:0}.cpStaffRoot h2,.cpStaffRoot h3,.cpStaffRoot p{margin:0}.cpStaffRoot p{white-space:pre-wrap;overflow-wrap:anywhere}.cpStaffSection{display:grid;gap:12px}.cpStaffActions{display:flex;flex-wrap:wrap;gap:8px}.cpStaffForm,.cpStaffList,.cpStaffField{display:grid;gap:9px}.cpStaffField span{font-size:13px;font-weight:600}.cpStaffField input,.cpStaffField textarea,.cpStaffField select{width:100%;min-width:0;box-sizing:border-box}.cpStaffStatus{font-size:13px;overflow-wrap:anywhere}.cpStaffOrder,.cpStaffRequest{display:grid;gap:9px}.cpStaffEstimateRows{display:grid;gap:12px}.cpStaffEstimateRow{display:grid;grid-template-columns:minmax(120px,1fr) 70px 80px minmax(100px,1fr);gap:8px;align-items:end;padding-bottom:12px;border-bottom:1px solid var(--line,#344157)}.cpStaffEstimateRow>button{grid-column:1/-1;justify-self:end}.cpStaffMessages{display:grid;gap:8px;max-height:400px;overflow:auto}.cpStaffBubble{border-radius:12px;background:rgba(128,145,165,.13);padding:12px;display:grid;gap:5px;max-width:92%}.cpStaffBubble.company{justify-self:end;background:rgba(44,130,220,.18)}.cpStaffBubble p{white-space:pre-wrap;overflow-wrap:anywhere}.cpStaffBubble small{opacity:.65}.cpStaffPhoto{display:block;max-width:100%;max-height:75vh;object-fit:contain}.cpStaffCheck{display:flex;align-items:flex-start;gap:10px}.cpStaffCheck input{width:20px;height:20px;flex:none}.cpStaffToolbar{margin-bottom:12px;display:flex;justify-content:flex-end}.cpStaffToolbar button{max-width:100%;white-space:normal}.cpStaffNote{font-size:13px}@media(max-width:600px){.cpStaffEstimateRow{grid-template-columns:1fr 1fr}.cpStaffEstimateRow>.cpStaffField:first-child{grid-column:1/-1}.cpStaffActions>button{flex:1 1 130px}.cpStaffToolbar{justify-content:stretch}.cpStaffToolbar>button{width:100%}.cpStaffBubble{max-width:100%}}'});document.head.append(style);
+  style.textContent+='.cpStaffUploadList{display:grid;gap:8px}.cpStaffUpload{padding:10px;border:1px solid var(--line,#344157);border-radius:10px;display:grid;gap:5px;overflow-wrap:anywhere}.cpStaffUpload button{justify-self:end}.cpStaffAttachmentDialog{width:min(850px,calc(100vw - 32px));max-height:90vh;box-sizing:border-box;background:var(--card,#101b2a);color:inherit;border:1px solid var(--line,#344157);padding:16px;border-radius:16px;overflow:auto}.cpStaffAttachmentDialog::backdrop{background:rgba(0,0,0,.7)}.cpStaffAttachmentDialog .cpStaffPhoto{margin-top:12px;width:100%}';
+  window.BOS_CLIENT_PORTAL_STAFF=Object.freeze({call,enabled:true});
 })();
 
 ;
