@@ -6,6 +6,7 @@
   const units=['шт.','комплект','выезд','пил.','точка','м','пог. м','п.м.','км','м²','час',''];
   function enhance(row,saved){
    if(row.querySelector('.bosWorkNumbers'))return;
+   row.bosSavedServiceId=saved?.service_id;
    const item=selectedWork(row.querySelector('select')),unit=saved?.unit??item?.u??'шт.';
    const quantity=saved?.quantity??(row.bosOriginalLegacy?'':1),price=saved?.unit_price??(order?null:item?.p);
    row.insertAdjacentHTML('beforeend',`<div class="bosWorkNumbers"><label>Количество<input class="bosWorkQty" inputmode="decimal" value="${esc(String(quantity).replace('.',','))}" placeholder="Не указано" aria-label="Количество"></label><label>Единица<select class="bosWorkUnit" aria-label="Единица измерения">${[...new Set([unit,...units])].map(u=>`<option value="${esc(u)}" ${u===unit?'selected':''}>${esc(u||'без единицы')}</option>`).join('')}</select></label><label>Цена за единицу, ₽<input class="bosWorkPrice" inputmode="decimal" value="${esc(price??'')}" placeholder="Не указана" aria-label="Цена за единицу"></label><div>Сумма позиции<strong class="bosWorkLineTotal">—</strong></div></div>`);
@@ -18,14 +19,14 @@
   rows().forEach((row,i)=>{row.bosOriginalLegacy=!!order&&!order.work_items?.length&&!!selectedWork(row.querySelector('.bosWorkSelect'));enhance(row,order?.work_items?.[i])});
   function collect(){return W.normalize(rows().map(row=>{
    const s=selectedWork(row.querySelector('.bosWorkSelect'));if(!s||row.bosOriginalLegacy&&!row.bosTouched)return null;
-   return {name:s.n,service_id:s.id,quantity:row.querySelector('.bosWorkQty').value,unit:row.querySelector('.bosWorkUnit').value,unit_price:row.querySelector('.bosWorkPrice').value};
+   return {name:s.n,service_id:row.bosSavedServiceId||s.id,quantity:row.querySelector('.bosWorkQty').value,unit:row.querySelector('.bosWorkUnit').value,unit_price:row.querySelector('.bosWorkPrice').value};
   }).filter(Boolean));}
   const footer=document.createElement('div');footer.className='bosWorkSum';footer.innerHTML='<p class="muted">Общая стоимость сохраняется отдельно. Чтобы взять сумму позиций, нажмите кнопку.</p><button type="button" class="secondary bosUseWorkTotal">Использовать сумму позиций</button><p class="bosWorkError newOrderError" role="status"></p>';stack.append(footer);
   function paint(){rows().forEach(row=>{enhance(row);const s=selectedWork(row.querySelector('select'));try{const [v]=W.normalize([{name:s?.n||'Позиция',quantity:row.querySelector('.bosWorkQty').value,unit:row.querySelector('.bosWorkUnit').value,unit_price:row.querySelector('.bosWorkPrice').value}]);row.querySelector('.bosWorkLineTotal').textContent=v.amount==null?'Не указана':money(v.amount)}catch(_){row.querySelector('.bosWorkLineTotal').textContent='—'}})}
   stack.addEventListener('click',e=>{if(e.target.closest('#bosAddWork,.bosRemoveWork')){rows().forEach(row=>enhance(row));dirty=true;paint()}});
   stack.addEventListener('change',e=>{
    const changed=e.target.closest('.bosWorkEditRow');if(changed)changed.bosTouched=true;
-   if(e.target.matches('.bosWorkSelect')){const row=e.target.closest('.bosWorkEditRow'),item=selectedWork(e.target);enhance(row);row.querySelector('.bosWorkQty').value='1';const u=row.querySelector('.bosWorkUnit');if(item?.u&&!Array.from(u.options).some(x=>x.value===item.u))u.add(new Option(item.u,item.u));u.value=item?.u??'шт.';row.querySelector('.bosWorkPrice').value=item?.p??'';}
+   if(e.target.matches('.bosWorkSelect')){e.target.closest('.bosWorkEditRow').bosSavedServiceId=null;const row=e.target.closest('.bosWorkEditRow'),item=selectedWork(e.target);enhance(row);row.querySelector('.bosWorkQty').value='1';const u=row.querySelector('.bosWorkUnit');if(item?.u&&!Array.from(u.options).some(x=>x.value===item.u))u.add(new Option(item.u,item.u));u.value=item?.u??'шт.';row.querySelector('.bosWorkPrice').value=item?.p??'';}
    dirty=true;paint();
   });
   stack.addEventListener('input',e=>{const changed=e.target.closest('.bosWorkEditRow');if(changed)changed.bosTouched=true;dirty=true;paint()});
