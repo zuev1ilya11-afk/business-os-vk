@@ -84,8 +84,8 @@ pages.team=function(){const html=profileTeamBase();return html.replace(/<section
   const catalog=modal.querySelector('.bosSharedCatalog'),avito=modal.querySelector('.bosAvitoCatalog'),materials=modal.querySelector('.bosPriceMaterials');
   if(catalog&&avito&&!modal.querySelector('.bosPriceTabs')){
    modal.classList.add('bosSharedScreen');const tabs=document.createElement('div');tabs.className='bosPriceTabs';tabs.setAttribute('role','group');tabs.setAttribute('aria-label','Разделы прайса');
-   const sections={catalog,avito,materials};
-   for(const [key,title] of [['catalog','Каталог работ'],['avito','Прайс Авито'],['materials','Материалы']]){if(!sections[key])continue;const b=document.createElement('button');b.type='button';b.dataset.priceTab=key;b.textContent=title;b.onclick=()=>{for(const [name,section] of Object.entries(sections)){if(section)section.hidden=name!==key;}tabs.querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button===b)));if(key==='materials')materials.open=true;};tabs.appendChild(b);}
+   const sections={catalog,lemana:modal.querySelector('.bosLemanaCatalog'),avito,materials};
+   for(const [key,title] of [['catalog','Каталог работ'],['lemana','Лемана Про'],['avito','Прайс Авито'],['materials','Материалы']]){if(!sections[key])continue;const b=document.createElement('button');b.type='button';b.dataset.priceTab=key;b.textContent=title;b.onclick=()=>{for(const [name,section] of Object.entries(sections)){if(section)section.hidden=name!==key;}tabs.querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button===b)));if(key==='materials')materials.open=true;};tabs.appendChild(b);}
    avito.before(tabs);tabs.querySelector('[data-price-tab=catalog]').click();
   }
   const toolsHead=modal.querySelector('.ownerToolsHead');

@@ -41,12 +41,12 @@ window.BOS_INIT_REPORT_DEDUCTION=function(form,order){
   }
   function search(){
     const q=$('mrCatalogSearch').value.trim().toLocaleLowerCase('ru');
-    const found=D.catalog.filter(s=>(s.name+' '+s.group).toLocaleLowerCase('ru').includes(q));
+    const found=D.forOrder(order).filter(s=>(s.name+' '+s.group).toLocaleLowerCase('ru').includes(q));
     $('mrCatalogResults').innerHTML=found.length?found.map(s=>`<button type="button" class="secondary deductionCatalogItem" data-service="${s.id}" ${rows.some(r=>r.service_id===s.id)?'disabled':''}><span><b>${escape(s.name)}</b><small>${escape(s.group)}${s.unit?' · '+escape(s.unit):''}</small></span><strong>${s.mode==='fixed'?money(s.price):s.mode==='from'?'от '+money(s.price):'По согласованию'}</strong></button>`).join(''):'<p class="muted">Работы не найдены</p>';
   }
   function payload(){
     if(!enabled())return {uncompleted_work_done:false,uncompleted_work_items:[],uncompleted_work_amount:0,uncompleted_work_description:''};
-    const items=D.items(rows.map(r=>({service_id:r.service_id,quantity:r.quantity,unit_price:r.unit_price,price_confirmed:r.price_confirmed})));
+    const items=D.items(rows.map(r=>({service_id:r.service_id,quantity:r.quantity,unit_price:r.unit_price,price_confirmed:r.price_confirmed})),order);
     const sum=D.round(items.reduce((v,r)=>v+r.amount,0));
     if(visibleCost&&sum>base)throw new Error('Сумма вычета превышает исходную сумму заявки');
     return {uncompleted_work_done:true,uncompleted_work_items:items,uncompleted_work_amount:sum,uncompleted_work_description:$('mrDeductionComment').value.trim()};
