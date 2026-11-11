@@ -14,6 +14,18 @@ FIXTURE = json.loads((Path(__file__).parent/'fixtures.json').read_text())
 
 
 class OverlayTests(unittest.TestCase):
+    def test_drift_diagnostic_hides_literals_and_still_refuses_patch(self):
+        original=FIXTURE['webBefore'].encode()
+        secret='DO_NOT_PRINT_PRIVATE_LITERAL_20261111'
+        changed=original+b'\nconst localRoute="'+secret.encode()+b'";\n'
+        output=io.StringIO()
+        with contextlib.redirect_stdout(output),self.assertRaises(r.Stop):
+            overlay.preserve_origins(original,changed,b'candidate','bundle:fixture.js')
+        self.assertIn('UPLOAD_ACTUAL_SHA=',output.getvalue())
+        self.assertIn('UPLOAD_SOURCE=bundle:fixture.js',output.getvalue())
+        self.assertNotIn(secret,output.getvalue())
+        self.assertLess(len(output.getvalue().splitlines()),14)
+
     def test_api_preserves_every_other_byte_and_refuses_unknown_code(self):
         for name, text in FIXTURE['apiBefore'].items():
             actual = text.encode()
