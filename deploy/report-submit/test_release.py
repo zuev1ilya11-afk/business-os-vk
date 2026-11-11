@@ -14,6 +14,30 @@ FIXTURE = json.loads((Path(__file__).parent/'fixtures.json').read_text())
 
 
 class OverlayTests(unittest.TestCase):
+    def test_observed_ru_module_exact_hash_and_preserved_endpoints(self):
+        before,after=overlay.web_versions(r.REPO)
+        rewrite=lambda value:value.replace(b'https://business-os-api-gateway.netlify.app',b'https://139.100.237.167').replace(
+            b'https://obsropbslfwtanyspjbi.supabase.co',b'https://139.100.237.167')
+        actual=rewrite(before)
+        self.assertEqual(r.sha(actual.rstrip()),'7ddfa403db2abb175e76926b796ef913c2c9767ed1fba127bef6f66c7ecaaebb')
+        changed=overlay.preserve_origins(before,actual,after)
+        self.assertEqual(changed,rewrite(after))
+        self.assertIn(b"REPORT_PROXY='https://139.100.237.167/api/proxy/report-api'",changed)
+        self.assertIn(b"REPORT_DIRECT='https://139.100.237.167/functions/v1/report-api'",changed)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)/'web'
+            self.fixture_web(root,uploader=actual)
+            files,_,_=overlay.frontend(root,r.REPO)
+            self.assertEqual(files['web/'+overlay.NAME],changed)
+            self.assertIn(changed.rstrip(),files['web/startup-shell.bundle.js'])
+
+    def test_unknown_endpoint_and_other_code_changes_remain_blocked(self):
+        before,after=overlay.web_versions(r.REPO)
+        for actual in (before.replace(b'https://business-os-api-gateway.netlify.app',b'https://unreviewed.example'),
+                       before.replace(b"'finalizeMasterReport'",b"'otherAction'",1)):
+            with contextlib.redirect_stdout(io.StringIO()),self.assertRaises(r.Stop):
+                overlay.preserve_origins(before,actual,after)
+
     def test_drift_diagnostic_hides_literals_and_still_refuses_patch(self):
         original=FIXTURE['webBefore'].encode()
         secret='DO_NOT_PRINT_PRIVATE_LITERAL_20261111'
@@ -35,13 +59,14 @@ class OverlayTests(unittest.TestCase):
             with self.assertRaises(r.Stop):
                 overlay.api(name,actual+b'\n// unrelated change')
 
-    def fixture_web(self, root):
+    def fixture_web(self, root, uploader=None):
         root.mkdir()
         version = 'a'*20
+        uploader=FIXTURE['webBefore'].encode() if uploader is None else uploader
         files = {
             'startup-shell.bundle.js':b'// Source: before.js\nconst untouched=1;\n;\n// Source: '+overlay.NAME.encode()+b'\n'+
-               FIXTURE['webBefore'].encode()+b'\n;\n// Source: after.js\nconst finalUntouched=2;\n',
-            overlay.NAME:FIXTURE['webBefore'].encode(),
+               uploader+b'\n;\n// Source: after.js\nconst finalUntouched=2;\n',
+            overlay.NAME:uploader,
             'config.js':b'const endpoint="https://homemaster.qd.je";',
             'index.html':('<script src="startup-shell.bundle.js?v='+version+'"></script>').encode(),
             'sw.js':("const BUILD_ID='"+version+"';\nconst remain=1;\n").encode(),
