@@ -25,6 +25,13 @@ test('new prices multiply by quantity; minimum visit is not an additive service'
  assert.throws(()=>D.items([{service_id:'lemana_20261111_010',unit_price:1850,quantity:1}],{source:'Hands'}));
  assert.throws(()=>D.items([{service_id:'lemana_20261111_010',unit_price:1699,quantity:1}],{source:'Лемана Про'}));
 });
+test('finance keeps old service identity and counts new Lemana deductions by saved ID',()=>{
+ const F=require('../finance-data.js');
+ const base={status:'Выполнена',completed_at:'2026-11-11T09:00:00Z',amount:500,master_payout:200,source:'Лемана Про',work:'Подрезка карниза по длине × 3 пил'};
+ const rows=F.records([{...base,id:'old',uncompleted_work_items:[{service_id:'standard_020',quantity:1}]},{...base,id:'new',work_items:[{service_id:'lemana_20261111_062',name:'Подрезка карниза по длине',quantity:3,unit:'пил',unit_price:200,amount:600}],uncompleted_work_items:[{service_id:'lemana_20261111_062',quantity:1}]}],[]);
+ assert.equal(rows[0].works[0].key,'standard_020');assert.equal(rows[1].works[0].key,'lemana_20261111_062');
+ const groups=F.workGroups(rows);assert.equal(groups.length,2);assert.ok(groups.every(g=>g.quantity===2));assert.equal(F.aggregate(rows).revenue,1000);
+});
 for(const [slug,action] of [['order-lifecycle-api','finalizeMasterReport'],['report-api','finalizeMasterReport'],['report-api','uploadMasterReport']]){
  test(slug+'/'+action+' saves Lemana version and applies the deduction once',async()=>{
   const old={id:'old',source:'Лемана Про',status:'Выполнена',amount:1699,master_payout:999};
