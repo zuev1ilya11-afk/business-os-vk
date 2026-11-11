@@ -84,6 +84,20 @@ class PriceOverlayTests(unittest.TestCase):
             del meta['assets']['finance-data.js']
             with self.assertRaises(r.Stop):overlay.web_target(meta,'finance-data.js')
 
+    def test_reviewed_deployed_finance_variant_preserves_unrelated_models(self):
+        for name,pair in overlay.LEGACY_FINANCE.items():
+            self.assertEqual(overlay.module(name,pair['before'].encode(),r.REPO),pair['after'].encode())
+            with contextlib.redirect_stdout(io.StringIO()),self.assertRaises(r.Stop):
+                overlay.module(name,pair['before'].encode()+b'const unknown=1;',r.REPO)
+        name='supabase/functions/_shared/finance-export-models.mjs'
+        def blocks(text):
+            parts=r.re.split(r'^// ([^\n]+\.(?:js|mjs))\n',text,flags=r.re.M)
+            return dict(zip(parts[1::2],parts[2::2]))
+        before,after=(blocks(overlay.LEGACY_FINANCE[name][k]) for k in ('before','after'))
+        self.assertEqual(before.keys(),after.keys())
+        self.assertEqual({n for n in before if before[n]!=after[n]}, {'finance-data.js','service-catalog.js','report-deduction.js'})
+        self.assertNotIn('D.financialOrder',overlay.LEGACY_FINANCE['finance-data.js']['after'])
+
 
 class InstallTests(unittest.TestCase):
     def setUp(self):
