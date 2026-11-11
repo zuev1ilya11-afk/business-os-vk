@@ -8,7 +8,9 @@ on:
 
 jobs:
   smoke:
-    runs-on: ubuntu-latest
+    # Playwright 1.55.1 has no Chromium build for ubuntu-latest's Ubuntu 26.04.
+    # Match the supported image already used by the Lemana price checks.
+    runs-on: ubuntu-22.04
     timeout-minutes: 20
     services:
       postgres:
