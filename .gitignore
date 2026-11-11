@@ -8,3 +8,5 @@ supabase/.temp/
 !.env.example
 
 .preview-intake-data/
+__pycache__/
+*.pyc

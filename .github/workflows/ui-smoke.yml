@@ -2,13 +2,15 @@ name: UI smoke
 on:
   push:
     branches: [main, feat/web-push-v211]
+  # Stacked fixes target feature branches while the RU release diverges from main.
   pull_request:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
   smoke:
-    runs-on: ubuntu-latest
+    # Playwright 1.55.1 has no Chromium build for ubuntu-latest's Ubuntu 26.04.
+    # Match the supported image already used by the Lemana price checks.
+    runs-on: ubuntu-22.04
     timeout-minutes: 20
     services:
       postgres:
@@ -48,6 +50,10 @@ jobs:
           supabase/functions/order-lifecycle-api/index.ts
           supabase/functions/report-api/index.ts
           supabase/functions/profile-self-api/index.ts
+          supabase/functions/claims-api/index.ts
+          supabase/functions/master-memo-api/index.ts
+          supabase/functions/drive-archive-api/index.ts
+          supabase/functions/report-file-upload/index.ts
       - name: Frozen push sender dependencies and TypeScript
         working-directory: supabase/functions/push-api
         run: |
@@ -79,6 +85,9 @@ jobs:
           bash scripts/test-contact-control.sh
           bash scripts/test-finance-expenses.sh
           bash scripts/test-lemana-concurrency.sh
+
+      - name: Read-only production collector safety
+        run: python3 tests/audit-production-readonly.test.py
 
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server

@@ -60,6 +60,6 @@ test('repeated rejection after the database trigger cleared pointers is a receip
 test('review loses to a concurrent cancellation instead of reopening it',async()=>{
  const {db}=fixture({report_review_status:'pending',report_uploaded_at:'2026-01-01'});
  db.beforeQuery=(table,mode)=>{if(table==='orders'&&mode==='update')db.tables.orders[0].status='Отменена'};
- assert.equal((await edge('order-lifecycle-api',db)({action:'reviewReport',id:'o',expected_report_token:'r1',expected_report_uploaded_at:'2026-01-01',decision:'rejected'})).status,409);
+ assert.equal((await edge('order-lifecycle-api',db)({action:'reviewReport',id:'o',expected_report_token:'r1',expected_report_uploaded_at:'2026-01-01',decision:'rejected',comment:'Исправьте акт'})).status,409);
  assert.equal(db.tables.orders[0].status,'Отменена');assert.equal(db.tables.orders[0].report_review_status,'pending');
 });

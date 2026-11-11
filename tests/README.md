@@ -1,3 +1,24 @@
+> **Audit note — 2026-11-11:** The VK-auth instructions below describe a historical
+> `profiles`/Supabase-auth implementation. This branch has no `app-vk.js` or
+> `tests/vk-auth.test.mjs`, and the active frontend calls `vk-session-api`, whose
+> deployed source is not tracked here. Do not use the historical deployment
+> command as a restoration step for the current RU backend.
+
+Current isolated authentication checks (Node 24):
+
+```sh
+node --test tests/launch-fallback-freshness.test.cjs
+```
+
+```sh
+node --test tests/server-audit.test.cjs
+```
+
+These execute repository handlers with synthetic data. They do not establish
+production parity, current RLS/bucket settings, or a successful real VK login.
+
+---
+
 # VK auth regression checks
 
 Run from the repository root with Node.js 24 or newer:

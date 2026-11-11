@@ -74,3 +74,39 @@ Before the correction, 28 targeted checks failed and 20 controls passed. After
 the correction, the focused auth/Avito/report run passed 215 tests. These results
 do not claim real-account VK, Avito, Hands, Sheets, Storage or Google Drive E2E
 verification. The aggregate suite must be rerun against the final combined patch.
+
+## Audit follow-up — 2026-11-11
+
+Audited candidate: `d2ac9ef89d00663c6151a0d40990921b8d27bb88`
+(`feat/lemana-price-20261111`). This is **not an attestation of the deployed
+backend**: production function source was not available for comparison.
+
+Four additional repository handlers still omitted the same timestamp check:
+`claims-api`, `master-memo-api`, `order-lifecycle-api`, and `drive-archive-api`.
+A correctly signed old or timestamp-free launch was accepted; `claims-api`
+could also return a new BOS session. This is a confirmed authentication defect
+in the candidate source (P1), requiring possession of valid signed launch data.
+No attack or authentication probe was sent to production.
+
+The follow-up applies the same positive integer `vk_ts` and symmetric 24-hour
+window already used by the four corrected handlers. Existing valid BOS sessions
+remain independent of the launch timestamp. Roles and business rules do not
+change. This is a backend-only correction: deploy the four verified functions
+after checking their actual deployed source, without overwriting RU runtime
+changes or publishing the whole candidate branch.
+
+The expanded behavioral suite executes all eight real handlers with synthetic
+signatures and an isolated database/storage adapter. Before the follow-up it
+had 28 failures and 68 passes; after it passes 96/96. The 28 failures are the
+seven invalid timestamp cases for each of the four newly covered handlers.
+Each rejection asserts zero database/storage calls and no issued session.
+Fresh launches, forged signatures, and valid BOS sessions are controls. The
+related auth/RBAC/employee regression selection passes 129/129.
+
+Known separate verification gaps remain: the frontend calls `vk-session-api`,
+whose implementation is still absent from this repository; `vk-auth` is an
+older `profiles`/Supabase-auth path and its live exposure is unverified. Current
+RLS policies, bucket settings, proxy header trust, and server-side session
+revocation must be inspected in the live environment before making security
+claims about production. `tests/README.md` also references a missing historical
+`tests/vk-auth.test.mjs`; that command is not a passing check in this candidate.
