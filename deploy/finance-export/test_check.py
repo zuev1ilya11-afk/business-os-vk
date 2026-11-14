@@ -1,7 +1,9 @@
 import contextlib
+import ctypes.util
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import runpy
 import subprocess
@@ -73,8 +75,8 @@ class CheckTests(unittest.TestCase):
             self.assertEqual(c.schema(edge, [edge, rest, db], report_route=True), ['orders.master_id'])
         args = cmd.call_args.args[0]
         self.assertNotIn('PRIVATE', str(args)); self.assertNotIn('SECRET', str(args))
-        self.assertEqual(args[:12], ['docker', 'exec', '-u', 'postgres', '-e', 'PGHOSTADDR=',
-                                    '-e', 'PGSERVICE=', 'db-id', 'psql', '-X', '-w'])
+        self.assertEqual(args[:13], ['docker', 'exec', '-u', 'postgres', 'db-id', 'env',
+                                    '-u', 'PGSERVICE', '-u', 'PGHOSTADDR', 'psql', '-X', '-w'])
         self.assertEqual(args[args.index('-h') + 1], '/var/run/postgresql')
         self.assertEqual(args[args.index('-p') + 1], '5432')
         self.assertEqual(output.getvalue(), 'DATABASE_ROUTE={"container":"db","database":"bos_restore_check"}\n')
@@ -109,7 +111,7 @@ class CheckTests(unittest.TestCase):
         for check in (host, mount, read, bundle): check.assert_not_called()
         self.assertEqual(cmd.call_count, 3)
         sql_args = cmd.call_args.args[0]
-        self.assertEqual(sql_args[sql_args.index('psql') - 1], 'business-os-db-id')
+        self.assertEqual(sql_args[sql_args.index('env') - 1], 'business-os-db-id')
         self.assertEqual(sql_args[sql_args.index('-d') + 1], 'actual_database')
         text = output.getvalue()
         self.assertIn('DATABASE_ROUTE={"container":"business-os-db","database":"actual_database"}', text)
@@ -163,6 +165,49 @@ class CheckTests(unittest.TestCase):
         self.assertNotIn('CHECK_COMPLETE=true', output.getvalue())
         self.assertNotIn('DATABASE_ROUTE=', output.getvalue())
         self.assertNotIn('PRIVATE_', output.getvalue())
+
+    def test_real_libpq_unsets_empty_service_before_local_socket_connect(self):
+        library = ctypes.util.find_library('pq')
+        if library is None: self.skipTest('libpq unavailable')
+        edge = container('edge', env=['BOS_REST_ORIGIN=http://rest:3000'])
+        rest = container('rest', ['rest'], ['PGRST_DB_URI=postgres://user:password@db/database'])
+        with patch.object(c, 'command', return_value=b'[]') as cmd:
+            c.schema(edge, [edge, rest, container('db', ['db'])])
+        args = cmd.call_args.args[0]
+        unset = args[args.index('env'):args.index('psql')]
+        # This child connects only to a private directory's absent Unix socket.
+        probe = '''import ctypes, json, os, sys
+pq = ctypes.CDLL(sys.argv[1])
+pq.PQconnectdb.argtypes = [ctypes.c_char_p]
+pq.PQconnectdb.restype = ctypes.c_void_p
+pq.PQstatus.argtypes = [ctypes.c_void_p]
+pq.PQstatus.restype = ctypes.c_int
+pq.PQerrorMessage.argtypes = [ctypes.c_void_p]
+pq.PQerrorMessage.restype = ctypes.c_char_p
+pq.PQhost.argtypes = [ctypes.c_void_p]
+pq.PQhost.restype = ctypes.c_char_p
+pq.PQfinish.argtypes = [ctypes.c_void_p]
+conn = pq.PQconnectdb(('host=' + sys.argv[2] + ' port=5432 dbname=postgres user=postgres connect_timeout=1').encode())
+error = pq.PQerrorMessage(conn).decode()
+result = {'status': pq.PQstatus(conn), 'service_present': 'PGSERVICE' in os.environ,
+          'hostaddr_present': 'PGHOSTADDR' in os.environ,
+          'service_error': 'definition of service "" not found' in error,
+          'unix_socket_target': (pq.PQhost(conn) or b'').decode() == sys.argv[2]}
+pq.PQfinish(conn)
+print(json.dumps(result))
+'''
+        with tempfile.TemporaryDirectory() as socket_dir:
+            service_file = Path(socket_dir) / 'pg_service.conf'
+            service_file.write_text('')
+            environment = {k: v for k, v in os.environ.items() if not k.startswith('PG')}
+            environment.update(PGSERVICE='', PGHOSTADDR='', PGSERVICEFILE=str(service_file),
+                               PGSYSCONFDIR=socket_dir, LC_ALL='C')
+            command = [sys.executable, '-c', probe, library, socket_dir]
+            before = json.loads(subprocess.check_output(command, env=environment, timeout=5))
+            after = json.loads(subprocess.check_output(unset + command, env=environment, timeout=5))
+        self.assertTrue(before['service_error'])
+        self.assertEqual(after, {'status': 1, 'service_present': False, 'hostaddr_present': False,
+                                 'service_error': False, 'unix_socket_target': True})
 
     def test_duplicate_module_cannot_be_selected_silently(self):
         entry = b'// Source: network-direct-v86.js\nfirst\n;\n// Source: next.js\nx'

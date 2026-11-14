@@ -143,8 +143,8 @@ FROM information_schema.columns WHERE table_schema='public'
 AND table_name IN ('orders','business_staff','finance_expenses','order_claims');
 ROLLBACK;"""
     # Override inherited libpq routing for this process only; never reconfigure Docker.
-    raw = command(['docker', 'exec', '-u', 'postgres', '-e', 'PGHOSTADDR=', '-e', 'PGSERVICE=',
-                   db['Id'], 'psql', '-X', '-w', '-qAt', '-v', 'ON_ERROR_STOP=1',
+    raw = command(['docker', 'exec', '-u', 'postgres', db['Id'], 'env', '-u', 'PGSERVICE', '-u', 'PGHOSTADDR',
+                   'psql', '-X', '-w', '-qAt', '-v', 'ON_ERROR_STOP=1',
                    '-h', '/var/run/postgresql', '-p', '5432', '-U', 'postgres', '-d', database, '-c', sql])
     actual = {(table, column) for table, column in json.loads(raw)}
     if report_route:
