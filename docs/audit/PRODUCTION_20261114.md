@@ -56,6 +56,17 @@ Live-результат владельца: `1|801a6a486f2cde0e2e78e3c1da770728|
 
 Следующий короткий шаг M01 — флаги RLS/FORCE и количество политик для четырёх таблиц `orders`, `business_staff`, `finance_expenses`, `order_claims`, без выражений политик/строк данных. Меньше четырёх строк означает неполноту, а сами флаги и количество не доказывают корректность доступа или наличие утечки. После этого остаётся сверка runtime/образов и маршрутов auth/storage; текущие настройки/БД не меняются.
 
+Получены все четыре строки:
+
+| Таблица | RLS | FORCE RLS | Число политик |
+| --- | --- | --- | --- |
+| business_staff | true | false | 0 |
+| finance_expenses | true | false | 1 |
+| order_claims | true | false | 0 |
+| orders | true | false | 3 |
+
+При включённом RLS отсутствие политик означает default-deny для ролей, к которым применяется RLS; владельцы таблиц, superuser и BYPASSRLS требуют отдельного рассмотрения ([PostgreSQL 17](https://www.postgresql.org/docs/17/ddl-rowsecurity.html)). FORCE=false сам по себе не ошибка. Выражения политик, grants и фактический доступ приложения этим запросом не проверялись; автоматические изменения не требуются. Следующий шаг — отфильтрованная диагностика состояния контейнеров текущего release и отдельной БД: status/restarts/OOM/health, без Env/labels/logs.
+
 ## Повтор AUD-15 в CI
 
 [Run 43607186978](https://github.com/zuev1ilya11-afk/business-os-vk/actions/runs/43607186978) завершился успешно, но содержит **1 flaky**: `manager: edit apartment/comment in existing form and see saved fields after reload`, `tests/master-compact-card.spec.js:42`. После очистки комментария fixture сохранила прежнее значение; повтор прошёл. Итог — 889 passed, 1 flaky, 6 skipped. Ранее локально аналогичная ошибка возникала у owner. Причина ещё не установлена; успешный retry не считается исправлением или чистой UI-приёмкой. Прикладной код между этими проверками не менялся.
