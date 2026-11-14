@@ -1,0 +1,34 @@
+name: Recovery package
+on:
+  pull_request:
+    paths:
+      - 'deploy/recovery/**'
+      - '.github/workflows/recovery-package.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recovery:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Safety regressions and deterministic operator package
+        run: |
+          python3 -m unittest discover -s deploy/recovery -p 'test_*.py'
+          python3 deploy/recovery/build.py
+          git diff --exit-code -- deploy/recovery/bos-backup.pyz
+          python3 deploy/recovery/bos-backup.pyz --help
+      - name: Build disposable PostgreSQL test environment
+        run: docker build -f deploy/recovery/test.Dockerfile -t bos-recovery-test deploy/recovery
+      - name: Real dump and restore with networking disabled
+        run: >-
+          docker run --rm --network none --read-only
+          --tmpfs /tmp:rw,noexec,nosuid,size=1g
+          --mount type=bind,src=${{ github.workspace }},dst=/repo,readonly
+          bos-recovery-test

@@ -1,0 +1,44 @@
+{
+  "date_utc": "2026-11-14",
+  "status": "LOCAL_VERIFIED",
+  "tests": {
+    "total": 57,
+    "passed": 57,
+    "skipped": 0,
+    "backup_safety": 28,
+    "discovery": 27,
+    "real_postgresql": 2
+  },
+  "postgresql": "17.11 (Debian 17.11-0+deb13u1)",
+  "local_transport": "loopback; Unix socket bind prohibited in this environment",
+  "real_restore": [
+    "custom dump",
+    "globals roles and memberships",
+    "schema and records",
+    "owners grants and RLS",
+    "FK CHECK identity triggers",
+    "Storage fixture bytes and DB metadata",
+    "read-only write refusal",
+    "truncated dump rejection and rollback"
+  ],
+  "fixtures": [
+    "Docker discovery/transport",
+    "Docker image export bytes",
+    "application data and Storage files"
+  ],
+  "production_capture": "NOT_RUN",
+  "production_restore": "NOT_RUN",
+  "database_storage_consistency": "NOT_PROVEN",
+  "independent_copy": "NOT_VERIFIED",
+  "disaster_recovery_ready": false,
+  "ci": "Not claimed by this local result; see the Recovery package workflow for its exact commit.",
+  "sha256": {
+    "backup.py": "6afe3920bb35423686692b98fd4b2ee040669078ba6bf6d9f5b88909cccd0190",
+    "discovery.py": "c52c5a45a0efb956a1e52482d565354c6196e5524906842974084415e04f6445",
+    "build.py": "47bfd7ab53d5b628f4a1e988376c8ee7c2fac6a30689d0ae3918498bf8824b26",
+    "test_backup.py": "ea206ed71c293620e6d74f627b3acb481c54a7ae7a42342b987da32c140a36ea",
+    "test_discovery.py": "82e2ae557c30e97ab86e74b9d8ae6690b5f2dd876cea49a132bda884e5e735df",
+    "test_postgres.py": "6a8d57e3c0c1f26c5fac47298d170b6243eb7dc58e76d2170610131c4083f774",
+    "bos-backup.pyz": "ffbd1e383cb4c971067fa2e2f50bdceba8737cc1cbba44a5551b7e586681d25e"
+  }
+}
