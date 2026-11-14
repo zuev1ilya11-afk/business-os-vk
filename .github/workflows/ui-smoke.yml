@@ -92,6 +92,9 @@ jobs:
           command -v docker
           python3 tests/audit-docker-template.test.py
 
+      - name: Read-only release journal verification
+        run: python3 tests/audit-release-journals.test.py
+
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server
 

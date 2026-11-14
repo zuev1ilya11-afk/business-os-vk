@@ -75,3 +75,21 @@ reproduces the old `.Id` raw-map fallback failure and checks absent/null,
 healthy and unhealthy Health values using the collector's actual template.
 Without Docker CLI these integration tests explicitly skip; the CI safety step
 requires the installed CLI before executing them.
+
+# Read-only release journal verification
+
+`python3 tests/audit-release-journals.test.py` uses synthetic files only. The
+standalone `scripts/audit-release-journals.py` reads the observed report and
+Lemana journal pointers and live release tree. It checks applied BUILD continuity,
+intersecting before/after hashes, every effective target (newer price targets
+supersede report targets), and the full edge/main filename/hash set against the
+latest journal's before.main. It never imports an installer, invokes Docker or
+another process, accesses the database/network, or writes files.
+
+The output has at most 15 lines and five allowlisted mismatch paths; unavailable
+reads, malformed evidence and budgets make COMPLETE=false. A fully read hash
+mismatch is complete evidence but VERIFIED=false. Exit zero requires VERIFIED.
+Only file hashes are compared: journal provenance, Docker image/env fingerprint,
+uid/gid/mode, database state and backup restoration remain outside this check.
+Fixtures can override --live, --report and --price; defaults are the server paths
+observed on 14.11.2026. These defaults do not establish that future mounts match.
