@@ -56,3 +56,20 @@ Alternatively, replace `vk-auth/index.ts` in the Supabase dashboard editor and
 deploy it there, preserving the existing JWT setting. No frontend deployment is
 needed for this change. Reopen VK Mini App 54758847 and use “Обновить вход через
 VK” if a cached Supabase session would otherwise skip the new authentication.
+
+# Read-only production collector
+
+Run `python3 tests/audit-production-readonly.test.py` for the metadata-only
+collector's unit regressions. One failed container inspection must preserve
+the other containers' BUILD/manifest results without disclosing stderr or
+host paths. `complete` describes evidence collection, not application health:
+an inspected `unhealthy` container is still complete evidence. Unavailable
+artifact checks and the container limit make collection incomplete.
+
+Run `python3 tests/audit-docker-template.test.py` for real Docker CLI formatting
+against a temporary synthetic Unix-socket Engine API. No real Docker daemon,
+container, external network, or privileged operation is used. The fixture
+reproduces the old `.Id` raw-map fallback failure and checks absent/null,
+healthy and unhealthy Health values using the collector's actual template.
+Without Docker CLI these integration tests explicitly skip; the CI safety step
+requires the installed CLI before executing them.

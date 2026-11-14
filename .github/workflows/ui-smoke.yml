@@ -87,7 +87,10 @@ jobs:
           bash scripts/test-lemana-concurrency.sh
 
       - name: Read-only production collector safety
-        run: python3 tests/audit-production-readonly.test.py
+        run: |
+          python3 tests/audit-production-readonly.test.py
+          command -v docker
+          python3 tests/audit-docker-template.test.py
 
       - name: Server authorization, payroll and gateway regressions
         run: npm run test:server

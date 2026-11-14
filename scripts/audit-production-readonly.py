@@ -18,7 +18,10 @@ MAX_FILE = 128 * 1024 * 1024
 MAX_TOTAL = 512 * 1024 * 1024
 SAFE_NAME = re.compile(r'^[A-Za-z0-9_.-]{1,160}$')
 # No environment, command, labels, ports or logs are requested from Docker.
-DOCKER_FORMAT = '{{json .Id}}\t{{json .Name}}\t{{json .Image}}\t{{json .Config.Image}}\t{{json .State.Status}}\t{{if .State.Health}}{{json .State.Health.Status}}{{else}}null{{end}}\t{{json .Mounts}}'
+# .Id selects Docker's raw-map fallback. Health is omitted without a healthcheck;
+# a dotted lookup fails under missingkey=error even inside "if". index returns
+# an empty value for an absent map key; if then emits null, not a false failure.
+DOCKER_FORMAT = '{{json .Id}}\t{{json .Name}}\t{{json .Image}}\t{{json .Config.Image}}\t{{json .State.Status}}\t{{if index .State "Health"}}{{json .State.Health.Status}}{{else}}null{{end}}\t{{json .Mounts}}'
 SCHEMA_SQL = """BEGIN READ ONLY;
 SET LOCAL statement_timeout='3s';
 SELECT json_build_object(
@@ -164,39 +167,66 @@ def backend_identity(root, budget):
     return {'files': files, 'execution_matches_sources': 'not_established'}
 
 
+def inspect_container(cid, budget):
+    row = command(['docker', 'inspect', '--format', DOCKER_FORMAT, cid])
+    fields = [json.loads(s) for s in row.split('\t')]
+    ident, name, image, image_ref, state, health, mounts = fields
+    item = {'name': str(name).lstrip('/'), 'image_id': image, 'image_reference': image_ref,
+            'state': state, 'health': health, 'mount_targets': []}
+    if not isinstance(mounts, list) or len(mounts) > 100:
+        raise ProbeError('MOUNT_LIMIT')
+    for m in mounts:
+        if not isinstance(m, dict):
+            raise ProbeError('MOUNT_FORMAT')
+        target = m.get('Destination', '')
+        if target not in ('/srv', '/bos-src', '/bos-bundles', '/bos-main', '/etc/caddy'):
+            continue
+        item['mount_targets'].append({'target': target, 'type': m.get('Type'), 'writable': bool(m.get('RW'))})
+        # Do not disclose arbitrary host paths or container configuration.
+        if m.get('Type') != 'bind':
+            continue
+        source = m.get('Source', '')
+        if target == '/srv':
+            item['web'] = guarded(lambda: web_identity(source, budget))
+        elif target in ('/bos-src', '/bos-bundles'):
+            item[target.lstrip('/')] = guarded(lambda: backend_identity(source, budget))
+        elif target == '/etc/caddy':
+            item['caddyfile'] = guarded(lambda: hash_file(safe_path(source), 'Caddyfile', budget))
+    return item
+
+
+def evidence_unavailable(value):
+    if isinstance(value, dict):
+        return value.get('status') == 'unavailable' or any(evidence_unavailable(v) for v in value.values())
+    if isinstance(value, list):
+        return any(evidence_unavailable(v) for v in value)
+    return False
+
+
 def inspect_containers(budget):
     rows = command(['docker', 'ps', '--format', '{{.ID}}\t{{.Names}}']).splitlines()
     selected = []
     for row in rows:
         parts = row.split('\t')
         if len(parts) == 2 and re.fullmatch(r'[a-f0-9]{12,64}', parts[0]) and re.fullmatch(r'bos[-_][A-Za-z0-9_.-]{1,120}', parts[1]):
-            selected.append(parts[0])
+            selected.append((parts[0], parts[1]))
     result = []
-    for cid in selected[:40]:
-        row = command(['docker', 'inspect', '--format', DOCKER_FORMAT, cid])
-        fields = [json.loads(s) for s in row.split('\t')]
-        ident, name, image, image_ref, state, health, mounts = fields
-        item = {'name': str(name).lstrip('/'), 'image_id': image, 'image_reference': image_ref,
-                'state': state, 'health': health, 'mount_targets': []}
-        if not isinstance(mounts, list) or len(mounts) > 100:
-            raise ProbeError('MOUNT_LIMIT')
-        for m in mounts:
-            target = m.get('Destination', '')
-            if target not in ('/srv', '/bos-src', '/bos-bundles', '/bos-main', '/etc/caddy'):
-                continue
-            item['mount_targets'].append({'target': target, 'type': m.get('Type'), 'writable': bool(m.get('RW'))})
-            # Do not disclose arbitrary host paths or container configuration.
-            if m.get('Type') != 'bind':
-                continue
-            source = m.get('Source', '')
-            if target == '/srv':
-                item['web'] = guarded(lambda: web_identity(source, budget))
-            elif target in ('/bos-src', '/bos-bundles'):
-                item[target.lstrip('/')] = guarded(lambda: backend_identity(source, budget))
-            elif target == '/etc/caddy':
-                item['caddyfile'] = guarded(lambda: hash_file(safe_path(source), 'Caddyfile', budget))
+    failed = incomplete = 0
+    for cid, name in selected[:40]:
+        # A disappearing container or unsupported inspect field must not erase
+        # the other containers' deployment evidence. Stderr remains private.
+        item = guarded(lambda: inspect_container(cid, budget))
+        if item.get('status') == 'unavailable':
+            failed += 1
+            item.update({'container_id': cid, 'name': name})
+        elif evidence_unavailable(item):
+            incomplete += 1
         result.append(item)
-    return {'containers': result, 'matching_containers': len(selected), 'truncated': len(selected) > 40}
+    truncated = len(selected) > 40
+    return {'containers': result, 'matching_containers': len(selected),
+            'inspected_containers': len(result) - failed, 'failed_containers': failed,
+            'incomplete_artifact_containers': incomplete,
+            'truncated': truncated, 'complete': not (failed or incomplete or truncated)}
 
 
 def database_identity(container, database):
