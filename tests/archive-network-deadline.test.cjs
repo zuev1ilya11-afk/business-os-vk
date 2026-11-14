@@ -56,7 +56,7 @@ for(const phase of ['headers','body'])test('approval '+phase+' timeout cannot co
 test('rejection and archived approval do not start archive requests or deadline timers',async()=>{
  for(const decision of ['rejected','approved']){
   const db=fixture();if(decision==='approved')Object.assign(db.tables.orders[0],{drive_archive_status:'archived',drive_archive_url:'https://drive.test/report'});
-  const r=await edge('order-lifecycle-api',db,{setTimeout:()=>{throw new Error('Unexpected timer')},fetch:()=>{throw new Error('Unexpected fetch')}})({...review,decision},'staff_d');
+  const r=await edge('order-lifecycle-api',db,{setTimeout:()=>{throw new Error('Unexpected timer')},fetch:()=>{throw new Error('Unexpected fetch')}})({...review,decision,comment:decision==='rejected'?'Добавьте фото креплений':''},'staff_d');
   assert.equal(r.status,200);assert.equal(db.tables.orders[0].report_review_status,decision);
  }
 });

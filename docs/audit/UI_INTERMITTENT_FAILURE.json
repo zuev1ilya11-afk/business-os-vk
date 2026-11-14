@@ -1,0 +1,31 @@
+{
+  "finding": "AUD-15",
+  "scope": "Synthetic UI fixture only; no live client data",
+  "test": "tests/master-compact-card.spec.js:38",
+  "title": "owner: edit apartment/comment in existing form and see saved fields after reload",
+  "failing_assertion_line": 42,
+  "local_commit": "394140004487638d02cb053f11055ff6ba187291",
+  "full_run_started_utc": "2026-11-11T17:32:59.423Z",
+  "test_duration_ms": 5817,
+  "retry": 0,
+  "expected_comment": "",
+  "actual_comment": "Локальный комментарий",
+  "error": "Timeout 5000ms exceeded while waiting on the predicate",
+  "observation": "After reload, the owner cleared the comment and submitted the form. The form became hidden but fixture orders[0].comment retained the previous value.",
+  "full_run": { "pass": 888, "fail": 1, "skipped": 4 },
+  "subsequent_exact_repeats": { "pass": 10, "fail": 0 },
+  "subsequent_adjacent_file_repeats": { "pass": 33, "fail": 0, "workers": 2 },
+  "subsequent_full_trace_run": {
+    "local_commit": "ff4266094075f99ded1dbc369b809302b9eb6c0b",
+    "pass": 890,
+    "fail": 0,
+    "skipped": 4,
+    "flaky": 0
+  },
+  "repeat_trace_observation": "Successful repeats sent comment empty string and received HTTP 200.",
+  "cause": "not established",
+  "fix_claimed": false,
+  "test_relaxed": false,
+  "follow_up": "Repeat clear/save/reload on the parity staging runtime; capture failure trace if reproducible. Do not describe this as a confirmed production defect.",
+  "original_json_sha256": "2439d0f506a5a004ee5128426274f13b21cdbcd8c4c751a9c9739231f70f76bd"
+}

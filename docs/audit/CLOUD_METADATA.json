@@ -1,0 +1,620 @@
+{
+  "observed_date": "2026-11-11",
+  "method": "Supabase connected plugin, metadata tools and BEGIN READ ONLY SELECT catalog/runtime flags; no business rows, secret values, log bodies, writes or external sends.",
+  "project": {
+    "id": "obsropbslfwtanyspjbi",
+    "name": "zu Project",
+    "status": "ACTIVE_HEALTHY",
+    "region": "eu-west-2",
+    "database_version": "17.6.1.166"
+  },
+  "functions": [
+    {
+      "slug": "vk-auth",
+      "status": "ACTIVE",
+      "version": 15,
+      "verify_jwt": true,
+      "updated_at": "2026-09-08T16:04:34.550Z"
+    },
+    {
+      "slug": "business-os-api",
+      "status": "ACTIVE",
+      "version": 12,
+      "verify_jwt": false,
+      "updated_at": "2026-09-09T07:42:05.735Z"
+    },
+    {
+      "slug": "claims-api",
+      "status": "ACTIVE",
+      "version": 12,
+      "verify_jwt": false,
+      "updated_at": "2026-10-01T10:40:07.179Z"
+    },
+    {
+      "slug": "mini-app-api",
+      "status": "ACTIVE",
+      "version": 28,
+      "verify_jwt": false,
+      "updated_at": "2026-10-05T16:10:37.656Z"
+    },
+    {
+      "slug": "report-api",
+      "status": "ACTIVE",
+      "version": 25,
+      "verify_jwt": false,
+      "updated_at": "2026-10-05T16:12:33.402Z"
+    },
+    {
+      "slug": "sheets-sync-api",
+      "status": "ACTIVE",
+      "version": 10,
+      "verify_jwt": false,
+      "updated_at": "2026-09-11T16:00:44.482Z"
+    },
+    {
+      "slug": "vk-session-api",
+      "status": "ACTIVE",
+      "version": 9,
+      "verify_jwt": false,
+      "updated_at": "2026-09-09T14:11:08.317Z"
+    },
+    {
+      "slug": "drive-archive-api",
+      "status": "ACTIVE",
+      "version": 17,
+      "verify_jwt": false,
+      "updated_at": "2026-09-30T10:48:52.661Z"
+    },
+    {
+      "slug": "gas-bridge-health",
+      "status": "ACTIVE",
+      "version": 8,
+      "verify_jwt": false,
+      "updated_at": "2026-09-13T09:03:45.263Z"
+    },
+    {
+      "slug": "archive-order-2-once",
+      "status": "ACTIVE",
+      "version": 9,
+      "verify_jwt": false,
+      "updated_at": "2026-09-11T16:11:25.926Z"
+    },
+    {
+      "slug": "e2e-create-staff-order-once",
+      "status": "ACTIVE",
+      "version": 6,
+      "verify_jwt": false,
+      "updated_at": "2026-09-11T16:11:12.231Z"
+    },
+    {
+      "slug": "password-session-api",
+      "status": "ACTIVE",
+      "version": 9,
+      "verify_jwt": false,
+      "updated_at": "2026-09-25T19:14:51.710Z"
+    },
+    {
+      "slug": "test-pin-session",
+      "status": "ACTIVE",
+      "version": 7,
+      "verify_jwt": false,
+      "updated_at": "2026-09-11T15:15:31.829Z"
+    },
+    {
+      "slug": "bos-api",
+      "status": "ACTIVE",
+      "version": 7,
+      "verify_jwt": false,
+      "updated_at": "2026-09-10T07:11:31.722Z"
+    },
+    {
+      "slug": "agent-business-api",
+      "status": "ACTIVE",
+      "version": 6,
+      "verify_jwt": true,
+      "updated_at": "2026-09-09T20:08:39.400Z"
+    },
+    {
+      "slug": "agent-link-self",
+      "status": "ACTIVE",
+      "version": 5,
+      "verify_jwt": true,
+      "updated_at": "2026-09-09T20:05:02.681Z"
+    },
+    {
+      "slug": "agent-runtime",
+      "status": "ACTIVE",
+      "version": 6,
+      "verify_jwt": true,
+      "updated_at": "2026-09-09T20:15:43.353Z"
+    },
+    {
+      "slug": "agent-dispatch-api",
+      "status": "ACTIVE",
+      "version": 5,
+      "verify_jwt": true,
+      "updated_at": "2026-09-09T20:15:13.250Z"
+    },
+    {
+      "slug": "agent-core",
+      "status": "ACTIVE",
+      "version": 5,
+      "verify_jwt": true,
+      "updated_at": "2026-09-09T20:18:27.813Z"
+    },
+    {
+      "slug": "report-upload-gateway",
+      "status": "ACTIVE",
+      "version": 5,
+      "verify_jwt": false,
+      "updated_at": "2026-09-10T15:37:08.001Z"
+    },
+    {
+      "slug": "order-meta-api",
+      "status": "ACTIVE",
+      "version": 8,
+      "verify_jwt": false,
+      "updated_at": "2026-09-29T13:22:51.558Z"
+    },
+    {
+      "slug": "profile-self-api",
+      "status": "ACTIVE",
+      "version": 8,
+      "verify_jwt": false,
+      "updated_at": "2026-10-05T16:12:17.251Z"
+    },
+    {
+      "slug": "employee-meta-api",
+      "status": "ACTIVE",
+      "version": 6,
+      "verify_jwt": false,
+      "updated_at": "2026-09-13T20:21:13.077Z"
+    },
+    {
+      "slug": "master-memo-api",
+      "status": "ACTIVE",
+      "version": 5,
+      "verify_jwt": false,
+      "updated_at": "2026-09-12T08:15:49.163Z"
+    },
+    {
+      "slug": "avito-api",
+      "status": "ACTIVE",
+      "version": 11,
+      "verify_jwt": false,
+      "updated_at": "2026-10-05T16:12:05.464Z"
+    },
+    {
+      "slug": "integration-api",
+      "status": "ACTIVE",
+      "version": 12,
+      "verify_jwt": false,
+      "updated_at": "2026-10-05T16:11:50.762Z"
+    },
+    {
+      "slug": "report-file-upload",
+      "status": "ACTIVE",
+      "version": 6,
+      "verify_jwt": false,
+      "updated_at": "2026-10-05T16:12:50.227Z"
+    },
+    {
+      "slug": "staff-admin-api",
+      "status": "ACTIVE",
+      "version": 7,
+      "verify_jwt": false,
+      "updated_at": "2026-09-19T15:38:05.856Z"
+    },
+    {
+      "slug": "staff-invite-api",
+      "status": "ACTIVE",
+      "version": 14,
+      "verify_jwt": false,
+      "updated_at": "2026-09-13T14:50:26.487Z"
+    },
+    {
+      "slug": "hands-api",
+      "status": "ACTIVE",
+      "version": 11,
+      "verify_jwt": false,
+      "updated_at": "2026-10-02T15:26:45.708Z"
+    },
+    {
+      "slug": "master-workflow-api",
+      "status": "ACTIVE",
+      "version": 14,
+      "verify_jwt": false,
+      "updated_at": "2026-10-04T19:39:24.597Z"
+    },
+    {
+      "slug": "order-lifecycle-api",
+      "status": "ACTIVE",
+      "version": 18,
+      "verify_jwt": false,
+      "updated_at": "2026-10-04T10:41:39.875Z"
+    },
+    {
+      "slug": "push-api",
+      "status": "ACTIVE",
+      "version": 5,
+      "verify_jwt": false,
+      "updated_at": "2026-10-01T07:57:11.187Z"
+    },
+    {
+      "slug": "avito-assistant-api",
+      "status": "ACTIVE",
+      "version": 2,
+      "verify_jwt": false,
+      "updated_at": "2026-09-30T18:28:46.791Z"
+    },
+    {
+      "slug": "hands-report-api",
+      "status": "ACTIVE",
+      "version": 7,
+      "verify_jwt": false,
+      "updated_at": "2026-10-01T19:33:26.506Z"
+    }
+  ],
+  "migrations": [
+    {
+      "version": "20260909000733",
+      "name": "business_os_operational_fields"
+    },
+    {
+      "version": "20260909001255",
+      "name": "google_sheets_sync_fields"
+    },
+    {
+      "version": "20260909001820",
+      "name": "claims_and_reopen_flow"
+    },
+    {
+      "version": "20260909002024",
+      "name": "claim_revisit_payment"
+    },
+    {
+      "version": "20260909004321",
+      "name": "business_staff_model"
+    },
+    {
+      "version": "20260909004859",
+      "name": "claims_staff_link"
+    },
+    {
+      "version": "20260909022011",
+      "name": "add_order_report_file_fields"
+    },
+    {
+      "version": "20260909034648",
+      "name": "launch_readiness_report_review_and_order_conditions"
+    },
+    {
+      "version": "20260909071723",
+      "name": "add_drive_archive_tracking"
+    },
+    {
+      "version": "20260909073003",
+      "name": "add_created_by_vk_id_for_mini_app_orders"
+    },
+    {
+      "version": "20260909074314",
+      "name": "enable_rls_for_private_business_tables"
+    },
+    {
+      "version": "20260909074646",
+      "name": "lock_down_legacy_rpc_functions"
+    },
+    {
+      "version": "20260909081731",
+      "name": "lock_down_legacy_security_definer_functions"
+    },
+    {
+      "version": "20260909082750",
+      "name": "launch_performance_indexes"
+    },
+    {
+      "version": "20260909111128",
+      "name": "zero_payouts_on_cancelled_orders"
+    },
+    {
+      "version": "20260909111242",
+      "name": "enforce_report_before_completion"
+    },
+    {
+      "version": "20260909135109",
+      "name": "add_staff_login_password"
+    },
+    {
+      "version": "20260909135208",
+      "name": "staff_password_auth_functions_v2"
+    },
+    {
+      "version": "20260909154427",
+      "name": "business_os_secure_core"
+    },
+    {
+      "version": "20260909155442",
+      "name": "business_os_operations"
+    },
+    {
+      "version": "20260909155741",
+      "name": "business_os_security"
+    },
+    {
+      "version": "20260909155836",
+      "name": "business_os_reminders"
+    },
+    {
+      "version": "20260909160038",
+      "name": "business_os_customer_query"
+    },
+    {
+      "version": "20260909160247",
+      "name": "business_os_staff_audit"
+    },
+    {
+      "version": "20260909195823",
+      "name": "agent_v04_core"
+    },
+    {
+      "version": "20260909195844",
+      "name": "agent_v04_indexes"
+    },
+    {
+      "version": "20260909200417",
+      "name": "agent_v06_identity_links"
+    },
+    {
+      "version": "20260909200729",
+      "name": "agent_v07_unified_business_data"
+    },
+    {
+      "version": "20260909200815",
+      "name": "agent_v07_dispatcher_formula_semantics"
+    },
+    {
+      "version": "20260909201726",
+      "name": "agent_v1_conversation_core"
+    },
+    {
+      "version": "20260909201802",
+      "name": "agent_v1_core_indexes"
+    },
+    {
+      "version": "20260909213049",
+      "name": "business_os_dashboard_projection"
+    },
+    {
+      "version": "20260910100706",
+      "name": "add_order_type"
+    },
+    {
+      "version": "20260910101559",
+      "name": "add_staff_avatar_url"
+    },
+    {
+      "version": "20260910173820",
+      "name": "add_business_staff_district"
+    },
+    {
+      "version": "20260910175320",
+      "name": "add_reclamation_order_status"
+    },
+    {
+      "version": "20260910180623",
+      "name": "add_master_memo_materials"
+    },
+    {
+      "version": "20260911071848",
+      "name": "add_avito_connection"
+    },
+    {
+      "version": "20260911072253",
+      "name": "add_avito_order_metadata"
+    },
+    {
+      "version": "20260911083251",
+      "name": "add_external_api_integrations"
+    },
+    {
+      "version": "20260911083922",
+      "name": "add_api_integration_field_mapping"
+    },
+    {
+      "version": "20260911084004",
+      "name": "add_api_integration_mapping_audit"
+    },
+    {
+      "version": "20260911161434",
+      "name": "enable_rls_api_integrations"
+    },
+    {
+      "version": "20260912200013",
+      "name": "restrict_order_closure_status_access"
+    },
+    {
+      "version": "20260912200039",
+      "name": "harden_order_trigger_search_paths"
+    },
+    {
+      "version": "20260913144830",
+      "name": "staff_invites"
+    },
+    {
+      "version": "20260913183831",
+      "name": "hands_webhook_deliveries"
+    },
+    {
+      "version": "20260913184410",
+      "name": "backup_public_orders_pre_hands_20260913"
+    },
+    {
+      "version": "20260913195100",
+      "name": "restrict_hands_backup_access"
+    },
+    {
+      "version": "20260919153047",
+      "name": "login_rate_limit_hardening"
+    },
+    {
+      "version": "20260919203032",
+      "name": "add_order_reschedule_request_fields"
+    },
+    {
+      "version": "20260919203544",
+      "name": "master_reschedule_profile_bridge"
+    },
+    {
+      "version": "20260919204023",
+      "name": "add_order_reschedule_requester_index"
+    },
+    {
+      "version": "20260920133158",
+      "name": "add_master_workflow_fields"
+    },
+    {
+      "version": "20260922105815",
+      "name": "master_workflow_profile_bridge"
+    },
+    {
+      "version": "20260923172733",
+      "name": "master_workflow_v2_contact_events"
+    },
+    {
+      "version": "20260924211948",
+      "name": "harden_internal_table_grants"
+    },
+    {
+      "version": "20260925091314",
+      "name": "add_staff_last_seen_at"
+    },
+    {
+      "version": "20260925115752",
+      "name": "restart_master_workflow_on_return_to_work"
+    },
+    {
+      "version": "20260925115909",
+      "name": "run_reopen_guard_on_report_rejection"
+    },
+    {
+      "version": "20260929173300",
+      "name": "web_push_v211"
+    },
+    {
+      "version": "20260929175304",
+      "name": "enable_pg_net_for_web_push"
+    },
+    {
+      "version": "20260930182832",
+      "name": "avito_assistant_intake"
+    },
+    {
+      "version": "20260930201423",
+      "name": "hands_report_delivery"
+    },
+    {
+      "version": "20261001075044",
+      "name": "order_control_tasks_v2"
+    },
+    {
+      "version": "20261001180353",
+      "name": "report_uncompleted_items"
+    },
+    {
+      "version": "20261001201934",
+      "name": "master_hands_details"
+    },
+    {
+      "version": "20261002103711",
+      "name": "master_contact_confirmation"
+    },
+    {
+      "version": "20261004104101",
+      "name": "manual_order_completion"
+    },
+    {
+      "version": "20261004185027",
+      "name": "master_contact_journal"
+    },
+    {
+      "version": "20261004193839",
+      "name": "finance_expenses"
+    }
+  ],
+  "security_advisors": [
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "count": 45,
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy"
+    },
+    {
+      "name": "extension_in_public",
+      "level": "WARN",
+      "count": 1,
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0014_extension_in_public"
+    },
+    {
+      "name": "auth_leaked_password_protection",
+      "level": "WARN",
+      "count": 1,
+      "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+    }
+  ],
+  "runtime_metadata": {
+    "server_version": "17.6",
+    "runtime_flags": [
+      {
+        "subsystem": "avito",
+        "enabled": false
+      },
+      {
+        "subsystem": "control",
+        "enabled": false
+      },
+      {
+        "subsystem": "hands",
+        "enabled": false
+      },
+      {
+        "subsystem": "push",
+        "enabled": false
+      }
+    ],
+    "cron_jobs": [
+      {
+        "jobname": "business-os-reminders",
+        "schedule": "*/5 * * * *",
+        "active": false
+      },
+      {
+        "jobname": "bos-web-push-recovery",
+        "schedule": "* * * * *",
+        "active": false
+      },
+      {
+        "jobname": "bos-hands-report-worker",
+        "schedule": "* * * * *",
+        "active": false
+      },
+      {
+        "jobname": "bos-order-control-reminders",
+        "schedule": "* * * * *",
+        "active": false
+      }
+    ],
+    "report_guard": [
+      {
+        "name": "guard_order_completion",
+        "preserve_submitted_report": false
+      }
+    ]
+  },
+  "limitations": [
+    "Cloud status does not identify the Russian production database or frontend.",
+    "ACTIVE functions indicate deployment state, not current traffic or successful operation.",
+    "Absence of submitting_report marker establishes this cloud guard lacks that candidate-specific guard marker, not a semantic proof of every function behavior.",
+    "RLS-without-policy INFO usually means client roles default deny; not a vulnerability diagnosis by itself.",
+    "No Russian server schema, secrets, client records, object contents, actual webhook processing or delivery inspected."
+  ]
+}

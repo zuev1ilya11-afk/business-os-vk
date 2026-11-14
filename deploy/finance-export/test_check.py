@@ -1,8 +1,13 @@
 import contextlib
+import ctypes.util
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
+import runpy
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -61,13 +66,22 @@ class CheckTests(unittest.TestCase):
     def test_schema_queries_only_metadata_and_never_passes_credentials(self):
         edge = container('edge', env=['BOS_REST_ORIGIN=http://rest:3000', 'VK_APP_SECRET=SECRET'])
         rest = container('rest', ['rest'], ['PGRST_DB_URI=postgres://user:PRIVATE@db:5432/bos_restore_check'])
-        db = container('db', ['db'])
+        db = container('db', ['db'], ['PGHOST=other-host', 'PGHOSTADDR=192.0.2.1',
+                                     'PGPORT=5433', 'PGSERVICE=other-service'])
+        output = io.StringIO()
         with patch.object(c, 'EXPECTED_COLUMNS', {'orders': ['id', 'master_id']}), \
-             patch.object(c, 'command', return_value=b'[["orders","id"]]') as cmd:
-            self.assertEqual(c.schema(edge, [edge, rest, db]), ['orders.master_id'])
+             patch.object(c, 'command', return_value=b'[["orders","id"]]') as cmd, \
+             contextlib.redirect_stdout(output):
+            self.assertEqual(c.schema(edge, [edge, rest, db], report_route=True), ['orders.master_id'])
         args = cmd.call_args.args[0]
         self.assertNotIn('PRIVATE', str(args)); self.assertNotIn('SECRET', str(args))
+        self.assertEqual(args[:13], ['docker', 'exec', '-u', 'postgres', 'db-id', 'env',
+                                    '-u', 'PGSERVICE', '-u', 'PGHOSTADDR', 'psql', '-X', '-w'])
+        self.assertEqual(args[args.index('-h') + 1], '/var/run/postgresql')
+        self.assertEqual(args[args.index('-p') + 1], '5432')
+        self.assertEqual(output.getvalue(), 'DATABASE_ROUTE={"container":"db","database":"bos_restore_check"}\n')
         self.assertIn('BEGIN READ ONLY;', args[-1])
+        self.assertIn("SET LOCAL statement_timeout='3s';", args[-1])
         self.assertIn('FROM information_schema.columns', args[-1])
         self.assertNotIn('FROM orders', args[-1])
         self.assertTrue(args[-1].endswith('ROLLBACK;'))
@@ -77,6 +91,123 @@ class CheckTests(unittest.TestCase):
         with patch.object(c, 'command') as cmd:
             with self.assertRaisesRegex(c.Stop, 'REST_ROUTE_UNSUPPORTED'): c.schema(edge, [])
             cmd.assert_not_called()
+
+    def test_database_only_resolves_actual_target_without_file_or_web_checks(self):
+        edge = container('bos-release-to2wblxf-edge', env=[
+            'BOS_REST_ORIGIN=http://rest:3000', 'VK_APP_SECRET=PRIVATE_TOKEN'])
+        rest = container('rest', ['rest'], [
+            'PGRST_DB_URI=postgres://user:PRIVATE_PASSWORD@db/actual_database'])
+        db = container('business-os-db', ['db'])
+        decoy = container('bos-release-to2wblxf-db', ['unused-db'])
+        containers = [edge, rest, db, decoy]
+        output = io.StringIO()
+        with patch.object(c, 'command', side_effect=[b'edge-id rest-id db-id decoy-id',
+                json.dumps(containers).encode(), b'[["orders","id"]]']) as cmd, \
+             patch.object(c, 'EXPECTED_COLUMNS', {'orders': ['id']}), \
+             patch.object(c, 'inspect_host') as host, patch.object(c, 'mount') as mount, \
+             patch.object(c, 'read') as read, patch.object(c, 'bundle_digest') as bundle, \
+             contextlib.redirect_stdout(output):
+            c.main(['--database-only'])
+        for check in (host, mount, read, bundle): check.assert_not_called()
+        self.assertEqual(cmd.call_count, 3)
+        sql_args = cmd.call_args.args[0]
+        self.assertEqual(sql_args[sql_args.index('env') - 1], 'business-os-db-id')
+        self.assertEqual(sql_args[sql_args.index('-d') + 1], 'actual_database')
+        text = output.getvalue()
+        self.assertIn('DATABASE_ROUTE={"container":"business-os-db","database":"actual_database"}', text)
+        self.assertIn('MISSING_COLUMNS=[]\nCHECK_COMPLETE=true\nPRODUCTION_CHANGED=false', text)
+        self.assertNotIn('PRIVATE_', text + str(cmd.call_args_list))
+        self.assertEqual(len(text.splitlines()), 5)
+
+    def test_ambiguous_routes_and_unsupported_database_uris_never_query(self):
+        for failure in ('rest-alias', 'db-alias', 'query', 'port', 'database-path', 'double-slash', 'rest-port'):
+            with self.subTest(failure=failure):
+                edge = container('edge', env=['BOS_REST_ORIGIN=http://rest:3000'])
+                uri = 'postgres://user:PRIVATE_PASSWORD@db/actual_database'
+                if failure == 'query': uri += '?host=other-db'
+                if failure == 'port': uri = uri.replace('@db/', '@db:5433/')
+                if failure == 'database-path': uri += '%2fother'
+                if failure == 'double-slash': uri = uri.replace('@db/', '@db//')
+                rest = container('rest', ['rest'], ['PGRST_DB_URI=' + uri])
+                if failure == 'rest-port': rest['Config']['Env'].append('PGRST_SERVER_PORT=3001')
+                containers = [edge, rest, container('db', ['db'])]
+                if failure.endswith('-alias'):
+                    containers.append(container('duplicate', [failure.split('-')[0]]))
+                output = io.StringIO()
+                with patch.object(c, 'command') as cmd, contextlib.redirect_stdout(output):
+                    with self.assertRaises(c.Stop): c.schema(edge, containers)
+                cmd.assert_not_called()
+                self.assertEqual(output.getvalue(), '')
+
+    def test_default_mode_still_runs_existing_host_inspection(self):
+        containers = [container('fixture')]
+        output = io.StringIO()
+        with patch.object(c, 'command', side_effect=[b'fixture-id', json.dumps(containers).encode()]), \
+             patch.object(c, 'inspect_host') as host, contextlib.redirect_stdout(output):
+            c.main([])
+        host.assert_called_once_with(containers)
+        self.assertEqual(output.getvalue(), 'FINANCE_CHECK_ONLY=true\n')
+
+    def test_database_cli_failure_does_not_print_stderr_or_completion(self):
+        edge = container('bos-release-to2wblxf-edge', env=['BOS_REST_ORIGIN=http://rest:3000'])
+        rest = container('rest', ['rest'], ['PGRST_DB_URI=postgres://user:PRIVATE_PASSWORD@db/database'])
+        responses = [subprocess.CompletedProcess([], 0, stdout=b'edge-id rest-id db-id'),
+                     subprocess.CompletedProcess([], 0, stdout=json.dumps([edge, rest, container('db', ['db'])]).encode()),
+                     subprocess.CalledProcessError(1, ['psql'], output=b'PRIVATE_OUTPUT', stderr=b'PRIVATE_STDERR')]
+        output = io.StringIO()
+        with patch.object(sys, 'argv', ['check.py', '--database-only']), \
+             patch.object(subprocess, 'run', side_effect=responses), \
+             contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
+            with self.assertRaises(SystemExit) as error:
+                runpy.run_path(str(Path(__file__).with_name('check.py')), run_name='__main__')
+        self.assertEqual(error.exception.code, 1)
+        self.assertIn('CHECK_STOPPED="COMMAND_OR_LAYOUT_UNAVAILABLE"', output.getvalue())
+        self.assertNotIn('CHECK_COMPLETE=true', output.getvalue())
+        self.assertNotIn('DATABASE_ROUTE=', output.getvalue())
+        self.assertNotIn('PRIVATE_', output.getvalue())
+
+    def test_real_libpq_unsets_empty_service_before_local_socket_connect(self):
+        library = ctypes.util.find_library('pq')
+        if library is None: self.skipTest('libpq unavailable')
+        edge = container('edge', env=['BOS_REST_ORIGIN=http://rest:3000'])
+        rest = container('rest', ['rest'], ['PGRST_DB_URI=postgres://user:password@db/database'])
+        with patch.object(c, 'command', return_value=b'[]') as cmd:
+            c.schema(edge, [edge, rest, container('db', ['db'])])
+        args = cmd.call_args.args[0]
+        unset = args[args.index('env'):args.index('psql')]
+        # This child connects only to a private directory's absent Unix socket.
+        probe = '''import ctypes, json, os, sys
+pq = ctypes.CDLL(sys.argv[1])
+pq.PQconnectdb.argtypes = [ctypes.c_char_p]
+pq.PQconnectdb.restype = ctypes.c_void_p
+pq.PQstatus.argtypes = [ctypes.c_void_p]
+pq.PQstatus.restype = ctypes.c_int
+pq.PQerrorMessage.argtypes = [ctypes.c_void_p]
+pq.PQerrorMessage.restype = ctypes.c_char_p
+pq.PQhost.argtypes = [ctypes.c_void_p]
+pq.PQhost.restype = ctypes.c_char_p
+pq.PQfinish.argtypes = [ctypes.c_void_p]
+conn = pq.PQconnectdb(('host=' + sys.argv[2] + ' port=5432 dbname=postgres user=postgres connect_timeout=1').encode())
+error = pq.PQerrorMessage(conn).decode()
+result = {'status': pq.PQstatus(conn), 'service_present': 'PGSERVICE' in os.environ,
+          'hostaddr_present': 'PGHOSTADDR' in os.environ,
+          'service_error': 'definition of service "" not found' in error,
+          'unix_socket_target': (pq.PQhost(conn) or b'').decode() == sys.argv[2]}
+pq.PQfinish(conn)
+print(json.dumps(result))
+'''
+        with tempfile.TemporaryDirectory() as socket_dir:
+            service_file = Path(socket_dir) / 'pg_service.conf'
+            service_file.write_text('')
+            environment = {k: v for k, v in os.environ.items() if not k.startswith('PG')}
+            environment.update(PGSERVICE='', PGHOSTADDR='', PGSERVICEFILE=str(service_file),
+                               PGSYSCONFDIR=socket_dir, LC_ALL='C')
+            command = [sys.executable, '-c', probe, library, socket_dir]
+            before = json.loads(subprocess.check_output(command, env=environment, timeout=5))
+            after = json.loads(subprocess.check_output(unset + command, env=environment, timeout=5))
+        self.assertTrue(before['service_error'])
+        self.assertEqual(after, {'status': 1, 'service_present': False, 'hostaddr_present': False,
+                                 'service_error': False, 'unix_socket_target': True})
 
     def test_duplicate_module_cannot_be_selected_silently(self):
         entry = b'// Source: network-direct-v86.js\nfirst\n;\n// Source: next.js\nx'
