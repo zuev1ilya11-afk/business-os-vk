@@ -67,6 +67,23 @@ Live-результат владельца: `1|801a6a486f2cde0e2e78e3c1da770728|
 
 При включённом RLS отсутствие политик означает default-deny для ролей, к которым применяется RLS; владельцы таблиц, superuser и BYPASSRLS требуют отдельного рассмотрения ([PostgreSQL 17](https://www.postgresql.org/docs/17/ddl-rowsecurity.html)). FORCE=false сам по себе не ошибка. Выражения политик, grants и фактический доступ приложения этим запросом не проверялись; автоматические изменения не требуются. Следующий шаг — отфильтрованная диагностика состояния контейнеров текущего release и отдельной БД: status/restarts/OOM/health, без Env/labels/logs.
 
+Docker-снимок охватил в том числе остановленные контейнеры с именем `bos-release-to2wblxf-*` и отдельно `business-os-db`. У всех десяти выведенных контейнеров `OOMKilled=false`:
+
+| Суффикс release-контейнера / отдельное имя | Состояние | RestartCount | Health |
+| --- | --- | --- | --- |
+| storage | running | 0 | none |
+| auth | running | 3 | none |
+| rest | running | 0 | none |
+| source | exited | 0 | unhealthy |
+| edge | running | 0 | none |
+| db-connect | exited | 0 | unhealthy |
+| db | running | 0 | healthy |
+| https | running | 0 | none |
+| web-build | exited | 0 | none |
+| business-os-db | running | 0 | healthy |
+
+`none` означает отсутствие предоставленного состояния healthcheck; счётчики/флаги не доказывают отсутствие прошлых сбоев. Три завершённых контейнера пока нельзя считать ни штатными one-shot, ни причиной текущей аварии. В tracked-репозитории нет определения исходного Docker-стека или этих трёх сервисов/зависимостей auth; существующие installers используют уже созданные Edge/web. Следующий ограниченный запрос для source/db-connect/web-build/auth — ExitCode, RestartPolicy и StartedAt/FinishedAt. Cmd/Entrypoint/Healthcheck.Test/State.Error/логи целиком не запрашиваются; причина трёх перезапусков auth ещё не установлена.
+
 ## Повтор AUD-15 в CI
 
 [Run 43607186978](https://github.com/zuev1ilya11-afk/business-os-vk/actions/runs/43607186978) завершился успешно, но содержит **1 flaky**: `manager: edit apartment/comment in existing form and see saved fields after reload`, `tests/master-compact-card.spec.js:42`. После очистки комментария fixture сохранила прежнее значение; повтор прошёл. Итог — 889 passed, 1 flaky, 6 skipped. Ранее локально аналогичная ошибка возникала у owner. Причина ещё не установлена; успешный retry не считается исправлением или чистой UI-приёмкой. Прикладной код между этими проверками не менялся.
