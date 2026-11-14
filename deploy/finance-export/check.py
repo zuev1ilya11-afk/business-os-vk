@@ -4,7 +4,9 @@
 Run on the existing RU Docker host. Never edits production files, starts/stops
 containers, reads business rows, or prints environment values/source text.
 The only database statement reads information_schema in a read-only transaction.
+--database-only skips file, web manifest and finance baseline inspection.
 """
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -115,7 +117,7 @@ def resolve(source, hostname, containers):
     return matches[0]
 
 
-def schema(edge, containers):
+def schema(edge, containers, report_route=False):
     route = urlsplit(variables(edge).get('BOS_REST_ORIGIN', ''))
     if (route.scheme not in ('http', 'https') or not route.hostname or route.username
             or route.password or route.query or route.fragment or route.path not in ('', '/')):
@@ -128,19 +130,23 @@ def schema(edge, containers):
     if (uri.scheme not in ('postgres', 'postgresql') or not uri.hostname or uri.query
             or uri.fragment or uri.port not in (None, 5432)):
         raise Stop('DATABASE_URI_UNSUPPORTED')
-    database = unquote(uri.path.lstrip('/'))
+    database = unquote(uri.path[1:]) if uri.path.startswith('/') else ''
     if not re.fullmatch(r'[A-Za-z0-9_-]{1,63}', database):
         raise Stop('DATABASE_NAME_UNSUPPORTED')
     db = resolve(rest, uri.hostname, containers)
+    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,159}', name(db)):
+        raise Stop('DATABASE_CONTAINER_UNSUPPORTED')
     # Constant metadata-only SQL. Do not interpolate identifiers or URI contents.
     sql = """BEGIN READ ONLY; SET LOCAL statement_timeout='3s';
 SELECT coalesce(json_agg(json_build_array(table_name,column_name)), '[]'::json)
 FROM information_schema.columns WHERE table_schema='public'
 AND table_name IN ('orders','business_staff','finance_expenses','order_claims');
 ROLLBACK;"""
-    raw = command(['docker', 'exec', db['Id'], 'psql', '-X', '-qAt', '-v', 'ON_ERROR_STOP=1',
+    raw = command(['docker', 'exec', '-u', 'postgres', db['Id'], 'psql', '-X', '-w', '-qAt', '-v', 'ON_ERROR_STOP=1',
                    '-U', 'postgres', '-d', database, '-c', sql])
     actual = {(table, column) for table, column in json.loads(raw)}
+    if report_route:
+        emit('DATABASE_ROUTE', {'container': name(db), 'database': database})
     return sorted(table + '.' + column for table, columns in EXPECTED_COLUMNS.items()
                   for column in columns if (table, column) not in actual)
 
@@ -229,12 +235,24 @@ def inspect_host(containers):
     emit('PRODUCTION_CHANGED', False)
 
 
-def main():
-    emit('FINANCE_CHECK_ONLY', True)
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--database-only', action='store_true')
+    args = parser.parse_args(argv)
+    emit('DATABASE_CHECK_ONLY' if args.database_only else 'FINANCE_CHECK_ONLY', True)
     ids = command(['docker', 'ps', '-q']).decode().split()
     if not ids:
         raise Stop('NO_CONTAINERS')
-    inspect_host(json.loads(command(['docker', 'inspect', *ids])))
+    containers = json.loads(command(['docker', 'inspect', *ids]))
+    if args.database_only:
+        edges = [c for c in containers if name(c) == 'bos-release-to2wblxf-edge']
+        if len(edges) != 1:
+            raise Stop('PRODUCTION_CONTAINER_NOT_UNIQUE')
+        emit('MISSING_COLUMNS', schema(edges[0], containers, report_route=True))
+        emit('CHECK_COMPLETE', True)
+        emit('PRODUCTION_CHANGED', False)
+    else:
+        inspect_host(containers)
 
 
 if __name__ == '__main__':

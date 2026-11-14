@@ -3,6 +3,9 @@ import importlib.util
 import io
 import json
 from pathlib import Path
+import runpy
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -62,12 +65,17 @@ class CheckTests(unittest.TestCase):
         edge = container('edge', env=['BOS_REST_ORIGIN=http://rest:3000', 'VK_APP_SECRET=SECRET'])
         rest = container('rest', ['rest'], ['PGRST_DB_URI=postgres://user:PRIVATE@db:5432/bos_restore_check'])
         db = container('db', ['db'])
+        output = io.StringIO()
         with patch.object(c, 'EXPECTED_COLUMNS', {'orders': ['id', 'master_id']}), \
-             patch.object(c, 'command', return_value=b'[["orders","id"]]') as cmd:
-            self.assertEqual(c.schema(edge, [edge, rest, db]), ['orders.master_id'])
+             patch.object(c, 'command', return_value=b'[["orders","id"]]') as cmd, \
+             contextlib.redirect_stdout(output):
+            self.assertEqual(c.schema(edge, [edge, rest, db], report_route=True), ['orders.master_id'])
         args = cmd.call_args.args[0]
         self.assertNotIn('PRIVATE', str(args)); self.assertNotIn('SECRET', str(args))
+        self.assertEqual(args[:8], ['docker', 'exec', '-u', 'postgres', 'db-id', 'psql', '-X', '-w'])
+        self.assertEqual(output.getvalue(), 'DATABASE_ROUTE={"container":"db","database":"bos_restore_check"}\n')
         self.assertIn('BEGIN READ ONLY;', args[-1])
+        self.assertIn("SET LOCAL statement_timeout='3s';", args[-1])
         self.assertIn('FROM information_schema.columns', args[-1])
         self.assertNotIn('FROM orders', args[-1])
         self.assertTrue(args[-1].endswith('ROLLBACK;'))
@@ -77,6 +85,80 @@ class CheckTests(unittest.TestCase):
         with patch.object(c, 'command') as cmd:
             with self.assertRaisesRegex(c.Stop, 'REST_ROUTE_UNSUPPORTED'): c.schema(edge, [])
             cmd.assert_not_called()
+
+    def test_database_only_resolves_actual_target_without_file_or_web_checks(self):
+        edge = container('bos-release-to2wblxf-edge', env=[
+            'BOS_REST_ORIGIN=http://rest:3000', 'VK_APP_SECRET=PRIVATE_TOKEN'])
+        rest = container('rest', ['rest'], [
+            'PGRST_DB_URI=postgres://user:PRIVATE_PASSWORD@db/actual_database'])
+        db = container('business-os-db', ['db'])
+        decoy = container('bos-release-to2wblxf-db', ['unused-db'])
+        containers = [edge, rest, db, decoy]
+        output = io.StringIO()
+        with patch.object(c, 'command', side_effect=[b'edge-id rest-id db-id decoy-id',
+                json.dumps(containers).encode(), b'[["orders","id"]]']) as cmd, \
+             patch.object(c, 'EXPECTED_COLUMNS', {'orders': ['id']}), \
+             patch.object(c, 'inspect_host') as host, patch.object(c, 'mount') as mount, \
+             patch.object(c, 'read') as read, patch.object(c, 'bundle_digest') as bundle, \
+             contextlib.redirect_stdout(output):
+            c.main(['--database-only'])
+        for check in (host, mount, read, bundle): check.assert_not_called()
+        self.assertEqual(cmd.call_count, 3)
+        sql_args = cmd.call_args.args[0]
+        self.assertEqual(sql_args[4], 'business-os-db-id')
+        self.assertEqual(sql_args[sql_args.index('-d') + 1], 'actual_database')
+        text = output.getvalue()
+        self.assertIn('DATABASE_ROUTE={"container":"business-os-db","database":"actual_database"}', text)
+        self.assertIn('MISSING_COLUMNS=[]\nCHECK_COMPLETE=true\nPRODUCTION_CHANGED=false', text)
+        self.assertNotIn('PRIVATE_', text + str(cmd.call_args_list))
+        self.assertEqual(len(text.splitlines()), 5)
+
+    def test_ambiguous_routes_and_unsupported_database_uris_never_query(self):
+        for failure in ('rest-alias', 'db-alias', 'query', 'port', 'database-path', 'double-slash', 'rest-port'):
+            with self.subTest(failure=failure):
+                edge = container('edge', env=['BOS_REST_ORIGIN=http://rest:3000'])
+                uri = 'postgres://user:PRIVATE_PASSWORD@db/actual_database'
+                if failure == 'query': uri += '?host=other-db'
+                if failure == 'port': uri = uri.replace('@db/', '@db:5433/')
+                if failure == 'database-path': uri += '%2fother'
+                if failure == 'double-slash': uri = uri.replace('@db/', '@db//')
+                rest = container('rest', ['rest'], ['PGRST_DB_URI=' + uri])
+                if failure == 'rest-port': rest['Config']['Env'].append('PGRST_SERVER_PORT=3001')
+                containers = [edge, rest, container('db', ['db'])]
+                if failure.endswith('-alias'):
+                    containers.append(container('duplicate', [failure.split('-')[0]]))
+                output = io.StringIO()
+                with patch.object(c, 'command') as cmd, contextlib.redirect_stdout(output):
+                    with self.assertRaises(c.Stop): c.schema(edge, containers)
+                cmd.assert_not_called()
+                self.assertEqual(output.getvalue(), '')
+
+    def test_default_mode_still_runs_existing_host_inspection(self):
+        containers = [container('fixture')]
+        output = io.StringIO()
+        with patch.object(c, 'command', side_effect=[b'fixture-id', json.dumps(containers).encode()]), \
+             patch.object(c, 'inspect_host') as host, contextlib.redirect_stdout(output):
+            c.main([])
+        host.assert_called_once_with(containers)
+        self.assertEqual(output.getvalue(), 'FINANCE_CHECK_ONLY=true\n')
+
+    def test_database_cli_failure_does_not_print_stderr_or_completion(self):
+        edge = container('bos-release-to2wblxf-edge', env=['BOS_REST_ORIGIN=http://rest:3000'])
+        rest = container('rest', ['rest'], ['PGRST_DB_URI=postgres://user:PRIVATE_PASSWORD@db/database'])
+        responses = [subprocess.CompletedProcess([], 0, stdout=b'edge-id rest-id db-id'),
+                     subprocess.CompletedProcess([], 0, stdout=json.dumps([edge, rest, container('db', ['db'])]).encode()),
+                     subprocess.CalledProcessError(1, ['psql'], output=b'PRIVATE_OUTPUT', stderr=b'PRIVATE_STDERR')]
+        output = io.StringIO()
+        with patch.object(sys, 'argv', ['check.py', '--database-only']), \
+             patch.object(subprocess, 'run', side_effect=responses), \
+             contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
+            with self.assertRaises(SystemExit) as error:
+                runpy.run_path(str(Path(__file__).with_name('check.py')), run_name='__main__')
+        self.assertEqual(error.exception.code, 1)
+        self.assertIn('CHECK_STOPPED="COMMAND_OR_LAYOUT_UNAVAILABLE"', output.getvalue())
+        self.assertNotIn('CHECK_COMPLETE=true', output.getvalue())
+        self.assertNotIn('DATABASE_ROUTE=', output.getvalue())
+        self.assertNotIn('PRIVATE_', output.getvalue())
 
     def test_duplicate_module_cannot_be_selected_silently(self):
         entry = b'// Source: network-direct-v86.js\nfirst\n;\n// Source: next.js\nx'
