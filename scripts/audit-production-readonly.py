@@ -143,9 +143,13 @@ def web_identity(root, budget):
         actual = guarded(lambda: hash_file(root, filename, budget))
         if actual.get('sha256') == expected:
             result['assets_verified'] += 1
+        elif actual.get('status') == 'unavailable':
+            # Keep the sanitized failure visible to the completeness check.
+            result['mismatches'].append({'asset': filename, **actual})
         else:
-            result['mismatches'].append({'asset': filename, 'status': 'missing_changed_or_unreadable'})
+            result['mismatches'].append({'asset': filename, 'status': 'hash_mismatch', **actual})
     shell = guarded(lambda: hash_file(root, 'index.html', budget))
+    result['shell'] = shell
     result['shell_matches'] = bool(shell.get('sha256')) and shell.get('sha256') == meta.get('shell')
     result['sw'] = guarded(lambda: hash_file(root, 'sw.js', budget))
     return result

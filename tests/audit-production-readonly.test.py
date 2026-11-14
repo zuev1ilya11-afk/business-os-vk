@@ -157,6 +157,55 @@ class ReadOnlyAuditTests(unittest.TestCase):
         self.assertFalse(result['complete'])
         self.assertNotIn('/private', json.dumps(result))
 
+    def test_unreadable_web_asset_or_shell_marks_evidence_incomplete(self):
+        for filename in ('app.js', 'index.html'):
+            with self.subTest(filename=filename), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                build = write_web_fixture(root)
+                original_open = Path.open
+
+                def deny_selected(path, *args, **kwargs):
+                    if path == root / filename:
+                        raise PermissionError('PRIVATE_SENTINEL ' + str(root))
+                    return original_open(path, *args, **kwargs)
+
+                responses = ['aaaaaaaaaaaa\tbos-web', docker_row('bos-web', mounts=[
+                    {'Destination': '/srv', 'Type': 'bind', 'Source': str(root), 'RW': False}])]
+                with mock.patch.object(audit, 'command', side_effect=responses), mock.patch.object(Path, 'open', deny_selected):
+                    result = audit.inspect_containers([0])
+                web = result['containers'][0]['web']
+                self.assertEqual(web['build_id'], build)
+                self.assertFalse(result['complete'])
+                self.assertEqual(result['failed_containers'], 0)
+                self.assertEqual(result['incomplete_artifact_containers'], 1)
+                unavailable = web['mismatches'][0] if filename == 'app.js' else web['shell']
+                self.assertEqual(unavailable['status'], 'unavailable')
+                self.assertEqual(unavailable['reason'], 'INVALID_OR_UNREADABLE_METADATA')
+                self.assertNotIn('PRIVATE_SENTINEL', json.dumps(result))
+                self.assertNotIn(str(root), json.dumps(result))
+
+    def test_known_web_hash_mismatch_is_complete_evidence(self):
+        for filename in ('app.js', 'index.html'):
+            with self.subTest(filename=filename), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                write_web_fixture(root)
+                changed = b'known changed fixture'
+                (root / filename).write_bytes(changed)
+                responses = ['aaaaaaaaaaaa\tbos-web', docker_row('bos-web', mounts=[
+                    {'Destination': '/srv', 'Type': 'bind', 'Source': str(root), 'RW': False}])]
+                with mock.patch.object(audit, 'command', side_effect=responses):
+                    result = audit.inspect_containers([0])
+                self.assertTrue(result['complete'])
+                self.assertEqual(result['incomplete_artifact_containers'], 0)
+                web = result['containers'][0]['web']
+                evidence = web['mismatches'][0] if filename == 'app.js' else web['shell']
+                self.assertEqual(evidence['sha256'], hashlib.sha256(changed).hexdigest())
+                if filename == 'app.js':
+                    self.assertEqual(evidence['status'], 'hash_mismatch')
+                    self.assertTrue(web['shell_matches'])
+                else:
+                    self.assertFalse(web['shell_matches'])
+
     def test_container_limit_is_reported_as_incomplete(self):
         rows = '\n'.join(f'{number:012x}\tbos-fixture-{number}' for number in range(41))
         with mock.patch.object(audit, 'command', return_value=rows), mock.patch.object(audit, 'inspect_container', return_value={'name': 'bos-fixture'}) as inspect:

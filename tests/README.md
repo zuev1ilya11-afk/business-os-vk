@@ -65,6 +65,8 @@ the other containers' BUILD/manifest results without disclosing stderr or
 host paths. `complete` describes evidence collection, not application health:
 an inspected `unhealthy` container is still complete evidence. Unavailable
 artifact checks and the container limit make collection incomplete.
+A readable file with a known hash mismatch is complete evidence; an unreadable
+asset or index preserves its sanitized failure and makes collection incomplete.
 
 Run `python3 tests/audit-docker-template.test.py` for real Docker CLI formatting
 against a temporary synthetic Unix-socket Engine API. No real Docker daemon,
