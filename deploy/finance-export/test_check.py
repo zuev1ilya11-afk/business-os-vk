@@ -64,7 +64,8 @@ class CheckTests(unittest.TestCase):
     def test_schema_queries_only_metadata_and_never_passes_credentials(self):
         edge = container('edge', env=['BOS_REST_ORIGIN=http://rest:3000', 'VK_APP_SECRET=SECRET'])
         rest = container('rest', ['rest'], ['PGRST_DB_URI=postgres://user:PRIVATE@db:5432/bos_restore_check'])
-        db = container('db', ['db'])
+        db = container('db', ['db'], ['PGHOST=other-host', 'PGHOSTADDR=192.0.2.1',
+                                     'PGPORT=5433', 'PGSERVICE=other-service'])
         output = io.StringIO()
         with patch.object(c, 'EXPECTED_COLUMNS', {'orders': ['id', 'master_id']}), \
              patch.object(c, 'command', return_value=b'[["orders","id"]]') as cmd, \
@@ -72,7 +73,10 @@ class CheckTests(unittest.TestCase):
             self.assertEqual(c.schema(edge, [edge, rest, db], report_route=True), ['orders.master_id'])
         args = cmd.call_args.args[0]
         self.assertNotIn('PRIVATE', str(args)); self.assertNotIn('SECRET', str(args))
-        self.assertEqual(args[:8], ['docker', 'exec', '-u', 'postgres', 'db-id', 'psql', '-X', '-w'])
+        self.assertEqual(args[:12], ['docker', 'exec', '-u', 'postgres', '-e', 'PGHOSTADDR=',
+                                    '-e', 'PGSERVICE=', 'db-id', 'psql', '-X', '-w'])
+        self.assertEqual(args[args.index('-h') + 1], '/var/run/postgresql')
+        self.assertEqual(args[args.index('-p') + 1], '5432')
         self.assertEqual(output.getvalue(), 'DATABASE_ROUTE={"container":"db","database":"bos_restore_check"}\n')
         self.assertIn('BEGIN READ ONLY;', args[-1])
         self.assertIn("SET LOCAL statement_timeout='3s';", args[-1])
@@ -105,7 +109,7 @@ class CheckTests(unittest.TestCase):
         for check in (host, mount, read, bundle): check.assert_not_called()
         self.assertEqual(cmd.call_count, 3)
         sql_args = cmd.call_args.args[0]
-        self.assertEqual(sql_args[4], 'business-os-db-id')
+        self.assertEqual(sql_args[sql_args.index('psql') - 1], 'business-os-db-id')
         self.assertEqual(sql_args[sql_args.index('-d') + 1], 'actual_database')
         text = output.getvalue()
         self.assertIn('DATABASE_ROUTE={"container":"business-os-db","database":"actual_database"}', text)
