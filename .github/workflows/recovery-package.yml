@@ -10,6 +10,44 @@ permissions:
   contents: read
 
 jobs:
+  docker-export:
+    name: Docker export (${{ matrix.store }})
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - store: classic
+            version: v28.5.2
+            containerd: false
+          - store: containerd
+            version: v29.9.3
+            containerd: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Start a disposable Docker daemon with an explicit image store
+        id: engine
+        uses: docker/setup-docker-action@3f1ab1ab0e29231562e4db4ca600c1a49653bac6 # v5.7.0
+        with:
+          version: ${{ matrix.version }}
+          daemon-config: |
+            {"features":{"containerd-snapshotter":${{ matrix.containerd }}}}
+      - name: Pull the fixed public PostgreSQL fixture
+        env:
+          FIXTURE_DOCKER_HOST: ${{ steps.engine.outputs.sock }}
+        run: docker --host "$FIXTURE_DOCKER_HOST" image pull --quiet docker.io/library/postgres:17.6
+      - name: Verify real Docker exports by actual inspect identities
+        env:
+          BOS_RECOVERY_DOCKER_TEST: '1'
+          BOS_RECOVERY_DOCKER_SOCKET: ${{ steps.engine.outputs.sock }}
+          BOS_RECOVERY_DOCKER_STORE: ${{ matrix.store }}
+          BOS_RECOVERY_DOCKER_VERSION: ${{ matrix.version }}
+        run: python3 deploy/recovery/test_docker.py --require
+
   recovery:
     runs-on: ubuntu-22.04
     timeout-minutes: 15

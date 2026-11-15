@@ -67,7 +67,9 @@ class FakeRunner:
         self.calls = []
         self.meta = {'version': 170011, 'database': layout['database'],
                      'bytes': 2048, 'extensions': [['plpgsql', '1.0']]}
-        self.image_meta = [{'Id': value, 'Size': 1024}
+        self.image_meta = [{'Id': value, 'Size': 1024, 'Os': 'linux',
+                            'Architecture': 'amd64', 'RootFS': {'Type': 'layers',
+                            'Layers': json.loads(IMAGE_CONFIG)['rootfs']['diff_ids']}}
                            for value in sorted(set(layout['images'].values()))]
         self.fail_program = None
         self.failure = None

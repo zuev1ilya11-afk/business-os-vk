@@ -129,12 +129,16 @@ class FakeDocker:
     def __init__(self, source, corrupt_dump=False):
         self.source, self.corrupt_dump, self.processes = source, corrupt_dump, []
         self.last_error = b''
-        config = json.dumps({'fixture': FIXTURE_MARKER}, sort_keys=True).encode()
+        layer = fixture_tar({'FIXTURE_ONLY.txt': FIXTURE_MARKER.encode()})
+        self.diff_ids = ['sha256:' + hashlib.sha256(layer).hexdigest()]
+        config = json.dumps({'fixture': FIXTURE_MARKER, 'architecture': 'amd64',
+                             'os': 'linux', 'rootfs': {'type': 'layers',
+                             'diff_ids': self.diff_ids}}, sort_keys=True).encode()
         digest = hashlib.sha256(config).hexdigest()
         self.image_id = 'sha256:' + digest
         self.images = fixture_tar({
             digest + '.json': config,
-            'layer.tar': fixture_tar({'FIXTURE_ONLY.txt': FIXTURE_MARKER.encode()}),
+            'layer.tar': layer,
             'manifest.json': json.dumps([{'Config': digest + '.json',
                                           'RepoTags': ['synthetic:fixture'],
                                           'Layers': ['layer.tar']}]).encode(),
@@ -143,6 +147,8 @@ class FakeDocker:
     def _execute(self, args, *, timeout, limit, input_path=None):
         if args == ['image', 'inspect', self.image_id]:
             return json.dumps([{'Id': self.image_id, 'Size': len(self.images),
+                                'Os': 'linux', 'Architecture': 'amd64',
+                                'RootFS': {'Type': 'layers', 'Layers': self.diff_ids},
                                 'Config': {'Labels': {'fixture': FIXTURE_MARKER}}}]).encode()
         if args == ['image', 'save', self.image_id]:
             return self.images

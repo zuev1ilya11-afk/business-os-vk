@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parent
 def build(destination=None):
     destination = destination or ROOT / 'bos-backup.pyz'
     contents = {'__main__.py': b'import backup\nraise SystemExit(backup.main())\n'}
-    for name in ('backup.py', 'discovery.py'):
+    for name in ('backup.py', 'discovery.py', 'image_archive.py'):
         contents[name] = (ROOT / name).read_bytes()
     with zipfile.ZipFile(destination, 'w', compression=zipfile.ZIP_STORED) as archive:
         for name, data in sorted(contents.items()):

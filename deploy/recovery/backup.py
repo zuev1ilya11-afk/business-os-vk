@@ -23,6 +23,7 @@ import time
 import uuid
 
 import discovery
+import image_archive
 
 MIB = 1024 * 1024
 RESERVE = 512 * MIB
@@ -330,38 +331,12 @@ PAYLOADS = {'database.dump', 'globals.sql', 'files.tar', 'images.tar',
             'private-config.json', 'inventory.json'}
 
 
-def verify_images(path, expected_ids):
-    """Inspect Docker save envelope/config hashes, without loading or extracting."""
-    if not expected_ids or any(not re.fullmatch(r'sha256:[0-9a-f]{64}', i) for i in expected_ids):
-        raise Stop('IMAGE_IDS_INVALID')
-    config_paths = {p for i in expected_ids for p in
-                    (i[7:] + '.json', 'blobs/sha256/' + i[7:])}
-    members, configs, listing = {}, {}, None
-    with tarfile.open(path, 'r|') as archive:
-        for item in archive:
-            if (not valid_member(item.name.rstrip('/')) or item.name in members
-                    or not (item.isfile() or item.isdir()) or len(members) >= MAX_FILES):
-                raise Stop('IMAGE_ARCHIVE_INVALID')
-            members[item.name] = item.size if item.isfile() else None
-            if item.name == 'manifest.json' or item.name in config_paths:
-                if not item.isfile() or item.size > 16 * MIB:
-                    raise Stop('IMAGE_ARCHIVE_INVALID')
-                data = archive.extractfile(item).read(16 * MIB + 1)
-                if item.name == 'manifest.json':
-                    listing = json.loads(data)
-                else:
-                    configs[item.name] = 'sha256:' + hashlib.sha256(data).hexdigest()
-    if not isinstance(listing, list):
-        raise Stop('IMAGE_MANIFEST_MISSING')
-    found = set()
-    for record in listing:
-        config, layers = record.get('Config'), record.get('Layers')
-        if (config not in configs or not isinstance(layers, list) or not layers
-                or any(name not in members or members[name] is None for name in layers)):
-            raise Stop('IMAGE_ARCHIVE_INCOMPLETE')
-        found.add(configs[config])
-    if found != set(expected_ids):
-        raise Stop('IMAGE_ARCHIVE_MISMATCH')
+def verify_images(path, expected_ids, expected_images=None):
+    """Validate saved image identities and payloads without loading them."""
+    try:
+        return image_archive.verify_images(path, expected_ids, expected_images)
+    except image_archive.ImageArchiveError as exc:
+        raise Stop(exc.reason_code) from None
 
 
 def verify(bundle, *, allow_partial=False):
@@ -387,7 +362,7 @@ def verify(bundle, *, allow_partial=False):
     inventory_data = read_json(bundle / 'inventory.json')
     verify_tar(bundle / 'files.tar', inventory_data)
     private = read_json(bundle / 'private-config.json')
-    verify_images(bundle / 'images.tar', [i['Id'] for i in private['images']])
+    verify_images(bundle / 'images.tar', [i['Id'] for i in private['images']], private['images'])
     with (bundle / 'database.dump').open('rb') as f:
         if f.read(5) != b'PGDMP':
             raise Stop('DUMP_FORMAT_INVALID')
@@ -472,6 +447,11 @@ def capture(layout, output_root, runner):
                 'payloads': {p: hash_file(partial / p) for p in sorted(PAYLOADS)}}
     write_json(partial / 'manifest.json', manifest)
     verify(partial, allow_partial=True)
+    return finalize(partial, final)
+
+
+def finalize(partial, final):
+    output_root = partial.parent
     # Rename within the private same-filesystem destination; no ready pointer is
     # written before all checks and syncs have completed.
     for path in partial.iterdir():
@@ -482,7 +462,7 @@ def capture(layout, output_root, runner):
         os.fsync(fd)
     finally:
         os.close(fd)
-    if final.exists():
+    if os.path.lexists(final):
         raise Stop('OUTPUT_COLLISION')
     fd = os.open(output_root, os.O_RDONLY | os.O_DIRECTORY)
     try:
@@ -503,11 +483,31 @@ def capture(layout, output_root, runner):
     return final
 
 
+def finish_latest(output_root=DEFAULT_OUTPUT):
+    """Verify and finish the newest complete partial, without recapturing data."""
+    output_root = private_dir(output_root)
+    pattern = r'\.capture-[0-9]{8}T[0-9]{6}Z-[0-9a-f]{12}\.partial'
+    candidates = sorted((p for p in output_root.iterdir()
+                         if re.fullmatch(pattern, p.name)), key=lambda p: p.name)
+    if not candidates:
+        raise Stop('PARTIAL_NOT_FOUND')
+    partial = private_dir(candidates[-1])
+    final = output_root / partial.name[1:-len('.partial')]
+    if os.path.lexists(final):
+        raise Stop('OUTPUT_COLLISION')
+    # A failed attempt before manifest creation is not resumable. Never fall
+    # back to an older partial or recapture sources implicitly.
+    verify(partial, allow_partial=True)
+    return finalize(partial, final)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='command', required=True)
     create = commands.add_parser('capture')
     create.add_argument('--output', type=Path, default=DEFAULT_OUTPUT)
+    finish = commands.add_parser('finish-latest')
+    finish.add_argument('--output', type=Path, default=DEFAULT_OUTPUT)
     check = commands.add_parser('verify')
     check.add_argument('bundle', type=Path)
     args = parser.parse_args(argv)
@@ -516,6 +516,8 @@ def main(argv=None):
         if args.command == 'capture':
             runner = LocalDocker()
             bundle = capture(discovery.discover(runner), args.output, runner)
+        elif args.command == 'finish-latest':
+            bundle = finish_latest(args.output)
         else:
             bundle = args.bundle
         result = verify(bundle)

@@ -2,11 +2,19 @@
   "date_utc": "2026-11-15",
   "status": "LOCAL_UNIT_VERIFIED_CI_REQUIRED",
   "tests": {
-    "unit_passed": 85,
+    "unit_passed": 118,
     "backup_safety": 35,
     "discovery": 50,
+    "image_archive": 22,
+    "finish_partial": 11,
     "real_postgresql_cases": 5,
-    "real_postgresql_this_revision": "CI_REQUIRED; includes existing admin selection, unchanged roles and data, and real SCRAM rejection; local binaries absent"
+    "real_postgresql_this_revision": "CI_REQUIRED; local binaries absent",
+    "real_docker_cases_per_store": 2,
+    "real_docker_stores": [
+      "classic",
+      "containerd"
+    ],
+    "real_docker_this_revision": "CI_REQUIRED; actual inspect/save individual and combined exports; local Docker absent"
   },
   "postgresql": "Current real-database validation belongs to the Recovery package CI run for this revision.",
   "local_transport": "No local PostgreSQL run on 2026-11-15; previous 2026-11-14 run used loopback.",
@@ -21,24 +29,28 @@
     "truncated dump rejection and rollback"
   ],
   "fixtures": [
-    "Docker discovery/transport",
-    "Docker image export bytes",
-    "application data and Storage files"
+    "Docker discovery/transport and image bytes in PostgreSQL integration only",
+    "application data and Storage files",
+    "real Docker export tests use public PostgreSQL and synthetic imported rootfs"
   ],
-  "production_capture": "NOT_RUN",
+  "production_capture": "ATTEMPTED_PREVIOUS_REVISION_FINAL_VERIFICATION_STOPPED; current completion pending",
   "production_restore": "NOT_RUN",
   "database_storage_consistency": "NOT_PROVEN",
   "independent_copy": "NOT_VERIFIED",
   "disaster_recovery_ready": false,
   "ci": "See Recovery package workflow for this exact revision; no new CI success is claimed by this local record.",
   "sha256": {
-    "backup.py": "f8ead7b4cc211dba2b68114cf1fe176fdb690811424d928b9fe3ce2453be50e8",
+    "backup.py": "e30a6357cf209198225ed8803672c8b48201d9a5bf4d1203d5ce5ac5e799d5ea",
     "discovery.py": "556257938b228dfcb02006920315ca04203b34dffdec6e7487e7db22e54d8230",
-    "build.py": "47bfd7ab53d5b628f4a1e988376c8ee7c2fac6a30689d0ae3918498bf8824b26",
-    "test_backup.py": "899f14cd33f81f21f7494abeb37eddbfba934cf876b8ebc79233e237bab82169",
+    "build.py": "164c12d09defd547eeb86081f488b7f444fb4cc5c33d0ff3dfd81cd94ad77094",
+    "test_backup.py": "1404f0232644372d1fffa87638c8d7519cf7bc7560b3993924120f2efb38424b",
     "test_discovery.py": "8394c661e716a72774d58f97b8fb19952b6639317875f906a16f17f23e31b653",
-    "test_postgres.py": "ac28c5685893710b6d6b82a8e54a0bf1b00c0e69f021da8f5a3f508745f929c1",
-    "bos-backup.pyz": "596510457134c9ab54a66a87bcc701d7b4fff0c33b630d17973db609642aa606"
+    "test_postgres.py": "793535f19dbb384d4e11a5464272bb36c2f4cd46c22df8495800d473fedf82e5",
+    "bos-backup.pyz": "dd48997077a68947c93c24d451ea2cdc5ffce1a01a8712b4cbaa7ef7cdd16bee",
+    "image_archive.py": "99d4e7ef7472b3a0b4e9b14dd2be6e5dce37045e37fcd5e70f482ce457b415fe",
+    "test_images.py": "3652a997b9f6c83f156118e726523c158bf5856f9ec355607cf1c575924f5283",
+    "test_finish.py": "ec5b38ae4f82cfa7b983683786cbc784d3b547b65dd0137e22e39bbd11445fb5",
+    "test_docker.py": "6bd4e372dd5c8f4caba616bc7188c3b294f3a0d97f6b0a3e60562f198c3e9f09"
   },
   "previous_full_verification": {
     "commit": "6d706eb0ff37886d1420f11d9327c3013d0a8a1c",
@@ -47,7 +59,7 @@
     "ci_run": 43627417693,
     "ci_postgresql": "17.6"
   },
-  "server_observation": "Package 6272bf30 stopped at DATABASE_METADATA_PERMISSION_DENIED before capture. Current package verifies the existing backup identity and uses it for metadata, dump and globals without changing roles or credentials; live result pending.",
+  "server_observation": "Package f5f93120 reached final verification and stopped with IMAGE_ARCHIVE_INCOMPLETE. A fully written private partial may be completed by finish-latest after full revalidation; the command never recaptures live data. Containerd image identity compatibility is fixed; live archive contents and result remain unobserved.",
   "previous_metadata_fix_validation": {
     "commit": "7dd8cbb696e6e7f2229a042d7e3f091c02e59b54",
     "unit_passed": 65,
@@ -60,6 +72,13 @@
     "unit_passed": 72,
     "real_postgresql_cases": 4,
     "ci_run": 43695687548,
+    "ci_postgresql": "17.6"
+  },
+  "previous_role_fix_validation": {
+    "commit": "f5f93120d79cbdb8de3201f8b26f61f6b8e30355",
+    "unit_passed": 85,
+    "real_postgresql_cases": 5,
+    "ci_run": 43696942072,
     "ci_postgresql": "17.6"
   }
 }
