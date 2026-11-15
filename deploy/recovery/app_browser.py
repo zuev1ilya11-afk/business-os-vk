@@ -127,8 +127,15 @@ function remap(value,asset=false){
 window.fetch=async function(input,init){
  const request=new Request(input,init),mapped=remap(request.url);
  if(mapped.disabled)return new Response(JSON.stringify({ok:false,error:blockedMessage,code:'LOCAL_DRILL_EXTERNAL_DISABLED'}),{status:501,headers:{'Content-Type':'application/json'}});
- const localRequest=new Request(mapped.url,request);
- return nativeFetch(localRequest,{redirect:'error'});
+ // Passing Request as RequestInit exposes its ReadableStream body. Chromium
+ // then requires a streaming-capable HTTP/2 connection, while this loopback
+ // portal deliberately speaks ordinary HTTP/1. Preserve a finite byte body.
+ const options={method:request.method,headers:request.headers,mode:request.mode,
+  credentials:request.credentials,cache:request.cache,redirect:'error',
+  referrer:request.referrer,referrerPolicy:request.referrerPolicy,
+  integrity:request.integrity,keepalive:request.keepalive,signal:request.signal};
+ if(request.body!==null){options.body=await request.arrayBuffer();if(options.body.byteLength>33554432)return new Response(JSON.stringify({ok:false,code:'LOCAL_DRILL_BODY_TOO_LARGE'}),{status:413,headers:{'Content-Type':'application/json'}})}
+ return nativeFetch(mapped.url,options);
 };
 if(window.XMLHttpRequest){const open=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(method,url,...args){const mapped=remap(url);if(mapped.disabled)throw new DOMException(blockedMessage,'SecurityError');return open.call(this,method,mapped.url,...args)}}
 if(navigator.sendBeacon){const beacon=navigator.sendBeacon.bind(navigator);navigator.sendBeacon=function(url,data){try{const mapped=remap(url);return !mapped.disabled&&beacon(mapped.url,data)}catch(_){return false}}}

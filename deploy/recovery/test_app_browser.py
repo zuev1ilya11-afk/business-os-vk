@@ -165,9 +165,10 @@ global.window=global;global.open=(...args)=>{opened.push(args);return {}};
 let observe;
 global.MutationObserver=class{constructor(callback){observe=callback}observe(){}};
 global.document={addEventListener:(name,handler)=>{if(name==='click')clickHandler=handler},documentElement:{querySelectorAll:()=>[]}};
-global.fetch=async(request,options)=>{
+global.fetch=async(input,options)=>{
+ const request=new Request(input,options);
  calls.push({url:request.url,method:request.method,headers:request.headers,
-             body:await request.text(),signal:request.signal,options});
+             body:await request.text(),signal:request.signal,options,finiteBody:options.body instanceof ArrayBuffer});
  return new Response('{"ok":true}',{headers:{'Content-Type':'application/json'}});
 };
 '''
@@ -180,6 +181,7 @@ const request=new Request('https://business-os-api-gateway.netlify.app/api/proxy
 await fetch(request);
 assert.equal(calls.length,1);assert.equal(calls[0].url,'http://127.0.0.1:1234/functions/v1/mini-app-api?x=1');
 assert.equal(calls[0].method,'POST');assert.equal(calls[0].body,'{"action":"bootstrap"}');
+assert.equal(calls[0].finiteBody,true);
 assert.equal(calls[0].headers.get('X-BOS-Session'),'fixture');
 controller.abort();assert.equal(calls[0].signal.aborted,true);
 assert.equal(calls[0].options.redirect,'error');
@@ -219,12 +221,10 @@ class BrowserContractTests(unittest.TestCase):
     def test_actual_password_ui_local_modules_and_attachment(self):
         if os.environ.get('BOS_APP_BROWSER_CONTRACT') != '1':
             self.skipTest('Set BOS_APP_BROWSER_CONTRACT=1 on a runner permitting Chromium process sockets')
-        if not shutil.which('node'):
-            self.skipTest('Node/Playwright not installed')
-        check = subprocess.run(['node', '-e', "try{const fs=require('fs'),p=require('playwright').chromium.executablePath();process.exit(fs.existsSync('/usr/bin/chromium')||fs.existsSync(p)?0:2)}catch(_){process.exit(2)}"],
+        self.assertIsNotNone(shutil.which('node'), 'BOS_APP_BROWSER_CONTRACT requires Node')
+        check = subprocess.run(['node', '-e', "try{const fs=require('fs'),p=process.env.BOS_APP_CHROMIUM_EXECUTABLE||require('playwright').chromium.executablePath();process.exit(fs.existsSync(p)?0:2)}catch(_){process.exit(2)}"],
                                capture_output=True, timeout=10)
-        if check.returncode:
-            self.skipTest('Playwright Chromium is not installed')
+        self.assertEqual(check.returncode, 0, 'BOS_APP_BROWSER_CONTRACT requires Playwright and its Chromium, or BOS_APP_CHROMIUM_EXECUTABLE')
         repo = Path(__file__).resolve().parents[2]
         shell_names = ['app-build-runtime.js', 'vk-init.js', 'network-direct-v86.js', 'config.js']
         shell = '\n'.join((repo / name).read_text() for name in shell_names)
@@ -273,10 +273,16 @@ window.show=()=>{};
 const assert=require('node:assert/strict'),fs=require('fs'),{chromium}=require('playwright');
 (async()=>{
  const base=process.argv[1];
- const browser=await chromium.launch({headless:true,executablePath:fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined,
+ const browser=await chromium.launch({headless:true,executablePath:process.env.BOS_APP_CHROMIUM_EXECUTABLE||chromium.executablePath(),
   proxy:{server:base,bypass:'<-loopback>'},args:['--no-sandbox','--disable-quic','--disable-background-networking','--disable-extensions','--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1']});
+ const page=await browser.newPage(),errors=[],requests=[],responses=[],failures=[];
+ const pathOnly=url=>{try{const u=new URL(url);return u.origin+u.pathname}catch(_){return 'invalid-url'}};
+ const record=(list,value)=>{if(list.length<80)list.push(value)};
+ page.on('pageerror',error=>record(errors,error.message.slice(0,600)));
+ page.on('request',request=>record(requests,{method:request.method(),path:pathOnly(request.url())}));
+ page.on('response',response=>record(responses,{status:response.status(),path:pathOnly(response.url())}));
+ page.on('requestfailed',request=>record(failures,{path:pathOnly(request.url()),error:String(request.failure()?.errorText||'').slice(0,200)}));
  try{
-  const page=await browser.newPage();const errors=[];page.on('pageerror',error=>errors.push(error.message));
   const response=await page.goto(base+'/');assert.match(response.headers()['content-security-policy'],/worker-src 'none'/);
   await page.locator('#simplePassForm').waitFor();await page.locator('input[name=login]').fill('fixture');await page.locator('input[name=password]').fill('fixture-only-password');
   await page.locator('#simplePassForm button').click();await page.locator('body.bos-auth-ok').waitFor({timeout:15000});
@@ -287,13 +293,18 @@ const assert=require('node:assert/strict'),fs=require('fs'),{chromium}=require('
   assert.equal(await page.evaluate(()=>fetch('https://unrelated.invalid/private').then(()=>false,()=>true)),true);
   const denied=await browser.newPage();const blocked=await denied.goto('http://unrelated.invalid/private');assert.equal(blocked.status(),403);
   assert.deepEqual(errors,[]);console.log('Actual password UI, captured loaders, local media and proxy denial passed');
+ }catch(error){
+  // This fixture contains synthetic data only. Exclude input values, headers,
+  // request bodies and URL queries even from its bounded failure diagnostics.
+  const dom=await page.locator('body').innerText({timeout:1000}).then(value=>value.slice(0,2400),()=>'<unavailable>');
+  console.error('BROWSER_FIXTURE_DIAGNOSTICS '+JSON.stringify({dom,errors,requests,responses,failures}));throw error;
  }finally{await browser.close()}
 })().catch(error=>{console.error(error);process.exitCode=1});
 '''
         try:
             result = subprocess.run(['node', '-e', program, portal.origin], capture_output=True,
                                     text=True, timeout=40, cwd=repo)
-            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.returncode, 0, result.stderr + '\nSYNTHETIC_TRANSPORT_PATHS=' + json.dumps(calls[-80:]))
             self.assertIn('passed', result.stdout)
             self.assertIn(('POST', '/functions/v1/password-session-api'), calls)
             self.assertIn(('POST', '/functions/v1/mini-app-api'), calls)

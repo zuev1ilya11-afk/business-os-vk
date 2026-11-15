@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import re
+import subprocess
 import sys
 import tarfile
 import tempfile
@@ -323,7 +324,8 @@ class RealApplicationLaunch(unittest.TestCase):
         head = {'Host': '127.0.0.1:' + str(port), 'Connection': 'close',
                 'Content-Length': str(len(body)), **(headers or {})}
         data = (method + ' ' + path + ' HTTP/1.1\r\n' + ''.join(k + ': ' + v + '\r\n' for k, v in head.items()) + '\r\n').encode() + body
-        raw = cls.docker.run(['exec', '-i', cls.source, '/bin/busybox', 'nc', '-w', '10', '127.0.0.1', str(port)], data=data, timeout=20)
+        raw = cls.docker.run(['exec', '-i', cls.source, '/bin/busybox', 'nc', '-w', '10', '127.0.0.1', str(port)],
+                             data=data, timeout=20, check=False)
         response = http.client.HTTPResponse(BytesSocket(raw))
         response.begin()
         return response.status, dict(response.getheaders()), response.read()
@@ -332,6 +334,10 @@ class RealApplicationLaunch(unittest.TestCase):
     def wait_http(cls, port, path):
         last = None
         for _ in range(90):
+            service = json.loads(cls.docker.run(['inspect', cls.containers[-1]]))[0]
+            if not service['State']['Running']:
+                cls.startup_diagnostic()
+                raise RuntimeError('Synthetic service exited before readiness: ' + str(port))
             try:
                 status, _, body = cls.internal_http(port, 'GET', path)
                 if status == 200:
@@ -340,9 +346,24 @@ class RealApplicationLaunch(unittest.TestCase):
             except (RuntimeError, http.client.HTTPException) as exc:
                 last = type(exc).__name__
             time.sleep(0.5)
-        for cid in cls.containers:
-            print('CI_SYNTHETIC_APP_STARTUP=' + cls.docker.run(['logs', '--tail', '10', cid], check=False)[:4096].decode(errors='replace'))
+        cls.startup_diagnostic()
         raise RuntimeError('Synthetic service did not become ready: ' + str(port) + ' ' + str(last))
+
+    @classmethod
+    def startup_diagnostic(cls):
+        # These containers contain generated records and fixture credentials
+        # only. Docker forwards application stderr to its own stderr stream;
+        # merge both here so a failed migration is not accidentally hidden.
+        for cid in cls.containers:
+            info = json.loads(cls.docker.run(['inspect', cid]))[0]
+            logs = subprocess.run([cls.docker.binary, '--host=' + cls.docker.host,
+                                   'logs', '--tail', '20', cid],
+                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                  env=cls.docker.env, timeout=15).stdout
+            print('CI_SYNTHETIC_APP_STARTUP=' + json.dumps({
+                'name': info['Name'], 'exit_code': info['State']['ExitCode'],
+                'running': info['State']['Running'],
+                'logs': logs[:8192].decode(errors='replace')}), flush=True)
 
     @classmethod
     def start_source_service(cls, role, mount=None):

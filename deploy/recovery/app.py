@@ -217,6 +217,8 @@ def verify_container(session, cid, spec, *, running=None):
         networks = item.get('NetworkSettings', {}).get('Networks') or {}
         require(set(networks) <= {'none'} and all(not n.get('IPAddress') and not n.get('GlobalIPv6Address')
                 for n in networks.values()), 'APP_CONTAINER_NETWORK_CHANGED')
+    if running is True and item.get('State', {}).get('OOMKilled') is True:
+        raise Stop('APP_SERVICE_OUT_OF_MEMORY')
     if running is not None:
         require(item.get('State', {}).get('Running') is running, 'APP_CONTAINER_NOT_RUNNING')
     return item
@@ -228,6 +230,7 @@ def mount_record(volume, target, *, subpath=None, readonly=False):
 
 
 def create_container(session, role, image, env, mounts, network, entrypoint, cmd, *, user='0:0', helper=False):
+    session._current_role = role
     args, tmpfs = base_args(session.run_id, role, image, env, mounts, network, user=user, helper=helper)
     if role == 'db':
         for hostname, address in app_plan.ALIASES.items():
@@ -235,7 +238,7 @@ def create_container(session, role, image, env, mounts, network, entrypoint, cmd
     args += ['--entrypoint', entrypoint, image['Id'], *cmd]
     cid = session.runner(args, limit=4096).decode().strip()
     require(ID.fullmatch(cid) is not None, 'APP_CONTAINER_CREATE_FAILED')
-    spec = {'image': image['Id'], 'network': network, 'mounts': mounts, 'tmpfs': tmpfs,
+    spec = {'role': role, 'image': image['Id'], 'network': network, 'mounts': mounts, 'tmpfs': tmpfs,
             'user': user, 'entrypoint': entrypoint, 'cmd': cmd,
             'memory': int(args[args.index('--memory') + 1]),
             'caps': {'CHOWN', 'DAC_OVERRIDE', 'DAC_READ_SEARCH', 'FOWNER'} if helper else set()}
@@ -347,6 +350,7 @@ def clone_baseline(session, context, report, image):
 
 
 def wait_database(session, expected):
+    session._current_role = 'db'
     deadline = time.monotonic() + 60
     while True:
         try:
@@ -373,6 +377,7 @@ def wait_database(session, expected):
 
 
 def wait_http(session, role, path, headers=None):
+    session._current_role = role
     deadline = time.monotonic() + 90
     while True:
         verify_container(session, session.containers[role], session._owned[session.containers[role]], running=True)
@@ -388,21 +393,48 @@ def wait_http(session, role, path, headers=None):
 
 
 def wait_edge(session):
+    session._current_role = 'edge'
     deadline = time.monotonic() + 90
-    for slug in ('mini-app-api', 'password-session-api'):
+    probes = [('mini-app-api', b'{"action":"health"}'),
+              ('password-session-api', b'{"action":"login","login":"","password":""}')]
+    for slug, request_body in probes:
         while True:
             verify_container(session, session.containers['edge'], session._owned[session.containers['edge']], running=True)
             try:
                 status, headers, body = app_transport.http_call(session.runner, session.containers['db'],
                     'POST', '/functions/v1/' + slug, {'Content-Type': 'application/json'},
-                    b'{"action":"__bos_restore_readiness_probe__"}', port=9000)
+                    request_body, port=9000)
                 payload = json.loads(body)
-                if status in (200, 400, 401, 403, 404, 405, 422) and isinstance(payload, dict):
+                healthy = isinstance(payload, dict) and status == 200 and payload.get('ok') is True
+                rejected_empty_login = (slug == 'password-session-api' and isinstance(payload, dict)
+                    and status == 400 and payload.get('ok') is False and isinstance(payload.get('error'), str))
+                if healthy or rejected_empty_login:
                     break
             except Exception:
                 pass
             require(time.monotonic() < deadline, 'APP_EDGE_FUNCTION_START_TIMEOUT')
             time.sleep(0.5)
+
+
+def classify_failure(raw):
+    """Return fixed diagnostic categories only, never source log text."""
+    data = raw[:16384] if isinstance(raw, bytes) else b''
+    message = data.decode('utf-8', errors='replace').lower()
+    category = 'UNCLASSIFIED_STARTUP_FAILURE'
+    for fragments, name in (
+        (('no space left on device', 'enospc'), 'DISK_FULL'),
+        (('out of memory', 'cannot allocate memory', 'oomkilled'), 'OUT_OF_MEMORY'),
+        (('read-only file system', 'readonly filesystem', 'erofs'), 'READ_ONLY_FILESYSTEM'),
+        (('password authentication failed', 'invalid password for user'), 'DATABASE_AUTHENTICATION_FAILED'),
+        (('envconfig', 'strconv.parse', 'invalid environment', 'invalid value for environment'), 'INVALID_ENVIRONMENT'),
+        (('permission denied', 'eacces'), 'PERMISSION_DENIED'),
+        (('executable file not found', 'no such file or directory'), 'MISSING_RUNTIME_FILE'),
+    ):
+        if any(fragment in message for fragment in fragments):
+            category = name
+            break
+    return {'category': category, 'evidence_bytes': len(data),
+            'truncated': isinstance(raw, bytes) and len(raw) > len(data)}
 
 
 class AppSession:
@@ -411,12 +443,15 @@ class AppSession:
         self.volume = None
         self.containers, self._owned = {}, {}
         self._stopped = False
+        self._current_stage, self._current_role = 'PREPARING_PLAN', None
         self._plan, self._profile, self._admin, self._database = None, None, None, None
         self._mapped = {}
         self.report = {'format': 1, 'run_id': run_id, 'status': 'STARTING',
             'application': 'NOT_RUN', 'disaster_recovery_ready': False,
             'database_storage_consistency': 'NOT_PROVEN', 'storage_extended_attributes': 'NOT_CAPTURED',
-            'network_isolation': 'NETWORK_NONE_SHARED_LOOPBACK_NO_HOST_PORTS'}
+            'network_isolation': 'NETWORK_NONE_SHARED_LOOPBACK_NO_HOST_PORTS',
+            'private_error_logs': {'location': 'OWNED_APP_VOLUME',
+                'paths': ['/bos/app/diagnostics', '/bos/data/app-bootstrap.stderr.log']}}
         self.portal = app_browser.LocalPortal(self._transport, profile_dir=profile_dir)
         self.origin = self.portal.origin
         self._thread = None
@@ -430,9 +465,11 @@ class AppSession:
         match = re.fullmatch(r'/storage/v1/object/(?:public|authenticated|sign)/(.+)', urlsplit(path).path)
         if status == 200 and method == 'GET' and match:
             obj = self._mapped.get(unquote(match[1]))
-            if obj is not None and obj.mimetype and len(data) == obj.expected_bytes and hashlib.sha256(data).hexdigest() == obj.expected_sha256:
-                response_headers = {k: v for k, v in response_headers.items() if k.lower() != 'content-type'}
-                response_headers['content-type'] = obj.mimetype
+            if obj is not None and len(data) == obj.expected_bytes and hashlib.sha256(data).hexdigest() == obj.expected_sha256:
+                response_headers = dict(response_headers)
+                if obj.mimetype:
+                    response_headers = {k: v for k, v in response_headers.items() if k.lower() != 'content-type'}
+                    response_headers['content-type'] = obj.mimetype
                 if obj.content_encoding:
                     response_headers['content-encoding'] = obj.content_encoding
                 if obj.cache_control:
@@ -448,23 +485,33 @@ class AppSession:
         self.runner(['container', 'rm', '-v', cid], limit=4096)
         del self._owned[cid]
 
-    def _private_logs(self):
-        anchor = self.containers.get('db')
-        if not anchor or anchor not in self._owned:
+    def _private_logs(self, original_evidence=b''):
+        evidence = original_evidence if isinstance(original_evidence, bytes) else b''
+        files = {}
+        for cid, spec in self._owned.items():
+            role = spec.get('role')
+            if role not in ('init', 'db', 'rest', 'auth', 'storage', 'edge', 'https'):
+                continue
+            try:
+                verify_container(self, cid, spec)
+                output = self.runner(['logs', '--tail', '80', cid], timeout=10, limit=128 * 1024)
+                # docker logs sends container stderr to its own stderr. Capture
+                # it immediately, before another runner call clears last_error.
+                errors = getattr(self.runner, 'last_error', b'')
+                data = output[:128 * 1024] + b'\n' + (errors[:8192] if isinstance(errors, bytes) else b'')
+                files['diagnostics/' + role + '.log'] = data
+                if role == self._current_role and data.strip():
+                    evidence = data
+            except Exception:
+                continue
+        self.report['diagnostics'] = classify_failure(evidence)
+        target = self.containers.get('db') or next(iter(self._owned), None)
+        if target is None or not files:
             return
         try:
-            verify_container(self, anchor, self._owned[anchor], running=True)
-            files = {}
-            for role, cid in self.containers.items():
-                try:
-                    verify_container(self, cid, self._owned[cid])
-                    data = self.runner(['logs', '--tail', '80', cid], timeout=10, limit=128 * 1024)
-                    files['diagnostics/' + role + '.log'] = data
-                except Exception:
-                    continue
-            if files:
-                app_transport.input_call(self.runner, ['exec', '-i', '--user', '0:0', anchor,
-                    'tar', '-xf', '-', '-C', '/bos/app'], tar_bytes(files), timeout=30, limit=4096)
+            verify_container(self, target, self._owned[target], running=True)
+            app_transport.input_call(self.runner, ['exec', '-i', '--user', '0:0', target,
+                'tar', '-xf', '-', '-C', '/bos/app'], tar_bytes(files), timeout=30, limit=4096)
         except Exception:
             pass
 
@@ -496,6 +543,9 @@ def start_app(bundle, successful_report, runner, *, profile_dir=None, progress=N
     baseline_available(runner, successful_report)
     images = ensure_images(runner, context)
     session = AppSession(runner, 'bos-app-' + uuid.uuid4().hex[:12], profile_dir)
+    def stage(value):
+        session._current_stage = value
+        emit(value)
     try:
         with tarfile.open(context['bundle'] / 'files.tar', 'r:') as archive:
             def read_file(name):
@@ -512,9 +562,9 @@ def start_app(bundle, successful_report, runner, *, profile_dir=None, progress=N
         session.volume = create_volume(runner, session.run_id)
         session.report.update(volume=session.volume, baseline_volume=source_volume,
             source_manifest_sha256=successful_report['source_manifest_sha256'])
-        emit('CLONING_VERIFIED_VOLUME')
+        stage('CLONING_VERIFIED_VOLUME')
         clone_baseline(session, context, successful_report, images[context['db_image']])
-        emit('DATABASE')
+        stage('DATABASE')
         db_image = images[context['db_image']]
         mounts = {'/bos': mount_record(session.volume, '/bos')}
         anchor = create_container(session, 'db', db_image, clean_env(db_image), mounts, 'none', '/bin/sh',
@@ -523,7 +573,7 @@ def start_app(bundle, successful_report, runner, *, profile_dir=None, progress=N
         session.containers['db'] = anchor
         counts = wait_database(session, successful_report)
         session.report['database'] = {'status': 'CLONE_VALIDATED', 'counts': counts, 'background_workers': 'DISABLED'}
-        emit('SERVICES')
+        stage('SERVICES')
         for role in ('rest', 'auth', 'storage', 'edge', 'https'):
             spec = session._plan['roles'][role]
             mounts = {entry['target']: mount_record(session.volume, entry['target'],
@@ -542,7 +592,8 @@ def start_app(bundle, successful_report, runner, *, profile_dir=None, progress=N
         wait_edge(session)
         # Services may run their own schema migrations; recheck record counts afterwards.
         wait_database(session, successful_report)
-        emit('VERIFYING_STORAGE')
+        stage('VERIFYING_STORAGE')
+        session._current_role = 'storage'
         schema = json.loads(sql(session, app_storage.SCHEMA_SQL, readonly=True))
         require(schema.get('objects_exists') is True and {'id', 'bucket_id', 'name', 'metadata'} <= set(schema.get('columns', [])),
                 'APP_STORAGE_SCHEMA_INVALID')
@@ -569,14 +620,18 @@ def start_app(bundle, successful_report, runner, *, profile_dir=None, progress=N
         session._thread = threading.Thread(target=session.portal.serve_forever, name='bos-local-portal', daemon=True)
         session._thread.start()
         require(session.portal._serving.wait(timeout=5), 'APP_PORTAL_START_FAILED')
-        emit('READY_FOR_MANUAL_CHECK')
+        stage('READY_FOR_MANUAL_CHECK')
         return session
     except (Exception, KeyboardInterrupt) as exc:
         code = getattr(exc, 'reason_code', 'APP_START_FAILED')
         if not isinstance(code, str) or not re.fullmatch(r'[A-Z0-9_]{1,80}', code):
             code = 'APP_START_FAILED'
-        session.report.update(status='STOPPED', reason=code)
-        session._private_logs()
+        session.report.update(status='STOPPED', reason=code, failed_stage=session._current_stage,
+                              failed_service=session._current_role)
+        evidence = getattr(runner, 'last_error', b'')
+        session._private_logs(evidence)
+        if code == 'APP_SERVICE_OUT_OF_MEMORY':
+            session.report['diagnostics']['category'] = 'OUT_OF_MEMORY'
         try:
             session.stop()
         except Exception:
