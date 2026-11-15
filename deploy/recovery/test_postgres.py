@@ -16,7 +16,7 @@ import hashlib
 import io
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import shutil
 import socket
 import stat
@@ -341,6 +341,65 @@ class PostgreSQLIntegration(unittest.TestCase):
         if not version.startswith('postgres (PostgreSQL) 17.'):
             raise RuntimeError('Integration requires PostgreSQL major 17: ' + version)
         print('\nReal database binaries: ' + version, flush=True)
+
+    def test_external_nonstandard_config_and_include_use_server_metadata(self):
+        with laboratory(self.binary) as (root, source, target):
+            config_dir = root / 'external-settings'
+            config_dir.mkdir(mode=0o700)
+            config = config_dir / 'server.runtime'
+            included = config_dir / 'tuning.fragment'
+            main_marker = 'SYNTHETIC_MAIN_BODY_MUST_NOT_BE_RETURNED'
+            include_marker = 'SYNTHETIC_INCLUDE_BODY_MUST_NOT_BE_RETURNED'
+            included.write_text('# ' + include_marker + "\nwork_mem = '7MB'\n")
+            config.write_text((source.path / 'postgresql.conf').read_text() +
+                              f"\n# {main_marker}\n"
+                              f"data_directory = '{source.path}'\n"
+                              f"hba_file = '{source.path / 'pg_hba.conf'}'\n"
+                              f"ident_file = '{source.path / 'pg_ident.conf'}'\n"
+                              f"include = '{included.name}'\n")
+            target_started = target.sql('postgres', 'SELECT pg_postmaster_start_time();')
+            before = source.sql('synthetic', SNAPSHOT_SQL)
+            # Only this freshly created test cluster is restarted. No real
+            # Docker endpoint or externally supplied database target is used.
+            source.stop()
+            source.run('pg_ctl', ['-D', str(source.path), '-l', str(source.log),
+                                  '-w', '-t', '20', '-o',
+                                  '-c config_file=' + str(config), 'start'])
+            source.started = True
+            self.assertEqual(source.sql('synthetic', 'SHOW config_file;'), str(config))
+            self.assertEqual(source.sql('synthetic', 'SHOW work_mem;'), '7MB')
+            runner = FakeDocker(source)
+            responses = []
+
+            def record_metadata(args, **kwargs):
+                response = runner(args, **kwargs)
+                responses.append(response)
+                return response
+
+            mapped = [(source.path, PurePosixPath(source.path), True),
+                      (config, PurePosixPath(config), False),
+                      (included, PurePosixPath(included), False)]
+            with patch.object(backup.discovery, 'DATABASE', 'synthetic'):
+                recognized = backup.discovery.database_config_files(
+                    record_metadata, {'Id': runner.container}, mapped)
+            self.assertEqual(recognized, {PurePosixPath(config), PurePosixPath(included)})
+            self.assertEqual(len(responses), 1)
+            metadata = json.loads(responses[0])
+            self.assertEqual(set(metadata), {'data_directory', 'files'})
+            self.assertEqual(metadata['data_directory'], str(source.path))
+            self.assertTrue({str(config), str(included),
+                             str(source.path / 'pg_hba.conf'),
+                             str(source.path / 'pg_ident.conf')} <= set(metadata['files']))
+            # The server supplies paths only; even recognized config bodies
+            # and settings must never cross the discovery query boundary.
+            for marker in (main_marker, include_marker, 'work_mem'):
+                self.assertNotIn(marker.encode(), responses[0])
+            self.assertTrue(all(p['readonly'] and p['returncode'] == 0
+                                for p in runner.processes))
+            self.assertEqual(source.sql('synthetic', SNAPSHOT_SQL), before)
+            self.assertEqual(target.sql('postgres', 'SELECT pg_postmaster_start_time();'), target_started)
+        self.assertFalse(root.exists())
+        self.assertFalse(source.started or target.started)
 
     def test_capture_verify_and_real_restore(self):
         with laboratory(self.binary) as (root, source, target):

@@ -1,16 +1,15 @@
 {
-  "date_utc": "2026-11-14",
-  "status": "LOCAL_VERIFIED",
+  "date_utc": "2026-11-15",
+  "status": "LOCAL_UNIT_VERIFIED_CI_REQUIRED",
   "tests": {
-    "total": 57,
-    "passed": 57,
-    "skipped": 0,
+    "unit_passed": 65,
     "backup_safety": 28,
-    "discovery": 27,
-    "real_postgresql": 2
+    "discovery": 37,
+    "real_postgresql_cases": 3,
+    "real_postgresql_this_revision": "CI_REQUIRED; binaries absent in resumed local environment"
   },
-  "postgresql": "17.11 (Debian 17.11-0+deb13u1)",
-  "local_transport": "loopback; Unix socket bind prohibited in this environment",
+  "postgresql": "Current real-database validation belongs to the Recovery package CI run for this revision.",
+  "local_transport": "No local PostgreSQL run on 2026-11-15; previous 2026-11-14 run used loopback.",
   "real_restore": [
     "custom dump",
     "globals roles and memberships",
@@ -31,14 +30,22 @@
   "database_storage_consistency": "NOT_PROVEN",
   "independent_copy": "NOT_VERIFIED",
   "disaster_recovery_ready": false,
-  "ci": "Not claimed by this local result; see the Recovery package workflow for its exact commit.",
+  "ci": "See Recovery package workflow for this exact revision; no new CI success is claimed by this local record.",
   "sha256": {
-    "backup.py": "6afe3920bb35423686692b98fd4b2ee040669078ba6bf6d9f5b88909cccd0190",
-    "discovery.py": "c52c5a45a0efb956a1e52482d565354c6196e5524906842974084415e04f6445",
+    "backup.py": "69ee9610edd23c1ad048d03df89168303f125f2d37c99eec20e5bd0a7376c6af",
+    "discovery.py": "63bca5b441c6f4f6d0b883a1c6f89ff5dd4501b3f994c3012a2a8c5d76cf24bf",
     "build.py": "47bfd7ab53d5b628f4a1e988376c8ee7c2fac6a30689d0ae3918498bf8824b26",
     "test_backup.py": "ea206ed71c293620e6d74f627b3acb481c54a7ae7a42342b987da32c140a36ea",
-    "test_discovery.py": "82e2ae557c30e97ab86e74b9d8ae6690b5f2dd876cea49a132bda884e5e735df",
-    "test_postgres.py": "6a8d57e3c0c1f26c5fac47298d170b6243eb7dc58e76d2170610131c4083f774",
-    "bos-backup.pyz": "ffbd1e383cb4c971067fa2e2f50bdceba8737cc1cbba44a5551b7e586681d25e"
-  }
+    "test_discovery.py": "04acf835e273d5c01eb809e4bfd7efc507c3a8b097f4ec99f4bc042b35275d5b",
+    "test_postgres.py": "f27d1b070fff1e8f6659f02ff973fea40c6d494be0a6e653d323d730cad1d1af",
+    "bos-backup.pyz": "3313115d0963a2931e731a9cfeb8e4d097c2f523a2b6329de9534c3f7bb56cfd"
+  },
+  "previous_full_verification": {
+    "commit": "6d706eb0ff37886d1420f11d9327c3013d0a8a1c",
+    "local_tests_passed": 57,
+    "postgresql": "17.11",
+    "ci_run": 43627417693,
+    "ci_postgresql": "17.6"
+  },
+  "server_observation": "Previous package stopped at DATABASE_FILE_MOUNT_UNSUPPORTED before capture; new package not yet run on production."
 }

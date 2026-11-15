@@ -2,7 +2,7 @@ import contextlib
 import importlib.util
 import io
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import tempfile
 import unittest
 from unittest.mock import Mock, patch
@@ -49,10 +49,18 @@ class DiscoveryTests(unittest.TestCase):
         self.other = []
         self.ps_result = None
         self.mount_result = None
+        self.db_metadata = {'data_directory': '/var/lib/postgresql/data',
+                            'files': ['/etc/postgresql/postgresql.conf']}
+        self.db_result = None
+        self.db_error = None
         self.run = Mock(side_effect=self.docker)
 
     def docker(self, args, **kwargs):
         containers = [*self.items.values(), *self.other]
+        if args[0] == 'exec':
+            self.assertIn('psql', args)
+            if self.db_error is not None: raise self.db_error
+            return self.db_result if self.db_result is not None else json.dumps(self.db_metadata).encode()
         if args == ['ps', '-aq', '--no-trunc']:
             return self.ps_result if self.ps_result is not None else (
                 '\n'.join(item['Id'] for item in containers) + '\n').encode()
@@ -79,7 +87,8 @@ class DiscoveryTests(unittest.TestCase):
 
     def stop(self, code):
         output = io.StringIO()
-        with contextlib.redirect_stdout(output), self.assertRaisesRegex(d.Stop, '^' + code + '$'):
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output), \
+             self.assertRaisesRegex(d.Stop, '^' + code + '$'):
             d.discover(self.run)
         self.assertEqual(output.getvalue(), '')
 
@@ -91,7 +100,7 @@ class DiscoveryTests(unittest.TestCase):
         full = [call for call in self.run.call_args_list if call.args[0][0] == 'inspect'
                 and '--format' not in call.args[0]]
         self.assertEqual(len(full), 1)
-        self.assertEqual(self.run.call_count, 3)
+        self.assertEqual(self.run.call_count, 4)
         self.assertEqual(output.getvalue(), '')
         self.assertEqual(layout['database'], d.DATABASE)
         self.assertEqual(layout['database_container'], self.items['db']['Id'])
@@ -151,6 +160,91 @@ class DiscoveryTests(unittest.TestCase):
         raw.write_bytes(b'PRIVATE_DATABASE_PAGE')
         self.mount('db', raw, '/db-page', directory=False)
         self.stop('DATABASE_FILE_MOUNT_UNSUPPORTED')
+
+    def test_metadata_referenced_config_accepts_renamed_source_and_target(self):
+        source = self.release / 'runtime-db-settings'
+        (self.release / 'postgres.conf').rename(source)
+        target = '/run/database/active-settings.conf'
+        self.items['db']['Mounts'][1].update(Source=str(source), Destination=target)
+        self.db_metadata['files'] = [target]
+        layout = d.discover(self.run)
+        self.assertIn(source, layout['roots'])
+        self.assertNotIn(self.release / 'data', layout['roots'])
+
+    def test_conf_suffix_without_metadata_reference_is_rejected(self):
+        source = self.release / 'unverified.conf'
+        source.write_text('PRIVATE_CONFIG_NOT_REFERENCED')
+        self.mount('db', source, '/etc/postgresql/unverified.conf', directory=False)
+        self.stop('DATABASE_FILE_MOUNT_UNSUPPORTED')
+
+    def test_previously_allowlisted_basename_without_reference_is_rejected(self):
+        source = self.release / 'pg_ident.conf'
+        source.write_text('PRIVATE_UNUSED_CONFIG')
+        self.mount('db', source, '/unused/pg_ident.conf', directory=False)
+        self.stop('DATABASE_FILE_MOUNT_UNSUPPORTED')
+
+    def test_config_query_is_read_only_local_bounded_and_does_not_pass_credentials(self):
+        d.discover(self.run)
+        calls = [call for call in self.run.call_args_list if call.args[0][0] == 'exec']
+        self.assertEqual(len(calls), 1)
+        args = calls[0].args[0]
+        self.assertEqual(args[:4], ['exec', '-u', 'postgres', self.items['db']['Id']])
+        env_start, client_start = args.index('env'), args.index('psql')
+        env = args[env_start + 1:client_start]
+        for key in ('PGSERVICE', 'PGSERVICEFILE', 'PGHOSTADDR', 'PGHOST', 'PGPORT',
+                    'PGDATABASE', 'PGUSER', 'PGPASSWORD', 'PGPASSFILE', 'PGOPTIONS'):
+            self.assertEqual(env[env.index(key) - 1], '-u')
+        client = args[client_start:]
+        self.assertEqual(client[client.index('-h') + 1], '/var/run/postgresql')
+        self.assertEqual(client[client.index('-p') + 1], '5432')
+        self.assertEqual(client[client.index('-d') + 1], d.DATABASE)
+        self.assertIn('-X', client)
+        self.assertIn('-w', client)
+        self.assertIn('ON_ERROR_STOP=1', client)
+        self.assertEqual(client[-1], d.DB_CONFIG_SQL)
+        self.assertIn('BEGIN READ ONLY;', client[-1])
+        self.assertIn("SET LOCAL statement_timeout='5s';", client[-1])
+        self.assertTrue(client[-1].endswith('ROLLBACK;'))
+        self.assertIn('timeout', args)
+        self.assertEqual(calls[0].kwargs, {'timeout': 30, 'limit': 65536})
+        self.assertNotIn('PRIVATE_', str(args))
+
+    def test_config_query_failure_is_sanitized(self):
+        self.db_error = RuntimeError('PRIVATE_QUERY_ERROR')
+        self.stop('DATABASE_CONFIG_QUERY_FAILED')
+
+    def test_malformed_config_json_is_sanitized(self):
+        self.db_result = b'{"PRIVATE_METADATA"'
+        self.stop('JSON_INVALID')
+
+    def test_untrusted_config_metadata_shapes_and_paths_are_rejected(self):
+        cases = [None, {'data_directory': '/data'},
+                 {'data_directory': 'PRIVATE_RELATIVE', 'files': []},
+                 {'data_directory': '/var/lib/postgresql/data', 'files': 'PRIVATE_STRING'},
+                 {'data_directory': '/var/lib/postgresql/data', 'files': ['/etc/../PRIVATE_ESCAPE']},
+                 {'data_directory': '/var/lib/postgresql/data', 'files': ['/etc/PRIVATE\x00_FILE']},
+                 {'data_directory': '/var/lib/postgresql/data', 'files': ['/etc/config'] * 257}]
+        for metadata in cases:
+            with self.subTest(metadata_kind=type(metadata).__name__):
+                self.db_metadata = metadata
+                self.stop('DATABASE_CONFIG_METADATA_INVALID')
+
+    def test_unmounted_database_data_directory_is_rejected(self):
+        self.db_metadata['data_directory'] = '/unmounted/PRIVATE_DATA'
+        self.stop('DATABASE_DATA_MOUNT_UNVERIFIED')
+
+    def test_ambiguous_persistent_pgdata_mapping_is_rejected(self):
+        parent = self.base / 'second-db-root'
+        parent.mkdir()
+        mapped = [*d.mounts(self.items['db']),
+                  (parent, PurePosixPath('/var/lib/postgresql'), True)]
+        with self.assertRaisesRegex(d.Stop, '^DATABASE_DATA_MOUNT_UNVERIFIED$'):
+            d.database_config_files(self.run, self.items['db'], mapped)
+
+    def test_config_under_pgdata_is_never_promoted_to_file_archive(self):
+        self.db_metadata['files'].append('/var/lib/postgresql/data/pg_hba.conf')
+        files = d.database_config_files(self.run, self.items['db'], d.mounts(self.items['db']))
+        self.assertEqual(files, {PurePosixPath('/etc/postgresql/postgresql.conf')})
 
     def test_storage_parent_cannot_include_raw_pgdata(self):
         self.items['storage']['Mounts'][0]['Source'] = str(self.base)

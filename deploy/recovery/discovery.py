@@ -12,8 +12,6 @@ BUILD = 'f78221901b3b47887fa7'
 DATABASE = 'bos_restore_check'
 ROLES = ('db', 'rest', 'auth', 'storage', 'edge', 'https')
 CONFIG_FILES = ('auth.env', 'db.env', 'rest.env', 'source.env', 'storage.env', 'images.json')
-DATABASE_CONFIG_NAMES = frozenset(('postgres.conf', 'postgresql.conf', 'pg_hba.conf',
-                                  'pg_ident.conf', 'postgresql.auto.conf'))
 IMAGE = re.compile(r'sha256:[0-9a-f]{64}')
 MAX_CONTAINERS = 512
 INSPECT_LIMIT = 16 * 1024 * 1024
@@ -140,6 +138,70 @@ def database_route(source, key, db, containers):
     require(database == DATABASE and
             resolve(source, uri.hostname, containers)['Id'] == db['Id'],
             'DATABASE_ROUTE_CHANGED')
+
+
+def db_command(layout, program, args, seconds=600):
+    # Bound the real in-container process and clear inherited libpq routing.
+    unset = ['PGSERVICE', 'PGSERVICEFILE', 'PGHOSTADDR', 'PGHOST', 'PGPORT',
+             'PGDATABASE', 'PGUSER', 'PGPASSWORD', 'PGPASSFILE', 'PGOPTIONS']
+    return ['exec', '-u', 'postgres', layout['database_container'],
+            'timeout', '-k', '10', str(seconds), 'env',
+            *[part for key in unset for part in ('-u', key)],
+            'PGCONNECT_TIMEOUT=5', 'PGAPPNAME=bos-recovery-capture',
+            'PGOPTIONS=-c default_transaction_read_only=on -c statement_timeout=600000',
+            program, '-h', '/var/run/postgresql', '-p', '5432',
+            '-U', 'postgres', '-w', *args]
+
+
+DB_CONFIG_SQL = """BEGIN READ ONLY;
+SET LOCAL statement_timeout='5s';
+SELECT json_build_object('data_directory',current_setting('data_directory'),
+ 'files',(SELECT json_agg(filename ORDER BY filename) FROM (
+   SELECT setting AS filename FROM pg_settings
+   WHERE name IN ('config_file','hba_file','ident_file')
+   UNION SELECT sourcefile FROM pg_file_settings WHERE sourcefile IS NOT NULL
+ ) AS paths));
+ROLLBACK;"""
+
+
+def database_config_files(run, db, mapped):
+    """Identify actual config paths; a plausible basename is not evidence.
+
+    Only metadata is queried. Do not copy arbitrary mounts outside PGDATA: they
+    can be data/tablespace files too. Every allowed file must be named by the
+    server's configuration metadata, and DB directory sources remain excluded.
+    """
+    layout = {'database_container': db['Id']}
+    args = db_command(layout, 'psql', ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1',
+                                      '-d', DATABASE, '-c', DB_CONFIG_SQL], 15)
+    try:
+        raw = run(args, timeout=30, limit=65536)
+    except Exception:
+        raise Stop('DATABASE_CONFIG_QUERY_FAILED') from None
+    require(isinstance(raw, bytes) and len(raw) <= 65536, 'DATABASE_CONFIG_METADATA_INVALID')
+    data = json_data(raw)
+    require(isinstance(data, dict) and set(data) == {'data_directory', 'files'},
+            'DATABASE_CONFIG_METADATA_INVALID')
+    def path(value):
+        require(isinstance(value, str) and 0 < len(value) <= 4096 and '\x00' not in value,
+                'DATABASE_CONFIG_METADATA_INVALID')
+        result = PurePosixPath(value)
+        require(result.is_absolute() and result != PurePosixPath('/') and
+                '..' not in result.parts, 'DATABASE_CONFIG_METADATA_INVALID')
+        return result
+    pgdata = path(data['data_directory'])
+    parents = [(source, target) for source, target, is_dir in mapped
+               if source is not None and is_dir and inside(pgdata, target)]
+    require(len(parents) == 1, 'DATABASE_DATA_MOUNT_UNVERIFIED')
+    source, target = parents[0]
+    _, directory = checked_path(source / pgdata.relative_to(target))
+    require(directory, 'DATABASE_DATA_MOUNT_UNVERIFIED')
+    files = data['files']
+    require(isinstance(files, list) and 1 <= len(files) <= 256,
+            'DATABASE_CONFIG_METADATA_INVALID')
+    files = {path(value) for value in files}
+    # Config under PGDATA remains outside the ordinary filesystem archive.
+    return {value for value in files if not inside(value, pgdata)}
 
 
 def mounts(container):
@@ -294,9 +356,10 @@ def _discover(run):
             actual = [(source, is_dir) for source, destination, is_dir in mapped[key]
                       if destination == PurePosixPath(target)]
             require(actual == [(expected_source, True)], 'PINNED_MOUNT_CHANGED')
+    database_configs = database_config_files(run, role['db'], mapped['db'])
     for source, target, is_dir in mapped['db']:
         if source is not None and not is_dir:
-            require(source.name in DATABASE_CONFIG_NAMES and target.name in DATABASE_CONFIG_NAMES,
+            require(target in database_configs,
                     'DATABASE_FILE_MOUNT_UNSUPPORTED')
     require(storage_env.get('STORAGE_BACKEND') == 'file', 'STORAGE_BACKEND_UNSUPPORTED')
     storage_value = storage_env.get('FILE_STORAGE_BACKEND_PATH')

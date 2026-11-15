@@ -174,18 +174,7 @@ class LocalDocker:
             os.fsync(f.fileno())
 
 
-def db_command(layout, program, args, seconds=600):
-    # timeout inside the container bounds the actual client, not just docker CLI.
-    # Explicit socket and cleared routing options prevent inherited PG service use.
-    unset = ['PGSERVICE', 'PGSERVICEFILE', 'PGHOSTADDR', 'PGHOST', 'PGPORT',
-             'PGDATABASE', 'PGUSER', 'PGPASSWORD', 'PGPASSFILE', 'PGOPTIONS']
-    return ['exec', '-u', 'postgres', layout['database_container'],
-            'timeout', '-k', '10', str(seconds), 'env',
-            *[part for key in unset for part in ('-u', key)],
-            'PGCONNECT_TIMEOUT=5', 'PGAPPNAME=bos-recovery-capture',
-            'PGOPTIONS=-c default_transaction_read_only=on -c statement_timeout=600000',
-            program, '-h', '/var/run/postgresql', '-p', '5432',
-            '-U', 'postgres', '-w', *args]
+db_command = discovery.db_command
 
 
 META_SQL = """BEGIN READ ONLY;
