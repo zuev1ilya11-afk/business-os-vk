@@ -40,13 +40,25 @@ class FixtureObservedRunner:
                  'NanoCpus', 'PidsLimit', 'ShmSize')
 
     def __init__(self, delegate):
-        self.delegate, self.isolation = delegate, {}
+        self.delegate, self.isolation, self.restore_errors = delegate, {}, []
 
     def __getattr__(self, name):
         return getattr(self.delegate, name)
 
     def __call__(self, args, **kwargs):
-        data = self.delegate(args, **kwargs)
+        try:
+            data = self.delegate(args, **kwargs)
+        except Exception:
+            # This wrapper is instantiated only by this test's generated
+            # synthetic bundle. Production DockerRunner never prints stderr.
+            # Keep the first restore failure before cleanup overwrites it.
+            if (args[:1] == ['exec'] and args[-1:] in
+                    (['/bos/input/globals.sql'], ['/bos/input/database.dump'])):
+                raw = getattr(self.delegate, 'last_error', b'')
+                if isinstance(raw, bytes):
+                    self.restore_errors.append(raw[:8192].decode(errors='replace'))
+                    self.restore_errors = self.restore_errors[-2:]
+            raise
         if args[:1] == ['inspect'] or args[:2] == ['container', 'inspect']:
             self.observe(json.loads(data))
         return data
@@ -72,6 +84,8 @@ class FixtureObservedRunner:
     def failure_diagnostic(self):
         print('CI_SYNTHETIC_ISOLATION=' + json.dumps(list(self.isolation.values()),
                                                    sort_keys=True), flush=True)
+        if self.restore_errors:
+            print('CI_SYNTHETIC_RESTORE_ERROR=' + json.dumps(self.restore_errors), flush=True)
 
 
 class DiagnosticWhitelistTest(unittest.TestCase):

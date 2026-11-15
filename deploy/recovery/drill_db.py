@@ -66,9 +66,13 @@ cp /bundle/database.dump /bos/input/database.dump
 cp /bundle/globals.sql /bos/input/globals.sql
 cp /bundle/files.tar /bos/input/files.tar
 printf '%s  %s\n' "$2" /bos/input/database.dump "$3" /bos/input/globals.sql "$4" /bos/input/files.tar | sha256sum --check --status || exit 43
+removed=$(dd if=/bos/input/globals.sql bs=1 skip="$5" count="$(($6 - $5))" status=none)
+test "$removed" = "CREATE ROLE $7;" || test "$removed" = "CREATE ROLE \"$7\";" || exit 44
+head -c "$5" /bos/input/globals.sql > /bos/input/globals-restore.sql
+tail -c "+$(($6 + 1))" /bos/input/globals.sql >> /bos/input/globals-restore.sql
 chmod 700 /bos /bos/input
-chmod 600 /bos/input/database.dump /bos/input/globals.sql /bos/input/files.tar
-chown postgres:postgres /bos /bos/input /bos/input/database.dump /bos/input/globals.sql /bos/input/files.tar
+chmod 600 /bos/input/database.dump /bos/input/globals.sql /bos/input/globals-restore.sql /bos/input/files.tar
+chown postgres:postgres /bos /bos/input /bos/input/database.dump /bos/input/globals.sql /bos/input/globals-restore.sql /bos/input/files.tar
 '''
 
 START_SCRIPT = r'''set -eu
@@ -242,7 +246,7 @@ def _cleanup(runner, cid, run_id):
 
 
 def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *, required_bytes=None,
-                     expected_payloads=None):
+                     expected_payloads=None, bootstrap_role=None, bootstrap_create_span=None):
     """Return safe aggregate results; preserve the fresh named volume for checks."""
     require(isinstance(image_id, str) and re.fullmatch(r'sha256:[0-9a-f]{64}', image_id), 'DRILL_IMAGE_ID_INVALID')
     require(isinstance(run_id, str) and re.fullmatch(r'bos-drill-[0-9a-f]{12}', run_id)
@@ -268,6 +272,12 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
                 and type(record.get('bytes')) is int and record['bytes'] >= 0,
                 'DRILL_PAYLOAD_METADATA_INVALID')
         hashes.append(record['sha256'])
+    require(isinstance(bootstrap_role, str) and re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]{0,62}', bootstrap_role)
+            and not bootstrap_role.startswith('pg_'), 'DRILL_BOOTSTRAP_METADATA_REQUIRED')
+    require(isinstance(bootstrap_create_span, (list, tuple)) and len(bootstrap_create_span) == 2
+            and all(type(offset) is int for offset in bootstrap_create_span)
+            and 0 <= bootstrap_create_span[0] < bootstrap_create_span[1] <= expected_payloads['globals.sql']['bytes'],
+            'DRILL_BOOTSTRAP_METADATA_REQUIRED')
     expected_extensions = metadata.get('extensions')
     require(isinstance(expected_extensions, list) and all(isinstance(x, list) and len(x) == 2
             and all(isinstance(v, str) for v in x) for x in expected_extensions),
@@ -279,32 +289,34 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
     require(vol.get('Name') == volume and vol.get('Driver') == 'local'
             and not vol.get('Options') and vol.get('Labels', {}).get(LABEL) == run_id,
             'DRILL_VOLUME_UNCONFIRMED')
-    bootstrap = 'drill_admin_' + secrets.token_hex(12)
+    administrator = 'drill_admin_' + secrets.token_hex(12)
     owned, result = [], None
     try:
         helper_args = _base_args(run_id + '-init', run_id, volume, image,
                                  helper=True, bundle_mount=bundle_mount)
         helper = _create(runner, [*helper_args, image_id, '-ceu', INIT_SCRIPT,
-                                  'bos-drill-init', str((required_bytes + 1023) // 1024), *hashes])
+                                  'bos-drill-init', str((required_bytes + 1023) // 1024), *hashes,
+                                  str(bootstrap_create_span[0]), str(bootstrap_create_span[1]), bootstrap_role])
         owned.append(helper)
         _inspect(runner, helper, run_id, volume, targets, helper=True, running=False)
         call(runner, ['start', helper], 'DRILL_VOLUME_INIT_FAILED', limit=4096)
         wait = call(runner, ['wait', helper], 'DRILL_VOLUME_INIT_FAILED', timeout=90, limit=4096)
         require(wait.strip() != b'42', 'DRILL_INSUFFICIENT_SPACE')
         require(wait.strip() != b'43', 'DRILL_COPY_HASH_MISMATCH')
+        require(wait.strip() != b'44', 'DRILL_BOOTSTRAP_METADATA_MISMATCH')
         require(wait.strip() == b'0', 'DRILL_VOLUME_INIT_FAILED')
         _inspect(runner, helper, run_id, volume, targets, helper=True, running=False)
         _cleanup(runner, helper, run_id)
         owned.remove(helper)
         args = _base_args(run_id + '-db', run_id, volume, image)
-        cid = _create(runner, [*args, image_id, '-ceu', START_SCRIPT, 'bos-drill', bootstrap])
+        cid = _create(runner, [*args, image_id, '-ceu', START_SCRIPT, 'bos-drill', bootstrap_role])
         owned.append(cid)
         _inspect(runner, cid, run_id, volume, targets, running=False)
         call(runner, ['start', cid], 'DRILL_DATABASE_START_FAILED', limit=4096)
         deadline = time.monotonic() + 60
         while True:
             try:
-                call(runner, _client(cid, bootstrap, 'psql', 'postgres',
+                call(runner, _client(cid, bootstrap_role, 'psql', 'postgres',
                      ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-c', 'SELECT 1;']),
                      'DRILL_DATABASE_NOT_READY', timeout=8, limit=4096)
                 break
@@ -313,13 +325,20 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
                 require(time.monotonic() < deadline, 'DRILL_DATABASE_START_TIMEOUT')
                 time.sleep(0.25)
         _inspect(runner, cid, run_id, volume, targets, running=True)
-        call(runner, _client(cid, bootstrap, 'psql', 'postgres',
-             ['-X', '-q', '-v', 'ON_ERROR_STOP=1', '-f', '/bos/input/globals.sql']),
+        # Globals may demote the original bootstrap role or remove LOGIN.  A
+        # new isolated administrator therefore performs the unchanged ALTERs
+        # and original GRANTED BY statements after initdb preserves its OID10.
+        create_admin = 'CREATE ROLE "' + administrator + '" WITH LOGIN SUPERUSER;'
+        call(runner, _client(cid, bootstrap_role, 'psql', 'postgres',
+             ['-X', '-q', '-v', 'ON_ERROR_STOP=1', '-c', create_admin]),
+             'DRILL_TEMPORARY_ADMIN_CREATE_FAILED')
+        call(runner, _client(cid, administrator, 'psql', 'postgres',
+             ['-X', '-q', '-v', 'ON_ERROR_STOP=1', '-f', '/bos/input/globals-restore.sql']),
              'DRILL_GLOBALS_RESTORE_FAILED', timeout=630)
-        call(runner, _client(cid, bootstrap, 'pg_restore', 'postgres',
+        call(runner, _client(cid, administrator, 'pg_restore', 'postgres',
              ['--exit-on-error', '--create', '/bos/input/database.dump']),
              'DRILL_DATABASE_RESTORE_FAILED', timeout=630)
-        raw = call(runner, _client(cid, bootstrap, 'psql', db,
+        raw = call(runner, _client(cid, administrator, 'psql', db,
                    ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-c', VALIDATE_SQL], readonly=True),
                    'DRILL_DATABASE_VALIDATION_FAILED', timeout=60)
         try:
@@ -344,6 +363,8 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
                   'archived_owners_and_acls': 'APPLIED_WITHOUT_RESTORE_ERRORS',
                   'extensions': 'MATCH', 'report_guard': 'PRESENT_AND_ENABLED',
                   'outbound_network': 'DISABLED', 'background_workers': 'DISABLED',
+                  'bootstrap_identity': 'INFERRED_FROM_UNIQUE_DUMP_GRANTOR',
+                  'temporary_admin': 'ISOLATED_RESTORE_ONLY',
                   'counts': counts, 'source_version': metadata['version']}
     finally:
         failed = False

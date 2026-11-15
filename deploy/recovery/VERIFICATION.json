@@ -51,18 +51,20 @@
     "test_images.py": "aabecd37eea49703e09aa30e8c000ebc4bdf839d015b2335d26389eb3d8f15eb",
     "test_finish.py": "ec5b38ae4f82cfa7b983683786cbc784d3b547b65dd0137e22e39bbd11445fb5",
     "test_docker.py": "6bd4e372dd5c8f4caba616bc7188c3b294f3a0d97f6b0a3e60562f198c3e9f09",
-    "drill.py": "0021aec91ed883251a85142236c3f2fa5a8991f88f748699da5e1c9c1a3d4add",
-    "drill_db.py": "f680c94b9a7ba6ad376ed2ad8ab31b46c02fbae214dc771af5876ae8116a1719",
+    "drill.py": "7f76d94f39ef31c9adf291479583d0cb632b6a9d5ef9529e08222b5557393d1d",
+    "drill_db.py": "97749f47dec6cf336b407d7cfc57e9a3616c42ede607cd634ea7a3d70de41668",
     "drill_files.py": "5ed19d86141c959ac462d6d8bd5396a8322b14c33794862276b1869e7a79b138",
-    "build_drill.py": "ebde8b548b2f4bb64d74fee016c8fe00b947d1067fccd13792a2b588dfd3b5bc",
-    "restore.ps1": "68ac916940412adc2f521b2f5a17b3c76a9f89a042ddad0dd3b7bb2c63573510",
+    "build_drill.py": "5f9feaa13ca12ec0be89cbb8e2b54fa00a2693d12691aef62f2f13f81b581e0b",
+    "restore.ps1": "18884bbe667a8e4857a1fbcaabe9ceca0c5b06c051cea426d686a0033a321255",
     "restore.cmd": "940b2c44c84db65d71498085e6c4468b4e215737dd1adb35915d1ae7159e7969",
-    "bos-restore.pyz": "4f97c66f9d84a3c19f8d15c89bc55b2de8857f6ac86e244eaf414216519979f3",
+    "bos-restore.pyz": "0ec6ab21a9ad11ba3a20fc84ca7edc4d69327164d22cfb9b3b1b6c5ce087591f",
     "test_drill.py": "f960942a872466a452f72a1594bee4952f6421ffaf907f07673c6058c26959b4",
-    "test_drill_db.py": "9b291d6f679973461c34bfdf86a8407f1945e7fc54db0a1d60cc3989bf9806c4",
+    "test_drill_db.py": "8a24e349a46ddbd344d1d8db2524e5d7de3353c98a13866c23f89ad0cfc5b53b",
     "test_drill_files.py": "f518e92ea51fd1efc7ee9dc535897d1dc691ac381a533929680ee4d718b2e08d",
-    "test_drill_integration.py": "57b94fa0a35491a41654f4bcc63e3af95ebcb8e58f4e996604d6854cd81d139a",
-    "test_launcher.ps1": "ba6b79f968010bfdcae480cd4aa5b8cd67e89cc9c95408eab8fd7b496bd0c7ac"
+    "test_drill_integration.py": "8547b5373611cb1407dbb50098f726ea4e73ccb8f870a58f9c0a916e5798fb74",
+    "test_launcher.ps1": "985aa7a33604aea18aecfe46d8535e7127c6a088f16b3b40c09c90bf2bdd0a51",
+    "drill_roles.py": "35ce460b3f45fcab4b853b59d9db40097d50e7ef89ebb7f11bd01bf951e458d9",
+    "test_drill_roles.py": "de42fca397e5f0e369139d5e5b8a9f4f42654fe65887aec4da8c2b6b23c6092d"
   },
   "previous_full_verification": {
     "commit": "6d706eb0ff37886d1420f11d9327c3013d0a8a1c",
@@ -106,8 +108,8 @@
   },
   "restore_drill": {
     "status": "LOCAL_UNIT_VERIFIED_CI_REQUIRED",
-    "unit_total": 178,
-    "new_tests": 59,
+    "unit_total": 185,
+    "new_tests": 66,
     "real_docker_restore": "CI_REQUIRED_BOTH_STORES",
     "windows_launcher": "CI_REQUIRED_POWERSHELL_5_1",
     "operator_docker_version": "29.9.2",
@@ -118,9 +120,9 @@
     "storage_extended_attributes": "NOT_CAPTURED",
     "disaster_recovery_ready": false,
     "previous_ci_attempt": {
-      "commit": "6a302f36484f2e1d0ff9eae58fab2d18581c364b",
-      "run": 43708313183,
-      "result": "FAIL_CLOSED_DOCKER_INSPECT_NORMALIZATION_AND_WINDOWS_TEST_ASSEMBLY; corrected pending exact CI"
+      "commit": "56f772fd074f5c65f010976446b6d06607e73436",
+      "run": 43708878468,
+      "result": "ISOLATION_AND_MISSING_IMAGE_LOAD_PASSED; globals failed on different bootstrap identity; Windows harness normalized exit code. Corrected pending exact CI."
     }
   }
 }

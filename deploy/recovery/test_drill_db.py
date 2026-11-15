@@ -9,7 +9,7 @@ import drill_db
 RUN = 'bos-drill-123456abcdef'
 VOLUME = RUN + '-data'
 IMAGE = 'sha256:' + 'a' * 64
-PAYLOADS = {name: {'sha256': char * 64, 'bytes': 10}
+PAYLOADS = {name: {'sha256': char * 64, 'bytes': 100}
             for name, char in (('database.dump', 'a'), ('globals.sql', 'b'), ('files.tar', 'c'))}
 PRIVATE = {'database': {'database': 'bos_restore_check', 'version': 170006,
                        'bytes': 4 * 1024 * 1024,
@@ -107,7 +107,8 @@ class Docker:
 def restore(docker, **overrides):
     arguments = {'runner': docker, 'image_id': IMAGE, 'run_id': RUN,
                  'volume': VOLUME, 'bundle_mount': '/private/captured-bundle',
-                 'private': PRIVATE, 'expected_payloads': PAYLOADS}
+                 'private': PRIVATE, 'expected_payloads': PAYLOADS,
+                 'bootstrap_role': 'postgres', 'bootstrap_create_span': (0, len('CREATE ROLE postgres;'))}
     arguments.update(overrides)
     return drill_db.restore_database(**arguments)
 
@@ -140,11 +141,15 @@ class DrillDatabaseTests(unittest.TestCase):
         self.assertNotIn('production-secret-host', repr(docker.calls))
         self.assertNotIn('never-output-this', repr(result))
 
-    def test_random_bootstrap_prevents_postgres_role_collision(self):
+    def test_original_bootstrap_identity_and_separate_temporary_admin(self):
         docker = Docker()
         restore(docker)
         create = [c for c in docker.calls if c[0] == 'create'][1]
-        self.assertRegex(create[-1], r'^drill_admin_[0-9a-f]{24}$')
+        self.assertEqual('postgres', create[-1])
+        create_admin = next(c for c in docker.calls if any(x.startswith('CREATE ROLE "drill_admin_') for x in c))
+        self.assertEqual('postgres', create_admin[create_admin.index('-U') + 1])
+        globals_command = next(c for c in docker.calls if '/bos/input/globals-restore.sql' in c)
+        self.assertRegex(globals_command[globals_command.index('-U') + 1], r'^drill_admin_[0-9a-f]{24}$')
         restore_command = next(c for c in docker.calls if 'pg_restore' in c)
         self.assertIn('--create', restore_command)
         self.assertIn('--exit-on-error', restore_command)
@@ -248,7 +253,7 @@ class DrillDatabaseTests(unittest.TestCase):
         self.assertReason('DRILL_COPY_HASH_MISMATCH', docker)
         created = [c for c in docker.calls if c[0] == 'create']
         self.assertEqual(1, len(created))
-        self.assertEqual(['a' * 64, 'b' * 64, 'c' * 64], created[0][-3:])
+        self.assertEqual(['a' * 64, 'b' * 64, 'c' * 64], created[0][-6:-3])
         self.assertIn('cp /bundle/files.tar /bos/input/files.tar', drill_db.INIT_SCRIPT)
         self.assertIn('sha256sum --check --status', drill_db.INIT_SCRIPT)
         self.assertEqual({}, docker.containers)
@@ -261,10 +266,29 @@ class DrillDatabaseTests(unittest.TestCase):
 
     def test_globals_error_stops_without_restoring_data_or_leaking_stderr(self):
         docker = Docker()
-        docker.fail = lambda c: '/bos/input/globals.sql' in c
+        docker.fail = lambda c: '/bos/input/globals-restore.sql' in c
         self.assertReason('DRILL_GLOBALS_RESTORE_FAILED', docker)
         self.assertFalse(any('pg_restore' in c for c in docker.calls))
         self.assertEqual({}, docker.containers)
+
+    def test_bootstrap_metadata_required_and_bad_copy_span_rejected(self):
+        for overrides in ({'bootstrap_role': None}, {'bootstrap_role': 'postgres;SELECT secret'},
+                          {'bootstrap_create_span': (-1, 15)}, {'bootstrap_create_span': (0, 101)},
+                          {'bootstrap_create_span': None}):
+            docker = Docker()
+            self.assertReason('DRILL_BOOTSTRAP_METADATA_REQUIRED', docker, **overrides)
+            self.assertEqual([], docker.calls)
+        docker = Docker()
+        docker.wait_code = b'44\n'
+        self.assertReason('DRILL_BOOTSTRAP_METADATA_MISMATCH', docker)
+        self.assertEqual(1, len([c for c in docker.calls if c[0] == 'create']))
+
+    def test_globals_copy_uses_parser_byte_span_not_line_filter_or_grant_rewrite(self):
+        self.assertIn('head -c "$5" /bos/input/globals.sql', drill_db.INIT_SCRIPT)
+        self.assertIn('tail -c "+$(($6 + 1))" /bos/input/globals.sql', drill_db.INIT_SCRIPT)
+        self.assertNotIn('GRANTED BY', drill_db.INIT_SCRIPT)
+        self.assertNotIn('sed ', drill_db.INIT_SCRIPT)
+        self.assertNotIn('CREATE ROLE', drill_db.VALIDATE_SQL)
 
     def test_database_restore_error_is_not_ignored(self):
         docker = Docker()

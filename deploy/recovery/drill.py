@@ -20,6 +20,7 @@ import uuid
 
 import drill_db
 import drill_files
+import drill_roles
 
 MIB = 1024 * 1024
 LABEL = 'io.business-os.restore-drill'
@@ -64,6 +65,7 @@ class DockerRunner:
         return [self.binary, *(['--host=' + self.host] if self.host else []), *args]
 
     def __call__(self, args, *, timeout=30, input_path=None, limit=16 * MIB):
+        self.last_error = b''
         stdout, stderr, overflow = bytearray(), bytearray(), threading.Event()
         def read(stream, output, maximum):
             try:
@@ -92,6 +94,7 @@ class DockerRunner:
                     thread.join(timeout=5)
                 require(not any(thread.is_alive() for thread in threads), 'DOCKER_OUTPUT_TIMEOUT')
                 require(not overflow.is_set(), 'DOCKER_OUTPUT_LIMIT')
+                self.last_error = bytes(stderr[:8192])
                 require(process.returncode == 0, 'DOCKER_COMMAND_FAILED')
                 return bytes(stdout)
             finally:
@@ -295,6 +298,7 @@ def write_report(path, report):
 def run_drill(bundle, runner, report_path=None):
     started = time.monotonic()
     context = drill_files.validate_bundle(Path(bundle))
+    bootstrap = drill_roles.source_bootstrap((context['bundle'] / 'globals.sql').read_bytes())
     run_id = 'bos-drill-' + uuid.uuid4().hex[:12]
     report = {'format': 1, 'run_id': run_id, 'status': 'INCOMPLETE',
               'scope': 'DATABASE_GLOBALS_AND_FILE_BYTES', 'restore': 'NOT_RUN',
@@ -317,7 +321,9 @@ def run_drill(bundle, runner, report_path=None):
         report['restore'] = drill_db.restore_database(runner, context['db_image'], run_id, volume,
                                                       str(context['bundle']), context['private'],
                                                       required_bytes=required_bytes,
-                                                      expected_payloads=context['manifest']['payloads'])
+                                                      expected_payloads=context['manifest']['payloads'],
+                                                      bootstrap_role=bootstrap['role'],
+                                                      bootstrap_create_span=bootstrap['create_span'])
         print('RESTORE_STAGE=FILES', flush=True)
         report['files'] = restore_files(runner, context, run_id, volume)
         drill_files.verify_payloads(context['bundle'], context['manifest'])

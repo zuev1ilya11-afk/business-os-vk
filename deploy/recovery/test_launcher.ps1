@@ -44,9 +44,9 @@ function Invoke-LauncherFixture([string]$Extra = '') {
     $process = New-Object Diagnostics.Process
     try {
         $process.StartInfo.FileName = Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe'
-        $scriptArg = $launcher.Replace("'", "''")
-        $bundleArg = $bundle.Replace("'", "''")
-        $process.StartInfo.Arguments = '-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "& ''' + $scriptArg + ''' -BundlePath ''' + $bundleArg + ''' ' + $Extra + '"'
+        # -File preserves the script's explicit native exit code. -Command
+        # normalizes a failing final command to 1 instead of preserving 7.
+        $process.StartInfo.Arguments = '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + $launcher + '" -BundlePath "' + $bundle + '" ' + $Extra
         $process.StartInfo.UseShellExecute = $false
         $process.StartInfo.CreateNoWindow = $true
         $process.StartInfo.RedirectStandardOutput = $true
