@@ -4,10 +4,13 @@ The caller verifies the bundle and owns the new labeled volume.  No production
 container settings, startup scripts, SQL configuration files or credentials are
 reused.  Database credentials in the genuine globals dump stay inside Docker.
 """
+import io
 import json
 import re
 import secrets
 import time
+import sys
+import tarfile
 
 import drill_errors
 import drill_profile
@@ -108,13 +111,14 @@ chown postgres:postgres /bos /bos/input /bos/input/database.dump /bos/input/glob
 
 START_SCRIPT = r'''set -eu
 umask 077
+exec 2>/bos/database-startup.stderr.log
 unset PGHOST PGHOSTADDR PGPORT PGDATABASE PGUSER PGSERVICE PGSERVICEFILE PGOPTIONS PGPASSWORD PGPASSFILE PGSYSCONFDIR PGDATA
 test ! -e /bos/data
 initdb --version | grep -Eq '^initdb \(PostgreSQL\) 17\.'
 bootstrap=$1
 shift
 initdb -D /bos/data --username "$bootstrap" --auth-local=trust --auth-host=reject --no-locale --encoding=UTF8 --no-instructions >/dev/null
-exec postgres -D /bos/data -c listen_addresses= -c port=5432 -c unix_socket_directories=/tmp -c unix_socket_permissions=0700 -c shared_preload_libraries= -c session_preload_libraries= -c local_preload_libraries= -c max_connections=20 -c shared_buffers=64MB -c max_worker_processes=0 -c max_parallel_workers=0 -c max_logical_replication_workers=0 -c max_wal_senders=0 -c autovacuum=off -c logging_collector=off -c log_min_messages=panic -c log_min_error_statement=panic -c log_statement=none -c log_connections=off -c log_disconnections=off "$@"
+exec postgres -D /bos/data -c listen_addresses= -c port=5432 -c unix_socket_directories=/tmp -c unix_socket_permissions=0700 -c shared_preload_libraries= -c session_preload_libraries= -c local_preload_libraries= -c max_connections=20 -c shared_buffers=64MB -c max_worker_processes=0 -c max_parallel_workers=0 -c max_logical_replication_workers=0 -c max_wal_senders=0 -c autovacuum=off -c logging_collector=off -c log_line_prefix= -c log_min_messages=error -c log_min_error_statement=panic -c log_statement=none -c log_connections=off -c log_disconnections=off "$@"
 '''
 
 VALIDATE_SQL = """BEGIN READ ONLY;
@@ -289,6 +293,26 @@ def _journal(args, log):
             'bos-drill-journal', log, *args[4:]]
 
 
+def _startup_detail(runner, cid, state):
+    if state.get('OOMKilled') is True:
+        return drill_errors.classify(b'FATAL: out of memory', 'STARTUP')
+    evidence = b''
+    try:
+        # docker cp can read the owned volume of a stopped container. The
+        # archive is parsed in memory, never extracted onto the host.
+        raw = runner(['cp', cid + ':/bos/database-startup.stderr.log', '-'],
+                     timeout=10, limit=128 * 1024)
+        with tarfile.open(fileobj=io.BytesIO(raw), mode='r:') as archive:
+            entries = archive.getmembers()
+            if (len(entries) == 1 and entries[0].isfile()
+                    and entries[0].name == 'database-startup.stderr.log'):
+                stream = archive.extractfile(entries[0])
+                evidence = stream.read(drill_errors.MAX_EVIDENCE_BYTES + 1)
+    except Exception:
+        pass
+    return drill_errors.classify(evidence, 'STARTUP')
+
+
 def _cleanup(runner, cid, run_id):
     # Even failure cleanup must never stop a resource whose identity changed.
     obj = one(runner, ['inspect', cid], 'DRILL_CLEANUP_UNCONFIRMED')
@@ -382,8 +406,13 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
                      'DRILL_DATABASE_NOT_READY', timeout=8, limit=4096)
                 break
             except DrillDBError:
-                _inspect(runner, cid, run_id, volume, targets, running=True)
-                require(time.monotonic() < deadline, 'DRILL_DATABASE_START_TIMEOUT')
+                state = _inspect(runner, cid, run_id, volume, targets).get('State', {})
+                if not state.get('Running'):
+                    raise DrillDBError('DRILL_DATABASE_START_FAILED',
+                                       _startup_detail(runner, cid, state)) from None
+                if time.monotonic() >= deadline:
+                    raise DrillDBError('DRILL_DATABASE_START_TIMEOUT',
+                                       _startup_detail(runner, cid, state)) from None
                 time.sleep(0.25)
         _inspect(runner, cid, run_id, volume, targets, running=True)
         raw = call(runner, _client(cid, bootstrap_role, 'psql', 'postgres',
@@ -450,6 +479,7 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
                   'temporary_admin': 'ISOLATED_RESTORE_ONLY',
                   'counts': counts, 'source_version': metadata['version']}
     finally:
+        original_detail = drill_errors.safe_detail(getattr(sys.exc_info()[1], "detail", None))
         failed = False
         for cid in reversed(owned):
             try:
@@ -457,6 +487,6 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
             except DrillDBError:
                 failed = True
         if failed:
-            raise DrillDBError('DRILL_CLEANUP_UNCONFIRMED') from None
+            raise DrillDBError('DRILL_CLEANUP_UNCONFIRMED', original_detail) from None
     result['cleanup'] = 'CONTAINERS_REMOVED_VOLUME_RETAINED'
     return result

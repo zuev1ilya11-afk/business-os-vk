@@ -2,6 +2,8 @@
 import copy
 import hashlib
 import json
+import io
+import tarfile
 import os
 from pathlib import Path
 import shutil
@@ -369,6 +371,44 @@ class DrillDatabaseTests(unittest.TestCase):
         self.assertEqual('DATABASE', raised.exception.detail['phase'])
         self.assertNotIn('SECRET', repr(raised.exception.detail))
         self.assertEqual({}, docker.containers)
+
+    def test_stopped_server_startup_error_is_read_without_host_extraction(self):
+        docker = Docker()
+        raw = io.BytesIO()
+        with tarfile.open(fileobj=raw, mode='w:') as archive:
+            payload = b'FATAL: could not access file "fixture_library": No such file or directory'
+            entry = tarfile.TarInfo('database-startup.stderr.log')
+            entry.size = len(payload)
+            archive.addfile(entry, io.BytesIO(payload))
+        original = docker.__call__
+        def runner(args, **kwargs):
+            if 'SELECT 1;' in args:
+                docker.containers[args[3]]['State']['Running'] = False
+                raise RuntimeError('not running')
+            if args[0] == 'cp':
+                return raw.getvalue()
+            return original(args, **kwargs)
+        with self.assertRaises(drill_db.DrillDBError) as raised:
+            restore(runner)
+        self.assertEqual('DRILL_DATABASE_START_FAILED', raised.exception.reason_code)
+        self.assertEqual('STARTUP', raised.exception.detail['phase'])
+        self.assertEqual('SHARED_LIBRARY_MISSING', raised.exception.detail['category'])
+        self.assertEqual({}, docker.containers)
+
+    def test_cleanup_failure_keeps_original_safe_database_diagnostic(self):
+        docker = Docker()
+        original = docker.__call__
+        def runner(args, **kwargs):
+            if 'head' in args:
+                return b'ERROR: pg_net is not in shared_preload_libraries'
+            if 'pg_restore' in args or args[0] == 'stop':
+                raise RuntimeError('private SQL')
+            return original(args, **kwargs)
+        with self.assertRaises(drill_db.DrillDBError) as raised:
+            restore(runner)
+        self.assertEqual('DRILL_CLEANUP_UNCONFIRMED', raised.exception.reason_code)
+        self.assertEqual('DATABASE', raised.exception.detail['phase'])
+        self.assertEqual('PRELOAD_REQUIRED', raised.exception.detail['category'])
 
     def test_extension_and_guard_mismatches_stop(self):
         docker = Docker()

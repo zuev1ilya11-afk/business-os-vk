@@ -359,7 +359,7 @@ def run_drill(bundle, runner, report_path=None):
         report['volume'] = volume
         report['private_error_logs'] = {
             'status': 'MAY_EXIST', 'location': 'RETAINED_DOCKER_VOLUME',
-            'paths': ['/bos/globals-restore.stderr.log', '/bos/database-restore.stderr.log']}
+            'paths': ['/bos/database-startup.stderr.log', '/bos/globals-restore.stderr.log', '/bos/database-restore.stderr.log']}
         print('RESTORE_STAGE=DATABASE', flush=True)
         required_bytes = context['private']['database']['bytes'] * 3 + context['file_bytes'] * 2 + 512 * MIB
         report['restore'] = drill_db.restore_database(runner, context['db_image'], run_id, volume,

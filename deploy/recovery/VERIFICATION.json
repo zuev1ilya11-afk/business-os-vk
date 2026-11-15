@@ -51,15 +51,15 @@
     "test_images.py": "aabecd37eea49703e09aa30e8c000ebc4bdf839d015b2335d26389eb3d8f15eb",
     "test_finish.py": "ec5b38ae4f82cfa7b983683786cbc784d3b547b65dd0137e22e39bbd11445fb5",
     "test_docker.py": "6bd4e372dd5c8f4caba616bc7188c3b294f3a0d97f6b0a3e60562f198c3e9f09",
-    "drill.py": "aa0b2382a20a53329bdfc007cc9f08173ab87d18bc0698c47ef23a63b5830c43",
-    "drill_db.py": "6efdc099a247ed2e1be64859e4f3994d80f7b8e3cd9b0f1fe7bd60d753dc1c5f",
+    "drill.py": "836fec4c84d9aef5a4954fb21478956b92e750dca2c7ae135d1b8843e817908b",
+    "drill_db.py": "fa807fe4b7a055e3d2161e20938f0b1995ff653077e659a08b0544c335fa635c",
     "drill_files.py": "bf1d458d7558c47f2181dd2760bc779030c3a5059c8dc177975d167ee3916134",
     "build_drill.py": "784cd5fce535758dc4b67eae69467f135ee2d0dbc2054de064a90ffd787cb709",
-    "restore.ps1": "0b2643ed75f33ae1921590d982d9f162d090010f7ade1fb72382369ae2197330",
+    "restore.ps1": "e4398ae54c985beb050863e62a09cc50a65e18cc6184bf13ec69594a28f49005",
     "restore.cmd": "940b2c44c84db65d71498085e6c4468b4e215737dd1adb35915d1ae7159e7969",
-    "bos-restore.pyz": "12b4eb0887860670181ac58a5988d5d6be898767b831b09ce4f1dc36a9b60c16",
+    "bos-restore.pyz": "e2fd7ae3a2940a7636652f5fdbda3acaf2093987be9cfa187024891b5f1297a0",
     "test_drill.py": "13e3aaca7dbdbe5cfd39083e097804534de595a3837a0b1ea6800d91783bf00d",
-    "test_drill_db.py": "c282062907d04c2cb7ed80672a0521f14569efb2b3f397a0ca916db177ae582f",
+    "test_drill_db.py": "9739f8252f40ce943eb18908dbdd356d9949712beb903cc09b9d7d9b3760dca4",
     "test_drill_files.py": "f518e92ea51fd1efc7ee9dc535897d1dc691ac381a533929680ee4d718b2e08d",
     "test_drill_integration.py": "36f8f912c153ca6cb4a744498c97767787155613a9cf73f8bdc721103ff743af",
     "test_launcher.ps1": "985aa7a33604aea18aecfe46d8535e7127c6a088f16b3b40c09c90bf2bdd0a51",
@@ -71,7 +71,7 @@
     "drill_errors.py": "be9b873da4e9acb68374a177a18be1970ffd02aec3160ccfa0c96b92dc7ae262",
     "test_drill_profile.py": "e71dd808c1123a5e34051fde78fbffd4084a47dea6c7988620b18e0c53a1bda2",
     "test_drill_errors.py": "055788891a88f9d4498bc730d6a4a00fb63303642da313c057f05e20cbe9de89",
-    "test_drill_supabase.py": "a04eb6f3570bdf1f7a7726f31784011e887c0f288e7e465435ba31454f167a76"
+    "test_drill_supabase.py": "685c6eeccda61c5cfbc55b272cd82fb0671dd090025a1c9c9ecfc2e1c5273ed8"
   },
   "previous_full_verification": {
     "commit": "6d706eb0ff37886d1420f11d9327c3013d0a8a1c",
@@ -133,12 +133,12 @@
     },
     "windows_bundle_validation": "7 native Windows tests passed installed and portable Python at commit 6cdbec04476d9f235a2677f0ecbc48c76cd5043e; operator v2 progressed past file verification to bootstrap parsing",
     "previous_full_success": {
-      "commit": "a47169fc349401c0cff71181d0223a9906578e78",
-      "run": 43716006666,
-      "note": "All4jobs passed: classic/containerd realdrill, BusyBox helpers, Windows. Supabase extension runtime not yet covered."
+      "commit": "901dbd842d8f058b8e4bd721a9d1b014cdd508d5",
+      "run": 43719731780,
+      "note": "All5jobs passed including realSupabase17.11 fullrestore with9extensions, 230unit tests, bothDockerstores, BusyBox4cases/store, Windows; additional startup failurejournal test requires currentCI."
     },
     "parameter_acl_fix": "Canonical parameter GRANT supported; parameter revokes refused before Docker. Verified source/target parameter ACL and functional permissions in previous exact CI43713533379.",
-    "local_discovery_ran": 230,
+    "local_discovery_ran": 232,
     "local_discovery_skipped": 12,
     "previous_parameter_acl_attempt": {
       "commit": "a1052c92476d1cb9f4c1a43e415697ea4ac9e4eb",
@@ -147,6 +147,6 @@
     },
     "busybox_compatibility": "Previous exact CI43716006666 passed both stores; new private file modes and explicit completion marker require exact current CI.",
     "supabase_runtime": "MINIMAL_ALLOWLIST_PRELOAD_WORKERS_ZERO; nine real extensions require dedicated current CI on pinned Supabase17.11.0.017",
-    "diagnostics": "Safe fixed categories survive cleanup; private stderr journals in new volume; successful report path printed on failure"
+    "diagnostics": "Safe fixed categories survive cleanup including cleanupfailure; private startup/globals/database stderr journals in newvolume; successful report path printed onfailure"
   }
 }

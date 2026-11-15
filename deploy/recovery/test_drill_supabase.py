@@ -16,6 +16,7 @@ import tempfile
 import time
 import unittest
 import uuid
+from unittest import mock
 
 REQUIRE = '--require' in sys.argv
 if REQUIRE:
@@ -278,6 +279,39 @@ class SupabaseRestoreDrill(unittest.TestCase):
             'cron_jobs_preserved_but_disabled': True, 'extension_workers': 0,
             'source_unchanged': True, 'network': 'none', 'full_application': 'NOT_RUN',
             'archive_image_absent_before_load': True,
+        }, sort_keys=True), flush=True)
+
+    def test_startup_error_is_classified_after_stopped_container_cleanup(self):
+        report_path = self.root / 'synthetic-startup-failure.json'
+        original = drill_db.START_SCRIPT
+        self.assertEqual(original.count('"$@"'), 1)
+        missing_library = 'bos_fixture_missing_library'
+        broken = original.replace('"$@"',
+            '"$@" -c shared_preload_libraries=' + missing_library)
+        with mock.patch.object(drill_db, 'START_SCRIPT', broken):
+            with self.assertRaises(drill_db.DrillDBError) as raised:
+                drill.run_drill(self.bundle, self.runner, report_path=report_path)
+        report = json.loads(report_path.read_text())
+        run_id = report['run_id']
+        self.addCleanup(self.cleanup_drill, run_id)
+        self.assertEqual(raised.exception.reason_code, 'DRILL_DATABASE_START_FAILED')
+        self.assertEqual(report['reason'], 'DRILL_DATABASE_START_FAILED')
+        self.assertEqual(report['diagnostics']['phase'], 'STARTUP')
+        self.assertEqual(report['diagnostics']['category'], 'SHARED_LIBRARY_MISSING')
+        self.assertGreater(report['diagnostics']['evidence_bytes'], 0)
+        self.assertFalse(report['disaster_recovery_ready'])
+        self.assertEqual(report['files'], 'NOT_RUN')
+        self.assertNotIn(missing_library, json.dumps(report))
+        self.assertEqual(self.docker.run([
+            'ps', '-aq', '--filter', 'label=' + LABEL + '=' + run_id]).strip(), b'')
+        self.assertEqual({p.name: backup.hash_file(p) for p in self.bundle.iterdir()},
+                         self.original_hashes)
+        self.assertEqual(self.snapshot(), self.source_before)
+        self.assertEqual(self.sql(self.source, INERT_SNAPSHOT_SQL), self.inert_before)
+        print('Actual Supabase startup failure: ' + json.dumps({
+            'category': report['diagnostics']['category'], 'phase': 'STARTUP',
+            'private_log_classified': True, 'owned_containers_removed': True,
+            'source_unchanged': True,
         }, sort_keys=True), flush=True)
 
 
