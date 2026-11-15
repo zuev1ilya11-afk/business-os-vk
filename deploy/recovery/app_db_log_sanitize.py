@@ -36,6 +36,7 @@ auth public storage extensions schema_migrations auth.schema_migrations auth.use
 supabase_auth_admin supabase_storage_admin authenticator postgres supabase_admin
 anon authenticated service_role
 Deno EdgeRuntime SyntaxError TypeError ReferenceError RangeError URIError EvalError AggregateError
+REPORT_ENV_INVALID
 '''.split())
 # Tokens are constants, not arbitrary matched text. They keep an unrecognized
 # error useful while preventing database values, passwords and SQL from export.
@@ -129,6 +130,11 @@ def _category(message, state):
     errno = _os_errno(message)
     if state == '42501':
         return 'DATABASE_PRIVILEGE_DENIED'
+    # Reviewed literal from deploy/report-acceptance/runtime-stage.py ENV_HELPER.
+    # Recognize this one project error; never export arbitrary uppercase codes.
+    if re.search(r'(?<![A-Za-z0-9_])REPORT_ENV_INVALID(?![A-Za-z0-9_])',
+                 _QUOTED.sub(' ', message[:8192])):
+        return 'GATEWAY_REPORT_CONFIG_INVALID'
     if state == '53100' or 'no space left on device' in low or errno == 'ENOSPC':
         return 'DISK_FULL'
     if state == '53200' or 'out of memory' in low or 'cannot allocate memory' in low or errno == 'ENOMEM':

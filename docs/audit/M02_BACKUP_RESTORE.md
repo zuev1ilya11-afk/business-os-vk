@@ -136,3 +136,12 @@ V3 передаёт только разрешённый путь LOCALE_ARCHIVE 
 Следующий артефакт — небольшое дополнение BOS-Services-Diagnostic-20261115-v2.zip для уже существующей E:\BOS-App. Оно повторно читает сохранённые журналы того же failed clone с поддержкой обычного текста, ANSI и цепочек причин. База, Edge и приложение не запускаются, новый том не создаётся; исходный baseline не монтируется. Сырые строки, URL, SQL и неизвестные значения в публичный JSON не выводятся.
 
 Пока точная ошибка Edge не получена, настройки его runtime не меняются. Возможные проблемы зависимостей/кэша являются гипотезами; синтетический gateway CI использует Deno.serve без внешних импортов и не доказывает запуск приватного gateway оператора. disaster_recovery_ready остаётся false.
+
+
+### 2026-11-15 — V5 сохраняет проверяемый публичный адрес шлюза
+
+Прочитан BOS-Services-Diagnostic-20261115T191328Z-4c32a385.json: Edge RUNTIME_EVENT_LOOP_EXITED, два сообщения с custom Error, 336 байт, три нераспознанные строки. Точный Error literal в операторском отчёте скрыт. Найден утверждённый ENV_HELPER из commit 800b057aebf19f9b837b29791f183fb7ad516263, deploy/report-acceptance/runtime-stage.py: helper при импорте требует public === https://homemaster.qd.je и иначе выбрасывает REPORT_ENV_INVALID. Старый planner подменял значение на https://bos-local.invalid.
+
+V5 сохраняет валидированный bare HTTPS origin из аутентифицированного bos-report-env.json. Internal upstream остаётся loopback, worker key новый, GAS отключён локально. Browser portal уже переписывает captured public origin в локальный; сохранение строки не создаёт сетевого доступа. Настройки сетевой изоляции и baseline не меняются. Известный технический код REPORT_ENV_INVALID теперь имеет отдельную безопасную категорию.
+
+В реальный Docker regression добавлены точные 1066 байт утверждённого bos-report-env.ts (SHA256 393717935e3140a7c1220407d772a3711c8d52549d4708964170105f6fe1a35c), импорт этого файла шлюзом, отрицательный запуск с прежним origin и полный положительный запуск с сохранённым origin. Проверяются неизменность helper/source/baseline и чтение Storage по логическому public URL через локальный portal. Приватный captured helper агент не читал, поэтому успешный операторский запуск остаётся отдельным необходимым подтверждением; disaster_recovery_ready=false.

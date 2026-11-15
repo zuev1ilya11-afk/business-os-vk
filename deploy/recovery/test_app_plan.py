@@ -71,7 +71,8 @@ def fixture():
             'source_sha256': {source: hashlib.sha256(b'synthetic source').hexdigest()},
             'import_map': None, 'verify_jwt': False}
     add('root-003/routes.json', routes)
-    add('root-003/bos-report-env.json', {'workerKey': SECRET, 'gas': 'https://production.invalid'})
+    add('root-003/bos-report-env.json', {'public': 'https://homemaster.qd.je',
+                                      'workerKey': SECRET, 'gas': 'https://production.invalid'})
     containers, images = [], []
     for i, role in enumerate(discovery.ROLES, 1):
         image = 'sha256:' + f'{i:064x}'
@@ -144,12 +145,12 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(first['roles']['storage']['env']['TUS_USE_FILE_VERSION_SEPARATOR'], 'true')
         self.assertEqual(first['roles']['storage']['cmd'], ['/app/dist/start/server.js'])
 
-    def test_gateway_uses_logical_https_url_and_no_production_worker_key(self):
+    def test_gateway_preserves_captured_public_contract_and_uses_fresh_worker_key(self):
         result = self.plan()
         config = json.loads(result['generated_files']['gateway/bos-report-env.json'])
-        self.assertEqual(config['public'], 'https://bos-local.invalid')
+        self.assertEqual(config['public'], 'https://homemaster.qd.je')
         self.assertEqual(result['logical_public_origin'], config['public'])
-        self.assertNotIn(config['public'], result['source_origins'])
+        self.assertIn(config['public'], result['source_origins'])
         self.assertEqual(result['roles']['auth']['env']['GOTRUE_SITE_URL'], 'http://127.0.0.1:18701')
         self.assertEqual(result['roles']['edge']['env']['SUPABASE_URL'], 'http://127.0.0.1:9000')
         self.assertEqual(config['internal'], 'http://127.0.0.1:9000')
@@ -159,6 +160,34 @@ class PlanTests(unittest.TestCase):
         self.assertIn(b'admin off', caddy)
         self.assertIn(b'auto_https off', caddy)
         self.assertNotIn(b'https://', caddy)
+
+    def test_public_origin_is_preserved_exactly_without_reusing_private_config(self):
+        self.add('root-003/bos-report-env.json', {'public': 'https://reports.example.test:8443',
+            'internal': 'https://production.invalid', 'workerKey': SECRET, 'gas': SECRET,
+            'legacy': '', 'unrelated_secret': SECRET})
+        result = self.plan()
+        config = json.loads(result['generated_files']['gateway/bos-report-env.json'])
+        self.assertEqual(config['public'], 'https://reports.example.test:8443')
+        self.assertEqual(result['logical_public_origin'], config['public'])
+        self.assertEqual(config['internal'], 'http://127.0.0.1:9000')
+        self.assertEqual(config['gas'], 'http://127.0.0.1:18080/__bos_blocked/gas')
+        self.assertNotIn(SECRET, repr(result))
+
+    def test_gateway_rejects_invalid_or_missing_public_origin(self):
+        values = (None, '', 1, [], 'http://homemaster.qd.je',
+            'https://user:secret@homemaster.qd.je', 'https://homemaster.qd.je/',
+            'https://homemaster.qd.je/path', 'https://homemaster.qd.je?secret',
+            'https://homemaster.qd.je?', 'https://homemaster.qd.je#fragment',
+            'https://homemaster.qd.je:65536', 'https://homemaster.qd.je:bad', 'https://homemaster.qd.je:',
+            'https://homemaster.qd.je\\@other.test', 'https://home master.qd.je',
+            'https://homemaster.qd.je\n', 'https://home%40master.qd.je',
+            'https://home..test', 'https://-home.test')
+        for value in values:
+            with self.subTest(public=value):
+                self.add('root-003/bos-report-env.json', {'public': value})
+                self.failure('APP_GATEWAY_PUBLIC_ORIGIN_INVALID')
+        self.add('root-003/bos-report-env.json', {'workerKey': SECRET})
+        self.failure('APP_GATEWAY_PUBLIC_ORIGIN_INVALID')
 
     def test_duplicate_unknown_main_json_rejected(self):
         self.add('root-003/private.json', {'secret': SECRET})

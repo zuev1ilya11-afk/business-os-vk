@@ -90,7 +90,25 @@ ALTER FUNCTION auth.jwt() OWNER TO supabase_auth_admin;
 
 # This generated gateway exercises the actual EdgeRuntime ESZIP worker API.
 # Its tiny functions are fixture contracts, not claims about Business OS login.
-GATEWAY = r'''const keys=['SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','VK_APP_SECRET'];
+# Exact ENV_HELPER from deploy/report-acceptance/runtime-stage.py at approved
+# commit 800b057aebf19f9b837b29791f183fb7ad516263. This is immutable gateway
+# source, not an approximation of its startup validation. All config/keys below
+# are generated test values; the fixed public origin is never contacted.
+REPORT_ENV_HELPER = r'''const bosConfig = JSON.parse(Deno.readTextFileSync('/bos-main/bos-report-env.json'));
+const bosFunctions = new Set(['order-lifecycle-api','drive-archive-api','report-api','report-file-upload','hands-report-api','push-api','gas-bridge-health']);
+if(bosConfig.version!==1||bosConfig.internal!=='http://127.0.0.1:9000'||bosConfig.public!=='https://homemaster.qd.je'||typeof bosConfig.legacy!=='string'||typeof bosConfig.workerKey!=='string'||bosConfig.workerKey.length<32||typeof bosConfig.gas!=='string')throw new Error('REPORT_ENV_INVALID');
+export function bosReportEnv(slug, entries){
+ if(!bosFunctions.has(slug))return entries;
+ const overrides={SUPABASE_URL:bosConfig.internal,BOS_PUBLIC_URL:bosConfig.public,BOS_LEGACY_STORAGE_ORIGINS:bosConfig.legacy};
+ if(slug==='drive-archive-api')overrides.BOS_DRIVE_WORKER_KEY=bosConfig.workerKey;
+ if(slug==='drive-archive-api'||slug==='gas-bridge-health')overrides.BOS_DRIVE_GAS_URL=bosConfig.gas;
+ return [...entries.filter(([key])=>!Object.prototype.hasOwnProperty.call(overrides,key)),...Object.entries(overrides)];
+}
+'''
+REPORT_ENV_HELPER_SHA256 = '393717935e3140a7c1220407d772a3711c8d52549d4708964170105f6fe1a35c'
+REPORT_PUBLIC_ORIGIN = 'https://homemaster.qd.je'
+GATEWAY = r'''import { bosReportEnv } from './bos-report-env.ts';
+const keys=['SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','VK_APP_SECRET'];
 const routes=JSON.parse(await Deno.readTextFile('/bos-main/routes.json'));
 Deno.serve(async(req)=>{
  const url=new URL(req.url);
@@ -109,7 +127,7 @@ Deno.serve(async(req)=>{
   ...(route.import_map?{context:{importMapPath:'/bos-src/'+slug+'/'+route.import_map}}:{}),
   allowRemoteModules:false,
   memoryLimitMb:128,workerTimeoutMs:30000,noModuleCache:false,
-  envVars:keys.map(key=>[key,Deno.env.get(key)||'']),
+  envVars:bosReportEnv(slug,keys.map(key=>[key,Deno.env.get(key)||''])),
   forceCreate:false,cpuTimeSoftLimitMs:5000,cpuTimeHardLimitMs:10000
  });
  return await worker.fetch(req);
@@ -526,7 +544,15 @@ class RealApplicationLaunch(unittest.TestCase):
     @classmethod
     def prepare_gateway(cls):
         (cls.capture / 'edge/main/index.ts').write_text(GATEWAY)
-        write_json(cls.capture / 'edge/main/bos-report-env.json', {'synthetic': True})
+        helper = REPORT_ENV_HELPER.encode()
+        if hashlib.sha256(helper).hexdigest() != REPORT_ENV_HELPER_SHA256:
+            raise RuntimeError('Approved report environment helper fixture changed')
+        (cls.capture / 'edge/main/bos-report-env.ts').write_bytes(helper)
+        cls.report_config = {'version': 1, 'internal': 'http://127.0.0.1:9000',
+                             'public': REPORT_PUBLIC_ORIGIN, 'legacy': '',
+                             'workerKey': 'synthetic-report-worker-key-never-production',
+                             'gas': 'http://127.0.0.1:1/gas'}
+        write_json(cls.capture / 'edge/main/bos-report-env.json', cls.report_config)
         cls.routes = {}
         fixtures = [
             ('mini-app-api', 'supabase/functions/mini-app-api/index.ts', None, MINI),
@@ -712,6 +738,53 @@ class RealApplicationLaunch(unittest.TestCase):
             self.remove_volume(failed_volume, APP_LABEL, failed_run)
         self.assertEqual(self.volume_hash(self.baseline['volume']), before)
         print('CI_AUTH_NAMESPACE_REPRODUCED=PUBLIC_PERMISSION_DENIED_WITHOUT_SESSION_SEARCH_PATH', flush=True)
+        # The captured report helper compares its public origin to an exact
+        # literal at module startup. Reproduce the former replacement with a
+        # different logical hostname before attempting the corrected full app.
+        gateway = app_plan.gateway
+        def old_report_public(*args, **kwargs):
+            keys, generated = gateway(*args, **kwargs)
+            report_config = json.loads(generated['gateway/bos-report-env.json'])
+            report_config['public'] = 'https://bos-local.invalid'
+            generated['gateway/bos-report-env.json'] = app_plan.json_bytes(report_config)
+            return keys, generated
+        failed_volume = None
+        with patch.object(app_plan, 'gateway', side_effect=old_report_public):
+            try:
+                broken = app.start_app(self.bundle, self.baseline, self.runner)
+            except app.Stop as error:
+                failure = getattr(error, 'report', {})
+                failed_volume = failure.get('volume')
+            else:
+                broken.stop()
+                self.remove_volume(broken.volume, APP_LABEL, broken.run_id)
+                self.fail('Edge unexpectedly accepted the changed report public origin')
+        self.assertRegex(failed_volume or '', r'^bos-app-[0-9a-f]{12}-data$')
+        failed_run = failed_volume.removesuffix('-data')
+        failed_info = json.loads(self.docker.run(['volume', 'inspect', failed_volume]))[0]
+        self.assertEqual(failed_info.get('Labels', {}).get(APP_LABEL), failed_run)
+        try:
+            self.assertEqual(failure.get('failed_stage'), 'SERVICES')
+            self.assertEqual(failure.get('failed_service'), 'edge')
+            self.assertEqual(failure.get('database', {}).get('status'), 'CLONE_VALIDATED')
+            self.assertEqual(failure.get('service_diagnostics', {}).get('edge', {}).get('primary_category'),
+                             'GATEWAY_REPORT_CONFIG_INVALID')
+            log_args = ['run', '--rm', '--network', 'none', '--read-only', '--log-driver', 'none',
+                '--user', '0:0', '--cap-drop', 'ALL', '--cap-add', 'DAC_READ_SEARCH',
+                '--security-opt', 'no-new-privileges',
+                '--mount', 'type=volume,src=' + failed_volume + ',dst=/bos,readonly,volume-nocopy']
+            for target in drill_db._tmpfs(self.images['db']):
+                log_args += ['--tmpfs', target + ':rw,noexec,nosuid,nodev,size=1m']
+            failure_logs = self.docker.run([*log_args, '--entrypoint', '/bin/busybox',
+                self.images['db']['Id'], 'head', '-c', '65536', '/bos/app/diagnostics/edge.log'])
+            self.assertIn(b'REPORT_ENV_INVALID', failure_logs)
+            self.assertIn(b'event loop error', failure_logs)
+            self.assertIn(b'bos-report-env.ts', failure_logs)
+            print('CI_REPORT_ENV_NEGATIVE_LOG_BYTES=' + str(len(failure_logs)), flush=True)
+        finally:
+            self.remove_volume(failed_volume, APP_LABEL, failed_run)
+        self.assertEqual(self.volume_hash(self.baseline['volume']), before)
+        print('CI_REPORT_ENV_REPRODUCED=EDGE_REPORT_ENV_INVALID_WITH_REPLACED_PUBLIC_ORIGIN', flush=True)
         try:
             session = app.start_app(self.bundle, self.baseline, self.runner)
         except Exception as error:
@@ -752,6 +825,18 @@ class RealApplicationLaunch(unittest.TestCase):
         preserved_routes = json.loads(self.docker.run(['exec', session.containers['edge'],
                                                        'cat', '/bos-main/routes.json']))
         self.assertEqual(preserved_routes, self.routes)
+        restored_helper = self.docker.run(['exec', session.containers['edge'],
+                                          'cat', '/bos-main/bos-report-env.ts'])
+        self.assertEqual(hashlib.sha256(restored_helper).hexdigest(), REPORT_ENV_HELPER_SHA256)
+        restored_report_config = json.loads(self.docker.run(['exec', session.containers['edge'],
+                                                             'cat', '/bos-main/bos-report-env.json']))
+        self.assertEqual(restored_report_config['public'], self.report_config['public'])
+        self.assertNotEqual(restored_report_config['workerKey'], self.report_config['workerKey'])
+        self.assertEqual(json.loads((self.capture / 'edge/main/bos-report-env.json').read_bytes()),
+                         self.report_config)
+        self.assertEqual(hashlib.sha256((self.capture / 'edge/main/bos-report-env.ts').read_bytes()).hexdigest(),
+                         REPORT_ENV_HELPER_SHA256)
+        print('CI_REPORT_ENV_PRESERVED=EXACT_CAPTURED_HELPER_AND_PUBLIC_ORIGIN', flush=True)
         for role, cid in session.containers.items():
             record = json.loads(self.docker.run(['inspect', cid]))[0]
             host = record['HostConfig']
@@ -795,6 +880,17 @@ class RealApplicationLaunch(unittest.TestCase):
         status, _, body = self.request(session, 'GET', '/storage/v1/object/public/fixture-bucket/fixture.bin')
         self.assertEqual(status, 200, body[:1024])
         self.assertEqual(body, FIXTURE_BYTES)
+        # The preserved logical public origin maps to this local portal. The
+        # actual object read below uses only 127.0.0.1 and the isolated stack.
+        import app_browser
+        public_object = REPORT_PUBLIC_ORIGIN + '/storage/v1/object/public/fixture-bucket/fixture.bin'
+        mapped = app_browser.rewrite_url(public_object, session.portal.origin, session.portal.allowed_origins)
+        self.assertEqual(mapped, session.portal.origin + '/storage/v1/object/public/fixture-bucket/fixture.bin')
+        self.assertEqual(urlsplit(mapped).hostname, '127.0.0.1')
+        status, _, body = self.request(session, 'GET', urlsplit(mapped).path)
+        self.assertEqual(status, 200, body[:1024])
+        self.assertEqual(body, FIXTURE_BYTES)
+        print('CI_REPORT_PUBLIC_STORAGE_MAPPED=LOCAL_PORTAL_ONLY', flush=True)
         status, _, body = self.request(session, 'GET', self.old_signed_path)
         self.assertEqual(status, 200, body[:1024])
         self.assertEqual(body, FIXTURE_BYTES)

@@ -18,9 +18,6 @@ import drill_files
 PORTS = {'rest': 3000, 'auth': 9999, 'storage': 5000, 'edge': 9000, 'https': 18080}
 ALIASES = {'bos-release-probe-' + role: '127.0.0.1' for role in ('rest', 'auth', 'storage')}
 SAFE_PATH = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-# A logical HTTPS origin satisfies the captured report URL contract. It is
-# never contacted: the browser portal maps only its Storage paths locally.
-LOGICAL_PUBLIC_ORIGIN = 'https://bos-local.invalid'
 ENV_KEY = re.compile(r'[A-Za-z_][A-Za-z0-9_]*')
 IDENT = re.compile(r'[A-Za-z_][A-Za-z0-9_]{0,62}')
 SLUG = re.compile(r'[a-z][a-z0-9-]{0,79}')
@@ -110,6 +107,36 @@ def jwt(role, secret):
     return message + '.' + base64.urlsafe_b64encode(signature).rstrip(b'=').decode()
 
 
+def gateway_public_origin(config):
+    """Retain the captured gateway's public URL contract without contacting it.
+
+    The installed report helper validates this value at module import. Its
+    origin is metadata; the isolated browser maps requests to the local portal.
+    Credentials, upstream services and external integration URLs stay fresh
+    or local and are never copied from this configuration.
+    """
+    require(isinstance(config, dict), 'APP_GATEWAY_PUBLIC_ORIGIN_INVALID')
+    value = config.get('public')
+    require(isinstance(value, str) and 0 < len(value) <= 2048
+            and all(33 <= ord(char) <= 126 for char in value) and '\\' not in value,
+            'APP_GATEWAY_PUBLIC_ORIGIN_INVALID')
+    try:
+        parsed = urlsplit(value)
+        port = parsed.port
+        require(parsed.scheme == 'https' and parsed.hostname
+                and parsed.username is None and parsed.password is None
+                and not parsed.path and not parsed.query and not parsed.fragment
+                and value == 'https://' + parsed.netloc and not parsed.netloc.endswith(':')
+                and re.fullmatch(r'[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?', parsed.hostname)
+                and all(re.fullmatch(r'[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?', label)
+                        for label in parsed.hostname.split('.'))
+                and (port is None or 1 <= port <= 65535),
+                'APP_GATEWAY_PUBLIC_ORIGIN_INVALID')
+    except ValueError:
+        raise Stop('APP_GATEWAY_PUBLIC_ORIGIN_INVALID') from None
+    return value
+
+
 def gateway(context, read_file, prefix, origin, secret):
     try:
         main = read_checked(context, read_file, prefix + '/index.ts').decode('utf-8')
@@ -164,8 +191,10 @@ def gateway(context, read_file, prefix, origin, secret):
                 require(isinstance(digest, str) and DIGEST.fullmatch(digest) is not None,
                         'APP_GATEWAY_SOURCE_HASH_INVALID')
     # A local worker endpoint deliberately has no handler; no production GAS URL/key is reused.
+    captured_config = json_read(read_checked(context, read_file, prefix + '/bos-report-env.json'))
+    public_origin = gateway_public_origin(captured_config)
     generated = {'gateway/routes.json': json_bytes(routes), 'gateway/bos-report-env.json': json_bytes({
-        'version': 1, 'internal': 'http://127.0.0.1:9000', 'public': LOGICAL_PUBLIC_ORIGIN,
+        'version': 1, 'internal': 'http://127.0.0.1:9000', 'public': public_origin,
         'legacy': '', 'workerKey': secret, 'gas': 'http://127.0.0.1:18080/__bos_blocked/gas'})}
     return keys, generated
 
@@ -421,7 +450,8 @@ def build_plan(context, read_file, origin):
         output[role]['mounts'] = mounts[role]
     return {'roles': output, 'mounts': mounts, 'generated_files': generated, 'db_roles': passwords,
             'secrets': secret, 'aliases': dict(ALIASES), 'ports': dict(PORTS),
-            'source_origins': sorted(source_origins), 'logical_public_origin': LOGICAL_PUBLIC_ORIGIN,
+            'source_origins': sorted(source_origins),
+            'logical_public_origin': json_read(generated['gateway/bos-report-env.json'])['public'],
             'gateway_archive_prefix': prefixes[('edge', '/bos-main')],
             'web_archive_prefix': prefixes[('https', '/srv')], 'storage_archive_prefix': storage_prefix,
             'application': 'NOT_RUN', 'disaster_recovery_ready': False}

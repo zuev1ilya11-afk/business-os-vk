@@ -134,6 +134,28 @@ class PortalTests(unittest.TestCase):
         self.assertEqual(self.request(path=self.portal.origin + '/')[0], 200)
         self.assertEqual(self.calls[-1][1], '/')
 
+    def test_custom_captured_origin_maps_locally_but_cannot_be_a_proxy_target(self):
+        source = 'https://reports.example.test:8443'
+        self.portal.allowed_origins |= frozenset({a.validated_origin(source)})
+        self.response = (200, {'Content-Type': 'application/json'}, b'{"ok":true}')
+        cases = (
+            ('/api/proxy/mini-app-api?q=a%2Fb&fixture=1',
+             '/functions/v1/mini-app-api?q=a%2Fb&fixture=1'),
+            ('/storage/v1/object/sign/bucket/photo.jpg?token=synthetic&download=copy%20photo.jpg',
+             '/storage/v1/object/sign/bucket/photo.jpg?token=synthetic&download=copy%20photo.jpg'),
+        )
+        for path, expected in cases:
+            mapped = a.rewrite_url(source + path, self.portal.origin, self.portal.allowed_origins)
+            self.assertEqual(mapped, self.portal.origin + expected)
+            self.assertEqual(self.request(path=mapped, headers={'Host': self.portal.host})[0], 200)
+            self.assertEqual(self.calls[-1][1], expected)
+        self.calls.clear()
+        self.assertEqual(self.request(path=source + cases[0][0],
+                                      headers={'Host': self.portal.host})[0], 403)
+        self.assertEqual(self.request('CONNECT', 'reports.example.test:8443',
+                                      {'Host': 'reports.example.test:8443'})[0], 403)
+        self.assertEqual(self.calls, [])
+
     def test_blocked_integration_and_body_limit_never_forward(self):
         status, _, body = self.request('POST', '/functions/v1/avito-api', body=b'{}')
         self.assertEqual(status, 501)

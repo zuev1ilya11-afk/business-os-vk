@@ -5,6 +5,23 @@ import app_db_log_sanitize as parser
 
 
 class RetainedLogSanitizerTests(unittest.TestCase):
+    def test_reviewed_gateway_report_error_code_is_recognized_without_unknown_codes(self):
+        for raw in (
+            b'Error: REPORT_ENV_INVALID',
+            b'event loop error: Error: REPORT_ENV_INVALID',
+            b'runtime has escaped from the event loop unexpectedly: event loop error: Error: REPORT_ENV_INVALID',
+        ):
+            with self.subTest(raw=raw):
+                result = parser.summarize(raw)
+                self.assertEqual(result['primary_category'], 'GATEWAY_REPORT_CONFIG_INVALID')
+                self.assertEqual(result['errors'][0]['known_identifiers'], ['REPORT_ENV_INVALID'])
+        for code in ('PRIVATE_SECRET_ERROR', 'REPORT_ENV_INVALID_PRIVATE', 'PRIVATE_REPORT_ENV_INVALID'):
+            result = parser.summarize(('Error: ' + code).encode())
+            self.assertNotEqual(result['primary_category'], 'GATEWAY_REPORT_CONFIG_INVALID')
+            self.assertNotIn(code, json.dumps(result))
+        self.assertNotEqual(parser.summarize(b'Error: "REPORT_ENV_INVALID"')['primary_category'],
+                            'GATEWAY_REPORT_CONFIG_INVALID')
+
     def test_edge_plain_ansi_titlecase_and_rust_tracing_formats(self):
         cases = (
             (b'error: Module not found "file:///bos-src/SECRET/index.ts"', 'MODULE_NOT_FOUND'),

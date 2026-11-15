@@ -209,7 +209,7 @@
     }
   },
   "application_launch": {
-    "status": "V4_AUTH_AND_STORAGE_READY_OPERATOR_STOPPED_EDGE",
+    "status": "V4_EDGE_EVENT_LOOP_FAILURE_GATEWAY_PUBLIC_CONTRACT_FIX_PREPARED",
     "artifact": "BOS-App-20261115-v4.zip",
     "bytes": 11277831,
     "sha256": "a5a6d96bb400308ddcd67be574cd6289b5be01f53eb05a88e9ef0c3a81d362e1",
@@ -355,7 +355,7 @@
       "exact_edge_error": "NOT_INCLUDED_BY_V4_LOG_PARSER",
       "next_action": "READ_RETAINED_EDGE_LOG_WITH_PLAINTEXT_AWARE_DIAGNOSTIC_V2"
     },
-    "diagnostic_limitation": "V4 collected 336 bytes of Edge logs but recognized no records. Exact v1.77.9 logger emits ordinary text without level prefixes; updated reader must recover fixed-vocabulary evidence before a runtime correction.",
+    "diagnostic_limitation": "Operator evidence proves a custom Edge event-loop failure, but its exact Error literal was redacted. Approved gateway helper has a concrete public-origin conflict with the launcher; real-runtime regression and private operator retry are separate checks.",
     "operator_database_diagnostic": {
       "evidence_file": "BOS-DB-Diagnostic-20261115T180017Z-c5a5ebc3.json",
       "sha256": "e55680bcd19c2ad444bf946446e5b0993b6ab2af0f1d84a70374ec0e7fff6e72",
@@ -408,6 +408,30 @@
       },
       "exact_auth_error": "NOT_PRESENT_IN_OPERATOR_REPORT",
       "next_action": "VALIDATE_AUTH_CONNECTION_SCHEMA_FIX_AND_V4_DIAGNOSTICS"
+    },
+    "candidate_artifact": "BOS-App-20261115-v5.zip",
+    "operator_services_diagnostic": {
+      "evidence": "BOS-Services-Diagnostic-20261115T191328Z-4c32a385.json",
+      "sha256": "8a08897f66d5922309478fda61cb5b9f0033404ae6158b23d94d3711d29fc602",
+      "status": "SERVICES_DIAGNOSTIC_COMPLETE",
+      "run_id": "bos-app-3cada07b4480",
+      "edge_category": "RUNTIME_EVENT_LOOP_EXITED",
+      "edge_evidence_bytes": 336,
+      "edge_unparsed_nonempty_lines": 3,
+      "exact_error_literal": "REDACTED_IN_OPERATOR_DIAGNOSTIC",
+      "database_started": false,
+      "baseline_mounted": false,
+      "new_volume_created": false
+    },
+    "confirmed_gateway_code_defect": {
+      "source_commit": "800b057aebf19f9b837b29791f183fb7ad516263",
+      "source_path": "deploy/report-acceptance/runtime-stage.py",
+      "helper_sha256": "393717935e3140a7c1220407d772a3711c8d52549d4708964170105f6fe1a35c",
+      "condition": "ENV_HELPER rejects public != https://homemaster.qd.je with REPORT_ENV_INVALID",
+      "old_plan": "Replaced public with https://bos-local.invalid",
+      "correction": "Preserve validated bare HTTPS public origin from authenticated capture config; keep internal upstreams local and keys fresh",
+      "operator_captured_helper_hash": "NOT_READ_BY_AGENT",
+      "regression": "EXACT_APPROVED_HELPER_NEGATIVE_OLD_PUBLIC_THEN_FULL_POSITIVE_STACK"
     }
   }
 }
