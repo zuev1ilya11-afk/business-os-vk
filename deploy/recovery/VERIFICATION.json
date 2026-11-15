@@ -2,10 +2,10 @@
   "date_utc": "2026-11-15",
   "status": "LOCAL_UNIT_VERIFIED_CI_REQUIRED",
   "tests": {
-    "unit_passed": 118,
+    "unit_passed": 119,
     "backup_safety": 35,
     "discovery": 50,
-    "image_archive": 22,
+    "image_archive": 23,
     "finish_partial": 11,
     "real_postgresql_cases": 5,
     "real_postgresql_this_revision": "CI_REQUIRED; local binaries absent",
@@ -46,9 +46,9 @@
     "test_backup.py": "1404f0232644372d1fffa87638c8d7519cf7bc7560b3993924120f2efb38424b",
     "test_discovery.py": "8394c661e716a72774d58f97b8fb19952b6639317875f906a16f17f23e31b653",
     "test_postgres.py": "793535f19dbb384d4e11a5464272bb36c2f4cd46c22df8495800d473fedf82e5",
-    "bos-backup.pyz": "dd48997077a68947c93c24d451ea2cdc5ffce1a01a8712b4cbaa7ef7cdd16bee",
-    "image_archive.py": "99d4e7ef7472b3a0b4e9b14dd2be6e5dce37045e37fcd5e70f482ce457b415fe",
-    "test_images.py": "3652a997b9f6c83f156118e726523c158bf5856f9ec355607cf1c575924f5283",
+    "bos-backup.pyz": "fc83e0e13c92de89ff5258c857d93accb14da0c816eed101473e111ad24dd9ce",
+    "image_archive.py": "0a07fdc333db5ad8101982672a024c22f0bef14975be48fa11f83561667cfe6d",
+    "test_images.py": "aabecd37eea49703e09aa30e8c000ebc4bdf839d015b2335d26389eb3d8f15eb",
     "test_finish.py": "ec5b38ae4f82cfa7b983683786cbc784d3b547b65dd0137e22e39bbd11445fb5",
     "test_docker.py": "6bd4e372dd5c8f4caba616bc7188c3b294f3a0d97f6b0a3e60562f198c3e9f09"
   },
@@ -80,5 +80,16 @@
     "real_postgresql_cases": 5,
     "ci_run": 43696942072,
     "ci_postgresql": "17.6"
+  },
+  "previous_image_fix_validation": {
+    "commit": "877145f68c42567160f858e325c3b99c66d349c4",
+    "unit_passed": 118,
+    "real_postgresql_cases": 5,
+    "real_docker_cases_per_store": 2,
+    "real_docker_stores": [
+      "classic 28.5.2",
+      "containerd 29.9.3"
+    ],
+    "ci_run": 43698154854
   }
 }

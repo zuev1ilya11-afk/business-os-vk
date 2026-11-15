@@ -245,6 +245,17 @@ class ImageArchiveTests(unittest.TestCase):
                     del data.entries['index.json' if failure == 'missing-index' else 'oci-layout']
                 self.rejected(data)
 
+    def test_root_and_child_descriptor_media_types_match_referenced_json(self):
+        for kind, incorrect_type in (('manifest', INDEX), ('index', MANIFEST)):
+            with self.subTest(root=kind):
+                data = fixture(kind)
+                top = json.loads(data.entries['index.json'])
+                top['manifests'][0]['mediaType'] = incorrect_type
+                data.entries['index.json'] = encoded(top)
+                self.rejected(data)
+        data = fixture('index', index_change=lambda index: index['manifests'][0].update(mediaType=INDEX))
+        self.rejected(data)
+
     def test_only_nonselected_platform_cannot_satisfy_expected_index(self):
         data = fixture('index', missing_other=True)
         del data.entries[data.manifest]

@@ -138,6 +138,10 @@ class Archive:
         name = 'blobs/sha256/' + value['digest'][7:]
         _, size, actual = self.record(name, missing)
         require(size == value['size'] and actual == value['digest'], 'IMAGE_DESCRIPTOR_MISMATCH')
+        if value['mediaType'] in INDEX_TYPES | MANIFEST_TYPES:
+            body = self.read_json(name, missing)
+            require(isinstance(body, dict) and body.get('mediaType') == value['mediaType'],
+                    'IMAGE_DESCRIPTOR_MISMATCH')
         return name
 
     def config(self, name, expected):
