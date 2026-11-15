@@ -26,6 +26,7 @@ IMAGE_ID = re.compile(r'sha256:[0-9a-f]{64}')
 CONTAINER_ID = re.compile(r'[0-9a-f]{64}')
 ROOT_NAME = re.compile(r'root-[0-9]{3,}')
 MIB = 1024 * 1024
+WINDOWS = os.name == 'nt'
 
 
 class Stop(Exception):
@@ -64,13 +65,29 @@ def _signature(s):
             s.st_mtime_ns, s.st_ctime_ns, getattr(s, 'st_file_attributes', 0))
 
 
+def _opened_signature(s):
+    if not WINDOWS:
+        return _signature(s)
+    # CPython 3.12 Windows path stat exposes birthtime as ctime for backward
+    # compatibility, whereas fstat exposes ChangeTime. Path stat also derives
+    # executable bits from filename extensions. These fields cannot be compared
+    # between APIs. Keep them in each API's own before/after checks below.
+    require(s.st_ino != 0 and getattr(s, 'st_birthtime_ns', None) is not None,
+            'BUNDLE_IDENTITY_UNAVAILABLE')
+    require(stat.S_ISREG(s.st_mode) and s.st_nlink == 1 and not _reparse(s),
+            'BUNDLE_FILE_TYPE_UNSUPPORTED')
+    return (s.st_dev, s.st_ino, stat.S_IFMT(s.st_mode), s.st_nlink, s.st_size,
+            s.st_mtime_ns, s.st_birthtime_ns)
+
+
 def _read(path, *, limit=None, collect=False):
     before = _regular(path)
     require(limit is None or before.st_size <= limit, 'BUNDLE_JSON_LIMIT')
     flags = os.O_RDONLY | getattr(os, 'O_BINARY', 0) | getattr(os, 'O_NOFOLLOW', 0)
     h, chunks, total = hashlib.sha256(), [], 0
     with os.fdopen(os.open(path, flags), 'rb') as stream:
-        require(_signature(before) == _signature(os.fstat(stream.fileno())),
+        opened = os.fstat(stream.fileno())
+        require(_opened_signature(before) == _opened_signature(opened),
                 'BUNDLE_CHANGED')
         for chunk in iter(lambda: stream.read(MIB), b''):
             total += len(chunk)
@@ -78,7 +95,7 @@ def _read(path, *, limit=None, collect=False):
             h.update(chunk)
             if collect:
                 chunks.append(chunk)
-        require(_signature(before) == _signature(os.fstat(stream.fileno())),
+        require(_signature(opened) == _signature(os.fstat(stream.fileno())),
                 'BUNDLE_CHANGED')
     require(_signature(before) == _signature(_regular(path)), 'BUNDLE_CHANGED')
     result = {'sha256': h.hexdigest(), 'bytes': total}

@@ -64,9 +64,19 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Validate real Windows bundle file handles
+        shell: powershell
+        run: python deploy/recovery/test_drill_windows.py
       - name: Test installed and portable Python launch paths
         shell: powershell
         run: ./deploy/recovery/test_launcher.ps1
+      - name: Validate bundle with the delivered portable Python
+        shell: powershell
+        run: |
+          $profileRoot = [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
+          $portable = Join-Path $profileRoot 'BOS-Tools\python-3.12.10-amd64\python.exe'
+          & $portable -I -m unittest discover -s deploy/recovery -p test_drill_windows.py -v
+          if ($LASTEXITCODE -ne 0) { throw 'Portable bundle validation failed.' }
 
   recovery:
     runs-on: ubuntu-22.04
