@@ -53,11 +53,14 @@ class RoleBrowserTests(unittest.TestCase):
             except (TypeError, ValueError):
                 return None
         broker = RoleSwitcher(secret, lambda: [dict(row) for row in staff])
-        actions, api_subjects, logins, refreshes = [], [], [], []
+        actions, api_subjects, logins, refreshes, authorizations = [], [], [], [], []
         class RecordingSwitcher:
             def handle(self, action, payload, session, grant=''):
                 actions.append(action)
-                return broker.handle(action, payload, session, grant)
+                result = broker.handle(action, payload, session, grant)
+                if action == 'authorize':
+                    authorizations.append(result[0])
+                return result
             def close(self):
                 broker.close()
         shell = r'''
@@ -126,9 +129,9 @@ const assert=require('node:assert/strict'),path=require('node:path'),fs=require(
  try{
   await page.goto(base+'/');await toolbar.waitFor();
   assert.equal(await account.isVisible(),false);
-  assert.match(await toolbar.innerText(),/Войдите в приложение/);
+  assert.match(await toolbar.locator('.identity').innerText(),/Войдите в приложение/);
   await page.locator('#simplePassForm input[name=login]').fill('owner');await page.locator('#simplePassForm input[name=password]').fill('fixture-only-password');await page.locator('#simplePassForm button').click();
-  await ready('owner');assert.match(await toolbar.innerText(),/Владелец.*Тестовый владелец/);
+  await ready('owner');assert.match(await toolbar.locator('.identity').innerText(),/Владелец.*Тестовый владелец/);
   assert.equal(await account.locator('optgroup').count(),4);
   assert.equal(await toolbar.locator('img').count(),0);
   if(shots){fs.mkdirSync(shots,{recursive:true});await page.screenshot({path:path.join(shots,'role-toolbar-desktop.png')})}
@@ -141,7 +144,7 @@ const assert=require('node:assert/strict'),path=require('node:path'),fs=require(
   const stored=await page.evaluate(()=>({same:sessionStorage.getItem('bos_vk_session_v2')===localStorage.getItem('bos_vk_session_v2'),subject:sessionStorage.getItem('bos_vk_session_v2')?.split('.')[0],grant:!!sessionStorage.getItem('bos_local_roles_v1'),ownerCache:localStorage.getItem('fixture-owner-cache'),call:sessionStorage.getItem('bosPendingClientCall'),draft:sessionStorage.getItem('bosContactDraft:owner:1')}));
   assert.deepEqual(stored,{same:true,subject:'master_subject',grant:true,ownerCache:null,call:null,draft:null});
   assert.equal(await page.evaluate(async()=>{try{await window.api('ownerOnly');return false}catch(error){return error.status===403}}),true);
-  assert.match(await toolbar.innerText(),/Мастер.*Тестовый мастер/);
+  assert.match(await toolbar.locator('.identity').innerText(),/Мастер.*Тестовый мастер/);
   await page.setViewportSize({width:390,height:844});
   const bounds=await page.evaluate(()=>{const host=document.getElementById('bos-local-role-toolbar'),bar=host.getBoundingClientRect(),content=document.getElementById('content').getBoundingClientRect();return{width:innerWidth,scroll:document.documentElement.scrollWidth,left:bar.left,right:bar.right,bottom:bar.bottom,contentTop:content.top}});
   assert.ok(bounds.scroll<=bounds.width);assert.ok(bounds.left>=0&&bounds.right<=bounds.width);assert.ok(bounds.contentTop>=bounds.bottom);
@@ -155,7 +158,7 @@ const assert=require('node:assert/strict'),path=require('node:path'),fs=require(
   await page.locator('#bosLogoutLoginForm input[name=login]').fill('master');await page.locator('#bosLogoutLoginForm input[name=password]').fill('fixture-only-password');await page.locator('#bosLogoutLoginForm button').click();
   await page.locator('body.bos-auth-ok').waitFor();await page.waitForFunction(()=>state.user.role==='master');
   await page.waitForFunction(()=>document.getElementById('bos-local-role-toolbar').getAttribute('aria-busy')==='false');
-  assert.equal(await account.isVisible(),false);assert.match(await toolbar.innerText(),/Мастер.*Тестовый мастер/);
+  assert.equal(await account.isVisible(),false);assert.match(await toolbar.locator('.identity').innerText(),/Мастер.*Тестовый мастер/);
   assert.equal(await page.evaluate(()=>sessionStorage.getItem('bos_local_roles_v1')),null);
   assert.deepEqual(errors,[]);console.log('Real auth, owner grant, target API permissions, reload cleanup and mobile role toolbar passed');
  }finally{await browser.close()}
@@ -169,7 +172,10 @@ const assert=require('node:assert/strict'),path=require('node:path'),fs=require(
             self.assertEqual(logins, ['owner', 'master'])
             self.assertEqual(actions.count('switch'), 2)
             self.assertEqual(actions.count('revoke'), 1)
-            self.assertEqual(actions.count('authorize'), 2)
+            # A concurrently refreshed token may cause a harmless retry. Only
+            # the initial owner may obtain control; the later master may not.
+            self.assertEqual(authorizations.count(200), 1)
+            self.assertEqual(authorizations[-1], 403)
             self.assertIn('master_subject', api_subjects)
             self.assertIn('owner_subject', api_subjects)
         finally:
