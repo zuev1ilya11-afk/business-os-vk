@@ -40,6 +40,10 @@ jobs:
         env:
           FIXTURE_DOCKER_HOST: ${{ steps.engine.outputs.sock }}
         run: docker --host "$FIXTURE_DOCKER_HOST" image pull --quiet docker.io/library/postgres:17.6
+      - name: Pull the observed BusyBox utility fixture
+        env:
+          FIXTURE_DOCKER_HOST: ${{ steps.engine.outputs.sock }}
+        run: docker --host "$FIXTURE_DOCKER_HOST" image pull --quiet docker.io/library/busybox:1.37.0
       - name: Verify real Docker exports by actual inspect identities
         env:
           BOS_RECOVERY_DOCKER_TEST: '1'
@@ -54,6 +58,13 @@ jobs:
           BOS_RECOVERY_DOCKER_STORE: ${{ matrix.store }}
           BOS_RECOVERY_DOCKER_VERSION: ${{ matrix.version }}
         run: python3 deploy/recovery/test_drill_integration.py --require
+      - name: Verify copy and file restore with real BusyBox utilities
+        env:
+          BOS_RECOVERY_DOCKER_TEST: '1'
+          BOS_RECOVERY_DOCKER_SOCKET: ${{ steps.engine.outputs.sock }}
+          BOS_RECOVERY_DOCKER_STORE: ${{ matrix.store }}
+          BOS_RECOVERY_DOCKER_VERSION: ${{ matrix.version }}
+        run: python3 deploy/recovery/test_drill_busybox.py --require
 
   windows-launcher:
     name: Windows PowerShell 5.1 launcher

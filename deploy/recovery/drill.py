@@ -25,6 +25,8 @@ import drill_roles
 MIB = 1024 * 1024
 LABEL = 'io.business-os.restore-drill'
 IMAGE_ID = re.compile(r'sha256:[0-9a-f]{64}')
+FILE_SCRIPT = ('set -eu; umask 077; test ! -e /bos/files; mkdir -m 700 /bos/files; '
+               'tar -xf /bos/input/files.tar -C /bos/files -o; exec sleep 1200')
 
 
 class Stop(Exception):
@@ -253,11 +255,8 @@ def restore_files(runner, context, run_id, volume):
     for path in drill_db._tmpfs(context['db_image_meta']):
         if path != '/tmp':
             args += ['--tmpfs', path + ':rw,noexec,nosuid,nodev,size=1m']
-    script = ('set -eu; test ! -e /bos/files; mkdir -m 700 /bos/files; '
-              'tar --extract --file=/bos/input/files.tar --directory=/bos/files '
-              '--no-same-owner --no-same-permissions; exec sleep 1200')
     try:
-        identifier = runner([*args, '--entrypoint', '/bin/sh', image, '-c', script]).decode().strip()
+        identifier = runner([*args, '--entrypoint', '/bin/sh', image, '-c', FILE_SCRIPT]).decode().strip()
         require(re.fullmatch(r'[0-9a-f]{64}', identifier), 'HELPER_ID_INVALID')
         helper_isolated(runner, identifier, run_id, volume, bundle)
         runner(['container', 'start', identifier])
@@ -277,7 +276,7 @@ def restore_files(runner, context, run_id, volume):
             time.sleep(0.2)
         require(ready, 'FILES_EXTRACTION_TIMEOUT')
         result = runner.verify_stream(['exec', '--user', 'postgres', identifier,
-                                       'tar', '--create', '--file=-', '--directory=/bos/files', '.'],
+                                       'tar', '-cf', '-', '-C', '/bos/files', '.'],
                                       context['inventory'])
         helper_isolated(runner, identifier, run_id, volume, bundle)
         return result

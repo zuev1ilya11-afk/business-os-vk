@@ -1,6 +1,12 @@
 """Safety-boundary tests for the disposable database restore transport."""
 import copy
+import hashlib
 import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import tempfile
 import unittest
 
 import drill_db
@@ -255,8 +261,20 @@ class DrillDatabaseTests(unittest.TestCase):
         self.assertEqual(1, len(created))
         self.assertEqual(['a' * 64, 'b' * 64, 'c' * 64], created[0][-6:-3])
         self.assertIn('cp /bundle/files.tar /bos/input/files.tar', drill_db.INIT_SCRIPT)
-        self.assertIn('sha256sum --check --status', drill_db.INIT_SCRIPT)
+        self.assertIn('check_hash "$2" /bos/input/database.dump', drill_db.INIT_SCRIPT)
+        self.assertNotIn('sha256sum --check --status', drill_db.INIT_SCRIPT)
         self.assertEqual({}, docker.containers)
+
+    def test_hash_utility_and_read_failures_are_not_mislabeled_as_corruption(self):
+        for code, reason in ((b'45\n', 'DRILL_HASH_TOOL_UNAVAILABLE'),
+                             (b'46\n', 'DRILL_HASH_OUTPUT_INVALID'),
+                             (b'47\n', 'DRILL_HASH_READ_FAILED')):
+            with self.subTest(reason=reason):
+                docker = Docker()
+                docker.wait_code = code
+                self.assertReason(reason, docker)
+                self.assertEqual(1, len([c for c in docker.calls if c[0] == 'create']))
+                self.assertEqual({}, docker.containers)
 
     def test_payload_hashes_must_be_present_and_cannot_inject_shell(self):
         for supplied in (None, {}, {'database.dump': {'sha256': 'x;echo secret', 'bytes': 1}}):
@@ -286,6 +304,7 @@ class DrillDatabaseTests(unittest.TestCase):
     def test_globals_copy_uses_parser_byte_span_not_line_filter_or_grant_rewrite(self):
         self.assertIn('head -c "$5" /bos/input/globals.sql', drill_db.INIT_SCRIPT)
         self.assertIn('tail -c "+$(($6 + 1))" /bos/input/globals.sql', drill_db.INIT_SCRIPT)
+        self.assertNotIn('status=none', drill_db.INIT_SCRIPT)
         self.assertNotIn('GRANTED BY', drill_db.INIT_SCRIPT)
         self.assertNotIn('sed ', drill_db.INIT_SCRIPT)
         self.assertNotIn('CREATE ROLE', drill_db.VALIDATE_SQL)
@@ -321,6 +340,58 @@ class DrillDatabaseTests(unittest.TestCase):
         self.assertIn('test ! -e /bos/data', drill_db.START_SCRIPT)
         self.assertNotIn('postgres.conf', drill_db.START_SCRIPT)
         self.assertNotIn('docker-entrypoint', drill_db.START_SCRIPT)
+
+
+@unittest.skipUnless(os.name == 'posix' and shutil.which('sh'), 'POSIX shell required')
+class PortableHashCheckTests(unittest.TestCase):
+    def run_check(self, path, expected, *, tool_script=None):
+        with tempfile.TemporaryDirectory() as temporary:
+            if tool_script is not None:
+                tool = Path(temporary) / 'sha256sum'
+                tool.write_text('#!/bin/sh\n' + tool_script + '\n')
+                tool.chmod(0o700)
+            env = dict(os.environ)
+            if tool_script is not None:
+                env['PATH'] = temporary
+            command = 'set -eu\n' + drill_db.HASH_CHECK_SCRIPT + '\ncheck_hash "$1" "$2"\n'
+            return subprocess.run([shutil.which('sh'), '-c', command, 'hash-check', expected,
+                                   str(path)], env=env, capture_output=True, timeout=5)
+
+    @unittest.skipUnless(shutil.which('sha256sum'), 'sha256sum required')
+    def test_real_file_hash_and_actual_mismatch(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / 'binary payload'
+            content = b'\x00\xff\r\nSYNTHETIC_ONLY\n'
+            path.write_bytes(content)
+            matched = self.run_check(path, hashlib.sha256(content).hexdigest())
+            self.assertEqual(0, matched.returncode)
+            self.assertEqual(b'', matched.stdout)
+            self.assertEqual(43, self.run_check(path, '0' * 64).returncode)
+
+    def test_failed_read_and_malformed_tool_output_have_distinct_codes(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / 'payload'
+            path.write_bytes(b'SYNTHETIC_ONLY')
+            self.assertEqual(47, self.run_check(path, 'a' * 64,
+                                              tool_script='exit 2').returncode)
+            self.assertEqual(47, self.run_check(path.with_name('missing'), 'a' * 64,
+                                              tool_script='exit 0').returncode)
+            for output in ('not-a-digest', 'a' * 63 + '  -', 'g' * 64 + '  -',
+                           'a' * 64 + '  other', 'a' * 64 + '  -\nextra'):
+                with self.subTest(output=output):
+                    script = "printf '%s\\n' '" + output + "'"
+                    result = self.run_check(path, 'a' * 64, tool_script=script)
+                    self.assertEqual(46, result.returncode)
+                    self.assertEqual(b'', result.stdout)
+
+    def test_missing_hash_tool_is_distinct(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            env = dict(os.environ, PATH=temporary)
+            result = subprocess.run([shutil.which('sh'), '-c',
+                                     'set -eu\n' + drill_db.HASH_CHECK_SCRIPT],
+                                    env=env, capture_output=True, timeout=5)
+            self.assertEqual(45, result.returncode)
+            self.assertEqual(b'', result.stdout)
 
 
 if __name__ == '__main__':

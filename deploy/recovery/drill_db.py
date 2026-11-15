@@ -49,7 +49,22 @@ def one(runner, args, reason):
     return result[0]
 
 
+HASH_CHECK_SCRIPT = r'''command -v sha256sum >/dev/null 2>&1 || exit 45
+check_hash() {
+    hash_line=$(sha256sum < "$2") || exit 47
+    case "$hash_line" in
+        *'  -') hash_value=${hash_line%'  -'} ;;
+        *) exit 46 ;;
+    esac
+    test "${#hash_value}" -eq 64 || exit 46
+    case "$hash_value" in *[!0-9a-f]*) exit 46 ;; esac
+    test "$hash_value" = "$1" || exit 43
+}
+'''
+
+
 INIT_SCRIPT = r'''set -eu
+''' + HASH_CHECK_SCRIPT + r'''
 umask 077
 test -z "$(ls -A /bos)"
 available_kb=$(df -Pk /bos | awk 'NR==2 {print $4}')
@@ -65,8 +80,10 @@ mkdir /bos/input
 cp /bundle/database.dump /bos/input/database.dump
 cp /bundle/globals.sql /bos/input/globals.sql
 cp /bundle/files.tar /bos/input/files.tar
-printf '%s  %s\n' "$2" /bos/input/database.dump "$3" /bos/input/globals.sql "$4" /bos/input/files.tar | sha256sum --check --status || exit 43
-removed=$(dd if=/bos/input/globals.sql bs=1 skip="$5" count="$(($6 - $5))" status=none)
+check_hash "$2" /bos/input/database.dump
+check_hash "$3" /bos/input/globals.sql
+check_hash "$4" /bos/input/files.tar
+removed=$(dd if=/bos/input/globals.sql bs=1 skip="$5" count="$(($6 - $5))" 2>/dev/null)
 test "$removed" = "CREATE ROLE $7;" || test "$removed" = "CREATE ROLE \"$7\";" || exit 44
 head -c "$5" /bos/input/globals.sql > /bos/input/globals-restore.sql
 tail -c "+$(($6 + 1))" /bos/input/globals.sql >> /bos/input/globals-restore.sql
@@ -304,6 +321,9 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
         require(wait.strip() != b'42', 'DRILL_INSUFFICIENT_SPACE')
         require(wait.strip() != b'43', 'DRILL_COPY_HASH_MISMATCH')
         require(wait.strip() != b'44', 'DRILL_BOOTSTRAP_METADATA_MISMATCH')
+        require(wait.strip() != b'45', 'DRILL_HASH_TOOL_UNAVAILABLE')
+        require(wait.strip() != b'46', 'DRILL_HASH_OUTPUT_INVALID')
+        require(wait.strip() != b'47', 'DRILL_HASH_READ_FAILED')
         require(wait.strip() == b'0', 'DRILL_VOLUME_INIT_FAILED')
         _inspect(runner, helper, run_id, volume, targets, helper=True, running=False)
         _cleanup(runner, helper, run_id)
