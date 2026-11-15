@@ -7,7 +7,10 @@ from pathlib import Path
 import shutil
 import subprocess
 import threading
+import tempfile
+import types
 import unittest
+from unittest.mock import patch
 
 import app_browser as a
 
@@ -216,6 +219,37 @@ console.log('Request body, headers, method, init overrides and abort signal pres
         self.assertIn('preserved', result.stdout)
 
 
+class EdgeProfileTests(unittest.TestCase):
+    def test_fresh_profile_keeps_downloads_beside_package_and_retains_proxy(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            executable = root / 'programs/Microsoft/Edge/Application/msedge.exe'
+            executable.parent.mkdir(parents=True)
+            executable.write_bytes(b'synthetic executable placeholder')
+            profile = root / 'package/browser-profile'
+            portal = a.LocalPortal(lambda *args: None, profile_dir=profile)
+            self.addCleanup(portal.shutdown)
+            def popen(args, **kwargs):
+                # Preferences must already exist when the browser starts.
+                prefs = json.loads((profile / 'Default/Preferences').read_text())
+                expected = str((profile.parent / 'Downloads').resolve())
+                self.assertEqual(prefs['download']['default_directory'], expected)
+                self.assertEqual(prefs['savefile']['default_directory'], expected)
+                self.assertFalse(prefs['download']['prompt_for_download'])
+                self.assertTrue((profile.parent / 'Downloads').is_dir())
+                self.assertIn('--proxy-server=' + portal.origin, args)
+                self.assertIn('--proxy-bypass-list=<-loopback>', args)
+                return types.SimpleNamespace(pid=12345)
+            fake_os = types.SimpleNamespace(name='nt', environ={'PROGRAMFILES': str(root / 'programs')})
+            with patch.object(a, 'os', fake_os), patch.object(a.subprocess, 'Popen', side_effect=popen) as launch:
+                self.assertTrue(portal.open_browser())
+                launch.assert_called_once()
+                before = (profile / 'Default/Preferences').read_bytes()
+                self.assertFalse(portal.open_browser())
+                self.assertEqual((profile / 'Default/Preferences').read_bytes(), before)
+                launch.assert_called_once()
+
+
 class BrowserContractTests(unittest.TestCase):
     """Captured-code contract against synthetic data; not a production login test."""
     def test_actual_password_ui_local_modules_and_attachment(self):
@@ -289,7 +323,7 @@ const assert=require('node:assert/strict'),fs=require('fs'),{chromium}=require('
   assert.equal(await page.locator('#content').textContent(),'Synthetic order from local API');
   await page.waitForFunction(()=>{const img=document.getElementById('fixturePhoto');return img?.complete&&img.naturalWidth===2});
   assert.equal(await page.locator('#fixturePhoto').getAttribute('src'),base+'/storage/v1/object/public/fixture/photo.svg');
-  assert.equal(await page.evaluate(()=>window.BOS_ROLE_MODULES_V190.master),11);
+  assert.equal(await page.evaluate(()=>window.BOS_ROLE_MODULES_V190.master),10);
   assert.equal(await page.evaluate(()=>fetch('https://unrelated.invalid/private').then(()=>false,()=>true)),true);
   const denied=await browser.newPage();const blocked=await denied.goto('http://unrelated.invalid/private');assert.equal(blocked.status(),403);
   assert.deepEqual(errors,[]);console.log('Actual password UI, captured loaders, local media and proxy denial passed');

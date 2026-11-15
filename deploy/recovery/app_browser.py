@@ -383,7 +383,21 @@ class LocalPortal:
         # proxy arguments or carry an old service worker and production session.
         if self.profile_dir.exists() and any(self.profile_dir.iterdir()):
             return False
-        self.profile_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self.profile_dir.mkdir(parents=True, exist_ok=True)
+            downloads = self.profile_dir.parent / 'Downloads'
+            downloads.mkdir(parents=True, exist_ok=True)
+            default_profile = self.profile_dir / 'Default'
+            default_profile.mkdir()
+            # Fresh profiles do not inherit the normal browser's download
+            # directory. Keep exports beside this package on the user's E drive.
+            preferences = {'download': {'default_directory': str(downloads.resolve()),
+                                        'directory_upgrade': True, 'prompt_for_download': False},
+                           'savefile': {'default_directory': str(downloads.resolve())}}
+            with (default_profile / 'Preferences').open('x', encoding='utf-8') as stream:
+                json.dump(preferences, stream, ensure_ascii=False)
+        except OSError:
+            return False
         args = [str(executable), '--user-data-dir=' + str(self.profile_dir.resolve()),
                 '--proxy-server=' + self.origin, '--proxy-bypass-list=<-loopback>',
                 '--disable-quic', '--disable-background-networking', '--disable-sync',

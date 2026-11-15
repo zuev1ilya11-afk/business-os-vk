@@ -76,6 +76,9 @@ ALTER DEFAULT PRIVILEGES FOR ROLE supabase_storage_admin IN SCHEMA storage GRANT
 CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
 CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $$SELECT nullif(current_setting('request.jwt.claim.role',true),'')$$;
 CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS $$SELECT coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb$$;
+ALTER FUNCTION auth.uid() OWNER TO supabase_auth_admin;
+ALTER FUNCTION auth.role() OWNER TO supabase_auth_admin;
+ALTER FUNCTION auth.jwt() OWNER TO supabase_auth_admin;
 """
 
 # This generated gateway exercises the actual EdgeRuntime ESZIP worker API.
@@ -171,6 +174,7 @@ class RealApplicationLaunch(unittest.TestCase):
         cls.images = {role: cls.docker.inspect([reference])[0] for role, reference in PUBLIC_IMAGES.items()}
         cls.name = 'bos-synthetic-app-' + uuid.uuid4().hex[:12]
         cls.containers = []
+        cls.source_services = {}
         cls.capture = cls.root / 'captured'
         cls.capture.mkdir(mode=0o755)
         for name in ('storage', 'web', 'caddy', 'caddy-config', 'edge/sources', 'edge/bundles', 'edge/main'):
@@ -232,11 +236,16 @@ class RealApplicationLaunch(unittest.TestCase):
             'https': {},
         }
         cls.start_source_service('auth')
-        cls.wait_http(9999, '/health')
         cls.start_source_service('rest')
-        cls.wait_http(3000, '/')
         cls.start_source_service('storage', mount=(cls.capture / 'storage', '/var/lib/storage'))
-        cls.wait_http(5000, '/status')
+        failures = []
+        for port, path in ((9999, '/health'), (3000, '/'), (5000, '/status')):
+            try:
+                cls.wait_http(port, path)
+            except Exception as error:
+                failures.append(str(port) + ': ' + str(error))
+        if failures:
+            raise RuntimeError('Synthetic service prerequisites failed: ' + '; '.join(failures))
         auth_headers = {'Authorization': 'Bearer ' + cls.service, 'apikey': cls.service}
         status, _, body = cls.internal_http(5000, 'POST', '/bucket',
              json.dumps({'id': 'fixture-bucket', 'name': 'fixture-bucket', 'public': True}).encode(),
@@ -334,7 +343,8 @@ class RealApplicationLaunch(unittest.TestCase):
     def wait_http(cls, port, path):
         last = None
         for _ in range(90):
-            service = json.loads(cls.docker.run(['inspect', cls.containers[-1]]))[0]
+            role = {9999: 'auth', 3000: 'rest', 5000: 'storage'}[port]
+            service = json.loads(cls.docker.run(['inspect', cls.source_services[role]]))[0]
             if not service['State']['Running']:
                 cls.startup_diagnostic()
                 raise RuntimeError('Synthetic service exited before readiness: ' + str(port))
@@ -377,6 +387,7 @@ class RealApplicationLaunch(unittest.TestCase):
         args += [cls.images[role]['Id']]
         cid = cls.docker.run(args).decode().strip()
         cls.own_container(cid)
+        cls.source_services[role] = cid
 
     @classmethod
     def prepare_gateway(cls):
