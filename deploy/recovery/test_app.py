@@ -132,6 +132,14 @@ class IsolationTests(unittest.TestCase):
         with self.assertRaisesRegex(app.Stop, 'APP_IMAGE_VOLUME_OVERLAP'):
             app.tmpfs_targets(image, {'/bos/data': {}})
 
+    def test_only_caddy_receives_its_required_file_capability(self):
+        image = {'Config': {}}
+        for role in ('db', 'rest', 'auth', 'storage', 'edge', 'https'):
+            args, _ = app.base_args(RUN, role, image, {}, {}, 'none')
+            self.assertEqual(args[args.index('--cap-drop') + 1], 'ALL')
+            added = [args[index + 1] for index, value in enumerate(args) if value == '--cap-add']
+            self.assertEqual(added, ['NET_BIND_SERVICE'] if role == 'https' else [])
+
     def test_pg_configuration_replaces_hooks_and_only_authenticates_localhost(self):
         profile = drill_profile.build_runtime_profile({'database': 'bos_restore_check', 'extensions': [['plpgsql', '1.0']]})
         files = app.postgres_files(profile)

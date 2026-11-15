@@ -89,9 +89,19 @@ jobs:
         shell: powershell
         run: deploy/recovery/test_app_launcher.ps1
   real-application:
-    name: Offline application with real Supabase services
+    name: Offline application (${{ matrix.store }})
     runs-on: ubuntu-22.04
     timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - store: classic
+            version: v28.5.2
+            containerd: false
+          - store: containerd
+            version: v29.9.3
+            containerd: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -101,9 +111,9 @@ jobs:
         id: engine
         uses: docker/setup-docker-action@3f1ab1ab0e29231562e4db4ca600c1a49653bac6 # v5.7.0
         with:
-          version: v28.5.2
+          version: ${{ matrix.version }}
           daemon-config: |
-            {"features":{"containerd-snapshotter":false}}
+            {"features":{"containerd-snapshotter":${{ matrix.containerd }}}}
       - name: Pull versioned public fixture images
         env:
           FIXTURE_DOCKER_HOST: ${{ steps.engine.outputs.sock }}
@@ -122,5 +132,6 @@ jobs:
         env:
           BOS_RECOVERY_APP_TEST: '1'
           BOS_RECOVERY_DOCKER_SOCKET: ${{ steps.engine.outputs.sock }}
-          BOS_RECOVERY_DOCKER_VERSION: v28.5.2
+          BOS_RECOVERY_DOCKER_VERSION: ${{ matrix.version }}
+          BOS_RECOVERY_DOCKER_STORE: ${{ matrix.store }}
         run: python3 deploy/recovery/test_app_integration.py --require

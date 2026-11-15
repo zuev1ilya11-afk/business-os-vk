@@ -159,6 +159,11 @@ def base_args(run_id, role, image, env, mounts, network, *, user='0:0', helper=F
     if helper:
         for cap in ('CHOWN', 'DAC_OVERRIDE', 'DAC_READ_SEARCH', 'FOWNER'):
             args += ['--cap-add', cap]
+    elif role == 'https':
+        # The pinned official Caddy executable carries this file capability.
+        # Its exec is denied if the capability is absent from the bounding set,
+        # even on port 18080. It grants no network configuration/raw sockets.
+        args += ['--cap-add', 'NET_BIND_SERVICE']
     for key, value in env.items():
         require(app_plan.ENV_KEY.fullmatch(key) and isinstance(value, str) and '\x00' not in value,
                 'APP_ENV_INVALID')
@@ -242,7 +247,8 @@ def create_container(session, role, image, env, mounts, network, entrypoint, cmd
     spec = {'role': role, 'image': image['Id'], 'network': network, 'mounts': mounts, 'tmpfs': tmpfs,
             'user': user, 'entrypoint': entrypoint, 'cmd': cmd,
             'memory': int(args[args.index('--memory') + 1]),
-            'caps': {'CHOWN', 'DAC_OVERRIDE', 'DAC_READ_SEARCH', 'FOWNER'} if helper else set()}
+            'caps': ({'CHOWN', 'DAC_OVERRIDE', 'DAC_READ_SEARCH', 'FOWNER'} if helper
+                     else {'NET_BIND_SERVICE'} if role == 'https' else set())}
     session._owned[cid] = spec
     verify_container(session, cid, spec, running=False)
     session.runner(['container', 'start', cid], limit=4096)

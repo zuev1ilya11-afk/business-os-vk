@@ -186,6 +186,10 @@ class RealApplicationLaunch(unittest.TestCase):
         version = json.loads(cls.docker.run(['version', '--format', '{{json .Server.Version}}']))
         if version != os.environ.get('BOS_RECOVERY_DOCKER_VERSION', '').removeprefix('v'):
             raise RuntimeError('Application fixture Docker version differs from selected daemon')
+        driver_status = json.loads(cls.docker.run(['info', '--format', '{{json .DriverStatus}}']))
+        containerd = any(row == ['driver-type', 'io.containerd.snapshotter.v1'] for row in driver_status or [])
+        if ('containerd' if containerd else 'classic') != os.environ.get('BOS_RECOVERY_DOCKER_STORE'):
+            raise RuntimeError('Application fixture image store differs from selected daemon')
         cls.images = {role: cls.docker.inspect([reference])[0] for role, reference in PUBLIC_IMAGES.items()}
         cls.name = 'bos-synthetic-app-' + uuid.uuid4().hex[:12]
         cls.containers = []
@@ -539,6 +543,9 @@ class RealApplicationLaunch(unittest.TestCase):
             self.assertFalse(host['PortBindings'])
             self.assertFalse(host['Privileged'])
             self.assertFalse(host['PublishAllPorts'])
+            self.assertEqual(drill_db._capabilities(host.get('CapDrop')), {'ALL'})
+            self.assertEqual(drill_db._capabilities(host.get('CapAdd')),
+                             {'NET_BIND_SERVICE'} if role == 'https' else set())
             self.assertEqual(record['Image'], self.images[role]['Id'])
             self.assertNotIn('CI_EXTERNAL_SECRET=SYNTHETIC_CAPTURED_SECRET_MUST_NOT_REACH_APP', record['Config']['Env'])
             self.assertFalse(any(m.get('Name') == self.baseline['volume'] for m in record['Mounts']))
