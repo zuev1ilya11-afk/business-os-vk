@@ -1,6 +1,6 @@
 {
   "date_utc": "2026-11-15",
-  "status": "LOCAL_UNIT_VERIFIED_CI_REQUIRED",
+  "status": "DELIVERED_PACKAGE_CI_AND_OPERATOR_DRILL_VERIFIED_WITH_LIMITS",
   "tests": {
     "unit_passed": 119,
     "backup_safety": 35,
@@ -8,13 +8,15 @@
     "image_archive": 23,
     "finish_partial": 11,
     "real_postgresql_cases": 5,
-    "real_postgresql_this_revision": "CI_REQUIRED; local binaries absent",
+    "real_postgresql_this_revision": "PASS delivered runtime CI43720101201,5cases",
     "real_docker_cases_per_store": 2,
     "real_docker_stores": [
       "classic",
       "containerd"
     ],
-    "real_docker_this_revision": "CI_REQUIRED; actual inspect/save individual and combined exports; local Docker absent"
+    "real_docker_this_revision": "PASS delivered runtime CI43720101201,classic and containerd",
+    "discovery_total": 232,
+    "discovery_skipped": 12
   },
   "postgresql": "Current real-database validation belongs to the Recovery package CI run for this revision.",
   "local_transport": "No local PostgreSQL run on 2026-11-15; previous 2026-11-14 run used loopback.",
@@ -34,11 +36,11 @@
     "real Docker export tests use public PostgreSQL and synthetic imported rootfs"
   ],
   "production_capture": "COMPLETE_INTEGRITY_VERIFIED_OPERATOR_SCREENSHOT_2026_11_15",
-  "production_restore": "NOT_RUN",
+  "production_restore": "NOT_RUN_ON_PRODUCTION; independent local copy drill completed by operator",
   "database_storage_consistency": "NOT_PROVEN",
   "independent_copy": "VERIFIED_OPERATOR_POWERSHELL_SHA256_ALL_SIX_PAYLOADS_2026_11_15",
   "disaster_recovery_ready": false,
-  "ci": "See Recovery package workflow for this exact revision; no new CI success is claimed by this local record.",
+  "ci": "Delivered runtime commit466fd4dbf31dd83b92e0147b308177e6c555bad5: Recovery43720101201 all5jobsSUCCESS; operator evidence update changes only documentation and this record.",
   "sha256": {
     "backup.py": "e30a6357cf209198225ed8803672c8b48201d9a5bf4d1203d5ce5ac5e799d5ea",
     "discovery.py": "556257938b228dfcb02006920315ca04203b34dffdec6e7487e7db22e54d8230",
@@ -80,7 +82,7 @@
     "ci_run": 43627417693,
     "ci_postgresql": "17.6"
   },
-  "server_observation": "Operator finish-latest completed capture-20261115T090155Z-fa50d3a08e64, then SCP transferred seven files to the operator Windows PC; six payload SHA256 checks returned True. No direct agent access to the archive. Production restore NOT_RUN.",
+  "server_observation": "Operator finish-latest completed capture-20261115T090155Z-fa50d3a08e64, then SCP transferred seven files to the operator Windows PC; six payload SHA256 checks returned True. No direct agent access to the archive. Production restore NOT_RUN. Operator later supplied DRILL_COMPLETED screenshot for local independent copy; production server restore still NOT_RUN.",
   "previous_metadata_fix_validation": {
     "commit": "7dd8cbb696e6e7f2229a042d7e3f091c02e59b54",
     "unit_passed": 65,
@@ -114,13 +116,12 @@
     "ci_run": 43698154854
   },
   "restore_drill": {
-    "status": "LOCAL_UNIT_VERIFIED_CI_REQUIRED",
-    "unit_total": 194,
-    "new_tests": 75,
-    "real_docker_restore": "CI_REQUIRED_BOTH_STORES",
-    "windows_launcher": "CI_REQUIRED_POWERSHELL_5_1",
+    "status": "OPERATOR_DRILL_COMPLETED_WITH_LIMITS",
+    "unit_total": 232,
+    "real_docker_restore": "PASS_DELIVERED_RUNTIME_CI43720101201_BOTH_STORES",
+    "windows_launcher": "PASS_DELIVERED_RUNTIME_CI43720101201",
     "operator_docker_version": "29.9.2",
-    "operator_restore": "V4_STOPPED_AT_DATABASE_DRILL_DATABASE_RESTORE_FAILED; exact stderr unavailable",
+    "operator_restore": "DRILL_COMPLETED_OPERATOR_SCREENSHOT_2026_11_15",
     "scope": "DATABASE_GLOBALS_AND_FILE_BYTES",
     "application": "NOT_RUN",
     "storage_relationships": "NOT_VERIFIED",
@@ -145,8 +146,41 @@
       "run": 43713172098,
       "result": "Actual dump/restore completed, but exact ACL comparison exposed PostgreSQL parameter REVOKE on a fresh catalog row being ignored. Narrowed support to GRANT-only and added pre-mutation refusal test; exact new CI required."
     },
-    "busybox_compatibility": "Previous exact CI43716006666 passed both stores; new private file modes and explicit completion marker require exact current CI.",
-    "supabase_runtime": "MINIMAL_ALLOWLIST_PRELOAD_WORKERS_ZERO; nine real extensions require dedicated current CI on pinned Supabase17.11.0.017",
-    "diagnostics": "Safe fixed categories survive cleanup including cleanupfailure; private startup/globals/database stderr journals in newvolume; successful report path printed onfailure"
+    "busybox_compatibility": "PASS_4_CASES_PER_STORE_DELIVERED_RUNTIME_CI43720101201",
+    "supabase_runtime": "PASS_REAL_SUPABASE17.11_WITH9_EXTENSIONS_AND_STARTUP_FAILURE_DIAGNOSTIC_CI43720101201",
+    "diagnostics": "Safe fixed categories survive cleanup including cleanupfailure; private startup/globals/database stderr journals in newvolume; successful report path printed onfailure",
+    "operator_result": {
+      "evidence": "operator screenshot image(20261115-145956).png; full JSON and private archive not read by agent",
+      "database": "RESTORED",
+      "globals": "RESTORED",
+      "archived_owners_and_acls": "APPLIED_WITHOUT_RESTORE_ERRORS",
+      "extensions": "MATCH",
+      "report_guard": "PRESENT_AND_ENABLED",
+      "outbound_network": "DISABLED",
+      "background_workers": "DISABLED",
+      "counts": {
+        "orders": 311,
+        "staff": 19,
+        "storage_objects": 1060
+      },
+      "source_version": 170011,
+      "files": {
+        "files": 1437,
+        "directories": 1798,
+        "bytes": 460235053,
+        "integrity": "VERIFIED",
+        "filesystem_metadata": "NOT_PROVEN"
+      },
+      "cleanup": "CONTAINERS_REMOVED_VOLUME_RETAINED",
+      "docker_storage_on_E": "NOT_CONFIRMED_BY_THIS_SCREENSHOT",
+      "elapsed_seconds": "NOT_VISIBLE_IN_SCREENSHOT"
+    },
+    "verified_delivered_runtime": {
+      "commit": "466fd4dbf31dd83b92e0147b308177e6c555bad5",
+      "run": 43720101201,
+      "conclusion": "SUCCESS_ALL_5_JOBS",
+      "supabase_cases": 2,
+      "busybox_cases_per_store": 4
+    }
   }
 }
