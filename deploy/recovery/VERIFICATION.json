@@ -1,6 +1,6 @@
 {
   "date_utc": "2026-11-15",
-  "status": "DELIVERED_PACKAGE_CI_AND_OPERATOR_DRILL_VERIFIED_WITH_LIMITS",
+  "status": "RESTORE_DRILL_OPERATOR_VERIFIED_APPLICATION_PACKAGE_CI_VERIFIED_OPERATOR_APP_PENDING",
   "tests": {
     "unit_passed": 119,
     "backup_safety": 35,
@@ -73,7 +73,27 @@
     "drill_errors.py": "be9b873da4e9acb68374a177a18be1970ffd02aec3160ccfa0c96b92dc7ae262",
     "test_drill_profile.py": "e71dd808c1123a5e34051fde78fbffd4084a47dea6c7988620b18e0c53a1bda2",
     "test_drill_errors.py": "055788891a88f9d4498bc730d6a4a00fb63303642da313c057f05e20cbe9de89",
-    "test_drill_supabase.py": "685c6eeccda61c5cfbc55b272cd82fb0671dd090025a1c9c9ecfc2e1c5273ed8"
+    "test_drill_supabase.py": "685c6eeccda61c5cfbc55b272cd82fb0671dd090025a1c9c9ecfc2e1c5273ed8",
+    "app.ps1": "4796f540e0daa1cec0738e127a6842a0b82259828c3e7ad2c534ac347327c62a",
+    "app.py": "7166b49642f959f3a18b3e265d69f64c072bcde369ab1b0b9ce0661805847957",
+    "app_browser.py": "7b5dd2b452904c723dac8ce79dcc50ad319b9b9b5c824e4b887531d8fe3dc748",
+    "app_cli.py": "816cac5641f80609d4b35819f166f6d997e822164ca8ebb998910686cdc0379d",
+    "app_plan.py": "e74c9301d3aec5a8216d77c2a5455889e097fa10a41be3f23f875252c785c95e",
+    "app_signed_urls.py": "85b89cef9519543f370d35985966499ffe0dae5a5934c46236b38830763b02dc",
+    "app_storage.py": "930b58d60fb9173232e5900c1cc64a36aa4323fbada2e449fd07a401d7466869",
+    "app_transport.py": "f1c6180d41e0467ea4ccfb4f0a341ff69dc2926975c016a7aeeadb80b485eb39",
+    "bos-app.pyz": "fef9058d77e4daaee216dba7826ed17c4790e33e97251abe73bebfa0aa3ff7e7",
+    "build_app.py": "a5283107ded1f891ab19f004d3b01db98c2a8316352bbeefde8b2f90b81486cb",
+    "start-app.cmd": "323c545f2f681371c1422577e2436c272b03cda98bcd46859961e643a82512bb",
+    "test_app.py": "cb7a4fb3f65c04c879dae06f16a25b5e97f08c278aaa864c13331afb5ad0c7ef",
+    "test_app_browser.py": "34ed64836652012d7895690a5ea9852e3cd38ad252de4ba176483dabd411fff5",
+    "test_app_cli.py": "877ed4ca0886e29c75e309d9fcba6264eb220e9290e6bf5b108f1269f42cc133",
+    "test_app_integration.py": "34f28ac20a0188445c2db2d2a4e87f3976dd5db4e1871d7247b23d3feb45d7b5",
+    "test_app_launcher.ps1": "72f4cad60278c245c011f31269c0e4a7441f0df2f5dc9b834ac1cfe935e7d07a",
+    "test_app_plan.py": "e8ccb8fe3e995daae07b8f831116bc4f45e6e7453cf49078edb45bf984de3720",
+    "test_app_signed_urls.py": "7bf8e2013304f093b61167c3c0dbcdb5c2e42efaf213da191acb677703aeac47",
+    "test_app_storage.py": "33ccb6aba3215f99f0b0009edbddebe6a72b61ba4b09826f0ce69b2a13d9b65c",
+    "test_app_transport.py": "18368bae5916dfd5d41e45ea62564d91f562e6c7c02f82ccfa7d950f46c691bd"
   },
   "previous_full_verification": {
     "commit": "6d706eb0ff37886d1420f11d9327c3013d0a8a1c",
@@ -82,7 +102,7 @@
     "ci_run": 43627417693,
     "ci_postgresql": "17.6"
   },
-  "server_observation": "Operator finish-latest completed capture-20261115T090155Z-fa50d3a08e64, then SCP transferred seven files to the operator Windows PC; six payload SHA256 checks returned True. No direct agent access to the archive. Production restore NOT_RUN. Operator later supplied DRILL_COMPLETED screenshot for local independent copy; production server restore still NOT_RUN.",
+  "server_observation": "Operator screenshots confirm capture, SCP and six payload hashes. Uploaded BOS-Restore-4ecb94f875d8.json was read in full: DRILL_COMPLETED on independent local copy. No direct agent SSH, private backup access, production restore or operator application launch.",
   "previous_metadata_fix_validation": {
     "commit": "7dd8cbb696e6e7f2229a042d7e3f091c02e59b54",
     "unit_passed": 65,
@@ -187,5 +207,85 @@
       "supabase_cases": 2,
       "busybox_cases_per_store": 4
     }
+  },
+  "application_launch": {
+    "status": "PACKAGE_VERIFIED_OPERATOR_LAUNCH_PENDING",
+    "artifact": "BOS-App-20261115-v1.zip",
+    "bytes": 11175648,
+    "sha256": "82b9a8314acd913c1fd41884e03cf1cc94425faa2453e9020bb0ba555c91acb9",
+    "runtime_ci": {
+      "commit": "0f4c32687ec56a347c338ef7f6ba2fa7513fe479",
+      "tree": "fddafb5bb7469750742276a2940dd5c1e60d1e26",
+      "workflow": "Recovery application",
+      "run_id": 43735056388,
+      "url": "https://github.com/zuev1ilya11-afk/business-os-vk/actions/runs/43735056388",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 132875703886,
+          "name": "Offline application (classic)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 132875704108,
+          "name": "Offline app launcher on Windows",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 132875704142,
+          "name": "Offline application (containerd)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 132875704148,
+          "name": "Local browser startup and network restrictions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 132875704222,
+          "name": "Application tests and reproducible package",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ],
+      "unit_discovery": {
+        "ran": 121,
+        "skipped": 2,
+        "native_checks_in_separate_jobs": true
+      },
+      "windows_launcher_process_cases": 6,
+      "real_browser_cases": 1,
+      "real_application_cases": [
+        {
+          "store": "classic",
+          "version": "28.5.2",
+          "cases": 1
+        },
+        {
+          "store": "containerd",
+          "version": "29.9.3",
+          "cases": 1
+        }
+      ]
+    },
+    "recovery_package_ci": {
+      "commit": "0f4c32687ec56a347c338ef7f6ba2fa7513fe479",
+      "run_id": 43735056335,
+      "conclusion": "success"
+    },
+    "private_operator_backup_available_to_agent": false,
+    "operator_application_workflows": "NOT_YET_VERIFIED",
+    "original_restore_volume": "READ_ONLY_CLONE_SOURCE_NEVER_STARTED",
+    "working_copy": "NEW_VOLUME_EACH_LAUNCH_RETAINED_AFTER_STOP",
+    "storage_relationships": "ALL_OBJECTS_AND_HTTP_BYTES_CHECKED_ON_LAUNCH",
+    "old_signed_urls": "VALID_UNEXPIRED_CAPTURED_CAPABILITY_RESEALED_WITH_LOCAL_KEY",
+    "database_storage_consistency": "NOT_PROVEN",
+    "storage_extended_attributes": "NOT_CAPTURED",
+    "docker_data_disk_on_E": "NOT_CONFIRMED",
+    "disaster_recovery_ready": false
   }
 }
