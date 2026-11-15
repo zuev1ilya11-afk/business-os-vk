@@ -27,7 +27,7 @@ def make_bundle(root):
     add('root-000/push-api.eszip', b'synthetic push bundle')
     routes['push-api'] = {'entrypoint': 'index.ts', 'import_map': 'deno.json',
                          'bundle_sha256': 'a' * 64,
-                         'source_sha256': {'index.ts': 'b' * 64}, 'verify_jwt': False}
+                         'source_sha256': {'index.ts': 'b' * 64, 'deno.json': 'c' * 64}, 'verify_jwt': False}
     # Unknown values must never leak, regardless of route schema rejection.
     routes['private-test'] = {'entrypoint': 'https://production.invalid/' + SECRET,
                               'token': SECRET, 'nested': {'value': SECRET}}
@@ -83,7 +83,7 @@ class DiagnosticTests(unittest.TestCase):
         self.assertEqual(code, 0)
         report = json.loads(Path(summary['report']).read_text())
         self.assertEqual(len(report['routes']), 4)
-        self.assertEqual(summary['unsupported_routes'], 2)
+        self.assertEqual(summary['unsupported_routes'], 1)
         self.assertFalse(report['docker_called'])
         self.assertFalse(report['backup_modified'])
         self.assertEqual({p.name: p.read_bytes() for p in self.bundle.iterdir()}, before)
@@ -91,6 +91,7 @@ class DiagnosticTests(unittest.TestCase):
         self.assertNotIn(SECRET, wire)
         self.assertNotIn('https://production.invalid', wire)
         push = next(r for r in report['routes'] if r['name'] == 'push-api')
+        self.assertEqual(push['route_contract'], 'SUPPORTED')
         self.assertEqual(push['shape']['fields']['entrypoint']['captured_code_path'], 'index.ts')
         self.assertEqual(push['shape']['fields']['import_map']['captured_code_path'], 'deno.json')
         self.assertTrue(push['captured_payloads']['root_index'])
@@ -130,6 +131,20 @@ class DiagnosticTests(unittest.TestCase):
         self.assertEqual(result['service_checks']['storage']['command'], 'APP_STORAGE_COMMAND_UNSUPPORTED')
         self.assertEqual(len(result['routes']), 4)
         self.assertNotIn(SECRET, json.dumps(result))
+
+    def test_supported_plan_can_read_verified_local_import_maps(self):
+        report = d.app_cli.read_report(self.root / 'restore-report.json')
+        context, contents, roles, images, prefixes = d.load_metadata(self.bundle, report)
+        self.assertIn('root-004/push-api/deno.json', contents)
+        route_name = prefixes['/bos-main'] + '/routes.json'
+        routes = json.loads(contents[route_name])
+        del routes['private-test']
+        contents[route_name] = json.dumps(routes).encode()
+        context['inventory'][route_name] = {'type': 'file', 'bytes': len(contents[route_name]),
+            'sha256': hashlib.sha256(contents[route_name]).hexdigest()}
+        result = d.collect(context, contents, roles, images, prefixes)
+        self.assertEqual(result['plan_result'], 'SUPPORTED')
+        self.assertTrue(all(route['route_contract'] == 'SUPPORTED' for route in result['routes']))
 
 
 if __name__ == '__main__':

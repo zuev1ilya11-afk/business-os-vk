@@ -294,9 +294,27 @@
       "failed_stage": "PREPARING_PLAN",
       "application": "NOT_RUN",
       "run_id": "bos-app-f47a01930694",
-      "next_action": "READ_ONLY_ROUTE_STRUCTURE_DIAGNOSTIC",
-      "exact_rejected_route": "UNKNOWN_UNTIL_OPERATOR_DIAGNOSTIC"
+      "next_action": "CORRECT_OBSERVED_CONTRACTS_AND_VALIDATE_NEW_APP_PACKAGE",
+      "exact_rejected_route": "28 routes: 27 entrypoint layout mismatches, plus bos-api non-null import_map"
     },
-    "confirmed_code_correction": "Historical routes.json hashes are not capture integrity baseline; actual manifest/inventory validation remains mandatory. This does not yet resolve the observed route schema refusal."
+    "confirmed_code_correction": "Historical routes.json hashes are not capture integrity baseline; actual manifest/inventory validation remains mandatory. This does not yet resolve the observed route schema refusal.",
+    "operator_route_diagnostic": {
+      "evidence_file": "BOS-App-Diagnostic-20261115T171426Z-7329bf98.json",
+      "sha256": "070fdb65ff578f3efa0f139891ab0af64cb5be65746cd44c7ce3ba35df8190ee",
+      "status": "DIAGNOSTIC_COMPLETE",
+      "route_count": 35,
+      "rejected_by_v1": 28,
+      "entry_layout_counts": {
+        "index.ts": 26,
+        "functions/<slug>/index.ts": 1,
+        "supabase/functions/<slug>/index.ts": 8
+      },
+      "non_null_import_maps": 3,
+      "all_reported_source_files_present": true,
+      "source_file_records": 57,
+      "structural_service_checks": "ALL_SUPPORTED",
+      "application_execution": "NOT_RUN_BY_DIAGNOSTIC",
+      "private_archive_available_to_agent": false
+    }
   }
 }

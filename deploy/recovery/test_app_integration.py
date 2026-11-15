@@ -12,7 +12,7 @@ import hmac
 import http.client
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import subprocess
 import sys
@@ -102,6 +102,8 @@ Deno.serve(async(req)=>{
   servicePath:'/bos-src/'+slug,
   maybeEszip:await Deno.readFile('/bos-bundles/'+slug+'.eszip'),
   maybeEntrypoint:'file:///bos-src/'+slug+'/'+route.entrypoint,
+  ...(route.import_map?{context:{importMapPath:'/bos-src/'+slug+'/'+route.import_map}}:{}),
+  allowRemoteModules:false,
   memoryLimitMb:128,workerTimeoutMs:30000,noModuleCache:false,
   envVars:keys.map(key=>[key,Deno.env.get(key)||'']),
   forceCreate:false,cpuTimeSoftLimitMs:5000,cpuTimeHardLimitMs:10000
@@ -129,6 +131,14 @@ Deno.serve(async(req)=>{
 });
 '''
 PASSWORD_FUNCTION = "Deno.serve(()=>Response.json({ok:true,fixture_only:true}));\n"
+# Exact path forms observed in the operator's read-only diagnostic. These extra
+# workers contain generated local code only; no production function is invoked.
+LAYOUT_ROUTES = {
+    'fixture-functions-api': ('functions/fixture-functions-api/index.ts', None),
+    'fixture-root-map-api': ('index.ts', 'deno.json'),
+    'fixture-nested-map-api': ('supabase/functions/fixture-nested-map-api/index.ts',
+                               'supabase/functions/fixture-nested-map-api/deno.json'),
+}
 WEB = b'<!doctype html><html><head><title>Synthetic BOS restore</title></head><body><h1 id="fixture">Captured synthetic web</h1></body></html>'
 
 
@@ -447,8 +457,16 @@ class RealApplicationLaunch(unittest.TestCase):
         (cls.capture / 'edge/main/index.ts').write_text(GATEWAY)
         write_json(cls.capture / 'edge/main/bos-report-env.json', {'synthetic': True})
         cls.routes = {}
-        for slug, code in (('mini-app-api', MINI), ('password-session-api', PASSWORD_FUNCTION)):
-            entrypoint = 'supabase/functions/' + slug + '/index.ts'
+        fixtures = [
+            ('mini-app-api', 'supabase/functions/mini-app-api/index.ts', None, MINI),
+            ('password-session-api', 'index.ts', None, PASSWORD_FUNCTION),
+        ]
+        for slug, (entrypoint, import_map) in LAYOUT_ROUTES.items():
+            dependency = ("import { marker } from 'fixture-helper';\n" if import_map else
+                          "const marker='offline-local-helper';\n")
+            code = dependency + 'Deno.serve(()=>Response.json({ok:true,fixture_layout:' + json.dumps(slug) + ',imported_value:marker}));\n'
+            fixtures.append((slug, entrypoint, import_map, code))
+        for slug, entrypoint, import_map, code in fixtures:
             sources = {entrypoint: code}
             if slug == 'mini-app-api':
                 sources.update({
@@ -456,23 +474,30 @@ class RealApplicationLaunch(unittest.TestCase):
                     'order-payroll.js': 'export const payrollVersion=1;\n',
                     'supabase/functions/_shared/hands-details.ts': 'export const detailsVersion=1;\n',
                 })
+            if import_map:
+                sources[import_map] = json.dumps({'imports': {'fixture-helper': './helper.ts'}})
+                helper = str(PurePosixPath(import_map).with_name('helper.ts'))
+                sources[helper] = "export const marker='offline-local-helper';\n"
             for relative, content in sources.items():
                 path = cls.capture / 'edge/sources' / slug / relative
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(content)
+            bundle_args = ['bundle', '--entrypoint', '/bos-src/' + slug + '/' + entrypoint,
+                           '--output', '/bos-output/' + slug + '.eszip', '--quiet', '--timeout', '90']
+            if import_map:
+                bundle_args += ['--import-map', '/bos-src/' + slug + '/' + import_map]
             cls.docker.run(['run', '--rm', '--network', 'none', '--cap-drop', 'ALL',
                 '--security-opt', 'no-new-privileges', '--entrypoint', 'edge-runtime',
                 '--mount', 'type=bind,src=' + str(cls.capture / 'edge/sources') + ',dst=/bos-src,readonly',
                 '--mount', 'type=bind,src=' + str(cls.capture / 'edge/bundles') + ',dst=/bos-output',
-                cls.images['edge']['Id'], 'bundle', '--entrypoint', '/bos-src/' + slug + '/' + entrypoint,
-                '--output', '/bos-output/' + slug + '.eszip', '--quiet', '--timeout', '90'], timeout=120)
+                cls.images['edge']['Id'], *bundle_args], timeout=120)
             # This five-field schema and the mini-app source names are the
             # server-observed contract in deploy/finance-export/README.md.
             # report-submit/release.py copies routes unchanged while replacing
             # source/bundle bytes. Deliberately stale hashes reproduce that
             # supported state; inventory.json remains the byte-integrity proof.
             cls.routes[slug] = {
-                'entrypoint': entrypoint, 'import_map': None, 'verify_jwt': False,
+                'entrypoint': entrypoint, 'import_map': import_map, 'verify_jwt': False,
                 'bundle_sha256': hashlib.sha256(('previous bundle metadata ' + slug).encode()).hexdigest(),
                 'source_sha256': {name: hashlib.sha256(('previous source metadata ' + name).encode()).hexdigest()
                                   for name in sources},
@@ -586,6 +611,21 @@ class RealApplicationLaunch(unittest.TestCase):
         self.assertEqual(status, 200, body[:1024])
         self.assertEqual([row['quantity'] for row in json.loads(body)['orders']], [1, 2, 3])
         self.assertEqual(json.loads(body)['fixture_version'], 3)
+        # Every observed path/import-map form executes through the real local
+        # portal, gateway and offline ESZIP worker, not only planner assertions.
+        for slug in self.routes:
+            with self.subTest(captured_gateway_route=slug):
+                status, _, body = self.request(session, 'GET', '/functions/v1/' + slug)
+                self.assertEqual(status, 200, body[:1024])
+                result = json.loads(body)
+                self.assertTrue(result['ok'])
+                if slug == 'mini-app-api':
+                    self.assertEqual(result['fixture_version'], 3)
+                elif slug == 'password-session-api':
+                    self.assertTrue(result['fixture_only'])
+                else:
+                    self.assertEqual(result['fixture_layout'], slug)
+                    self.assertEqual(result['imported_value'], 'offline-local-helper')
         status, _, body = self.request(session, 'GET', '/storage/v1/object/public/fixture-bucket/fixture.bin')
         self.assertEqual(status, 200, body[:1024])
         self.assertEqual(body, FIXTURE_BYTES)

@@ -74,7 +74,7 @@ function Assert-Diagnostic($result, [string]$name) {
         throw ($name + ': ' + $result.Code + ' ' + $result.Out + ' ' + $result.Err)
     }
     $summary = $result.Out.Trim() | ConvertFrom-Json
-    if ($summary.status -ne 'DIAGNOSTIC_COMPLETE' -or $summary.unsupported_routes -ne 2) {
+    if ($summary.status -ne 'DIAGNOSTIC_COMPLETE' -or $summary.unsupported_routes -ne 1) {
         throw ('Unexpected diagnostic summary: ' + $result.Out)
     }
     if ([IO.Path]::GetDirectoryName($summary.report) -ne $root) { throw 'Diagnostic report outside package' }

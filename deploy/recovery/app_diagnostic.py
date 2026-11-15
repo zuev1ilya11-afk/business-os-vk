@@ -74,6 +74,26 @@ def load_metadata(bundle, successful):
     main = prefixes['/bos-main']
     contents = selected_gateway(bundle, inventory, {
         main + '/' + name for name in ('index.ts', 'routes.json', 'bos-report-env.json')})
+    # The v2 planner also verifies the observed adjacent local import maps.
+    # Select only those exact route-local paths, never arbitrary JSON values.
+    routes = plan.json_read(contents[main + '/routes.json'])
+    maps = set()
+    if isinstance(routes, dict) and len(routes) <= 256:
+        for slug, route in routes.items():
+            if not isinstance(slug, str) or not plan.SLUG.fullmatch(slug) or not isinstance(route, dict):
+                continue
+            entry, import_map = route.get('entrypoint'), route.get('import_map')
+            if (isinstance(entry, str) and entry in ('index.ts', 'functions/' + slug + '/index.ts',
+                    'supabase/functions/' + slug + '/index.ts')
+                    and isinstance(import_map, str)
+                    and import_map == str(PurePosixPath(entry).with_name('deno.json'))):
+                name = prefixes['/bos-src'] + '/' + slug + '/' + import_map
+                if isinstance(inventory.get(name), dict) and inventory[name].get('type') == 'file':
+                    maps.add(name)
+    plan.require(sum(inventory[name]['bytes'] for name in maps) <= 16 * 1024 * 1024,
+                 'DIAGNOSTIC_IMPORT_MAP_LIMIT')
+    if maps:
+        contents.update(selected_gateway(bundle, inventory, maps))
     return {'private': private, 'inventory': inventory}, contents, roles, images, prefixes
 
 
@@ -149,8 +169,8 @@ def collect(context, contents, roles, images, prefixes):
     routes = plan.json_read(contents[route_name])
     plan.require(isinstance(routes, dict) and len(routes) <= 256, 'APP_GATEWAY_ROUTES_REQUIRED')
     inventory = context['inventory']
-    output = {'format': 1, 'status': 'DIAGNOSTIC_COMPLETE', 'docker_called': False,
-              'backup_modified': False, 'scope': 'METADATA_AND_SELECTED_GATEWAY_BYTES',
+    output = {'format': 2, 'status': 'DIAGNOSTIC_COMPLETE', 'docker_called': False,
+              'backup_modified': False, 'scope': 'METADATA_GATEWAY_AND_LOCAL_IMPORT_MAP_BYTES',
               'full_backup_reverification': 'NOT_RUN', 'disaster_recovery_ready': False,
               'routes': [], 'service_checks': {}}
     for index, (slug, route) in enumerate(routes.items()):
@@ -168,7 +188,7 @@ def collect(context, contents, roles, images, prefixes):
                       'nested_index': source + '/' + slug + '/supabase/functions/' + slug + '/index.ts',
                       'root_deno_json': source + '/' + slug + '/deno.json',
                       'bundle': bundles + '/' + slug + '.eszip'}
-        output['routes'].append({'name': label, 'v1_route_contract': status,
+        output['routes'].append({'name': label, 'route_contract': status,
             'shape': describe(route, slug, source, inventory, 'route'),
             'captured_payloads': {key: isinstance(inventory.get(name), dict)
                 and inventory[name].get('type') == 'file' for key, name in candidates.items()}})
@@ -213,7 +233,7 @@ def main(argv=None):
         stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
         output = work / ('BOS-App-Diagnostic-' + stamp + '-' + uuid.uuid4().hex[:8] + '.json')
         app_cli.write_report(output, result)
-        bad = sum(r['v1_route_contract'] != 'SUPPORTED' for r in result['routes'])
+        bad = sum(r['route_contract'] != 'SUPPORTED' for r in result['routes'])
         print(json.dumps({'status': 'DIAGNOSTIC_COMPLETE', 'unsupported_routes': bad, 'report': str(output)}))
         return 0
     except Exception as error:

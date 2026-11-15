@@ -7,7 +7,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
-$PackageSha256 = 'a562543cb3e6f730f5eed336f9882b4415da15fa7e5b2c304d4c03d4cda1041a'
+$PackageSha256 = 'f6be5a50bb5012cad2f658c8059bcead57829c3a6e6c2c333dea5f3d470960fe'
 $PythonSha256 = '4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3'
 $PythonBytes = 11133606
 function Stop-Bos([string]$Code) { throw [InvalidOperationException]::new($Code) }

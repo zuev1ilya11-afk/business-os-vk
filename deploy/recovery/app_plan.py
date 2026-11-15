@@ -142,12 +142,23 @@ def gateway(context, read_file, prefix, origin, secret):
             require(isinstance(item, dict) and set(item) == {
                 'bundle_sha256', 'entrypoint', 'import_map', 'source_sha256', 'verify_jwt'},
                 'APP_GATEWAY_ROUTE_INVALID')
-            require(item['entrypoint'] == entry and item['import_map'] is None
+            # These three layouts are present in the operator's verified
+            # capture diagnostic. Resolve inside this route's own source root;
+            # do not infer a nested path when a route explicitly names index.ts.
+            entry = item['entrypoint']
+            allowed_entries = {'index.ts', 'functions/' + slug + '/index.ts',
+                               'supabase/functions/' + slug + '/index.ts'}
+            require(isinstance(entry, str) and entry in allowed_entries
                     and type(item['verify_jwt']) is bool and isinstance(item['bundle_sha256'], str)
                     and DIGEST.fullmatch(item['bundle_sha256']) is not None, 'APP_GATEWAY_ROUTE_INVALID')
+            import_map = item['import_map']
+            require(import_map is None or (isinstance(import_map, str)
+                    and import_map == str(PurePosixPath(entry).with_name('deno.json'))),
+                    'APP_GATEWAY_IMPORT_MAP_INVALID')
             sources = item['source_sha256']
             require(isinstance(sources, dict) and entry in sources and 1 <= len(sources) <= 10000,
                     'APP_GATEWAY_SOURCE_HASH_INVALID')
+            require(import_map is None or import_map in sources, 'APP_GATEWAY_IMPORT_MAP_INVALID')
             for source, digest in sources.items():
                 path(source, False)
                 require(isinstance(digest, str) and DIGEST.fullmatch(digest) is not None,
@@ -302,12 +313,19 @@ def build_plan(context, read_file, origin):
                 raise Stop('APP_CAPTURED_ORIGIN_INVALID') from None
     route_map = json_read(generated['gateway/routes.json'])
     for slug, route in route_map.items():
-        source_name = prefixes[('edge', '/bos-src')] + '/' + slug + '/supabase/functions/' + slug + '/index.ts'
+        source_root = prefixes[('edge', '/bos-src')] + '/' + slug + '/'
+        entry = route['entrypoint'] if isinstance(route, dict) else 'supabase/functions/' + slug + '/index.ts'
+        source_name = source_root + entry
         bundle_name = prefixes[('edge', '/bos-bundles')] + '/' + slug + '.eszip'
         source_record, bundle_record = context['inventory'].get(source_name), context['inventory'].get(bundle_name)
         require(isinstance(source_record, dict) and source_record.get('type') == 'file'
                 and isinstance(bundle_record, dict) and bundle_record.get('type') == 'file'
                 and bundle_record.get('bytes', 0) > 0, 'APP_ROUTE_PAYLOAD_MISSING')
+        if isinstance(route, dict) and route['import_map'] is not None:
+            # The manifest/inventory, not stale route hashes, authenticates the
+            # copied local import map. Its path is adjacent to the entrypoint
+            # and must already be declared in this route's source metadata.
+            read_checked(context, read_file, source_root + route['import_map'])
         # These route hashes are historical release metadata, not the capture
         # integrity baseline. The successful server release documented stale
         # values after source/bundle updates (deploy/finance-export/README.md,

@@ -10,6 +10,47 @@ import discovery
 
 SECRET = 'PRIVATE_PRODUCTION_SECRET_NEVER_REUSED'
 
+# Sanitized path/type shapes observed in the 2026-11-15 operator diagnostic.
+# All file bodies and digests below are generated synthetic test data.
+OBSERVED_ROUTES = (
+    ('agent-business-api', 'index.ts', None, True, ('index.ts',)),
+    ('agent-core', 'index.ts', None, True, ('index.ts',)),
+    ('agent-dispatch-api', 'index.ts', None, True, ('index.ts',)),
+    ('agent-link-self', 'index.ts', None, True, ('index.ts',)),
+    ('agent-runtime', 'index.ts', None, True, ('index.ts',)),
+    ('archive-order-2-once', 'index.ts', None, False, ('index.ts',)),
+    ('avito-api', 'index.ts', None, False, ('index.ts',)),
+    ('avito-assistant-api', 'functions/avito-assistant-api/index.ts', None, False, ('functions/_shared/avito-price-catalog.json', 'functions/avito-assistant-api/core.ts', 'functions/avito-assistant-api/index.ts')),
+    ('bos-api', 'supabase/functions/bos-api/index.ts', 'supabase/functions/bos-api/deno.json', False, ('lib/security.ts', 'lib/validation.ts', 'supabase/functions/bos-api/deno.json', 'supabase/functions/bos-api/index.ts')),
+    ('business-os-api', 'index.ts', None, False, ('index.ts',)),
+    ('claims-api', 'supabase/functions/claims-api/index.ts', None, False, ('order-payroll.js', 'supabase/functions/claims-api/index.ts')),
+    ('drive-archive-api', 'index.ts', None, False, ('index.ts',)),
+    ('e2e-create-staff-order-once', 'index.ts', None, False, ('index.ts',)),
+    ('employee-meta-api', 'index.ts', None, False, ('index.ts',)),
+    ('gas-bridge-health', 'index.ts', None, False, ('index.ts',)),
+    ('hands-api', 'index.ts', None, False, ('hands-details.ts', 'index.ts')),
+    ('hands-report-api', 'index.ts', 'deno.json', False, ('deno.json', 'index.ts')),
+    ('integration-api', 'supabase/functions/integration-api/index.ts', None, False, ('order-payroll.js', 'supabase/functions/integration-api/index.ts')),
+    ('master-memo-api', 'index.ts', None, False, ('index.ts',)),
+    ('master-workflow-api', 'supabase/functions/master-workflow-api/index.ts', None, False, ('order-payroll.js', 'supabase/functions/master-workflow-api/index.ts')),
+    ('mini-app-api', 'supabase/functions/mini-app-api/index.ts', None, False, ('finance-expenses.js', 'order-payroll.js', 'supabase/functions/_shared/hands-details.ts', 'supabase/functions/mini-app-api/index.ts')),
+    ('order-lifecycle-api', 'supabase/functions/order-lifecycle-api/index.ts', None, False, ('order-payroll.js', 'report-deduction.js', 'service-catalog.js', 'supabase/functions/_shared/hands-details.ts', 'supabase/functions/order-lifecycle-api/index.ts')),
+    ('order-meta-api', 'index.ts', None, False, ('index.ts',)),
+    ('password-session-api', 'index.ts', None, False, ('index.ts',)),
+    ('profile-self-api', 'supabase/functions/profile-self-api/index.ts', None, False, ('order-payroll.js', 'supabase/functions/profile-self-api/index.ts')),
+    ('push-api', 'index.ts', 'deno.json', False, ('deno.json', 'index.ts')),
+    ('report-api', 'supabase/functions/report-api/index.ts', None, False, ('order-payroll.js', 'report-deduction.js', 'service-catalog.js', 'supabase/functions/report-api/index.ts')),
+    ('report-file-upload', 'index.ts', None, False, ('index.ts',)),
+    ('report-upload-gateway', 'index.ts', None, False, ('index.ts',)),
+    ('sheets-sync-api', 'index.ts', None, False, ('index.ts',)),
+    ('staff-admin-api', 'index.ts', None, False, ('index.ts',)),
+    ('staff-invite-api', 'index.ts', None, False, ('index.ts',)),
+    ('test-pin-session', 'index.ts', None, False, ('index.ts',)),
+    ('vk-auth', 'index.ts', None, True, ('index.ts',)),
+    ('vk-session-api', 'index.ts', None, False, ('index.ts',)),
+)
+
+
 
 def fixture():
     roots = ['/capture/' + item for item in ('bundles', 'caddy', 'config', 'main', 'sources', 'storage', 'web')]
@@ -194,15 +235,85 @@ class PlanTests(unittest.TestCase):
                 with self.assertRaises(p.Stop):
                     self.plan()
 
-    def test_unconfirmed_root_entrypoint_shape_stays_rejected(self):
-        # pr289 proves push-api source/index.ts exists, but no captured route
-        # record is available here. Do not infer or broaden route JSON schema.
+    def test_explicit_root_entrypoint_does_not_fall_back_to_nested_source(self):
         routes = json.loads(self.files['root-003/routes.json'])
         route = routes['mini-app-api']
         route['entrypoint'] = 'index.ts'
         route['source_sha256'] = {'index.ts': 'e' * 64}
         self.add('root-003/routes.json', routes)
-        self.failure('APP_GATEWAY_ROUTE_INVALID')
+        # The old nested source is present, but the actual root entry is not.
+        self.failure('APP_ROUTE_PAYLOAD_MISSING')
+        self.add('root-004/mini-app-api/index.ts', b'synthetic root source')
+        result = self.plan()
+        self.assertEqual(json.loads(result['generated_files']['gateway/routes.json']), routes)
+
+    def install_observed_routes(self):
+        # Remove the two old fixture source layouts, so a mistaken canonical
+        # lookup cannot pass because a second copy happens to be present.
+        for name in list(self.context['inventory']):
+            if name.startswith(('root-004/', 'root-000/')):
+                del self.context['inventory'][name]
+                self.files.pop(name, None)
+        routes = {}
+        for slug, entry, import_map, verify_jwt, sources in OBSERVED_ROUTES:
+            for source in sources:
+                content = b'{"imports":{}}' if source.endswith('/deno.json') or source == 'deno.json' else b'// synthetic source'
+                self.add('root-004/' + slug + '/' + source, content)
+            self.add('root-000/' + slug + '.eszip', b'synthetic bundle ' + slug.encode())
+            routes[slug] = {'entrypoint': entry, 'import_map': import_map, 'verify_jwt': verify_jwt,
+                'bundle_sha256': 'f' * 64, 'source_sha256': {source: 'e' * 64 for source in sources}}
+        self.add('root-003/routes.json', routes)
+        return routes
+
+    def test_all_35_observed_route_shapes_preserve_metadata_and_verified_inputs(self):
+        routes = self.install_observed_routes()
+        before = copy.deepcopy((self.context, self.files))
+        self.assertEqual(len(routes), 35)
+        self.assertEqual(sum(r['entrypoint'] == 'index.ts' for r in routes.values()), 26)
+        self.assertEqual(sum(r['entrypoint'].startswith('functions/') for r in routes.values()), 1)
+        self.assertEqual(sum(r['entrypoint'].startswith('supabase/functions/') for r in routes.values()), 8)
+        self.assertEqual(sum(r['import_map'] is not None for r in routes.values()), 3)
+        result = self.plan()
+        self.assertEqual(json.loads(result['generated_files']['gateway/routes.json']), routes)
+        self.assertEqual((self.context, self.files), before)
+
+    def test_observed_import_map_must_exist_and_match_verified_inventory(self):
+        self.install_observed_routes()
+        name = 'root-004/push-api/deno.json'
+        self.files[name] += b'altered'
+        self.failure('APP_CAPTURE_FILE_CHANGED')
+        self.install_observed_routes()
+        del self.context['inventory'][name]
+        self.failure('APP_CAPTURE_FILE_REQUIRED')
+
+    def test_import_map_must_be_declared_in_same_route_source_metadata(self):
+        routes = self.install_observed_routes()
+        del routes['push-api']['source_sha256']['deno.json']
+        self.add('root-003/routes.json', routes)
+        self.failure('APP_GATEWAY_IMPORT_MAP_INVALID')
+
+    def test_import_map_must_be_adjacent_local_deno_file(self):
+        baseline = self.install_observed_routes()
+        for value in ('../deno.json', '/deno.json', './deno.json', 'https://outside.invalid/deno.json',
+                      'file:///deno.json', 'supabase/functions/other-api/deno.json', 'config.json'):
+            with self.subTest(value=value):
+                routes = copy.deepcopy(baseline)
+                routes['push-api']['import_map'] = value
+                routes['push-api']['source_sha256'][value] = 'e' * 64
+                self.add('root-003/routes.json', routes)
+                self.failure('APP_GATEWAY_IMPORT_MAP_INVALID')
+
+    def test_entrypoint_stays_inside_exact_observed_route_layouts(self):
+        baseline = self.install_observed_routes()
+        for value in ('../index.ts', '/index.ts', './index.ts', 'functions/other-api/index.ts',
+                      'supabase/functions/other-api/index.ts', 'https://outside.invalid/index.ts',
+                      'file:///index.ts', 'functions/push-api/../index.ts', 'index.ts?x', 'nested/index.ts'):
+            with self.subTest(value=value):
+                routes = copy.deepcopy(baseline)
+                routes['push-api']['entrypoint'] = value
+                routes['push-api']['source_sha256'][value] = 'e' * 64
+                self.add('root-003/routes.json', routes)
+                self.failure('APP_GATEWAY_ROUTE_INVALID')
 
     def test_same_login_user_gets_one_shared_password(self):
         self.container('storage')['Config']['Env'] = [v.replace('storage_user:', 'rest_user:') for v in self.container('storage')['Config']['Env']]
