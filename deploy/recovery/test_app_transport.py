@@ -62,6 +62,34 @@ class InputCallTests(unittest.TestCase):
         self.assertEqual(transport.input_call(LocalRunner(script), ['test'], b'abc'),
                          b'premature EOF')
 
+    def test_http_mode_closes_stdin_only_after_complete_response(self):
+        responses = [b'HTTP/1.1 200 OK\r\nContent-Length: 3\r\n\r\nA\x00Z',
+                     b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n'
+                     b'3\r\nA\x00Z\r\n0\r\n\r\n']
+        for response in responses:
+            # Model nc_bloaty: it emits the complete response but does not exit
+            # until stdin EOF. An earlier EOF aborts the asynchronous response.
+            script = ('import os,sys,threading,time; '
+                      'sys.stdin.buffer.read(3); ended=threading.Event(); '
+                      'threading.Thread(target=lambda:(sys.stdin.buffer.read(1),ended.set()),daemon=True).start(); '
+                      f'os.write(1,{response[:-2]!r}); '
+                      'early=ended.wait(0.1); '
+                      'exec("if early: os._exit(7)"); '
+                      f'os.write(1,{response[-2:]!r}); '
+                      'finished=ended.wait(1); os._exit(0 if finished else 8)')
+            with self.subTest(response=response):
+                result = transport.input_call(LocalRunner(script), ['test'], b'abc',
+                    timeout=2, close_stdin=False, output_complete=transport._HTTPFrameComplete('POST'))
+                self.assertEqual(result, response)
+
+    def test_unframed_response_fails_promptly_in_http_mode(self):
+        runner = LocalRunner('import os,time; os.write(1,b"HTTP/1.1 200 OK\\r\\n\\r\\nbody"); time.sleep(10)')
+        before = time.monotonic()
+        with self.assertRaisesRegex(transport.Stop, '^APP_HTTP_RESPONSE_FRAMING_REQUIRED$'):
+            transport.input_call(runner, ['test'], b'', timeout=2, close_stdin=False,
+                                 output_complete=transport._HTTPFrameComplete('GET'))
+        self.assertLess(time.monotonic() - before, 1)
+
 
 class HttpCallTests(unittest.TestCase):
     cid = 'a' * 64
@@ -147,6 +175,26 @@ class HttpCallTests(unittest.TestCase):
                 self.request(b'HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\n12345')
             with self.assertRaisesRegex(transport.Stop, '^APP_HTTP_BODY_LIMIT$'):
                 self.request(b'HTTP/1.1 200 OK\r\n\r\n12345')
+
+    def test_frame_detection_is_incremental(self):
+        responses = [
+            ('GET', b'HTTP/1.1 100 Continue\r\n\r\nHTTP/1.1 200 OK\r\nContent-Length: 3\r\n\r\nabc'),
+            ('HEAD', b'HTTP/1.1 200 OK\r\nContent-Length: 123\r\n\r\n'),
+            ('GET', b'HTTP/1.1 204 No Content\r\n\r\n'),
+            ('GET', b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n'
+                    b'3;foo=bar\r\na\x00c\r\n2\r\nde\r\n0\r\nX-Check: yes\r\n\r\n')]
+        for method, response in responses:
+            frame = transport._HTTPFrameComplete(method)
+            with self.subTest(method=method, response=response):
+                for end in range(len(response)):
+                    self.assertFalse(frame(bytearray(response[:end])))
+                self.assertTrue(frame(bytearray(response)))
+
+    def test_http_timeout_is_propagated(self):
+        with patch.object(transport, 'input_call', return_value=b'HTTP/1.1 204 No Content\r\n\r\n') as call:
+            transport.http_call(object(), self.cid, 'GET', '/', {}, b'', timeout=10)
+        self.assertEqual(call.call_args.kwargs['timeout'], 10)
+        self.assertIn('10', call.call_args.args[1])
 
 
 if __name__ == '__main__':

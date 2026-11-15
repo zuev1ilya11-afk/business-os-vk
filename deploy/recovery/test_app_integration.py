@@ -362,10 +362,10 @@ class RealApplicationLaunch(unittest.TestCase):
         raise RuntimeError('Synthetic PostgreSQL did not start')
 
     @classmethod
-    def internal_http(cls, port, method, path, body=b'', headers=None):
+    def internal_http(cls, port, method, path, body=b'', headers=None, *, timeout=90):
         try:
             return app_transport.http_call(cls.runner, cls.source, method, path,
-                                           headers or {}, body, port=port)
+                                           headers or {}, body, port=port, timeout=timeout)
         except Exception:
             if method != 'GET':
                 cls.startup_diagnostic()
@@ -374,14 +374,16 @@ class RealApplicationLaunch(unittest.TestCase):
     @classmethod
     def wait_http(cls, port, path):
         last = None
-        for _ in range(90):
+        deadline = time.monotonic() + 90
+        while time.monotonic() < deadline:
             role = {9999: 'auth', 3000: 'rest', 5000: 'storage'}[port]
             service = json.loads(cls.docker.run(['inspect', cls.source_services[role]]))[0]
             if not service['State']['Running']:
                 cls.startup_diagnostic()
                 raise RuntimeError('Synthetic service exited before readiness: ' + str(port))
             try:
-                status, _, body = cls.internal_http(port, 'GET', path)
+                status, _, body = cls.internal_http(port, 'GET', path,
+                                                   timeout=min(10, max(0.1, deadline - time.monotonic())))
                 if status == 200:
                     return
                 last = str(status) + ' ' + body[:1024].decode(errors='replace')
