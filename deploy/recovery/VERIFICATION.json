@@ -121,7 +121,7 @@
     "real_docker_restore": "PASS_DELIVERED_RUNTIME_CI43720101201_BOTH_STORES",
     "windows_launcher": "PASS_DELIVERED_RUNTIME_CI43720101201",
     "operator_docker_version": "29.9.2",
-    "operator_restore": "DRILL_COMPLETED_OPERATOR_SCREENSHOT_2026_11_15",
+    "operator_restore": "DRILL_COMPLETED_OPERATOR_JSON_READ_2026_11_15",
     "scope": "DATABASE_GLOBALS_AND_FILE_BYTES",
     "application": "NOT_RUN",
     "storage_relationships": "NOT_VERIFIED",
@@ -150,7 +150,7 @@
     "supabase_runtime": "PASS_REAL_SUPABASE17.11_WITH9_EXTENSIONS_AND_STARTUP_FAILURE_DIAGNOSTIC_CI43720101201",
     "diagnostics": "Safe fixed categories survive cleanup including cleanupfailure; private startup/globals/database stderr journals in newvolume; successful report path printed onfailure",
     "operator_result": {
-      "evidence": "operator screenshot image(20261115-145956).png; full JSON and private archive not read by agent",
+      "evidence": "Uploaded BOS-Restore-4ecb94f875d8.json read in full; private backup bundle not accessible to agent",
       "database": "RESTORED",
       "globals": "RESTORED",
       "archived_owners_and_acls": "APPLIED_WITHOUT_RESTORE_ERRORS",
@@ -172,8 +172,13 @@
         "filesystem_metadata": "NOT_PROVEN"
       },
       "cleanup": "CONTAINERS_REMOVED_VOLUME_RETAINED",
-      "docker_storage_on_E": "NOT_CONFIRMED_BY_THIS_SCREENSHOT",
-      "elapsed_seconds": "NOT_VISIBLE_IN_SCREENSHOT"
+      "docker_storage_on_E": "NOT_CONFIRMED_BY_RESTORE_REPORT",
+      "elapsed_seconds": 79.17,
+      "run_id": "bos-drill-f18143a443fb",
+      "volume": "bos-drill-f18143a443fb-data",
+      "source_manifest_sha256": "90d8b9f06a1d635185c5bdc2831f8be78631092f73c09cf2a993760f38984dc0",
+      "source_capture_started_at": "2026-11-15T09:01:55.572223+00:00",
+      "source_capture_finished_at": "2026-11-15T09:02:28.146729+00:00"
     },
     "verified_delivered_runtime": {
       "commit": "466fd4dbf31dd83b92e0147b308177e6c555bad5",
