@@ -51,6 +51,19 @@ class URLTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 a.validated_origin(origin)
 
+    def test_internal_and_logical_origins_only_map_storage(self):
+        base = 'http://127.0.0.1:1234'
+        for origin in a.STORAGE_ONLY_ORIGINS:
+            url = origin + '/storage/v1/object/sign/bucket/photo.jpg?token=synthetic'
+            self.assertEqual(a.rewrite_url(url, base, a.KNOWN_ORIGINS),
+                             base + '/storage/v1/object/sign/bucket/photo.jpg?token=synthetic')
+            for path in ['/functions/v1/mini-app-api', '/api/proxy/mini-app-api', '/private.html']:
+                self.assertIsNone(a.rewrite_url(origin + path, base, a.KNOWN_ORIGINS, asset=True))
+        for origin in ['http://127.0.0.1:9001', 'http://localhost:9000',
+                       'https://bos-local.invalid.evil.test', 'https://bos-local.invalid:8443']:
+            self.assertIsNone(a.rewrite_url(origin + '/storage/v1/object/public/bucket/photo.jpg',
+                                          base, a.KNOWN_ORIGINS, asset=True))
+
 
 class PortalTests(unittest.TestCase):
     def setUp(self):
@@ -210,6 +223,19 @@ clickHandler({target:{closest:()=>anchor},preventDefault:()=>{prevented=true},st
 assert.equal(prevented,false);assert.equal(anchor.href,blob);
 window.open('blob:https://evil.test/00000000-0000-4000-8000-000000000001');assert.equal(opened.length,1);
 await assert.rejects(fetch(blob));
+for(const origin of ['https://bos-local.invalid','http://127.0.0.1:9000']){
+ const url=origin+'/storage/v1/object/sign/bucket/photo.jpg?token=synthetic';
+ await fetch(url);assert.equal(calls.at(-1).url,'http://127.0.0.1:1234/storage/v1/object/sign/bucket/photo.jpg?token=synthetic');
+ attributes.src=url;observe([{type:'attributes',target:image}]);assert.equal(attributes.src,'http://127.0.0.1:1234/storage/v1/object/sign/bucket/photo.jpg?token=synthetic');
+ await assert.rejects(fetch(origin+'/functions/v1/mini-app-api'));
+ const previous=opened.length;window.open(origin+'/private.html');assert.equal(opened.length,previous);
+}
+await assert.rejects(fetch('http://127.0.0.1:9001/storage/v1/object/public/bucket/photo.jpg'));
+await assert.rejects(fetch('http://localhost:9000/storage/v1/object/public/bucket/photo.jpg'));
+const attachment='https://bos-local.invalid/storage/v1/object/sign/bucket/photo.jpg?token=synthetic';
+const body=JSON.stringify({action:'finalizeMasterReport',act_url:attachment,photo_urls:[attachment]});
+await fetch('https://homemaster.qd.je/functions/v1/report-api',{method:'POST',body});
+assert.equal(calls.at(-1).body,body);
 console.log('Request body, headers, method, init overrides and abort signal preserved');
 })().catch(error=>{console.error(error);process.exitCode=1});
 '''
@@ -323,6 +349,14 @@ const assert=require('node:assert/strict'),fs=require('fs'),{chromium}=require('
   assert.equal(await page.locator('#content').textContent(),'Synthetic order from local API');
   await page.waitForFunction(()=>{const img=document.getElementById('fixturePhoto');return img?.complete&&img.naturalWidth===2});
   assert.equal(await page.locator('#fixturePhoto').getAttribute('src'),base+'/storage/v1/object/public/fixture/photo.svg');
+  for(const origin of ['https://bos-local.invalid','http://127.0.0.1:9000']){
+   const url=origin+'/storage/v1/object/sign/fixture/photo.svg?token=synthetic';
+   assert.equal(await page.evaluate(async value=>(await fetch(value)).status,url),200);
+   await page.locator('#fixturePhoto').evaluate((img,value)=>{img.src=value},url);
+   await page.waitForFunction(expected=>{const img=document.getElementById('fixturePhoto');return img?.src===expected&&img.complete&&img.naturalWidth===2},base+'/storage/v1/object/sign/fixture/photo.svg?token=synthetic');
+   assert.equal(await page.evaluate(value=>fetch(value+'/functions/v1/mini-app-api').then(()=>false,()=>true),origin),true);
+  }
+  assert.equal(await page.evaluate(()=>fetch('http://127.0.0.1:9001/storage/v1/object/sign/fixture/photo.svg').then(()=>false,()=>true)),true);
   assert.equal(await page.evaluate(()=>window.BOS_ROLE_MODULES_V190.master),10);
   assert.equal(await page.evaluate(()=>fetch('https://unrelated.invalid/private').then(()=>false,()=>true)),true);
   const denied=await browser.newPage();const blocked=await denied.goto('http://unrelated.invalid/private');assert.equal(blocked.status(),403);

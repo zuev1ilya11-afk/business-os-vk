@@ -6,9 +6,10 @@ Storage. It captures those bytes, restores them through run_drill, and launches
 the application on a clone. No production archive, endpoint, or secret is used.
 Docker is opt-in and must be the explicitly selected disposable CI daemon.
 """
+import base64
 import hashlib
+import hmac
 import http.client
-import io
 import json
 import os
 from pathlib import Path
@@ -20,12 +21,14 @@ import tempfile
 import time
 import unittest
 import uuid
+from urllib.parse import parse_qs, urlencode, urlsplit
 
 REQUIRE = '--require' in sys.argv
 if REQUIRE:
     sys.argv.remove('--require')
 
 import backup
+import app_transport
 import discovery
 import drill
 import drill_db
@@ -126,14 +129,6 @@ PASSWORD_FUNCTION = "Deno.serve(()=>Response.json({ok:true,fixture_only:true}));
 WEB = b'<!doctype html><html><head><title>Synthetic BOS restore</title></head><body><h1 id="fixture">Captured synthetic web</h1></body></html>'
 
 
-class BytesSocket:
-    def __init__(self, value):
-        self.value = value
-
-    def makefile(self, *args, **kwargs):
-        return io.BytesIO(self.value)
-
-
 def archive_tree(root, target):
     """Capture regular generated files, deliberately without POSIX xattrs."""
     inventory = {}
@@ -151,6 +146,14 @@ def archive_tree(root, target):
                 raise RuntimeError('Synthetic capture contains a special file')
             archive.add(path, arcname=name, recursive=False)
     return inventory
+
+
+def signed_storage_token(payload):
+    """Test-only HS256 encoder for a previously captured Storage capability."""
+    encode = lambda value: base64.urlsafe_b64encode(json.dumps(value, separators=(',', ':')).encode()).rstrip(b'=').decode()
+    unsigned = encode({'alg': 'HS256', 'typ': 'JWT'}) + '.' + encode(payload)
+    signature = hmac.new(JWT_SECRET.encode(), unsigned.encode(), hashlib.sha256).digest()
+    return unsigned + '.' + base64.urlsafe_b64encode(signature).rstrip(b'=').decode()
 
 
 class RealApplicationLaunch(unittest.TestCase):
@@ -259,6 +262,36 @@ class RealApplicationLaunch(unittest.TestCase):
         status, _, body = cls.internal_http(5000, 'GET', '/object/public/fixture-bucket/fixture.bin')
         if status != 200 or body != FIXTURE_BYTES:
             raise RuntimeError('Real Storage API did not return the uploaded synthetic bytes')
+        # A second, private object tests captured capabilities independently of
+        # public-bucket reads. Its signed URL is minted by the real Storage API.
+        status, _, body = cls.internal_http(5000, 'POST', '/bucket',
+             b'{"id":"private-fixture","name":"private-fixture","public":false}',
+             {**auth_headers, 'Content-Type': 'application/json'})
+        if status not in (200, 201):
+            raise RuntimeError('Synthetic private bucket creation failed: ' + str(status))
+        status, _, body = cls.internal_http(5000, 'POST', '/object/private-fixture/fixture.bin', FIXTURE_BYTES,
+                                           {**auth_headers, 'Content-Type': 'application/octet-stream'})
+        if status not in (200, 201):
+            raise RuntimeError('Synthetic private object upload failed: ' + str(status))
+        status, _, body = cls.internal_http(5000, 'POST', '/object/sign/private-fixture/fixture.bin',
+                                           b'{"expiresIn":3600}', {**auth_headers, 'Content-Type': 'application/json'})
+        if status != 200:
+            raise RuntimeError('Synthetic Storage signing failed: ' + str(status))
+        signed = json.loads(body)['signedURL']
+        parsed = urlsplit(signed)
+        if parsed.path != '/object/sign/private-fixture/fixture.bin':
+            raise RuntimeError('Unexpected synthetic signed URL route')
+        cls.old_signed_path = '/storage/v1' + parsed.path + '?' + parsed.query
+        cls.wrong_object_signed_path = cls.old_signed_path.replace('/private-fixture/', '/fixture-bucket/', 1)
+        token = parse_qs(parsed.query)['token'][0]
+        segments = token.split('.')
+        payload = json.loads(base64.urlsafe_b64decode(segments[1] + '=' * (-len(segments[1]) % 4)))
+        expired = {**payload, 'iat': int(time.time()) - 7200, 'exp': int(time.time()) - 3600}
+        cls.expired_signed_path = '/storage/v1' + parsed.path + '?' + urlencode({'token': signed_storage_token(expired)})
+        broken = segments[0] + '.' + segments[1] + '.' + ('A' if segments[2][0] != 'A' else 'B') + segments[2][1:]
+        cls.invalid_signed_path = '/storage/v1' + parsed.path + '?' + urlencode({'token': broken})
+        cls.sql('ALTER TABLE public.orders ADD COLUMN fixture_signed_url text;\n'
+                "UPDATE public.orders SET fixture_signed_url='" + cls.old_signed_path.replace("'", "''") + "' WHERE id=1;")
         cls.prepare_gateway()
         (cls.capture / 'web/index.html').write_bytes(WEB)
         (cls.capture / 'caddy/Caddyfile').write_text('http://127.0.0.1:18080 { respond "synthetic" }\n')
@@ -330,14 +363,13 @@ class RealApplicationLaunch(unittest.TestCase):
 
     @classmethod
     def internal_http(cls, port, method, path, body=b'', headers=None):
-        head = {'Host': '127.0.0.1:' + str(port), 'Connection': 'close',
-                'Content-Length': str(len(body)), **(headers or {})}
-        data = (method + ' ' + path + ' HTTP/1.1\r\n' + ''.join(k + ': ' + v + '\r\n' for k, v in head.items()) + '\r\n').encode() + body
-        raw = cls.docker.run(['exec', '-i', cls.source, '/bin/busybox', 'nc', '-w', '10', '127.0.0.1', str(port)],
-                             data=data, timeout=20, check=False)
-        response = http.client.HTTPResponse(BytesSocket(raw))
-        response.begin()
-        return response.status, dict(response.getheaders()), response.read()
+        try:
+            return app_transport.http_call(cls.runner, cls.source, method, path,
+                                           headers or {}, body, port=port)
+        except Exception:
+            if method != 'GET':
+                cls.startup_diagnostic()
+            raise
 
     @classmethod
     def wait_http(cls, port, path):
@@ -353,7 +385,7 @@ class RealApplicationLaunch(unittest.TestCase):
                 if status == 200:
                     return
                 last = str(status) + ' ' + body[:1024].decode(errors='replace')
-            except (RuntimeError, http.client.HTTPException) as exc:
+            except (RuntimeError, http.client.HTTPException, app_transport.Stop) as exc:
                 last = type(exc).__name__
             time.sleep(0.5)
         cls.startup_diagnostic()
@@ -455,7 +487,26 @@ class RealApplicationLaunch(unittest.TestCase):
     def test_real_stack_uses_clone_and_serves_captured_binary(self):
         import app
         before = self.volume_hash(self.baseline['volume'])
-        session = app.start_app(self.bundle, self.baseline, self.runner)
+        try:
+            session = app.start_app(self.bundle, self.baseline, self.runner)
+        except Exception as error:
+            report = getattr(error, 'report', {})
+            print('CI_SYNTHETIC_APP_REPORT=' + json.dumps(report), flush=True)
+            volume = report.get('volume') if isinstance(report, dict) else None
+            if isinstance(volume, str) and re.fullmatch(r'bos-app-[0-9a-f]{12}-data', volume):
+                info = json.loads(self.docker.run(['volume', 'inspect', volume]))[0]
+                if info.get('Labels', {}).get(APP_LABEL) == volume.removesuffix('-data'):
+                    # This test creates every byte in the volume; unlike the
+                    # operator path, CI may display its bounded private logs.
+                    logs = self.docker.run(['run', '--rm', '--network', 'none', '--read-only',
+                        '--user', '0:0', '--cap-drop', 'ALL', '--cap-add', 'DAC_READ_SEARCH',
+                        '--security-opt', 'no-new-privileges',
+                        '--mount', 'type=volume,src=' + volume + ',dst=/bos,readonly,volume-nocopy',
+                        '--entrypoint', '/bin/sh', self.images['db']['Id'], '-c',
+                        '/bin/busybox find /bos/app/diagnostics -type f -exec /bin/busybox head -c 8192 {} \\; ; '
+                        '/bin/busybox head -c 8192 /bos/data/app-bootstrap.stderr.log'], check=False)
+                    print('CI_SYNTHETIC_APP_PRIVATE_LOGS=' + logs[:65536].decode(errors='replace'), flush=True)
+            raise
         self.addCleanup(session.stop)
         # Register cleanup in this order so containers stop before volume remove.
         info = json.loads(self.docker.run(['volume', 'inspect', session.volume]))[0]
@@ -491,6 +542,13 @@ class RealApplicationLaunch(unittest.TestCase):
         status, _, body = self.request(session, 'GET', '/storage/v1/object/public/fixture-bucket/fixture.bin')
         self.assertEqual(status, 200, body[:1024])
         self.assertEqual(body, FIXTURE_BYTES)
+        status, _, body = self.request(session, 'GET', self.old_signed_path)
+        self.assertEqual(status, 200, body[:1024])
+        self.assertEqual(body, FIXTURE_BYTES)
+        for rejected in (self.expired_signed_path, self.invalid_signed_path, self.wrong_object_signed_path):
+            status, _, _ = self.request(session, 'GET', rejected)
+            self.assertGreaterEqual(status, 400)
+            self.assertLess(status, 500)
         status, _, body = self.request(session, 'POST', '/api/proxy/mini-app-api',
                                       b'{"action":"fixture_write"}', {'Content-Type': 'application/json'})
         self.assertEqual(status, 200, body[:1024])

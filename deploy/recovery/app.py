@@ -17,6 +17,7 @@ import uuid
 
 import app_browser
 import app_plan
+import app_signed_urls
 import app_storage
 import app_transport
 import drill
@@ -446,6 +447,7 @@ class AppSession:
         self._current_stage, self._current_role = 'PREPARING_PLAN', None
         self._plan, self._profile, self._admin, self._database = None, None, None, None
         self._mapped = {}
+        self._signed_urls = None
         self.report = {'format': 1, 'run_id': run_id, 'status': 'STARTING',
             'application': 'NOT_RUN', 'disaster_recovery_ready': False,
             'database_storage_consistency': 'NOT_PROVEN', 'storage_extended_attributes': 'NOT_CAPTURED',
@@ -458,6 +460,12 @@ class AppSession:
 
     def _transport(self, method, path, headers, body):
         require(not self._stopped and 'db' in self.containers, 'APP_NOT_RUNNING')
+        if self._signed_urls is not None:
+            try:
+                path = self._signed_urls.rewrite(method, path)
+            except app_signed_urls.Stop:
+                return (403, {'Content-Type': 'application/json'},
+                        b'{"ok":false,"code":"LOCAL_SIGNED_URL_REJECTED"}')
         anchor = self.containers['db']
         verify_container(self, anchor, self._owned[anchor], running=True)
         status, response_headers, data = app_transport.http_call(self.runner, anchor, method, path, headers, body)
@@ -609,6 +617,10 @@ def start_app(bundle, successful_report, runner, *, profile_dir=None, progress=N
         session.report['storage'] = storage
         require(storage['bytes_status'] == 'VERIFIED', 'APP_STORAGE_HTTP_VERIFICATION_FAILED')
         session._mapped = {obj.bucket_id + '/' + obj.name: obj for obj in mapped}
+        session._signed_urls = app_signed_urls.SignedUrlAdapter(
+            source_secret=app_signed_urls.source_secret(context),
+            local_secret=session._plan['secrets']['jwt'], verified_objects=session._mapped)
+        session.report['stored_signed_urls'] = 'VALID_CAPTURED_CAPABILITY_TRANSLATION_ENABLED'
         session.report['storage_browser_content_type'] = 'VERIFIED_DB_METADATA_OVERRIDE_AVAILABLE'
         drill_files.verify_payloads(context['bundle'], context['manifest'])
         baseline_available(runner, successful_report)

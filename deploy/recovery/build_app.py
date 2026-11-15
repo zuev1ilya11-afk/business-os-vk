@@ -7,7 +7,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parent
 MODULES = ('app.py', 'app_cli.py', 'app_plan.py', 'app_browser.py',
-           'app_storage.py', 'app_transport.py', 'drill.py', 'drill_db.py',
+           'app_storage.py', 'app_signed_urls.py', 'app_transport.py', 'drill.py', 'drill_db.py',
            'drill_files.py', 'drill_roles.py', 'drill_profile.py',
            'drill_errors.py', 'backup.py', 'discovery.py', 'image_archive.py')
 

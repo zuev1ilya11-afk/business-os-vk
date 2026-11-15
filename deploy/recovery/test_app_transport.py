@@ -51,6 +51,17 @@ class InputCallTests(unittest.TestCase):
         with self.assertRaisesRegex(transport.Stop, '^APP_DOCKER_PIPE_FAILED$'):
             transport.input_call(runner, ['test'], b'x' * transport.MIB)
 
+    def test_http_mode_keeps_stdin_open_until_response(self):
+        script = ('import os,sys,threading; '
+                  'data=sys.stdin.buffer.read(3); ended=threading.Event(); '
+                  'threading.Thread(target=lambda:(sys.stdin.buffer.read(1),ended.set()),daemon=True).start(); '
+                  'early=ended.wait(0.1); '
+                  'os.write(1,b"premature EOF" if early else data); os._exit(0)')
+        self.assertEqual(transport.input_call(LocalRunner(script), ['test'], b'abc',
+                                             close_stdin=False), b'abc')
+        self.assertEqual(transport.input_call(LocalRunner(script), ['test'], b'abc'),
+                         b'premature EOF')
+
 
 class HttpCallTests(unittest.TestCase):
     cid = 'a' * 64
@@ -79,6 +90,7 @@ class HttpCallTests(unittest.TestCase):
         self.assertIn(f'Content-Length: {len(body)}'.encode(), head)
         self.assertIn(b'Host: localhost:18080', head)
         self.assertNotIn(b'external.invalid', wire)
+        self.assertIs(call.call_args.kwargs['close_stdin'], False)
 
     def test_chunked_response_and_hop_headers(self):
         response = (b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n'

@@ -18,6 +18,9 @@ import drill_files
 PORTS = {'rest': 3000, 'auth': 9999, 'storage': 5000, 'edge': 9000, 'https': 18080}
 ALIASES = {'bos-release-probe-' + role: '127.0.0.1' for role in ('rest', 'auth', 'storage')}
 SAFE_PATH = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+# A logical HTTPS origin satisfies the captured report URL contract. It is
+# never contacted: the browser portal maps only its Storage paths locally.
+LOGICAL_PUBLIC_ORIGIN = 'https://bos-local.invalid'
 ENV_KEY = re.compile(r'[A-Za-z_][A-Za-z0-9_]*')
 IDENT = re.compile(r'[A-Za-z_][A-Za-z0-9_]{0,62}')
 SLUG = re.compile(r'[a-z][a-z0-9-]{0,79}')
@@ -151,7 +154,7 @@ def gateway(context, read_file, prefix, origin, secret):
                         'APP_GATEWAY_SOURCE_HASH_INVALID')
     # A local worker endpoint deliberately has no handler; no production GAS URL/key is reused.
     generated = {'gateway/routes.json': json_bytes(routes), 'gateway/bos-report-env.json': json_bytes({
-        'version': 1, 'internal': 'http://127.0.0.1:9000', 'public': origin,
+        'version': 1, 'internal': 'http://127.0.0.1:9000', 'public': LOGICAL_PUBLIC_ORIGIN,
         'legacy': '', 'workerKey': secret, 'gas': 'http://127.0.0.1:18080/__bos_blocked/gas'})}
     return keys, generated
 
@@ -380,7 +383,7 @@ def build_plan(context, read_file, origin):
         output[role]['mounts'] = mounts[role]
     return {'roles': output, 'mounts': mounts, 'generated_files': generated, 'db_roles': passwords,
             'secrets': secret, 'aliases': dict(ALIASES), 'ports': dict(PORTS),
-            'source_origins': sorted(source_origins),
+            'source_origins': sorted(source_origins), 'logical_public_origin': LOGICAL_PUBLIC_ORIGIN,
             'gateway_archive_prefix': prefixes[('edge', '/bos-main')],
             'web_archive_prefix': prefixes[('https', '/srv')], 'storage_archive_prefix': storage_prefix,
             'application': 'NOT_RUN', 'disaster_recovery_ready': False}

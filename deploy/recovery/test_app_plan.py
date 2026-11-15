@@ -103,10 +103,14 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(first['roles']['storage']['env']['TUS_USE_FILE_VERSION_SEPARATOR'], 'true')
         self.assertEqual(first['roles']['storage']['cmd'], ['/app/dist/start/server.js'])
 
-    def test_gateway_uses_local_public_url_and_no_production_worker_key(self):
+    def test_gateway_uses_logical_https_url_and_no_production_worker_key(self):
         result = self.plan()
         config = json.loads(result['generated_files']['gateway/bos-report-env.json'])
-        self.assertEqual(config['public'], 'http://127.0.0.1:18701')
+        self.assertEqual(config['public'], 'https://bos-local.invalid')
+        self.assertEqual(result['logical_public_origin'], config['public'])
+        self.assertNotIn(config['public'], result['source_origins'])
+        self.assertEqual(result['roles']['auth']['env']['GOTRUE_SITE_URL'], 'http://127.0.0.1:18701')
+        self.assertEqual(result['roles']['edge']['env']['SUPABASE_URL'], 'http://127.0.0.1:9000')
         self.assertEqual(config['internal'], 'http://127.0.0.1:9000')
         self.assertIn('/__bos_blocked/', config['gas'])
         self.assertEqual(config['workerKey'], result['secrets']['worker'])

@@ -36,7 +36,7 @@ def _require(condition, reason):
         raise Stop(reason)
 
 
-def input_call(runner, args, data, *, timeout=90, limit=64 * MIB):
+def input_call(runner, args, data, *, timeout=90, limit=64 * MIB, close_stdin=True):
     """Run pinned Docker with bounded concurrent binary stdin/stdout/stderr."""
     runner.last_error = b''
     _require(isinstance(data, bytes) and len(data) <= 64 * MIB,
@@ -46,6 +46,7 @@ def input_call(runner, args, data, *, timeout=90, limit=64 * MIB):
              'APP_DOCKER_ARGUMENT_INVALID')
     _require(isinstance(limit, int) and not isinstance(limit, bool)
              and 0 < limit <= 256 * MIB, 'APP_DOCKER_ARGUMENT_INVALID')
+    _require(isinstance(close_stdin, bool), 'APP_DOCKER_ARGUMENT_INVALID')
     _require(isinstance(args, (list, tuple)) and args
              and all(isinstance(a, str) and '\0' not in a for a in args),
              'APP_DOCKER_ARGUMENT_INVALID')
@@ -87,7 +88,11 @@ def input_call(runner, args, data, *, timeout=90, limit=64 * MIB):
         except (OSError, ValueError):
             io_error.set()
         finally:
-            process.stdin.close()
+            # nc turns stdin EOF into a TCP half-close. Some asynchronous HTTP
+            # servers close that socket before producing the response, so HTTP
+            # keeps stdin open until the server's Connection:close completes.
+            if close_stdin:
+                process.stdin.close()
 
     threads = [threading.Thread(target=write, daemon=True),
                threading.Thread(target=read, args=(process.stdout, stdout, limit), daemon=True),
@@ -284,5 +289,5 @@ def http_call(runner, anchor_cid, method, path, headers, body, *, port=18080):
     request = _request(method, path, headers, body, port)
     raw = input_call(runner, ['exec', '-i', '--user', 'postgres', anchor_cid,
                              '/bin/busybox', 'nc', '-w', '60', '127.0.0.1', str(port)],
-                     request, timeout=90, limit=64 * MIB)
+                     request, timeout=90, limit=64 * MIB, close_stdin=False)
     return _response(raw, method)

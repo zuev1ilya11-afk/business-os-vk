@@ -225,7 +225,7 @@ class BrowserMetadataTests(unittest.TestCase):
         obj = app_storage.MappedObject('id', 'bucket', 'photo', None, 'root-000/photo', '/object/photo',
             len(payload), hashlib.sha256(payload).hexdigest(), 'image/jpeg', 'max-age=60', 'gzip')
         session = types.SimpleNamespace(_stopped=False, containers={'db': CID}, _owned={CID: {}},
-            runner=Mock(), _mapped={'bucket/photo': obj})
+            runner=Mock(), _mapped={'bucket/photo': obj}, _signed_urls=None)
         with patch.object(app, 'verify_container'), patch.object(app.app_transport, 'http_call',
              return_value=(200, {'content-type': 'application/octet-stream'}, payload)):
             _, headers, _ = app.AppSession._transport(session, 'GET', '/storage/v1/object/public/bucket/photo', {}, b'')

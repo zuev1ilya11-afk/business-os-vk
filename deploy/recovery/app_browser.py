@@ -25,6 +25,7 @@ KNOWN_ORIGINS = frozenset({
     'https://business-os-api-gateway-ukp6ew.v2.appdeploy.ai',
     'https://business-os-api-gateway.netlify.app',
 })
+STORAGE_ONLY_ORIGINS = frozenset({'http://127.0.0.1:9000', 'https://bos-local.invalid'})
 BLOCKED_FUNCTIONS = frozenset({
     'push-api', 'vk-auth', 'vk-session-api', 'avito-api',
     'avito-assistant-api', 'hands-api', 'hands-report-api',
@@ -96,6 +97,10 @@ def rewrite_url(value, local_origin, allowed_origins, *, asset=False):
         return None
     if origin == local_origin:
         return local_origin + urlunsplit(('', '', _api_path(p.path) or p.path or '/', p.query, p.fragment))
+    if origin in STORAGE_ONLY_ORIGINS:
+        if not p.path.startswith('/storage/v1/'):
+            return None
+        return local_origin + urlunsplit(('', '', p.path, p.query, p.fragment))
     if origin not in allowed_origins:
         return None
     mapped = _api_path(p.path)
@@ -109,6 +114,7 @@ def rewrite_url(value, local_origin, allowed_origins, *, asset=False):
 _GUARD = r'''(()=>{
 'use strict';
 const allowed=new Set(__ORIGINS__), blocked=new Set(__BLOCKED__), base=location.origin;
+const storageOnly=new Set(__STORAGE_ORIGINS__);
 const nativeFetch=window.fetch.bind(window);
 const blockedMessage='Внешняя интеграция отключена в локальной проверке восстановления.';
 function remap(value,asset=false){
@@ -116,7 +122,9 @@ function remap(value,asset=false){
  if(asset&&u.protocol==='blob:'&&u.origin===base)return {url:u.href,disabled:false};
  if(!/^https?:$/.test(u.protocol)||u.username||u.password)throw new TypeError('LOCAL_DRILL_EXTERNAL_BLOCKED');
  const same=u.origin===base;
- if(!same&&!allowed.has(u.origin))throw new TypeError('LOCAL_DRILL_EXTERNAL_BLOCKED');
+ const storageOrigin=storageOnly.has(u.origin);
+ if(storageOrigin&&!u.pathname.startsWith('/storage/v1/'))throw new TypeError('LOCAL_DRILL_EXTERNAL_BLOCKED');
+ if(!same&&!storageOrigin&&!allowed.has(u.origin))throw new TypeError('LOCAL_DRILL_EXTERNAL_BLOCKED');
  let p=u.pathname.replace(/^\/app\/business-os-api-gateway-(?:3y8h7e|ukp6ew)(?=\/)/,'');
  const m=p.match(/^\/(?:functions\/v1|api\/proxy)\/([a-z0-9][a-z0-9-]*)\/?$/);
  if(m)p='/functions/v1/'+m[1];
@@ -168,6 +176,7 @@ window.BOS_LOCAL_DRILL=true;
 
 def guard_script(allowed_origins):
     return (_GUARD.replace('__ORIGINS__', json.dumps(sorted(allowed_origins)))
+            .replace('__STORAGE_ORIGINS__', json.dumps(sorted(STORAGE_ONLY_ORIGINS)))
             .replace('__BLOCKED__', json.dumps(sorted(BLOCKED_FUNCTIONS)))).encode('utf-8')
 
 
