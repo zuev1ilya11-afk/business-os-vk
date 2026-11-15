@@ -1,6 +1,6 @@
 {
   "date_utc": "2026-11-15",
-  "status": "RESTORE_DRILL_OPERATOR_VERIFIED_APPLICATION_PACKAGE_CI_VERIFIED_OPERATOR_APP_PENDING",
+  "status": "RESTORE_DRILL_OPERATOR_VERIFIED_APP_LAUNCH_STOPPED_ROUTE_DIAGNOSIS_PENDING",
   "tests": {
     "unit_passed": 119,
     "backup_safety": 35,
@@ -209,7 +209,7 @@
     }
   },
   "application_launch": {
-    "status": "PACKAGE_VERIFIED_OPERATOR_LAUNCH_PENDING",
+    "status": "OPERATOR_STOPPED_PREPARING_PLAN",
     "artifact": "BOS-App-20261115-v1.zip",
     "bytes": 11175648,
     "sha256": "82b9a8314acd913c1fd41884e03cf1cc94425faa2453e9020bb0ba555c91acb9",
@@ -286,6 +286,17 @@
     "database_storage_consistency": "NOT_PROVEN",
     "storage_extended_attributes": "NOT_CAPTURED",
     "docker_data_disk_on_E": "NOT_CONFIRMED",
-    "disaster_recovery_ready": false
+    "disaster_recovery_ready": false,
+    "operator_attempt": {
+      "date_utc": "2026-11-15",
+      "evidence": "operator screenshot image(20261115-165432).png",
+      "reason": "APP_GATEWAY_ROUTE_INVALID",
+      "failed_stage": "PREPARING_PLAN",
+      "application": "NOT_RUN",
+      "run_id": "bos-app-f47a01930694",
+      "next_action": "READ_ONLY_ROUTE_STRUCTURE_DIAGNOSTIC",
+      "exact_rejected_route": "UNKNOWN_UNTIL_OPERATOR_DIAGNOSTIC"
+    },
+    "confirmed_code_correction": "Historical routes.json hashes are not capture integrity baseline; actual manifest/inventory validation remains mandatory. This does not yet resolve the observed route schema refusal."
   }
 }

@@ -96,12 +96,12 @@ Deno.serve(async(req)=>{
    return await fetch(new Request(target,req));
   }
  }
- const slug=url.pathname.split('/')[3];
- if(!routes[slug]) return new Response('fixture route absent',{status:404});
+ const slug=url.pathname.split('/')[3],route=routes[slug];
+ if(!route) return new Response('fixture route absent',{status:404});
  const worker=await EdgeRuntime.userWorkers.create({
   servicePath:'/bos-src/'+slug,
   maybeEszip:await Deno.readFile('/bos-bundles/'+slug+'.eszip'),
-  maybeEntrypoint:'file:///bos-src/'+slug+'/supabase/functions/'+slug+'/index.ts',
+  maybeEntrypoint:'file:///bos-src/'+slug+'/'+route.entrypoint,
   memoryLimitMb:128,workerTimeoutMs:30000,noModuleCache:false,
   envVars:keys.map(key=>[key,Deno.env.get(key)||'']),
   forceCreate:false,cpuTimeSoftLimitMs:5000,cpuTimeHardLimitMs:10000
@@ -109,7 +109,10 @@ Deno.serve(async(req)=>{
  return await worker.fetch(req);
 });
 '''
-MINI = r'''Deno.serve(async(req)=>{
+MINI = r'''import { expenseVersion } from '../../../finance-expenses.js';
+import { payrollVersion } from '../../../order-payroll.js';
+import { detailsVersion } from '../_shared/hands-details.ts';
+Deno.serve(async(req)=>{
  const input=req.method==='POST'?await req.json():{};
  const headers={'apikey':Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
  'Authorization':'Bearer '+Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
@@ -122,7 +125,7 @@ MINI = r'''Deno.serve(async(req)=>{
  }
  const response=await fetch(Deno.env.get('SUPABASE_URL')+suffix,init);
  if(!response.ok)return new Response(await response.text(),{status:response.status});
- return Response.json({ok:true,orders:await response.json()});
+ return Response.json({ok:true,orders:await response.json(),fixture_version:expenseVersion+payrollVersion+detailsVersion});
 });
 '''
 PASSWORD_FUNCTION = "Deno.serve(()=>Response.json({ok:true,fixture_only:true}));\n"
@@ -443,19 +446,38 @@ class RealApplicationLaunch(unittest.TestCase):
     def prepare_gateway(cls):
         (cls.capture / 'edge/main/index.ts').write_text(GATEWAY)
         write_json(cls.capture / 'edge/main/bos-report-env.json', {'synthetic': True})
-        write_json(cls.capture / 'edge/main/routes.json', {name: '/bos-bundles/' + name + '.eszip'
-                   for name in ('mini-app-api', 'password-session-api')})
+        cls.routes = {}
         for slug, code in (('mini-app-api', MINI), ('password-session-api', PASSWORD_FUNCTION)):
-            relative = slug + '/supabase/functions/' + slug + '/index.ts'
-            path = cls.capture / 'edge/sources' / relative
-            path.parent.mkdir(parents=True)
-            path.write_text(code)
+            entrypoint = 'supabase/functions/' + slug + '/index.ts'
+            sources = {entrypoint: code}
+            if slug == 'mini-app-api':
+                sources.update({
+                    'finance-expenses.js': 'export const expenseVersion=1;\n',
+                    'order-payroll.js': 'export const payrollVersion=1;\n',
+                    'supabase/functions/_shared/hands-details.ts': 'export const detailsVersion=1;\n',
+                })
+            for relative, content in sources.items():
+                path = cls.capture / 'edge/sources' / slug / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(content)
             cls.docker.run(['run', '--rm', '--network', 'none', '--cap-drop', 'ALL',
                 '--security-opt', 'no-new-privileges', '--entrypoint', 'edge-runtime',
                 '--mount', 'type=bind,src=' + str(cls.capture / 'edge/sources') + ',dst=/bos-src,readonly',
                 '--mount', 'type=bind,src=' + str(cls.capture / 'edge/bundles') + ',dst=/bos-output',
-                cls.images['edge']['Id'], 'bundle', '--entrypoint', '/bos-src/' + relative,
+                cls.images['edge']['Id'], 'bundle', '--entrypoint', '/bos-src/' + slug + '/' + entrypoint,
                 '--output', '/bos-output/' + slug + '.eszip', '--quiet', '--timeout', '90'], timeout=120)
+            # This five-field schema and the mini-app source names are the
+            # server-observed contract in deploy/finance-export/README.md.
+            # report-submit/release.py copies routes unchanged while replacing
+            # source/bundle bytes. Deliberately stale hashes reproduce that
+            # supported state; inventory.json remains the byte-integrity proof.
+            cls.routes[slug] = {
+                'entrypoint': entrypoint, 'import_map': None, 'verify_jwt': False,
+                'bundle_sha256': hashlib.sha256(('previous bundle metadata ' + slug).encode()).hexdigest(),
+                'source_sha256': {name: hashlib.sha256(('previous source metadata ' + name).encode()).hexdigest()
+                                  for name in sources},
+            }
+        write_json(cls.capture / 'edge/main/routes.json', cls.routes)
 
     @classmethod
     def captured_containers(cls):
@@ -536,6 +558,9 @@ class RealApplicationLaunch(unittest.TestCase):
         self.assertNotEqual(session.volume, self.baseline['volume'])
         self.assertEqual(set(session.containers), set(discovery.ROLES))
         anchor = session.containers['db']
+        preserved_routes = json.loads(self.docker.run(['exec', session.containers['edge'],
+                                                       'cat', '/bos-main/routes.json']))
+        self.assertEqual(preserved_routes, self.routes)
         for role, cid in session.containers.items():
             record = json.loads(self.docker.run(['inspect', cid]))[0]
             host = record['HostConfig']
@@ -560,6 +585,7 @@ class RealApplicationLaunch(unittest.TestCase):
                                       b'{"action":"bootstrap"}', {'Content-Type': 'application/json'})
         self.assertEqual(status, 200, body[:1024])
         self.assertEqual([row['quantity'] for row in json.loads(body)['orders']], [1, 2, 3])
+        self.assertEqual(json.loads(body)['fixture_version'], 3)
         status, _, body = self.request(session, 'GET', '/storage/v1/object/public/fixture-bucket/fixture.bin')
         self.assertEqual(status, 200, body[:1024])
         self.assertEqual(body, FIXTURE_BYTES)

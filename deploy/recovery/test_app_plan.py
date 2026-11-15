@@ -165,9 +165,44 @@ class PlanTests(unittest.TestCase):
         del self.context['inventory']['root-000/mini-app-api.eszip']
         self.failure('APP_ROUTE_PAYLOAD_MISSING')
 
-    def test_route_hash_mismatch_fails_preflight(self):
-        self.context['inventory']['root-000/mini-app-api.eszip']['sha256'] = 'f' * 64
-        self.failure('APP_ROUTE_PAYLOAD_HASH_MISMATCH')
+    def test_stale_release_hash_metadata_is_preserved_not_used_as_capture_baseline(self):
+        routes = json.loads(self.files['root-003/routes.json'])
+        routes['mini-app-api']['bundle_sha256'] = 'f' * 64
+        entry = routes['mini-app-api']['entrypoint']
+        routes['mini-app-api']['source_sha256'][entry] = 'e' * 64
+        self.add('root-003/routes.json', routes)
+        inventory = copy.deepcopy(self.context['inventory'])
+        result = self.plan()
+        self.assertEqual(json.loads(result['generated_files']['gateway/routes.json']), routes)
+        self.assertEqual(self.context['inventory'], inventory)
+        self.assertNotEqual(inventory['root-000/mini-app-api.eszip']['sha256'], 'f' * 64)
+        self.assertNotEqual(inventory['root-004/mini-app-api/' + entry]['sha256'], 'e' * 64)
+        # Historical metadata does not make a missing actual payload acceptable.
+        del self.context['inventory']['root-000/mini-app-api.eszip']
+        self.failure('APP_ROUTE_PAYLOAD_MISSING')
+
+    def test_route_hash_format_and_structural_guards_stay_strict(self):
+        baseline = json.loads(self.files['root-003/routes.json'])
+        cases = [('bundle_sha256', 'not-a-digest'), ('verify_jwt', 'false'),
+                 ('entrypoint', '/outside/index.ts'), ('import_map', 'https://outside.invalid/map.json'),
+                 ('source_sha256', []), ('unexpected_field', True)]
+        for field, value in cases:
+            with self.subTest(field=field):
+                routes = copy.deepcopy(baseline)
+                routes['mini-app-api'][field] = value
+                self.add('root-003/routes.json', routes)
+                with self.assertRaises(p.Stop):
+                    self.plan()
+
+    def test_unconfirmed_root_entrypoint_shape_stays_rejected(self):
+        # pr289 proves push-api source/index.ts exists, but no captured route
+        # record is available here. Do not infer or broaden route JSON schema.
+        routes = json.loads(self.files['root-003/routes.json'])
+        route = routes['mini-app-api']
+        route['entrypoint'] = 'index.ts'
+        route['source_sha256'] = {'index.ts': 'e' * 64}
+        self.add('root-003/routes.json', routes)
+        self.failure('APP_GATEWAY_ROUTE_INVALID')
 
     def test_same_login_user_gets_one_shared_password(self):
         self.container('storage')['Config']['Env'] = [v.replace('storage_user:', 'rest_user:') for v in self.container('storage')['Config']['Env']]
