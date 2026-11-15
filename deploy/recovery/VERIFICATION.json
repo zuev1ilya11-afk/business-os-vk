@@ -2,11 +2,11 @@
   "date_utc": "2026-11-15",
   "status": "LOCAL_UNIT_VERIFIED_CI_REQUIRED",
   "tests": {
-    "unit_passed": 72,
-    "backup_safety": 32,
-    "discovery": 40,
-    "real_postgresql_cases": 4,
-    "real_postgresql_this_revision": "CI_REQUIRED; includes 5 SCRAM credential subcases; local binaries absent"
+    "unit_passed": 85,
+    "backup_safety": 35,
+    "discovery": 50,
+    "real_postgresql_cases": 5,
+    "real_postgresql_this_revision": "CI_REQUIRED; includes existing admin selection, unchanged roles and data, and real SCRAM rejection; local binaries absent"
   },
   "postgresql": "Current real-database validation belongs to the Recovery package CI run for this revision.",
   "local_transport": "No local PostgreSQL run on 2026-11-15; previous 2026-11-14 run used loopback.",
@@ -32,13 +32,13 @@
   "disaster_recovery_ready": false,
   "ci": "See Recovery package workflow for this exact revision; no new CI success is claimed by this local record.",
   "sha256": {
-    "backup.py": "cc3128096e15294f6836fd4759b0116780244af1c4a293f5b898257e7f9d2c74",
-    "discovery.py": "0bd9dc5e6676c0871213b88129de044f60024c7442460e596f691610ab1f9172",
+    "backup.py": "f8ead7b4cc211dba2b68114cf1fe176fdb690811424d928b9fe3ce2453be50e8",
+    "discovery.py": "556257938b228dfcb02006920315ca04203b34dffdec6e7487e7db22e54d8230",
     "build.py": "47bfd7ab53d5b628f4a1e988376c8ee7c2fac6a30689d0ae3918498bf8824b26",
-    "test_backup.py": "005d9e0bed5f6318604320881c8fa129f2fbc0ca4bca335a2a5111c3508a8339",
-    "test_discovery.py": "2c71dae427180cf07a8e715b7d0de2190dffad48bb50e9fdb058e4600f95dc49",
-    "test_postgres.py": "59c7fb95e3db17f6de4e4cc2f8e87af2480cd813c254ab7dfd3ce60944322daf",
-    "bos-backup.pyz": "266ec6e22e327e2fb6edd0e96458f949112e6d6a2fcd79711ed45614f7dae54a"
+    "test_backup.py": "899f14cd33f81f21f7494abeb37eddbfba934cf876b8ebc79233e237bab82169",
+    "test_discovery.py": "8394c661e716a72774d58f97b8fb19952b6639317875f906a16f17f23e31b653",
+    "test_postgres.py": "ac28c5685893710b6d6b82a8e54a0bf1b00c0e69f021da8f5a3f508745f929c1",
+    "bos-backup.pyz": "596510457134c9ab54a66a87bcc701d7b4fff0c33b630d17973db609642aa606"
   },
   "previous_full_verification": {
     "commit": "6d706eb0ff37886d1420f11d9327c3013d0a8a1c",
@@ -47,12 +47,19 @@
     "ci_run": 43627417693,
     "ci_postgresql": "17.6"
   },
-  "server_observation": "Package 7dd8cbb stopped at DATABASE_CONFIG_QUERY_FAILED before capture; cause not identified from generic code. Current package preserves container credentials and distinguishes safe error categories; production result pending.",
+  "server_observation": "Package 6272bf30 stopped at DATABASE_METADATA_PERMISSION_DENIED before capture. Current package verifies the existing backup identity and uses it for metadata, dump and globals without changing roles or credentials; live result pending.",
   "previous_metadata_fix_validation": {
     "commit": "7dd8cbb696e6e7f2229a042d7e3f091c02e59b54",
     "unit_passed": 65,
     "real_postgresql_cases": 3,
     "ci_run": 43694602748,
+    "ci_postgresql": "17.6"
+  },
+  "previous_auth_fix_validation": {
+    "commit": "6272bf30f2ce782952bcc4d876adb3c056b23ea3",
+    "unit_passed": 72,
+    "real_postgresql_cases": 4,
+    "ci_run": 43695687548,
     "ci_postgresql": "17.6"
   }
 }

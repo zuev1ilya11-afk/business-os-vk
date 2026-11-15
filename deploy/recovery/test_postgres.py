@@ -181,6 +181,7 @@ class FakeDocker:
                 if env.get(key) != self.source.env.get(key):
                     raise AssertionError('Container authentication was not preserved')
         program, pg_args = command[0], command[1:]
+        database_user = None
         if program not in ('psql', 'pg_dump', 'pg_dumpall', 'pg_restore'):
             raise AssertionError('Unexpected executable')
         if program == 'pg_restore':
@@ -189,15 +190,18 @@ class FakeDocker:
         else:
             if env.get('PGOPTIONS') != READ_ONLY:
                 raise AssertionError('Capture did not preserve read-only PGOPTIONS')
-            if pg_args[:7] != ['-h', '/var/run/postgresql', '-p', '5432', '-U', 'postgres', '-w']:
+            if (len(pg_args) < 7 or pg_args[:5] != ['-h', '/var/run/postgresql', '-p', '5432', '-U']
+                    or pg_args[5] not in ('postgres', 'supabase_admin') or pg_args[6] != '-w'):
                 raise AssertionError('Unexpected database routing')
+            database_user = pg_args[5]
             pg_args = ['-h', self.source.host, '-p', str(self.source.port), *pg_args[4:]]
         with (input_path.open('rb') if input_path else open(os.devnull, 'rb')) as stdin:
             result = subprocess.run([str(self.source.binary / program), *pg_args],
                                     stdin=stdin, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                     env=env, timeout=min(timeout, inner_timeout))
         self.processes.append({'program': program, 'returncode': result.returncode,
-                               'readonly': env.get('PGOPTIONS') == READ_ONLY})
+                               'readonly': env.get('PGOPTIONS') == READ_ONLY,
+                               'database_user': database_user})
         self.last_error = result.stderr
         if result.returncode:
             raise backup.Stop('COMMAND_FAILED')
@@ -268,11 +272,11 @@ SELECT jsonb_build_object(
 
 
 @contextmanager
-def laboratory(binary):
+def laboratory(binary, source_user='postgres'):
     # Short /tmp paths keep Unix sockets below sockaddr_un's path length limit.
     with tempfile.TemporaryDirectory(prefix='bos-pg-', dir='/tmp') as temp:
         root = Path(temp).resolve()
-        source = Cluster(root, 'source', 'postgres', binary)
+        source = Cluster(root, 'source', source_user, binary)
         target = Cluster(root, 'target', 'postgres', binary)
         try:
             source.start()
@@ -346,6 +350,99 @@ class PostgreSQLIntegration(unittest.TestCase):
         if not version.startswith('postgres (PostgreSQL) 17.'):
             raise RuntimeError('Integration requires PostgreSQL major 17: ' + version)
         print('\nReal database binaries: ' + version, flush=True)
+
+    def test_existing_admin_selected_for_complete_capture_without_role_changes(self):
+        # A demoted bootstrap postgres still owns system catalogs. Use the
+        # Supabase-like owner here so the limited postgres permission failures
+        # are real; every role and privilege change below belongs to this lab.
+        with laboratory(self.binary, source_user='supabase_admin') as (root, source, target):
+            runner = FakeDocker(source)
+            layout, _ = layout_fixture(root, source, runner)
+            admin_password = 'synthetic-existing-admin-password'
+            source.sql('postgres', "CREATE ROLE postgres LOGIN SUPERUSER; "
+                       "ALTER ROLE postgres NOSUPERUSER; "
+                       "SET password_encryption='scram-sha-256'; "
+                       "ALTER ROLE supabase_admin PASSWORD '" + admin_password + "';")
+            mapped = [(source.path, PurePosixPath(source.path), True)]
+            before_data = source.sql('synthetic', SNAPSHOT_SQL)
+
+            def role_snapshot():
+                dump = source.run('pg_dumpall', ['-h', source.host, '-p', str(source.port),
+                                  '-U', source.user, '-w', '-l', 'synthetic', '--roles-only']).stdout.decode()
+                return '\n'.join(line for line in dump.splitlines()
+                                 if not line.startswith(('\\restrict ', '\\unrestrict ')))
+
+            before_roles = role_snapshot()
+            with patch.object(backup.discovery, 'DATABASE', 'synthetic'):
+                with self.assertRaises(backup.discovery.Stop):
+                    backup.discovery.database_config_files(runner, {'Id': runner.container}, mapped)
+                self.assertIn(b'permission denied', runner.last_error)
+                with self.assertRaisesRegex(backup.Stop, '^COMMAND_FAILED$'):
+                    runner(backup.db_command(layout, 'pg_dumpall', ['--globals-only', '-l', 'synthetic']))
+                self.assertIn(b'permission denied', runner.last_error)
+                probes = []
+
+                def record_probe(args, **kwargs):
+                    response = runner(args, **kwargs)
+                    probes.append(json.loads(response))
+                    return response
+
+                selected = backup.discovery.select_backup_role(record_probe, {'Id': runner.container})
+                self.assertEqual(selected, 'supabase_admin')
+                self.assertEqual(probes, [
+                    {'user': 'postgres', 'session_user': 'postgres', 'database': 'synthetic',
+                     'readonly': True, 'superuser': False, 'supabase_admin': True},
+                    {'user': 'supabase_admin', 'session_user': 'supabase_admin', 'database': 'synthetic',
+                     'readonly': True, 'superuser': True, 'supabase_admin': True},
+                ])
+                self.assertEqual(backup.discovery.database_config_files(
+                    runner, {'Id': runner.container}, mapped, user=selected), set())
+            layout['database_user'] = selected
+            start = len(runner.processes)
+            with patch.object(backup.discovery, 'discover', return_value=layout):
+                bundle = backup.capture(layout, root / 'output', runner)
+            self.assertEqual(backup.verify(bundle)['integrity'], 'VERIFIED')
+            self.assertTrue((bundle / 'database.dump').read_bytes().startswith(b'PGDMP'))
+            captured_globals = (bundle / 'globals.sql').read_text()
+            self.assertIn('CREATE ROLE supabase_admin;', captured_globals)
+            for name in ('supabase_admin', 'app_login'):
+                password_hash = source.sql('postgres', "SELECT rolpassword FROM pg_authid WHERE rolname='" + name + "';")
+                self.assertTrue(password_hash.startswith('SCRAM-SHA-256$'))
+                self.assertIn(password_hash, captured_globals)
+            self.assertEqual(role_snapshot(), before_roles)
+            self.assertEqual(source.sql('synthetic', SNAPSHOT_SQL), before_data)
+            self.assertTrue(all(p['database_user'] == 'supabase_admin' and p['readonly']
+                                for p in runner.processes[start:] if p['program'] != 'pg_restore'))
+
+            # The candidate exists, but authentication may still fail. Require
+            # its real SCRAM rejection; postgres remains able to run its probe.
+            (source.path / 'pg_hba.conf').write_text(
+                'local all supabase_admin scram-sha-256\nlocal all all trust\n'
+                'host all supabase_admin 127.0.0.1/32 scram-sha-256\n'
+                'host all all 127.0.0.1/32 trust\n'
+                'host all supabase_admin ::1/128 scram-sha-256\n'
+                'host all all ::1/128 trust\n')
+            source.run('pg_ctl', ['-D', str(source.path), 'reload'])
+            source.env['PGPASSWORD'] = 'synthetic-wrong-admin-password'
+            deadline = time.monotonic() + 5
+            with patch.object(backup.discovery, 'DATABASE', 'synthetic'):
+                while True:
+                    try:
+                        backup.discovery.select_backup_role(runner, {'Id': runner.container})
+                    except backup.discovery.Stop:
+                        self.assertIn(b'password authentication failed', runner.last_error)
+                        self.assertEqual(runner.processes[-1]['database_user'], 'supabase_admin')
+                        self.assertNotEqual(runner.processes[-1]['returncode'], 0)
+                        self.assertEqual(runner.processes[-2]['database_user'], 'postgres')
+                        self.assertEqual(runner.processes[-2]['returncode'], 0)
+                        break
+                    if time.monotonic() >= deadline:
+                        self.fail('Synthetic candidate did not reject incorrect credentials')
+                    time.sleep(0.05)
+            source.env['PGPASSWORD'] = admin_password
+            self.assertEqual(role_snapshot(), before_roles)
+        self.assertFalse(root.exists())
+        self.assertFalse(source.started or target.started)
 
     def test_scram_auth_preserves_container_password_and_passfile(self):
         with laboratory(self.binary) as (root, source, target):

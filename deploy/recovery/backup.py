@@ -454,10 +454,13 @@ def capture(layout, output_root, runner):
     before_signature = signature(layout['containers'])
     after_signature = signature(after['containers'])
     if (before_signature != after_signature or layout['roots'] != after['roots']
-            or layout['protected'] != after['protected'] or inventory(sources) != entries):
+            or layout['protected'] != after['protected']
+            or layout.get('database_user', 'postgres') != after.get('database_user', 'postgres')
+            or inventory(sources) != entries):
         raise Stop('SOURCE_CHANGED')
     write_json(partial / 'private-config.json',
                {'containers': layout['containers'], 'database': meta,
+                'database_user': layout.get('database_user', 'postgres'),
                 'images': image_meta, 'roots': [str(p) for p in sources],
                 'contains_secrets': True})
     write_json(partial / 'inventory.json', files)

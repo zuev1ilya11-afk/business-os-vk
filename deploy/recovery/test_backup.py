@@ -200,6 +200,71 @@ class CaptureTests(unittest.TestCase):
                 self.assertIn('--list', args)
                 self.assertNotIn('-d', args)
 
+    def test_selected_admin_role_reaches_all_database_connections_and_private_config(self):
+        self.layout['database_user'] = 'supabase_admin'
+        code, result = self.cli(['capture', '--output', str(self.output)])
+        self.assertEqual(code, 0)
+        bundle = Path(result['bundle'])
+        private = json.loads((bundle / 'private-config.json').read_text())
+        self.assertEqual(private['database_user'], 'supabase_admin')
+        self.assertEqual(stat.S_IMODE((bundle / 'private-config.json').stat().st_mode), 0o600)
+        self.assertNotIn('supabase_admin', json.dumps(result))
+        self.assertNotIn('supabase_admin', (bundle / 'manifest.json').read_text())
+        connections = {}
+        for _, args, _ in self.runner.calls:
+            for program in ('psql', 'pg_dump', 'pg_dumpall'):
+                if program in args:
+                    connections[program] = connections.get(program, 0) + 1
+                    self.assertEqual(args.count('-U'), 1)
+                    self.assertEqual(args[args.index('-U') + 1], 'supabase_admin')
+                    self.assertEqual(args[:4], ['exec', '-u', 'postgres', self.layout['database_container']])
+                    self.assertEqual(args[args.index('-h') + 1], '/var/run/postgresql')
+                    self.assertEqual(args[args.index('-p') + 1], '5432')
+                    database_flag = '-l' if program == 'pg_dumpall' else '-d'
+                    self.assertEqual(args[args.index(database_flag) + 1], self.layout['database'])
+                    self.assertIn('-w', args)
+                    self.assertIn('PGOPTIONS=-c default_transaction_read_only=on -c statement_timeout=600000', args)
+            if 'pg_restore' in args:
+                self.assertIn('--list', args)
+                self.assertNotIn('-U', args)
+                self.assertNotIn('-d', args)
+        self.assertEqual(connections, {'psql': 1, 'pg_dump': 1, 'pg_dumpall': 1})
+
+    def test_changed_database_role_between_discovery_and_capture_is_not_promoted(self):
+        for before, after_user in [('supabase_admin', 'postgres'),
+                                   ('supabase_admin', None), (None, 'supabase_admin')]:
+            with self.subTest(before=before, after=after_user):
+                self.output = self.root / f'role-change-{before}-{after_user}'
+                self.layout.pop('database_user', None)
+                if before is not None:
+                    self.layout['database_user'] = before
+                after = copy.deepcopy(self.layout)
+                after.pop('database_user', None)
+                if after_user is not None:
+                    after['database_user'] = after_user
+                self.discovery.side_effect = lambda runner, value=after: value
+                with self.assertRaisesRegex(b.Stop, '^SOURCE_CHANGED$'):
+                    self.capture()
+                self.assert_no_final()
+
+    def test_database_command_role_allowlist_and_legacy_default(self):
+        for role in (None, 'postgres', 'supabase_admin'):
+            with self.subTest(role=role):
+                layout = {'database_container': 'b' * 64}
+                if role is not None:
+                    layout['database_user'] = role
+                args = b.db_command(layout, 'psql', ['-d', 'fixture_database'])
+                self.assertEqual(args[args.index('-U') + 1], role or 'postgres')
+                self.assertEqual(args[:4], ['exec', '-u', 'postgres', 'b' * 64])
+        for role in ('', 'POSTGRES', 'arbitrary_admin', '-h attacker',
+                     'supabase_admin\n' + SECRET, None, 7, ['supabase_admin']):
+            with self.subTest(invalid_role=role):
+                with self.assertRaises((b.Stop, b.discovery.Stop)) as raised:
+                    b.db_command({'database_container': 'b' * 64, 'database_user': role},
+                                 'psql', ['-d', 'fixture_database'])
+                self.assertRegex(str(raised.exception), r'^[A-Z][A-Z0-9_]{1,80}$')
+                self.assertNotIn(SECRET, str(raised.exception))
+
     def test_failure_exit_timeout_warning_diskfull_and_interrupt_never_promote(self):
         cases = [('exit', b.Stop('COMMAND_FAILED')), ('timeout', b.Stop('COMMAND_TIMEOUT')),
                  ('warning', b.Stop('COMMAND_WARNINGS')), ('disk', OSError(errno.ENOSPC, SECRET)),

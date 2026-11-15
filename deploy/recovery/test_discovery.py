@@ -53,12 +53,23 @@ class DiscoveryTests(unittest.TestCase):
                             'files': ['/etc/postgresql/postgresql.conf']}
         self.db_result = None
         self.db_error = None
+        self.role_metadata = {user: {
+            'user': user, 'session_user': user, 'database': d.DATABASE,
+            'readonly': True, 'superuser': True, 'supabase_admin': False,
+        } for user in ('postgres', 'supabase_admin')}
+        self.role_results = {}
+        self.role_errors = {}
         self.run = Mock(side_effect=self.docker)
 
     def docker(self, args, **kwargs):
         containers = [*self.items.values(), *self.other]
         if args[0] == 'exec':
             self.assertIn('psql', args)
+            if args[-1] == d.ROLE_PROBE_SQL:
+                user = args[args.index('-U') + 1]
+                if user in self.role_errors: raise self.role_errors[user]
+                return self.role_results.get(user, json.dumps(self.role_metadata[user]).encode())
+            self.assertEqual(args[-1], d.DB_CONFIG_SQL)
             if self.db_error is not None: raise self.db_error
             return self.db_result if self.db_result is not None else json.dumps(self.db_metadata).encode()
         if args == ['ps', '-aq', '--no-trunc']:
@@ -100,10 +111,11 @@ class DiscoveryTests(unittest.TestCase):
         full = [call for call in self.run.call_args_list if call.args[0][0] == 'inspect'
                 and '--format' not in call.args[0]]
         self.assertEqual(len(full), 1)
-        self.assertEqual(self.run.call_count, 4)
+        self.assertEqual(self.run.call_count, 5)
         self.assertEqual(output.getvalue(), '')
         self.assertEqual(layout['database'], d.DATABASE)
         self.assertEqual(layout['database_container'], self.items['db']['Id'])
+        self.assertEqual(layout['database_user'], 'postgres')
         self.assertNotIn(self.release / 'data', layout['roots'])
         self.assertIn(self.release / 'data', layout['protected'])
         self.assertIn(self.release / 'postgres.conf', layout['roots'])
@@ -185,7 +197,7 @@ class DiscoveryTests(unittest.TestCase):
 
     def test_config_query_is_read_only_local_bounded_and_does_not_pass_credentials(self):
         d.discover(self.run)
-        calls = [call for call in self.run.call_args_list if call.args[0][0] == 'exec']
+        calls = [call for call in self.run.call_args_list if call.args[0][-1] == d.DB_CONFIG_SQL]
         self.assertEqual(len(calls), 1)
         args = calls[0].args[0]
         self.assertEqual(args[:4], ['exec', '-u', 'postgres', self.items['db']['Id']])
@@ -222,13 +234,113 @@ class DiscoveryTests(unittest.TestCase):
         with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
             d.discover(self.run)
         calls = [call for call in self.run.call_args_list if call.args[0][0] == 'exec']
-        self.assertEqual(len(calls), 1)
-        args = calls[0].args[0]
-        self.assertNotIn('PGPASSWORD', args)
-        self.assertNotIn('PGPASSFILE', args)
-        self.assertNotIn('PRIVATE_', str(args))
-        self.assertNotIn('/PRIVATE/', str(args))
+        self.assertEqual(len(calls), 2)
+        for call in calls:
+            args = call.args[0]
+            self.assertNotIn('PGPASSWORD', args)
+            self.assertNotIn('PGPASSFILE', args)
+            self.assertNotIn('PRIVATE_', str(args))
+            self.assertNotIn('/PRIVATE/', str(args))
         self.assertEqual(output.getvalue(), '')
+
+    def role_calls(self):
+        return [call for call in self.run.call_args_list if call.args[0][-1] == d.ROLE_PROBE_SQL]
+
+    def enable_admin_selection(self):
+        self.role_metadata['postgres'].update(superuser=False, supabase_admin=True)
+
+    def test_superuser_postgres_does_not_probe_other_available_admin(self):
+        self.role_metadata['postgres']['supabase_admin'] = True
+        self.assertEqual(d.select_backup_role(self.run, self.items['db']), 'postgres')
+        self.assertEqual(len(self.role_calls()), 1)
+
+    def test_existing_admin_is_verified_once_and_pinned_for_metadata(self):
+        self.enable_admin_selection()
+        layout = d.discover(self.run)
+        self.assertEqual(layout['database_user'], 'supabase_admin')
+        calls = [call for call in self.run.call_args_list if call.args[0][0] == 'exec']
+        self.assertEqual([call.args[0][call.args[0].index('-U') + 1] for call in calls],
+                         ['postgres', 'supabase_admin', 'supabase_admin'])
+        self.assertEqual([call.args[0][-1] for call in calls],
+                         [d.ROLE_PROBE_SQL, d.ROLE_PROBE_SQL, d.DB_CONFIG_SQL])
+        for call in self.role_calls():
+            args = call.args[0]
+            self.assertEqual(args[:4], ['exec', '-u', 'postgres', self.items['db']['Id']])
+            self.assertEqual(args[args.index('-h') + 1], '/var/run/postgresql')
+            self.assertEqual(args[args.index('-p') + 1], '5432')
+            self.assertEqual(args[args.index('-d') + 1], d.DATABASE)
+            self.assertIn('-w', args)
+            self.assertIn('-X', args)
+            self.assertEqual(call.kwargs, {'timeout': 30, 'limit': 65536})
+        self.assertTrue(d.ROLE_PROBE_SQL.startswith('BEGIN READ ONLY;'))
+        self.assertTrue(d.ROLE_PROBE_SQL.endswith('ROLLBACK;'))
+        self.assertNotRegex(d.ROLE_PROBE_SQL.upper(), r'\b(GRANT|ALTER|INSERT|UPDATE|DELETE)\b|SET ROLE')
+        self.assertNotIn('PRIVATE_', str(calls))
+
+    def test_missing_existing_admin_stops_before_metadata(self):
+        self.role_metadata['postgres']['superuser'] = False
+        self.stop('DATABASE_BACKUP_ROLE_UNAVAILABLE')
+        self.assertEqual(len(self.role_calls()), 1)
+        self.assertFalse(any(call.args[0][-1] == d.DB_CONFIG_SQL for call in self.run.call_args_list))
+
+    def test_admin_must_still_be_superuser_after_connecting(self):
+        self.enable_admin_selection()
+        self.role_metadata['supabase_admin']['superuser'] = False
+        self.stop('DATABASE_BACKUP_ROLE_NOT_SUPERUSER')
+        self.assertEqual(len(self.role_calls()), 2)
+
+    def test_role_identity_database_readonly_and_boolean_types_are_verified(self):
+        changes = [{'user': 'PRIVATE_OTHER_USER'}, {'session_user': 'PRIVATE_OTHER_USER'},
+                   {'database': 'PRIVATE_OTHER_DB'}, {'readonly': False}, {'readonly': 1},
+                   {'superuser': 1}, {'supabase_admin': 'true'}, {'extra': 'PRIVATE_VALUE'}]
+        for user in ('postgres', 'supabase_admin'):
+            for change in changes:
+                with self.subTest(user=user, field=next(iter(change))):
+                    self.enable_admin_selection()
+                    self.role_results[user] = json.dumps({**self.role_metadata[user], **change}).encode()
+                    self.stop('DATABASE_BACKUP_ROLE_MISMATCH')
+                    self.role_results.clear()
+
+    def test_role_response_missing_fields_or_wrong_shapes_is_rejected(self):
+        for result in (b'null', b'[]', b'{}', b'{"superuser":true}', 'PRIVATE_TEXT', b' ' * 65537):
+            with self.subTest(result_type=type(result).__name__):
+                self.role_results['postgres'] = result
+                self.stop('DATABASE_BACKUP_ROLE_MISMATCH')
+
+    def test_role_invalid_json_is_sanitized(self):
+        self.role_results['postgres'] = b'{"PRIVATE_RESPONSE"'
+        self.stop('JSON_INVALID')
+
+    def test_admin_auth_failure_is_sanitized_without_retry(self):
+        self.enable_admin_selection()
+        for code in ('DATABASE_PASSWORD_REQUIRED', 'DATABASE_PASSWORD_REJECTED'):
+            with self.subTest(code=code):
+                self.run.reset_mock()
+                error = RuntimeError('PRIVATE_PASSWORD_AND_URI')
+                error.reason_code = code
+                self.role_errors['supabase_admin'] = error
+                self.stop('DATABASE_BACKUP_ROLE_AUTH_FAILED')
+                self.assertEqual(len(self.role_calls()), 2)
+
+    def test_role_query_errors_preserve_only_sanitized_allowlist(self):
+        for code in ('COMMAND_TIMEOUT', 'DATABASE_PASSWORD_REQUIRED', 'DATABASE_PASSWORD_REJECTED',
+                     'DATABASE_METADATA_PERMISSION_DENIED', 'DATABASE_CLIENT_UNAVAILABLE',
+                     'COMMAND_FAILED', 'PRIVATE_REASON_WITH_URI'):
+            with self.subTest(code_kind='known' if code in d.SAFE_DATABASE_COMMAND_ERRORS else 'unknown'):
+                error = RuntimeError('PRIVATE_ROLE_QUERY_ERROR')
+                error.reason_code = code
+                self.role_errors['postgres'] = error
+                self.stop(code if code in d.SAFE_DATABASE_COMMAND_ERRORS else 'DATABASE_BACKUP_ROLE_QUERY_FAILED')
+        self.role_errors['postgres'] = RuntimeError('PRIVATE_UNCLASSIFIED_ERROR')
+        self.stop('DATABASE_BACKUP_ROLE_QUERY_FAILED')
+
+    def test_database_command_rejects_unapproved_user_before_execution(self):
+        for user in ('root', '', 'PRIVATE_UNAPPROVED_USER'):
+            with self.subTest(user_kind='unapproved'), \
+                 self.assertRaisesRegex(d.Stop, '^DATABASE_USER_UNSUPPORTED$'):
+                d.db_command({'database_container': self.items['db']['Id'], 'database_user': user},
+                             'psql', [])
+        self.run.assert_not_called()
 
     def test_config_query_preserves_only_allowlisted_runner_reason_codes(self):
         codes = ('DATABASE_PASSWORD_REQUIRED', 'DATABASE_PASSWORD_REJECTED',

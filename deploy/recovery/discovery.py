@@ -146,13 +146,15 @@ def db_command(layout, program, args, seconds=600):
     # pass the host's PG environment without -e; neither password is put in argv.
     unset = ['PGSERVICE', 'PGSERVICEFILE', 'PGHOSTADDR', 'PGHOST', 'PGPORT',
              'PGDATABASE', 'PGUSER', 'PGOPTIONS']
+    user = layout.get('database_user', 'postgres')
+    require(user in ('postgres', 'supabase_admin'), 'DATABASE_USER_UNSUPPORTED')
     return ['exec', '-u', 'postgres', layout['database_container'],
             'timeout', '-k', '10', str(seconds), 'env',
             *[part for key in unset for part in ('-u', key)],
             'LC_ALL=C', 'PGCONNECT_TIMEOUT=5', 'PGAPPNAME=bos-recovery-capture',
             'PGOPTIONS=-c default_transaction_read_only=on -c statement_timeout=600000',
             program, '-h', '/var/run/postgresql', '-p', '5432',
-            '-U', 'postgres', '-w', *args]
+            '-U', user, '-w', *args]
 
 
 SAFE_DATABASE_COMMAND_ERRORS = frozenset((
@@ -162,6 +164,59 @@ SAFE_DATABASE_COMMAND_ERRORS = frozenset((
     'COMMAND_TIMEOUT', 'COMMAND_WARNINGS', 'COMMAND_OUTPUT_LIMIT',
     'COMMAND_ERROR_OUTPUT_LIMIT',
 ))
+
+
+ROLE_PROBE_SQL = """BEGIN READ ONLY;
+SET LOCAL statement_timeout='5s';
+SELECT json_build_object('user',current_user,'session_user',session_user,
+ 'database',current_database(),
+ 'readonly',current_setting('transaction_read_only')='on',
+ 'superuser',(SELECT rolsuper FROM pg_catalog.pg_roles WHERE rolname=current_user),
+ 'supabase_admin',EXISTS(SELECT 1 FROM pg_catalog.pg_roles
+   WHERE rolname='supabase_admin' AND rolsuper AND rolcanlogin));
+ROLLBACK;"""
+
+
+def select_backup_role(run, db):
+    """Authenticate one existing backup identity, without granting any rights.
+
+    Supabase can intentionally make postgres a non-superuser. Complete globals
+    (including password hashes) require the existing administrative identity.
+    No other role names, new credentials, SET ROLE, or password fallback is used.
+    """
+    def probe(user):
+        args = db_command({'database_container': db['Id'], 'database_user': user},
+                          'psql', ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1',
+                                   '-v', 'VERBOSITY=verbose', '-d', DATABASE,
+                                   '-c', ROLE_PROBE_SQL], 15)
+        try:
+            raw = run(args, timeout=30, limit=65536)
+        except Exception as exc:
+            code = getattr(exc, 'reason_code', None)
+            if user == 'supabase_admin' and code in (
+                    'DATABASE_PASSWORD_REQUIRED', 'DATABASE_PASSWORD_REJECTED'):
+                raise Stop('DATABASE_BACKUP_ROLE_AUTH_FAILED') from None
+            if isinstance(code, str) and code in SAFE_DATABASE_COMMAND_ERRORS:
+                raise Stop(code) from None
+            raise Stop('DATABASE_BACKUP_ROLE_QUERY_FAILED') from None
+        require(isinstance(raw, bytes) and len(raw) <= 65536,
+                'DATABASE_BACKUP_ROLE_MISMATCH')
+        data = json_data(raw)
+        require(isinstance(data, dict) and set(data) == {
+                    'user', 'session_user', 'database', 'readonly',
+                    'superuser', 'supabase_admin'}, 'DATABASE_BACKUP_ROLE_MISMATCH')
+        require(data['user'] == user and data['session_user'] == user and
+                data['database'] == DATABASE and data['readonly'] is True and
+                type(data['superuser']) is bool and type(data['supabase_admin']) is bool,
+                'DATABASE_BACKUP_ROLE_MISMATCH')
+        return data
+    current = probe('postgres')
+    if current['superuser']:
+        return 'postgres'
+    require(current['supabase_admin'], 'DATABASE_BACKUP_ROLE_UNAVAILABLE')
+    admin = probe('supabase_admin')
+    require(admin['superuser'], 'DATABASE_BACKUP_ROLE_NOT_SUPERUSER')
+    return 'supabase_admin'
 
 
 DB_CONFIG_SQL = """BEGIN READ ONLY;
@@ -175,14 +230,14 @@ SELECT json_build_object('data_directory',current_setting('data_directory'),
 ROLLBACK;"""
 
 
-def database_config_files(run, db, mapped):
+def database_config_files(run, db, mapped, user='postgres'):
     """Identify actual config paths; a plausible basename is not evidence.
 
     Only metadata is queried. Do not copy arbitrary mounts outside PGDATA: they
     can be data/tablespace files too. Every allowed file must be named by the
     server's configuration metadata, and DB directory sources remain excluded.
     """
-    layout = {'database_container': db['Id']}
+    layout = {'database_container': db['Id'], 'database_user': user}
     args = db_command(layout, 'psql', ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1',
                                       '-v', 'VERBOSITY=verbose',
                                       '-d', DATABASE, '-c', DB_CONFIG_SQL], 15)
@@ -371,7 +426,8 @@ def _discover(run):
             actual = [(source, is_dir) for source, destination, is_dir in mapped[key]
                       if destination == PurePosixPath(target)]
             require(actual == [(expected_source, True)], 'PINNED_MOUNT_CHANGED')
-    database_configs = database_config_files(run, role['db'], mapped['db'])
+    database_user = select_backup_role(run, role['db'])
+    database_configs = database_config_files(run, role['db'], mapped['db'], database_user)
     for source, target, is_dir in mapped['db']:
         if source is not None and not is_dir:
             require(target in database_configs,
@@ -411,5 +467,6 @@ def _discover(run):
     roots = sorted(path for path in roots if not any(path != other and inside(path, other) for other in roots))
     protected.update(protected_mounts(run, [container['Id'] for container in containers]))
     return {'containers': containers, 'database_container': role['db']['Id'],
-            'database': DATABASE, 'images': expected, 'build': BUILD, 'release': release,
+            'database': DATABASE, 'database_user': database_user,
+            'images': expected, 'build': BUILD, 'release': release,
             'roots': roots, 'protected': sorted(protected)}
