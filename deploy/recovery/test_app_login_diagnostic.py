@@ -31,7 +31,8 @@ class Runner:
                     'VK_APP_SECRET=private-session-secret']},
                 'HostConfig': {'NetworkMode': 'none' if role == 'db' else 'container:' + '1' * 64,
                     'ReadonlyRootfs': True}, 'State': {'Running': True, 'OOMKilled': False, 'ExitCode': 0},
-                'RestartCount': 0, 'Mounts': [{'Type': 'volume', 'Name': RUN + '-data'}]}
+                'RestartCount': 0, 'Mounts': ([] if role in ('rest', 'auth') else
+                    [{'Type': 'volume', 'Name': RUN + '-data'}])}
 
     def __call__(self, args, **kwargs):
         self.calls.append(args)
@@ -158,6 +159,12 @@ class LoginDiagnosticTests(unittest.TestCase):
         with self.assertRaisesRegex(app_cli.Stop, 'LOGIN_ISOLATION_CHANGED'):
             login.collect(runner, LAUNCH, host=checks.host, transport=changing)
         self.assertFalse(checks.logins)
+
+    def test_database_requires_own_volume_even_though_rest_auth_do_not(self):
+        runner = Runner()
+        runner.records['1' * 64]['Mounts'] = []
+        with self.assertRaisesRegex(app_cli.Stop, 'LOGIN_MOUNTS_CHANGED'):
+            self.collect(runner=runner)
 
     def test_latest_ready_report_only(self):
         with tempfile.TemporaryDirectory() as root:

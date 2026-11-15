@@ -105,7 +105,10 @@ def verify_container(item, cid, role, launch, anchor):
         require(set(networks) <= {'none'} and all(not n.get('IPAddress')
                 and not n.get('GlobalIPv6Address') for n in networks.values()), 'LOGIN_ISOLATION_CHANGED')
     mounts = item.get('Mounts') or []
-    require(any(m.get('Type') == 'volume' and m.get('Name') == launch['volume'] for m in mounts)
+    # REST and Auth have no app-volume mount: they use the database over the
+    # already-verified shared loopback namespace. Other services own mounts.
+    require((role in ('rest', 'auth') or any(m.get('Type') == 'volume'
+                and m.get('Name') == launch['volume'] for m in mounts))
             and all(m.get('Type') == 'tmpfs' or (m.get('Type') == 'volume'
                     and m.get('Name') == launch['volume']) for m in mounts), 'LOGIN_MOUNTS_CHANGED')
     return item
