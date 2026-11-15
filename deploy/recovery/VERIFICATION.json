@@ -209,66 +209,70 @@
     }
   },
   "application_launch": {
-    "status": "OPERATOR_STOPPED_PREPARING_PLAN",
-    "artifact": "BOS-App-20261115-v1.zip",
-    "bytes": 11175648,
-    "sha256": "82b9a8314acd913c1fd41884e03cf1cc94425faa2453e9020bb0ba555c91acb9",
+    "status": "OPERATOR_STOPPED_DATABASE",
+    "artifact": "BOS-App-20261115-v2.zip",
+    "bytes": 11212391,
+    "sha256": "2e1962f3ed8cedd3e84b8040df7a23eee9ad2cf05b0d29c35ffc883f38ada508",
     "runtime_ci": {
-      "commit": "0f4c32687ec56a347c338ef7f6ba2fa7513fe479",
-      "tree": "fddafb5bb7469750742276a2940dd5c1e60d1e26",
+      "commit": "52b32cd9885035e10e5215c899ca48a744817091",
+      "tree": "5da4a99091cea84864e6146183adba9e9f9238e4",
       "workflow": "Recovery application",
-      "run_id": 43735056388,
-      "url": "https://github.com/zuev1ilya11-afk/business-os-vk/actions/runs/43735056388",
+      "run_id": 43740763636,
+      "url": "https://github.com/zuev1ilya11-afk/business-os-vk/actions/runs/43740763636",
       "conclusion": "success",
       "jobs": [
         {
-          "id": 132875703886,
-          "name": "Offline application (classic)",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 132875704108,
+          "id": 132893186144,
           "name": "Offline app launcher on Windows",
           "status": "completed",
           "conclusion": "success"
         },
         {
-          "id": 132875704142,
+          "id": 132893186378,
+          "name": "Application tests and reproducible package",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 132893186421,
           "name": "Offline application (containerd)",
           "status": "completed",
           "conclusion": "success"
         },
         {
-          "id": 132875704148,
+          "id": 132893186468,
           "name": "Local browser startup and network restrictions",
           "status": "completed",
           "conclusion": "success"
         },
         {
-          "id": 132875704222,
-          "name": "Application tests and reproducible package",
+          "id": 132893186484,
+          "name": "Offline application (classic)",
           "status": "completed",
           "conclusion": "success"
         }
       ],
       "unit_discovery": {
-        "ran": 121,
+        "ran": 134,
         "skipped": 2,
         "native_checks_in_separate_jobs": true
       },
+      "observed_route_shapes": 35,
       "windows_launcher_process_cases": 6,
+      "windows_diagnostic_process_cases": 4,
       "real_browser_cases": 1,
       "real_application_cases": [
         {
           "store": "classic",
           "version": "28.5.2",
-          "cases": 1
+          "cases": 1,
+          "layout_import_map_combinations": 5
         },
         {
           "store": "containerd",
           "version": "29.9.3",
-          "cases": 1
+          "cases": 1,
+          "layout_import_map_combinations": 5
         }
       ]
     },
@@ -281,23 +285,13 @@
     "operator_application_workflows": "NOT_YET_VERIFIED",
     "original_restore_volume": "READ_ONLY_CLONE_SOURCE_NEVER_STARTED",
     "working_copy": "NEW_VOLUME_EACH_LAUNCH_RETAINED_AFTER_STOP",
-    "storage_relationships": "ALL_OBJECTS_AND_HTTP_BYTES_CHECKED_ON_LAUNCH",
+    "storage_relationships": "NOT_REACHED_ON_OPERATOR_BACKUP",
     "old_signed_urls": "VALID_UNEXPIRED_CAPTURED_CAPABILITY_RESEALED_WITH_LOCAL_KEY",
     "database_storage_consistency": "NOT_PROVEN",
     "storage_extended_attributes": "NOT_CAPTURED",
     "docker_data_disk_on_E": "NOT_CONFIRMED",
     "disaster_recovery_ready": false,
-    "operator_attempt": {
-      "date_utc": "2026-11-15",
-      "evidence": "operator screenshot image(20261115-165432).png",
-      "reason": "APP_GATEWAY_ROUTE_INVALID",
-      "failed_stage": "PREPARING_PLAN",
-      "application": "NOT_RUN",
-      "run_id": "bos-app-f47a01930694",
-      "next_action": "CORRECT_OBSERVED_CONTRACTS_AND_VALIDATE_NEW_APP_PACKAGE",
-      "exact_rejected_route": "28 routes: 27 entrypoint layout mismatches, plus bos-api non-null import_map"
-    },
-    "confirmed_code_correction": "Historical routes.json hashes are not capture integrity baseline; actual manifest/inventory validation remains mandatory. This does not yet resolve the observed route schema refusal.",
+    "confirmed_code_correction": "V2 accepts all 35 observed entrypoint/import-map structures; exact captured bytes remain checked by manifest/inventory. Operator passed PREPARING_PLAN and stopped during DATABASE validation.",
     "operator_route_diagnostic": {
       "evidence_file": "BOS-App-Diagnostic-20261115T171426Z-7329bf98.json",
       "sha256": "070fdb65ff578f3efa0f139891ab0af64cb5be65746cd44c7ce3ba35df8190ee",
@@ -315,6 +309,36 @@
       "structural_service_checks": "ALL_SUPPORTED",
       "application_execution": "NOT_RUN_BY_DIAGNOSTIC",
       "private_archive_available_to_agent": false
-    }
+    },
+    "previous_artifact": {
+      "artifact": "BOS-App-20261115-v1.zip",
+      "bytes": 11175648,
+      "sha256": "82b9a8314acd913c1fd41884e03cf1cc94425faa2453e9020bb0ba555c91acb9"
+    },
+    "operator_attempt_v1": {
+      "date_utc": "2026-11-15",
+      "evidence": "operator screenshot image(20261115-165432).png",
+      "reason": "APP_GATEWAY_ROUTE_INVALID",
+      "failed_stage": "PREPARING_PLAN",
+      "application": "NOT_RUN",
+      "run_id": "bos-app-f47a01930694",
+      "next_action": "CORRECT_OBSERVED_CONTRACTS_AND_VALIDATE_NEW_APP_PACKAGE",
+      "exact_rejected_route": "28 routes: 27 entrypoint layout mismatches, plus bos-api non-null import_map"
+    },
+    "operator_attempt": {
+      "date_utc": "2026-11-15",
+      "evidence": "operator screenshot image(20261115-173908).png",
+      "reason": "APP_DOCKER_COMMAND_FAILED",
+      "failed_stage": "DATABASE",
+      "failed_service": "db",
+      "application": "NOT_RUN",
+      "run_id": "bos-app-04be1a710f3f",
+      "volume": "bos-app-04be1a710f3f-data",
+      "reported_diagnostic_category": "MISSING_RUNTIME_FILE",
+      "evidence_bytes": 1482,
+      "exact_database_error": "UNKNOWN_PENDING_RETAINED_LOG_DIAGNOSTIC",
+      "next_action": "READ_EXISTING_FAILED_CLONE_LOGS_WITHOUT_STARTING_DATABASE"
+    },
+    "diagnostic_limitation": "Original input_call stderr can be replaced by DB log evidence; the old broad classifier cannot distinguish actual SQL errors from unrelated startup messages."
   }
 }
