@@ -20,6 +20,7 @@ import tarfile
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 import uuid
 from urllib.parse import parse_qs, urlencode, urlsplit
 
@@ -140,13 +141,23 @@ LAYOUT_ROUTES = {
                                'supabase/functions/fixture-nested-map-api/deno.json'),
 }
 WEB = b'<!doctype html><html><head><title>Synthetic BOS restore</title></head><body><h1 id="fixture">Captured synthetic web</h1></body></html>'
+LOCALE_SQL = """SELECT json_build_object('provider',datlocprovider,
+ 'collate',datcollate,'ctype',datctype,'locale',datlocale,'version',datcollversion)
+FROM pg_database WHERE datname=current_database();"""
 
 
 class SyntheticAppRunner(drill.DockerRunner):
     """Print bounded command failures only for this generated CI bundle."""
     def __call__(self, args, **kwargs):
         try:
-            return super().__call__(args, **kwargs)
+            output = super().__call__(args, **kwargs)
+            # Read the restored database's catalog while the ordinary drill
+            # validation connection still exists. Never restart the baseline
+            # merely to inspect its locale after the drill has stopped it.
+            if args[-2:] == ['-c', drill_db.VALIDATE_SQL]:
+                locale = super().__call__([*args[:-1], LOCALE_SQL], **kwargs)
+                self.restored_locale = json.loads(locale)
+            return output
         except Exception:
             print('CI_SYNTHETIC_APP_COMMAND_ERROR=' + json.dumps({
                 'operation': args[:2],
@@ -233,7 +244,28 @@ class RealApplicationLaunch(unittest.TestCase):
         help_text = cls.docker.run(['exec', cls.source, '/bin/busybox', '--list']).decode()
         if 'nc' not in help_text.splitlines():
             raise RuntimeError('Public database fixture does not contain BusyBox nc')
-        cls.sql('CREATE DATABASE bos_restore_check;', database='postgres')
+        # A default C database hid the real operator failure: the Nix glibc
+        # locale archive is needed at connection time for an archived non-C
+        # database. Select an actual libc locale supplied by the pinned image.
+        image_env = dict(item.split('=', 1) for item in cls.images['db']['Config'].get('Env') or [])
+        cls.locale_archive = image_env.get('LOCALE_ARCHIVE')
+        if not isinstance(cls.locale_archive, str) or not cls.locale_archive.startswith('/'):
+            raise RuntimeError('Pinned public database image has no locale archive setting')
+        cls.docker.run(['exec', cls.source, 'test', '-f', cls.locale_archive])
+        cls.fixture_locale = cls.sql("SELECT collcollate FROM pg_collation "
+            "WHERE collprovider='c' AND collcollate IN ('en_US.UTF-8','en_US.utf8') "
+            "ORDER BY collcollate LIMIT 1;", database='postgres')
+        if cls.fixture_locale not in ('en_US.UTF-8', 'en_US.utf8'):
+            raise RuntimeError('Pinned public database image lacks the non-C libc fixture locale')
+        cls.sql("CREATE DATABASE bos_restore_check TEMPLATE template0 ENCODING 'UTF8' LOCALE_PROVIDER libc "
+                "LC_COLLATE '" + cls.fixture_locale + "' LC_CTYPE '" + cls.fixture_locale + "';",
+                database='postgres')
+        cls.source_locale = json.loads(cls.sql(LOCALE_SQL))
+        if (set(cls.source_locale) != {'provider', 'collate', 'ctype', 'locale', 'version'}
+                or {key: cls.source_locale[key] for key in ('provider', 'collate', 'ctype')}
+                != {'provider': 'c', 'collate': cls.fixture_locale, 'ctype': cls.fixture_locale}
+                or cls.source_locale['locale'] is not None):
+            raise RuntimeError('Source fixture did not preserve the requested non-C libc locale')
         cls.sql('CREATE ROLE postgres LOGIN CREATEROLE CREATEDB REPLICATION BYPASSRLS;')
         for name in EXTENSIONS:
             cls.sql('CREATE EXTENSION "' + name + '";')
@@ -354,6 +386,8 @@ class RealApplicationLaunch(unittest.TestCase):
         if cls.baseline['status'] != 'DRILL_COMPLETED':
             raise RuntimeError('Synthetic prerequisite restore did not complete')
         cls.addClassCleanup(cls.remove_volume, cls.baseline['volume'], DRILL_LABEL, cls.baseline['run_id'])
+        if getattr(cls.runner, 'restored_locale', None) != cls.source_locale:
+            raise RuntimeError('Restore drill changed the captured locale or its provider')
 
     @classmethod
     def own_container(cls, cid):
@@ -538,6 +572,10 @@ class RealApplicationLaunch(unittest.TestCase):
         info = json.loads(cls.docker.run(['volume', 'inspect', volume]))[0]
         if info.get('Labels', {}).get(label) != run_id:
             raise RuntimeError('Refusing to remove an unowned integration volume')
+        references = cls.docker.run(['container', 'ls', '--all', '--quiet', '--no-trunc',
+                                     '--filter', 'volume=' + volume])
+        if references.strip():
+            raise RuntimeError('Refusing to remove a referenced integration volume')
         cls.docker.run(['volume', 'rm', volume])
 
     def request(self, session, method, path, body=None, headers=None):
@@ -552,6 +590,52 @@ class RealApplicationLaunch(unittest.TestCase):
     def test_real_stack_uses_clone_and_serves_captured_binary(self):
         import app
         before = self.volume_hash(self.baseline['volume'])
+        # Reproduce the former launcher on a disposable clone by omitting only
+        # the image's locale archive from the clean postmaster environment.
+        # PostgreSQL can accept the C-locale readiness connection but must reject
+        # the captured non-C application database with the operator's FATAL.
+        original_environment = app.postgres_environment
+
+        def without_locale_archive(image):
+            environment = original_environment(image)
+            environment.pop('LOCALE_ARCHIVE', None)
+            return environment
+
+        failed_volume = None
+        with patch.object(app, 'postgres_environment', side_effect=without_locale_archive):
+            try:
+                broken = app.start_app(self.bundle, self.baseline, self.runner)
+            except app.Stop as error:
+                failure = getattr(error, 'report', {})
+                failure_code = error.reason_code
+                failed_volume = failure.get('volume')
+            else:
+                broken.stop()
+                self.remove_volume(broken.volume, APP_LABEL, broken.run_id)
+                self.fail('Non-C locale unexpectedly worked with the locale archive removed')
+        self.assertRegex(failed_volume or '', r'^bos-app-[0-9a-f]{12}-data$')
+        failed_run = failed_volume.removesuffix('-data')
+        failed_info = json.loads(self.docker.run(['volume', 'inspect', failed_volume]))[0]
+        self.assertEqual(failed_info.get('Labels', {}).get(APP_LABEL), failed_run)
+        try:
+            self.assertEqual(failure.get('failed_stage'), 'DATABASE')
+            self.assertEqual(failure.get('failed_service'), 'db')
+            self.assertEqual(failure_code, 'APP_DOCKER_COMMAND_FAILED')
+            self.assertEqual(failure.get('diagnostics', {}).get('category'), 'LOCALE_OR_COLLATION_FAILURE')
+            log_args = ['run', '--rm', '--network', 'none', '--read-only', '--log-driver', 'none',
+                '--user', '0:0', '--cap-drop', 'ALL', '--cap-add', 'DAC_READ_SEARCH',
+                '--security-opt', 'no-new-privileges',
+                '--mount', 'type=volume,src=' + failed_volume + ',dst=/bos,readonly,volume-nocopy']
+            for target in drill_db._tmpfs(self.images['db']):
+                log_args += ['--tmpfs', target + ':rw,noexec,nosuid,nodev,size=1m']
+            failure_logs = self.docker.run([*log_args, '--entrypoint', '/bin/busybox',
+                self.images['db']['Id'], 'head', '-c', '65536', '/bos/app/diagnostics/db.log'])
+            self.assertIn(b'database locale is incompatible with operating system', failure_logs.lower())
+            self.assertIn(b'FATAL:', failure_logs)
+        finally:
+            self.remove_volume(failed_volume, APP_LABEL, failed_run)
+        self.assertEqual(self.volume_hash(self.baseline['volume']), before)
+        print('CI_NON_C_LOCALE_REPRODUCED=DATABASE_FATAL_WITHOUT_LOCALE_ARCHIVE', flush=True)
         try:
             session = app.start_app(self.bundle, self.baseline, self.runner)
         except Exception as error:
@@ -582,6 +666,8 @@ class RealApplicationLaunch(unittest.TestCase):
         self.addCleanup(session.stop)
         self.assertNotEqual(session.volume, self.baseline['volume'])
         self.assertEqual(set(session.containers), set(discovery.ROLES))
+        self.assertEqual(json.loads(app.sql(session, LOCALE_SQL, readonly=True)), self.source_locale)
+        print('CI_NON_C_LOCALE_PRESERVED=SOURCE_RESTORE_AND_APP_LIBC_LOCALE_MATCH', flush=True)
         anchor = session.containers['db']
         preserved_routes = json.loads(self.docker.run(['exec', session.containers['edge'],
                                                        'cat', '/bos-main/routes.json']))
@@ -646,6 +732,7 @@ class RealApplicationLaunch(unittest.TestCase):
         session.stop()
         self.assertEqual(self.volume_hash(self.baseline['volume']), before)
         self.assertEqual(self.sql('SELECT json_agg(t ORDER BY id) FROM public.orders t;'), self.source_before)
+        self.assertEqual(json.loads(self.sql(LOCALE_SQL)), self.source_locale)
         self.assertEqual({p.name: backup.hash_file(p) for p in self.bundle.iterdir()}, self.bundle_before)
 
 

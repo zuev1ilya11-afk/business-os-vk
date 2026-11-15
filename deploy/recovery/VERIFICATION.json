@@ -209,7 +209,7 @@
     }
   },
   "application_launch": {
-    "status": "OPERATOR_STOPPED_DATABASE",
+    "status": "OPERATOR_LOCALE_FAILURE_CONFIRMED_V3_PENDING_VALIDATION",
     "artifact": "BOS-App-20261115-v2.zip",
     "bytes": 11212391,
     "sha256": "2e1962f3ed8cedd3e84b8040df7a23eee9ad2cf05b0d29c35ffc883f38ada508",
@@ -336,9 +336,21 @@
       "volume": "bos-app-04be1a710f3f-data",
       "reported_diagnostic_category": "MISSING_RUNTIME_FILE",
       "evidence_bytes": 1482,
-      "exact_database_error": "UNKNOWN_PENDING_RETAINED_LOG_DIAGNOSTIC",
-      "next_action": "READ_EXISTING_FAILED_CLONE_LOGS_WITHOUT_STARTING_DATABASE"
+      "exact_database_error": "FATAL_DATABASE_LOCALE_INCOMPATIBLE_WITH_OPERATING_SYSTEM",
+      "next_action": "TEST_LOCALE_ARCHIVE_ENV_FIX_AND_DELIVER_V3"
     },
-    "diagnostic_limitation": "Original input_call stderr can be replaced by DB log evidence; the old broad classifier cannot distinguish actual SQL errors from unrelated startup messages."
+    "diagnostic_limitation": "Original input_call stderr can be replaced by DB log evidence; the old broad classifier cannot distinguish actual SQL errors from unrelated startup messages.",
+    "operator_database_diagnostic": {
+      "evidence_file": "BOS-DB-Diagnostic-20261115T180017Z-c5a5ebc3.json",
+      "sha256": "e55680bcd19c2ad444bf946446e5b0993b6ab2af0f1d84a70374ec0e7fff6e72",
+      "status": "DB_DIAGNOSTIC_COMPLETE",
+      "primary_category": "LOCALE_OR_COLLATION_FAILURE",
+      "fatal_count": 1,
+      "database_started_by_diagnostic": false,
+      "baseline_mounted": false,
+      "new_volume_created": false,
+      "backup_modified": false
+    },
+    "confirmed_locale_correction": "Retain only known immutable-image LOCALE_ARCHIVE through clean env and both env -i PostgreSQL invocations; database locale/collation catalogs unchanged. Preserve original failing command stderr instead of replacing it with startup logs."
   }
 }

@@ -31,6 +31,7 @@ RUN = re.compile(r'bos-app-[0-9a-f]{12}')
 SOURCE_RUN = re.compile(r'bos-drill-[0-9a-f]{12}')
 SUBPATH = re.compile(r'[A-Za-z0-9_./-]+')
 MIB = 1024 * 1024
+LOCALE_ARCHIVE = '/nix/var/nix/profiles/default/lib/locale/locale-archive'
 
 
 class Stop(Exception):
@@ -256,10 +257,35 @@ def create_container(session, role, image, env, mounts, network, entrypoint, cmd
     return cid
 
 
+def postgres_environment(image):
+    """Retain the image's locale data while discarding captured runtime ENV.
+
+    Supabase's Nix PostgreSQL uses this immutable in-image locale archive.
+    Clearing it allows C databases to connect but makes non-C databases fail
+    setlocale() even though they were restored using the very same image.
+    No container-supplied path, locale override or library hook is accepted.
+    """
+    inherited = app_plan.environment(image.get('Config') or {})
+    env = dict(PATH=drill_db.PATH, LANG='C.UTF-8', LC_ALL='C.UTF-8', TZ='UTC')
+    archive = inherited.get('LOCALE_ARCHIVE')
+    if archive:
+        require(archive == LOCALE_ARCHIVE, 'APP_IMAGE_LOCALE_ARCHIVE_UNSUPPORTED')
+        env['LOCALE_ARCHIVE'] = archive
+    return env
+
+
 def clean_env(image):
     env = {key: '' for key in app_plan.environment(image.get('Config') or {})}
-    env.update(PATH=drill_db.PATH, LANG='C.UTF-8', LC_ALL='C.UTF-8', TZ='UTC')
+    env.update(postgres_environment(image))
     return env
+
+
+def postgres_argv(image, *, single=False):
+    """Explicit environment survives env -i in bootstrap and normal startup."""
+    env = postgres_environment(image)
+    return ['env', '-i', *(key + '=' + value for key, value in env.items()),
+            'postgres', *(['--single'] if single else []), '-D', '/bos/data',
+            '-c', 'config_file=/bos/data/postgresql.conf', *(['postgres'] if single else [])]
 
 
 def tar_bytes(files):
@@ -341,6 +367,12 @@ def clone_baseline(session, context, report, image):
     app_transport.input_call(session.runner, ['exec', '-i', helper, 'tar', '-xf', '-', '-C', '/bos'], tar_bytes(files))
     session.runner(['exec', helper, 'chown', 'postgres:postgres', '/bos/data/postgresql.conf',
                     '/bos/data/postgresql.auto.conf', '/bos/data/pg_hba.conf', '/bos/data/pg_ident.conf'], limit=4096)
+    if 'LOCALE_ARCHIVE' in postgres_environment(image):
+        try:
+            session.runner(['exec', '--user', 'postgres', helper, '/bin/sh', '-ceu',
+                'test -f "$1" && test -r "$1"', 'bos-locale-archive', LOCALE_ARCHIVE], limit=4096)
+        except Exception:
+            raise Stop('APP_IMAGE_LOCALE_ARCHIVE_UNREADABLE') from None
     # Single-user mode is confined to the unstarted clone; it creates one new local administrator.
     session._admin = 'app_admin_' + secrets.token_hex(12)
     statements = ['CREATE ROLE "' + session._admin + '" WITH LOGIN SUPERUSER;', 'DELETE FROM pg_db_role_setting;']
@@ -349,8 +381,8 @@ def clone_baseline(session, context, report, image):
         statements.append('ALTER ROLE "' + user + '" WITH LOGIN PASSWORD \'' + password + '\';')
     statement = '\n'.join(statements) + '\n'
     app_transport.input_call(session.runner, ['exec', '-i', '--user', 'postgres', helper, '/bin/sh', '-ceu',
-        'exec env -i PATH="$1" postgres --single -D /bos/data -c config_file=/bos/data/postgresql.conf postgres 2>/bos/data/app-bootstrap.stderr.log',
-        'bos-app-bootstrap', drill_db.PATH], statement.encode(), timeout=120, limit=2 * MIB)
+        'exec "$@" 2>/bos/data/app-bootstrap.stderr.log',
+        'bos-app-bootstrap', *postgres_argv(image, single=True)], statement.encode(), timeout=120, limit=2 * MIB)
     verify_container(session, helper, session._owned[helper], running=True)
     session._remove(helper)
     baseline_available(session.runner, report)
@@ -432,6 +464,8 @@ def classify_failure(raw):
         (('no space left on device', 'enospc'), 'DISK_FULL'),
         (('out of memory', 'cannot allocate memory', 'oomkilled'), 'OUT_OF_MEMORY'),
         (('read-only file system', 'readonly filesystem', 'erofs'), 'READ_ONLY_FILESYSTEM'),
+        (('database locale is incompatible', 'invalid locale name', 'invalid lc_collate',
+          'invalid lc_ctype'), 'LOCALE_OR_COLLATION_FAILURE'),
         (('password authentication failed', 'invalid password for user'), 'DATABASE_AUTHENTICATION_FAILED'),
         (('envconfig', 'strconv.parse', 'invalid environment', 'invalid value for environment'), 'INVALID_ENVIRONMENT'),
         (('permission denied', 'eacces'), 'PERMISSION_DENIED'),
@@ -501,7 +535,8 @@ class AppSession:
 
     def _private_logs(self, original_evidence=b''):
         evidence = original_evidence if isinstance(original_evidence, bytes) else b''
-        files = {}
+        command_evidence = bool(evidence.strip())
+        files = {'diagnostics/command.stderr.log': evidence[:8192]} if command_evidence else {}
         for cid, spec in self._owned.items():
             role = spec.get('role')
             if role not in ('init', 'db', 'rest', 'auth', 'storage', 'edge', 'https'):
@@ -514,7 +549,7 @@ class AppSession:
                 errors = getattr(self.runner, 'last_error', b'')
                 data = output[:128 * 1024] + b'\n' + (errors[:8192] if isinstance(errors, bytes) else b'')
                 files['diagnostics/' + role + '.log'] = data
-                if role == self._current_role and data.strip():
+                if role == self._current_role and data.strip() and not command_evidence:
                     evidence = data
             except Exception:
                 continue
@@ -582,8 +617,7 @@ def start_app(bundle, successful_report, runner, *, profile_dir=None, progress=N
         db_image = images[context['db_image']]
         mounts = {'/bos': mount_record(session.volume, '/bos')}
         anchor = create_container(session, 'db', db_image, clean_env(db_image), mounts, 'none', '/bin/sh',
-            ['-ceu', 'exec env -i PATH="$1" postgres -D /bos/data -c config_file=/bos/data/postgresql.conf',
-             'bos-app-db', drill_db.PATH], user='postgres')
+            ['-ceu', 'exec "$@"', 'bos-app-db', *postgres_argv(db_image)], user='postgres')
         session.containers['db'] = anchor
         counts = wait_database(session, successful_report)
         session.report['database'] = {'status': 'CLONE_VALIDATED', 'counts': counts, 'background_workers': 'DISABLED'}

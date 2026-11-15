@@ -101,6 +101,35 @@ class ReportTests(unittest.TestCase):
 
 
 class IsolationTests(unittest.TestCase):
+    def test_only_image_locale_archive_survives_clean_database_environment(self):
+        image = {'Config': {'Env': ['LOCALE_ARCHIVE=' + app.LOCALE_ARCHIVE,
+            'PGHOST=production', 'PGPASSWORD=PRIVATE_SECRET', 'LD_PRELOAD=/private/hook.so',
+            'LOCPATH=/private/locales', 'LC_ALL=PRIVATE_LOCALE']}}
+        clean = app.clean_env(image)
+        self.assertEqual(clean['LOCALE_ARCHIVE'], app.LOCALE_ARCHIVE)
+        self.assertEqual(clean['LC_ALL'], 'C.UTF-8')
+        for key in ('PGHOST', 'PGPASSWORD', 'LD_PRELOAD', 'LOCPATH'):
+            self.assertEqual(clean[key], '')
+        for single in (True, False):
+            command = app.postgres_argv(image, single=single)
+            self.assertEqual(command[:2], ['env', '-i'])
+            self.assertIn('LOCALE_ARCHIVE=' + app.LOCALE_ARCHIVE, command)
+            self.assertNotIn('PRIVATE', repr(command))
+            self.assertEqual('--single' in command, single)
+
+    def test_missing_image_locale_override_keeps_builtin_locale_lookup(self):
+        for env in ([], ['LOCALE_ARCHIVE=']):
+            image = {'Config': {'Env': env}}
+            self.assertNotIn('LOCALE_ARCHIVE', app.postgres_environment(image))
+            self.assertFalse(any(x.startswith('LOCALE_ARCHIVE=') for x in app.postgres_argv(image)))
+
+    def test_locale_archive_cannot_point_at_backup_or_writable_mount(self):
+        for value in ('/bos/files/locale-archive', '/tmp/locale-archive', '/run/locale-archive',
+                      'https://example/locale-archive', app.LOCALE_ARCHIVE + '/..',
+                      app.LOCALE_ARCHIVE + ':other', '/nix/var/nix/profiles/default/lib/locale/../locale-archive'):
+            with self.subTest(value=value), self.assertRaisesRegex(app.Stop, 'APP_IMAGE_LOCALE_ARCHIVE_UNSUPPORTED'):
+                app.postgres_argv({'Config': {'Env': ['LOCALE_ARCHIVE=' + value]}})
+
     def test_safe_inspect_accepts_docker_null_cmd(self):
         obj, spec = inspect_fixture()
         session = types.SimpleNamespace(run_id=RUN, runner=Mock(return_value=json.dumps([obj]).encode()))
@@ -180,6 +209,19 @@ class IsolationTests(unittest.TestCase):
 
 
 class DiagnosticsTests(unittest.TestCase):
+    def test_failing_sql_stderr_is_not_replaced_by_startup_log(self):
+        runner = Mock(return_value=b'LOG: could not open file: No such file or directory')
+        runner.last_error = b''
+        original = b'FATAL: database locale is incompatible with operating system\nPRIVATE_SECRET'
+        session = types.SimpleNamespace(runner=runner, _owned={CID: {'role': 'db'}},
+            containers={'db': CID}, _current_role='db', report={})
+        with patch.object(app, 'verify_container'), patch.object(app.app_transport, 'input_call') as save:
+            app.AppSession._private_logs(session, original)
+        self.assertEqual(session.report['diagnostics']['category'], 'LOCALE_OR_COLLATION_FAILURE')
+        self.assertNotIn('PRIVATE_SECRET', repr(session.report))
+        with tarfile.open(fileobj=io.BytesIO(save.call_args.args[2])) as archive:
+            self.assertEqual(archive.extractfile('diagnostics/command.stderr.log').read(), original)
+
     def test_diagnostics_are_bounded_constant_values(self):
         secret = b'PRIVATE_CUSTOMER_SECRET'
         result = app.classify_failure(b'fatal: password authentication failed ' + secret)
