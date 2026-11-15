@@ -118,7 +118,13 @@ def main(argv=None):
                 failure['report'] = str(report_path)
             except OSError:
                 pass
-        print(json.dumps(failure, ensure_ascii=True), flush=True)
+        # The file retains all safe per-service evidence. Keep the console
+        # compact so the operator can see the stage and report path at once.
+        displayed = {key: value for key, value in failure.items() if key != 'launch'}
+        if isinstance(safe_report, dict):
+            displayed.update({key: safe_report[key] for key in
+                ('failed_stage', 'failed_service', 'diagnostics') if key in safe_report})
+        print(json.dumps(displayed, ensure_ascii=True), flush=True)
     finally:
         if session is not None:
             try:

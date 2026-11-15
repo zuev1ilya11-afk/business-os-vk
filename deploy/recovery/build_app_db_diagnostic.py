@@ -57,7 +57,10 @@ def build():
     exit 1
 }
 '''
-    (ROOT / 'check-db.ps1').write_text(prefix + tail, encoding='utf-8', newline='\n')
+    # Both entry points verify and execute the same collector package. Keep the
+    # original database launcher usable when updating an existing app folder.
+    for name in ('check-db.ps1', 'check-services.ps1'):
+        (ROOT / name).write_text(prefix + tail, encoding='utf-8', newline='\n')
     return digest
 
 

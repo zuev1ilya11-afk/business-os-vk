@@ -221,6 +221,22 @@ def structural(source, key, default, kind='ident'):
     return value
 
 
+def auth_namespace(source):
+    keys = ('GOTRUE_DB_DB_NAMESPACE', 'GOTRUE_DB_NAMESPACE', 'DB_NAMESPACE')
+    values = [structural(source, key, 'auth') for key in keys if source.get(key)]
+    require(len(set(values)) <= 1, 'APP_AUTH_NAMESPACE_CONFLICT')
+    return values[0] if values else 'auth'
+
+
+def auth_database_uri(uri, namespace):
+    # Auth's migration ledger is unqualified. Its namespace setting does not
+    # establish PostgreSQL search_path; the production role normally does.
+    # Set it only for these connections, never on a possibly shared DB role.
+    require(IDENT.fullmatch(namespace) is not None, 'APP_STRUCTURAL_ENV_INVALID')
+    require(not urlsplit(uri).query and not urlsplit(uri).fragment, 'APP_DATABASE_URI_INVALID')
+    return uri + '?search_path=' + quote('"' + namespace + '"', safe='')
+
+
 CADDY = b'''{
     admin off
     auto_https off
@@ -356,8 +372,10 @@ def build_plan(context, read_file, origin):
                 PGRST_DB_CONFIG='false', PGRST_DB_CHANNEL_ENABLED='false', PGRST_DB_POOL='5',
                 PGRST_SERVER_HOST='127.0.0.1', PGRST_SERVER_PORT='3000', PGRST_LOG_LEVEL='error')
         elif role == 'auth':
-            env.update(GOTRUE_DB_DATABASE_URL=uris[role], DATABASE_URL=uris[role], GOTRUE_DB_DRIVER='postgres',
-                GOTRUE_DB_NAMESPACE=structural(old, 'GOTRUE_DB_NAMESPACE', 'auth'),
+            namespace = auth_namespace(old)
+            auth_uri = auth_database_uri(uris[role], namespace)
+            env.update(GOTRUE_DB_DATABASE_URL=auth_uri, DATABASE_URL=auth_uri, GOTRUE_DB_DRIVER='postgres',
+                GOTRUE_DB_NAMESPACE=namespace, GOTRUE_DB_DB_NAMESPACE=namespace, DB_NAMESPACE=namespace,
                 GOTRUE_DB_MIGRATIONS_PATH='/usr/local/etc/auth/migrations', GOTRUE_DB_MAX_POOL_SIZE='3',
                 GOTRUE_API_HOST='127.0.0.1', GOTRUE_API_PORT='9999', GOTRUE_SITE_URL=origin,
                 API_EXTERNAL_URL=origin, GOTRUE_URI_ALLOW_LIST=origin, GOTRUE_JWT_SECRET=secret['jwt'],

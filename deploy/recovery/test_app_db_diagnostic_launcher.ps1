@@ -37,6 +37,10 @@ $source = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'check-db.ps1'))
 $source = [regex]::Replace($source, "(?m)^\`$PackageSha256 = '[^']+'", ('$PackageSha256 = ' + "'" + $hash + "'"))
 $launcher = Join-Path $root 'check-db.ps1'
 [IO.File]::WriteAllText($launcher, $source, (New-Object Text.UTF8Encoding($false)))
+$serviceLauncher = Join-Path $root 'check-services.ps1'
+$serviceSource = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'check-services.ps1'))
+$serviceSource = [regex]::Replace($serviceSource, "(?m)^\`$PackageSha256 = '[^']+'", ('$PackageSha256 = ' + "'" + $hash + "'"))
+[IO.File]::WriteAllText($serviceLauncher, $serviceSource, (New-Object Text.UTF8Encoding($false)))
 
 # A real executable detects accidental launcher-level Docker execution.
 $trapDirectory = Join-Path $root 'process-trap'
@@ -54,11 +58,11 @@ public class DbDiagnosticDockerTrap {
 '@
 Add-Type -TypeDefinition $trapSource -OutputAssembly (Join-Path $trapDirectory 'docker.exe') -OutputType ConsoleApplication
 
-function Invoke-Fixture {
+function Invoke-Fixture([string]$Script = $launcher) {
     $process = New-Object Diagnostics.Process
     try {
         $process.StartInfo.FileName = Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe'
-        $process.StartInfo.Arguments = '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + $launcher + '"'
+        $process.StartInfo.Arguments = '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + $Script + '"'
         $process.StartInfo.UseShellExecute = $false
         $process.StartInfo.CreateNoWindow = $true
         $process.StartInfo.RedirectStandardOutput = $true
@@ -88,9 +92,11 @@ function Assert-Blocked($result, [string]$code) {
 }
 Assert-Ok (Invoke-Fixture) 'Offline Python stays beside spaced package'
 Assert-Ok (Invoke-Fixture) 'Verified runtime reuse'
+Assert-Ok (Invoke-Fixture $serviceLauncher) 'Service launcher alias preserves child arguments and exit'
 $stream = [IO.File]::Open($package, [IO.FileMode]::Append, [IO.FileAccess]::Write)
 try { $stream.WriteByte(65) } finally { $stream.Dispose() }
 Assert-Blocked (Invoke-Fixture) 'DB_DIAGNOSTIC_PACKAGE_HASH_MISMATCH'
+Assert-Blocked (Invoke-Fixture $serviceLauncher) 'DB_DIAGNOSTIC_PACKAGE_HASH_MISMATCH'
 $stream = [IO.File]::Open($package, [IO.FileMode]::Open, [IO.FileAccess]::Write)
 try { $stream.SetLength($stream.Length - 1) } finally { $stream.Dispose() }
 Remove-Item -LiteralPath $report
@@ -114,6 +120,7 @@ Assert-Blocked (Invoke-Fixture) 'BUNDLED_PYTHON_MISSING'
 # no failed-app report it must stop before ever calling the real Docker trap.
 [IO.File]::Copy($env:BOS_APP_PYTHON_ZIP, $archivePath)
 [IO.File]::Copy((Join-Path $PSScriptRoot 'check-db.ps1'), $launcher, $true)
+[IO.File]::Copy((Join-Path $PSScriptRoot 'check-services.ps1'), $serviceLauncher, $true)
 [IO.File]::Copy((Join-Path $PSScriptRoot 'bos-db-check.pyz'), $package, $true)
 $fixtureCode = @'
 import json
@@ -134,9 +141,10 @@ foreach ($file in @(Get-ChildItem -LiteralPath (Join-Path $root 'BOS-Backup') -F
     $inputs[$file.FullName] = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash
 }
 Assert-Blocked (Invoke-Fixture) 'DB_DIAGNOSTIC_FAILED_REPORT_NOT_FOUND'
+Assert-Blocked (Invoke-Fixture $serviceLauncher) 'DB_DIAGNOSTIC_FAILED_REPORT_NOT_FOUND'
 foreach ($path in $inputs.Keys) {
     if ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ne $inputs[$path]) {
         throw 'Collector modified an input before finding a failed report'
     }
 }
-Write-Output 'DB diagnostic launcher: 8 real process cases passed.'
+Write-Output 'DB and service diagnostic launchers: 11 real process cases passed.'

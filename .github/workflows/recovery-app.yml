@@ -88,11 +88,14 @@ jobs:
           import build_app_db_diagnostic as build
           package = Path('deploy/recovery/bos-db-check.pyz')
           launcher = Path('deploy/recovery/check-db.ps1')
+          service_launcher = Path('deploy/recovery/check-services.ps1')
           original_package, original_launcher = package.read_bytes(), launcher.read_bytes()
+          original_service_launcher = service_launcher.read_bytes()
           first, second = build.build(), build.build()
           assert first == second == hashlib.sha256(original_package).hexdigest()
           assert package.read_bytes() == original_package
           assert launcher.read_bytes() == original_launcher
+          assert service_launcher.read_bytes() == original_service_launcher == original_launcher
           with zipfile.ZipFile(package) as archive:
               assert archive.testzip() is None
               assert set(archive.namelist()) == set(build.MODULES) | {'__main__.py'}

@@ -28,6 +28,14 @@ LOG = ('2026-11-15 17:38:03 UTC [41] LOG: could not open file '
        '"pg_stat/pg_stat_statements.stat": No such file or directory\n'
        '2026-11-15 17:38:03 UTC [42] ERROR: unrecognized configuration parameter '
        '"pgaudit.log"\nDETAIL: ' + SECRET + '\n')
+SERVICE_DB_LOG = ('2026-11-15 18:38:03 UTC [41] LOG: could not open file '
+                  '"pg_stat/pg_stat_statements.stat": No such file or directory\n'
+                  '2026-11-15 18:38:03 UTC [42] WARNING: database "' + SECRET +
+                  '" has a collation version mismatch\n')
+AUTH_LOG = json.dumps({'level': 'fatal', 'time': '2026-11-15T18:38:03Z',
+    'msg': 'running db migrations: ERROR: permission denied for schema auth (SQLSTATE 42501)',
+    'error': 'ERROR: permission denied for schema auth (SQLSTATE 42501)',
+    'private_customer': SECRET, 'url': 'https://production.invalid/' + SECRET}) + '\n'
 
 
 class RecordingRunner(drill.DockerRunner):
@@ -81,6 +89,12 @@ class RetainedLogDockerTests(unittest.TestCase):
         self.docker.run(['volume', 'rm', volume])
 
     def test_real_logs_read_without_starting_database_or_changing_volumes(self):
+        self.exercise_collection('DATABASE', 'db', LOG, '')
+
+    def test_structured_auth_failure_is_read_without_database_restart(self):
+        self.exercise_collection('SERVICES', 'auth', SERVICE_DB_LOG, AUTH_LOG)
+
+    def exercise_collection(self, stage, service, db_log, auth_log):
         run = 'bos-app-' + uuid.uuid4().hex[:12]
         baseline_run = 'bos-drill-' + uuid.uuid4().hex[:12]
         volume, baseline = run + '-data', baseline_run + '-data'
@@ -92,12 +106,13 @@ mkdir -p /bos/app/diagnostics /bos/data
 printf '%s' "$1" > /bos/app/diagnostics/db.log
 printf '%s' "$2" > /bos/app/diagnostics/init.log
 printf '%s' "$3" > /bos/data/app-bootstrap.stderr.log
-''', LOG, 'helper started\n' + SECRET, 'bootstrap\n' + SECRET)
+printf '%s' "$4" > /bos/app/diagnostics/auth.log
+''', db_log, 'helper started\n' + SECRET, 'bootstrap\n' + SECRET, auth_log)
         self.fixture_call(baseline, 'printf "%s" "$1" > /bos/baseline-sentinel', SECRET)
         digest_script = 'find /bos -type f -exec sha256sum {} \\; | sort'
         before = self.fixture_call(volume, digest_script, readonly=True)
         baseline_before = self.fixture_call(baseline, digest_script, readonly=True)
-        self.assertEqual(len(before.splitlines()), 3)
+        self.assertEqual(len(before.splitlines()), 4)
         self.assertEqual(len(baseline_before.splitlines()), 1)
         containers_before = self.docker.run(['container', 'ls', '--all', '--quiet', '--no-trunc'])
         image = self.image
@@ -106,12 +121,13 @@ printf '%s' "$3" > /bos/data/app-bootstrap.stderr.log
         successful = {'format': 1, 'status': 'DRILL_COMPLETED', 'run_id': baseline_run,
                       'volume': baseline, 'source_manifest_sha256': 'a' * 64}
         launch = {'format': 1, 'status': 'STOPPED', 'run_id': run, 'volume': volume,
-                  'failed_stage': 'DATABASE', 'failed_service': 'db',
+                  'failed_stage': stage, 'failed_service': service,
                   'baseline_volume': baseline, 'source_manifest_sha256': 'a' * 64,
                   'reason': 'APP_DOCKER_COMMAND_FAILED'}
         self.runner.calls.clear()
         result = app_db_diagnostic.collect(context, successful, launch, self.runner)
-        self.assertEqual(result['status'], 'DB_DIAGNOSTIC_COMPLETE')
+        self.assertEqual(result['status'], 'DB_DIAGNOSTIC_COMPLETE' if stage == 'DATABASE'
+                         else 'SERVICES_DIAGNOSTIC_COMPLETE')
         self.assertEqual(result['failed_clone_mount'], 'READ_ONLY')
         self.assertFalse(result['database_started'])
         self.assertFalse(result['baseline_mounted'])
@@ -120,7 +136,14 @@ printf '%s' "$3" > /bos/data/app-bootstrap.stderr.log
         text = json.dumps(result)
         self.assertNotIn(SECRET, text)
         self.assertNotIn('unrecognized configuration parameter', text)
-        self.assertIn('pgaudit.log', text)
+        if service == 'db':
+            self.assertIn('pgaudit.log', text)
+        else:
+            self.assertEqual(result['log_states']['auth']['status'], 'READ')
+            self.assertEqual(result['diagnostics']['auth']['primary_category'], 'DATABASE_PRIVILEGE_DENIED')
+            self.assertTrue(any(event['sqlstate'] == '42501' for event in result['diagnostics']['auth']['errors']))
+            self.assertEqual(result['diagnostics']['db']['primary_category'], 'NO_SERVER_ERROR_RECORD')
+            self.assertNotIn('production.invalid', text)
         self.assertEqual(before, self.fixture_call(volume, digest_script, readonly=True))
         self.assertEqual(baseline_before, self.fixture_call(baseline, digest_script, readonly=True))
         self.assertEqual(containers_before,
@@ -139,7 +162,7 @@ printf '%s' "$3" > /bos/data/app-bootstrap.stderr.log
             self.assertNotIn(args[:2], [['volume', 'create'], ['image', 'pull'], ['image', 'load']])
             self.assertNotIn('postgres --single', ' '.join(args))
             self.assertNotIn('pg_ctl', args)
-        print('Retained diagnostic: sanitized existing logs, unchanged clone and baseline, helper removed', flush=True)
+        print('Retained ' + service + ' diagnostic: sanitized existing logs, unchanged clone and baseline, helper removed', flush=True)
 
 
 if __name__ == '__main__':

@@ -25,6 +25,23 @@ def reports():
     return successful, launch
 
 
+class ServiceFailureSelectionTests(unittest.TestCase):
+    def test_service_failure_bound_to_same_restore(self):
+        successful, launch = reports()
+        launch.update(failed_stage='SERVICES', failed_service='auth')
+        self.assertEqual(d.validate_failure(launch, successful), launch)
+        launch['volume'] = successful['volume']
+        with self.assertRaisesRegex(Exception, 'DB_DIAGNOSTIC_FAILED_REPORT_MISMATCH'):
+            d.validate_failure(launch, successful)
+
+    def test_unknown_service_cannot_select_arbitrary_log_path(self):
+        successful, launch = reports()
+        for role in ('../../private', 'other', 'auth.log'):
+            launch.update(failed_stage='SERVICES', failed_service=role)
+            with self.assertRaisesRegex(Exception, 'DB_DIAGNOSTIC_FAILED_REPORT_INVALID'):
+                d.validate_failure(launch, successful)
+
+
 class FakeRunner:
     """Small inspect-compatible daemon; every attempted operation is retained."""
     def __init__(self, context, launch):
@@ -145,6 +162,21 @@ class CollectorTests(unittest.TestCase):
         self.save_failure(launch=dict(self.launch, source_manifest_sha256='f' * 64))
         with self.assertRaisesRegex(d.app_cli.Stop, 'DB_DIAGNOSTIC_FAILED_REPORT_MISMATCH'):
             d.select_failure(self.root, self.successful)
+
+    def test_embedded_service_diagnostics_above_64k_remain_selectable(self):
+        expanded = dict(self.launch, service_diagnostics={'synthetic': ['constant'] * 30000})
+        self.save_failure(launch=expanded)
+        selected = d.select_failure(self.root, self.successful)
+        self.assertEqual(selected['run_id'], self.launch['run_id'])
+        self.assertGreater(len(json.dumps(selected)), 64 * 1024)
+
+    def test_newest_invalid_or_oversized_report_never_selects_older_clone(self):
+        self.save_failure('BOS-App-20261114T173803Z-11111111.json')
+        latest = self.root / 'BOS-App-20261115T173803Z-753c7ec3.json'
+        for payload in ('invalid json', ' ' * (d.MAX_FAILED_REPORT + 1)):
+            latest.write_text(payload)
+            with self.assertRaisesRegex(d.app_cli.Stop, 'DB_DIAGNOSTIC_FAILED_REPORT_INVALID'):
+                d.select_failure(self.root, self.successful)
 
     def test_source_metadata_hash_checked_without_reading_large_archives(self):
         for name in ('files.tar', 'images.tar', 'database.dump', 'globals.sql', 'inventory.json'):

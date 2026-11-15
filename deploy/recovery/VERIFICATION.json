@@ -209,10 +209,10 @@
     }
   },
   "application_launch": {
-    "status": "OPERATOR_LOCALE_FAILURE_CONFIRMED_V3_PENDING_VALIDATION",
-    "artifact": "BOS-App-20261115-v2.zip",
-    "bytes": 11212391,
-    "sha256": "2e1962f3ed8cedd3e84b8040df7a23eee9ad2cf05b0d29c35ffc883f38ada508",
+    "status": "V3_DATABASE_VALIDATED_OPERATOR_STOPPED_AUTH",
+    "artifact": "BOS-App-20261115-v3.zip",
+    "bytes": 11266828,
+    "sha256": "7388331927cedfb93d404bc9017e4cc52f5c713650d93f23e35ec1e5e25adc08",
     "runtime_ci": {
       "commit": "52b32cd9885035e10e5215c899ca48a744817091",
       "tree": "5da4a99091cea84864e6146183adba9e9f9238e4",
@@ -327,6 +327,45 @@
     },
     "operator_attempt": {
       "date_utc": "2026-11-15",
+      "evidence": "BOS-App-20261115T182136Z-090a5afe.json",
+      "sha256": "7429c811287a8b05ee237f58fe1c93564ed44d5d49da95fb741755a6d8f6ec1b",
+      "run_id": "bos-app-3a4a2468d519",
+      "volume": "bos-app-3a4a2468d519-data",
+      "reason": "APP_CONTAINER_NOT_RUNNING",
+      "failed_stage": "SERVICES",
+      "failed_service": "auth",
+      "diagnostics": {
+        "category": "PERMISSION_DENIED",
+        "evidence_bytes": 599,
+        "truncated": false
+      },
+      "database": {
+        "status": "CLONE_VALIDATED",
+        "counts": {
+          "orders": 311,
+          "staff": 19,
+          "storage_objects": 1060
+        },
+        "background_workers": "DISABLED"
+      },
+      "exact_auth_error": "NOT_PRESENT_IN_OPERATOR_REPORT",
+      "next_action": "VALIDATE_AUTH_CONNECTION_SCHEMA_FIX_AND_V4_DIAGNOSTICS"
+    },
+    "diagnostic_limitation": "V3 operator summary contains only PERMISSION_DENIED for Auth, not the exact server error. V4 adds bounded sanitized per-service evidence to the JSON report.",
+    "operator_database_diagnostic": {
+      "evidence_file": "BOS-DB-Diagnostic-20261115T180017Z-c5a5ebc3.json",
+      "sha256": "e55680bcd19c2ad444bf946446e5b0993b6ab2af0f1d84a70374ec0e7fff6e72",
+      "status": "DB_DIAGNOSTIC_COMPLETE",
+      "primary_category": "LOCALE_OR_COLLATION_FAILURE",
+      "fatal_count": 1,
+      "database_started_by_diagnostic": false,
+      "baseline_mounted": false,
+      "new_volume_created": false,
+      "backup_modified": false
+    },
+    "confirmed_locale_correction": "Retain only known immutable-image LOCALE_ARCHIVE through clean env and both env -i PostgreSQL invocations; database locale/collation catalogs unchanged. Preserve original failing command stderr instead of replacing it with startup logs.",
+    "operator_attempt_v2": {
+      "date_utc": "2026-11-15",
       "evidence": "operator screenshot image(20261115-173908).png",
       "reason": "APP_DOCKER_COMMAND_FAILED",
       "failed_stage": "DATABASE",
@@ -339,18 +378,7 @@
       "exact_database_error": "FATAL_DATABASE_LOCALE_INCOMPATIBLE_WITH_OPERATING_SYSTEM",
       "next_action": "TEST_LOCALE_ARCHIVE_ENV_FIX_AND_DELIVER_V3"
     },
-    "diagnostic_limitation": "Original input_call stderr can be replaced by DB log evidence; the old broad classifier cannot distinguish actual SQL errors from unrelated startup messages.",
-    "operator_database_diagnostic": {
-      "evidence_file": "BOS-DB-Diagnostic-20261115T180017Z-c5a5ebc3.json",
-      "sha256": "e55680bcd19c2ad444bf946446e5b0993b6ab2af0f1d84a70374ec0e7fff6e72",
-      "status": "DB_DIAGNOSTIC_COMPLETE",
-      "primary_category": "LOCALE_OR_COLLATION_FAILURE",
-      "fatal_count": 1,
-      "database_started_by_diagnostic": false,
-      "baseline_mounted": false,
-      "new_volume_created": false,
-      "backup_modified": false
-    },
-    "confirmed_locale_correction": "Retain only known immutable-image LOCALE_ARCHIVE through clean env and both env -i PostgreSQL invocations; database locale/collation catalogs unchanged. Preserve original failing command stderr instead of replacing it with startup logs."
+    "confirmed_auth_code_defect": "Stripped role search_path is not replaced by Auth Namespace; old fixture public CREATE grant masked migration-table lookup failure. Generated Auth-only URI search_path restores intended schema without extra privileges.",
+    "candidate_artifact": "BOS-App-20261115-v4.zip"
   }
 }

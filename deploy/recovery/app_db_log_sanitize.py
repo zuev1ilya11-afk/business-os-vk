@@ -5,11 +5,12 @@ category is taken from actual ERROR/FATAL/PANIC records; startup LOG/NOTICE
 messages cannot replace it. Unknown values, quoted strings, paths, numeric
 identifiers and multiline DETAIL/HINT/CONTEXT/STATEMENT content are omitted.
 """
+import json
 import re
 
 MAX_BYTES = 128 * 1024
 MAX_EVENTS = 16
-LOG_NAMES = ('db', 'init', 'bootstrap')
+LOG_NAMES = ('db', 'init', 'bootstrap', 'command', 'rest', 'auth', 'storage', 'edge', 'https')
 SEVERITIES = frozenset(('ERROR', 'FATAL', 'PANIC', 'LOG', 'WARNING', 'NOTICE'))
 SQLSTATES = frozenset(('0A000', '08001', '08006', '22023', '25006', '28000',
     '28P01', '3D000', '3F000', '42501', '42601', '42703', '42704', '42804',
@@ -29,6 +30,9 @@ pg_stat_statements.track pgaudit.log pgaudit.log_client pgaudit.role
 max_worker_processes max_parallel_workers max_logical_replication_workers
 max_wal_senders server_version_num listen_addresses json_build_object json_agg
 current_setting current_database to_regprocedure to_regclass count
+auth public storage extensions schema_migrations auth.schema_migrations auth.users auth.sessions
+supabase_auth_admin supabase_storage_admin authenticator postgres supabase_admin
+anon authenticated service_role
 '''.split())
 # Tokens are constants, not arbitrary matched text. They keep an unrecognized
 # error useful while preventing database values, passwords and SQL from export.
@@ -64,6 +68,8 @@ _QUOTED = re.compile(r'"(?:[^"\\]|\\.)*"|\'(?:[^\'\\]|\\.)*\'')
 
 def _category(message, state):
     low = message.lower()
+    if state == '42501':
+        return 'DATABASE_PRIVILEGE_DENIED'
     if state == '53100' or 'no space left on device' in low:
         return 'DISK_FULL'
     if state == '53200' or 'out of memory' in low or 'cannot allocate memory' in low:
@@ -76,8 +82,11 @@ def _category(message, state):
         return 'PRELOAD_REQUIRED'
     if state == '28P01' or 'password authentication failed' in low:
         return 'DATABASE_AUTHENTICATION_FAILED'
-    if state == '42501' or 'permission denied' in low or 'must be superuser' in low:
+    if (state == '42501' or 'must be superuser' in low or 'must be owner' in low
+            or re.search(r'permission denied for (?:schema|table|relation|database|sequence|function)', low)):
         return 'DATABASE_PRIVILEGE_DENIED'
+    if 'permission denied' in low or 'eacces' in low:
+        return 'PERMISSION_DENIED'
     if 'unrecognized configuration parameter' in low:
         return 'CONFIGURATION_PARAMETER_UNKNOWN'
     if 'invalid value for parameter' in low or 'cannot be changed' in low:
@@ -157,6 +166,39 @@ def _terms(message):
     return out
 
 
+def _structured_message(record):
+    """Prefer the final server error, excluding a migration's preceding SQL.
+
+    Keep offsets while masking quoted SQL strings/identifiers so an error-like
+    literal cannot become the authoritative PostgreSQL error record. Separate
+    JSON fields are never concatenated into a synthetic error message.
+    """
+    parts = [record[key] for key in ('msg', 'message', 'error')
+             if isinstance(record.get(key), str)]
+    if not parts:
+        return None
+    for message in parts:
+        masked = _QUOTED.sub(lambda match: ' ' * len(match.group()), message)
+        markers = list(re.finditer(r'\b(?:ERROR|FATAL|PANIC):\s*', masked))
+        if not markers:
+            continue
+        start = markers[-1].end()
+        suffix = re.search(r'\(SQLSTATE\s+([0-9A-Z]{5})\)\s*$', masked[start:])
+        state = suffix.group(1) if suffix else None
+        end = start + suffix.start() if suffix else len(message)
+        # DETAIL/CONTEXT and any subsequent multiline payload are not evidence.
+        return message[start:end].splitlines()[0] if message[start:end] else '', state
+    # Non-PostgreSQL service errors still use the fixed-vocabulary sanitizer.
+    # Only a trailing, unquoted SQLSTATE is accepted, never one inside SQL text.
+    for message in parts:
+        masked = _QUOTED.sub(lambda match: ' ' * len(match.group()), message)
+        suffix = re.search(r'\(SQLSTATE\s+([0-9A-Z]{5})\)\s*$', masked)
+        if suffix:
+            prefix = message[:suffix.start()]
+            return prefix.splitlines()[0] if prefix else '', suffix.group(1)
+    return parts[0].splitlines()[0] if parts[0] else '', None
+
+
 def summarize(raw):
     if not isinstance(raw, bytes):
         raw = b''
@@ -165,9 +207,31 @@ def summarize(raw):
     counts = {level: 0 for level in sorted(SEVERITIES)}
     for line in content.decode('utf-8', errors='replace').splitlines():
         match = _RECORD.fullmatch(line)
-        if not match:
+        if match:
+            level, state, message = match.groups()
+        elif line.startswith('{') and len(line) <= 16384:
+            # GoTrue and other services use structured JSON logs. Only the
+            # explicitly known message fields enter the same strict sanitizer.
+            try:
+                record = json.loads(line)
+            except (ValueError, RecursionError):
+                continue
+            if not isinstance(record, dict):
+                continue
+            raw_level = record.get('level', record.get('severity'))
+            if not isinstance(raw_level, str):
+                continue
+            level = {'fatal': 'FATAL', 'panic': 'PANIC', 'error': 'ERROR',
+                     'warn': 'WARNING', 'warning': 'WARNING', 'info': 'LOG',
+                     'notice': 'NOTICE'}.get(raw_level.lower())
+            if level is None:
+                continue
+            selected = _structured_message(record)
+            if selected is None:
+                continue
+            message, state = selected
+        else:
             continue
-        level, state, message = match.groups()
         counts[level] += 1
         state = state if state in SQLSTATES else None
         event = {'severity': level, 'category': _category(message, state),

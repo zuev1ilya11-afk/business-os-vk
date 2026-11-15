@@ -59,20 +59,23 @@ unset PGHOST PGHOSTADDR PGPORT PGDATABASE PGUSER PGSERVICE PGSERVICEFILE PGOPTIO
 initdb -D /bos/data --username supabase_admin --auth-local=trust --auth-host=trust --no-locale --encoding=UTF8 --no-instructions >/dev/null
 exec postgres -D /bos/data -c listen_addresses=127.0.0.1 -c port=5432 -c unix_socket_directories=/tmp -c unix_socket_permissions=0700 -c max_connections=50 -c shared_buffers=64MB -c logging_collector=off -c log_min_error_statement=panic -c log_statement=none "$@"
 '''
+# Match Auth's role contract in v2.197.0/init_postgres.sh: its own namespace
+# is the search path, and the role has no CREATE grant on public. A permissive
+# fixture previously hid the app bootstrap's removal of that role setting.
 ROLES_SQL = """
 CREATE ROLE anon NOLOGIN NOINHERIT;
 CREATE ROLE authenticated NOLOGIN NOINHERIT;
 CREATE ROLE service_role NOLOGIN NOINHERIT BYPASSRLS;
 CREATE ROLE authenticator LOGIN NOINHERIT PASSWORD 'synthetic-ci-password-never-used-outside-this-fixture';
-CREATE ROLE supabase_auth_admin LOGIN CREATEROLE PASSWORD 'synthetic-ci-password-never-used-outside-this-fixture';
+CREATE ROLE supabase_auth_admin NOINHERIT LOGIN CREATEROLE PASSWORD 'synthetic-ci-password-never-used-outside-this-fixture';
 CREATE ROLE supabase_storage_admin LOGIN CREATEROLE PASSWORD 'synthetic-ci-password-never-used-outside-this-fixture';
 GRANT anon, authenticated, service_role TO authenticator;
 GRANT anon, authenticated, service_role TO supabase_storage_admin WITH ADMIN OPTION;
 CREATE SCHEMA auth AUTHORIZATION supabase_auth_admin;
+ALTER ROLE supabase_auth_admin SET search_path = auth;
 CREATE SCHEMA storage AUTHORIZATION supabase_storage_admin;
 CREATE SCHEMA extensions;
 GRANT USAGE ON SCHEMA public,auth,storage,extensions TO anon,authenticated,service_role,authenticator,supabase_auth_admin,supabase_storage_admin;
-GRANT CREATE ON SCHEMA public TO supabase_auth_admin,supabase_storage_admin;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO service_role;
 ALTER DEFAULT PRIVILEGES FOR ROLE supabase_storage_admin IN SCHEMA storage GRANT ALL ON TABLES TO anon,authenticated,service_role;
@@ -144,6 +147,19 @@ WEB = b'<!doctype html><html><head><title>Synthetic BOS restore</title></head><b
 LOCALE_SQL = """SELECT json_build_object('provider',datlocprovider,
  'collate',datcollate,'ctype',datctype,'locale',datlocale,'version',datcollversion)
 FROM pg_database WHERE datname=current_database();"""
+AUTH_SCHEMA_SQL = """SELECT json_build_object(
+ 'public_create',has_schema_privilege('supabase_auth_admin','public','CREATE'),
+ 'auth_create',has_schema_privilege('supabase_auth_admin','auth','CREATE'),
+ 'auth_owner',(SELECT nspowner='supabase_auth_admin'::regrole
+   FROM pg_namespace WHERE nspname='auth'),
+ 'storage_public_create',has_schema_privilege('supabase_storage_admin','public','CREATE'),
+ 'storage_create',has_schema_privilege('supabase_storage_admin','storage','CREATE'),
+ 'storage_owner',(SELECT nspowner='supabase_storage_admin'::regrole
+   FROM pg_namespace WHERE nspname='storage'),
+ 'role_noinherit',(SELECT NOT rolinherit FROM pg_roles WHERE rolname='supabase_auth_admin'),
+ 'public_migrations',to_regclass('public.schema_migrations') IS NOT NULL,
+ 'migrations',(SELECT coalesce(json_agg(version ORDER BY version),'[]'::json)
+   FROM auth.schema_migrations));"""
 
 
 class SyntheticAppRunner(drill.DockerRunner):
@@ -157,6 +173,8 @@ class SyntheticAppRunner(drill.DockerRunner):
             if args[-2:] == ['-c', drill_db.VALIDATE_SQL]:
                 locale = super().__call__([*args[:-1], LOCALE_SQL], **kwargs)
                 self.restored_locale = json.loads(locale)
+                auth_schema = super().__call__([*args[:-1], AUTH_SCHEMA_SQL], **kwargs)
+                self.restored_auth_schema = json.loads(auth_schema)
             return output
         except Exception:
             print('CI_SYNTHETIC_APP_COMMAND_ERROR=' + json.dumps({
@@ -310,6 +328,23 @@ class RealApplicationLaunch(unittest.TestCase):
                 failures.append(str(port) + ': ' + str(error))
         if failures:
             raise RuntimeError('Synthetic service prerequisites failed: ' + '; '.join(failures))
+        cls.source_auth_schema = json.loads(cls.sql(AUTH_SCHEMA_SQL))
+        if (cls.source_auth_schema.get('public_create') is not False
+                or cls.source_auth_schema.get('auth_create') is not True
+                or cls.source_auth_schema.get('auth_owner') is not True
+                or cls.source_auth_schema.get('storage_public_create') is not False
+                or cls.source_auth_schema.get('storage_create') is not True
+                or cls.source_auth_schema.get('storage_owner') is not True
+                or cls.source_auth_schema.get('role_noinherit') is not True
+                or cls.source_auth_schema.get('public_migrations') is not False
+                or not cls.source_auth_schema.get('migrations')):
+            raise RuntimeError('Auth and Storage fixture roles must own their schemas without public CREATE')
+        auth_connection = json.loads(cls.docker.run(['exec', '-i', '-u', 'postgres', cls.source,
+            'psql', '-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-h', '/tmp',
+            '-U', 'supabase_auth_admin', '-d', discovery.DATABASE],
+            data=b"SELECT json_build_object('schema',current_schema(),'schemas',current_schemas(false));"))
+        if auth_connection != {'schema': 'auth', 'schemas': ['auth']}:
+            raise RuntimeError('Source Auth connection did not apply its role search_path')
         auth_headers = {'Authorization': 'Bearer ' + cls.service, 'apikey': cls.service}
         status, _, body = cls.internal_http(5000, 'POST', '/bucket',
              json.dumps({'id': 'fixture-bucket', 'name': 'fixture-bucket', 'public': True}).encode(),
@@ -388,6 +423,8 @@ class RealApplicationLaunch(unittest.TestCase):
         cls.addClassCleanup(cls.remove_volume, cls.baseline['volume'], DRILL_LABEL, cls.baseline['run_id'])
         if getattr(cls.runner, 'restored_locale', None) != cls.source_locale:
             raise RuntimeError('Restore drill changed the captured locale or its provider')
+        if getattr(cls.runner, 'restored_auth_schema', None) != cls.source_auth_schema:
+            raise RuntimeError('Restore drill changed Auth migrations or schema privileges')
 
     @classmethod
     def own_container(cls, cid):
@@ -636,6 +673,45 @@ class RealApplicationLaunch(unittest.TestCase):
             self.remove_volume(failed_volume, APP_LABEL, failed_run)
         self.assertEqual(self.volume_hash(self.baseline['volume']), before)
         print('CI_NON_C_LOCALE_REPRODUCED=DATABASE_FATAL_WITHOUT_LOCALE_ARCHIVE', flush=True)
+        # The former launcher erased the archived Auth role search_path and
+        # supplied a bare connection URI. Auth then tried migration bookkeeping
+        # in public, which its original least-privilege role cannot create in.
+        # Reproduce this independently of the locale fix on another owned clone.
+        import app_plan
+        failed_volume = None
+        with patch.object(app_plan, 'auth_database_uri', side_effect=lambda uri, namespace: uri):
+            try:
+                broken = app.start_app(self.bundle, self.baseline, self.runner)
+            except app.Stop as error:
+                failure = getattr(error, 'report', {})
+                failed_volume = failure.get('volume')
+            else:
+                broken.stop()
+                self.remove_volume(broken.volume, APP_LABEL, broken.run_id)
+                self.fail('Auth unexpectedly started without its namespace after role settings were cleared')
+        self.assertRegex(failed_volume or '', r'^bos-app-[0-9a-f]{12}-data$')
+        failed_run = failed_volume.removesuffix('-data')
+        failed_info = json.loads(self.docker.run(['volume', 'inspect', failed_volume]))[0]
+        self.assertEqual(failed_info.get('Labels', {}).get(APP_LABEL), failed_run)
+        try:
+            self.assertEqual(failure.get('failed_stage'), 'SERVICES')
+            self.assertEqual(failure.get('failed_service'), 'auth')
+            self.assertEqual(failure.get('diagnostics', {}).get('category'), 'PERMISSION_DENIED')
+            self.assertEqual(failure.get('database', {}).get('status'), 'CLONE_VALIDATED')
+            log_args = ['run', '--rm', '--network', 'none', '--read-only', '--log-driver', 'none',
+                '--user', '0:0', '--cap-drop', 'ALL', '--cap-add', 'DAC_READ_SEARCH',
+                '--security-opt', 'no-new-privileges',
+                '--mount', 'type=volume,src=' + failed_volume + ',dst=/bos,readonly,volume-nocopy']
+            for target in drill_db._tmpfs(self.images['db']):
+                log_args += ['--tmpfs', target + ':rw,noexec,nosuid,nodev,size=1m']
+            failure_logs = self.docker.run([*log_args, '--entrypoint', '/bin/busybox',
+                self.images['db']['Id'], 'head', '-c', '65536', '/bos/app/diagnostics/auth.log'])
+            self.assertIn(b'permission denied for schema public', failure_logs.lower())
+            self.assertIn(b'42501', failure_logs)
+        finally:
+            self.remove_volume(failed_volume, APP_LABEL, failed_run)
+        self.assertEqual(self.volume_hash(self.baseline['volume']), before)
+        print('CI_AUTH_NAMESPACE_REPRODUCED=PUBLIC_PERMISSION_DENIED_WITHOUT_SESSION_SEARCH_PATH', flush=True)
         try:
             session = app.start_app(self.bundle, self.baseline, self.runner)
         except Exception as error:
@@ -668,6 +744,10 @@ class RealApplicationLaunch(unittest.TestCase):
         self.assertEqual(set(session.containers), set(discovery.ROLES))
         self.assertEqual(json.loads(app.sql(session, LOCALE_SQL, readonly=True)), self.source_locale)
         print('CI_NON_C_LOCALE_PRESERVED=SOURCE_RESTORE_AND_APP_LIBC_LOCALE_MATCH', flush=True)
+        self.assertEqual(json.loads(app.sql(session, AUTH_SCHEMA_SQL, readonly=True)), self.source_auth_schema)
+        self.assertEqual(self.request(session, 'GET', '/auth/v1/health')[0], 200)
+        print('CI_AUTH_NAMESPACE_PRESERVED=REAL_AUTH_HEALTHY_WITHOUT_PUBLIC_CREATE_OR_MIGRATION_CHANGES', flush=True)
+        print('CI_STORAGE_PRIVILEGES_PRESERVED=STORAGE_READY_WITHOUT_PUBLIC_CREATE', flush=True)
         anchor = session.containers['db']
         preserved_routes = json.loads(self.docker.run(['exec', session.containers['edge'],
                                                        'cat', '/bos-main/routes.json']))
@@ -733,6 +813,7 @@ class RealApplicationLaunch(unittest.TestCase):
         self.assertEqual(self.volume_hash(self.baseline['volume']), before)
         self.assertEqual(self.sql('SELECT json_agg(t ORDER BY id) FROM public.orders t;'), self.source_before)
         self.assertEqual(json.loads(self.sql(LOCALE_SQL)), self.source_locale)
+        self.assertEqual(json.loads(self.sql(AUTH_SCHEMA_SQL)), self.source_auth_schema)
         self.assertEqual({p.name: backup.hash_file(p) for p in self.bundle.iterdir()}, self.bundle_before)
 
 

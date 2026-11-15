@@ -19,6 +19,7 @@ import drill_files as files
 
 MIB = 1024 * 1024
 MAX_LOG = 64 * 1024
+MAX_FAILED_REPORT = MIB
 APP_LABEL = 'io.business-os.local-app'
 HELPER_LABEL = 'io.business-os.app-log-diagnostic'
 APP_RUN = re.compile(r'bos-app-[0-9a-f]{12}')
@@ -29,13 +30,20 @@ REPORT_NAME = re.compile(r'BOS-App-[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}\.json')
 ENV_KEY = re.compile(r'[A-Za-z_][A-Za-z0-9_]*')
 LOG_PATHS = {'db': '/bos/app/diagnostics/db.log',
              'init': '/bos/app/diagnostics/init.log',
+             'rest': '/bos/app/diagnostics/rest.log',
+             'auth': '/bos/app/diagnostics/auth.log',
+             'storage': '/bos/app/diagnostics/storage.log',
+             'edge': '/bos/app/diagnostics/edge.log',
+             'https': '/bos/app/diagnostics/https.log',
+             'command': '/bos/app/diagnostics/command.stderr.log',
              'bootstrap': '/bos/data/app-bootstrap.stderr.log'}
+FAILURES = {'DATABASE': {'db'}, 'SERVICES': {'db', 'rest', 'auth', 'storage', 'edge', 'https'}}
 
 # A fixed status byte precedes bounded file content. No arbitrary filename is
 # accepted; every ancestor is checked before opening a regular file.
 READ_LOG = r'''set -eu
 case "$1" in
- /bos/app/diagnostics/db.log|/bos/app/diagnostics/init.log)
+ /bos/app/diagnostics/db.log|/bos/app/diagnostics/init.log|/bos/app/diagnostics/rest.log|/bos/app/diagnostics/auth.log|/bos/app/diagnostics/storage.log|/bos/app/diagnostics/edge.log|/bos/app/diagnostics/https.log|/bos/app/diagnostics/command.stderr.log)
   for p in /bos /bos/app /bos/app/diagnostics; do
    if test -L "$p"; then printf U; exit 0; fi
    if ! test -d "$p"; then printf M; exit 0; fi
@@ -84,7 +92,8 @@ def validate_successful(successful):
 def validate_failure(launch, successful):
     validate_successful(successful)
     require(isinstance(launch, dict) and launch.get('status') == 'STOPPED'
-            and launch.get('failed_stage') == 'DATABASE' and launch.get('failed_service') == 'db',
+            and launch.get('failed_stage') in FAILURES
+            and launch.get('failed_service') in FAILURES[launch['failed_stage']],
             'DB_DIAGNOSTIC_FAILED_REPORT_INVALID')
     run = launch.get('run_id')
     require(isinstance(run, str) and APP_RUN.fullmatch(run)
@@ -96,23 +105,26 @@ def validate_failure(launch, successful):
 
 
 def select_failure(work, successful):
-    """Select the latest timestamped local DATABASE/db failure for this restore."""
+    """Select the latest timestamped database/service failure for this restore."""
     validate_successful(successful)
     candidates = sorted((p for p in work.glob('BOS-App-*.json') if REPORT_NAME.fullmatch(p.name)),
                         key=lambda p: p.name, reverse=True)
     require(len(candidates) <= 512, 'DB_DIAGNOSTIC_REPORT_COUNT_LIMIT')
     for path in candidates:
         try:
-            raw, _ = files._read(path, limit=64 * 1024, collect=True)
+            raw, _ = files._read(path, limit=MAX_FAILED_REPORT, collect=True)
             report = json.loads(raw, object_pairs_hook=files._unique_pairs)
         except Exception:
-            continue
+            # Never silently diagnose an older clone when a newer report is
+            # unreadable, malformed, a symlink, or beyond the bounded limit.
+            raise app_cli.Stop('DB_DIAGNOSTIC_FAILED_REPORT_INVALID') from None
         if not isinstance(report, dict) or report.get('status') != 'STOPPED':
             continue
         launch = report.get('launch')
         if not isinstance(launch, dict) or launch.get('status') != 'STOPPED':
             continue
-        if launch.get('failed_stage') != 'DATABASE' or launch.get('failed_service') != 'db':
+        if (launch.get('failed_stage') not in FAILURES
+                or launch.get('failed_service') not in FAILURES[launch['failed_stage']]):
             continue
         # An eligible newest report with another identity must not silently
         # select an older clone, even when the older clone still exists.
@@ -284,7 +296,9 @@ def collect(context, successful, launch, runner):
             except Exception:
                 raise app_cli.Stop('DB_DIAGNOSTIC_HELPER_CLEANUP_UNCONFIRMED') from None
     volume_available(runner, launch)
-    return {'format': 1, 'status': 'DB_DIAGNOSTIC_COMPLETE',
+    return {'format': 2, 'status': ('DB_DIAGNOSTIC_COMPLETE' if launch['failed_stage'] == 'DATABASE'
+                                   else 'SERVICES_DIAGNOSTIC_COMPLETE'),
+            'failed_stage': launch['failed_stage'], 'failed_service': launch['failed_service'],
             'scope': 'RETAINED_FAILED_CLONE_LOGS_ONLY', 'run_id': launch['run_id'],
             'volume': launch['volume'], 'baseline_volume': successful['volume'],
             'source_manifest_sha256': successful['source_manifest_sha256'],
@@ -310,7 +324,8 @@ def main(argv=None):
         context = load_metadata(bundle, successful)
         result = collect(context, successful, launch, drill.DockerRunner())
         stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
-        output = work / ('BOS-DB-Diagnostic-' + stamp + '-' + uuid.uuid4().hex[:8] + '.json')
+        prefix = 'BOS-DB-Diagnostic-' if launch['failed_stage'] == 'DATABASE' else 'BOS-Services-Diagnostic-'
+        output = work / (prefix + stamp + '-' + uuid.uuid4().hex[:8] + '.json')
         app_cli.write_report(output, result)
         print(json.dumps({'status': result['status'], 'report': str(output),
                           'disaster_recovery_ready': False}))

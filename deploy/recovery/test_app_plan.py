@@ -189,6 +189,31 @@ class PlanTests(unittest.TestCase):
         config['Env'] = [v + '?host=production.invalid' if v.startswith('PGRST_DB_URI=') else v for v in config['Env']]
         self.failure('APP_DATABASE_URI_INVALID')
 
+    def test_auth_search_path_is_scoped_to_its_connection_without_extra_privileges(self):
+        from urllib.parse import parse_qs, urlsplit
+        roles = self.plan()['roles']
+        auth = roles['auth']['env']
+        self.assertEqual(auth['DATABASE_URL'], auth['GOTRUE_DB_DATABASE_URL'])
+        self.assertEqual(parse_qs(urlsplit(auth['DATABASE_URL']).query), {'search_path': ['"auth"']})
+        for key in ('GOTRUE_DB_NAMESPACE', 'GOTRUE_DB_DB_NAMESPACE', 'DB_NAMESPACE'):
+            self.assertEqual(auth[key], 'auth')
+        self.assertEqual(urlsplit(roles['rest']['env']['PGRST_DB_URI']).query, '')
+        self.assertEqual(urlsplit(roles['storage']['env']['DATABASE_URL']).query, '')
+
+    def test_auth_custom_schema_is_quoted_and_alias_conflicts_are_refused(self):
+        from urllib.parse import parse_qs, urlsplit
+        config = self.container('auth')['Config']
+        config['Env'].append('DB_NAMESPACE=AuthCustom')
+        auth = self.plan()['roles']['auth']['env']
+        self.assertEqual(parse_qs(urlsplit(auth['DATABASE_URL']).query), {'search_path': ['"AuthCustom"']})
+        config['Env'].append('GOTRUE_DB_DB_NAMESPACE=other')
+        self.failure('APP_AUTH_NAMESPACE_CONFLICT')
+
+    def test_auth_namespace_cannot_inject_a_second_schema_or_pg_option(self):
+        for value in ('auth,public', 'auth;SELECT', 'auth"', 'auth&host=production'):
+            with self.subTest(value=value), self.assertRaises(p.Stop):
+                p.auth_database_uri('postgresql://user:local@127.0.0.1:5432/db', value)
+
     def test_changed_callback_bytes_rejected(self):
         self.files['root-003/index.ts'] += b'change'
         self.failure('APP_CAPTURE_FILE_CHANGED')

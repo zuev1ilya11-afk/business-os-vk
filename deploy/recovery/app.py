@@ -16,6 +16,7 @@ from urllib.parse import unquote, urlsplit
 import uuid
 
 import app_browser
+import app_db_log_sanitize
 import app_plan
 import app_signed_urls
 import app_storage
@@ -537,6 +538,7 @@ class AppSession:
         evidence = original_evidence if isinstance(original_evidence, bytes) else b''
         command_evidence = bool(evidence.strip())
         files = {'diagnostics/command.stderr.log': evidence[:8192]} if command_evidence else {}
+        raw_logs = {'command': evidence[:8192]} if command_evidence else {}
         for cid, spec in self._owned.items():
             role = spec.get('role')
             if role not in ('init', 'db', 'rest', 'auth', 'storage', 'edge', 'https'):
@@ -549,11 +551,13 @@ class AppSession:
                 errors = getattr(self.runner, 'last_error', b'')
                 data = output[:128 * 1024] + b'\n' + (errors[:8192] if isinstance(errors, bytes) else b'')
                 files['diagnostics/' + role + '.log'] = data
+                raw_logs[role] = data
                 if role == self._current_role and data.strip() and not command_evidence:
                     evidence = data
             except Exception:
                 continue
         self.report['diagnostics'] = classify_failure(evidence)
+        self.report['service_diagnostics'] = app_db_log_sanitize.collect_logs(raw_logs)
         target = self.containers.get('db') or next(iter(self._owned), None)
         if target is None or not files:
             return
