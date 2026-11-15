@@ -116,7 +116,7 @@ class HttpCallTests(unittest.TestCase):
         head, sent = wire.split(b'\r\n\r\n', 1)
         self.assertEqual(sent, body)
         self.assertIn(f'Content-Length: {len(body)}'.encode(), head)
-        self.assertIn(b'Host: localhost:18080', head)
+        self.assertIn(b'Host: 127.0.0.1:18080', head)
         self.assertNotIn(b'external.invalid', wire)
         self.assertIs(call.call_args.kwargs['close_stdin'], False)
 
@@ -128,6 +128,12 @@ class HttpCallTests(unittest.TestCase):
         result, _ = self.request(response)
         self.assertEqual(result, (200, {'content-type': 'application/octet-stream',
                                         'content-length': '5'}, b'\x00\xffxYZ'))
+
+    def test_request_host_matches_generated_caddy_site(self):
+        import app_plan
+        request = transport._request('GET', '/', {}, b'', app_plan.PORTS['https'])
+        host = next(line[6:] for line in request.split(b'\r\n') if line.startswith(b'Host: '))
+        self.assertIn(b'http://' + host + b' {', app_plan.CADDY)
 
     def test_continue_and_no_body(self):
         result, _ = self.request(b'HTTP/1.1 100 Continue\r\n\r\n'

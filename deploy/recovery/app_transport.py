@@ -164,7 +164,10 @@ def _request(method, path, headers, body, port):
              and len(path) <= 16384, 'APP_HTTP_REQUEST_INVALID')
     _require(isinstance(body, bytes) and len(body) <= MAX_BODY, 'APP_HTTP_BODY_LIMIT')
     _require(isinstance(headers, dict), 'APP_HTTP_REQUEST_INVALID')
-    lines = [f'{method} {path} HTTP/1.1', f'Host: localhost:{port}',
+    # Caddy's captured-app replacement site matches the literal loopback host.
+    # Keep Host aligned with the fixed network target, not an interchangeable
+    # DNS spelling that Caddy would route to an empty unmatched response.
+    lines = [f'{method} {path} HTTP/1.1', f'Host: 127.0.0.1:{port}',
              'Connection: close', f'Content-Length: {len(body)}',
              'Accept-Encoding: identity']
     seen = set()
