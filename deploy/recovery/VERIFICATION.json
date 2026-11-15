@@ -33,10 +33,10 @@
     "application data and Storage files",
     "real Docker export tests use public PostgreSQL and synthetic imported rootfs"
   ],
-  "production_capture": "ATTEMPTED_PREVIOUS_REVISION_FINAL_VERIFICATION_STOPPED; current completion pending",
+  "production_capture": "COMPLETE_INTEGRITY_VERIFIED_OPERATOR_SCREENSHOT_2026_11_15",
   "production_restore": "NOT_RUN",
   "database_storage_consistency": "NOT_PROVEN",
-  "independent_copy": "NOT_VERIFIED",
+  "independent_copy": "VERIFIED_OPERATOR_POWERSHELL_SHA256_ALL_SIX_PAYLOADS_2026_11_15",
   "disaster_recovery_ready": false,
   "ci": "See Recovery package workflow for this exact revision; no new CI success is claimed by this local record.",
   "sha256": {
@@ -50,7 +50,19 @@
     "image_archive.py": "0a07fdc333db5ad8101982672a024c22f0bef14975be48fa11f83561667cfe6d",
     "test_images.py": "aabecd37eea49703e09aa30e8c000ebc4bdf839d015b2335d26389eb3d8f15eb",
     "test_finish.py": "ec5b38ae4f82cfa7b983683786cbc784d3b547b65dd0137e22e39bbd11445fb5",
-    "test_docker.py": "6bd4e372dd5c8f4caba616bc7188c3b294f3a0d97f6b0a3e60562f198c3e9f09"
+    "test_docker.py": "6bd4e372dd5c8f4caba616bc7188c3b294f3a0d97f6b0a3e60562f198c3e9f09",
+    "drill.py": "00f492538ef7db6166154bc6a6e7bf84344181a12c15ea0b6025833a9685027b",
+    "drill_db.py": "4e93e64691f728a01cdaac3e475f7edea5f7c04f6f51b766b9d7f73eb2053370",
+    "drill_files.py": "5ed19d86141c959ac462d6d8bd5396a8322b14c33794862276b1869e7a79b138",
+    "build_drill.py": "ebde8b548b2f4bb64d74fee016c8fe00b947d1067fccd13792a2b588dfd3b5bc",
+    "restore.ps1": "5899946ac099ea29348adc1905abde0f696b8e23481a77f79ccdffc7fe8df0f0",
+    "restore.cmd": "940b2c44c84db65d71498085e6c4468b4e215737dd1adb35915d1ae7159e7969",
+    "bos-restore.pyz": "cf482fa5b399b0bcebd6891d13a3ac9b22efe9b572b342dc4d57f259a0f748e0",
+    "test_drill.py": "f960942a872466a452f72a1594bee4952f6421ffaf907f07673c6058c26959b4",
+    "test_drill_db.py": "54e475f5afe13e13339f35d69d84e5cc3dd0fa26a495137540b8eab44434745e",
+    "test_drill_files.py": "f518e92ea51fd1efc7ee9dc535897d1dc691ac381a533929680ee4d718b2e08d",
+    "test_drill_integration.py": "d46875673337d5a422b1aec82f00e5e1f112573819e00f44c0bf621777a5108d",
+    "test_launcher.ps1": "0d0abd0d731a09775d43aaa6f66b2612b267be18242ede38ba070f9eb3b72d06"
   },
   "previous_full_verification": {
     "commit": "6d706eb0ff37886d1420f11d9327c3013d0a8a1c",
@@ -59,7 +71,7 @@
     "ci_run": 43627417693,
     "ci_postgresql": "17.6"
   },
-  "server_observation": "Package f5f93120 reached final verification and stopped with IMAGE_ARCHIVE_INCOMPLETE. A fully written private partial may be completed by finish-latest after full revalidation; the command never recaptures live data. Containerd image identity compatibility is fixed; live archive contents and result remain unobserved.",
+  "server_observation": "Operator finish-latest completed capture-20261115T090155Z-fa50d3a08e64, then SCP transferred seven files to the operator Windows PC; six payload SHA256 checks returned True. No direct agent access to the archive. Production restore NOT_RUN.",
   "previous_metadata_fix_validation": {
     "commit": "7dd8cbb696e6e7f2229a042d7e3f091c02e59b54",
     "unit_passed": 65,
@@ -91,5 +103,19 @@
       "containerd 29.9.3"
     ],
     "ci_run": 43698154854
+  },
+  "restore_drill": {
+    "status": "LOCAL_UNIT_VERIFIED_CI_REQUIRED",
+    "unit_total": 175,
+    "new_tests": 56,
+    "real_docker_restore": "CI_REQUIRED_BOTH_STORES",
+    "windows_launcher": "CI_REQUIRED_POWERSHELL_5_1",
+    "operator_docker_version": "29.9.2",
+    "operator_restore": "NOT_RUN",
+    "scope": "DATABASE_GLOBALS_AND_FILE_BYTES",
+    "application": "NOT_RUN",
+    "storage_relationships": "NOT_VERIFIED",
+    "storage_extended_attributes": "NOT_CAPTURED",
+    "disaster_recovery_ready": false
   }
 }

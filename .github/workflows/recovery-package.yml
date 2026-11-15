@@ -13,7 +13,7 @@ jobs:
   docker-export:
     name: Docker export (${{ matrix.store }})
     runs-on: ubuntu-22.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
@@ -47,6 +47,26 @@ jobs:
           BOS_RECOVERY_DOCKER_STORE: ${{ matrix.store }}
           BOS_RECOVERY_DOCKER_VERSION: ${{ matrix.version }}
         run: python3 deploy/recovery/test_docker.py --require
+      - name: Restore a real synthetic bundle through the operator drill
+        env:
+          BOS_RECOVERY_DOCKER_TEST: '1'
+          BOS_RECOVERY_DOCKER_SOCKET: ${{ steps.engine.outputs.sock }}
+          BOS_RECOVERY_DOCKER_STORE: ${{ matrix.store }}
+          BOS_RECOVERY_DOCKER_VERSION: ${{ matrix.version }}
+        run: python3 deploy/recovery/test_drill_integration.py --require
+
+  windows-launcher:
+    name: Windows PowerShell 5.1 launcher
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test installed and portable Python launch paths
+        shell: powershell
+        run: ./deploy/recovery/test_launcher.ps1
 
   recovery:
     runs-on: ubuntu-22.04
@@ -62,6 +82,9 @@ jobs:
           python3 deploy/recovery/build.py
           git diff --exit-code -- deploy/recovery/bos-backup.pyz
           python3 deploy/recovery/bos-backup.pyz --help
+          python3 deploy/recovery/build_drill.py
+          git diff --exit-code -- deploy/recovery/bos-restore.pyz deploy/recovery/restore.ps1
+          python3 deploy/recovery/bos-restore.pyz --help
       - name: Build disposable PostgreSQL test environment
         run: docker build -f deploy/recovery/test.Dockerfile -t bos-recovery-test deploy/recovery
       - name: Real dump and restore with networking disabled
