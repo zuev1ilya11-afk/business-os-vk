@@ -114,7 +114,6 @@ CREATE ROLE supabase_realtime_admin LOGIN;
 GRANT fixture_team TO fixture_reader;
 GRANT SET ON PARAMETER log_min_messages TO supabase_realtime_admin;
 GRANT ALTER SYSTEM ON PARAMETER log_min_messages TO fixture_team WITH GRANT OPTION;
-REVOKE ALTER SYSTEM ON PARAMETER log_min_messages FROM postgres;
 ALTER DATABASE bos_restore_check OWNER TO app_owner;
 SET ROLE app_owner;
 CREATE TABLE public.orders (
@@ -279,9 +278,6 @@ class RealRestoreDrill(unittest.TestCase):
                 b'GRANT ALTER SYSTEM ON PARAMETER log_min_messages TO fixture_team WITH GRANT OPTION;'):
             if statement not in globals_sql:
                 raise RuntimeError('Real globals dump omitted a parameter grant fixture')
-        if not re.search(rb'^REVOKE [^\n]+ ON PARAMETER log_min_messages FROM postgres;',
-                         globals_sql, re.MULTILINE):
-            raise RuntimeError('Real globals dump omitted the parameter revoke fixture')
         metadata = json.loads(cls.sql(cls.source, backup.META_SQL))
         cls.docker.save(cls.bundle / 'images.tar', [cls.image])
         cls.docker.run(['image', 'rm', cls.image['Id']])
@@ -366,6 +362,28 @@ class RealRestoreDrill(unittest.TestCase):
         finally:
             target.write_bytes(original)
 
+    def test_parameter_revoke_stops_before_docker_mutation(self):
+        target, manifest_path = self.bundle / 'globals.sql', self.bundle / 'manifest.json'
+        original, original_manifest = target.read_bytes(), manifest_path.read_bytes()
+        before = self.resource_ids()
+        # This is an intentionally re-hashed synthetic fixture, not corruption:
+        # PostgreSQL can silently ignore this REVOKE on a fresh parameter ACL.
+        target.write_bytes(original +
+                           b'\nREVOKE ALTER SYSTEM ON PARAMETER log_min_messages FROM postgres;\n')
+        manifest = json.loads(original_manifest)
+        manifest['payloads']['globals.sql'] = backup.hash_file(target)
+        write_json(manifest_path, manifest)
+        try:
+            with self.assertRaises(Exception) as raised:
+                self.drill.run_drill(self.bundle, self.runner)
+            self.assertEqual(getattr(raised.exception, 'reason_code', None),
+                             'DRILL_BOOTSTRAP_METADATA_REQUIRED')
+            self.assertEqual(self.resource_ids(), before)
+            self.assertEqual(self.snapshot(), self.source_before)
+        finally:
+            target.write_bytes(original)
+            manifest_path.write_bytes(original_manifest)
+
     def test_real_bundle_restores_roles_data_guard_and_file_bytes(self):
         self.assertNotIn(self.image['Id'], self.docker.run(
             ['image', 'ls', '--all', '--quiet', '--no-trunc']).decode().split())
@@ -448,7 +466,7 @@ class RealRestoreDrill(unittest.TestCase):
         print('\nActual Docker restore: ' + json.dumps({
             'store': os.environ.get('BOS_RECOVERY_DOCKER_STORE'),
             'scope': report['scope'], 'roles_acl_rls_guard': 'VERIFIED_SYNTHETIC',
-            'parameter_grants_revokes_options': 'VERIFIED_SYNTHETIC',
+            'parameter_grants_and_options': 'VERIFIED_SYNTHETIC',
             'source_unchanged': True, 'network': 'none', 'full_application': 'NOT_RUN',
             'archive_image_id_absent_before_load': True,
         }, sort_keys=True), flush=True)

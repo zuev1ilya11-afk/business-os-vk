@@ -55,16 +55,16 @@
     "drill_db.py": "97749f47dec6cf336b407d7cfc57e9a3616c42ede607cd634ea7a3d70de41668",
     "drill_files.py": "bf1d458d7558c47f2181dd2760bc779030c3a5059c8dc177975d167ee3916134",
     "build_drill.py": "5f9feaa13ca12ec0be89cbb8e2b54fa00a2693d12691aef62f2f13f81b581e0b",
-    "restore.ps1": "eb6a9833b43a0f399a14b28273b2d6373c8e6be99c443a2f37f1ef2c3e017cda",
+    "restore.ps1": "81a5b6aeb72ae205cbafdd1ce8278e57927db5fb0f0eaa63a68efd592af96dd2",
     "restore.cmd": "940b2c44c84db65d71498085e6c4468b4e215737dd1adb35915d1ae7159e7969",
-    "bos-restore.pyz": "da1285352bfd475ba3b931ff1480ab3a0c0f8f2f029a7f8f7b7a4d4b689c0dba",
+    "bos-restore.pyz": "a38f863e6576e20957bd88022603d6f78f887b5878534b39ffbaaaf2532f0194",
     "test_drill.py": "f960942a872466a452f72a1594bee4952f6421ffaf907f07673c6058c26959b4",
     "test_drill_db.py": "8a24e349a46ddbd344d1d8db2524e5d7de3353c98a13866c23f89ad0cfc5b53b",
     "test_drill_files.py": "f518e92ea51fd1efc7ee9dc535897d1dc691ac381a533929680ee4d718b2e08d",
-    "test_drill_integration.py": "ba07f691ca8e1536024434e059befedae50793431e9514cf1dceccc82241fdf2",
+    "test_drill_integration.py": "c68fa84679d420f784b5ad05e431c1db5b7dd34bea9ebc90613526af2e1027df",
     "test_launcher.ps1": "985aa7a33604aea18aecfe46d8535e7127c6a088f16b3b40c09c90bf2bdd0a51",
-    "drill_roles.py": "9bc3d2b8d5126057bbcf8ab643ecdad14e25b2e1bdaa0c362ac2bdcc7f3eb370",
-    "test_drill_roles.py": "3c77c0a91c3c3f1d0d207830b14eb5fe512f8c78643a444f04f60c043c4a09cd",
+    "drill_roles.py": "0edf4be3c5594a1ab31ed74c1828ecc243996e0ee36a877625d30777c498b8b7",
+    "test_drill_roles.py": "6681a023485896509840561984e1dd66d6e4c60b8492884ef4b2f5ece27dc8d0",
     "test_drill_windows.py": "1330dd7edfe7051883ad9e0504aac59a6dcda8bac63d867d1ff7ef74e728f562"
   },
   "previous_full_verification": {
@@ -109,8 +109,8 @@
   },
   "restore_drill": {
     "status": "LOCAL_UNIT_VERIFIED_CI_REQUIRED",
-    "unit_total": 189,
-    "new_tests": 70,
+    "unit_total": 190,
+    "new_tests": 71,
     "real_docker_restore": "CI_REQUIRED_BOTH_STORES",
     "windows_launcher": "CI_REQUIRED_POWERSHELL_5_1",
     "operator_docker_version": "29.9.2",
@@ -131,8 +131,13 @@
       "run": 43711541316,
       "note": "All four recovery jobs passed; Windows native file validation covered installed and portable Python."
     },
-    "parameter_acl_fix": "Recognize canonical parameter grants/revokes separately from memberships; preserve SQL bytes; exact operator GRANT SET log_min_messages covered. Native PostgreSQL ACL/grant-option/revoke behavior awaits exact CI.",
-    "local_discovery_ran": 196,
-    "local_discovery_skipped": 10
+    "parameter_acl_fix": "Recognize canonical parameter GRANT separately from memberships; preserve SQL bytes. Exact operator log_min_messages grant and grant options covered. REVOKE remains unsupported and refused before Docker mutation.",
+    "local_discovery_ran": 197,
+    "local_discovery_skipped": 10,
+    "previous_parameter_acl_attempt": {
+      "commit": "a1052c92476d1cb9f4c1a43e415697ea4ac9e4eb",
+      "run": 43713172098,
+      "result": "Actual dump/restore completed, but exact ACL comparison exposed PostgreSQL parameter REVOKE on a fresh catalog row being ignored. Narrowed support to GRANT-only and added pre-mutation refusal test; exact new CI required."
+    }
   }
 }

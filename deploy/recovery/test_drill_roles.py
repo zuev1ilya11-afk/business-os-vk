@@ -54,11 +54,9 @@ class BootstrapInferenceTests(unittest.TestCase):
 
     def test_canonical_parameter_acl_options_and_quoted_identifiers(self):
         acls = [
-            b'REVOKE ALL ON PARAMETER log_min_messages FROM PUBLIC;',
             b'GRANT SET, ALTER SYSTEM ON PARAMETER log_min_messages TO member;',
             b'GRANT ALTER SYSTEM, SET ON PARAMETER log_min_messages TO member;',
             b'GRANT ALL PRIVILEGES ON PARAMETER log_min_messages TO member WITH GRANT OPTION;',
-            b'REVOKE GRANT OPTION FOR ALTER SYSTEM ON PARAMETER log_min_messages FROM member;',
             b'GRANT SET ON PARAMETER "app.test" TO "member ";',
             b'GRANT SET ON PARAMETER "GRANT x TO y GRANTED BY fake;" TO member;',
         ]
@@ -94,6 +92,17 @@ class BootstrapInferenceTests(unittest.TestCase):
         for acl in bad:
             with self.subTest(acl=acl), self.assertRaises(drill_roles.Stop):
                 drill_roles.source_bootstrap(self.example() + acl)
+
+    def test_parameter_revokes_stop_before_an_unproven_acl_restore(self):
+        revokes = [
+            b'REVOKE ALL ON PARAMETER log_min_messages FROM postgres;',
+            b'REVOKE ALL ON PARAMETER log_min_messages FROM PUBLIC;',
+            b'REVOKE SET ON PARAMETER log_min_messages FROM member;',
+            b'REVOKE GRANT OPTION FOR ALTER SYSTEM ON PARAMETER log_min_messages FROM member;',
+        ]
+        for revoke in revokes:
+            with self.subTest(revoke=revoke), self.assertRaises(drill_roles.Stop):
+                drill_roles.source_bootstrap(self.example() + revoke)
 
     def test_ambiguous_missing_and_unknown_grants_fail_closed(self):
         bad = [b'CREATE ROLE postgres;',
