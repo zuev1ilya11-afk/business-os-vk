@@ -9,16 +9,20 @@ import re
 import secrets
 import time
 
+import drill_errors
+import drill_profile
+
 
 LABEL = 'io.business-os.restore-drill'
-PATH = '/usr/lib/postgresql/17/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+PATH = '/usr/lib/postgresql/17/bin:/usr/lib/postgresql/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 ROUTING = ('PGHOST', 'PGHOSTADDR', 'PGPORT', 'PGDATABASE', 'PGUSER', 'PGSERVICE',
            'PGSERVICEFILE', 'PGOPTIONS', 'PGPASSWORD', 'PGPASSFILE', 'PGSYSCONFDIR')
 
 
 class DrillDBError(Exception):
-    def __init__(self, reason_code):
+    def __init__(self, reason_code, detail=None):
         self.reason_code = reason_code
+        self.detail = drill_errors.safe_detail(detail)
         super().__init__(reason_code)
 
 
@@ -27,11 +31,21 @@ def require(condition, reason):
         raise DrillDBError(reason)
 
 
-def call(runner, args, reason, *, timeout=30, limit=16 * 1024 * 1024):
+def call(runner, args, reason, *, timeout=30, limit=16 * 1024 * 1024, phase=None, diagnostic=None):
     try:
         return runner(args, timeout=timeout, limit=limit)
     except Exception:
-        raise DrillDBError(reason) from None
+        evidence = getattr(runner, 'last_error', None)
+        if diagnostic is not None:
+            cid, log = diagnostic
+            try:
+                evidence = runner(['exec', '--user', 'postgres', cid, 'head', '-c',
+                                   str(drill_errors.MAX_EVIDENCE_BYTES + 1), log],
+                                  timeout=5, limit=drill_errors.MAX_EVIDENCE_BYTES + 1)
+            except Exception:
+                pass
+        detail = drill_errors.classify(evidence, phase) if phase else None
+        raise DrillDBError(reason, detail) from None
 
 
 def document(runner, args, reason):
@@ -97,8 +111,10 @@ umask 077
 unset PGHOST PGHOSTADDR PGPORT PGDATABASE PGUSER PGSERVICE PGSERVICEFILE PGOPTIONS PGPASSWORD PGPASSFILE PGSYSCONFDIR PGDATA
 test ! -e /bos/data
 initdb --version | grep -Eq '^initdb \(PostgreSQL\) 17\.'
-initdb -D /bos/data --username "$1" --auth-local=trust --auth-host=reject --no-locale --encoding=UTF8 --no-instructions >/dev/null
-exec postgres -D /bos/data -c listen_addresses= -c port=5432 -c unix_socket_directories=/tmp -c unix_socket_permissions=0700 -c shared_preload_libraries= -c session_preload_libraries= -c local_preload_libraries= -c max_connections=20 -c shared_buffers=64MB -c max_worker_processes=0 -c max_parallel_workers=0 -c max_logical_replication_workers=0 -c max_wal_senders=0 -c autovacuum=off -c logging_collector=off -c log_min_messages=panic -c log_min_error_statement=panic -c log_statement=none -c log_connections=off -c log_disconnections=off
+bootstrap=$1
+shift
+initdb -D /bos/data --username "$bootstrap" --auth-local=trust --auth-host=reject --no-locale --encoding=UTF8 --no-instructions >/dev/null
+exec postgres -D /bos/data -c listen_addresses= -c port=5432 -c unix_socket_directories=/tmp -c unix_socket_permissions=0700 -c shared_preload_libraries= -c session_preload_libraries= -c local_preload_libraries= -c max_connections=20 -c shared_buffers=64MB -c max_worker_processes=0 -c max_parallel_workers=0 -c max_logical_replication_workers=0 -c max_wal_senders=0 -c autovacuum=off -c logging_collector=off -c log_min_messages=panic -c log_min_error_statement=panic -c log_statement=none -c log_connections=off -c log_disconnections=off "$@"
 '''
 
 VALIDATE_SQL = """BEGIN READ ONLY;
@@ -108,7 +124,9 @@ SELECT json_build_object(
  'socket_only',inet_server_addr() IS NULL AND current_setting('listen_addresses')='',
  'readonly',current_setting('transaction_read_only')='on',
  'workers_disabled',current_setting('max_worker_processes')='0'
-   AND current_setting('shared_preload_libraries')='',
+   AND NOT EXISTS(SELECT 1 FROM pg_stat_activity WHERE backend_type NOT IN
+     ('client backend','checkpointer','background writer','walwriter')),
+ 'preloads',current_setting('shared_preload_libraries'),
  'extensions',(SELECT coalesce(json_agg(json_build_array(extname,extversion)), '[]'::json) FROM pg_extension),
  'guard_function',to_regprocedure('public.guard_order_completion()') IS NOT NULL,
  'guard_trigger',EXISTS(SELECT 1 FROM pg_trigger
@@ -120,6 +138,15 @@ SELECT json_build_object(
  'staff',(SELECT count(*) FROM public.business_staff),
  'storage_objects',(SELECT count(*) FROM storage.objects));
 ROLLBACK;"""
+
+
+PREFLIGHT_SQL = """SELECT json_build_object(
+ 'version',current_setting('server_version_num')::int,
+ 'preloads',current_setting('shared_preload_libraries'),
+ 'workers_disabled',current_setting('max_worker_processes')='0'
+   AND NOT EXISTS(SELECT 1 FROM pg_stat_activity WHERE backend_type NOT IN
+     ('client backend','checkpointer','background writer','walwriter')),
+ 'available_extensions',(""" + drill_profile.AVAILABLE_EXTENSIONS_SQL.rstrip(';') + ")) ;"
 
 
 def _tmpfs(image):
@@ -238,16 +265,28 @@ def _create(runner, args):
     return cid
 
 
-def _client(cid, bootstrap, program, database, options, *, readonly=False):
+def _client(cid, bootstrap, program, database, options, *, readonly=False, profile=None):
     args = ['exec', '--user', 'postgres', cid, 'env']
     for variable in ROUTING:
         args += ['-u', variable]
     settings = '-c session_preload_libraries= -c local_preload_libraries= -c statement_timeout=600000'
+    if profile is not None:
+        settings += ''.join(' -c ' + option for option in profile.pgoptions)
     if readonly:
         settings += ' -c default_transaction_read_only=on'
     args += ['PGCONNECT_TIMEOUT=5', 'PGOPTIONS=' + settings, program,
              '-h', '/tmp', '-p', '5432', '-U', bootstrap, '-w', '-d', database, *options]
     return args
+
+
+def _journal(args, log):
+    require(log in ('/bos/globals-restore.stderr.log', '/bos/database-restore.stderr.log'),
+            'DRILL_DIAGNOSTIC_PATH_INVALID')
+    # stdout remains bounded by DockerRunner; private SQL stderr stays in the
+    # owned volume, mode 0600. The actual argv passes through without eval.
+    return [*args[:4], '/bin/sh', '-c',
+            'umask 077; log=$1; shift; exec "$@" 2>"$log"',
+            'bos-drill-journal', log, *args[4:]]
 
 
 def _cleanup(runner, cid, run_id):
@@ -295,10 +334,11 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
             and all(type(offset) is int for offset in bootstrap_create_span)
             and 0 <= bootstrap_create_span[0] < bootstrap_create_span[1] <= expected_payloads['globals.sql']['bytes'],
             'DRILL_BOOTSTRAP_METADATA_REQUIRED')
-    expected_extensions = metadata.get('extensions')
-    require(isinstance(expected_extensions, list) and all(isinstance(x, list) and len(x) == 2
-            and all(isinstance(v, str) for v in x) for x in expected_extensions),
-            'DRILL_DATABASE_METADATA_INVALID')
+    try:
+        profile = drill_profile.build_runtime_profile(metadata)
+    except drill_profile.ProfileError as exc:
+        raise DrillDBError(exc.reason_code) from None
+    expected_extensions = metadata['extensions']
     image = one(runner, ['image', 'inspect', image_id], 'DRILL_IMAGE_INSPECT_FAILED')
     require(image.get('Os') == 'linux', 'DRILL_IMAGE_PLATFORM_INVALID')
     targets = _tmpfs(image)
@@ -329,7 +369,8 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
         _cleanup(runner, helper, run_id)
         owned.remove(helper)
         args = _base_args(run_id + '-db', run_id, volume, image)
-        cid = _create(runner, [*args, image_id, '-ceu', START_SCRIPT, 'bos-drill', bootstrap_role])
+        startup = [argument for setting in profile.startup_settings for argument in ('-c', setting)]
+        cid = _create(runner, [*args, image_id, '-ceu', START_SCRIPT, 'bos-drill', bootstrap_role, *startup])
         owned.append(cid)
         _inspect(runner, cid, run_id, volume, targets, running=False)
         call(runner, ['start', cid], 'DRILL_DATABASE_START_FAILED', limit=4096)
@@ -337,7 +378,7 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
         while True:
             try:
                 call(runner, _client(cid, bootstrap_role, 'psql', 'postgres',
-                     ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-c', 'SELECT 1;']),
+                     ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-c', 'SELECT 1;'], profile=profile),
                      'DRILL_DATABASE_NOT_READY', timeout=8, limit=4096)
                 break
             except DrillDBError:
@@ -345,22 +386,41 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
                 require(time.monotonic() < deadline, 'DRILL_DATABASE_START_TIMEOUT')
                 time.sleep(0.25)
         _inspect(runner, cid, run_id, volume, targets, running=True)
+        raw = call(runner, _client(cid, bootstrap_role, 'psql', 'postgres',
+                   ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-c', PREFLIGHT_SQL],
+                   readonly=True, profile=profile),
+                   'DRILL_DATABASE_PREFLIGHT_FAILED', phase='PREFLIGHT')
+        try:
+            preflight = json.loads(raw)
+            require(isinstance(preflight, dict)
+                    and preflight.get('version') == metadata['version'],
+                    'DRILL_DATABASE_VERSION_MISMATCH')
+            require(preflight.get('preloads') == ','.join(profile.preloads)
+                    and preflight.get('workers_disabled') is True,
+                    'DRILL_DATABASE_RUNTIME_UNCONFIRMED')
+            drill_profile.check_available_extensions(profile, preflight.get('available_extensions'))
+        except (ValueError, TypeError):
+            raise DrillDBError('DRILL_DATABASE_PREFLIGHT_FAILED') from None
+        except drill_profile.ProfileError as exc:
+            raise DrillDBError(exc.reason_code) from None
         # Globals may demote the original bootstrap role or remove LOGIN.  A
         # new isolated administrator therefore performs the unchanged ALTERs
         # and original GRANTED BY statements after initdb preserves its OID10.
         create_admin = 'CREATE ROLE "' + administrator + '" WITH LOGIN SUPERUSER;'
         call(runner, _client(cid, bootstrap_role, 'psql', 'postgres',
-             ['-X', '-q', '-v', 'ON_ERROR_STOP=1', '-c', create_admin]),
+             ['-X', '-q', '-v', 'ON_ERROR_STOP=1', '-c', create_admin], profile=profile),
              'DRILL_TEMPORARY_ADMIN_CREATE_FAILED')
-        call(runner, _client(cid, administrator, 'psql', 'postgres',
-             ['-X', '-q', '-v', 'ON_ERROR_STOP=1', '-f', '/bos/input/globals-restore.sql']),
-             'DRILL_GLOBALS_RESTORE_FAILED', timeout=630)
-        call(runner, _client(cid, administrator, 'pg_restore', 'postgres',
-             ['--exit-on-error', '--create', '/bos/input/database.dump']),
-             'DRILL_DATABASE_RESTORE_FAILED', timeout=630)
+        globals_log = '/bos/globals-restore.stderr.log'
+        call(runner, _journal(_client(cid, administrator, 'psql', 'postgres',
+             ['-X', '-q', '-v', 'ON_ERROR_STOP=1', '-f', '/bos/input/globals-restore.sql'], profile=profile), globals_log),
+             'DRILL_GLOBALS_RESTORE_FAILED', timeout=630, phase='GLOBALS', diagnostic=(cid, globals_log))
+        database_log = '/bos/database-restore.stderr.log'
+        call(runner, _journal(_client(cid, administrator, 'pg_restore', 'postgres',
+             ['--exit-on-error', '--create', '/bos/input/database.dump'], profile=profile), database_log),
+             'DRILL_DATABASE_RESTORE_FAILED', timeout=630, phase='DATABASE', diagnostic=(cid, database_log))
         raw = call(runner, _client(cid, administrator, 'psql', db,
-                   ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-c', VALIDATE_SQL], readonly=True),
-                   'DRILL_DATABASE_VALIDATION_FAILED', timeout=60)
+                   ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-c', VALIDATE_SQL], readonly=True, profile=profile),
+                   'DRILL_DATABASE_VALIDATION_FAILED', timeout=60, phase='VALIDATION')
         try:
             checked = json.loads(raw)
         except (TypeError, ValueError):
@@ -368,7 +428,9 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
         require(isinstance(checked, dict) and checked.get('database') == db
                 and checked.get('version') == metadata['version']
                 and checked.get('socket_only') is True and checked.get('readonly') is True
-                and checked.get('workers_disabled') is True, 'DRILL_DATABASE_VALIDATION_FAILED')
+                and checked.get('workers_disabled') is True
+                and checked.get('preloads') == ','.join(profile.preloads),
+                'DRILL_DATABASE_VALIDATION_FAILED')
         try:
             require(sorted(checked.get('extensions', [])) == sorted(expected_extensions),
                     'DRILL_EXTENSION_MISMATCH')
@@ -381,7 +443,8 @@ def restore_database(runner, image_id, run_id, volume, bundle_mount, private, *,
         _inspect(runner, cid, run_id, volume, targets, running=True)
         result = {'database': 'RESTORED', 'globals': 'RESTORED',
                   'archived_owners_and_acls': 'APPLIED_WITHOUT_RESTORE_ERRORS',
-                  'extensions': 'MATCH', 'report_guard': 'PRESENT_AND_ENABLED',
+                  'extensions': 'MATCH', 'extension_preflight': 'EXACT_AVAILABLE_DEFAULTS',
+                  'runtime_profile': 'CAPTURED_EXTENSIONS_WITHOUT_WORKERS', 'report_guard': 'PRESENT_AND_ENABLED',
                   'outbound_network': 'DISABLED', 'background_workers': 'DISABLED',
                   'bootstrap_identity': 'INFERRED_FROM_UNIQUE_DUMP_GRANTOR',
                   'temporary_admin': 'ISOLATED_RESTORE_ONLY',

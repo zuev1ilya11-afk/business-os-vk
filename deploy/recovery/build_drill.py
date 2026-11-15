@@ -12,7 +12,7 @@ def build(destination=None):
     destination = destination or ROOT / 'bos-restore.pyz'
     contents = {'__main__.py': b'import drill\nraise SystemExit(drill.main())\n'}
     for name in ('drill.py', 'drill_db.py', 'drill_files.py', 'drill_roles.py', 'backup.py',
-                 'discovery.py', 'image_archive.py'):
+                 'drill_profile.py', 'drill_errors.py', 'discovery.py', 'image_archive.py'):
         contents[name] = (ROOT / name).read_bytes()
     with zipfile.ZipFile(destination, 'w', compression=zipfile.ZIP_STORED) as archive:
         for name, data in sorted(contents.items()):

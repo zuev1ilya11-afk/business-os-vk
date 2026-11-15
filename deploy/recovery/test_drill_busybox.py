@@ -155,6 +155,41 @@ class BusyBoxHelpers(unittest.TestCase):
         code, _, _ = self.run_init()
         self.assertEqual(code, b'43')
 
+    def test_group_only_file_mode_is_normalized_in_private_nested_copy(self):
+        directories = ['root-000', 'root-000/nested']
+        name = 'root-000/nested/fixture.bin'
+        self.inventory = {name: {'type': 'file', 'bytes': len(SYNTHETIC_BYTES),
+                                'sha256': hashlib.sha256(SYNTHETIC_BYTES).hexdigest()}}
+        self.inventory.update({path: {'type': 'directory', 'bytes': 0} for path in directories})
+        with tarfile.open(self.bundle / 'files.tar', 'w') as archive:
+            for path in directories:
+                member = tarfile.TarInfo(path)
+                member.type, member.mode = tarfile.DIRTYPE, 0o700
+                archive.addfile(member)
+            member = tarfile.TarInfo(name)
+            member.size, member.mode = len(SYNTHETIC_BYTES), 0o040
+            archive.addfile(member, io.BytesIO(SYNTHETIC_BYTES))
+        original = {p.name: p.read_bytes() for p in self.bundle.iterdir()}
+        self.hashes = [hashlib.sha256(original[name]).hexdigest()
+                       for name in ('database.dump', 'globals.sql', 'files.tar')]
+        drill.file_mode_preflight({'bundle': self.bundle})
+        code, run_id, volume = self.run_init()
+        self.assertEqual(code, b'0')
+        result = drill.restore_files(self.runner, {
+            'bundle': self.bundle, 'db_image': self.image['Id'],
+            'db_image_meta': self.image, 'inventory': self.inventory}, run_id, volume)
+        self.assertEqual(result['integrity'], 'VERIFIED')
+        self.assertEqual(result['files'], 1)
+        modes = self.runner([
+            'run', '--rm', '--network=none', '--read-only', '--cap-drop=ALL',
+            '--security-opt=no-new-privileges', '--user=postgres',
+            '--mount', 'type=volume,source=' + volume + ',target=/bos,readonly',
+            '--entrypoint', '/bin/stat', self.image['Id'], '-c', '%a',
+            '/bos/files', *['/bos/files/' + path for path in directories],
+            '/bos/files/' + name])
+        self.assertEqual(modes.splitlines(), [b'700', b'700', b'700', b'600'])
+        self.assertEqual({p.name: p.read_bytes() for p in self.bundle.iterdir()}, original)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

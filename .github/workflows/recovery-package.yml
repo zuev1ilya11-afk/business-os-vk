@@ -66,6 +66,35 @@ jobs:
           BOS_RECOVERY_DOCKER_VERSION: ${{ matrix.version }}
         run: python3 deploy/recovery/test_drill_busybox.py --require
 
+  supabase-restore:
+    name: Supabase PostgreSQL 17.11 restore
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Start a disposable classic Docker daemon
+        id: engine
+        uses: docker/setup-docker-action@3f1ab1ab0e29231562e4db4ca600c1a49653bac6 # v5.7.0
+        with:
+          version: v28.5.2
+          daemon-config: |
+            {"features":{"containerd-snapshotter":false}}
+      - name: Pull the pinned public Supabase PostgreSQL fixture
+        env:
+          FIXTURE_DOCKER_HOST: ${{ steps.engine.outputs.sock }}
+        run: >-
+          docker --host "$FIXTURE_DOCKER_HOST" image pull --quiet
+          docker.io/supabase/postgres@sha256:cd71229b4041fa5d0baede5dbd9ea9e3b45aba23e0fa601733f530b8a3def5c8
+      - name: Restore real Supabase extensions without background jobs
+        env:
+          BOS_RECOVERY_SUPABASE_TEST: '1'
+          BOS_RECOVERY_DOCKER_SOCKET: ${{ steps.engine.outputs.sock }}
+          BOS_RECOVERY_DOCKER_VERSION: v28.5.2
+        run: python3 deploy/recovery/test_drill_supabase.py --require
+
   windows-launcher:
     name: Windows PowerShell 5.1 launcher
     runs-on: windows-latest

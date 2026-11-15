@@ -9,7 +9,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
-$PackageSha256 = 'b026d6ef85bb162c003078d93597fcddb728961959816172c04338f116539a41'
+$PackageSha256 = '12b4eb0887860670181ac58a5988d5d6be898767b831b09ce4f1dc36a9b60c16'
 $PythonUrl = 'https://www.python.org/ftp/python/3.12.10/python-3.12.10-embed-amd64.zip'
 $PythonSha256 = '4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3'
 $PythonBytes = 11133606

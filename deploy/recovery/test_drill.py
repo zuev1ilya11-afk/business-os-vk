@@ -9,6 +9,7 @@ import unittest
 from unittest.mock import patch
 
 import drill
+import drill_errors
 
 
 class HostBoundaryTests(unittest.TestCase):
@@ -103,6 +104,123 @@ class HostBoundaryTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 drill.write_report(target, {'status': 'DRILL_COMPLETED'})
             self.assertEqual(json.loads(target.read_text())['status'], 'INCOMPLETE')
+
+
+class FailureReportTests(unittest.TestCase):
+    def context(self, directory, mode=0o700):
+        bundle = Path(directory)
+        (bundle / 'globals.sql').write_bytes(b'CREATE ROLE postgres;\n')
+        (bundle / 'manifest.json').write_bytes(b'{}')
+        with tarfile.open(bundle / 'files.tar', 'w') as archive:
+            member = tarfile.TarInfo('root-000')
+            member.type, member.mode = tarfile.DIRTYPE, mode
+            archive.addfile(member)
+        return {'bundle': bundle, 'manifest': {'started_at': 'fixture-start',
+                'finished_at': 'fixture-finish', 'payloads': {}},
+                'private': {'database': {'bytes': 1}}, 'file_bytes': 0,
+                'db_image': 'sha256:' + 'a' * 64}
+
+    def run_failure(self, context, output, failure):
+        with patch('drill.drill_files.validate_bundle', return_value=context), \
+                patch('drill.drill_roles.source_bootstrap',
+                      return_value={'role': 'postgres', 'create_span': [0, 21]}), \
+                patch('drill.local_preflight', return_value='daemon'), \
+                patch('drill.load_images'), patch('drill.volume_create', return_value='volume'), \
+                patch('drill.drill_db.restore_database', side_effect=failure):
+            with self.assertRaises(drill.Stop) as caught:
+                drill.run_drill(context['bundle'], object(), output)
+        self.assertIs(caught.exception, failure)
+
+    def test_database_failure_writes_safe_report_and_printable_path(self):
+        with tempfile.TemporaryDirectory() as directory:
+            context = self.context(directory)
+            output = Path(directory) / 'report.json'
+            failure = drill.Stop('DRILL_PRELOAD_REQUIRED')
+            failure.detail = drill_errors.classify(
+                b'ERROR: pg_cron must be loaded via shared_preload_libraries\n'
+                b'DETAIL: SECRET-CUSTOMER', 'DATABASE')
+            self.run_failure(context, output, failure)
+            report = json.loads(output.read_text())
+            payload = drill.failure_payload(failure, output)
+            self.assertEqual(report['status'], 'INCOMPLETE')
+            self.assertEqual(report['diagnostics'], failure.detail)
+            self.assertEqual(payload['report'], str(output))
+            self.assertEqual(payload['diagnostics']['category'], 'PRELOAD_REQUIRED')
+            self.assertNotIn('SECRET', json.dumps(report))
+            self.assertNotIn('SECRET', json.dumps(payload))
+
+    def test_untrusted_details_and_other_report_paths_are_omitted(self):
+        failure = drill.Stop('DRILL_DATABASE_RESTORE_FAILED')
+        failure.detail = {'stderr': 'SECRET-CUSTOMER'}
+        failure.report_path = '/private/SECRET-CUSTOMER.json'
+        payload = drill.failure_payload(failure, Path('/generated/report.json'))
+        self.assertNotIn('diagnostics', payload)
+        self.assertNotIn('report', payload)
+        failure.reason_code = {'not': 'a reason code'}
+        self.assertEqual(drill.failure_payload(failure)['reason'], 'RESTORE_DRILL_FAILED')
+
+    def test_report_write_failure_preserves_original_restore_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            context = self.context(directory)
+            output = Path(directory) / 'missing-directory' / 'report.json'
+            failure = drill.Stop('DRILL_DATABASE_RESTORE_FAILED')
+            self.run_failure(context, output, failure)
+            payload = drill.failure_payload(failure, output)
+            self.assertEqual(payload['reason'], 'DRILL_DATABASE_RESTORE_FAILED')
+            self.assertEqual(payload['report_status'], 'WRITE_FAILED')
+            self.assertNotIn('report', payload)
+
+    def test_restrictive_directory_modes_stop_before_any_docker_call(self):
+        for mode in (0o040, 0o500, 0o600, 0o000):
+            with self.subTest(mode=oct(mode)), tempfile.TemporaryDirectory() as directory:
+                context = self.context(directory, mode)
+                with patch('drill.drill_files.validate_bundle', return_value=context), \
+                        patch('drill.drill_roles.source_bootstrap', return_value={}), \
+                        patch('drill.local_preflight') as docker_preflight, \
+                        patch('drill.load_images') as image_load:
+                    with self.assertRaisesRegex(drill.Stop, 'FILE_DIRECTORY_MODE_UNSUPPORTED'):
+                        drill.run_drill(context['bundle'], object())
+                docker_preflight.assert_not_called()
+                image_load.assert_not_called()
+
+    def test_main_prints_created_failure_report(self):
+        with tempfile.TemporaryDirectory() as directory:
+            def failed_run(bundle, runner, output):
+                failure = drill.Stop('DRILL_DATABASE_RESTORE_FAILED')
+                drill.write_report(output, {'status': 'INCOMPLETE'})
+                failure.report_path = str(output)
+                raise failure
+            stream = io.StringIO()
+            with patch('drill.DockerRunner'), patch('drill.run_drill', side_effect=failed_run), \
+                    patch('sys.stdout', stream):
+                self.assertEqual(drill.main(['--bundle', directory]), 1)
+            payload = json.loads(stream.getvalue().splitlines()[-1])
+            output = Path(payload['report'])
+            try:
+                self.assertTrue(output.is_file())
+                self.assertEqual(payload['reason'], 'DRILL_DATABASE_RESTORE_FAILED')
+            finally:
+                output.unlink(missing_ok=True)
+
+
+class FileCompletionTests(unittest.TestCase):
+    def test_extraction_exit_during_readiness_check_has_specific_reason(self):
+        identifier, calls = 'a' * 64, []
+        def runner(args, **kwargs):
+            calls.append(args)
+            if args[:2] == ['container', 'create']:
+                return identifier.encode()
+            if args[0] == 'exec':
+                raise drill.Stop('DOCKER_COMMAND_FAILED')
+            return b''
+        context = {'bundle': Path('/fixture'), 'db_image': 'sha256:' + 'b' * 64,
+                   'db_image_meta': {'Config': {}}, 'inventory': {}}
+        states = [{'State': {'Running': value}} for value in (False, True, False, False)]
+        with patch('drill.helper_isolated', side_effect=states), \
+                patch('drill.drill_db._tmpfs', return_value=['/tmp']):
+            with self.assertRaisesRegex(drill.Stop, 'FILES_EXTRACTION_FAILED'):
+                drill.restore_files(runner, context, 'bos-drill-fixture', 'fixture-volume')
+        self.assertEqual(calls[-1], ['container', 'rm', '--force', identifier])
 
 
 if __name__ == '__main__':

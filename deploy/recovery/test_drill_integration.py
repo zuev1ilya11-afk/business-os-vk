@@ -60,6 +60,9 @@ class FixtureObservedRunner:
                     self.restore_errors.append(raw[:8192].decode(errors='replace'))
                     self.restore_errors = self.restore_errors[-2:]
             raise
+        if args[:1] == ['exec'] and 'head' in args and args[-1:] in (['/bos/globals-restore.stderr.log'], ['/bos/database-restore.stderr.log']):
+            self.restore_errors.append(data[:8192].decode(errors='replace'))
+            self.restore_errors = self.restore_errors[-2:]
         if args[:1] == ['inspect'] or args[:2] == ['container', 'inspect']:
             self.observe(json.loads(data))
         return data

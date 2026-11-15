@@ -31,13 +31,16 @@ class Docker:
         self.wait_code = b'0\n'
         self.fail = None
         self.mutate = None
+        self.last_error = b''
+        self.preflight = {'version': 170006, 'preloads': '', 'workers_disabled': True,
+                          'available_extensions': [['plpgsql', '1.0', '1.0']]}
         self.volume = {'Name': VOLUME, 'Driver': 'local', 'Options': None,
                        'Labels': {drill_db.LABEL: RUN}}
         self.image = {'Id': IMAGE, 'Os': 'linux',
                       'Config': {'Volumes': {'/var/lib/postgresql/data': {}}}}
         self.checked = {'version': 170006, 'database': 'bos_restore_check',
                         'socket_only': True, 'readonly': True,
-                        'workers_disabled': True, 'extensions': [['plpgsql', '1.0']],
+                        'workers_disabled': True, 'preloads': '', 'extensions': [['plpgsql', '1.0']],
                         'guard_function': True, 'guard_trigger': True,
                         'orders': 12, 'staff': 4, 'storage_objects': 23}
 
@@ -102,6 +105,8 @@ class Docker:
             del self.containers[args[-1]]
             return b''
         if args[0] == 'exec':
+            if drill_db.PREFLIGHT_SQL in args:
+                return json.dumps(self.preflight).encode()
             if drill_db.VALIDATE_SQL in args:
                 return json.dumps(self.checked).encode()
             if 'SELECT 1;' in args:
@@ -151,7 +156,7 @@ class DrillDatabaseTests(unittest.TestCase):
         docker = Docker()
         restore(docker)
         create = [c for c in docker.calls if c[0] == 'create'][1]
-        self.assertEqual('postgres', create[-1])
+        self.assertEqual('postgres', create[create.index('bos-drill') + 1])
         create_admin = next(c for c in docker.calls if any(x.startswith('CREATE ROLE "drill_admin_') for x in c))
         self.assertEqual('postgres', create_admin[create_admin.index('-U') + 1])
         globals_command = next(c for c in docker.calls if '/bos/input/globals-restore.sql' in c)
@@ -313,6 +318,56 @@ class DrillDatabaseTests(unittest.TestCase):
         docker = Docker()
         docker.fail = lambda c: 'pg_restore' in c
         self.assertReason('DRILL_DATABASE_RESTORE_FAILED', docker)
+        self.assertEqual({}, docker.containers)
+
+    def test_supabase_preloads_and_worker_guards_are_applied_before_globals(self):
+        private = copy.deepcopy(PRIVATE)
+        private['database']['extensions'] += [['pg_cron', '1.6'], ['pg_net', '0.20.4']]
+        docker = Docker()
+        docker.preflight.update(preloads='pg_cron,pg_net', available_extensions=[
+            ['plpgsql', '1.0', '1.0'], ['pg_cron', '1.6', '1.6'], ['pg_net', '0.20.4', '0.20.4']])
+        docker.checked.update(preloads='pg_cron,pg_net', extensions=private['database']['extensions'])
+        self.assertEqual('RESTORED', restore(docker, private=private)['database'])
+        create = [c for c in docker.calls if c[0] == 'create'][1]
+        for setting in ('shared_preload_libraries=pg_cron,pg_net',
+                        'cron.database_name=bos_restore_check',
+                        'cron.launch_active_jobs=off', 'cron.use_background_workers=off',
+                        'max_worker_processes=0', 'pg_net.batch_size=0'):
+            self.assertIn(setting, create)
+        preflight_index = next(i for i, c in enumerate(docker.calls) if drill_db.PREFLIGHT_SQL in c)
+        globals_index = next(i for i, c in enumerate(docker.calls) if '/bos/input/globals-restore.sql' in c)
+        self.assertLess(preflight_index, globals_index)
+
+    def test_version_extension_and_workers_preflight_stop_before_globals(self):
+        for change, reason in (({'version': 170007}, 'DRILL_DATABASE_VERSION_MISMATCH'),
+                               ({'preloads': 'unknown'}, 'DRILL_DATABASE_RUNTIME_UNCONFIRMED'),
+                               ({'workers_disabled': False}, 'DRILL_DATABASE_RUNTIME_UNCONFIRMED'),
+                               ({'available_extensions': []}, 'DRILL_EXTENSION_VERSION_UNAVAILABLE'),
+                               ({'available_extensions': [['plpgsql', '1.0', '2.0']]},
+                                'DRILL_EXTENSION_DEFAULT_VERSION_MISMATCH')):
+            with self.subTest(reason=reason):
+                docker = Docker()
+                docker.preflight.update(change)
+                self.assertReason(reason, docker)
+                self.assertFalse(any('/bos/input/globals-restore.sql' in c for c in docker.calls))
+                self.assertEqual({}, docker.containers)
+
+    def test_safe_database_diagnostic_survives_cleanup_without_raw_sql(self):
+        docker = Docker()
+        original = docker.__call__
+        def runner(args, **kwargs):
+            runner.last_error = b''
+            if 'head' in args:
+                return b'pg_restore: error: could not execute query: ERROR:  pg_net is not in shared_preload_libraries\nCommand was: SECRET SQL;'
+            if 'pg_restore' in args:
+                runner.last_error = b'pg_restore: error: could not execute query: ERROR:  pg_net is not in shared_preload_libraries\nCommand was: SECRET SQL;'
+                raise RuntimeError('private error')
+            return original(args, **kwargs)
+        with self.assertRaises(drill_db.DrillDBError) as raised:
+            restore(runner)
+        self.assertEqual('PRELOAD_REQUIRED', raised.exception.detail['category'])
+        self.assertEqual('DATABASE', raised.exception.detail['phase'])
+        self.assertNotIn('SECRET', repr(raised.exception.detail))
         self.assertEqual({}, docker.containers)
 
     def test_extension_and_guard_mismatches_stop(self):

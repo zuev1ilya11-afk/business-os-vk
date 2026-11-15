@@ -19,14 +19,19 @@ import time
 import uuid
 
 import drill_db
+import drill_errors
 import drill_files
 import drill_roles
 
 MIB = 1024 * 1024
 LABEL = 'io.business-os.restore-drill'
 IMAGE_ID = re.compile(r'sha256:[0-9a-f]{64}')
-FILE_SCRIPT = ('set -eu; umask 077; test ! -e /bos/files; mkdir -m 700 /bos/files; '
-               'tar -xf /bos/input/files.tar -C /bos/files -o; exec sleep 1200')
+FILE_SCRIPT = ('set -eu; umask 077; test ! -e /bos/files; test ! -e /bos/files-ready; '
+               'mkdir -m 700 /bos/files; tar -xf /bos/input/files.tar -C /bos/files -o; '
+               'chmod -R u+rwX,go-rwx /bos/files; '
+               'find /bos/files -type d -exec chmod 700 {} +; '
+               'find /bos/files -type f -exec chmod 600 {} +; '
+               ': > /bos/files-ready; exec sleep 1200')
 
 
 class Stop(Exception):
@@ -260,17 +265,25 @@ def restore_files(runner, context, run_id, volume):
         require(re.fullmatch(r'[0-9a-f]{64}', identifier), 'HELPER_ID_INVALID')
         helper_isolated(runner, identifier, run_id, volume, bundle)
         runner(['container', 'start', identifier])
-        # Wait for extraction by inspecting the live shell process. A marker is
-        # created only after a successful tar; no archive code is executed.
+        # The marker is outside the extracted tree and is created only after
+        # tar and private copy permissions both succeed.
         deadline = time.monotonic() + 600
         ready = False
         while time.monotonic() < deadline:
             item = helper_isolated(runner, identifier, run_id, volume, bundle)
             require(item.get('State', {}).get('Running'), 'FILES_EXTRACTION_FAILED')
-            # PID 1 changes from shell to sleep only on successful extraction.
-            command = runner(['exec', identifier, '/bin/sh', '-c',
-                              'tr "\\000" " " < /proc/1/cmdline']).decode()
-            if command.strip() == 'sleep 1200':
+            try:
+                command = runner(['exec', identifier, '/bin/sh', '-c',
+                                  'if test -f /bos/files-ready; then printf READY; '
+                                  'else printf WAIT; fi'])
+            except Stop:
+                # The helper may exit between inspect and exec. Preserve the
+                # extraction failure instead of reporting an opaque exec error.
+                item = helper_isolated(runner, identifier, run_id, volume, bundle)
+                require(item.get('State', {}).get('Running'), 'FILES_EXTRACTION_FAILED')
+                raise
+            require(command in (b'WAIT', b'READY'), 'FILES_EXTRACTION_FAILED')
+            if command == b'READY':
                 ready = True
                 break
             time.sleep(0.2)
@@ -294,6 +307,34 @@ def write_report(path, report):
         stream.write('\n')
 
 
+def file_mode_preflight(context):
+    # BusyBox tar sets directory modes immediately; a non-writable or
+    # non-searchable directory prevents creation of its children. Reject this
+    # before any Docker mutation. File modes can safely be normalized later in
+    # the isolated copy, since tar already holds the created file descriptor.
+    with tarfile.open(context['bundle'] / 'files.tar', 'r:') as archive:
+        for member in archive:
+            require(not member.isdir() or member.mode & 0o700 == 0o700,
+                    'FILE_DIRECTORY_MODE_UNSUPPORTED')
+
+
+def failure_payload(exc, report_path=None):
+    code = getattr(exc, 'reason_code', 'RESTORE_DRILL_FAILED')
+    if type(code) is not str or not re.fullmatch(r'[A-Z0-9_]{1,80}', code):
+        code = 'RESTORE_DRILL_FAILED'
+    result = {'status': 'STOPPED', 'reason': code, 'disaster_recovery_ready': False}
+    detail = drill_errors.safe_detail(getattr(exc, 'detail', None))
+    if detail is not None:
+        result['diagnostics'] = detail
+    # Only the generated exclusive report path may be advertised, and only
+    # after run_drill has actually written it successfully.
+    if report_path is not None and getattr(exc, 'report_path', None) == str(report_path):
+        result['report'] = str(report_path)
+    if getattr(exc, 'report_write_failed', False) is True:
+        result['report_status'] = 'WRITE_FAILED'
+    return result
+
+
 def run_drill(bundle, runner, report_path=None):
     started = time.monotonic()
     context = drill_files.validate_bundle(Path(bundle))
@@ -309,12 +350,16 @@ def run_drill(bundle, runner, report_path=None):
               'source_manifest_sha256': hashlib.sha256((context['bundle'] / 'manifest.json').read_bytes()).hexdigest(),
               'source_capture_started_at': context['manifest']['started_at'],
               'source_capture_finished_at': context['manifest']['finished_at']}
-    daemon_id = local_preflight(runner, context)
     try:
+        file_mode_preflight(context)
+        daemon_id = local_preflight(runner, context)
         load_images(runner, context)
         require(local_preflight(runner, context) == daemon_id, 'DOCKER_DAEMON_CHANGED')
         volume = volume_create(runner, run_id)
         report['volume'] = volume
+        report['private_error_logs'] = {
+            'status': 'MAY_EXIST', 'location': 'RETAINED_DOCKER_VOLUME',
+            'paths': ['/bos/globals-restore.stderr.log', '/bos/database-restore.stderr.log']}
         print('RESTORE_STAGE=DATABASE', flush=True)
         required_bytes = context['private']['database']['bytes'] * 3 + context['file_bytes'] * 2 + 512 * MIB
         report['restore'] = drill_db.restore_database(runner, context['db_image'], run_id, volume,
@@ -333,10 +378,19 @@ def run_drill(bundle, runner, report_path=None):
             write_report(report_path, report)
         return report
     except (Exception, KeyboardInterrupt) as exc:
-        report['reason'] = getattr(exc, 'reason_code', 'RESTORE_DRILL_FAILED')
+        failure = failure_payload(exc)
+        report['reason'] = failure['reason']
+        if 'diagnostics' in failure:
+            report['diagnostics'] = failure['diagnostics']
         report['elapsed_seconds'] = round(time.monotonic() - started, 2)
         if report_path:
-            write_report(report_path, report)
+            try:
+                write_report(report_path, report)
+            except OSError:
+                # A report write failure must not hide the restore failure.
+                exc.report_write_failed = True
+            else:
+                exc.report_path = str(report_path)
         raise
 
 
@@ -344,6 +398,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--bundle', required=True, type=Path)
     args = parser.parse_args(argv)
+    output = None
     try:
         bundle = args.bundle.absolute()
         require(bundle.is_dir(), 'BUNDLE_DIRECTORY_MISSING')
@@ -356,11 +411,7 @@ def main(argv=None):
                           'disaster_recovery_ready': False, 'report': str(output)}, ensure_ascii=True))
         return 0
     except (Exception, KeyboardInterrupt) as exc:
-        code = getattr(exc, 'reason_code', 'RESTORE_DRILL_FAILED')
-        if not re.fullmatch(r'[A-Z0-9_]{1,80}', code):
-            code = 'RESTORE_DRILL_FAILED'
-        print(json.dumps({'status': 'STOPPED', 'reason': code,
-                          'disaster_recovery_ready': False}))
+        print(json.dumps(failure_payload(exc, output), ensure_ascii=True))
         return 1
 
 

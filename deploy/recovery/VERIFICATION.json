@@ -51,22 +51,27 @@
     "test_images.py": "aabecd37eea49703e09aa30e8c000ebc4bdf839d015b2335d26389eb3d8f15eb",
     "test_finish.py": "ec5b38ae4f82cfa7b983683786cbc784d3b547b65dd0137e22e39bbd11445fb5",
     "test_docker.py": "6bd4e372dd5c8f4caba616bc7188c3b294f3a0d97f6b0a3e60562f198c3e9f09",
-    "drill.py": "794581ebf58f0c91d6357a40302f36cdeffc186520982b21eae4a8a09610c9cb",
-    "drill_db.py": "9a8595ac43dc816965eea190e6be937f9c2f21d9305f79359516e104df899105",
+    "drill.py": "aa0b2382a20a53329bdfc007cc9f08173ab87d18bc0698c47ef23a63b5830c43",
+    "drill_db.py": "6efdc099a247ed2e1be64859e4f3994d80f7b8e3cd9b0f1fe7bd60d753dc1c5f",
     "drill_files.py": "bf1d458d7558c47f2181dd2760bc779030c3a5059c8dc177975d167ee3916134",
-    "build_drill.py": "5f9feaa13ca12ec0be89cbb8e2b54fa00a2693d12691aef62f2f13f81b581e0b",
-    "restore.ps1": "672157aa454743ef188d93c45a4de2012e457b15668270d6e7bc153c55767305",
+    "build_drill.py": "784cd5fce535758dc4b67eae69467f135ee2d0dbc2054de064a90ffd787cb709",
+    "restore.ps1": "0b2643ed75f33ae1921590d982d9f162d090010f7ade1fb72382369ae2197330",
     "restore.cmd": "940b2c44c84db65d71498085e6c4468b4e215737dd1adb35915d1ae7159e7969",
-    "bos-restore.pyz": "b026d6ef85bb162c003078d93597fcddb728961959816172c04338f116539a41",
-    "test_drill.py": "f960942a872466a452f72a1594bee4952f6421ffaf907f07673c6058c26959b4",
-    "test_drill_db.py": "c95f1380f7b9115e9056e0d476487f58d717f6fb6605ce973bc096a442050dc3",
+    "bos-restore.pyz": "12b4eb0887860670181ac58a5988d5d6be898767b831b09ce4f1dc36a9b60c16",
+    "test_drill.py": "13e3aaca7dbdbe5cfd39083e097804534de595a3837a0b1ea6800d91783bf00d",
+    "test_drill_db.py": "c282062907d04c2cb7ed80672a0521f14569efb2b3f397a0ca916db177ae582f",
     "test_drill_files.py": "f518e92ea51fd1efc7ee9dc535897d1dc691ac381a533929680ee4d718b2e08d",
-    "test_drill_integration.py": "c68fa84679d420f784b5ad05e431c1db5b7dd34bea9ebc90613526af2e1027df",
+    "test_drill_integration.py": "36f8f912c153ca6cb4a744498c97767787155613a9cf73f8bdc721103ff743af",
     "test_launcher.ps1": "985aa7a33604aea18aecfe46d8535e7127c6a088f16b3b40c09c90bf2bdd0a51",
     "drill_roles.py": "0edf4be3c5594a1ab31ed74c1828ecc243996e0ee36a877625d30777c498b8b7",
     "test_drill_roles.py": "6681a023485896509840561984e1dd66d6e4c60b8492884ef4b2f5ece27dc8d0",
     "test_drill_windows.py": "1330dd7edfe7051883ad9e0504aac59a6dcda8bac63d867d1ff7ef74e728f562",
-    "test_drill_busybox.py": "58cdf27c111dc84b19a33ec13e7866dbbdebaabe064523213bec25490b02194f"
+    "test_drill_busybox.py": "81022b43ec6cf02fd4d568e69638b4069e3b56dde82dfa88b3d65f417e8eca12",
+    "drill_profile.py": "3b6b97ff571fce7815741a20b2262aa3bc965ac73de309ae4df12b10cb6f2a3d",
+    "drill_errors.py": "be9b873da4e9acb68374a177a18be1970ffd02aec3160ccfa0c96b92dc7ae262",
+    "test_drill_profile.py": "e71dd808c1123a5e34051fde78fbffd4084a47dea6c7988620b18e0c53a1bda2",
+    "test_drill_errors.py": "055788891a88f9d4498bc730d6a4a00fb63303642da313c057f05e20cbe9de89",
+    "test_drill_supabase.py": "a04eb6f3570bdf1f7a7726f31784011e887c0f288e7e465435ba31454f167a76"
   },
   "previous_full_verification": {
     "commit": "6d706eb0ff37886d1420f11d9327c3013d0a8a1c",
@@ -115,7 +120,7 @@
     "real_docker_restore": "CI_REQUIRED_BOTH_STORES",
     "windows_launcher": "CI_REQUIRED_POWERSHELL_5_1",
     "operator_docker_version": "29.9.2",
-    "operator_restore": "STOPPED_BEFORE_INITDB_BUSYBOX_GNU_CHECKER_FLAGS_OPERATOR_SCREENSHOT",
+    "operator_restore": "V4_STOPPED_AT_DATABASE_DRILL_DATABASE_RESTORE_FAILED; exact stderr unavailable",
     "scope": "DATABASE_GLOBALS_AND_FILE_BYTES",
     "application": "NOT_RUN",
     "storage_relationships": "NOT_VERIFIED",
@@ -128,18 +133,20 @@
     },
     "windows_bundle_validation": "7 native Windows tests passed installed and portable Python at commit 6cdbec04476d9f235a2677f0ecbc48c76cd5043e; operator v2 progressed past file verification to bootstrap parsing",
     "previous_full_success": {
-      "commit": "45abbf38f0829f06dfea7d5d65ed07399361e329",
-      "run": 43713533379,
-      "note": "GNU-based database/file restore, parameter ACL, and Windows tests passed; BusyBox utility compatibility was not yet covered."
+      "commit": "a47169fc349401c0cff71181d0223a9906578e78",
+      "run": 43716006666,
+      "note": "All4jobs passed: classic/containerd realdrill, BusyBox helpers, Windows. Supabase extension runtime not yet covered."
     },
     "parameter_acl_fix": "Canonical parameter GRANT supported; parameter revokes refused before Docker. Verified source/target parameter ACL and functional permissions in previous exact CI43713533379.",
-    "local_discovery_ran": 201,
-    "local_discovery_skipped": 11,
+    "local_discovery_ran": 230,
+    "local_discovery_skipped": 12,
     "previous_parameter_acl_attempt": {
       "commit": "a1052c92476d1cb9f4c1a43e415697ea4ac9e4eb",
       "run": 43713172098,
       "result": "Actual dump/restore completed, but exact ACL comparison exposed PostgreSQL parameter REVOKE on a fresh catalog row being ignored. Narrowed support to GRANT-only and added pre-mutation refusal test; exact new CI required."
     },
-    "busybox_compatibility": "Operator confirmed BusyBox1.37.0 sha256sum; GNU checker flags unsupported. Use portable stdin digest validation, distinct errors, short tar flags, private umask, and portable dd. Three real BusyBox helper tests awaiting exact CI in each store."
+    "busybox_compatibility": "Previous exact CI43716006666 passed both stores; new private file modes and explicit completion marker require exact current CI.",
+    "supabase_runtime": "MINIMAL_ALLOWLIST_PRELOAD_WORKERS_ZERO; nine real extensions require dedicated current CI on pinned Supabase17.11.0.017",
+    "diagnostics": "Safe fixed categories survive cleanup; private stderr journals in new volume; successful report path printed on failure"
   }
 }
