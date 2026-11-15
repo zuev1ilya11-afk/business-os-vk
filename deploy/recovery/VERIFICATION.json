@@ -209,10 +209,10 @@
     }
   },
   "application_launch": {
-    "status": "V3_DATABASE_VALIDATED_OPERATOR_STOPPED_AUTH",
-    "artifact": "BOS-App-20261115-v3.zip",
-    "bytes": 11266828,
-    "sha256": "7388331927cedfb93d404bc9017e4cc52f5c713650d93f23e35ec1e5e25adc08",
+    "status": "V4_AUTH_AND_STORAGE_READY_OPERATOR_STOPPED_EDGE",
+    "artifact": "BOS-App-20261115-v4.zip",
+    "bytes": 11277831,
+    "sha256": "a5a6d96bb400308ddcd67be574cd6289b5be01f53eb05a88e9ef0c3a81d362e1",
     "runtime_ci": {
       "commit": "52b32cd9885035e10e5215c899ca48a744817091",
       "tree": "5da4a99091cea84864e6146183adba9e9f9238e4",
@@ -327,16 +327,16 @@
     },
     "operator_attempt": {
       "date_utc": "2026-11-15",
-      "evidence": "BOS-App-20261115T182136Z-090a5afe.json",
-      "sha256": "7429c811287a8b05ee237f58fe1c93564ed44d5d49da95fb741755a6d8f6ec1b",
-      "run_id": "bos-app-3a4a2468d519",
-      "volume": "bos-app-3a4a2468d519-data",
+      "evidence": "BOS-App-20261115T184817Z-53ae22ac.json",
+      "sha256": "b831b62a461cd3ae247b497748fdd0526be32cbabd3a6a71eeea087e12a71188",
+      "run_id": "bos-app-3cada07b4480",
+      "volume": "bos-app-3cada07b4480-data",
       "reason": "APP_CONTAINER_NOT_RUNNING",
       "failed_stage": "SERVICES",
-      "failed_service": "auth",
+      "failed_service": "edge",
       "diagnostics": {
-        "category": "PERMISSION_DENIED",
-        "evidence_bytes": 599,
+        "category": "UNCLASSIFIED_STARTUP_FAILURE",
+        "evidence_bytes": 336,
         "truncated": false
       },
       "database": {
@@ -348,10 +348,14 @@
         },
         "background_workers": "DISABLED"
       },
-      "exact_auth_error": "NOT_PRESENT_IN_OPERATOR_REPORT",
-      "next_action": "VALIDATE_AUTH_CONNECTION_SCHEMA_FIX_AND_V4_DIAGNOSTICS"
+      "auth_readiness": "PASSED_BEFORE_EDGE_PROBE",
+      "storage_readiness": "PASSED_BEFORE_EDGE_PROBE",
+      "edge_retained_log_bytes": 336,
+      "edge_error_records_recognized": 0,
+      "exact_edge_error": "NOT_INCLUDED_BY_V4_LOG_PARSER",
+      "next_action": "READ_RETAINED_EDGE_LOG_WITH_PLAINTEXT_AWARE_DIAGNOSTIC_V2"
     },
-    "diagnostic_limitation": "V3 operator summary contains only PERMISSION_DENIED for Auth, not the exact server error. V4 adds bounded sanitized per-service evidence to the JSON report.",
+    "diagnostic_limitation": "V4 collected 336 bytes of Edge logs but recognized no records. Exact v1.77.9 logger emits ordinary text without level prefixes; updated reader must recover fixed-vocabulary evidence before a runtime correction.",
     "operator_database_diagnostic": {
       "evidence_file": "BOS-DB-Diagnostic-20261115T180017Z-c5a5ebc3.json",
       "sha256": "e55680bcd19c2ad444bf946446e5b0993b6ab2af0f1d84a70374ec0e7fff6e72",
@@ -379,6 +383,31 @@
       "next_action": "TEST_LOCALE_ARCHIVE_ENV_FIX_AND_DELIVER_V3"
     },
     "confirmed_auth_code_defect": "Stripped role search_path is not replaced by Auth Namespace; old fixture public CREATE grant masked migration-table lookup failure. Generated Auth-only URI search_path restores intended schema without extra privileges.",
-    "candidate_artifact": "BOS-App-20261115-v4.zip"
+    "operator_attempt_v3": {
+      "date_utc": "2026-11-15",
+      "evidence": "BOS-App-20261115T182136Z-090a5afe.json",
+      "sha256": "7429c811287a8b05ee237f58fe1c93564ed44d5d49da95fb741755a6d8f6ec1b",
+      "run_id": "bos-app-3a4a2468d519",
+      "volume": "bos-app-3a4a2468d519-data",
+      "reason": "APP_CONTAINER_NOT_RUNNING",
+      "failed_stage": "SERVICES",
+      "failed_service": "auth",
+      "diagnostics": {
+        "category": "PERMISSION_DENIED",
+        "evidence_bytes": 599,
+        "truncated": false
+      },
+      "database": {
+        "status": "CLONE_VALIDATED",
+        "counts": {
+          "orders": 311,
+          "staff": 19,
+          "storage_objects": 1060
+        },
+        "background_workers": "DISABLED"
+      },
+      "exact_auth_error": "NOT_PRESENT_IN_OPERATOR_REPORT",
+      "next_action": "VALIDATE_AUTH_CONNECTION_SCHEMA_FIX_AND_V4_DIAGNOSTICS"
+    }
   }
 }

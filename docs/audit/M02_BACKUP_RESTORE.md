@@ -127,3 +127,12 @@ V3 передаёт только разрешённый путь LOCALE_ARCHIVE 
 Новый полный BOS-App JSON содержит обезличенные сведения о журналах всех уже запущенных служб. Поддержаны GoTrue JSON logs и SQLSTATE; исходный SQL, неизвестные значения, пароли и клиентские данные не экспортируются. Console вывод сокращён до этапа, сервиса, категории и пути к полному отчёту. Дополнительный check-services.cmd читает fixed service logs из существующего failed clone только read-only без запуска PostgreSQL и создания новой копии. Private startup всё ещё требует следующего операторского запуска; CI не заменяет вход сотрудника и бизнес-сценарии.
 
 Первичные основания: [Auth init_postgres.sh v2.197.0](https://github.com/supabase/auth/blob/v2.197.0/init_postgres.sh), [Auth migrate_cmd.go](https://github.com/supabase/auth/blob/v2.197.0/cmd/migrate_cmd.go), [pgconn RuntimeParams](https://pkg.go.dev/github.com/jackc/pgx/v5/pgconn), [Storage v1.89.12 migrations](https://github.com/supabase/storage/blob/v1.89.12/src/internal/database/migrations/migrate.ts).
+
+
+### 2026-11-15 — V4 прошла Auth/Storage, остановка Edge
+
+Прочитан операторский BOS-App-20261115T184817Z-53ae22ac.json: DATABASE CLONE_VALIDATED, 311/19/1060; wait_http Auth и Storage пройдены до ожидания Edge. Сбой SERVICES/edge APP_CONTAINER_NOT_RUNNING. Сохранено 336 байт журнала, но v4 не распознала ни одной записи. Это не доказательство отсутствия ошибок: upstream edge-runtime v1.77.9 cli/src/logger.rs печатает Info/Error/Warn как обычный текст без обязательного префикса уровня.
+
+Следующий артефакт — небольшое дополнение BOS-Services-Diagnostic-20261115-v2.zip для уже существующей E:\BOS-App. Оно повторно читает сохранённые журналы того же failed clone с поддержкой обычного текста, ANSI и цепочек причин. База, Edge и приложение не запускаются, новый том не создаётся; исходный baseline не монтируется. Сырые строки, URL, SQL и неизвестные значения в публичный JSON не выводятся.
+
+Пока точная ошибка Edge не получена, настройки его runtime не меняются. Возможные проблемы зависимостей/кэша являются гипотезами; синтетический gateway CI использует Deno.serve без внешних импортов и не доказывает запуск приватного gateway оператора. disaster_recovery_ready остаётся false.

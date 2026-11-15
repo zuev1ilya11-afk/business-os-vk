@@ -1,9 +1,11 @@
-"""Summarize retained PostgreSQL logs using only fixed public-safe vocabulary.
+"""Summarize retained database and runtime logs with fixed safe vocabulary.
 
 This reader does not execute SQL or return source log lines. The headline
 category is taken from actual ERROR/FATAL/PANIC records; startup LOG/NOTICE
 messages cannot replace it. Unknown values, quoted strings, paths, numeric
 identifiers and multiline DETAIL/HINT/CONTEXT/STATEMENT content are omitted.
+Runtime cause chains are recognized only after an actual error prefix; their
+messages pass through the same sanitizer and never become raw output.
 """
 import json
 import re
@@ -33,6 +35,7 @@ current_setting current_database to_regprocedure to_regclass count
 auth public storage extensions schema_migrations auth.schema_migrations auth.users auth.sessions
 supabase_auth_admin supabase_storage_admin authenticator postgres supabase_admin
 anon authenticated service_role
+Deno EdgeRuntime SyntaxError TypeError ReferenceError RangeError URIError EvalError AggregateError
 '''.split())
 # Tokens are constants, not arbitrary matched text. They keep an unrecognized
 # error useful while preventing database values, passwords and SQL from export.
@@ -57,6 +60,12 @@ set reset option options parameter parameters count column columns aggregate
 extension extensions initializing initialized disabled enabled system tables table
 cache entry lookup index indexes catalog internal fatal panic found path permission
 readiness exists target source input output busy limit exceeded exhausted terminating
+worker main boot bootstrap graph module modules import imports map specifier export
+exports named provide resolve resolution fetch download sending request url dns
+network unreachable reset connect host service temporary failure tls certificate
+issuer peer entrypoint uncaught promise javascript typescript deno rust event loop
+escaped unexpectedly caused because expected reserved word panic panicked thread
+relative absolute prefixed cache cached dependency dependencies lockfile
 '''.split())
 _PREFIX = (r'(?:\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}'
            r'(?:\.\d+)?(?:\s+(?:UTC|GMT|[+-]\d{2}(?::?\d{2})?))?\s+)?'
@@ -64,17 +73,67 @@ _PREFIX = (r'(?:\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}'
 _RECORD = re.compile(r'^' + _PREFIX + r'(ERROR|FATAL|PANIC|LOG|WARNING|NOTICE):\s*'
                      r'(?:([0-9A-Z]{5}):\s*)?([^\r\n]*)$')
 _QUOTED = re.compile(r'"(?:[^"\\]|\\.)*"|\'(?:[^\'\\]|\\.)*\'')
+_ANSI = re.compile(r'\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)|\x1b\[[0-?]*[ -/]*[@-~]')
+_ISO = r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})'
+_LEVELS = {'fatal': 'FATAL', 'panic': 'PANIC', 'error': 'ERROR',
+           'warn': 'WARNING', 'warning': 'WARNING', 'info': 'LOG', 'log': 'LOG',
+           'debug': 'LOG', 'trace': 'LOG', 'notice': 'NOTICE'}
+_PLAIN = re.compile(r'^(error|fatal|panic|warn(?:ing)?|info|log|notice):\s*'
+                    r'(?:([0-9A-Z]{5}):\s*)?(.*)$', re.IGNORECASE)
+_TRACING = re.compile(r'^(?:' + _ISO + r'\s+)?(ERROR|FATAL|PANIC|WARN|WARNING|INFO|DEBUG|TRACE)\s+'
+                      r'(?:[A-Za-z_][A-Za-z0-9_.:-]{0,127}:\s+)?(.*)$', re.IGNORECASE)
+_BRACKET = re.compile(r'^\[(?:' + _ISO + r'\s+)?(ERROR|FATAL|PANIC|WARN|WARNING|INFO|DEBUG|TRACE)'
+                     r'(?:\s+[A-Za-z_][A-Za-z0-9_.:-]{0,127})?\]\s*(.*)$', re.IGNORECASE)
+_WORKER = re.compile(r'^(?:(?:Error|InvalidWorkerCreation):\s*)?(?:main )?worker boot error\b|'
+                     r'^runtime has escaped from the event loop unexpectedly:|'
+                     r'^event loop error:', re.IGNORECASE)
+_RUST_PANIC = re.compile(r'^thread (?:\'[^\'\r\n]{0,128}\'|"[^"\r\n]{0,128}") panicked at\b')
+JS_ERRORS = frozenset(('SyntaxError', 'TypeError', 'ReferenceError', 'RangeError',
+                      'URIError', 'EvalError', 'AggregateError'))
+_JS_ERROR = re.compile(r'^(?:Uncaught(?: \(in promise\))?\s+)?('
+                       + '|'.join(sorted(JS_ERRORS)) + r'):\s*')
+OS_ERRNOS = {1: 'EPERM', 2: 'ENOENT', 12: 'ENOMEM', 13: 'EACCES', 21: 'EISDIR',
+            22: 'EINVAL', 24: 'EMFILE', 28: 'ENOSPC', 30: 'EROFS', 98: 'EADDRINUSE',
+            101: 'ENETUNREACH', 104: 'ECONNRESET', 110: 'ETIMEDOUT', 111: 'ECONNREFUSED'}
+_GENERIC = frozenset(('UNCLASSIFIED_DATABASE_MESSAGE', 'WORKER_BOOT_FAILED', 'RUNTIME_PANIC'))
+
+
+def _os_errno(message):
+    clean = _QUOTED.sub(' ', message[:8192])
+    match = re.search(r'\(os error (\d{1,3})\)', clean, re.IGNORECASE)
+    return OS_ERRNOS.get(int(match.group(1))) if match else None
+
+
+def _javascript_error(message):
+    clean = _QUOTED.sub(' ', message[:8192])
+    for name in sorted(JS_ERRORS):
+        if re.search(r'\b' + name + r'\b', clean):
+            return name
+    return None
+
+
+def _main_location(message):
+    # Only the fixed captured gateway entrypoint is identifiable. No function,
+    # customer filename, arbitrary path or source line can leave this parser.
+    match = re.search(r'(?<![A-Za-z0-9_/.-])(?:file://)?/bos-main/index\.ts:(\d{1,6}):(\d{1,6})(?!\d)',
+                      message[:8192])
+    if match:
+        line, column = map(int, match.groups())
+        if 1 <= line <= 999999 and 1 <= column <= 999999:
+            return {'line': line, 'column': column}
+    return None
 
 
 def _category(message, state):
     low = message.lower()
+    errno = _os_errno(message)
     if state == '42501':
         return 'DATABASE_PRIVILEGE_DENIED'
-    if state == '53100' or 'no space left on device' in low:
+    if state == '53100' or 'no space left on device' in low or errno == 'ENOSPC':
         return 'DISK_FULL'
-    if state == '53200' or 'out of memory' in low or 'cannot allocate memory' in low:
+    if state == '53200' or 'out of memory' in low or 'cannot allocate memory' in low or errno == 'ENOMEM':
         return 'OUT_OF_MEMORY'
-    if 'read-only file system' in low:
+    if 'read-only file system' in low or errno == 'EROFS':
         return 'READ_ONLY_FILESYSTEM'
     if state == '25006' or 'read-only transaction' in low:
         return 'READ_ONLY_TRANSACTION'
@@ -85,7 +144,7 @@ def _category(message, state):
     if (state == '42501' or 'must be superuser' in low or 'must be owner' in low
             or re.search(r'permission denied for (?:schema|table|relation|database|sequence|function)', low)):
         return 'DATABASE_PRIVILEGE_DENIED'
-    if 'permission denied' in low or 'eacces' in low:
+    if 'permission denied' in low or 'eacces' in low or errno in ('EACCES', 'EPERM'):
         return 'PERMISSION_DENIED'
     if 'unrecognized configuration parameter' in low:
         return 'CONFIGURATION_PARAMETER_UNKNOWN'
@@ -101,7 +160,38 @@ def _category(message, state):
     if (state in ('XX001', 'XX002') or any(x in low for x in
             ('invalid page', 'invalid checkpoint', 'checksum mismatch', 'database system is corrupted'))):
         return 'DATABASE_CORRUPTION_REPORTED'
-    if state == '58P01' or 'no such file or directory' in low:
+    if any(value in low for value in ('dns error', 'failed to lookup address',
+                                      'name or service not known', 'temporary failure in name resolution')):
+        return 'DNS_LOOKUP_FAILED'
+    if 'connection refused' in low or errno == 'ECONNREFUSED':
+        return 'NETWORK_CONNECTION_REFUSED'
+    if 'network is unreachable' in low or errno in ('ENETUNREACH', 'ECONNRESET'):
+        return 'NETWORK_UNAVAILABLE'
+    if ('certificate' in low or 'unknownissuer' in low) and any(
+            value in low for value in ('invalid', 'unknown', 'failed', 'error')):
+        return 'CERTIFICATE_VALIDATION_FAILED'
+    if ('failed to determine entrypoint' in low or 'could not find an appropriate entrypoint' in low
+            or 'main entrypoint' in low and 'not found' in low):
+        return 'MAIN_ENTRYPOINT_UNAVAILABLE'
+    if 'import map' in low and any(value in low for value in ('invalid', 'failed', 'error', 'parse')):
+        return 'IMPORT_MAP_INVALID'
+    if 'relative import path' in low and 'not prefixed' in low:
+        return 'MODULE_SPECIFIER_INVALID'
+    if 'module' in low and 'does not provide an export' in low:
+        return 'MODULE_EXPORT_MISSING'
+    if any(value in low for value in ('module not found', 'cannot find module', 'err_module_not_found')):
+        return 'MODULE_NOT_FOUND'
+    if 'error sending request for url' in low or 'import ' in low and ' failed' in low:
+        return 'MODULE_IMPORT_FAILED'
+    if _javascript_error(message) == 'SyntaxError':
+        return 'JAVASCRIPT_SYNTAX_ERROR'
+    if _javascript_error(message) is not None:
+        return 'JAVASCRIPT_RUNTIME_ERROR'
+    if 'cache' in low and any(value in low for value in ('failed', 'cannot', 'could not', 'unavailable')):
+        return 'RUNTIME_CACHE_UNAVAILABLE'
+    if errno == 'EISDIR' or 'is a directory' in low:
+        return 'FILE_TYPE_MISMATCH'
+    if state == '58P01' or 'no such file or directory' in low or errno == 'ENOENT':
         return 'FILE_MISSING'
     if state == '42P01' or re.match(r'relation .+ does not exist', low):
         return 'RELATION_MISSING'
@@ -121,8 +211,18 @@ def _category(message, state):
         return 'FEATURE_UNSUPPORTED'
     if 'collation' in low or 'locale' in low:
         return 'LOCALE_OR_COLLATION_FAILURE'
-    if state in ('53300', '53400') or 'too many' in low or 'limit exceeded' in low:
+    if state in ('53300', '53400') or 'too many' in low or 'limit exceeded' in low or errno == 'EMFILE':
         return 'RESOURCE_LIMIT'
+    if errno == 'ETIMEDOUT' or 'connection timed out' in low:
+        return 'NETWORK_TIMEOUT'
+    if errno == 'EADDRINUSE' or 'address already in use' in low:
+        return 'ADDRESS_IN_USE'
+    if 'panicked at' in low:
+        return 'RUNTIME_PANIC'
+    if 'worker boot error' in low or 'failed to bootstrap runtime' in low or 'failed to create the graph' in low:
+        return 'WORKER_BOOT_FAILED'
+    if 'runtime has escaped from the event loop unexpectedly' in low or 'event loop error:' in low:
+        return 'RUNTIME_EVENT_LOOP_EXITED'
     return 'UNCLASSIFIED_DATABASE_MESSAGE'
 
 
@@ -143,6 +243,11 @@ def _path_kinds(message):
         ('POSTGRES_SOCKET', r'/tmp/\.s\.PGSQL\.5432\b'),
         ('POSTGRES_CONFIG', r'/bos/data/(?:postgresql(?:\.auto)?\.conf|pg_hba\.conf|pg_ident\.conf)\b'),
         ('POSTGRES_SHMEM', r'/PostgreSQL\.\d+'),
+        ('EDGE_MAIN_SERVICE', r'(?:file://)?/bos-main(?:/|\b)'),
+        ('EDGE_FUNCTION_SOURCE', r'(?:file://)?/bos-src(?:/|\b)'),
+        ('EDGE_BUNDLE', r'(?:file://)?/bos-bundles(?:/|\b)'),
+        ('DENO_CACHE', r'/(?:root/\.cache/deno|tmp/deno(?:-cache)?)(?:/|\b)'),
+        ('REMOTE_MODULE', r'\b(?:https?://|jsr:|npm:)'),
     )
     for label, pattern in patterns:
         if re.search(pattern, message):
@@ -175,6 +280,9 @@ def _structured_message(record):
     """
     parts = [record[key] for key in ('msg', 'message', 'error')
              if isinstance(record.get(key), str)]
+    fields = record.get('fields')
+    if isinstance(fields, dict) and isinstance(fields.get('message'), str):
+        parts.append(fields['message'])
     if not parts:
         return None
     for message in parts:
@@ -199,50 +307,122 @@ def _structured_message(record):
     return parts[0].splitlines()[0] if parts[0] else '', None
 
 
+def _runtime_record(line):
+    match = _PLAIN.fullmatch(line)
+    if match:
+        level, state, message = match.groups()
+        return _LEVELS[level.lower()], state.upper() if state else None, message
+    for pattern in (_TRACING, _BRACKET):
+        match = pattern.fullmatch(line)
+        if match:
+            level, message = match.groups()
+            return _LEVELS[level.lower()], None, message
+    if (_WORKER.match(line) or _JS_ERROR.match(line)
+            or re.match(r'^Uncaught(?: \(in promise\))? Error:', line)):
+        return 'ERROR', None, line
+    if _RUST_PANIC.match(line):
+        return 'PANIC', None, line
+    return None
+
+
 def summarize(raw):
     if not isinstance(raw, bytes):
         raw = b''
     content = raw[:MAX_BYTES]
-    errors, notices = [], []
+    errors, notices, error_groups = [], [], []
     counts = {level: 0 for level in sorted(SEVERITIES)}
-    for line in content.decode('utf-8', errors='replace').splitlines():
+    unparsed, ansi_removed, context_left, cause_chain = 0, False, 0, False
+    active_group = None
+    for original in content.decode('utf-8', errors='replace').splitlines():
+        line = _ANSI.sub('', original)
+        ansi_removed |= line != original
+        if not line.strip():
+            continue
+        runtime, cause = False, False
         match = _RECORD.fullmatch(line)
         if match:
             level, state, message = match.groups()
         elif line.startswith('{') and len(line) <= 16384:
             # GoTrue and other services use structured JSON logs. Only the
             # explicitly known message fields enter the same strict sanitizer.
+            # Even malformed JSON ends a preceding plain-text runtime chain.
+            context_left, cause_chain, active_group = 0, False, None
             try:
                 record = json.loads(line)
             except (ValueError, RecursionError):
+                unparsed += 1
+                context_left, cause_chain = 0, False
                 continue
             if not isinstance(record, dict):
+                unparsed += 1
                 continue
             raw_level = record.get('level', record.get('severity'))
             if not isinstance(raw_level, str):
+                unparsed += 1
                 continue
-            level = {'fatal': 'FATAL', 'panic': 'PANIC', 'error': 'ERROR',
-                     'warn': 'WARNING', 'warning': 'WARNING', 'info': 'LOG',
-                     'notice': 'NOTICE'}.get(raw_level.lower())
+            level = _LEVELS.get(raw_level.lower())
             if level is None:
+                unparsed += 1
                 continue
             selected = _structured_message(record)
             if selected is None:
+                unparsed += 1
                 continue
             message, state = selected
         else:
-            continue
+            selected = _runtime_record(line.strip()) if len(line) <= 16384 else None
+            if selected is not None:
+                level, state, message = selected
+                runtime = True
+            elif context_left > 0 and re.match(r'^\s*Caused by:\s*', line):
+                message = re.sub(r'^\s*Caused by:\s*', '', line, count=1)
+                cause_chain = True
+                context_left -= 1
+                if not message:
+                    continue
+                level, state = 'ERROR', None
+                cause = True
+            elif context_left > 0 and cause_chain and re.match(r'^\s+(?:\d{1,2}:\s*)?\S', line):
+                message = re.sub(r'^\s+(?:\d{1,2}:\s*)?', '', line, count=1)
+                level, state = 'ERROR', None
+                context_left -= 1
+                cause = True
+            else:
+                unparsed += 1
+                context_left, cause_chain = 0, False
+                continue
+        if runtime:
+            context_left, cause_chain = (12, False) if level in ('ERROR', 'FATAL', 'PANIC') else (0, False)
+            active_group = None
+        elif match or line.startswith('{'):
+            context_left, cause_chain = 0, False
+            active_group = None
         counts[level] += 1
         state = state if state in SQLSTATES else None
         event = {'severity': level, 'category': _category(message, state),
                  'sqlstate': state, 'known_identifiers': _known_identifiers(message),
-                 'path_kinds': _path_kinds(message), 'message_terms': _terms(message)}
+                 'path_kinds': _path_kinds(message), 'message_terms': _terms(message),
+                 'javascript_error': _javascript_error(message), 'os_errno': _os_errno(message),
+                 'main_location': _main_location(message)}
         target = errors if level in ('ERROR', 'FATAL', 'PANIC') else notices
         if len(target) < MAX_EVENTS:
             target.append(event)
+            if target is errors:
+                if cause and active_group is not None:
+                    # Only a cause within this bounded runtime chain may
+                    # replace its enclosing error with a more specific one.
+                    if event['category'] not in _GENERIC:
+                        error_groups[active_group] = event['category']
+                else:
+                    error_groups.append(event['category'])
+                    active_group = len(error_groups) - 1 if runtime else None
+    specific = [category for category in error_groups if category not in _GENERIC]
+    primary = specific[0] if specific else error_groups[0] if error_groups else (
+        'UNPARSED_LOG_RECORDS' if unparsed else 'NO_SERVER_ERROR_RECORD')
     return {'evidence_bytes': len(content), 'truncated': len(raw) > MAX_BYTES,
             'severity_counts': counts, 'errors': errors, 'startup_messages': notices,
-            'primary_category': errors[0]['category'] if errors else 'NO_SERVER_ERROR_RECORD',
+            'primary_category': primary, 'unparsed_nonempty_lines': unparsed,
+            'ansi_sequences_removed': ansi_removed,
             'events_truncated': sum(counts.values()) > len(errors) + len(notices)}
 
 

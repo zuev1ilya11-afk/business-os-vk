@@ -36,6 +36,13 @@ AUTH_LOG = json.dumps({'level': 'fatal', 'time': '2026-11-15T18:38:03Z',
     'msg': 'running db migrations: ERROR: permission denied for schema auth (SQLSTATE 42501)',
     'error': 'ERROR: permission denied for schema auth (SQLSTATE 42501)',
     'private_customer': SECRET, 'url': 'https://production.invalid/' + SECRET}) + '\n'
+EDGE_LOG = ('\x1b[31mError: main worker boot error\x1b[0m\n'
+            '\nCaused by:\n'
+            '    0: worker boot error: failed to create the graph\n'
+            '    1: Import "https://production.invalid/' + SECRET + '?token=' + SECRET + '" failed: '
+            'error sending request for url (https://production.invalid/' + SECRET + ')\n'
+            '    2: dns error: failed to lookup address information: Temporary failure in name resolution\n'
+            '    at file:///bos-main/' + SECRET + '/index.ts:1:1\n')
 
 
 class RecordingRunner(drill.DockerRunner):
@@ -94,7 +101,10 @@ class RetainedLogDockerTests(unittest.TestCase):
     def test_structured_auth_failure_is_read_without_database_restart(self):
         self.exercise_collection('SERVICES', 'auth', SERVICE_DB_LOG, AUTH_LOG)
 
-    def exercise_collection(self, stage, service, db_log, auth_log):
+    def test_plain_ansi_edge_cause_chain_is_read_without_database_restart(self):
+        self.exercise_collection('SERVICES', 'edge', SERVICE_DB_LOG, '', EDGE_LOG)
+
+    def exercise_collection(self, stage, service, db_log, auth_log, edge_log=''):
         run = 'bos-app-' + uuid.uuid4().hex[:12]
         baseline_run = 'bos-drill-' + uuid.uuid4().hex[:12]
         volume, baseline = run + '-data', baseline_run + '-data'
@@ -107,12 +117,13 @@ printf '%s' "$1" > /bos/app/diagnostics/db.log
 printf '%s' "$2" > /bos/app/diagnostics/init.log
 printf '%s' "$3" > /bos/data/app-bootstrap.stderr.log
 printf '%s' "$4" > /bos/app/diagnostics/auth.log
-''', db_log, 'helper started\n' + SECRET, 'bootstrap\n' + SECRET, auth_log)
+printf '%s' "$5" > /bos/app/diagnostics/edge.log
+''', db_log, 'helper started\n' + SECRET, 'bootstrap\n' + SECRET, auth_log, edge_log)
         self.fixture_call(baseline, 'printf "%s" "$1" > /bos/baseline-sentinel', SECRET)
         digest_script = 'find /bos -type f -exec sha256sum {} \\; | sort'
         before = self.fixture_call(volume, digest_script, readonly=True)
         baseline_before = self.fixture_call(baseline, digest_script, readonly=True)
-        self.assertEqual(len(before.splitlines()), 4)
+        self.assertEqual(len(before.splitlines()), 5)
         self.assertEqual(len(baseline_before.splitlines()), 1)
         containers_before = self.docker.run(['container', 'ls', '--all', '--quiet', '--no-trunc'])
         image = self.image
@@ -138,12 +149,22 @@ printf '%s' "$4" > /bos/app/diagnostics/auth.log
         self.assertNotIn('unrecognized configuration parameter', text)
         if service == 'db':
             self.assertIn('pgaudit.log', text)
-        else:
+        elif service == 'auth':
             self.assertEqual(result['log_states']['auth']['status'], 'READ')
             self.assertEqual(result['diagnostics']['auth']['primary_category'], 'DATABASE_PRIVILEGE_DENIED')
             self.assertTrue(any(event['sqlstate'] == '42501' for event in result['diagnostics']['auth']['errors']))
             self.assertEqual(result['diagnostics']['db']['primary_category'], 'NO_SERVER_ERROR_RECORD')
             self.assertNotIn('production.invalid', text)
+        else:
+            self.assertEqual(result['log_states']['edge']['status'], 'READ')
+            self.assertEqual(result['diagnostics']['edge']['primary_category'], 'DNS_LOOKUP_FAILED')
+            self.assertTrue(result['diagnostics']['edge']['errors'])
+            self.assertEqual(result['diagnostics']['db']['primary_category'], 'NO_SERVER_ERROR_RECORD')
+            self.assertNotIn('production.invalid', text)
+            self.assertNotIn('/bos-main/', text)
+            self.assertNotIn('file://', text)
+            self.assertNotIn('\\u001b', text)
+            self.assertNotIn('worker boot error: failed to create the graph', text)
         self.assertEqual(before, self.fixture_call(volume, digest_script, readonly=True))
         self.assertEqual(baseline_before, self.fixture_call(baseline, digest_script, readonly=True))
         self.assertEqual(containers_before,
