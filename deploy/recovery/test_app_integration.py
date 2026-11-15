@@ -210,7 +210,15 @@ PASSWORD_FUNCTION = SESSION_FUNCTIONS + STAFF_FUNCTIONS + r'''Deno.serve(async(r
  if(req.method==='GET')return Response.json({ok:true,fixture_only:true});
  const input=await req.json();
  if(input.action==='login'&&(!input.login||!input.password))
-  return Response.json({ok:false,error:'LOGIN_REQUIRED'},{status:400});
+  return Response.json({ok:false,error:'Введите логин и пароль'},{status:400});
+ if(input.action==='login') {
+  // Synthetic invalid-login path only; never authenticates a fixture user.
+  const key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
+  const r=await fetch(Deno.env.get('SUPABASE_URL')+'/rest/v1/business_staff?select=id&limit=0',
+    {headers:{apikey:key,Authorization:'Bearer '+key}});
+  if(!r.ok)return Response.json({ok:false,error:'Временная ошибка сервиса. Повторите позже.'},{status:500});
+  return Response.json({ok:false,error:'Неверный логин или пароль'},{status:401});
+ }
  if(input.action!=='refresh')return Response.json({ok:false,error:'UNKNOWN_ACTION'},{status:404});
  const me=await fixtureActor(req);
  if(!me)return Response.json({ok:false,error:'UNAUTHORIZED'},{status:401});
@@ -1023,6 +1031,18 @@ class RealApplicationLaunch(unittest.TestCase):
         self.assertIn(b'Captured synthetic web', html)
         self.assertIn(b'/__bos_local_guard.js', html)
         self.assertIn("connect-src 'self'", headers['Content-Security-Policy'])
+        import app_login_diagnostic
+        login_report = app_login_diagnostic.collect(self.runner, session.report)
+        self.assertEqual(login_report['finding'],
+                         'INVALID_LOGIN_PATH_OK_REAL_LOGIN_AND_BOOTSTRAP_NOT_TESTED')
+        self.assertEqual(login_report['synthetic_login_requests'], 1)
+        self.assertFalse(login_report['real_login_verified'])
+        self.assertEqual(login_report['checks']['rest_direct']['http_status'], 200)
+        self.assertEqual(login_report['checks']['rest_via_gateway']['http_status'], 200)
+        self.assertEqual(login_report['checks']['synthetic_login']['http_status'], 401)
+        for secret in session._plan['secrets'].values():
+            self.assertNotIn(secret, json.dumps(login_report))
+        print('CI_LIVE_LOGIN_DIAGNOSTIC=REAL_PORTAL_GATEWAY_DATABASE_PATHS_AND_SANITIZED_LOGS', flush=True)
         owner_session = signed_staff_session('fixture_owner', session._plan['secrets']['vk'])
         owner_headers = {'Content-Type': 'application/json', 'X-BOS-Session': owner_session}
         self.exercise_role_switching(session, owner_session)

@@ -150,6 +150,9 @@ jobs:
       - name: Run retained database log diagnostic launcher processes
         shell: powershell
         run: deploy/recovery/test_app_db_diagnostic_launcher.ps1
+      - name: Run live login diagnostic launcher processes
+        shell: powershell
+        run: deploy/recovery/test_app_login_diagnostic_launcher.ps1
   real-application:
     name: Offline application (${{ matrix.store }})
     runs-on: ubuntu-22.04
