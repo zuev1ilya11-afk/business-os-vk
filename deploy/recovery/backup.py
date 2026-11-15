@@ -34,6 +34,9 @@ FORMAT = 1
 
 class Stop(Exception):
     """Only fixed, non-sensitive codes may cross the CLI boundary."""
+    def __init__(self, reason_code):
+        super().__init__(reason_code)
+        self.reason_code = reason_code
 
 
 def utc():
@@ -107,6 +110,37 @@ def read_json(path, limit=MAX_MANIFEST):
         return json.loads(f.read(limit + 1))
 
 
+def command_failure(args, returncode, stderr):
+    """Classify a bounded private error prefix; never return the error text."""
+    if not args or args[0] != 'exec':
+        return 'COMMAND_FAILED'
+    error = stderr[:8192].lower()
+    if returncode == 124:
+        return 'COMMAND_TIMEOUT'
+    missing = (b'executable file not found', b'no such file or directory',
+               b'not found', b'failed to run command')
+    if b'psql' in error and any(part in error for part in missing) and (
+            b'failed to run command' in error or b'executable file not found' in error
+            or b'env:' in error):
+        return 'DATABASE_CLIENT_UNAVAILABLE'
+    if b'timeout' in error and any(part in error for part in missing):
+        return 'DATABASE_TIMEOUT_UNAVAILABLE'
+    if b'no password supplied' in error:
+        return 'DATABASE_PASSWORD_REQUIRED'
+    if b'password authentication failed' in error:
+        return 'DATABASE_PASSWORD_REJECTED'
+    if b'permission denied' in error and any(name in error for name in
+            (b'pg_file_settings', b'pg_settings', b'pg_show_all_file_settings',
+             b'data_directory', b'config_file', b'hba_file', b'ident_file')):
+        return 'DATABASE_METADATA_PERMISSION_DENIED'
+    if b'psql' in error and b'/var/run/postgresql/' in error and (
+            b'no such file or directory' in error or b'connection refused' in error):
+        return 'DATABASE_SOCKET_UNAVAILABLE'
+    if b'canceling statement due to statement timeout' in error:
+        return 'COMMAND_TIMEOUT'
+    return 'COMMAND_FAILED'
+
+
 class LocalDocker:
     """Explicit local Unix socket; never inherit a remote Docker context.
 
@@ -122,6 +156,7 @@ class LocalDocker:
         env = {k: v for k, v in os.environ.items() if not k.startswith('DOCKER_')}
         command = [self.binary, '--host=unix:///var/run/docker.sock', *args]
         started, count, errors = time.monotonic(), 0, 0
+        error_prefix = bytearray()
         with (input_path.open('rb') if input_path else open(os.devnull, 'rb')) as stdin:
             p = subprocess.Popen(command, stdin=stdin, stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE, env=env, start_new_session=True)
@@ -147,11 +182,13 @@ class LocalDocker:
                                 output.write(chunk)
                             else:
                                 errors += len(chunk)
+                                if len(error_prefix) < 8192:
+                                    error_prefix.extend(chunk[:8192 - len(error_prefix)])
                                 if errors > MIB:
                                     raise Stop('COMMAND_ERROR_OUTPUT_LIMIT')
                     p.wait(timeout=max(1, timeout - (time.monotonic() - started)))
                 if p.returncode != 0:
-                    raise Stop('COMMAND_FAILED')
+                    raise Stop(command_failure(args, p.returncode, bytes(error_prefix)))
                 # pg_dump warnings must be investigated, not discarded as success.
                 if errors:
                     raise Stop('COMMAND_WARNINGS')

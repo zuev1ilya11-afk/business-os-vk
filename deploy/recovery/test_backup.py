@@ -584,6 +584,99 @@ class DockerStreamTests(unittest.TestCase):
                     self.runner(['synthetic'], timeout=timeout, limit=limit)
             self.assertIsNotNone(self.processes[-1].poll())
 
+    def test_database_stderr_categories_reach_cli_without_private_text(self):
+        args = b.db_command({'database_container': 'b' * 64}, 'psql',
+                            ['-X', '-d', 'fixture_database', '-c', 'SELECT 1'], 15)
+        cases = [
+            ('psql: error: fe_sendauth: no password supplied', 2, 'DATABASE_PASSWORD_REQUIRED'),
+            ('psql: error: FATAL: password authentication failed for user "postgres"',
+             2, 'DATABASE_PASSWORD_REJECTED'),
+            ('ERROR: 42501: permission denied for view pg_file_settings',
+             3, 'DATABASE_METADATA_PERMISSION_DENIED'),
+            ('ERROR: 42501: permission denied to examine "data_directory"',
+             3, 'DATABASE_METADATA_PERMISSION_DENIED'),
+            ('ERROR: permission denied for function pg_show_all_file_settings',
+             3, 'DATABASE_METADATA_PERMISSION_DENIED'),
+            ('OCI runtime exec failed: exec: "timeout": executable file not found in $PATH',
+             127, 'DATABASE_TIMEOUT_UNAVAILABLE'),
+            ("env: 'psql': No such file or directory", 127, 'DATABASE_CLIENT_UNAVAILABLE'),
+            ('unrecognized failure', 1, 'COMMAND_FAILED'),
+            ('неизвестная ошибка подключения', 2, 'COMMAND_FAILED'),
+            ('', 124, 'COMMAND_TIMEOUT'),
+        ]
+        source = 'import os,sys; os.write(2,os.environ["BOS_SYNTHETIC_STDERR"].encode()); sys.exit(int(os.environ["BOS_SYNTHETIC_EXIT"]))'
+        for message, status, expected in cases:
+            with self.subTest(expected=expected, status=status):
+                output = io.StringIO()
+                before_umask = os.umask(0o077)
+                try:
+                    with self.python_child(source), \
+                            mock.patch.dict(os.environ, {'BOS_SYNTHETIC_STDERR': message + '\n' + SECRET,
+                                                         'BOS_SYNTHETIC_EXIT': str(status)}), \
+                            mock.patch.object(b, 'LocalDocker', return_value=self.runner), \
+                            mock.patch.object(b.discovery, 'discover', side_effect=lambda run: run(args)), \
+                            contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
+                        code = b.main(['capture'])
+                finally:
+                    os.umask(before_umask)
+                self.assertEqual(code, 1)
+                report = json.loads(output.getvalue())
+                self.assertEqual(report['reason'], expected)
+                self.assertEqual(report['capture'], 'STOPPED')
+                self.assertFalse(report['disaster_recovery_ready'])
+                self.assertNotIn(SECRET, output.getvalue())
+                self.assertNotIn(SECRET, str(self.commands[-1][0]))
+                self.assertIsNotNone(self.processes[-1].poll())
+
+    def test_ordinary_image_error_is_not_misclassified_as_database_error(self):
+        source = 'import os; os.write(2,os.environ["BOS_SYNTHETIC_STDERR"].encode()); raise SystemExit(2)'
+        with self.python_child(source), mock.patch.dict(os.environ, {
+                'BOS_SYNTHETIC_STDERR': 'fe_sendauth: no password supplied\n' + SECRET}):
+            with self.assertRaisesRegex(b.Stop, '^COMMAND_FAILED$'):
+                self.runner(['image', 'save', IMAGE_ID])
+
+    def test_stderr_classifier_receives_only_bounded_prefix(self):
+        source = 'import os; os.write(2,os.environ["BOS_SYNTHETIC_STDERR"].encode()); raise SystemExit(2)'
+        args = b.db_command({'database_container': 'b' * 64}, 'psql', ['-d', 'fixture_database'])
+        message = 'x' * 8192 + 'fe_sendauth: no password supplied\n' + SECRET
+        with self.python_child(source), mock.patch.dict(os.environ, {'BOS_SYNTHETIC_STDERR': message}), \
+                mock.patch.object(b, 'command_failure', wraps=b.command_failure) as classify:
+            with self.assertRaisesRegex(b.Stop, '^COMMAND_FAILED$'):
+                self.runner(args)
+        classify.assert_called_once()
+        sample = classify.call_args.args[2]
+        self.assertIsInstance(sample, bytes)
+        self.assertLessEqual(len(sample), 8192)
+        self.assertNotIn(SECRET.encode(), sample)
+
+    def test_database_credentials_survive_only_in_environment_with_pinned_route(self):
+        args = b.db_command({'database_container': 'b' * 64}, 'psql',
+                            ['-X', '-d', 'fixture_database', '-c', 'SELECT 1'], 15)
+        environment_args = args[args.index('env') + 1:args.index('psql')]
+        self.assertNotIn('PGPASSWORD', environment_args)
+        self.assertNotIn('PGPASSFILE', environment_args)
+        self.assertNotIn('-e', args)
+        self.assertIn('-w', args)
+        for flag, value in [('-h', '/var/run/postgresql'), ('-p', '5432'),
+                            ('-U', 'postgres'), ('-d', 'fixture_database')]:
+            self.assertEqual(args[args.index(flag) + 1], value)
+        for key in ('PGSERVICE', 'PGSERVICEFILE', 'PGHOSTADDR', 'PGHOST', 'PGPORT',
+                    'PGDATABASE', 'PGUSER', 'PGOPTIONS'):
+            self.assertIn(['-u', key], [environment_args[i:i + 2] for i in range(len(environment_args) - 1)])
+        environment = dict(os.environ)
+        environment.update(PGPASSWORD=SECRET, PGPASSFILE='/synthetic/private/passfile',
+                           BOS_EXPECTED_PASSWORD=SECRET, BOS_EXPECTED_PASSFILE='/synthetic/private/passfile',
+                           PGHOSTADDR='192.0.2.1', PGSERVICE='unwanted')
+        probe = ('import json,os; print(json.dumps({'
+                 '"password":os.environ.get("PGPASSWORD")==os.environ["BOS_EXPECTED_PASSWORD"],'
+                 '"passfile":os.environ.get("PGPASSFILE")==os.environ["BOS_EXPECTED_PASSFILE"],'
+                 '"redirect":any(k in os.environ for k in ("PGHOSTADDR","PGSERVICE"))}))')
+        command = ['env', *environment_args, sys.executable, '-c', probe]
+        result = subprocess.run(command, env=environment, capture_output=True, timeout=5, check=True)
+        self.assertEqual(json.loads(result.stdout), {'password': True, 'passfile': True, 'redirect': False})
+        self.assertNotIn(SECRET, str(args) + str(command))
+        self.assertNotIn(SECRET.encode(), result.stdout + result.stderr)
+
     def test_streamed_private_file_checks_disk_space_before_writing(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / 'partial.dump'

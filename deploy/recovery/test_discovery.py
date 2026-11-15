@@ -192,8 +192,11 @@ class DiscoveryTests(unittest.TestCase):
         env_start, client_start = args.index('env'), args.index('psql')
         env = args[env_start + 1:client_start]
         for key in ('PGSERVICE', 'PGSERVICEFILE', 'PGHOSTADDR', 'PGHOST', 'PGPORT',
-                    'PGDATABASE', 'PGUSER', 'PGPASSWORD', 'PGPASSFILE', 'PGOPTIONS'):
+                    'PGDATABASE', 'PGUSER', 'PGOPTIONS'):
             self.assertEqual(env[env.index(key) - 1], '-u')
+        self.assertNotIn('PGPASSWORD', env)
+        self.assertNotIn('PGPASSFILE', env)
+        self.assertIn('LC_ALL=C', env)
         client = args[client_start:]
         self.assertEqual(client[client.index('-h') + 1], '/var/run/postgresql')
         self.assertEqual(client[client.index('-p') + 1], '5432')
@@ -212,6 +215,39 @@ class DiscoveryTests(unittest.TestCase):
     def test_config_query_failure_is_sanitized(self):
         self.db_error = RuntimeError('PRIVATE_QUERY_ERROR')
         self.stop('DATABASE_CONFIG_QUERY_FAILED')
+
+    def test_existing_container_auth_is_not_unset_or_copied_into_arguments(self):
+        self.env('db', PGPASSWORD='PRIVATE_EXISTING_PASSWORD', PGPASSFILE='/PRIVATE/passfile')
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
+            d.discover(self.run)
+        calls = [call for call in self.run.call_args_list if call.args[0][0] == 'exec']
+        self.assertEqual(len(calls), 1)
+        args = calls[0].args[0]
+        self.assertNotIn('PGPASSWORD', args)
+        self.assertNotIn('PGPASSFILE', args)
+        self.assertNotIn('PRIVATE_', str(args))
+        self.assertNotIn('/PRIVATE/', str(args))
+        self.assertEqual(output.getvalue(), '')
+
+    def test_config_query_preserves_only_allowlisted_runner_reason_codes(self):
+        codes = ('DATABASE_PASSWORD_REQUIRED', 'DATABASE_PASSWORD_REJECTED',
+                 'DATABASE_METADATA_PERMISSION_DENIED', 'DATABASE_TIMEOUT_UNAVAILABLE',
+                 'DATABASE_CLIENT_UNAVAILABLE', 'DATABASE_SOCKET_UNAVAILABLE',
+                 'COMMAND_TIMEOUT', 'COMMAND_WARNINGS',
+                 'COMMAND_OUTPUT_LIMIT', 'COMMAND_ERROR_OUTPUT_LIMIT')
+        for code in codes:
+            with self.subTest(code=code):
+                self.db_error = RuntimeError('PRIVATE_RUNNER_MESSAGE')
+                self.db_error.reason_code = code
+                self.stop(code)
+
+    def test_config_query_rejects_untrusted_or_generic_runner_reason_codes(self):
+        for reason in ('PRIVATE_REASON_URI_AND_SECRET', 'COMMAND_FAILED', 'UNREVIEWED_REASON'):
+            with self.subTest(reason_kind='untrusted'):
+                self.db_error = RuntimeError('PRIVATE_RUNNER_MESSAGE')
+                self.db_error.reason_code = reason
+                self.stop('DATABASE_CONFIG_QUERY_FAILED')
 
     def test_malformed_config_json_is_sanitized(self):
         self.db_result = b'{"PRIVATE_METADATA"'

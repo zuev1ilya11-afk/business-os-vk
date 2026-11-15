@@ -142,15 +142,26 @@ def database_route(source, key, db, containers):
 
 def db_command(layout, program, args, seconds=600):
     # Bound the real in-container process and clear inherited libpq routing.
+    # Retain credentials already owned by this container. docker exec does not
+    # pass the host's PG environment without -e; neither password is put in argv.
     unset = ['PGSERVICE', 'PGSERVICEFILE', 'PGHOSTADDR', 'PGHOST', 'PGPORT',
-             'PGDATABASE', 'PGUSER', 'PGPASSWORD', 'PGPASSFILE', 'PGOPTIONS']
+             'PGDATABASE', 'PGUSER', 'PGOPTIONS']
     return ['exec', '-u', 'postgres', layout['database_container'],
             'timeout', '-k', '10', str(seconds), 'env',
             *[part for key in unset for part in ('-u', key)],
-            'PGCONNECT_TIMEOUT=5', 'PGAPPNAME=bos-recovery-capture',
+            'LC_ALL=C', 'PGCONNECT_TIMEOUT=5', 'PGAPPNAME=bos-recovery-capture',
             'PGOPTIONS=-c default_transaction_read_only=on -c statement_timeout=600000',
             program, '-h', '/var/run/postgresql', '-p', '5432',
             '-U', 'postgres', '-w', *args]
+
+
+SAFE_DATABASE_COMMAND_ERRORS = frozenset((
+    'DATABASE_PASSWORD_REQUIRED', 'DATABASE_PASSWORD_REJECTED',
+    'DATABASE_METADATA_PERMISSION_DENIED', 'DATABASE_TIMEOUT_UNAVAILABLE',
+    'DATABASE_CLIENT_UNAVAILABLE', 'DATABASE_SOCKET_UNAVAILABLE',
+    'COMMAND_TIMEOUT', 'COMMAND_WARNINGS', 'COMMAND_OUTPUT_LIMIT',
+    'COMMAND_ERROR_OUTPUT_LIMIT',
+))
 
 
 DB_CONFIG_SQL = """BEGIN READ ONLY;
@@ -173,10 +184,14 @@ def database_config_files(run, db, mapped):
     """
     layout = {'database_container': db['Id']}
     args = db_command(layout, 'psql', ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1',
+                                      '-v', 'VERBOSITY=verbose',
                                       '-d', DATABASE, '-c', DB_CONFIG_SQL], 15)
     try:
         raw = run(args, timeout=30, limit=65536)
-    except Exception:
+    except Exception as exc:
+        code = getattr(exc, 'reason_code', None)
+        if isinstance(code, str) and code in SAFE_DATABASE_COMMAND_ERRORS:
+            raise Stop(code) from None
         raise Stop('DATABASE_CONFIG_QUERY_FAILED') from None
     require(isinstance(raw, bytes) and len(raw) <= 65536, 'DATABASE_CONFIG_METADATA_INVALID')
     data = json_data(raw)

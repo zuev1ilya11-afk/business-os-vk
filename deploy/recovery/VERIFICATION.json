@@ -2,11 +2,11 @@
   "date_utc": "2026-11-15",
   "status": "LOCAL_UNIT_VERIFIED_CI_REQUIRED",
   "tests": {
-    "unit_passed": 65,
-    "backup_safety": 28,
-    "discovery": 37,
-    "real_postgresql_cases": 3,
-    "real_postgresql_this_revision": "CI_REQUIRED; binaries absent in resumed local environment"
+    "unit_passed": 72,
+    "backup_safety": 32,
+    "discovery": 40,
+    "real_postgresql_cases": 4,
+    "real_postgresql_this_revision": "CI_REQUIRED; includes 5 SCRAM credential subcases; local binaries absent"
   },
   "postgresql": "Current real-database validation belongs to the Recovery package CI run for this revision.",
   "local_transport": "No local PostgreSQL run on 2026-11-15; previous 2026-11-14 run used loopback.",
@@ -32,13 +32,13 @@
   "disaster_recovery_ready": false,
   "ci": "See Recovery package workflow for this exact revision; no new CI success is claimed by this local record.",
   "sha256": {
-    "backup.py": "69ee9610edd23c1ad048d03df89168303f125f2d37c99eec20e5bd0a7376c6af",
-    "discovery.py": "63bca5b441c6f4f6d0b883a1c6f89ff5dd4501b3f994c3012a2a8c5d76cf24bf",
+    "backup.py": "cc3128096e15294f6836fd4759b0116780244af1c4a293f5b898257e7f9d2c74",
+    "discovery.py": "0bd9dc5e6676c0871213b88129de044f60024c7442460e596f691610ab1f9172",
     "build.py": "47bfd7ab53d5b628f4a1e988376c8ee7c2fac6a30689d0ae3918498bf8824b26",
-    "test_backup.py": "ea206ed71c293620e6d74f627b3acb481c54a7ae7a42342b987da32c140a36ea",
-    "test_discovery.py": "04acf835e273d5c01eb809e4bfd7efc507c3a8b097f4ec99f4bc042b35275d5b",
-    "test_postgres.py": "f27d1b070fff1e8f6659f02ff973fea40c6d494be0a6e653d323d730cad1d1af",
-    "bos-backup.pyz": "3313115d0963a2931e731a9cfeb8e4d097c2f523a2b6329de9534c3f7bb56cfd"
+    "test_backup.py": "005d9e0bed5f6318604320881c8fa129f2fbc0ca4bca335a2a5111c3508a8339",
+    "test_discovery.py": "2c71dae427180cf07a8e715b7d0de2190dffad48bb50e9fdb058e4600f95dc49",
+    "test_postgres.py": "59c7fb95e3db17f6de4e4cc2f8e87af2480cd813c254ab7dfd3ce60944322daf",
+    "bos-backup.pyz": "266ec6e22e327e2fb6edd0e96458f949112e6d6a2fcd79711ed45614f7dae54a"
   },
   "previous_full_verification": {
     "commit": "6d706eb0ff37886d1420f11d9327c3013d0a8a1c",
@@ -47,5 +47,12 @@
     "ci_run": 43627417693,
     "ci_postgresql": "17.6"
   },
-  "server_observation": "Previous package stopped at DATABASE_FILE_MOUNT_UNSUPPORTED before capture; new package not yet run on production."
+  "server_observation": "Package 7dd8cbb stopped at DATABASE_CONFIG_QUERY_FAILED before capture; cause not identified from generic code. Current package preserves container credentials and distinguishes safe error categories; production result pending.",
+  "previous_metadata_fix_validation": {
+    "commit": "7dd8cbb696e6e7f2229a042d7e3f091c02e59b54",
+    "unit_passed": 65,
+    "real_postgresql_cases": 3,
+    "ci_run": 43694602748,
+    "ci_postgresql": "17.6"
+  }
 }

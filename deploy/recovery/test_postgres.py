@@ -24,6 +24,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -158,8 +159,7 @@ class FakeDocker:
         if command and command[0] == 'env':
             poisoned = {'PGHOST': 'invalid.fixture.example', 'PGHOSTADDR': '203.0.113.1',
                         'PGPORT': '9', 'PGDATABASE': 'never_connect_here',
-                        'PGUSER': 'never_use_this_user', 'PGPASSWORD': 'synthetic-unused',
-                        'PGPASSFILE': '/nonexistent/fixture', 'PGSERVICE': 'invalid-fixture',
+                        'PGUSER': 'never_use_this_user', 'PGSERVICE': 'invalid-fixture',
                         'PGSERVICEFILE': '/nonexistent/fixture',
                         'PGOPTIONS': '-c default_transaction_read_only=off'}
             env.update(poisoned)
@@ -175,6 +175,11 @@ class FakeDocker:
             while command and '=' in command[0]:
                 key, value = command.pop(0).split('=', 1)
                 env[key] = value
+            # These belong to the synthetic container, not caller routing.
+            # Preserve them in the environment; never copy secrets into argv.
+            for key in ('PGPASSWORD', 'PGPASSFILE'):
+                if env.get(key) != self.source.env.get(key):
+                    raise AssertionError('Container authentication was not preserved')
         program, pg_args = command[0], command[1:]
         if program not in ('psql', 'pg_dump', 'pg_dumpall', 'pg_restore'):
             raise AssertionError('Unexpected executable')
@@ -341,6 +346,79 @@ class PostgreSQLIntegration(unittest.TestCase):
         if not version.startswith('postgres (PostgreSQL) 17.'):
             raise RuntimeError('Integration requires PostgreSQL major 17: ' + version)
         print('\nReal database binaries: ' + version, flush=True)
+
+    def test_scram_auth_preserves_container_password_and_passfile(self):
+        with laboratory(self.binary) as (root, source, target):
+            runner = FakeDocker(source)
+            layout, _ = layout_fixture(root, source, runner)
+            before = source.sql('synthetic', SNAPSHOT_SQL)
+            password = 'synthetic-container-scram-password'
+            source.sql('postgres', "SET password_encryption='scram-sha-256'; "
+                       "ALTER ROLE postgres PASSWORD '" + password + "';")
+            (source.path / 'pg_hba.conf').write_text(
+                'local all all scram-sha-256\n'
+                'host all all 127.0.0.1/32 scram-sha-256\n'
+                'host all all ::1/128 scram-sha-256\n')
+            source.run('pg_ctl', ['-D', str(source.path), 'reload'])
+            # pg_ctl reload returns before SIGHUP has necessarily been applied.
+            # Wait for actual password enforcement, never infer it from the file.
+            deadline = time.monotonic() + 5
+            while True:
+                no_password = source.run('psql', ['-X', '-qAt', *source.connection('synthetic'),
+                                                  '-c', 'SELECT 1;'], check=False)
+                if no_password.returncode:
+                    self.assertIn(b'no password supplied', no_password.stderr)
+                    break
+                if time.monotonic() >= deadline:
+                    self.fail('Synthetic cluster did not enforce SCRAM after reload')
+                time.sleep(0.05)
+            good_passfile, wrong_passfile = root / 'good.pgpass', root / 'wrong.pgpass'
+            for path, value in ((good_passfile, password), (wrong_passfile, 'synthetic-wrong')):
+                with backup.exclusive(path) as output:
+                    output.write(('*:*:*:postgres:' + value + '\n').encode())
+                self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+            missing_passfile = root / 'does-not-exist.pgpass'
+            mapped = [(source.path, PurePosixPath(source.path), True)]
+            cases = [
+                ('password', {'PGPASSWORD': password, 'PGPASSFILE': str(missing_passfile)}, None),
+                ('passfile', {'PGPASSFILE': str(good_passfile)}, None),
+                ('wrong-password', {'PGPASSWORD': 'synthetic-wrong', 'PGPASSFILE': str(missing_passfile)},
+                 b'password authentication failed'),
+                ('wrong-passfile', {'PGPASSFILE': str(wrong_passfile)}, b'password authentication failed'),
+                ('missing-credentials', {'PGPASSFILE': str(missing_passfile)}, b'no password supplied'),
+            ]
+            for name, credentials, auth_error in cases:
+                with self.subTest(credentials=name):
+                    succeeds = auth_error is None
+                    source.env.pop('PGPASSWORD', None)
+                    source.env.pop('PGPASSFILE', None)
+                    source.env.update(credentials)
+                    with patch.object(backup.discovery, 'DATABASE', 'synthetic'):
+                        if succeeds:
+                            self.assertEqual(backup.discovery.database_config_files(
+                                runner, {'Id': runner.container}, mapped), set())
+                        else:
+                            with self.assertRaises(backup.discovery.Stop):
+                                backup.discovery.database_config_files(
+                                    runner, {'Id': runner.container}, mapped)
+                            self.assertEqual(runner.processes[-1]['program'], 'psql')
+                            self.assertNotEqual(runner.processes[-1]['returncode'], 0)
+                            self.assertIn(auth_error, runner.last_error)
+                    if succeeds:
+                        with patch.object(backup.discovery, 'discover', return_value=layout):
+                            bundle = backup.capture(layout, root / ('output-' + name), runner)
+                        self.assertEqual(backup.verify(bundle)['integrity'], 'VERIFIED')
+                        self.assertTrue((bundle / 'database.dump').read_bytes().startswith(b'PGDMP'))
+                        self.assertEqual(source.sql('synthetic', SNAPSHOT_SQL), before)
+                    else:
+                        with self.assertRaisesRegex(backup.Stop, '^COMMAND_FAILED$'):
+                            runner(backup.db_command(layout, 'pg_dump', ['-Fc', '-d', 'synthetic']))
+                        self.assertEqual(runner.processes[-1]['program'], 'pg_dump')
+                        self.assertNotEqual(runner.processes[-1]['returncode'], 0)
+                        self.assertIn(auth_error, runner.last_error)
+            self.assertTrue(all(p['readonly'] for p in runner.processes if p['program'] != 'pg_restore'))
+        self.assertFalse(root.exists())
+        self.assertFalse(source.started or target.started)
 
     def test_external_nonstandard_config_and_include_use_server_metadata(self):
         with laboratory(self.binary) as (root, source, target):
