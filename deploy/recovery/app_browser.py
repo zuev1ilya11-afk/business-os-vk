@@ -14,9 +14,13 @@ import subprocess
 import threading
 from urllib.parse import unquote, urlsplit, urlunsplit
 
+import app_role_ui
+
 
 MAX_BODY = 32 * 1024 * 1024
 GUARD_PATH = '/__bos_local_guard.js'
+ROLE_PATH = '/__bos_local_roles'
+ROLE_SCRIPT_PATH = '/__bos_local_roles.js'
 KNOWN_ORIGINS = frozenset({
     'https://139.100.237.167', 'https://136.234.17.113',
     'https://homemaster.qd.je', 'https://obsropbslfwtanyspjbi.supabase.co',
@@ -180,7 +184,7 @@ def guard_script(allowed_origins):
             .replace('__BLOCKED__', json.dumps(sorted(BLOCKED_FUNCTIONS)))).encode('utf-8')
 
 
-def rewrite_html(data, local_origin, allowed_origins):
+def rewrite_html(data, local_origin, allowed_origins, *, role_switching=False):
     def attribute(match):
         before, quote, raw = match.group(1), match.group(2), match.group(3)
         mapped = rewrite_url(html.unescape(raw), local_origin, allowed_origins, asset=True)
@@ -207,6 +211,8 @@ def rewrite_html(data, local_origin, allowed_origins):
     parser.close()
     value = ''.join(parser.parts)
     tag = '<script src="' + GUARD_PATH + '"></script>'
+    if role_switching:
+        tag += '<script src="' + ROLE_SCRIPT_PATH + '"></script>'
     head = re.search(r'<head\b[^>]*>', value, flags=re.I)
     if head:
         value = value[:head.end()] + tag + value[head.end():]
@@ -219,6 +225,7 @@ class LocalPortal:
     """Bind immediately; start serve_forever in a launcher-owned thread."""
     def __init__(self, transport, allowed_origins=(), profile_dir=None):
         self.transport = transport
+        self.role_switcher = None
         self.allowed_origins = KNOWN_ORIGINS | frozenset(validated_origin(x) for x in allowed_origins)
         self.profile_dir = Path(profile_dir) if profile_dir is not None else None
         self._serving = threading.Event()
@@ -302,10 +309,54 @@ class LocalPortal:
                     self.error(400, 'LOCAL_DRILL_BODY_INVALID'); return
                 if length > MAX_BODY:
                     self.error(413, 'LOCAL_DRILL_BODY_TOO_LARGE'); return
+                if decoded.startswith(ROLE_PATH) and length > 2048:
+                    self.error(413, 'LOCAL_ROLE_BODY_TOO_LARGE'); return
                 body = self.rfile.read(length) if length else b''
                 if len(body) != length:
                     self.error(400, 'LOCAL_DRILL_BODY_INVALID'); return
                 parsed = urlsplit(path)
+                if decoded.startswith(ROLE_PATH):
+                    if portal.role_switcher is None:
+                        self.error(404, 'LOCAL_ROLE_UNAVAILABLE'); return
+                    if parsed.path == ROLE_SCRIPT_PATH and not parsed.query:
+                        if self.command not in ('GET', 'HEAD'):
+                            self.error(405, 'LOCAL_DRILL_METHOD_REJECTED'); return
+                        self.result(200, app_role_ui.role_script(),
+                                    {'Content-Type': 'text/javascript; charset=utf-8'}); return
+                    if parsed.path != ROLE_PATH or parsed.query:
+                        self.error(404, 'LOCAL_ROLE_ROUTE_INVALID'); return
+                    if self.command != 'POST':
+                        self.error(405, 'LOCAL_DRILL_METHOD_REJECTED'); return
+                    if origins != [portal.origin]:
+                        self.error(403, 'LOCAL_DRILL_ORIGIN_REJECTED'); return
+                    content_types = self.headers.get_all('Content-Type') or []
+                    sessions = self.headers.get_all('X-BOS-Session') or []
+                    grants = self.headers.get_all('X-BOS-Role-Control') or []
+                    if (len(content_types) != 1 or content_types[0].split(';')[0].strip().lower() != 'application/json'
+                            or len(sessions) != 1 or not 0 < len(sessions[0]) <= 1024
+                            or len(grants) > 1 or any(not 0 < len(value) <= 128 for value in grants)):
+                        self.error(400, 'LOCAL_ROLE_REQUEST_INVALID'); return
+                    try:
+                        def unique_object(pairs):
+                            value = {}
+                            for key, item in pairs:
+                                if key in value:
+                                    raise ValueError()
+                                value[key] = item
+                            return value
+                        payload = json.loads(body, object_pairs_hook=unique_object)
+                        if not isinstance(payload, dict) or not isinstance(payload.get('action'), str):
+                            raise ValueError()
+                        action = payload.pop('action')
+                    except (ValueError, UnicodeError):
+                        self.error(400, 'LOCAL_ROLE_REQUEST_INVALID'); return
+                    try:
+                        status, result = portal.role_switcher.handle(action, payload, sessions[0],
+                                                                   grants[0] if grants else '')
+                        self.result(status, json.dumps(result, ensure_ascii=False).encode(),
+                                    {'Content-Type': 'application/json; charset=utf-8'}); return
+                    except Exception:
+                        self.error(503, 'LOCAL_ROLE_UNAVAILABLE'); return
                 mapped = _api_path(parsed.path)
                 if mapped:
                     path = urlunsplit(('', '', mapped, parsed.query, ''))
@@ -340,7 +391,8 @@ class LocalPortal:
                         headers = {key: value for key, value in headers.items() if key.lower() != 'location'}
                         headers['Location'] = location
                     if is_html and self.command != 'HEAD':
-                        output = rewrite_html(output, portal.origin, portal.allowed_origins)
+                        output = rewrite_html(output, portal.origin, portal.allowed_origins,
+                                              role_switching=portal.role_switcher is not None)
                     self.result(status, output, headers)
                 except (BrokenPipeError, ConnectionResetError):
                     return
@@ -368,6 +420,8 @@ class LocalPortal:
             self._serving.clear()
 
     def shutdown(self):
+        if self.role_switcher is not None:
+            self.role_switcher.close()
         if self._serving.is_set():
             self.server.shutdown()
         self.server.server_close()

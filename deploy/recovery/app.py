@@ -18,6 +18,7 @@ import uuid
 import app_browser
 import app_db_log_sanitize
 import app_plan
+import app_roles
 import app_signed_urls
 import app_storage
 import app_transport
@@ -499,6 +500,19 @@ class AppSession:
         self.origin = self.portal.origin
         self._thread = None
 
+    def _role_staff(self):
+        """Only minimum identity fields from the verified local clone, never credentials."""
+        require(not self._stopped and 'db' in self.containers, 'APP_NOT_RUNNING')
+        anchor = self.containers['db']
+        verify_container(self, anchor, self._owned[anchor], running=True)
+        statement = """SELECT coalesce(json_agg(staff), '[]'::json) FROM (
+            SELECT id::text, external_id, full_name, role
+            FROM public.business_staff
+            WHERE is_active IS TRUE AND role IN ('owner','manager','dispatcher','master')
+            ORDER BY id LIMIT 1001
+        ) staff;"""
+        return json.loads(sql(self, statement, readonly=True, limit=MIB))
+
     def _transport(self, method, path, headers, body):
         require(not self._stopped and 'db' in self.containers, 'APP_NOT_RUNNING')
         if self._signed_urls is not None:
@@ -671,8 +685,11 @@ def start_app(bundle, successful_report, runner, *, profile_dir=None, progress=N
         for cid, spec in session._owned.items():
             verify_container(session, cid, spec, running=True)
         inspect_volume(runner, session.run_id, session.volume)
+        session.portal.role_switcher = app_roles.RoleSwitcher(session._plan['secrets']['vk'],
+                                                             session._role_staff)
         session.report.update(status='READY_FOR_MANUAL_CHECK', application='LOCAL_SERVICES_READY',
-            browser_workflows='NOT_VERIFIED', origin=session.origin)
+            browser_workflows='NOT_VERIFIED', origin=session.origin,
+            local_role_switching='OWNER_AUTHENTICATED_LOCAL_SESSIONS')
         session._thread = threading.Thread(target=session.portal.serve_forever, name='bos-local-portal', daemon=True)
         session._thread.start()
         require(session.portal._serving.wait(timeout=5), 'APP_PORTAL_START_FAILED')

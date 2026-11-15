@@ -87,6 +87,34 @@ ALTER FUNCTION auth.uid() OWNER TO supabase_auth_admin;
 ALTER FUNCTION auth.role() OWNER TO supabase_auth_admin;
 ALTER FUNCTION auth.jwt() OWNER TO supabase_auth_admin;
 """
+STAFF_SQL = """
+ALTER TABLE public.business_staff ADD COLUMN external_id text;
+ALTER TABLE public.business_staff ADD COLUMN full_name text;
+ALTER TABLE public.business_staff ADD COLUMN role text;
+ALTER TABLE public.business_staff ADD COLUMN is_active boolean NOT NULL DEFAULT false;
+ALTER TABLE public.business_staff ADD COLUMN phone text NOT NULL DEFAULT '';
+ALTER TABLE public.business_staff ADD COLUMN city text NOT NULL DEFAULT 'Fixture city';
+ALTER TABLE public.business_staff ADD COLUMN login text;
+ALTER TABLE public.business_staff ADD COLUMN password_hash text;
+UPDATE public.business_staff SET external_id='fixture_owner',full_name='Fixture owner',
+ role='owner',is_active=true,login='fixture-owner',password_hash='synthetic-credential-sentinel' WHERE id=1;
+UPDATE public.business_staff SET external_id='fixture_inactive',full_name='Inactive owner',
+ role='owner',is_active=false WHERE id=2;
+INSERT INTO public.business_staff(id,active,external_id,full_name,role,is_active) VALUES
+ (3,true,'fixture_master','Fixture master','master',true),
+ (4,true,'fixture_manager','Fixture manager','manager',true),
+ (5,true,'fixture_dispatcher','Fixture dispatcher','dispatcher',true),
+ (6,true,'fixture_other_master','Other fixture master','master',true);
+ALTER TABLE public.orders ADD COLUMN master_staff_id integer REFERENCES public.business_staff(id);
+UPDATE public.orders SET master_staff_id=CASE id WHEN 1 THEN 3 WHEN 2 THEN 6 END;
+"""
+ROLE_SNAPSHOT_SQL = """SELECT json_build_object(
+ 'staff',(SELECT json_agg(t ORDER BY id) FROM public.business_staff t),
+ 'database_roles',(SELECT json_agg(t ORDER BY rolname) FROM
+   (SELECT rolname,rolsuper,rolinherit,rolcreaterole,rolcreatedb,rolcanlogin,
+           rolreplication,rolbypassrls,rolpassword FROM pg_authid) t),
+ 'role_settings',(SELECT coalesce(json_agg(t ORDER BY setdatabase,setrole),'[]'::json)
+                  FROM pg_db_role_setting t));"""
 
 # This generated gateway exercises the actual EdgeRuntime ESZIP worker API.
 # Its tiny functions are fixture contracts, not claims about Business OS login.
@@ -133,26 +161,64 @@ Deno.serve(async(req)=>{
  return await worker.fetch(req);
 });
 '''
+# The same custom-session helpers as password-session-api, without its npm
+# client: the fixture uses real local PostgREST for the active staff lookup.
+# Tokens are generated only from this CI launch's replacement VK secret.
+SESSION_FUNCTIONS = r'''function b64u(bytes:Uint8Array){let s='';for(const b of bytes)s+=String.fromCharCode(b);return btoa(s).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_')}
+async function hmac(msg:string,secret:string){const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);return b64u(new Uint8Array(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(msg))))}
+function validSubject(v:string){return /^[A-Za-z0-9_-]{1,128}$/.test(v)}
+async function verifySession(token:string,secret:string){const p=String(token||'').split('.');if(p.length!==3||!validSubject(p[0])||!/^[0-9]+$/.test(p[1]))return null;const exp=Number(p[1]);if(!Number.isFinite(exp)||exp<Math.floor(Date.now()/1000))return null;const expected=await hmac(`${p[0]}.${p[1]}`,secret);if(expected.length!==p[2].length)return null;let mismatch=0;for(let i=0;i<expected.length;i++)mismatch|=expected.charCodeAt(i)^p[2].charCodeAt(i);return mismatch===0?p[0]:null}
+'''
+STAFF_FUNCTIONS = r'''async function fixtureActor(req:Request){
+ const uid=await verifySession(req.headers.get('x-bos-session')||'',Deno.env.get('VK_APP_SECRET')||'');
+ if(!uid)return null;
+ const key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
+ const response=await fetch(Deno.env.get('SUPABASE_URL')+'/rest/v1/business_staff?select=id,external_id,full_name,role,phone,city&external_id=eq.'+encodeURIComponent(uid)+'&is_active=eq.true',
+  {headers:{apikey:key,Authorization:'Bearer '+key}});
+ if(!response.ok)return null;
+ const rows=await response.json();return rows.length===1?rows[0]:null;
+}
+'''
 MINI = r'''import { expenseVersion } from '../../../finance-expenses.js';
 import { payrollVersion } from '../../../order-payroll.js';
 import { detailsVersion } from '../_shared/hands-details.ts';
+''' + SESSION_FUNCTIONS + STAFF_FUNCTIONS + r'''
 Deno.serve(async(req)=>{
  const input=req.method==='POST'?await req.json():{};
+ if(input.action==='health')return Response.json({ok:true});
+ const me=await fixtureActor(req);
+ if(!me)return Response.json({ok:false,error:'UNAUTHORIZED'},{status:401});
  const headers={'apikey':Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
  'Authorization':'Bearer '+Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
  'Content-Type':'application/json'};
- let suffix='/rest/v1/orders?select=id,status,quantity&order=id';
+ let suffix='/rest/v1/orders?select=id,status,quantity,master_staff_id&order=id';
+ if(me.role==='master')suffix+='&master_staff_id=eq.'+encodeURIComponent(String(me.id));
  let init={headers};
+ if(['fixture_manage','fixture_write'].includes(input.action)&&!['owner','manager','dispatcher'].includes(me.role))
+  return Response.json({ok:false,error:'FORBIDDEN'},{status:403});
+ if(input.action==='fixture_manage')return Response.json({ok:true,user:me});
  if(input.action==='fixture_write'){
   suffix='/rest/v1/orders?id=eq.1';
   init={method:'PATCH',headers:{...headers,'Prefer':'return=representation'},body:JSON.stringify({quantity:7})};
  }
  const response=await fetch(Deno.env.get('SUPABASE_URL')+suffix,init);
  if(!response.ok)return new Response(await response.text(),{status:response.status});
- return Response.json({ok:true,orders:await response.json(),fixture_version:expenseVersion+payrollVersion+detailsVersion});
+ return Response.json({ok:true,user:me,orders:await response.json(),fixture_version:expenseVersion+payrollVersion+detailsVersion});
 });
 '''
-PASSWORD_FUNCTION = "Deno.serve(()=>Response.json({ok:true,fixture_only:true}));\n"
+PASSWORD_FUNCTION = SESSION_FUNCTIONS + STAFF_FUNCTIONS + r'''Deno.serve(async(req)=>{
+ if(req.method==='GET')return Response.json({ok:true,fixture_only:true});
+ const input=await req.json();
+ if(input.action==='login'&&(!input.login||!input.password))
+  return Response.json({ok:false,error:'LOGIN_REQUIRED'},{status:400});
+ if(input.action!=='refresh')return Response.json({ok:false,error:'UNKNOWN_ACTION'},{status:404});
+ const me=await fixtureActor(req);
+ if(!me)return Response.json({ok:false,error:'UNAUTHORIZED'},{status:401});
+ const exp=Math.floor(Date.now()/1000)+3600,msg=me.external_id+'.'+exp;
+ const session_token=msg+'.'+await hmac(msg,Deno.env.get('VK_APP_SECRET')||'');
+ return Response.json({ok:true,fixture_only:true,user:me,session_token});
+});
+'''
 # Exact path forms observed in the operator's read-only diagnostic. These extra
 # workers contain generated local code only; no production function is invoked.
 LAYOUT_ROUTES = {
@@ -225,6 +291,13 @@ def signed_storage_token(payload):
     encode = lambda value: base64.urlsafe_b64encode(json.dumps(value, separators=(',', ':')).encode()).rstrip(b'=').decode()
     unsigned = encode({'alg': 'HS256', 'typ': 'JWT'}) + '.' + encode(payload)
     signature = hmac.new(JWT_SECRET.encode(), unsigned.encode(), hashlib.sha256).digest()
+    return unsigned + '.' + base64.urlsafe_b64encode(signature).rstrip(b'=').decode()
+
+
+def signed_staff_session(subject, secret):
+    """CI-only custom session, using the real password API's wire format."""
+    unsigned = subject + '.' + str(int(time.time()) + 3600)
+    signature = hmac.new(secret.encode(), unsigned.encode(), hashlib.sha256).digest()
     return unsigned + '.' + base64.urlsafe_b64encode(signature).rstrip(b'=').decode()
 
 
@@ -306,6 +379,7 @@ class RealApplicationLaunch(unittest.TestCase):
         for name in EXTENSIONS:
             cls.sql('CREATE EXTENSION "' + name + '";')
         cls.sql(SQL.split('CREATE SCHEMA storage AUTHORIZATION app_owner;')[0] + '\nRESET ROLE;')
+        cls.sql(STAFF_SQL)
         cls.sql(ROLES_SQL)
         cls.anon = app_plan.jwt('anon', JWT_SECRET)
         cls.service = app_plan.jwt('service_role', JWT_SECRET)
@@ -435,6 +509,7 @@ class RealApplicationLaunch(unittest.TestCase):
             'payloads': {name: backup.hash_file(cls.bundle / name) for name in sorted(backup.PAYLOADS)}})
         cls.bundle_before = {p.name: backup.hash_file(p) for p in cls.bundle.iterdir()}
         cls.source_before = cls.sql('SELECT json_agg(t ORDER BY id) FROM public.orders t;')
+        cls.source_roles_before = json.loads(cls.sql(ROLE_SNAPSHOT_SQL))
         cls.baseline = drill.run_drill(cls.bundle, cls.runner)
         if cls.baseline['status'] != 'DRILL_COMPLETED':
             raise RuntimeError('Synthetic prerequisite restore did not complete')
@@ -543,6 +618,10 @@ class RealApplicationLaunch(unittest.TestCase):
 
     @classmethod
     def prepare_gateway(cls):
+        password_source = (Path(__file__).resolve().parents[2]
+                           / 'supabase/functions/password-session-api/index.ts').read_text()
+        if any(line not in password_source for line in SESSION_FUNCTIONS.splitlines()):
+            raise RuntimeError('CI session helpers differ from the real password API contract')
         (cls.capture / 'edge/main/index.ts').write_text(GATEWAY)
         helper = REPORT_ENV_HELPER.encode()
         if hashlib.sha256(helper).hexdigest() != REPORT_ENV_HELPER_SHA256:
@@ -649,6 +728,93 @@ class RealApplicationLaunch(unittest.TestCase):
             return response.status, dict(response.getheaders()), response.read()
         finally:
             connection.close()
+
+    def exercise_role_switching(self, session, owner_session):
+        import app
+        before = json.loads(app.sql(session, ROLE_SNAPSHOT_SQL, readonly=True))
+
+        def control(action, token, grant=None, **fields):
+            headers = {'Content-Type': 'application/json', 'Origin': session.origin,
+                       'X-BOS-Session': token}
+            if grant is not None:
+                headers['X-BOS-Role-Control'] = grant
+            status, response_headers, raw = self.request(session, 'POST', '/__bos_local_roles',
+                json.dumps({'action': action, **fields}).encode(), headers)
+            self.assertIn('no-store', response_headers.get('Cache-Control', ''))
+            return status, json.loads(raw)
+
+        status, _ = control('authorize', '')
+        self.assertEqual(status, 400)
+        status, _ = control('authorize', 'invalid-session')
+        self.assertEqual(status, 401)
+        master_session = signed_staff_session('fixture_master', session._plan['secrets']['vk'])
+        status, _ = control('authorize', master_session)
+        self.assertEqual(status, 403)
+        status, _, _ = self.request(session, 'POST', '/__bos_local_roles',
+            b'{"action":"authorize"}', {'Content-Type': 'application/json',
+            'Origin': 'https://untrusted.invalid', 'X-BOS-Session': owner_session})
+        self.assertEqual(status, 403)
+        status, authorized = control('authorize', owner_session)
+        self.assertEqual(status, 200, authorized)
+        self.assertTrue(authorized['ok'])
+        self.assertEqual(authorized['owner']['role'], 'owner')
+        self.assertEqual(authorized['current']['id'], '1')
+        accounts = {item['id']: item for item in authorized['accounts']}
+        self.assertEqual(set(accounts), {'1', '3', '4', '5', '6'})
+        self.assertNotIn('fixture_owner', json.dumps(authorized))
+        self.assertNotIn('password_hash', json.dumps(authorized))
+        grant, current = authorized['grant'], owner_session
+        status, _ = control('list', owner_session, 'invalid-control-grant')
+        self.assertEqual(status, 403)
+        status, listing = control('list', current, grant)
+        self.assertEqual(status, 200)
+        self.assertEqual(listing['accounts'], authorized['accounts'])
+
+        for staff_id, role in (('3', 'master'), ('4', 'manager'), ('5', 'dispatcher'), ('1', 'owner')):
+            with self.subTest(local_role=role):
+                status, switched = control('switch', current, grant, staff_id=staff_id)
+                self.assertEqual(status, 200, switched)
+                self.assertEqual(switched['current']['id'], staff_id)
+                self.assertEqual(switched['current']['role'], role)
+                current = switched['session_token']
+                headers = {'Content-Type': 'application/json', 'X-BOS-Session': current}
+                status, _, body = self.request(session, 'POST', '/functions/v1/mini-app-api',
+                    b'{"action":"bootstrap"}', headers)
+                self.assertEqual(status, 200, body[:1024])
+                bootstrap = json.loads(body)
+                self.assertEqual(str(bootstrap['user']['id']), staff_id)
+                self.assertEqual(bootstrap['user']['role'], role)
+                self.assertEqual([row['id'] for row in bootstrap['orders']], [1] if role == 'master' else [1, 2, 3])
+                status, _, body = self.request(session, 'POST', '/api/proxy/mini-app-api',
+                    b'{"action":"fixture_manage","role":"owner","staff_id":"1"}', headers)
+                self.assertEqual(status, 403 if role == 'master' else 200, body[:1024])
+                if role == 'master':
+                    self.assertEqual(json.loads(body)['error'], 'FORBIDDEN')
+                    # A valid control grant does not turn a master app session
+                    # into a management session in the actual Edge worker.
+                    status, _, body = self.request(session, 'POST', '/functions/v1/mini-app-api',
+                        b'{"action":"fixture_write"}', headers)
+                    self.assertEqual(status, 403, body[:1024])
+                # The same session verifier used by password-session-api must
+                # accept a switched token, and the broker must accept its refresh.
+                status, _, body = self.request(session, 'POST', '/functions/v1/password-session-api',
+                    b'{"action":"refresh"}', headers)
+                self.assertEqual(status, 200, body[:1024])
+                refreshed = json.loads(body)
+                self.assertEqual(str(refreshed['user']['id']), staff_id)
+                self.assertEqual(refreshed['user']['role'], role)
+                current = refreshed['session_token']
+                status, listing = control('list', current, grant)
+                self.assertEqual(status, 200, listing)
+                self.assertEqual(listing['current']['role'], role)
+        status, revoked = control('revoke', current, grant)
+        self.assertEqual(status, 200, revoked)
+        status, _ = control('switch', current, grant, staff_id='3')
+        self.assertEqual(status, 403)
+        self.assertEqual(json.loads(app.sql(session, ROLE_SNAPSHOT_SQL, readonly=True)), before)
+        print('CI_LOCAL_ROLES_PRESERVED=OWNER_MASTER_MANAGER_DISPATCHER_OWNER_WITH_REAL_EDGE_SESSIONS', flush=True)
+        print('CI_LOCAL_ROLE_BOUNDARY=MASTER_SCOPED_AND_SERVER_DENIED_MANAGEMENT', flush=True)
+        print('CI_LOCAL_ROLE_DATA_UNCHANGED=STAFF_CREDENTIALS_SQL_ROLES_AND_PASSWORDS', flush=True)
 
     def test_real_stack_uses_clone_and_serves_captured_binary(self):
         import app
@@ -857,8 +1023,11 @@ class RealApplicationLaunch(unittest.TestCase):
         self.assertIn(b'Captured synthetic web', html)
         self.assertIn(b'/__bos_local_guard.js', html)
         self.assertIn("connect-src 'self'", headers['Content-Security-Policy'])
+        owner_session = signed_staff_session('fixture_owner', session._plan['secrets']['vk'])
+        owner_headers = {'Content-Type': 'application/json', 'X-BOS-Session': owner_session}
+        self.exercise_role_switching(session, owner_session)
         status, _, body = self.request(session, 'POST', '/functions/v1/mini-app-api',
-                                      b'{"action":"bootstrap"}', {'Content-Type': 'application/json'})
+                                      b'{"action":"bootstrap"}', owner_headers)
         self.assertEqual(status, 200, body[:1024])
         self.assertEqual([row['quantity'] for row in json.loads(body)['orders']], [1, 2, 3])
         self.assertEqual(json.loads(body)['fixture_version'], 3)
@@ -866,7 +1035,8 @@ class RealApplicationLaunch(unittest.TestCase):
         # portal, gateway and offline ESZIP worker, not only planner assertions.
         for slug in self.routes:
             with self.subTest(captured_gateway_route=slug):
-                status, _, body = self.request(session, 'GET', '/functions/v1/' + slug)
+                status, _, body = self.request(session, 'GET', '/functions/v1/' + slug,
+                                              headers=owner_headers)
                 self.assertEqual(status, 200, body[:1024])
                 result = json.loads(body)
                 self.assertTrue(result['ok'])
@@ -899,7 +1069,7 @@ class RealApplicationLaunch(unittest.TestCase):
             self.assertGreaterEqual(status, 400)
             self.assertLess(status, 500)
         status, _, body = self.request(session, 'POST', '/api/proxy/mini-app-api',
-                                      b'{"action":"fixture_write"}', {'Content-Type': 'application/json'})
+                                      b'{"action":"fixture_write"}', owner_headers)
         self.assertEqual(status, 200, body[:1024])
         self.assertEqual(json.loads(body)['orders'][0]['quantity'], 7)
         status, _, _ = self.request(session, 'POST', '/functions/v1/push-api', b'{}', {'Content-Type': 'application/json'})
@@ -910,6 +1080,7 @@ class RealApplicationLaunch(unittest.TestCase):
         self.assertEqual(self.sql('SELECT json_agg(t ORDER BY id) FROM public.orders t;'), self.source_before)
         self.assertEqual(json.loads(self.sql(LOCALE_SQL)), self.source_locale)
         self.assertEqual(json.loads(self.sql(AUTH_SCHEMA_SQL)), self.source_auth_schema)
+        self.assertEqual(json.loads(self.sql(ROLE_SNAPSHOT_SQL)), self.source_roles_before)
         self.assertEqual({p.name: backup.hash_file(p) for p in self.bundle.iterdir()}, self.bundle_before)
 
 

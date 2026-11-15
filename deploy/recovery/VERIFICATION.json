@@ -209,7 +209,7 @@
     }
   },
   "application_launch": {
-    "status": "V4_EDGE_EVENT_LOOP_FAILURE_GATEWAY_PUBLIC_CONTRACT_FIX_PREPARED",
+    "status": "V5_OPERATOR_LOGIN_SCREEN_REACHED_V6_ROLE_SWITCHING_PREPARED",
     "artifact": "BOS-App-20261115-v4.zip",
     "bytes": 11277831,
     "sha256": "a5a6d96bb400308ddcd67be574cd6289b5be01f53eb05a88e9ef0c3a81d362e1",
@@ -409,7 +409,7 @@
       "exact_auth_error": "NOT_PRESENT_IN_OPERATOR_REPORT",
       "next_action": "VALIDATE_AUTH_CONNECTION_SCHEMA_FIX_AND_V4_DIAGNOSTICS"
     },
-    "candidate_artifact": "BOS-App-20261115-v5.zip",
+    "candidate_artifact": "BOS-App-20261115-v6.zip",
     "operator_services_diagnostic": {
       "evidence": "BOS-Services-Diagnostic-20261115T191328Z-4c32a385.json",
       "sha256": "8a08897f66d5922309478fda61cb5b9f0033404ae6158b23d94d3711d29fc602",
@@ -432,6 +432,22 @@
       "correction": "Preserve validated bare HTTPS public origin from authenticated capture config; keep internal upstreams local and keys fresh",
       "operator_captured_helper_hash": "NOT_READ_BY_AGENT",
       "regression": "EXACT_APPROVED_HELPER_NEGATIVE_OLD_PUBLIC_THEN_FULL_POSITIVE_STACK"
+    },
+    "operator_v5_result": {
+      "source": "USER_CONFIRMED_LOGIN_SCREEN",
+      "authenticated_login": "NOT_YET_CONFIRMED",
+      "business_workflows": "NOT_YET_CONFIRMED"
+    },
+    "local_role_switching": {
+      "authorization": "INITIAL_AUTHENTICATED_OWNER",
+      "subject": "ACTIVE_STAFF_IN_LOCAL_CLONE",
+      "session_format": "CAPTURED_STAFF_HMAC_WITH_LOCAL_KEY",
+      "role_password_mutations": false,
+      "control_ttl_seconds": 28800,
+      "scope": "LOCAL_LOOPBACK_PORTAL_ONLY",
+      "production_changes": false,
+      "git_staging_link": "NOT_CONFIGURED",
+      "validation": "CANDIDATE_TESTS_PENDING"
     }
   }
 }

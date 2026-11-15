@@ -125,7 +125,7 @@ jobs:
         env:
           BOS_APP_BROWSER_CONTRACT: '1'
         working-directory: deploy/recovery
-        run: python3 -m unittest test_app_browser.BrowserContractTests -v
+        run: python3 -m unittest test_app_browser.BrowserContractTests test_app_role_ui -v
   windows-launcher:
     name: Offline app launcher on Windows
     runs-on: windows-2022
