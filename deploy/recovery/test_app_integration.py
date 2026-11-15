@@ -129,6 +129,18 @@ PASSWORD_FUNCTION = "Deno.serve(()=>Response.json({ok:true,fixture_only:true}));
 WEB = b'<!doctype html><html><head><title>Synthetic BOS restore</title></head><body><h1 id="fixture">Captured synthetic web</h1></body></html>'
 
 
+class SyntheticAppRunner(drill.DockerRunner):
+    """Print bounded command failures only for this generated CI bundle."""
+    def __call__(self, args, **kwargs):
+        try:
+            return super().__call__(args, **kwargs)
+        except Exception:
+            print('CI_SYNTHETIC_APP_COMMAND_ERROR=' + json.dumps({
+                'operation': args[:2],
+                'stderr': self.last_error[:8192].decode(errors='replace')}), flush=True)
+            raise
+
+
 def archive_tree(root, target):
     """Capture regular generated files, deliberately without POSIX xattrs."""
     inventory = {}
@@ -170,7 +182,7 @@ class RealApplicationLaunch(unittest.TestCase):
         cls.addClassCleanup(cls.temp.cleanup)
         cls.root = Path(cls.temp.name).resolve()
         cls.docker = SyntheticDocker(socket_value, cls.root)
-        cls.runner = drill.DockerRunner(host=cls.docker.host)
+        cls.runner = SyntheticAppRunner(host=cls.docker.host)
         version = json.loads(cls.docker.run(['version', '--format', '{{json .Server.Version}}']))
         if version != os.environ.get('BOS_RECOVERY_DOCKER_VERSION', '').removeprefix('v'):
             raise RuntimeError('Application fixture Docker version differs from selected daemon')

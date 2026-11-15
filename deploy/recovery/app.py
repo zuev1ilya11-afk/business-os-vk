@@ -155,7 +155,7 @@ def base_args(run_id, role, image, env, mounts, network, *, user='0:0', helper=F
             '--network', network, '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
             '--restart', 'no', '--no-healthcheck', '--user', user, '--pids-limit', '256',
             '--memory', str(memory), '--memory-swap', str(memory), '--cpus', '2',
-            '--log-driver', 'local', '--log-opt', 'max-size=1m', '--log-opt', 'max-file=1']
+            '--log-driver', 'local', '--log-opt', 'max-size=1m', '--log-opt', 'max-file=2']
     if helper:
         for cap in ('CHOWN', 'DAC_OVERRIDE', 'DAC_READ_SEARCH', 'FOWNER'):
             args += ['--cap-add', cap]
