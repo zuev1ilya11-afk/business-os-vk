@@ -2,6 +2,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 if ($env:OS -ne 'Windows_NT') { throw 'These launcher tests require Windows.' }
+Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $testRoot = Join-Path ([IO.Path]::GetTempPath()) ('bos-launcher-' + [Guid]::NewGuid().ToString('N'))
 $null = New-Item -ItemType Directory -Path $testRoot
@@ -68,6 +69,19 @@ function Assert-FixtureSuccess($Result, [string]$Case) {
 Assert-FixtureSuccess (Invoke-LauncherFixture) 'Installed Python and spaced bundle path'
 Assert-FixtureSuccess (Invoke-LauncherFixture '-UsePortablePython') 'Pinned portable Python and zipapp module import'
 
+# Exercise the delivered offline ZIP path with the HTTPS fallback unusable.
+# This cache was just created and verified by the preceding synthetic test.
+$profileRoot = [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
+$cachedArchive = Join-Path $profileRoot 'BOS-Tools\python-3.12.10-embed-amd64.zip'
+$bundledArchive = Join-Path $testRoot 'python-3.12.10-embed-amd64.zip'
+[IO.File]::Move($cachedArchive, $bundledArchive)
+$offlineSource = $source.Replace(
+    'https://www.python.org/ftp/python/3.12.10/python-3.12.10-embed-amd64.zip',
+    'invalid-uri-fallback-must-not-run')
+[IO.File]::WriteAllText($launcher, $offlineSource, (New-Object Text.UTF8Encoding($false)))
+try { Assert-FixtureSuccess (Invoke-LauncherFixture '-UsePortablePython') 'Bundled Python without HTTPS fallback' }
+finally { [IO.File]::WriteAllText($launcher, $source, (New-Object Text.UTF8Encoding($false))) }
+
 # A modified code package must stop before either Python path is selected.
 $file = [IO.File]::Open($package, [IO.FileMode]::Append, [IO.FileAccess]::Write)
 try { $file.WriteByte(65) } finally { $file.Dispose() }
@@ -85,4 +99,4 @@ if ($result.Code -ne 1 -or $result.Out -notmatch 'BUNDLE_MANIFEST_MISSING' -or
     $result.Out -match 'LAUNCHER_FIXTURE_OK') { throw 'Missing manifest was not rejected.' }
 Write-Output 'Missing manifest rejected: PASS'
 
-Write-Output 'Launcher tests: 4 passed (real Windows PowerShell processes).'
+Write-Output 'Launcher tests: 5 passed (real Windows PowerShell processes).'

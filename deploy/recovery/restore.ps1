@@ -9,7 +9,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
-$PackageSha256 = 'cf482fa5b399b0bcebd6891d13a3ac9b22efe9b572b342dc4d57f259a0f748e0'
+$PackageSha256 = '4f97c66f9d84a3c19f8d15c89bc55b2de8857f6ac86e244eaf414216519979f3'
 $PythonUrl = 'https://www.python.org/ftp/python/3.12.10/python-3.12.10-embed-amd64.zip'
 $PythonSha256 = '4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3'
 $PythonBytes = 11133606
@@ -84,11 +84,21 @@ function Get-PortablePython {
     $archivePath = Join-Path $toolsRoot 'python-3.12.10-embed-amd64.zip'
     if (-not (Test-Path -LiteralPath $archivePath)) {
         $downloadPath = Join-Path $toolsRoot ('python-' + [Guid]::NewGuid().ToString('N') + '.partial')
-        $oldProtocol = [Net.ServicePointManager]::SecurityProtocol
-        try {
-            [Net.ServicePointManager]::SecurityProtocol = $oldProtocol -bor [Net.SecurityProtocolType]::Tls12
-            Invoke-WebRequest -UseBasicParsing -Uri $PythonUrl -OutFile $downloadPath -TimeoutSec 120
-        } finally { [Net.ServicePointManager]::SecurityProtocol = $oldProtocol }
+        $bundledArchive = Join-Path $PSScriptRoot 'python-3.12.10-embed-amd64.zip'
+        if (Test-Path -LiteralPath $bundledArchive) {
+            Assert-NoReparse $bundledArchive
+            if ((Get-Item -LiteralPath $bundledArchive).Length -ne $PythonBytes -or
+                (Get-FileHash -LiteralPath $bundledArchive -Algorithm SHA256).Hash -ne $PythonSha256) {
+                Stop-Bos 'BUNDLED_PYTHON_HASH_MISMATCH'
+            }
+            [IO.File]::Copy($bundledArchive, $downloadPath, $false)
+        } else {
+            $oldProtocol = [Net.ServicePointManager]::SecurityProtocol
+            try {
+                [Net.ServicePointManager]::SecurityProtocol = $oldProtocol -bor [Net.SecurityProtocolType]::Tls12
+                Invoke-WebRequest -UseBasicParsing -Uri $PythonUrl -OutFile $downloadPath -TimeoutSec 120
+            } finally { [Net.ServicePointManager]::SecurityProtocol = $oldProtocol }
+        }
         Assert-NoReparse $downloadPath
         if ((Get-Item -LiteralPath $downloadPath).Length -ne $PythonBytes -or
             (Get-FileHash -LiteralPath $downloadPath -Algorithm SHA256).Hash -ne $PythonSha256) {
@@ -102,6 +112,7 @@ function Get-PortablePython {
         (Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash -ne $PythonSha256) {
         Stop-Bos 'PYTHON_CACHE_HASH_MISMATCH'
     }
+    Add-Type -AssemblyName System.IO.Compression
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $archive = [IO.Compression.ZipFile]::OpenRead($archivePath)
     try {

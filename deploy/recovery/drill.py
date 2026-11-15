@@ -220,8 +220,8 @@ def helper_isolated(runner, identifier, run_id, volume, bundle):
             and host.get('UTSMode', '') in ('', 'private')
             and host.get('RestartPolicy', {}).get('Name') in ('no', '')
             and host.get('LogConfig', {}).get('Type') == 'none'
-            and set(host.get('CapDrop') or []) == {'ALL'} and not host.get('CapAdd')
-            and any(v.startswith('no-new-privileges') for v in host.get('SecurityOpt') or []),
+            and drill_db._capabilities(host.get('CapDrop')) == {'ALL'} and not host.get('CapAdd')
+            and drill_db._no_new_privileges(host.get('SecurityOpt')),
             'HELPER_ISOLATION_FAILED')
     networks = item.get('NetworkSettings', {}).get('Networks') or {}
     require(set(networks) <= {'none'} and all(not n.get('IPAddress') for n in networks.values()),

@@ -123,7 +123,7 @@ def _tmpfs(image):
 def _base_args(name, run_id, volume, image, *, helper=False, bundle_mount=None):
     args = ['create', '--name', name, '--label', LABEL + '=' + run_id,
             '--network', 'none', '--read-only', '--cap-drop', 'ALL',
-            '--security-opt', 'no-new-privileges:true', '--restart', 'no',
+            '--security-opt', 'no-new-privileges', '--restart', 'no',
             '--no-healthcheck', '--log-driver', 'none', '--pids-limit', '256',
             '--memory', '1g', '--memory-swap', '1g', '--cpus', '2',
             '--shm-size', '128m', '--user', '0:0' if helper else 'postgres',
@@ -136,6 +136,26 @@ def _base_args(name, run_id, volume, image, *, helper=False, bundle_mount=None):
         options = 'rw,noexec,nosuid,nodev,size=64m,mode=1777' if target == '/tmp' else 'rw,noexec,nosuid,nodev,size=16m'
         args += ['--tmpfs', target + ':' + options]
     return args
+
+
+def _capabilities(value):
+    """Docker versions return capability names with or without the CAP_ prefix."""
+    require(value is None or isinstance(value, list), 'DRILL_ISOLATION_UNCONFIRMED')
+    normalized = set()
+    for capability in value or []:
+        require(isinstance(capability, str) and re.fullmatch(r'[A-Za-z_]+', capability),
+                'DRILL_ISOLATION_UNCONFIRMED')
+        capability = capability.upper()
+        normalized.add(capability[4:] if capability.startswith('CAP_') else capability)
+    return normalized
+
+
+def _no_new_privileges(value):
+    # Exact enabling forms only.  Do not accept "false" or extra options such
+    # as seccomp=unconfined merely because one enabling entry is also present.
+    return (isinstance(value, list) and len(value) == 1
+            and value[0] in ('no-new-privileges', 'no-new-privileges:true',
+                             'no-new-privileges=true'))
 
 
 def _inspect(runner, cid, run_id, volume, tmpfs, *, helper=False, running=None):
@@ -154,10 +174,9 @@ def _inspect(runner, cid, run_id, volume, tmpfs, *, helper=False, running=None):
             and hc.get('Memory') == 1024 ** 3 and hc.get('MemorySwap') == 1024 ** 3
             and hc.get('NanoCpus') == 2_000_000_000 and hc.get('PidsLimit') == 256
             and hc.get('ShmSize') == 128 * 1024 * 1024
-            and set(hc.get('CapDrop') or []) == {'ALL'}
-            and set(hc.get('CapAdd') or []) == ({'CHOWN', 'DAC_READ_SEARCH'} if helper else set())
-            and any(s in ('no-new-privileges', 'no-new-privileges:true')
-                    for s in hc.get('SecurityOpt') or [])
+            and _capabilities(hc.get('CapDrop')) == {'ALL'}
+            and _capabilities(hc.get('CapAdd')) == ({'CHOWN', 'DAC_READ_SEARCH'} if helper else set())
+            and _no_new_privileges(hc.get('SecurityOpt'))
             and hc.get('RestartPolicy', {}).get('Name') in ('', 'no')
             and hc.get('LogConfig', {}).get('Type') == 'none'
             and config.get('Healthcheck', {}).get('Test') == ['NONE']

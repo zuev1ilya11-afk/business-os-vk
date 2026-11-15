@@ -206,6 +206,28 @@ class DrillDatabaseTests(unittest.TestCase):
         self.assertReason('DRILL_ISOLATION_UNCONFIRMED', docker)
         self.assertEqual({}, docker.containers)
 
+    def test_docker_capability_prefixes_and_security_option_forms(self):
+        for option in ('no-new-privileges', 'no-new-privileges:true', 'no-new-privileges=true'):
+            docker = Docker()
+            def mutate(obj):
+                config = obj['HostConfig']
+                config['SecurityOpt'] = [option]
+                config['CapAdd'] = ['CAP_' + name for name in config['CapAdd']]
+            docker.mutate = mutate
+            self.assertEqual('RESTORED', restore(docker)['database'])
+            created = [c for c in docker.calls if c[0] == 'create']
+            self.assertTrue(all(c[c.index('--security-opt') + 1] == 'no-new-privileges' for c in created))
+
+    def test_disabled_or_extra_security_options_and_extra_capabilities_are_rejected(self):
+        for override in ({'SecurityOpt': ['no-new-privileges=false']},
+                         {'SecurityOpt': ['no-new-privileges:true', 'seccomp=unconfined']},
+                         {'CapAdd': ['CAP_CHOWN', 'CAP_DAC_READ_SEARCH', 'CAP_SYS_ADMIN']},
+                         {'CapDrop': []}):
+            docker = Docker()
+            docker.mutate = lambda c: c['HostConfig'].update(override)
+            self.assertReason('DRILL_ISOLATION_UNCONFIRMED', docker)
+            self.assertFalse(any(c[0] == 'start' for c in docker.calls))
+
     def test_missing_memory_limit_and_host_device_are_rejected(self):
         for override in ({'Memory': 0}, {'Devices': [{'PathOnHost': '/dev/sda'}]}):
             docker = Docker()

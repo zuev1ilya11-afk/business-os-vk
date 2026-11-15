@@ -31,6 +31,66 @@ from test_docker import DisposableDocker, PUBLIC_IMAGE
 LABEL = 'io.business-os.restore-drill'
 FIXTURE_BYTES = b'Isolated recovery fixture photo bytes.\x00\xff\n'
 
+
+class FixtureObservedRunner:
+    """Retain only a strict diagnostic allowlist for this synthetic CI fixture."""
+    HOST_KEYS = ('NetworkMode', 'ReadonlyRootfs', 'Privileged', 'PublishAllPorts',
+                 'PidMode', 'IpcMode', 'UTSMode', 'CapDrop', 'CapAdd', 'SecurityOpt',
+                 'RestartPolicy', 'LogConfig', 'Tmpfs', 'Memory', 'MemorySwap',
+                 'NanoCpus', 'PidsLimit', 'ShmSize')
+
+    def __init__(self, delegate):
+        self.delegate, self.isolation = delegate, {}
+
+    def __getattr__(self, name):
+        return getattr(self.delegate, name)
+
+    def __call__(self, args, **kwargs):
+        data = self.delegate(args, **kwargs)
+        if args[:1] == ['inspect'] or args[:2] == ['container', 'inspect']:
+            self.observe(json.loads(data))
+        return data
+
+    def observe(self, records):
+        for item in records:
+            config, host = item.get('Config', {}), item.get('HostConfig', {})
+            run_id = (config.get('Labels') or {}).get(LABEL, '')
+            if not re.fullmatch(r'bos-drill-[0-9a-f]{12}', run_id):
+                continue
+            safe = {'HostConfig': {key: host.get(key) for key in self.HOST_KEYS},
+                    'Config': {'User': config.get('User'),
+                               'Entrypoint': config.get('Entrypoint'),
+                               'Healthcheck': {'Test': (config.get('Healthcheck') or {}).get('Test')}},
+                    'State': {key: (item.get('State') or {}).get(key)
+                              for key in ('Running', 'ExitCode')}}
+            self.isolation[item['Id']] = safe
+            # A single drill creates only three containers; this bound also
+            # prevents unrelated large inspect responses expanding CI output.
+            while len(self.isolation) > 4:
+                del self.isolation[next(iter(self.isolation))]
+
+    def failure_diagnostic(self):
+        print('CI_SYNTHETIC_ISOLATION=' + json.dumps(list(self.isolation.values()),
+                                                   sort_keys=True), flush=True)
+
+
+class DiagnosticWhitelistTest(unittest.TestCase):
+    def test_diagnostic_excludes_environment_commands_and_mount_sources(self):
+        observed = FixtureObservedRunner(None)
+        observed.observe([{'Id': 'a' * 64,
+                           'Config': {'Labels': {LABEL: 'bos-drill-' + 'b' * 12},
+                                      'User': 'postgres', 'Entrypoint': ['/bin/sh'],
+                                      'Env': ['SECRET=must-not-print'],
+                                      'Cmd': ['sensitive SQL'], 'Healthcheck': {'Test': ['NONE']}},
+                           'HostConfig': {'NetworkMode': 'none', 'Binds': ['secret-source']},
+                           'Mounts': [{'Source': 'private-directory'}],
+                           'State': {'Running': False, 'ExitCode': 0, 'Error': 'private stderr'}}])
+        text = json.dumps(list(observed.isolation.values()))
+        for secret in ('must-not-print', 'sensitive SQL', 'secret-source', 'private-directory', 'private stderr'):
+            self.assertNotIn(secret, text)
+        self.assertIn('NetworkMode', text)
+        self.assertIn('postgres', text)
+
 SQL = """
 CREATE ROLE app_owner NOLOGIN;
 CREATE ROLE fixture_team NOLOGIN;
@@ -132,7 +192,7 @@ class RealRestoreDrill(unittest.TestCase):
         cls.root = Path(cls.temp.name).resolve()
         cls.docker = DisposableDocker(socket_value, cls.root)
         cls.runner = drill.DockerRunner(host=cls.docker.host)
-        cls.image = cls.docker.inspect([PUBLIC_IMAGE])[0]
+        cls.source_image = cls.docker.inspect([PUBLIC_IMAGE])[0]
         version = json.loads(cls.docker.run(['version', '--format', '{{json .Server.Version}}']))
         if version != os.environ.get('BOS_RECOVERY_DOCKER_VERSION', '').removeprefix('v'):
             raise RuntimeError('Restore test Docker version differs from the selected matrix')
@@ -142,7 +202,7 @@ class RealRestoreDrill(unittest.TestCase):
             '--read-only', '--tmpfs', '/var/lib/postgresql/data:rw,size=256m',
             '--tmpfs', '/var/run/postgresql:rw,size=16m', '--tmpfs', '/tmp:rw,size=16m',
             '-e', 'POSTGRES_HOST_AUTH_METHOD=trust', '-e', 'POSTGRES_DB=bos_restore_check',
-            '-e', 'POSTGRES_INITDB_ARGS=--no-locale --encoding=UTF8', cls.image['Id'],
+            '-e', 'POSTGRES_INITDB_ARGS=--no-locale --encoding=UTF8', cls.source_image['Id'],
         ], timeout=60).decode().strip()
         if not re.fullmatch(r'[0-9a-f]{64}', cls.source):
             raise RuntimeError('Fixture container ID was not returned')
@@ -158,12 +218,34 @@ class RealRestoreDrill(unittest.TestCase):
             raise RuntimeError('Synthetic PostgreSQL did not become ready')
         cls.sql(cls.source, SQL)
         cls.source_before = cls.snapshot()
+        # Give the archived image a unique config without executing a build or
+        # changing the source database image. Remove it before the drill, so a
+        # successful restore must load an absent image identity from the archive.
+        producer = cls.docker.run([
+            'create', '--name', cls.fixture_name + '-image', '--network', 'none',
+            '--entrypoint', '/bin/true', cls.source_image['Id'],
+        ]).decode().strip()
+        cls.addClassCleanup(cls.docker.run, ['rm', '-f', '-v', producer], check=False)
+        variant = cls.docker.run([
+            'commit', '--change', 'LABEL io.business-os.synthetic-drill=' + uuid.uuid4().hex,
+            producer,
+        ]).decode().strip()
+        if not re.fullmatch(r'sha256:[0-9a-f]{64}', variant):
+            raise RuntimeError('Synthetic image commit did not return an image identity')
+        cls.image = cls.docker.inspect([variant])[0]
+        if cls.image['Id'] == cls.source_image['Id']:
+            raise RuntimeError('Synthetic archive image identity is not distinct')
+        cls.addClassCleanup(cls.docker.run, ['image', 'rm', cls.image['Id']], check=False)
+        cls.docker.run(['rm', '-v', producer])
         cls.bundle = cls.root / 'capture-20261115T000000Z-0123456789ab'
         cls.bundle.mkdir(mode=0o700)
         cls.save_database_file('pg_dump', ['-Fc', '-d', discovery.DATABASE], 'database.dump')
         cls.save_database_file('pg_dumpall', ['--globals-only', '-l', discovery.DATABASE], 'globals.sql')
         metadata = json.loads(cls.sql(cls.source, backup.META_SQL))
         cls.docker.save(cls.bundle / 'images.tar', [cls.image])
+        cls.docker.run(['image', 'rm', cls.image['Id']])
+        if cls.image['Id'] in cls.docker.run(['image', 'ls', '--all', '--quiet', '--no-trunc']).decode().split():
+            raise RuntimeError('Synthetic image remained available before archive loading')
         inventory = file_archive(cls.bundle / 'files.tar')
         write_json(cls.bundle / 'inventory.json', inventory)
         containers = []
@@ -244,7 +326,14 @@ class RealRestoreDrill(unittest.TestCase):
             target.write_bytes(original)
 
     def test_real_bundle_restores_roles_data_guard_and_file_bytes(self):
-        report = self.drill.run_drill(self.bundle, self.runner)
+        self.assertNotIn(self.image['Id'], self.docker.run(
+            ['image', 'ls', '--all', '--quiet', '--no-trunc']).decode().split())
+        observed = FixtureObservedRunner(self.runner)
+        try:
+            report = self.drill.run_drill(self.bundle, observed)
+        except Exception:
+            observed.failure_diagnostic()
+            raise
         run_id = report['run_id']
         self.addCleanup(self.cleanup_drill, run_id)
         self.assertEqual(report['status'], 'DRILL_COMPLETED')
@@ -307,6 +396,7 @@ class RealRestoreDrill(unittest.TestCase):
             'store': os.environ.get('BOS_RECOVERY_DOCKER_STORE'),
             'scope': report['scope'], 'roles_acl_rls_guard': 'VERIFIED_SYNTHETIC',
             'source_unchanged': True, 'network': 'none', 'full_application': 'NOT_RUN',
+            'archive_image_id_absent_before_load': True,
         }, sort_keys=True), flush=True)
 
     def target_sql(self, container, sql, *, user='postgres'):
