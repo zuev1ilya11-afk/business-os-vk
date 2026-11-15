@@ -1,0 +1,478 @@
+import contextlib
+import importlib.util
+import io
+import json
+from pathlib import Path, PurePosixPath
+import tempfile
+import unittest
+from unittest.mock import Mock, patch
+
+spec = importlib.util.spec_from_file_location('recovery_discovery', Path(__file__).with_name('discovery.py'))
+d = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(d)
+
+
+class DiscoveryTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.base = Path(self.temp.name)
+        self.release = self.base / 'release'
+        self.release.mkdir()
+        release = patch.object(d, 'RELEASE', self.release)
+        release.start()
+        self.addCleanup(release.stop)
+        for name in (*d.CONFIG_FILES, 'postgres.conf'):
+            (self.release / name).write_text('PRIVATE_CONFIG_BODY')
+        self.items = {}
+        for index, role in enumerate(d.ROLES, 1):
+            self.items[role] = {'Name': '/' + d.PREFIX + '-' + role, 'Id': f'{index:064x}',
+                'Image': 'sha256:' + f'{index:064x}', 'State': {'Running': True, 'Status': 'running'},
+                'Config': {'Env': ['PRIVATE_KEY=PRIVATE_ENV']}, 'Mounts': [],
+                'NetworkSettings': {'Networks': {'private': {'Aliases': [role]}}}}
+        uri = 'postgres://postgres:PRIVATE_PASSWORD@db:5432/' + d.DATABASE
+        self.env('rest', PGRST_DB_URI=uri, PGRST_SERVER_PORT='3000')
+        self.env('auth', GOTRUE_DB_DATABASE_URL=uri)
+        self.env('storage', DATABASE_URL=uri, STORAGE_BACKEND='file',
+                 FILE_STORAGE_BACKEND_PATH='/var/lib/storage', PORT='5000')
+        self.env('edge', BOS_REST_ORIGIN='http://rest:3000', BOS_STORAGE_ORIGIN='http://storage:5000')
+        for role, relative, target in [
+            ('https', 'web', '/srv'), ('https', 'caddy', '/etc/caddy'),
+            ('https', 'caddy-config', '/config'), ('edge', 'edge/sources', '/bos-src'),
+            ('edge', 'edge/bundles', '/bos-bundles'), ('edge', 'edge/main', '/bos-main'),
+            ('storage', 'storage', '/var/lib/storage'), ('db', 'data', '/var/lib/postgresql/data')]:
+            self.mount(role, self.release / relative, target)
+        self.mount('db', self.release / 'postgres.conf', '/etc/postgresql/postgresql.conf', directory=False)
+        self.manifest()
+        (self.release / 'images.json').write_text(json.dumps({
+            ('caddy' if key == 'https' else key): value['Image'] for key, value in self.items.items()}))
+        self.other = []
+        self.ps_result = None
+        self.mount_result = None
+        self.db_metadata = {'data_directory': '/var/lib/postgresql/data',
+                            'files': ['/etc/postgresql/postgresql.conf']}
+        self.db_result = None
+        self.db_error = None
+        self.role_metadata = {user: {
+            'user': user, 'session_user': user, 'database': d.DATABASE,
+            'readonly': True, 'superuser': True, 'supabase_admin': False,
+        } for user in ('postgres', 'supabase_admin')}
+        self.role_results = {}
+        self.role_errors = {}
+        self.run = Mock(side_effect=self.docker)
+
+    def docker(self, args, **kwargs):
+        containers = [*self.items.values(), *self.other]
+        if args[0] == 'exec':
+            self.assertIn('psql', args)
+            if args[-1] == d.ROLE_PROBE_SQL:
+                user = args[args.index('-U') + 1]
+                if user in self.role_errors: raise self.role_errors[user]
+                return self.role_results.get(user, json.dumps(self.role_metadata[user]).encode())
+            self.assertEqual(args[-1], d.DB_CONFIG_SQL)
+            if self.db_error is not None: raise self.db_error
+            return self.db_result if self.db_result is not None else json.dumps(self.db_metadata).encode()
+        if args == ['ps', '-aq', '--no-trunc']:
+            return self.ps_result if self.ps_result is not None else (
+                '\n'.join(item['Id'] for item in containers) + '\n').encode()
+        if args[:3] == ['inspect', '--format', '{{json .Mounts}}']:
+            self.assertEqual(args[3:], [item['Id'] for item in containers])
+            return self.mount_result if self.mount_result is not None else (
+                '\n'.join(json.dumps(item['Mounts']) for item in containers) + '\n').encode()
+        self.assertEqual(args, ['inspect', *(d.PREFIX + '-' + r for r in d.ROLES)])
+        return json.dumps(list(self.items.values())).encode()
+
+    def env(self, role, **values):
+        current = d.environment(self.items[role])
+        current.update(values)
+        self.items[role]['Config']['Env'] = [k + '=' + v for k, v in current.items()]
+
+    def mount(self, role, source, target, directory=True):
+        if directory: source.mkdir(parents=True, exist_ok=True)
+        self.items[role]['Mounts'].append({'Type': 'bind', 'Source': str(source), 'Destination': target})
+
+    def manifest(self, build=None):
+        (self.release / 'web/build-version.js').write_text(
+            '// Generated by npm run build. Do not edit.\nself.BOS_BUILD=' +
+            json.dumps({'id': build or d.BUILD}) + ';\n')
+
+    def stop(self, code):
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output), \
+             self.assertRaisesRegex(d.Stop, '^' + code + '$'):
+            d.discover(self.run)
+        self.assertEqual(output.getvalue(), '')
+
+    def test_exact_six_inspection_and_private_layout_exclude_pgdata(self):
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output): layout = d.discover(self.run)
+        self.run.assert_any_call(['inspect', *(d.PREFIX + '-' + r for r in d.ROLES)],
+                                 timeout=30, limit=16 * 1024 * 1024)
+        full = [call for call in self.run.call_args_list if call.args[0][0] == 'inspect'
+                and '--format' not in call.args[0]]
+        self.assertEqual(len(full), 1)
+        self.assertEqual(self.run.call_count, 5)
+        self.assertEqual(output.getvalue(), '')
+        self.assertEqual(layout['database'], d.DATABASE)
+        self.assertEqual(layout['database_container'], self.items['db']['Id'])
+        self.assertEqual(layout['database_user'], 'postgres')
+        self.assertNotIn(self.release / 'data', layout['roots'])
+        self.assertIn(self.release / 'data', layout['protected'])
+        self.assertIn(self.release / 'postgres.conf', layout['roots'])
+        self.assertIn(self.release / 'storage', layout['roots'])
+        self.assertEqual(layout['build'], d.BUILD)
+
+    def test_ambiguous_rest_alias_fails(self):
+        self.items['storage']['NetworkSettings']['Networks']['private']['Aliases'].append('rest')
+        self.stop('ROUTE_NOT_UNIQUE')
+
+    def test_auth_other_database_fails(self):
+        self.env('auth', GOTRUE_DB_DATABASE_URL='postgres://u:PRIVATE@db/other')
+        self.stop('DATABASE_ROUTE_CHANGED')
+
+    def test_storage_other_database_fails(self):
+        self.env('storage', DATABASE_URL='postgres://u:PRIVATE@db/other')
+        self.stop('DATABASE_ROUTE_CHANGED')
+
+    def test_s3_backend_fails(self):
+        self.env('storage', STORAGE_BACKEND='s3')
+        self.stop('STORAGE_BACKEND_UNSUPPORTED')
+
+    def test_missing_backend_has_no_guessed_default(self):
+        self.items['storage']['Config']['Env'] = [entry for entry in self.items['storage']['Config']['Env']
+                                                if not entry.startswith('STORAGE_BACKEND=')]
+        self.stop('STORAGE_BACKEND_UNSUPPORTED')
+
+    def test_changed_build_fails(self):
+        self.manifest('0' * 20)
+        self.stop('BUILD_CHANGED')
+
+    def test_changed_image_fails(self):
+        self.items['edge']['Image'] = 'sha256:' + 'f' * 64
+        self.stop('IMAGE_MANIFEST_CHANGED')
+
+    def test_nested_destination_fails(self):
+        self.mount('edge', self.base / 'nested', '/bos-src/nested')
+        self.stop('NESTED_MOUNT_TARGET')
+
+    def test_other_mounted_web_cannot_claim_pinned_build(self):
+        other = self.base / 'different-web'
+        other.mkdir()
+        self.items['https']['Mounts'][0]['Source'] = str(other)
+        self.stop('PINNED_MOUNT_CHANGED')
+
+    def test_changed_caddy_mount_fails(self):
+        other = self.base / 'different-caddy'
+        other.mkdir()
+        self.items['https']['Mounts'][1]['Source'] = str(other)
+        self.stop('PINNED_MOUNT_CHANGED')
+
+    def test_nonconfig_regular_db_bind_is_not_archived(self):
+        raw = self.base / 'raw-db-page'
+        raw.write_bytes(b'PRIVATE_DATABASE_PAGE')
+        self.mount('db', raw, '/db-page', directory=False)
+        self.stop('DATABASE_FILE_MOUNT_UNSUPPORTED')
+
+    def test_metadata_referenced_config_accepts_renamed_source_and_target(self):
+        source = self.release / 'runtime-db-settings'
+        (self.release / 'postgres.conf').rename(source)
+        target = '/run/database/active-settings.conf'
+        self.items['db']['Mounts'][1].update(Source=str(source), Destination=target)
+        self.db_metadata['files'] = [target]
+        layout = d.discover(self.run)
+        self.assertIn(source, layout['roots'])
+        self.assertNotIn(self.release / 'data', layout['roots'])
+
+    def test_conf_suffix_without_metadata_reference_is_rejected(self):
+        source = self.release / 'unverified.conf'
+        source.write_text('PRIVATE_CONFIG_NOT_REFERENCED')
+        self.mount('db', source, '/etc/postgresql/unverified.conf', directory=False)
+        self.stop('DATABASE_FILE_MOUNT_UNSUPPORTED')
+
+    def test_previously_allowlisted_basename_without_reference_is_rejected(self):
+        source = self.release / 'pg_ident.conf'
+        source.write_text('PRIVATE_UNUSED_CONFIG')
+        self.mount('db', source, '/unused/pg_ident.conf', directory=False)
+        self.stop('DATABASE_FILE_MOUNT_UNSUPPORTED')
+
+    def test_config_query_is_read_only_local_bounded_and_does_not_pass_credentials(self):
+        d.discover(self.run)
+        calls = [call for call in self.run.call_args_list if call.args[0][-1] == d.DB_CONFIG_SQL]
+        self.assertEqual(len(calls), 1)
+        args = calls[0].args[0]
+        self.assertEqual(args[:4], ['exec', '-u', 'postgres', self.items['db']['Id']])
+        env_start, client_start = args.index('env'), args.index('psql')
+        env = args[env_start + 1:client_start]
+        for key in ('PGSERVICE', 'PGSERVICEFILE', 'PGHOSTADDR', 'PGHOST', 'PGPORT',
+                    'PGDATABASE', 'PGUSER', 'PGOPTIONS'):
+            self.assertEqual(env[env.index(key) - 1], '-u')
+        self.assertNotIn('PGPASSWORD', env)
+        self.assertNotIn('PGPASSFILE', env)
+        self.assertIn('LC_ALL=C', env)
+        client = args[client_start:]
+        self.assertEqual(client[client.index('-h') + 1], '/var/run/postgresql')
+        self.assertEqual(client[client.index('-p') + 1], '5432')
+        self.assertEqual(client[client.index('-d') + 1], d.DATABASE)
+        self.assertIn('-X', client)
+        self.assertIn('-w', client)
+        self.assertIn('ON_ERROR_STOP=1', client)
+        self.assertEqual(client[-1], d.DB_CONFIG_SQL)
+        self.assertIn('BEGIN READ ONLY;', client[-1])
+        self.assertIn("SET LOCAL statement_timeout='5s';", client[-1])
+        self.assertTrue(client[-1].endswith('ROLLBACK;'))
+        self.assertIn('timeout', args)
+        self.assertEqual(calls[0].kwargs, {'timeout': 30, 'limit': 65536})
+        self.assertNotIn('PRIVATE_', str(args))
+
+    def test_config_query_failure_is_sanitized(self):
+        self.db_error = RuntimeError('PRIVATE_QUERY_ERROR')
+        self.stop('DATABASE_CONFIG_QUERY_FAILED')
+
+    def test_existing_container_auth_is_not_unset_or_copied_into_arguments(self):
+        self.env('db', PGPASSWORD='PRIVATE_EXISTING_PASSWORD', PGPASSFILE='/PRIVATE/passfile')
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
+            d.discover(self.run)
+        calls = [call for call in self.run.call_args_list if call.args[0][0] == 'exec']
+        self.assertEqual(len(calls), 2)
+        for call in calls:
+            args = call.args[0]
+            self.assertNotIn('PGPASSWORD', args)
+            self.assertNotIn('PGPASSFILE', args)
+            self.assertNotIn('PRIVATE_', str(args))
+            self.assertNotIn('/PRIVATE/', str(args))
+        self.assertEqual(output.getvalue(), '')
+
+    def role_calls(self):
+        return [call for call in self.run.call_args_list if call.args[0][-1] == d.ROLE_PROBE_SQL]
+
+    def enable_admin_selection(self):
+        self.role_metadata['postgres'].update(superuser=False, supabase_admin=True)
+
+    def test_superuser_postgres_does_not_probe_other_available_admin(self):
+        self.role_metadata['postgres']['supabase_admin'] = True
+        self.assertEqual(d.select_backup_role(self.run, self.items['db']), 'postgres')
+        self.assertEqual(len(self.role_calls()), 1)
+
+    def test_existing_admin_is_verified_once_and_pinned_for_metadata(self):
+        self.enable_admin_selection()
+        layout = d.discover(self.run)
+        self.assertEqual(layout['database_user'], 'supabase_admin')
+        calls = [call for call in self.run.call_args_list if call.args[0][0] == 'exec']
+        self.assertEqual([call.args[0][call.args[0].index('-U') + 1] for call in calls],
+                         ['postgres', 'supabase_admin', 'supabase_admin'])
+        self.assertEqual([call.args[0][-1] for call in calls],
+                         [d.ROLE_PROBE_SQL, d.ROLE_PROBE_SQL, d.DB_CONFIG_SQL])
+        for call in self.role_calls():
+            args = call.args[0]
+            self.assertEqual(args[:4], ['exec', '-u', 'postgres', self.items['db']['Id']])
+            self.assertEqual(args[args.index('-h') + 1], '/var/run/postgresql')
+            self.assertEqual(args[args.index('-p') + 1], '5432')
+            self.assertEqual(args[args.index('-d') + 1], d.DATABASE)
+            self.assertIn('-w', args)
+            self.assertIn('-X', args)
+            self.assertEqual(call.kwargs, {'timeout': 30, 'limit': 65536})
+        self.assertTrue(d.ROLE_PROBE_SQL.startswith('BEGIN READ ONLY;'))
+        self.assertTrue(d.ROLE_PROBE_SQL.endswith('ROLLBACK;'))
+        self.assertNotRegex(d.ROLE_PROBE_SQL.upper(), r'\b(GRANT|ALTER|INSERT|UPDATE|DELETE)\b|SET ROLE')
+        self.assertNotIn('PRIVATE_', str(calls))
+
+    def test_missing_existing_admin_stops_before_metadata(self):
+        self.role_metadata['postgres']['superuser'] = False
+        self.stop('DATABASE_BACKUP_ROLE_UNAVAILABLE')
+        self.assertEqual(len(self.role_calls()), 1)
+        self.assertFalse(any(call.args[0][-1] == d.DB_CONFIG_SQL for call in self.run.call_args_list))
+
+    def test_admin_must_still_be_superuser_after_connecting(self):
+        self.enable_admin_selection()
+        self.role_metadata['supabase_admin']['superuser'] = False
+        self.stop('DATABASE_BACKUP_ROLE_NOT_SUPERUSER')
+        self.assertEqual(len(self.role_calls()), 2)
+
+    def test_role_identity_database_readonly_and_boolean_types_are_verified(self):
+        changes = [{'user': 'PRIVATE_OTHER_USER'}, {'session_user': 'PRIVATE_OTHER_USER'},
+                   {'database': 'PRIVATE_OTHER_DB'}, {'readonly': False}, {'readonly': 1},
+                   {'superuser': 1}, {'supabase_admin': 'true'}, {'extra': 'PRIVATE_VALUE'}]
+        for user in ('postgres', 'supabase_admin'):
+            for change in changes:
+                with self.subTest(user=user, field=next(iter(change))):
+                    self.enable_admin_selection()
+                    self.role_results[user] = json.dumps({**self.role_metadata[user], **change}).encode()
+                    self.stop('DATABASE_BACKUP_ROLE_MISMATCH')
+                    self.role_results.clear()
+
+    def test_role_response_missing_fields_or_wrong_shapes_is_rejected(self):
+        for result in (b'null', b'[]', b'{}', b'{"superuser":true}', 'PRIVATE_TEXT', b' ' * 65537):
+            with self.subTest(result_type=type(result).__name__):
+                self.role_results['postgres'] = result
+                self.stop('DATABASE_BACKUP_ROLE_MISMATCH')
+
+    def test_role_invalid_json_is_sanitized(self):
+        self.role_results['postgres'] = b'{"PRIVATE_RESPONSE"'
+        self.stop('JSON_INVALID')
+
+    def test_admin_auth_failure_is_sanitized_without_retry(self):
+        self.enable_admin_selection()
+        for code in ('DATABASE_PASSWORD_REQUIRED', 'DATABASE_PASSWORD_REJECTED'):
+            with self.subTest(code=code):
+                self.run.reset_mock()
+                error = RuntimeError('PRIVATE_PASSWORD_AND_URI')
+                error.reason_code = code
+                self.role_errors['supabase_admin'] = error
+                self.stop('DATABASE_BACKUP_ROLE_AUTH_FAILED')
+                self.assertEqual(len(self.role_calls()), 2)
+
+    def test_role_query_errors_preserve_only_sanitized_allowlist(self):
+        for code in ('COMMAND_TIMEOUT', 'DATABASE_PASSWORD_REQUIRED', 'DATABASE_PASSWORD_REJECTED',
+                     'DATABASE_METADATA_PERMISSION_DENIED', 'DATABASE_CLIENT_UNAVAILABLE',
+                     'COMMAND_FAILED', 'PRIVATE_REASON_WITH_URI'):
+            with self.subTest(code_kind='known' if code in d.SAFE_DATABASE_COMMAND_ERRORS else 'unknown'):
+                error = RuntimeError('PRIVATE_ROLE_QUERY_ERROR')
+                error.reason_code = code
+                self.role_errors['postgres'] = error
+                self.stop(code if code in d.SAFE_DATABASE_COMMAND_ERRORS else 'DATABASE_BACKUP_ROLE_QUERY_FAILED')
+        self.role_errors['postgres'] = RuntimeError('PRIVATE_UNCLASSIFIED_ERROR')
+        self.stop('DATABASE_BACKUP_ROLE_QUERY_FAILED')
+
+    def test_database_command_rejects_unapproved_user_before_execution(self):
+        for user in ('root', '', 'PRIVATE_UNAPPROVED_USER'):
+            with self.subTest(user_kind='unapproved'), \
+                 self.assertRaisesRegex(d.Stop, '^DATABASE_USER_UNSUPPORTED$'):
+                d.db_command({'database_container': self.items['db']['Id'], 'database_user': user},
+                             'psql', [])
+        self.run.assert_not_called()
+
+    def test_config_query_preserves_only_allowlisted_runner_reason_codes(self):
+        codes = ('DATABASE_PASSWORD_REQUIRED', 'DATABASE_PASSWORD_REJECTED',
+                 'DATABASE_METADATA_PERMISSION_DENIED', 'DATABASE_TIMEOUT_UNAVAILABLE',
+                 'DATABASE_CLIENT_UNAVAILABLE', 'DATABASE_SOCKET_UNAVAILABLE',
+                 'COMMAND_TIMEOUT', 'COMMAND_WARNINGS',
+                 'COMMAND_OUTPUT_LIMIT', 'COMMAND_ERROR_OUTPUT_LIMIT')
+        for code in codes:
+            with self.subTest(code=code):
+                self.db_error = RuntimeError('PRIVATE_RUNNER_MESSAGE')
+                self.db_error.reason_code = code
+                self.stop(code)
+
+    def test_config_query_rejects_untrusted_or_generic_runner_reason_codes(self):
+        for reason in ('PRIVATE_REASON_URI_AND_SECRET', 'COMMAND_FAILED', 'UNREVIEWED_REASON'):
+            with self.subTest(reason_kind='untrusted'):
+                self.db_error = RuntimeError('PRIVATE_RUNNER_MESSAGE')
+                self.db_error.reason_code = reason
+                self.stop('DATABASE_CONFIG_QUERY_FAILED')
+
+    def test_malformed_config_json_is_sanitized(self):
+        self.db_result = b'{"PRIVATE_METADATA"'
+        self.stop('JSON_INVALID')
+
+    def test_untrusted_config_metadata_shapes_and_paths_are_rejected(self):
+        cases = [None, {'data_directory': '/data'},
+                 {'data_directory': 'PRIVATE_RELATIVE', 'files': []},
+                 {'data_directory': '/var/lib/postgresql/data', 'files': 'PRIVATE_STRING'},
+                 {'data_directory': '/var/lib/postgresql/data', 'files': ['/etc/../PRIVATE_ESCAPE']},
+                 {'data_directory': '/var/lib/postgresql/data', 'files': ['/etc/PRIVATE\x00_FILE']},
+                 {'data_directory': '/var/lib/postgresql/data', 'files': ['/etc/config'] * 257}]
+        for metadata in cases:
+            with self.subTest(metadata_kind=type(metadata).__name__):
+                self.db_metadata = metadata
+                self.stop('DATABASE_CONFIG_METADATA_INVALID')
+
+    def test_unmounted_database_data_directory_is_rejected(self):
+        self.db_metadata['data_directory'] = '/unmounted/PRIVATE_DATA'
+        self.stop('DATABASE_DATA_MOUNT_UNVERIFIED')
+
+    def test_ambiguous_persistent_pgdata_mapping_is_rejected(self):
+        parent = self.base / 'second-db-root'
+        parent.mkdir()
+        mapped = [*d.mounts(self.items['db']),
+                  (parent, PurePosixPath('/var/lib/postgresql'), True)]
+        with self.assertRaisesRegex(d.Stop, '^DATABASE_DATA_MOUNT_UNVERIFIED$'):
+            d.database_config_files(self.run, self.items['db'], mapped)
+
+    def test_config_under_pgdata_is_never_promoted_to_file_archive(self):
+        self.db_metadata['files'].append('/var/lib/postgresql/data/pg_hba.conf')
+        files = d.database_config_files(self.run, self.items['db'], d.mounts(self.items['db']))
+        self.assertEqual(files, {PurePosixPath('/etc/postgresql/postgresql.conf')})
+
+    def test_storage_parent_cannot_include_raw_pgdata(self):
+        self.items['storage']['Mounts'][0]['Source'] = str(self.base)
+        self.stop('DATABASE_FILES_CAPTURE_FORBIDDEN')
+
+    def test_release_root_cannot_be_archived_wholesale(self):
+        self.items['storage']['Mounts'][0]['Source'] = str(self.release)
+        self.stop('RELEASE_ROOT_CAPTURE_FORBIDDEN')
+
+    def test_symlink_source_fails(self):
+        alias = self.base / 'storage-alias'
+        alias.symlink_to(self.release / 'storage', target_is_directory=True)
+        self.items['storage']['Mounts'][0]['Source'] = str(alias)
+        self.stop('SOURCE_PATH_SYMLINK')
+
+    def test_local_volume_is_supported(self):
+        self.items['storage']['Mounts'][0].update(Type='volume', Driver='local')
+        layout = d.discover(self.run)
+        self.assertIn(self.release / 'storage', layout['roots'])
+
+    def test_remote_volume_driver_is_rejected(self):
+        self.items['storage']['Mounts'][0].update(Type='volume', Driver='unknown')
+        self.stop('MOUNT_TYPE_UNSUPPORTED')
+
+    def test_invalid_uri_never_leaks_private_values(self):
+        self.env('rest', PGRST_DB_URI='postgres://u:PRIVATE@db/db?host=outside')
+        self.stop('ROUTE_URI_UNSUPPORTED')
+
+    def test_docker_failure_does_not_echo_command_or_stderr(self):
+        self.run.side_effect = RuntimeError('PRIVATE_ERROR_BODY')
+        self.stop('DOCKER_INSPECT_FAILED')
+
+    def test_other_stopped_database_mount_is_protected_not_archived(self):
+        data = self.base / 'business-os-db-data'
+        data.mkdir()
+        self.other.append({'Id': 'a' * 64, 'State': {'Status': 'exited'},
+            'Config': {'Env': ['PRIVATE_OTHER_DB_SECRET']},
+            'Mounts': [{'Type': 'bind', 'Source': str(data), 'Destination': '/pgdata'}]})
+        layout = d.discover(self.run)
+        self.assertIn(data, layout['protected'])
+        self.assertNotIn(data, layout['roots'])
+        self.assertEqual(len(layout['containers']), 6)
+        self.assertNotIn('PRIVATE_OTHER_DB_SECRET', str(self.run.call_args_list))
+        self.run.assert_any_call(['ps', '-aq', '--no-trunc'], timeout=30, limit=d.MAX_CONTAINERS * 65 + 1)
+
+    def test_missing_stopped_mount_path_remains_protected(self):
+        missing = self.base / 'removed-volume' / 'data'
+        self.other.append({'Id': 'a' * 64, 'Mounts': [
+            {'Type': 'volume', 'Source': str(missing), 'Destination': '/data'}]})
+        self.assertIn(missing, d.discover(self.run)['protected'])
+
+    def test_other_container_root_mount_protects_every_destination(self):
+        self.other.append({'Id': 'a' * 64, 'Mounts': [
+            {'Type': 'bind', 'Source': '/', 'Destination': '/host'}]})
+        self.assertIn(Path('/'), d.discover(self.run)['protected'])
+
+    def test_all_container_inventory_rejects_malformed_ids(self):
+        self.ps_result = b'PRIVATE_NOT_AN_ID\n'
+        self.stop('MOUNT_CONTAINER_ID_UNSUPPORTED')
+
+    def test_all_container_inventory_is_bounded(self):
+        self.ps_result = ('\n'.join(f'{n:064x}' for n in range(1, 514)) + '\n').encode()
+        self.stop('MOUNT_INVENTORY_LIMIT')
+
+    def test_all_container_mount_inventory_rejects_missing_lines(self):
+        self.mount_result = b'[]\n'
+        self.stop('MOUNT_INVENTORY_LAYOUT_UNSUPPORTED')
+
+    def test_other_container_mount_symlink_is_rejected(self):
+        alias = self.base / 'dangling-alias'
+        alias.symlink_to(self.base / 'missing')
+        self.other.append({'Id': 'a' * 64, 'Mounts': [
+            {'Type': 'bind', 'Source': str(alias), 'Destination': '/data'}]})
+        self.stop('MOUNT_INVENTORY_PATH_UNSAFE')
+
+    def test_unknown_mount_format_is_rejected(self):
+        self.other.append({'Id': 'a' * 64, 'Mounts': [
+            {'Type': 'unknown', 'Source': str(self.base), 'Destination': '/data'}]})
+        self.stop('MOUNT_INVENTORY_LAYOUT_UNSUPPORTED')
+
+
+if __name__ == '__main__':
+    unittest.main()
