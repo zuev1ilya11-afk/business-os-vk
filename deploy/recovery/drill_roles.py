@@ -14,6 +14,19 @@ GRANT = re.compile(r'^GRANT\s+(' + IDENT + r')\s+TO\s+(' + IDENT +
                    r'(?:,\s*(?:ADMIN|INHERIT|SET)\s+(?:TRUE|FALSE))*))?'
                    r'\s+GRANTED\s+BY\s+(' + IDENT + r');$')
 CREATE = re.compile(r'^CREATE\s+ROLE\s+(' + IDENT + r');$')
+# pg_dumpall also emits parameter ACLs. They do not describe role membership
+# and must not be used to infer the bootstrap grantor. Recognize only their
+# canonical dump form; restore still executes the original bytes unchanged.
+PARAM_PRIVILEGES = (r'(?:ALL(?:\s+PRIVILEGES)?|SET(?:,\s*ALTER\s+SYSTEM)?'
+                    r'|ALTER\s+SYSTEM(?:,\s*SET)?)')
+PARAM_GRANTEE = r'(?:' + IDENT + r'|PUBLIC)'
+PARAM_GRANT = re.compile(r'^GRANT\s+' + PARAM_PRIVILEGES +
+                         r'\s+ON\s+PARAMETER\s+' + IDENT +
+                         r'\s+TO\s+' + PARAM_GRANTEE +
+                         r'(?:\s+WITH\s+GRANT\s+OPTION)?;$')
+PARAM_REVOKE = re.compile(r'^REVOKE\s+(?:GRANT\s+OPTION\s+FOR\s+)?' +
+                          PARAM_PRIVILEGES + r'\s+ON\s+PARAMETER\s+' + IDENT +
+                          r'\s+FROM\s+' + PARAM_GRANTEE + r';$')
 
 
 class Stop(Exception):
@@ -95,10 +108,14 @@ def source_bootstrap(raw):
     for sql, start, end in statements(raw):
         first = sql.split(None, 1)[0]
         if first == 'GRANT':
+            if PARAM_GRANT.fullmatch(sql):
+                continue
             match = GRANT.fullmatch(sql)
             require(match is not None)
             grantors.add(identifier(match.group(4)))
         elif first == 'REVOKE':
+            if PARAM_REVOKE.fullmatch(sql):
+                continue
             # Tablespace ACL rewrites or noncanonical input require a separately
             # recorded bootstrap identity; do not infer through unknown grants.
             raise Stop()

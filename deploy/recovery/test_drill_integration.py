@@ -53,7 +53,8 @@ class FixtureObservedRunner:
             # synthetic bundle. Production DockerRunner never prints stderr.
             # Keep the first restore failure before cleanup overwrites it.
             if (args[:1] == ['exec'] and args[-1:] in
-                    (['/bos/input/globals.sql'], ['/bos/input/database.dump'])):
+                    (['/bos/input/globals.sql'], ['/bos/input/globals-restore.sql'],
+                     ['/bos/input/database.dump'])):
                 raw = getattr(self.delegate, 'last_error', b'')
                 if isinstance(raw, bytes):
                     self.restore_errors.append(raw[:8192].decode(errors='replace'))
@@ -109,7 +110,11 @@ SQL = """
 CREATE ROLE app_owner NOLOGIN;
 CREATE ROLE fixture_team NOLOGIN;
 CREATE ROLE fixture_reader LOGIN PASSWORD 'SYNTHETIC_ONLY_NOT_A_REAL_SECRET';
+CREATE ROLE supabase_realtime_admin LOGIN;
 GRANT fixture_team TO fixture_reader;
+GRANT SET ON PARAMETER log_min_messages TO supabase_realtime_admin;
+GRANT ALTER SYSTEM ON PARAMETER log_min_messages TO fixture_team WITH GRANT OPTION;
+REVOKE ALTER SYSTEM ON PARAMETER log_min_messages FROM postgres;
 ALTER DATABASE bos_restore_check OWNER TO app_owner;
 SET ROLE app_owner;
 CREATE TABLE public.orders (
@@ -155,10 +160,20 @@ SNAPSHOT_SQL = """SELECT json_build_object(
  'storage',(SELECT json_agg(t ORDER BY id) FROM storage.objects t),
  'roles',(SELECT json_agg(t ORDER BY rolname) FROM
   (SELECT rolname,rolsuper,rolcanlogin,rolpassword FROM pg_authid
-   WHERE rolname IN ('app_owner','fixture_team','fixture_reader')) t),
+   WHERE rolname IN ('app_owner','fixture_team','fixture_reader','supabase_realtime_admin')) t),
+ 'parameter_acl',(SELECT json_agg(t ORDER BY parname) FROM
+  (SELECT parname,paracl::text FROM pg_parameter_acl) t),
  'acl',(SELECT relacl::text FROM pg_class WHERE oid='public.orders'::regclass),
  'owner',(SELECT pg_get_userbyid(datdba) FROM pg_database
   WHERE datname=current_database()))::text;"""
+
+PARAMETER_ACL_SQL = """SELECT coalesce(json_agg(t ORDER BY
+ parname,grantee,privilege_type,grantor)::text,'[]') FROM (
+ SELECT p.parname,pg_get_userbyid(a.grantor) AS grantor,
+  CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE pg_get_userbyid(a.grantee) END AS grantee,
+  a.privilege_type,a.is_grantable
+ FROM pg_parameter_acl p CROSS JOIN LATERAL aclexplode(p.paracl) a
+ WHERE p.parname='log_min_messages') t;"""
 
 
 def write_json(path, value):
@@ -230,7 +245,10 @@ class RealRestoreDrill(unittest.TestCase):
             time.sleep(0.25)
         else:
             raise RuntimeError('Synthetic PostgreSQL did not become ready')
+        if cls.sql(cls.source, PARAMETER_ACL_SQL) != '[]':
+            raise RuntimeError('Fresh fixture unexpectedly has parameter grants')
         cls.sql(cls.source, SQL)
+        cls.parameter_acl = cls.sql(cls.source, PARAMETER_ACL_SQL)
         cls.source_before = cls.snapshot()
         # Give the archived image a unique config without executing a build or
         # changing the source database image. Remove it before the drill, so a
@@ -255,6 +273,15 @@ class RealRestoreDrill(unittest.TestCase):
         cls.bundle.mkdir(mode=0o700)
         cls.save_database_file('pg_dump', ['-Fc', '-d', discovery.DATABASE], 'database.dump')
         cls.save_database_file('pg_dumpall', ['--globals-only', '-l', discovery.DATABASE], 'globals.sql')
+        globals_sql = (cls.bundle / 'globals.sql').read_bytes()
+        for statement in (
+                b'GRANT SET ON PARAMETER log_min_messages TO supabase_realtime_admin;',
+                b'GRANT ALTER SYSTEM ON PARAMETER log_min_messages TO fixture_team WITH GRANT OPTION;'):
+            if statement not in globals_sql:
+                raise RuntimeError('Real globals dump omitted a parameter grant fixture')
+        if not re.search(rb'^REVOKE [^\n]+ ON PARAMETER log_min_messages FROM postgres;',
+                         globals_sql, re.MULTILINE):
+            raise RuntimeError('Real globals dump omitted the parameter revoke fixture')
         metadata = json.loads(cls.sql(cls.source, backup.META_SQL))
         cls.docker.save(cls.bundle / 'images.tar', [cls.image])
         cls.docker.run(['image', 'rm', cls.image['Id']])
@@ -400,6 +427,18 @@ class RealRestoreDrill(unittest.TestCase):
         self.assertEqual(self.target_sql(verifier, 'SELECT count(*) FROM public.orders;', user='fixture_reader'), '2')
         self.assertEqual(self.target_sql(verifier, "SELECT pg_get_userbyid(datdba) FROM pg_database WHERE datname=current_database();"), 'app_owner')
         self.assertEqual(self.target_sql(verifier, "SELECT pg_get_userbyid(relowner) || ':' || relrowsecurity::text FROM pg_class WHERE oid='public.orders'::regclass;"), 'app_owner:true')
+        self.assertEqual(self.target_sql(verifier, PARAMETER_ACL_SQL), self.parameter_acl)
+        self.assertEqual(self.target_sql(verifier,
+                         "SELECT has_parameter_privilege('supabase_realtime_admin','log_min_messages','SET');"), 't')
+        self.assertEqual(self.target_sql(verifier,
+                         "SELECT has_parameter_privilege('supabase_realtime_admin','log_min_messages','ALTER SYSTEM');"), 'f')
+        self.assertEqual(self.target_sql(verifier,
+                         "SELECT has_parameter_privilege('fixture_team','log_min_messages','ALTER SYSTEM WITH GRANT OPTION');"), 't')
+        self.assertEqual(self.target_sql(verifier,
+                         "SET log_min_messages='debug1'; SHOW log_min_messages;",
+                         user='supabase_realtime_admin'), 'debug1')
+        with self.assertRaises(RuntimeError):
+            self.target_sql(verifier, "SET log_min_messages='debug1';", user='fixture_reader')
         with self.assertRaises(RuntimeError):
             self.target_sql(verifier, "UPDATE public.orders SET status='completed' WHERE id=1;")
         with self.assertRaises(RuntimeError):
@@ -409,6 +448,7 @@ class RealRestoreDrill(unittest.TestCase):
         print('\nActual Docker restore: ' + json.dumps({
             'store': os.environ.get('BOS_RECOVERY_DOCKER_STORE'),
             'scope': report['scope'], 'roles_acl_rls_guard': 'VERIFIED_SYNTHETIC',
+            'parameter_grants_revokes_options': 'VERIFIED_SYNTHETIC',
             'source_unchanged': True, 'network': 'none', 'full_application': 'NOT_RUN',
             'archive_image_id_absent_before_load': True,
         }, sort_keys=True), flush=True)

@@ -37,6 +37,64 @@ class BootstrapInferenceTests(unittest.TestCase):
                b'GRANT team TO member WITH ADMIN TRUE, INHERIT FALSE, SET TRUE GRANTED BY "postgres";\n')
         self.assertEqual('postgres', drill_roles.source_bootstrap(raw)['role'])
 
+    def test_supabase_parameter_acl_is_preserved_and_not_a_membership(self):
+        parameter_acl = (b'GRANT SET ON PARAMETER log_min_messages '
+                         b'TO supabase_realtime_admin;\n')
+        memberships = (b'GRANT anon TO postgres WITH ADMIN OPTION, INHERIT TRUE '
+                       b'GRANTED BY supabase_admin;\n')
+        raw = self.example('supabase_admin') + memberships + parameter_acl
+        original = raw
+        result = drill_roles.source_bootstrap(raw)
+        a, b = result['create_span']
+        self.assertEqual('supabase_admin', result['role'])
+        self.assertEqual(b'CREATE ROLE supabase_admin;', raw[a:b])
+        self.assertEqual(original, raw)
+        self.assertIn(parameter_acl, raw[:a] + raw[b:])
+        self.assertIn(memberships, raw[:a] + raw[b:])
+
+    def test_canonical_parameter_acl_options_and_quoted_identifiers(self):
+        acls = [
+            b'REVOKE ALL ON PARAMETER log_min_messages FROM PUBLIC;',
+            b'GRANT SET, ALTER SYSTEM ON PARAMETER log_min_messages TO member;',
+            b'GRANT ALTER SYSTEM, SET ON PARAMETER log_min_messages TO member;',
+            b'GRANT ALL PRIVILEGES ON PARAMETER log_min_messages TO member WITH GRANT OPTION;',
+            b'REVOKE GRANT OPTION FOR ALTER SYSTEM ON PARAMETER log_min_messages FROM member;',
+            b'GRANT SET ON PARAMETER "app.test" TO "member ";',
+            b'GRANT SET ON PARAMETER "GRANT x TO y GRANTED BY fake;" TO member;',
+        ]
+        for acl in acls:
+            with self.subTest(acl=acl):
+                raw = self.example() + acl
+                result = drill_roles.source_bootstrap(raw)
+                a, b = result['create_span']
+                self.assertEqual('postgres', result['role'])
+                self.assertIn(acl, raw[:a] + raw[b:])
+
+    def test_parameter_acls_do_not_supply_missing_or_ambiguous_bootstrap(self):
+        acl = b'GRANT SET ON PARAMETER log_min_messages TO member;\n'
+        bad = [b'CREATE ROLE postgres;\n' + acl,
+               self.example() + acl + b'GRANT team TO member GRANTED BY another;\n']
+        for raw in bad:
+            with self.subTest(raw=raw), self.assertRaises(drill_roles.Stop):
+                drill_roles.source_bootstrap(raw)
+
+    def test_unknown_or_malformed_parameter_acls_still_fail_closed(self):
+        bad = [
+            b'GRANT EXECUTE ON PARAMETER log_min_messages TO member;',
+            b'GRANT SET ON PARAMETER TO member;',
+            b'GRANT SET ON PARAMETER log_min_messages TO;',
+            b'GRANT SET ON PARAMETER log_min_messages TO member WITH ADMIN OPTION;',
+            b'GRANT SET ON PARAMETER log_min_messages TO member trailing;',
+            b'GRANT SET, SET ON PARAMETER log_min_messages TO member;',
+            b'REVOKE SET ON PARAMETER log_min_messages TO member;',
+            b'REVOKE SET ON PARAMETER log_min_messages FROM;',
+            b'REVOKE ADMIN OPTION FOR SET ON PARAMETER log_min_messages FROM member;',
+            b'GRANT SET ON PARAMETERS log_min_messages TO member;',
+        ]
+        for acl in bad:
+            with self.subTest(acl=acl), self.assertRaises(drill_roles.Stop):
+                drill_roles.source_bootstrap(self.example() + acl)
+
     def test_ambiguous_missing_and_unknown_grants_fail_closed(self):
         bad = [b'CREATE ROLE postgres;',
                self.example() + b'GRANT team TO member GRANTED BY another;\n',

@@ -55,16 +55,16 @@
     "drill_db.py": "97749f47dec6cf336b407d7cfc57e9a3616c42ede607cd634ea7a3d70de41668",
     "drill_files.py": "bf1d458d7558c47f2181dd2760bc779030c3a5059c8dc177975d167ee3916134",
     "build_drill.py": "5f9feaa13ca12ec0be89cbb8e2b54fa00a2693d12691aef62f2f13f81b581e0b",
-    "restore.ps1": "9a842c6735893fa09659134fc80c789bdd9191c1a4ac050991c4c9a505ca5dd6",
+    "restore.ps1": "eb6a9833b43a0f399a14b28273b2d6373c8e6be99c443a2f37f1ef2c3e017cda",
     "restore.cmd": "940b2c44c84db65d71498085e6c4468b4e215737dd1adb35915d1ae7159e7969",
-    "bos-restore.pyz": "8f92e9dbe556355818fc4e76f536e1e8912aab12fde597cb782a28dfc803f587",
+    "bos-restore.pyz": "da1285352bfd475ba3b931ff1480ab3a0c0f8f2f029a7f8f7b7a4d4b689c0dba",
     "test_drill.py": "f960942a872466a452f72a1594bee4952f6421ffaf907f07673c6058c26959b4",
     "test_drill_db.py": "8a24e349a46ddbd344d1d8db2524e5d7de3353c98a13866c23f89ad0cfc5b53b",
     "test_drill_files.py": "f518e92ea51fd1efc7ee9dc535897d1dc691ac381a533929680ee4d718b2e08d",
-    "test_drill_integration.py": "8547b5373611cb1407dbb50098f726ea4e73ccb8f870a58f9c0a916e5798fb74",
+    "test_drill_integration.py": "ba07f691ca8e1536024434e059befedae50793431e9514cf1dceccc82241fdf2",
     "test_launcher.ps1": "985aa7a33604aea18aecfe46d8535e7127c6a088f16b3b40c09c90bf2bdd0a51",
-    "drill_roles.py": "35ce460b3f45fcab4b853b59d9db40097d50e7ef89ebb7f11bd01bf951e458d9",
-    "test_drill_roles.py": "de42fca397e5f0e369139d5e5b8a9f4f42654fe65887aec4da8c2b6b23c6092d",
+    "drill_roles.py": "9bc3d2b8d5126057bbcf8ab643ecdad14e25b2e1bdaa0c362ac2bdcc7f3eb370",
+    "test_drill_roles.py": "3c77c0a91c3c3f1d0d207830b14eb5fe512f8c78643a444f04f60c043c4a09cd",
     "test_drill_windows.py": "1330dd7edfe7051883ad9e0504aac59a6dcda8bac63d867d1ff7ef74e728f562"
   },
   "previous_full_verification": {
@@ -109,12 +109,12 @@
   },
   "restore_drill": {
     "status": "LOCAL_UNIT_VERIFIED_CI_REQUIRED",
-    "unit_total": 185,
-    "new_tests": 66,
+    "unit_total": 189,
+    "new_tests": 70,
     "real_docker_restore": "CI_REQUIRED_BOTH_STORES",
     "windows_launcher": "CI_REQUIRED_POWERSHELL_5_1",
     "operator_docker_version": "29.9.2",
-    "operator_restore": "STOPPED_BEFORE_RESTORE_BUNDLE_CHANGED_WINDOWS_OPERATOR_SCREENSHOT",
+    "operator_restore": "STOPPED_BEFORE_RESTORE_PARAMETER_ACL_PARSER_OPERATOR_SCREENSHOT",
     "scope": "DATABASE_GLOBALS_AND_FILE_BYTES",
     "application": "NOT_RUN",
     "storage_relationships": "NOT_VERIFIED",
@@ -125,11 +125,14 @@
       "run": 43708878468,
       "result": "ISOLATION_AND_MISSING_IMAGE_LOAD_PASSED; globals failed on different bootstrap identity; Windows harness normalized exit code. Corrected pending exact CI."
     },
-    "windows_bundle_validation": "FIXED_CROSS_API_CTIME_COMPARISON; 7 native Windows regressions awaiting exact CI with installed and portable Python",
+    "windows_bundle_validation": "7 native Windows tests passed installed and portable Python at commit 6cdbec04476d9f235a2677f0ecbc48c76cd5043e; operator v2 progressed past file verification to bootstrap parsing",
     "previous_full_success": {
-      "commit": "848246948f29e44ee76fdc4613e13d22a795aedc",
-      "run": 43709926098,
-      "note": "Linux actual restore and Windows launcher passed; native Windows bundle metadata was not covered."
-    }
+      "commit": "6cdbec04476d9f235a2677f0ecbc48c76cd5043e",
+      "run": 43711541316,
+      "note": "All four recovery jobs passed; Windows native file validation covered installed and portable Python."
+    },
+    "parameter_acl_fix": "Recognize canonical parameter grants/revokes separately from memberships; preserve SQL bytes; exact operator GRANT SET log_min_messages covered. Native PostgreSQL ACL/grant-option/revoke behavior awaits exact CI.",
+    "local_discovery_ran": 196,
+    "local_discovery_skipped": 10
   }
 }
