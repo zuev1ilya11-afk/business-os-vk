@@ -8,6 +8,7 @@ import build_app_login_diagnostic as login_build
 
 ROOT = Path(__file__).resolve().parent
 FILES = ('bos-flow-check.pyz', 'check-flow.ps1', 'check-flow.cmd', 'FLOW-CHECK-README.txt')
+DELIVERY = 'BOS-Flow-Check-20261116-v2.zip'
 
 
 def write_zip(path, items, compression=zipfile.ZIP_STORED):
@@ -24,6 +25,7 @@ def build():
     package = ROOT / 'bos-flow-check.pyz'
     items = {name: (ROOT / name).read_bytes() for name in login_build.MODULES}
     items['app_flow_check.py'] = (ROOT / 'app_flow_check.py').read_bytes()
+    items['app_plan.py'] = (ROOT / 'app_plan.py').read_bytes()
     items['__main__.py'] = b'import app_flow_check\nraise SystemExit(app_flow_check.main())\n'
     write_zip(package, items)
     digest = hashlib.sha256(package.read_bytes()).hexdigest()
@@ -39,7 +41,7 @@ def build():
         Stop-Bos 'FLOW_PACKAGE_HASH_MISMATCH'
     }
     $python = Get-PortablePython
-    & $python.Executable '-I' '-X' 'utf8' $packagePath '--package-dir' $PSScriptRoot
+    & $python.Executable '-I' '-X' 'utf8' $packagePath '--package-dir' $PSScriptRoot '--resume-latest'
     exit $LASTEXITCODE
 } catch {
     $code = $_.Exception.Message
@@ -49,7 +51,7 @@ def build():
 }
 '''
     (ROOT / 'check-flow.ps1').write_text(prefix + tail, encoding='utf-8', newline='\n')
-    write_zip(ROOT / 'BOS-Flow-Check-20261116.zip',
+    write_zip(ROOT / DELIVERY,
               {name: (ROOT / name).read_bytes() for name in FILES}, zipfile.ZIP_DEFLATED)
     return digest
 

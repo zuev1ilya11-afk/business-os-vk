@@ -1,5 +1,8 @@
 import io
+import hashlib
 import json
+from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import patch
 import zipfile
@@ -7,7 +10,23 @@ import zipfile
 import app_cli
 import app_flow_check as flow
 import build_app_flow_check as build
-from test_app_login_diagnostic import Runner, LAUNCH, ORIGIN
+from test_app_login_diagnostic import Runner as LoginRunner, LAUNCH, ORIGIN
+
+PUBLIC = 'https://homemaster.qd.je'
+
+
+class Runner(LoginRunner):
+    def __init__(self):
+        super().__init__()
+        self.gateway = {'version': 1, 'internal': 'http://127.0.0.1:9000', 'public': PUBLIC,
+                        'legacy': '', 'gas': 'http://127.0.0.1:18080/__bos_blocked/gas',
+                        'workerKey': 'private-worker-secret-not-exported'}
+
+    def __call__(self, args, **kwargs):
+        if args == ['exec', '5'*64, 'cat', '/bos-main/bos-report-env.json']:
+            self.calls.append(args)
+            return json.dumps(self.gateway).encode()
+        return super().__call__(args, **kwargs)
 
 
 def evidence():
@@ -57,11 +76,12 @@ class Server:
         if action == 'addEmployee':
             assert role == 'owner'
             ident = str(len(self.staff) + 100)
-            self.staff[ident] = {'id': ident, 'role': body['role']}
+            self.staff[ident] = {'id': ident, 'role': body['role'], 'full_name': body['full_name'], 'is_active': True}
             assert body['full_name'].startswith('BOS-CHECK-')
             return response({'ok': True, 'user': self.staff[ident]})
         if action == 'bootstrap':
             return response({'ok': True, 'user': {'role': role, 'full_name': 'PRIVATE_OWNER'},
+                             'users': list(self.staff.values()),
                              'orders': self.orders + [{'id': '50', 'client': 'PRIVATE_CLIENT'}]})
         if action == 'createOrder':
             assert role == 'dispatcher'
@@ -81,9 +101,11 @@ class Server:
             assert role == 'master'
             path = '/storage/v1/object/sign/business-os-vk-files/orders/777/' + body['upload_token'] + '/' + body['file_kind'] + '.png?token=synthetic.signature'
             self.files[path] = flow.base64.b64decode(body['file_data'])
-            return response({'ok': True, 'url': 'http://127.0.0.1:9000' + path})
+            return response({'ok': True, 'url': PUBLIC + path})
         if action == 'finalizeMasterReport':
             assert role == 'master'
+            assert body['act_url'].startswith(PUBLIC + '/storage/')
+            assert all(u.startswith(PUBLIC + '/storage/') for u in body['photo_urls'])
             if self.orders[0].get('report_upload_token') != body['upload_token']:
                 self.revision += 1
                 self.orders[0].update(report_upload_token=body['upload_token'], report_uploaded_at=str(self.revision),
@@ -120,6 +142,108 @@ class FlowTests(unittest.TestCase):
     def checker(self, runner=None, server=None):
         return flow.Checker(runner or Runner(), LAUNCH, evidence(), server or Server(), progress=lambda _: None)
 
+    def interrupted(self):
+        server = Server()
+        def old_checker_mismatch(*args):
+            result = server(*args)
+            if json.loads(args[4] or b'{}').get('action') == 'uploadReportFile':
+                return 200, {}, b'{"ok":true,"url":"https://not-the-configured-origin.invalid/"}'
+            return result
+        checker = self.checker(server=old_checker_mismatch)
+        with self.assertRaisesRegex(app_cli.Stop, 'FLOW_STORAGE_URL_INVALID'):
+            checker.run('private-owner', 'private-password')
+        checker.close()
+        prior = dict(checker.report, diagnostic='LIVE_SYNTHETIC_FLOW',
+                     run_id=LAUNCH['run_id'], source_manifest_sha256=LAUNCH['source_manifest_sha256'],
+                     reason='FLOW_STORAGE_URL_INVALID', failed_step='UPLOAD_ACT_1')
+        server.calls.clear()
+        return server, prior
+
+    def test_resume_reuses_live_staff_and_started_order(self):
+        server, prior = self.interrupted()
+        checker = self.checker(server=server)
+        checker.run('private-owner', 'private-password', resume=prior)
+        checker.close()
+        actions = [body.get('action') for _, body in server.calls]
+        for mutation in ('addEmployee', 'createOrder', 'updateOrder', 'setStage',
+                         'recordContactAttempt', 'recordContactResult', 'setAgreementSchedule'):
+            self.assertNotIn(mutation, actions)
+        self.assertTrue(checker.report['reused_existing_records'])
+        self.assertEqual(checker.report['synthetic_order_id'], '777')
+        self.assertEqual(len(server.staff), 3)
+        self.assertEqual(len(server.orders), 1)
+        self.assertEqual(checker.report['status'], 'PARTIAL_EXTERNAL_ARCHIVE_DISABLED')
+
+    def test_resume_rejects_changed_staff_before_any_upload(self):
+        server, prior = self.interrupted()
+        server.staff['102']['full_name'] = 'Someone else'
+        checker = self.checker(server=server)
+        with self.assertRaisesRegex(app_cli.Stop, 'FLOW_RESUME_STAFF_CHANGED'):
+            checker.run('private-owner', 'private-password', resume=prior)
+        self.assertFalse(any(body.get('action') == 'uploadReportFile' for _, body in server.calls))
+
+    def test_resume_rejects_changed_order_before_any_upload(self):
+        for key, value in (('client', 'REAL_CLIENT'), ('status', 'Выполнена'),
+                           ('amount', 900), ('report_review_status', 'pending')):
+            with self.subTest(key=key):
+                server, prior = self.interrupted()
+                server.orders[0][key] = value
+                checker = self.checker(server=server)
+                with self.assertRaisesRegex(app_cli.Stop, 'FLOW_RESUME_STATE_CHANGED'):
+                    checker.run('private-owner', 'private-password', resume=prior)
+                self.assertFalse(any(body.get('action') == 'uploadReportFile' for _, body in server.calls))
+
+    def test_resume_rejects_changed_build_before_login(self):
+        server, prior = self.interrupted()
+        prior['captured_build_file_sha256'] = 'a'*64
+        with self.assertRaisesRegex(app_cli.Stop, 'FLOW_RESUME_BUILD_CHANGED'):
+            self.checker(server=server).run('private-owner', 'private-password', resume=prior)
+        self.assertFalse(any(body.get('action') == 'login' for _, body in server.calls))
+
+    def test_resume_file_is_bound_to_same_clone_and_latest_run(self):
+        _, prior = self.interrupted()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / 'BOS-Flow-Check-20261116T094752Z-20de65df.json'
+            path.write_text(json.dumps(prior))
+            selected, name = flow.resume_input(root, LAUNCH)
+            self.assertEqual(name, path.name)
+            self.assertEqual(selected['synthetic_order_id'], '777')
+            changed = dict(prior, run_id='bos-app-' + 'f'*12)
+            path.write_text(json.dumps(changed))
+            with self.assertRaisesRegex(app_cli.Stop, 'FLOW_RESUME_CLONE_MISMATCH'):
+                flow.resume_input(root, LAUNCH)
+            path.write_text(json.dumps(prior))
+            (root / 'BOS-Flow-Check-20261116T100000Z-12345678.json').write_text(
+                json.dumps(dict(prior, status='PARTIAL_EXTERNAL_ARCHIVE_DISABLED')))
+            with self.assertRaisesRegex(app_cli.Stop, 'FLOW_RESUME_POINT_UNSUPPORTED'):
+                flow.resume_input(root, LAUNCH)
+
+    def test_gateway_external_configuration_stops_before_login(self):
+        runner, server = Runner(), Server()
+        runner.gateway['gas'] = 'https://outside.invalid/'
+        with self.assertRaisesRegex(app_cli.Stop, 'FLOW_GATEWAY_CONFIG_NOT_ISOLATED'):
+            self.checker(runner, server).run('private-owner', 'private-password')
+        self.assertFalse(any(body.get('action') == 'login' for _, body in server.calls))
+
+    def test_storage_contract_keeps_capability_but_transport_is_only_local(self):
+        token = 'flow_0123456789abcdef_1'
+        path = '/storage/v1/object/sign/business-os-vk-files/orders/777/' + token + '/act.png?token=synthetic.signature'
+        self.assertEqual(flow.storage_path(PUBLIC + path, {PUBLIC}, '777', token), path)
+        for bad in ('https://homemaster.qd.je.evil.invalid' + path,
+                    'https://user:password@homemaster.qd.je' + path,
+                    PUBLIC + path + '#fragment', PUBLIC + path.replace('/777/', '/778/'),
+                    PUBLIC + path.replace('/act.png', '/%2e%2e%2fsecret'),
+                    PUBLIC + path.replace('/act.png', '/nested/act.png')):
+            with self.subTest(url=bad), self.assertRaises(app_cli.Stop):
+                flow.storage_path(bad, {PUBLIC}, '777', token)
+        with patch.object(flow.http.client, 'HTTPConnection') as connection:
+            response = connection.return_value.getresponse.return_value
+            response.status, response.getheaders.return_value, response.read.return_value = 200, [], b'png'
+            self.assertEqual(flow.local_request(ORIGIN, 'GET', path, {}, b'')[2], b'png')
+            connection.assert_called_once_with('127.0.0.1', 45678, timeout=55)
+            self.assertEqual(connection.return_value.request.call_args.args[:2], ('GET', path))
+
     def test_native_sequence_and_scope(self):
         server = Server()
         checker = self.checker(server=server)
@@ -134,7 +258,7 @@ class FlowTests(unittest.TestCase):
         self.assertEqual(checker.tokens, {})
         encoded = json.dumps(checker.report)
         for private in ('private-owner', 'private-password', 'secret-owner', 'secret-grant',
-                        'PRIVATE_CLIENT', 'PRIVATE_OWNER', 'synthetic.signature'):
+                        'PRIVATE_CLIENT', 'PRIVATE_OWNER', 'synthetic.signature', 'private-worker-secret-not-exported'):
             self.assertNotIn(private, encoded)
         self.assertEqual(checker.report['states']['pending_2']['master_payout'], 552.5)
         self.assertTrue(checker.report['xlsx']['downloaded'])
@@ -233,9 +357,9 @@ class FlowTests(unittest.TestCase):
 
     def test_package_is_reproducible_and_contains_current_sources(self):
         first = build.build()
-        original = (build.ROOT / 'BOS-Flow-Check-20261116.zip').read_bytes()
+        original = (build.ROOT / build.DELIVERY).read_bytes()
         self.assertEqual(build.build(), first)
-        self.assertEqual((build.ROOT / 'BOS-Flow-Check-20261116.zip').read_bytes(), original)
+        self.assertEqual((build.ROOT / build.DELIVERY).read_bytes(), original)
         with zipfile.ZipFile(build.ROOT / 'bos-flow-check.pyz') as archive:
             self.assertEqual(archive.read('app_flow_check.py'), (build.ROOT / 'app_flow_check.py').read_bytes())
         with zipfile.ZipFile(io.BytesIO(original)) as archive:
@@ -243,6 +367,7 @@ class FlowTests(unittest.TestCase):
             for name in build.FILES:
                 self.assertEqual(archive.read(name), (build.ROOT / name).read_bytes())
         self.assertIn(first, (build.ROOT / 'check-flow.ps1').read_text())
+        self.assertIn("'--resume-latest'", (build.ROOT / 'check-flow.ps1').read_text())
 
 
 if __name__ == '__main__':

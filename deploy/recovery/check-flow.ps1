@@ -7,7 +7,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
-$PackageSha256 = '32bf4f2a848d68471c146060b8384e7d7f87c6bf02146b4c525ede28aeb865ee'
+$PackageSha256 = 'c5a5252fd92b569e1dd0a306c60a54b8091cc7310cb930e53569cb20a4c2aca4'
 $PythonSha256 = '4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3'
 $PythonBytes = 11133606
 function Stop-Bos([string]$Code) { throw [InvalidOperationException]::new($Code) }
@@ -113,7 +113,7 @@ try {
         Stop-Bos 'FLOW_PACKAGE_HASH_MISMATCH'
     }
     $python = Get-PortablePython
-    & $python.Executable '-I' '-X' 'utf8' $packagePath '--package-dir' $PSScriptRoot
+    & $python.Executable '-I' '-X' 'utf8' $packagePath '--package-dir' $PSScriptRoot '--resume-latest'
     exit $LASTEXITCODE
 } catch {
     $code = $_.Exception.Message

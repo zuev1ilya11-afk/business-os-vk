@@ -136,7 +136,7 @@
     "new_operator_restore_run": false
   },
   "blocked": [
-    "four real test accounts and persisted sessions",
+    "persistent sessions/refresh and browser UI across four roles; API role bootstrap verified",
     "real PostgreSQL/PostgREST grants and cross-account permissions",
     "full continuous path on restored runtime",
     "DB-storage file relationships and authorized restored files",
@@ -217,16 +217,33 @@
     "four_roles_verified": false
   },
   "flow_addon": {
-    "artifact": "deploy/recovery/BOS-Flow-Check-20261116.zip",
+    "artifact": "deploy/recovery/BOS-Flow-Check-20261116-v2.zip",
     "launch": "check-flow.cmd",
-    "new_test_staff": 3,
-    "new_test_orders": 1,
+    "new_test_staff": 0,
+    "new_test_orders": 0,
     "native_api_and_local_role_broker": true,
     "tests_scope": "HARNESS_FIXTURES_AND_EXISTING_RECOVERY_TESTS_NOT_LIVE_WINDOWS",
-    "live_result": "NOT_RUN",
+    "live_result": "V1_STOPPED_AT_CHECKER_ORIGIN_VALIDATION_V2_NOT_RUN",
     "code_or_migrations_installed": false,
     "full_acceptance": false,
-    "known_boundary": "external Drive disabled; captured attachment HTTP compatibility unverified",
-    "checks": "12 harness tests; recovery app suite 231 run, 4 skipped; finance projection assertions pending pay=0, master count=0, full count=1"
+    "known_boundary": "Drive disabled; signed URL public origin now read from verified clone config; unchanged capability mapped to local GET only",
+    "checks": "19 checker tests passed; recovery app suite 238 run, 234 passed, 4 skipped",
+    "version": 2,
+    "launch_mode": "--resume-latest"
+  },
+  "live_flow_20261116": {
+    "input": "BOS-Flow-Check-20261116T094752Z-20de65df(1).json",
+    "run_id": "bos-app-c72f9de1b663",
+    "order_id": "1954",
+    "status": "STOPPED",
+    "reason": "FLOW_STORAGE_URL_INVALID",
+    "failed_step": "UPLOAD_ACT_1",
+    "upload_http_status": 200,
+    "native_roles_bootstrap_verified": true,
+    "create_retry_assignment_contact_start_verified": true,
+    "finance_denial_master_dispatcher_verified": true,
+    "attachment_read_verified": false,
+    "report_submission_verified": false,
+    "production_changed": false
   }
 }
