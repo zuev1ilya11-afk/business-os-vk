@@ -30,6 +30,14 @@ ORIGIN = re.compile(r'http://127\.0\.0\.1:([0-9]{1,5})')
 GUARD = '/__bos_local_guard.js'
 LOGIN = '/api/proxy/password-session-api'
 EMPTY = b'{"action":"login","login":"","password":""}'
+PROBES = {
+    'portal_guard': ('GET', GUARD, None),
+    'rest_direct': ('GET', '/business_staff?select=id&limit=0', 3000),
+    'rest_via_gateway': ('GET', '/rest/v1/business_staff?select=id&limit=0', 9000),
+    'rest_rpc_schema': ('GET', '/', 3000),
+    'empty_login': ('POST', LOGIN, None),
+    'synthetic_login': ('POST', LOGIN, None),
+}
 ERROR_CODES = frozenset({'PGRST000', 'PGRST001', 'PGRST002', 'PGRST003',
     'PGRST100', 'PGRST116', 'PGRST202', 'PGRST204', 'PGRST301', 'PGRST302',
     'PGRST303', '42501', '42883', '42P01', '42703', '53300', '53400', '57014'})
@@ -166,7 +174,9 @@ def http_summary(status, headers, body):
         error_code = value.get('code')
         if isinstance(error_code, str) and error_code in ERROR_CODES:
             result['error_code'] = error_code
-        result['session_returned'] = bool(value.get('session_token'))
+        result['session_returned'] = bool(value.get('session_token')) or any(
+            str(key).lower() == 'x-bos-session' and bool(content)
+            for key, content in headers.items())
         paths = value.get('paths')
         if isinstance(paths, dict):
             result['credential_rpc_visible'] = '/rpc/bos_verify_staff_credentials' in paths
@@ -199,7 +209,19 @@ def host_request(origin, method, path, body=b''):
         connection.close()
 
 
-def measured(call):
+def request_metadata(name, origin):
+    """Only fixed probe paths and a validated loopback origin may be recorded."""
+    require(name in PROBES and isinstance(origin, str) and ORIGIN.fullmatch(origin),
+            'LOGIN_REQUEST_METADATA_INVALID')
+    require(1 <= int(ORIGIN.fullmatch(origin)[1]) <= 65535, 'LOGIN_ORIGIN_INVALID')
+    method, path, port = PROBES[name]
+    return {'method': method, 'url': (origin if port is None else 'http://127.0.0.1:' + str(port)) + path,
+            'network_scope': 'HOST_LOOPBACK' if port is None else 'ISOLATED_CONTAINER_LOOPBACK',
+            'started_at': datetime.now(timezone.utc).isoformat(timespec='milliseconds')}
+
+
+def measured(call, *, name, origin):
+    metadata = request_metadata(name, origin)
     start = time.monotonic()
     try:
         result = http_summary(*call())
@@ -207,7 +229,30 @@ def measured(call):
         result = {'error': code(error)}
     result['elapsed_ms'] = round((time.monotonic() - start) * 1000)
     result['exceeded_browser_timeout'] = result['elapsed_ms'] >= 20000
+    result['request'] = metadata
     return result
+
+
+def rejected_login(check, result, status):
+    return (check.get('http_status') == status and check.get('ok') is False
+            and check.get('login_result') == result and check.get('session_returned') is False)
+
+
+def first_failed_request(checks):
+    """Chronological failure among performed probes, not a claimed browser trace."""
+    for name, check in checks.items():
+        if name == 'portal_guard':
+            passed = check.get('recognized') is True
+        elif name == 'empty_login':
+            passed = rejected_login(check, 'EMPTY_CREDENTIALS_REJECTED', 400)
+        elif name == 'synthetic_login':
+            passed = rejected_login(check, 'INVALID_CREDENTIALS_REJECTED', 401)
+        else:
+            passed = check.get('http_status') == 200
+        if not passed:
+            return {'probe': name, **{key: check[key] for key in
+                ('request', 'http_status', 'error', 'elapsed_ms') if key in check}}
+    return None
 
 
 def diagnosis(report):
@@ -226,16 +271,16 @@ def diagnosis(report):
     attempt = checks.get('synthetic_login', {})
     if attempt.get('exceeded_browser_timeout') or attempt.get('error') in ('TIMEOUT', 'APP_DOCKER_COMMAND_TIMEOUT'):
         return 'LOGIN_PATH_TIMEOUT'
-    if attempt.get('login_result') == 'LOGIN_RATE_LIMITED':
+    if rejected_login(attempt, 'LOGIN_RATE_LIMITED', 429):
         return 'LOCAL_LOGIN_RATE_LIMITED'
-    if attempt.get('login_result') == 'INVALID_CREDENTIALS_REJECTED':
+    if rejected_login(attempt, 'INVALID_CREDENTIALS_REJECTED', 401):
         return 'INVALID_LOGIN_PATH_OK_REAL_LOGIN_AND_BOOTSTRAP_NOT_TESTED'
     return 'LOGIN_PATH_FAILED_NEEDS_REVIEW'
 
 
 def collect(runner, launch, *, host=host_request, transport=app_transport.http_call, progress=lambda x: None):
     records = discover(runner, launch)
-    report = {'format': 1, 'diagnostic': 'LIVE_LOGIN_CHECK', 'status': 'COLLECTED',
+    report = {'format': 2, 'diagnostic': 'LIVE_LOGIN_CHECK', 'status': 'COLLECTED',
         'run_id': launch['run_id'], 'source_manifest_sha256': launch['source_manifest_sha256'],
         'origin': launch['origin'], 'containers': {}, 'checks': {}, 'service_logs': {},
         'real_credentials_used': False, 'real_login_verified': False,
@@ -251,12 +296,16 @@ def collect(runner, launch, *, host=host_request, transport=app_transport.http_c
             'restart_count': item.get('RestartCount') if type(item.get('RestartCount')) is int else None}
     checks = report['checks']
     progress('LOCAL_PORTAL')
+    metadata = request_metadata('portal_guard', launch['origin'])
+    started = time.monotonic()
     try:
         status, _, data = host(launch['origin'], 'GET', GUARD)
         checks['portal_guard'] = {'http_status': status,
             'recognized': status == 200 and b'LOCAL_DRILL_EXTERNAL_BLOCKED' in data}
     except Exception as error:
         checks['portal_guard'] = {'recognized': False, 'error': code(error)}
+    checks['portal_guard'].update(request=metadata,
+        elapsed_ms=round((time.monotonic() - started) * 1000))
     env = environment(records['edge']) if 'edge' in records else {}
     report['local_configuration'] = {'supabase_url_is_local_gateway': env.get('SUPABASE_URL') == 'http://127.0.0.1:9000',
         'service_key_present': bool(env.get('SUPABASE_SERVICE_ROLE_KEY')),
@@ -271,18 +320,20 @@ def collect(runner, launch, *, host=host_request, transport=app_transport.http_c
                 ('rest_rpc_schema', 3000, '/')):
             verify_container(one(runner, ['container', 'inspect', anchor]), anchor, 'db', launch, anchor)
             checks[name] = measured(lambda port=port, path=path: transport(runner, anchor,
-                'GET', path, headers, b'', port=port, timeout=10))
+                'GET', path, headers, b'', port=port, timeout=10), name=name, origin=launch['origin'])
     if checks['portal_guard']['recognized']:
         progress('LOGIN_VALIDATION')
-        checks['empty_login'] = measured(lambda: host(launch['origin'], 'POST', LOGIN, EMPTY))
-        if checks['empty_login'].get('login_result') == 'EMPTY_CREDENTIALS_REJECTED':
+        checks['empty_login'] = measured(lambda: host(launch['origin'], 'POST', LOGIN, EMPTY),
+                                         name='empty_login', origin=launch['origin'])
+        if rejected_login(checks['empty_login'], 'EMPTY_CREDENTIALS_REJECTED', 400):
             # No real staff login or password is read or entered. Never retry:
             # this may consume one local IP counter and one random pair counter.
             progress('SYNTHETIC_LOGIN')
             payload = json.dumps({'action': 'login', 'login': 'bos_check_' + secrets.token_hex(16),
                                   'password': secrets.token_urlsafe(32)}).encode()
             report['synthetic_login_requests'] = 1
-            checks['synthetic_login'] = measured(lambda: host(launch['origin'], 'POST', LOGIN, payload))
+            checks['synthetic_login'] = measured(lambda: host(launch['origin'], 'POST', LOGIN, payload),
+                                                 name='synthetic_login', origin=launch['origin'])
     progress('SERVICE_LOGS')
     for role, item in records.items():
         try:
@@ -297,6 +348,8 @@ def collect(runner, launch, *, host=host_request, transport=app_transport.http_c
         except Exception as error:
             report['service_logs'][role] = {'error': code(error)}
     report['finding'] = diagnosis(report)
+    report['first_failed_request'] = first_failed_request(checks)
+    report['request_trace_scope'] = 'DIAGNOSTIC_PROBES_ONLY_NOT_BROWSER_HISTORY'
     return report
 
 
