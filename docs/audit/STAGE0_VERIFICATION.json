@@ -136,7 +136,6 @@
     "new_operator_restore_run": false
   },
   "blocked": [
-    "current Windows login cause and first failing request",
     "four real test accounts and persisted sessions",
     "real PostgreSQL/PostgREST grants and cross-account permissions",
     "full continuous path on restored runtime",
@@ -206,5 +205,28 @@
     "sha256": "bb91c6c668139af0fa4943cd7c0b1be50468bcdbeb11698b01bda28a57f6d4d0",
     "bytes": 63296,
     "zip_matches_sources": true
+  },
+  "live_login_20261116": {
+    "input": "BOS-Login-Diagnostic-20261116T091512Z-b46bb415.json",
+    "run_id": "bos-app-c72f9de1b663",
+    "status": "COLLECTED",
+    "running_services": 6,
+    "first_failed_request": null,
+    "isolation_verified_by_operator_tool": true,
+    "user_confirmed_successful_login": true,
+    "four_roles_verified": false
+  },
+  "flow_addon": {
+    "artifact": "deploy/recovery/BOS-Flow-Check-20261116.zip",
+    "launch": "check-flow.cmd",
+    "new_test_staff": 3,
+    "new_test_orders": 1,
+    "native_api_and_local_role_broker": true,
+    "tests_scope": "HARNESS_FIXTURES_AND_EXISTING_RECOVERY_TESTS_NOT_LIVE_WINDOWS",
+    "live_result": "NOT_RUN",
+    "code_or_migrations_installed": false,
+    "full_acceptance": false,
+    "known_boundary": "external Drive disabled; captured attachment HTTP compatibility unverified",
+    "checks": "12 harness tests; recovery app suite 231 run, 4 skipped; finance projection assertions pending pay=0, master count=0, full count=1"
   }
 }
