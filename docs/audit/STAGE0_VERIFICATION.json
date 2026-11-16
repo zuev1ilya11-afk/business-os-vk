@@ -1,0 +1,392 @@
+{
+  "date": "2026-11-16",
+  "timezone": "Europe/Moscow",
+  "status": "PARTIAL",
+  "branch": "fix/stage-0-stabilization-20261116",
+  "local_baseline": "fcdc384b1aaf19cc43993c7180ba05e154b6af34",
+  "remote_baseline": "0a62fdd4d725c39849ba2cfa157aa05ae6934acb",
+  "baseline_tree": "bf3460ff249d852aec2bbec6efc25ea349157c7d",
+  "origin_main": "80a97b374357706a5e1a1ca4f16d9bfdaaf773aa",
+  "frontend_build_before": "4f012805a30ee6b7d8ba",
+  "frontend_build_after": "be8101c7274a35aec63b",
+  "checks": {
+    "build_check": "PASS",
+    "node_server": {
+      "command": "npm run test:server",
+      "passed": 925,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "VM handlers, static checks, synthetic auth/storage, selected PGlite SQL"
+    },
+    "ui_auth_finance": {
+      "passed": 33,
+      "failed": 0
+    },
+    "ui_order_report_flow": {
+      "passed": 58,
+      "failed": 0
+    },
+    "ui_mobile": {
+      "unique_scenarios_with_passing_result": 38,
+      "initial_passed": 37,
+      "initial_failed": 1,
+      "initial_failure": "outdated received-date label assertion",
+      "recheck_passed": 17,
+      "recheck_failed": 0
+    },
+    "report_revisions": {
+      "passed": 8,
+      "failed": 0,
+      "included_in_server_total": true
+    },
+    "two_managers": {
+      "passed": 1,
+      "failed": 0,
+      "included_in_server_total": true
+    },
+    "finance_group": {
+      "passed": 147,
+      "failed": 0,
+      "included_in_server_total": true
+    },
+    "expense_sql": "PASS PGlite with ROLLBACK",
+    "push_sql": "PASS PGlite fixtures; notification queue failure does not rollback order update",
+    "recovery": {
+      "date": "2026-11-16",
+      "scope": "LOCAL_UNIT_AND_SYNTHETIC_BROWSER_CONTRACTS",
+      "production_accessed": false,
+      "windows_test_runtime_accessed": false,
+      "login_cause_confirmed": false,
+      "real_accounts_login_verified": false,
+      "unit_suite": {
+        "tests": 219,
+        "passed": 215,
+        "skipped": 4
+      },
+      "focused_diagnostic_regression": {
+        "tests": 18,
+        "passed": 18
+      },
+      "browser_contract": {
+        "tests": 3,
+        "passed": 3,
+        "backend": "SYNTHETIC",
+        "browser": "pinned_chromium_headless_shell_1193"
+      },
+      "prior_browser_attempt": {
+        "browser": "system_chromium",
+        "passed_syntax": 1,
+        "launch_failures": 2,
+        "reason": "PROCESS_SINGLETON_SOCKET_NOT_PERMITTED",
+        "app_requests": 0
+      },
+      "diagnostic_zip": {
+        "filename": "BOS-Login-Check-20261116.zip",
+        "bytes": 63296,
+        "sha256": "bb91c6c668139af0fa4943cd7c0b1be50468bcdbeb11698b01bda28a57f6d4d0"
+      },
+      "migrations_applied": []
+    },
+    "independent_review": "token reuse key flaw corrected; legacy preflight and actual service_role update added"
+  },
+  "isolation": {
+    "ui_base_url": "http://127.0.0.1:4173",
+    "browser_and_context_proxy": "http://127.0.0.1:9; bypass loopback only",
+    "BOS_TEST_OFFLINE": true,
+    "database": "disposable PGlite",
+    "external_provider_calls": "intercepted fixtures",
+    "production_writes": false,
+    "real_messages_sent": false
+  },
+  "migrations": {
+    "prepared": [
+      "supabase/migrations/20261116010000_preserve_report_revisions.sql"
+    ],
+    "applied_to": "disposable PGlite fixtures only",
+    "windows_applied": false,
+    "production_applied": false,
+    "historical_data_backfill": false
+  },
+  "production_readonly_probe": {
+    "checked_at_utc": "2026-11-15T21:22:29.851189+00:00",
+    "method": "GET",
+    "url": "https://homemaster.qd.je/build-version.js",
+    "read_only": true,
+    "http_status": 200,
+    "content_type": "text/html",
+    "bytes": 195,
+    "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+    "classification": "SITE_UNAVAILABLE_PLACEHOLDER"
+  },
+  "restore": {
+    "source_report": "BOS-Restore-4ecb94f875d8.json",
+    "source": "prior operator execution; JSON read this session",
+    "status": "DRILL_COMPLETED",
+    "scope": "DATABASE_GLOBALS_AND_FILE_BYTES",
+    "orders": 311,
+    "staff": 19,
+    "storage_objects": 1060,
+    "files": 1437,
+    "bytes": 460235053,
+    "elapsed_seconds": 79.17,
+    "storage_relationships": "NOT_VERIFIED",
+    "database_storage_consistency": "NOT_PROVEN",
+    "storage_extended_attributes": "NOT_CAPTURED",
+    "disaster_recovery_ready": false,
+    "new_operator_restore_run": false
+  },
+  "blocked": [
+    "persistent sessions/refresh and browser UI across four roles; API role bootstrap verified",
+    "real PostgreSQL/PostgREST grants and cross-account permissions",
+    "full continuous path on restored runtime",
+    "DB-storage file relationships and authorized restored files",
+    "history UI and renewal of old report signed links",
+    "effective owner/manager schedule approval vs master fallback",
+    "production current source/runtime parity and closed periods/payout evidence"
+  ],
+  "logs": {
+    "stage0-server-final.log": {
+      "sha256": "947d637fdedec5ca3a8ffdb1b3e391f4af484d61ff3c979c4fceb99237aea29c",
+      "bytes": 94427
+    },
+    "stage0-ui.log": {
+      "sha256": "7d6e0cc910023aaf9edcd2aa759c58aea4bc98ccc7cff9d19041bcaeba470431",
+      "bytes": 6090
+    },
+    "stage0-flow-ui.log": {
+      "sha256": "97b8791b2de3ca126cc783ceaada754bbfd46fa546aebd3f1db63b495dfa0a69",
+      "bytes": 9663
+    },
+    "mobile-ui-test.log": {
+      "sha256": "bb369dbdace81ae81451fedf73cbdc895d599e713964470d66d45c82e69295ed",
+      "bytes": 8347
+    },
+    "mobile-ui-recheck.log": {
+      "sha256": "aec567003f63efa47af613791fc19213e5fcd19a7f98e84aab47dded7fade529",
+      "bytes": 2968
+    },
+    "finance-test.log": {
+      "sha256": "8d9f49db2a15fe02b54674479bfee9eca2f551206b87130b26f1189a3d0d5e14",
+      "bytes": 15822
+    },
+    "finance-concurrency-test.log": {
+      "sha256": "b0d4da02796ab70efea11c4e0072f97716d2f1d2950dd76349028011cc5f91e4",
+      "bytes": 394
+    },
+    "report-revisions-test.log": {
+      "sha256": "0c9edab5e22865855114a94a91fae051f6d765ae5f2af6060c1a55361c9229dc",
+      "bytes": 1201
+    },
+    "order-integrity-node.log": {
+      "sha256": "7f223aed105f8c0c2efca7fa13e46d996b62ee12facf4583d5c6054013385fd0",
+      "bytes": 6164
+    },
+    "order-integrity-sql.log": {
+      "sha256": "eb2ec720e8ff5785fd41f559064ba6d2c00410b6d0e2271b7ae22766b0b45d9f",
+      "bytes": 786
+    },
+    "order-integrity-adjacent.log": {
+      "sha256": "4d0b520e7380086e172bb16d717d4c7615cb78646962b13d7ffe98aa2bc6bd0f",
+      "bytes": 12638
+    }
+  },
+  "note": "Test groups overlap; do not sum. No assertion that fixture success closes real-runtime acceptance.",
+  "publication": {
+    "functional_local_commit": "cb735ee0334df35411886e0d1984098aadff72e7",
+    "initial_push": "AUTO_REVIEW_REJECTED_BEFORE_EXPLICIT_AUTHORIZATION",
+    "user_authorization_date": "2026-11-16",
+    "scope": "publish prepared branch and draft PR; no main merge or production deployment",
+    "git_cli_attempt_after_authorization": "FAILED_MISSING_HTTPS_CREDENTIALS",
+    "route": "authenticated GitHub connector; verify remote tree equals local tree",
+    "remote_ci_for_candidate": "consult current PR checks; not included in local results"
+  },
+  "download": {
+    "path": "deploy/recovery/BOS-Login-Check-20261116.zip",
+    "sha256": "bb91c6c668139af0fa4943cd7c0b1be50468bcdbeb11698b01bda28a57f6d4d0",
+    "bytes": 63296,
+    "zip_matches_sources": true
+  },
+  "live_login_20261116": {
+    "input": "BOS-Login-Diagnostic-20261116T091512Z-b46bb415.json",
+    "run_id": "bos-app-c72f9de1b663",
+    "status": "COLLECTED",
+    "running_services": 6,
+    "first_failed_request": null,
+    "isolation_verified_by_operator_tool": true,
+    "user_confirmed_successful_login": true,
+    "four_roles_verified": false
+  },
+  "flow_addon": {
+    "artifact": "deploy/recovery/BOS-Flow-Check-20261116-v2.zip",
+    "launch": "check-flow.cmd",
+    "new_test_staff": 0,
+    "new_test_orders": 0,
+    "native_api_and_local_role_broker": true,
+    "tests_scope": "HARNESS_FIXTURES_AND_EXISTING_RECOVERY_TESTS_NOT_LIVE_WINDOWS",
+    "live_result": "V2_PARTIAL_EXTERNAL_ARCHIVE_DISABLED_39_OF_39_PASSED",
+    "code_or_migrations_installed": false,
+    "full_acceptance": false,
+    "known_boundary": "V2 portal archive route denied as expected; later manual UI approval and 652.50 accrual observed; external archival status unknown; old restored storage not proven",
+    "checks": "19 checker tests passed; recovery app suite 238 run, 234 passed, 4 skipped",
+    "version": 2,
+    "launch_mode": "--resume-latest"
+  },
+  "live_flow_20261116": {
+    "input": "BOS-Flow-Check-20261116T094752Z-20de65df(1).json",
+    "run_id": "bos-app-c72f9de1b663",
+    "order_id": "1954",
+    "status": "STOPPED",
+    "reason": "FLOW_STORAGE_URL_INVALID",
+    "failed_step": "UPLOAD_ACT_1",
+    "upload_http_status": 200,
+    "native_roles_bootstrap_verified": true,
+    "create_retry_assignment_contact_start_verified": true,
+    "finance_denial_master_dispatcher_verified": true,
+    "attachment_read_verified": false,
+    "report_submission_verified": false,
+    "production_changed": false
+  },
+  "live_flow_v2_20261116": {
+    "input": "BOS-Flow-Check-20261116T111845Z-b7ee6fc4.json",
+    "input_sha256": "33760d78f727353c4830c1dd84feaadd72538146c1ebfb817952f7187b8863f6",
+    "time_moscow": "2026-11-16T14:19:05+03:00",
+    "run_id": "bos-app-c72f9de1b663",
+    "order_id": "1954",
+    "status": "PARTIAL_EXTERNAL_ARCHIVE_DISABLED",
+    "checks_passed": 39,
+    "checks_total": 39,
+    "reused_existing_records": true,
+    "states": {
+      "resumed_started": {
+        "status": "В работе",
+        "report_review_status": "not_submitted",
+        "master_workflow_stage": "started",
+        "master_payout": 552.5,
+        "extra_work_amount": 0,
+        "report_present": false
+      },
+      "pending_1": {
+        "status": "В работе",
+        "report_review_status": "pending",
+        "master_workflow_stage": "started",
+        "master_payout": 552.5,
+        "extra_work_amount": 100,
+        "report_present": true
+      },
+      "returned": {
+        "status": "В работе",
+        "report_review_status": "rejected",
+        "master_workflow_stage": "assigned",
+        "master_payout": 552.5,
+        "extra_work_amount": 100,
+        "report_present": false
+      },
+      "pending_2": {
+        "status": "В работе",
+        "report_review_status": "pending",
+        "master_workflow_stage": "assigned",
+        "master_payout": 552.5,
+        "extra_work_amount": 100,
+        "report_present": true
+      }
+    },
+    "xlsx": {
+      "downloaded": true,
+      "bytes": 30935,
+      "sha256": "4e4e2402fe1756975e992b25743952c8f7fd0fe0fea328ea669c76cc115470ea",
+      "scope": "ONE_SYNTHETIC_PENDING_ORDER_NOT_APPROVED_PAYROLL"
+    },
+    "api_roles_verified": true,
+    "synthetic_attachment_bytes_verified": true,
+    "submitted_report_retries_preserved_revision": true,
+    "manager_return_and_resubmission_verified": true,
+    "pending_excluded_from_approved_payroll": true,
+    "ui_verified": false,
+    "approved_payroll_verified": false,
+    "candidate_code_installed": false,
+    "migration_installed": false,
+    "production_changed": false,
+    "pending_checks": [
+      "approval_and_accrual",
+      "approved_report_retry",
+      "concurrent_review",
+      "claim_no_reaccrual",
+      "late_source_event",
+      "all_sources_live",
+      "history_ui",
+      "browser_and_phone_ui"
+    ]
+  },
+  "ci_d3aecb8": {
+    "commit": "d3aecb8d3df504b947b41bb5cfe40ca2ee55c155",
+    "Recovery package": "success",
+    "Recovery application": "success",
+    "UI smoke": "success"
+  },
+  "manual_ui_acceptance_20261116": {
+    "evidence": [
+      {
+        "filename": "image(20261116-112710).png",
+        "sha256": "e1ff72f04b93b438ade1c4252633fe0a008e32f9a9f1d68b9de212a5c70b15e9"
+      },
+      {
+        "filename": "image(20261116-112942).png",
+        "sha256": "14dd7b4a9ab5857b2d839ecd20d6baabe0fefa0b37ffb4ceab29959764eb49e0"
+      },
+      {
+        "filename": "image(20261116-113208).png",
+        "sha256": "af808dcb22af2ba173ca52452bc98c69effd327ded9d4f0877026f60573a2875"
+      }
+    ],
+    "test_order_id": "1954",
+    "pending_label_verified": true,
+    "new_count_when_pending": 0,
+    "owner_reported_approval": true,
+    "master_after_switch_and_refresh": {
+      "completed_count": 1,
+      "base_pay": 552.5,
+      "extras": 100,
+      "deductions": 0,
+      "total_pay": 652.5,
+      "active_orders": 0
+    },
+    "scope": "MANUAL_UI_ACCEPTANCE_SINGLE_SYNTHETIC_ORDER_NOT_DISBURSEMENT",
+    "server_archival_status": "NOT_OBSERVED",
+    "approved_retry": "NOT_TESTED",
+    "claim_no_reaccrual": "REGRESSION_UI_EXTRAS_LOST_INVESTIGATING_LIVE_DATA",
+    "candidate_code_installed": false,
+    "production_changed": false
+  },
+  "claim_ui_regression_20261116": {
+    "evidence": {
+      "filename": "image(20261116-114248).png",
+      "sha256": "4550beb7541b58e5f48eeaf1852e6824f6bb5b0836493cc0a6cc4976793e0dea"
+    },
+    "test_order_id": "1954",
+    "observed": {
+      "completed_count": 1,
+      "base_pay": 552.5,
+      "extras": 0,
+      "deductions": 0,
+      "total_pay": 552.5
+    },
+    "previous_total_pay": 652.5,
+    "candidate_fix": "master-day-summary-v128 uses masterFinancialOrders and immutable master_payout",
+    "reproduction": "Before: 2 regression cases fail with 0/552.50; after: all 15 targeted UI cases pass",
+    "checks": {
+      "node_pglite_passed": 14,
+      "ui_passed": 15,
+      "recovery_tests_run": 244,
+      "recovery_tests_passed": 240,
+      "recovery_tests_skipped": 4,
+      "build_check": "PASS"
+    },
+    "candidate_frontend_build": "04a7075c47414173482c",
+    "diagnostic_artifact": "deploy/recovery/BOS-Claim-Check-20261116.zip",
+    "diagnostic_sha256": "5f981cb9e4ffc7aa77b5e950b25535b9c39b165bd7df4107d7eb06c1d680c918",
+    "live_snapshot": "NOT_YET_READ",
+    "candidate_installed_in_windows": false,
+    "business_data_changed": false,
+    "production_changed": false
+  }
+}

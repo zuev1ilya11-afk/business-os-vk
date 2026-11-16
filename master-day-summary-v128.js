@@ -28,8 +28,14 @@ function completedDay(o){
   return dateOf(o);
 }
 function completed(o){return String(o?.status||'')==='Выполнена'||String(o?.report_review_status||'')==='approved'}
-function completedToday(orders=mine()){const d=today();return orders.filter(o=>completed(o)&&completedDay(o)===d)}
+function completedToday(orders=mine()){
+  const user=typeof isMasterPreview==='function'&&isMasterPreview()&&typeof previewUser!=='undefined'?previewUser:(typeof liveMasterUser==='function'?liveMasterUser():state?.user);
+  const calendar=window.BOS_SALARY_PERIODS;
+  const financial=calendar?calendar.masterFinancialOrders(state?.orders||[],user,orders):orders;
+  const d=today();return financial.filter(o=>completed(o)&&!o.financial_unresolved&&completedDay(o)===d);
+}
 function payout(o){
+  if(o?.financial_origin_claim)return num(o.master_payout);
   const direct=window.BOS_ORDER_PAYROLL?.directMaster(o);if(direct!=null)return direct;
   if(window.BOS_MASTER_PROFILE_SUMMARY_V129_API?.payout)return window.BOS_MASTER_PROFILE_SUMMARY_V129_API.payout(o);
   const raw=o?.amount;

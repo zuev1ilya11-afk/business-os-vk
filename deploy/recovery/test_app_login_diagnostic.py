@@ -1,4 +1,5 @@
 import hashlib
+from datetime import datetime
 import json
 from pathlib import Path
 import tempfile
@@ -68,7 +69,7 @@ class Checks:
             return 400, {}, json.dumps({'ok': False, 'error': 'Введите логин и пароль'}).encode()
         if self.login_timeout:
             raise TimeoutError('private-detail')
-        return 401, {'X-BOS-Session': 'private-session-secret'}, json.dumps({
+        return 401, {}, json.dumps({
             'ok': False, 'error': 'Неверный логин или пароль', 'private': 'private-client-name'}).encode()
 
     def transport(self, runner, anchor, method, path, headers, body, *, port, timeout):
@@ -114,6 +115,62 @@ class LoginDiagnosticTests(unittest.TestCase):
         checks = Checks()
         checks.gateway_failure = True
         self.assertEqual(self.collect(checks)[0]['finding'], 'GATEWAY_TO_DATABASE_PATH_FAILED')
+
+    def test_invalid_login_text_requires_expected_status_failure_and_no_session(self):
+        for variant in ('wrong_status', 'ok_true', 'body_session', 'header_session'):
+            with self.subTest(variant=variant):
+                checks = Checks()
+                host = checks.host
+                def altered(origin, method, path, body=b''):
+                    status, headers, output = host(origin, method, path, body)
+                    if path == login.LOGIN and json.loads(body)['login']:
+                        payload = json.loads(output)
+                        if variant == 'wrong_status': status = 200
+                        if variant == 'ok_true': payload['ok'] = True
+                        if variant == 'body_session': payload['session_token'] = 'private-session-secret'
+                        if variant == 'header_session': headers['x-bos-session'] = 'private-session-secret'
+                        output = json.dumps(payload).encode()
+                    return status, headers, output
+                checks.host = altered
+                result = self.collect(checks)[0]
+                self.assertEqual(result['finding'], 'LOGIN_PATH_FAILED_NEEDS_REVIEW')
+                self.assertEqual(result['first_failed_request']['probe'], 'synthetic_login')
+                self.assertNotIn('private-session-secret', json.dumps(result))
+
+    def test_inconsistent_empty_rejection_does_not_send_synthetic_credentials(self):
+        checks = Checks()
+        host = checks.host
+        def altered(origin, method, path, body=b''):
+            status, headers, output = host(origin, method, path, body)
+            return (200 if path == login.LOGIN else status), headers, output
+        checks.host = altered
+        result = self.collect(checks)[0]
+        self.assertEqual(result['synthetic_login_requests'], 0)
+        self.assertEqual(result['first_failed_request']['probe'], 'empty_login')
+
+    def test_request_evidence_is_timed_fixed_and_not_a_browser_trace(self):
+        result, _, _ = self.collect()
+        self.assertIsNone(result['first_failed_request'])
+        self.assertEqual(result['request_trace_scope'], 'DIAGNOSTIC_PROBES_ONLY_NOT_BROWSER_HISTORY')
+        for name, check in result['checks'].items():
+            request = check['request']
+            method, path, port = login.PROBES[name]
+            expected_origin = ORIGIN if port is None else 'http://127.0.0.1:' + str(port)
+            self.assertEqual(request['url'], expected_origin + path)
+            self.assertEqual(request['method'], method)
+            self.assertEqual(datetime.fromisoformat(request['started_at']).utcoffset().total_seconds(), 0)
+        with self.assertRaises(app_cli.Stop): login.request_metadata('private_path', ORIGIN)
+        with self.assertRaises(app_cli.Stop): login.request_metadata('empty_login', 'https://production.example')
+
+    def test_first_failed_request_uses_probe_order_and_keeps_transport_evidence(self):
+        checks = Checks()
+        checks.gateway_failure = True
+        result = self.collect(checks)[0]
+        first = result['first_failed_request']
+        self.assertEqual(first['probe'], 'rest_via_gateway')
+        self.assertEqual(first['http_status'], 503)
+        self.assertEqual(first['request']['network_scope'], 'ISOLATED_CONTAINER_LOOPBACK')
+        self.assertNotIn('private-client-name', json.dumps(first))
 
     def test_portal_unavailable_does_not_attempt_login(self):
         checks = Checks()

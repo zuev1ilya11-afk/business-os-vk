@@ -23,7 +23,10 @@ for(const width of [360,390,430,1280])test(`compact layout at ${width}: visit, n
  await expect(card.locator('.bosOrderVisit')).toContainText('Сегодня');
  await expect(card.locator('.bosOrderVisit')).toContainText('14:00');
  await expect(card.getByText('Тестовая улица, дом 12',{exact:true})).toHaveCount(1);
- await expect(card.locator('.bosHandsHead')).not.toContainText('Поступила');
+ await expect(card.locator('.bosHandsHead .bosCompactReceived')).toHaveText('· Поступила 20.10.2026');
+ await expect(card.locator('.bosCompactReceived')).toBeVisible();
+ await expect(card.locator('.bosOrderAdditional .bosCompactReceived')).toHaveCount(0);
+ await expect(card.locator('.masterV126CopyPhone')).toHaveCount(1);
  await expect(card.locator('.bosOrderAdditional')).not.toHaveAttribute('open','');
  await expect(card.getByRole('button',{name:'Помощь по заявке',exact:true})).toBeHidden();
  const call=card.locator('a[aria-label="Позвонить клиенту"]'),primary=card.getByRole('button',{name:'Подтвердить: выехал',exact:true});
