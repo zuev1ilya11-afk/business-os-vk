@@ -226,7 +226,7 @@
     "live_result": "V2_PARTIAL_EXTERNAL_ARCHIVE_DISABLED_39_OF_39_PASSED",
     "code_or_migrations_installed": false,
     "full_acceptance": false,
-    "known_boundary": "Drive disabled as expected; UI and final accrual not verified; 4 new control files do not prove old restored storage integrity",
+    "known_boundary": "V2 portal archive route denied as expected; later manual UI approval and 652.50 accrual observed; external archival status unknown; old restored storage not proven",
     "checks": "19 checker tests passed; recovery app suite 238 run, 234 passed, 4 skipped",
     "version": 2,
     "launch_mode": "--resume-latest"
@@ -322,5 +322,39 @@
     "Recovery package": "success",
     "Recovery application": "success",
     "UI smoke": "success"
+  },
+  "manual_ui_acceptance_20261116": {
+    "evidence": [
+      {
+        "filename": "image(20261116-112710).png",
+        "sha256": "e1ff72f04b93b438ade1c4252633fe0a008e32f9a9f1d68b9de212a5c70b15e9"
+      },
+      {
+        "filename": "image(20261116-112942).png",
+        "sha256": "14dd7b4a9ab5857b2d839ecd20d6baabe0fefa0b37ffb4ceab29959764eb49e0"
+      },
+      {
+        "filename": "image(20261116-113208).png",
+        "sha256": "af808dcb22af2ba173ca52452bc98c69effd327ded9d4f0877026f60573a2875"
+      }
+    ],
+    "test_order_id": "1954",
+    "pending_label_verified": true,
+    "new_count_when_pending": 0,
+    "owner_reported_approval": true,
+    "master_after_switch_and_refresh": {
+      "completed_count": 1,
+      "base_pay": 552.5,
+      "extras": 100,
+      "deductions": 0,
+      "total_pay": 652.5,
+      "active_orders": 0
+    },
+    "scope": "MANUAL_UI_ACCEPTANCE_SINGLE_SYNTHETIC_ORDER_NOT_DISBURSEMENT",
+    "server_archival_status": "NOT_OBSERVED",
+    "approved_retry": "NOT_TESTED",
+    "claim_no_reaccrual": "NEXT_STEP",
+    "candidate_code_installed": false,
+    "production_changed": false
   }
 }
