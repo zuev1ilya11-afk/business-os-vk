@@ -53,6 +53,53 @@ test('master v128 summary is not rendered for dispatcher',async({page})=>{
   await expect(page.locator('#masterDaySummaryV128')).toHaveCount(0);
 });
 
+for(const status of ['В работе','Выполнена'])test(`daily summary retains original extras after reclamation: ${status}`,async({page})=>{
+  await page.clock.setFixedTime(new Date('2026-11-16T12:00:00Z'));
+  const {db}=await fullStack(page,'master'),order=db.tables.orders[0];
+  Object.assign(order,{status:'Выполнена',report_review_status:'approved',source:'Лемана Про',
+    completed_at:'2026-11-16T10:00:00Z',report_reviewed_at:'2026-11-16T10:00:00Z',
+    master_payout:552.5,extra_work_amount:100,uncompleted_work_amount:0});
+  const original={...order};
+  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
+  const summary=page.locator('#masterDaySummaryV128');
+  await expect(summary.locator('summary')).toHaveText('Выполнено 1 · Начислено 652,5 ₽');
+  await summary.locator('summary').click();
+  db.tables.order_financial_snapshots=[{order_id:order.id,financial_data:original}];
+  Object.assign(order,{is_claim:true,status,extra_work_amount:0,
+    completed_at:status==='Выполнена'?'2026-11-17T10:00:00Z':null,
+    report_review_status:status==='Выполнена'?'approved':null,
+    report_reviewed_at:null,scheduled_date:'2026-11-17'});
+  for(let i=0;i<2;i++){
+    await page.evaluate(()=>BOS_REFRESH_NOW());
+    await page.waitForFunction(()=>state.orders.some(o=>String(o.id)==='11'&&o.is_claim&&o.extra_work_amount===0));
+    await page.evaluate(()=>new Promise(resolve=>{BOS_MASTER_DAY_SUMMARY_V128_API.refresh();requestAnimationFrame(()=>requestAnimationFrame(resolve))}));
+    await expect(summary.locator('summary')).toHaveText('Выполнено 1 · Начислено 652,5 ₽');
+    await expect(summary.getByText('Допработы',{exact:true}).locator('..')).toContainText('100 ₽');
+    await expect(summary.locator('.masterV128Done')).toHaveCount(1);
+  }
+  // Bootstrap moves the immutable event to financial_history after reassignment.
+  order.master_staff_id='another-master';
+  await page.evaluate(()=>BOS_REFRESH_NOW());
+  await page.waitForFunction(()=>!state.orders.some(o=>String(o.id)==='11')&&state.user.financial_history?.some(o=>String(o.id)==='11'));
+  await page.evaluate(()=>new Promise(resolve=>{BOS_MASTER_DAY_SUMMARY_V128_API.refresh();requestAnimationFrame(()=>requestAnimationFrame(resolve))}));
+  await expect(summary.locator('summary')).toHaveText('Выполнено 1 · Начислено 652,5 ₽');
+  await page.evaluate(()=>show('team'));
+  await page.getByRole('button',{name:'Подробнее →',exact:true}).click();
+  await expect(page.locator('#masterMoneyV130 .salaryHero')).toContainText('652,5 ₽');
+  expect(original.extra_work_amount).toBe(100);
+});
+
+test('daily summary does not give the new reclamation master the original masters earnings',async({page})=>{
+  await page.clock.setFixedTime(new Date('2026-11-16T12:00:00Z'));
+  const {db}=await fullStack(page,'master'),order=db.tables.orders[0];
+  Object.assign(order,{status:'Выполнена',is_claim:true,report_review_status:'approved',
+    completed_at:'2026-11-16T10:00:00Z',extra_work_amount:999});
+  db.tables.order_financial_snapshots=[{order_id:order.id,financial_data:{...order,
+    is_claim:false,master_staff_id:'original-master',extra_work_amount:100}}];
+  await page.goto('/');await expect(page.locator('#authGate')).toBeHidden();
+  await expect(page.locator('#masterDaySummaryV128 summary')).toHaveText('Выполнено 0 · Начислено 0 ₽');
+});
+
 
 test('approved order refresh flows from working day to daily totals and cabinet without duplicate earnings',async({page})=>{
   const {db}=await fullStack(page,'master');

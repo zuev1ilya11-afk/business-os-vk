@@ -353,8 +353,40 @@
     "scope": "MANUAL_UI_ACCEPTANCE_SINGLE_SYNTHETIC_ORDER_NOT_DISBURSEMENT",
     "server_archival_status": "NOT_OBSERVED",
     "approved_retry": "NOT_TESTED",
-    "claim_no_reaccrual": "NEXT_STEP",
+    "claim_no_reaccrual": "REGRESSION_UI_EXTRAS_LOST_INVESTIGATING_LIVE_DATA",
     "candidate_code_installed": false,
+    "production_changed": false
+  },
+  "claim_ui_regression_20261116": {
+    "evidence": {
+      "filename": "image(20261116-114248).png",
+      "sha256": "4550beb7541b58e5f48eeaf1852e6824f6bb5b0836493cc0a6cc4976793e0dea"
+    },
+    "test_order_id": "1954",
+    "observed": {
+      "completed_count": 1,
+      "base_pay": 552.5,
+      "extras": 0,
+      "deductions": 0,
+      "total_pay": 552.5
+    },
+    "previous_total_pay": 652.5,
+    "candidate_fix": "master-day-summary-v128 uses masterFinancialOrders and immutable master_payout",
+    "reproduction": "Before: 2 regression cases fail with 0/552.50; after: all 15 targeted UI cases pass",
+    "checks": {
+      "node_pglite_passed": 14,
+      "ui_passed": 15,
+      "recovery_tests_run": 244,
+      "recovery_tests_passed": 240,
+      "recovery_tests_skipped": 4,
+      "build_check": "PASS"
+    },
+    "candidate_frontend_build": "04a7075c47414173482c",
+    "diagnostic_artifact": "deploy/recovery/BOS-Claim-Check-20261116.zip",
+    "diagnostic_sha256": "5f981cb9e4ffc7aa77b5e950b25535b9c39b165bd7df4107d7eb06c1d680c918",
+    "live_snapshot": "NOT_YET_READ",
+    "candidate_installed_in_windows": false,
+    "business_data_changed": false,
     "production_changed": false
   }
 }
