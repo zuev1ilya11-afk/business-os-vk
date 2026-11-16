@@ -223,10 +223,10 @@
     "new_test_orders": 0,
     "native_api_and_local_role_broker": true,
     "tests_scope": "HARNESS_FIXTURES_AND_EXISTING_RECOVERY_TESTS_NOT_LIVE_WINDOWS",
-    "live_result": "V1_STOPPED_AT_CHECKER_ORIGIN_VALIDATION_V2_NOT_RUN",
+    "live_result": "V2_PARTIAL_EXTERNAL_ARCHIVE_DISABLED_39_OF_39_PASSED",
     "code_or_migrations_installed": false,
     "full_acceptance": false,
-    "known_boundary": "Drive disabled; signed URL public origin now read from verified clone config; unchanged capability mapped to local GET only",
+    "known_boundary": "Drive disabled as expected; UI and final accrual not verified; 4 new control files do not prove old restored storage integrity",
     "checks": "19 checker tests passed; recovery app suite 238 run, 234 passed, 4 skipped",
     "version": 2,
     "launch_mode": "--resume-latest"
@@ -245,5 +245,82 @@
     "attachment_read_verified": false,
     "report_submission_verified": false,
     "production_changed": false
+  },
+  "live_flow_v2_20261116": {
+    "input": "BOS-Flow-Check-20261116T111845Z-b7ee6fc4.json",
+    "input_sha256": "33760d78f727353c4830c1dd84feaadd72538146c1ebfb817952f7187b8863f6",
+    "time_moscow": "2026-11-16T14:19:05+03:00",
+    "run_id": "bos-app-c72f9de1b663",
+    "order_id": "1954",
+    "status": "PARTIAL_EXTERNAL_ARCHIVE_DISABLED",
+    "checks_passed": 39,
+    "checks_total": 39,
+    "reused_existing_records": true,
+    "states": {
+      "resumed_started": {
+        "status": "В работе",
+        "report_review_status": "not_submitted",
+        "master_workflow_stage": "started",
+        "master_payout": 552.5,
+        "extra_work_amount": 0,
+        "report_present": false
+      },
+      "pending_1": {
+        "status": "В работе",
+        "report_review_status": "pending",
+        "master_workflow_stage": "started",
+        "master_payout": 552.5,
+        "extra_work_amount": 100,
+        "report_present": true
+      },
+      "returned": {
+        "status": "В работе",
+        "report_review_status": "rejected",
+        "master_workflow_stage": "assigned",
+        "master_payout": 552.5,
+        "extra_work_amount": 100,
+        "report_present": false
+      },
+      "pending_2": {
+        "status": "В работе",
+        "report_review_status": "pending",
+        "master_workflow_stage": "assigned",
+        "master_payout": 552.5,
+        "extra_work_amount": 100,
+        "report_present": true
+      }
+    },
+    "xlsx": {
+      "downloaded": true,
+      "bytes": 30935,
+      "sha256": "4e4e2402fe1756975e992b25743952c8f7fd0fe0fea328ea669c76cc115470ea",
+      "scope": "ONE_SYNTHETIC_PENDING_ORDER_NOT_APPROVED_PAYROLL"
+    },
+    "api_roles_verified": true,
+    "synthetic_attachment_bytes_verified": true,
+    "submitted_report_retries_preserved_revision": true,
+    "manager_return_and_resubmission_verified": true,
+    "pending_excluded_from_approved_payroll": true,
+    "ui_verified": false,
+    "approved_payroll_verified": false,
+    "candidate_code_installed": false,
+    "migration_installed": false,
+    "production_changed": false,
+    "pending_checks": [
+      "approval_and_accrual",
+      "approved_report_retry",
+      "concurrent_review",
+      "claim_no_reaccrual",
+      "late_source_event",
+      "all_sources_live",
+      "history_ui",
+      "browser_and_phone_ui"
+    ]
+  },
+  "ci_d3aecb8": {
+    "commit": "d3aecb8d3df504b947b41bb5cfe40ca2ee55c155",
+    "Recovery package": "success",
+    "Recovery application": "success",
+    "UI smoke": "success"
   }
 }
