@@ -92,7 +92,7 @@ test("SSR search, multiple services, photo, OTP, dispatcher, master, estimate an
   ).toBe(200);
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Большие планы",
+    "Мастер для",
   );
   const html = await (
     await request.get(origin + "/services/zamena-smesitelya")

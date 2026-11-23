@@ -1624,3 +1624,92 @@ hr {
     height: 40px;
   }
 }
+
+.header-phone {
+  font-size: 15px;
+  white-space: nowrap;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.contact-number {
+  display: inline-block;
+  font-size: clamp(24px, 4vw, 42px);
+  font-weight: 650;
+  color: var(--ink);
+}
+.mobile-menu {
+  display: none;
+}
+@media (min-width: 761px) and (max-width: 1060px) {
+  .header {
+    gap: 18px;
+  }
+  .header .city {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  .mobile-menu {
+    display: block;
+    position: relative;
+    margin-left: auto;
+  }
+  .mobile-menu summary {
+    cursor: pointer;
+    font-size: 14px;
+    padding: 11px 5px;
+  }
+  .header .mobile-menu nav {
+    display: grid;
+    gap: 0;
+    position: absolute;
+    z-index: 45;
+    top: 100%;
+    right: 0;
+    min-width: 160px;
+    padding: 5px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 6px 18px #19383615;
+  }
+  .mobile-menu nav a {
+    padding: 10px;
+    font-size: 15px;
+  }
+  .header .cabinet {
+    display: none;
+  }
+  .header-phone {
+    font-size: 13px;
+  }
+  .header {
+    gap: 12px;
+    padding-inline: 15px;
+  }
+}
+
+@media (max-width: 375px) {
+  .header {
+    gap: 7px;
+    padding-inline: 10px;
+  }
+  .header .brand {
+    font-size: 15px;
+    gap: 5px;
+  }
+  .header .company-logo {
+    width: 32px;
+    height: 32px;
+  }
+  .header .header-phone {
+    font-size: 12px;
+  }
+  .article-card {
+    grid-template-columns: 86px minmax(0, 1fr);
+  }
+  .article-card > div {
+    padding: 14px;
+    overflow-wrap: anywhere;
+  }
+}

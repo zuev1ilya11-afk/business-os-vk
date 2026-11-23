@@ -1,0 +1,150 @@
+[
+  {
+    "ref": "standard:standard_005",
+    "slug": "ustanovka-karniza",
+    "name": "Установка карниза",
+    "category": "Карнизы и шторы",
+    "category_slug": "curtains",
+    "subcategory": "Карнизы",
+    "subcategory_slug": "rods",
+    "synonyms": [
+      "повесить карниз",
+      "крепление карниза"
+    ],
+    "description": "Закрепим потолочный или настенный карниз. Для расчёта понадобятся длина карниза, высота потолка и материал основания."
+  },
+  {
+    "ref": "standard:standard_010",
+    "slug": "rulonnye-shtory",
+    "name": "Монтаж рулонных штор",
+    "category": "Карнизы и шторы",
+    "category_slug": "curtains",
+    "subcategory": "Шторы и жалюзи",
+    "subcategory_slug": "blinds",
+    "synonyms": [
+      "установить шторы",
+      "день ночь",
+      "жалюзи"
+    ],
+    "description": "Установим рулонные шторы на створку или в оконный проём. Уточните размеры, модель штор и нужное количество креплений."
+  },
+  {
+    "ref": "avito:mixer",
+    "slug": "zamena-smesitelya",
+    "name": "Замена смесителя",
+    "category": "Сантехника",
+    "category_slug": "plumbing",
+    "subcategory": "Смесители",
+    "subcategory_slug": "mixers",
+    "synonyms": [
+      "течёт кран",
+      "течет кран",
+      "капает кран",
+      "смеситель"
+    ],
+    "description": "Снимем старый смеситель и установим новый. Уточним тип подключения и проверим соединения после монтажа."
+  },
+  {
+    "ref": "avito:toilet",
+    "slug": "ustanovka-unitaza",
+    "name": "Установка унитаза",
+    "category": "Сантехника",
+    "category_slug": "plumbing",
+    "subcategory": "Санфаянс",
+    "subcategory_slug": "sanitary",
+    "synonyms": [
+      "унитаз",
+      "бачок"
+    ],
+    "description": "Установим унитаз и подключим его к подготовленным выводам. Демонтаж, состояние основания и состав комплекта обсудим заранее."
+  },
+  {
+    "ref": "avito:socket_replace",
+    "slug": "zamena-rozetki",
+    "name": "Замена розетки",
+    "category": "Электрика",
+    "category_slug": "electrical",
+    "subcategory": "Розетки и выключатели",
+    "subcategory_slug": "sockets",
+    "synonyms": [
+      "заменить розетку",
+      "не работает розетка",
+      "выключатель"
+    ],
+    "description": "Заменим розетку в существующем месте. Перед визитом уточним тип розетки и состояние места установки."
+  },
+  {
+    "ref": "avito:chandelier",
+    "slug": "ustanovka-lyustry",
+    "name": "Установка люстры",
+    "category": "Электрика",
+    "category_slug": "electrical",
+    "subcategory": "Освещение",
+    "subcategory_slug": "lighting",
+    "synonyms": [
+      "светильник",
+      "повесить люстру"
+    ],
+    "description": "Соберём и закрепим светильник, подключим его к существующему выводу. Укажите модель, вес и высоту потолка."
+  },
+  {
+    "ref": "avito:tv_bracket",
+    "slug": "televizor-na-stenu",
+    "name": "Телевизор на стену",
+    "category": "Мелкий ремонт",
+    "category_slug": "handyman",
+    "subcategory": "Настенный монтаж",
+    "subcategory_slug": "mounting",
+    "synonyms": [
+      "повесить телевизор",
+      "кронштейн тв"
+    ],
+    "description": "Закрепим телевизор на стене с помощью подходящего кронштейна. Для подбора крепежа уточним диагональ, вес и материал стены."
+  },
+  {
+    "ref": "avito:shelf",
+    "slug": "naveska-polok",
+    "name": "Навеска полок",
+    "category": "Мелкий ремонт",
+    "category_slug": "handyman",
+    "subcategory": "Настенный монтаж",
+    "subcategory_slug": "mounting",
+    "synonyms": [
+      "повесить полку",
+      "закрепить полку"
+    ],
+    "description": "Установим полку на согласованной высоте. Сообщите размеры, материал стены и какие крепления входят в комплект."
+  },
+  {
+    "ref": "avito:dishwasher_washer",
+    "slug": "podklyuchenie-mashiny",
+    "name": "Подключение стиральной или посудомоечной машины",
+    "category": "Бытовая техника",
+    "category_slug": "appliances",
+    "subcategory": "Подключение",
+    "subcategory_slug": "connection",
+    "synonyms": [
+      "подключить стиральную машину",
+      "посудомойка",
+      "посудомоечная машина",
+      "подключить посудомоечную машину",
+      "стиралка"
+    ],
+    "description": "Подключим машину к подготовленным выводам воды и канализации. Уточним модель техники и расположение коммуникаций."
+  },
+  {
+    "ref": "avito:furniture",
+    "slug": "sborka-mebeli",
+    "name": "Сборка и ремонт мебели",
+    "category": "Мебель",
+    "category_slug": "furniture",
+    "subcategory": "Сборка",
+    "subcategory_slug": "assembly",
+    "synonyms": [
+      "собрать шкаф",
+      "сборка мебели",
+      "комод"
+    ],
+    "description": "Соберём мебель по инструкции или обсудим ремонт конкретной детали. Для расчёта пригодятся модель и фото комплекта."
+  }
+]

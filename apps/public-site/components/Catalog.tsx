@@ -1,3 +1,4 @@
+import { bookingLink, byPhone } from "../lib/company";
 import type { Service } from "../lib/types";
 export const money = (n: number) =>
   new Intl.NumberFormat("ru-RU", {
@@ -57,9 +58,9 @@ export function EmptyCatalog() {
   return (
     <div className="empty">
       <h2>Подберём работу по описанию</h2>
-      <p>Не нашли подходящую услугу? Расскажите о задаче и приложите фото.</p>
-      <a className="button" href="/order?quick=1">
-        Описать задачу ↗
+      <p>Расскажите, что нужно сделать. Поможем подобрать услугу.</p>
+      <a className="button" href={bookingLink("/order?quick=1")}>
+        {byPhone ? "Позвонить" : "Описать задачу ↗"}
       </a>
     </div>
   );
