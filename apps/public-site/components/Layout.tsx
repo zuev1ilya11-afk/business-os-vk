@@ -1,9 +1,10 @@
 import Head from "next/head";
-import { company } from "../lib/company";
+import { bookingLink, byPhone, company, phoneHref } from "../lib/company";
 import { track } from "../lib/analytics";
 import type { ReactNode } from "react";
 export function Layout({
   children,
+  callbackReady = false,
   title,
   description,
   path = "/",
@@ -12,6 +13,7 @@ export function Layout({
   noindex = false,
 }: {
   children: ReactNode;
+  callbackReady?: boolean;
   title: string;
   description?: string;
   path?: string;
@@ -28,7 +30,7 @@ export function Layout({
           name="description"
           content={
             description ||
-            "Услуги мастеров в Санкт-Петербурге. Опишите задачу, согласуйте работы и следите за заявкой в личном кабинете."
+            "Установка карнизов и штор, подключение техники и мелкий ремонт в Санкт-Петербурге. Согласуем стоимость и время визита."
           }
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -84,18 +86,36 @@ export function Layout({
         <span className="city">
           <i /> Санкт-Петербург
         </span>
-        <nav aria-label="Основная навигация">
+        <details className="mobile-menu">
+          <summary>Меню</summary>
+          <nav aria-label="Разделы сайта">
+            <a href="/services">Услуги</a>
+            <a href="/business">Для бизнеса</a>
+            <a href="/contacts">Контакты</a>
+            {!byPhone && <a href={company.cabinet}>Личный кабинет</a>}
+          </nav>
+        </details>
+        <nav className="desktop-nav" aria-label="Основная навигация">
           <a href="/services">Услуги</a>
           <a href="/business">Для бизнеса</a>
           <a href="/contacts">Контакты</a>
         </nav>
         <a
-          className="cabinet"
-          href={company.cabinet}
-          onClick={() => track("open_cabinet")}
+          className="header-phone"
+          href={phoneHref}
+          onClick={() => track("call_click")}
         >
-          <span aria-hidden="true">◉</span> Личный кабинет
+          {company.phone}
         </a>
+        {!byPhone && (
+          <a
+            className="cabinet"
+            href={company.cabinet}
+            onClick={() => track("open_cabinet")}
+          >
+            <span aria-hidden="true">◉</span> Личный кабинет
+          </a>
+        )}
       </header>
       <main id="main">{children}</main>
       <footer>
@@ -127,27 +147,30 @@ export function Layout({
           <div>
             <b>На связи</b>
             {company.phone ? (
-              <a
-                href={"tel:" + company.phone}
-                onClick={() => track("call_click")}
-              >
+              <a href={phoneHref} onClick={() => track("call_click")}>
                 {company.phone}
               </a>
             ) : (
               <a href={company.cabinet + "#messages"}>Написать компании</a>
             )}
-            <a href="/order?quick=1">Описать задачу →</a>
+            <a href={"mailto:" + company.email}>{company.email}</a>
+            {callbackReady && <a href="/request">Заказать звонок</a>}
+            {!byPhone && <a href="/order?quick=1">Описать задачу →</a>}
           </div>
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Домашний мастер</span>
-          <a href="/privacy">Конфиденциальность</a>
-          <a href="/consent">Обработка данных</a>
-          <a href="/terms">Условия услуг</a>
+          <a href="/privacy">Политика конфиденциальности</a>
+          {!byPhone && (
+            <>
+              <a href="/consent">Обработка данных</a>
+              <a href="/terms">Условия услуг</a>
+            </>
+          )}
         </div>
       </footer>
-      <a className="mobile-cta" href="/order">
-        Оформить заявку <span>↗</span>
+      <a className="mobile-cta" href={callbackReady ? "/request" : bookingLink()}>
+        {callbackReady ? "Оставить обращение" : byPhone ? "Позвонить мастеру" : "Оформить заявку"} <span>↗</span>
       </a>
     </>
   );

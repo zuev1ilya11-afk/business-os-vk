@@ -1,3 +1,5 @@
+import { byPhone } from "./company";
+import phoneServices from "./phone-catalog.cjs";
 import type { Service, LegalDocument } from "./types";
 let cached: { expires: number; services: Service[] } | undefined;
 export async function apiRead(path: string) {
@@ -18,6 +20,7 @@ export async function apiRead(path: string) {
   return response.json();
 }
 export async function catalog(): Promise<Service[]> {
+  if (byPhone) return phoneServices as Service[];
   if (cached && cached.expires > Date.now()) return cached.services;
   const data = await apiRead("website/catalog");
   cached = { services: data.services, expires: Date.now() + 30000 };
@@ -25,4 +28,20 @@ export async function catalog(): Promise<Service[]> {
 }
 export async function documents(): Promise<LegalDocument[]> {
   return (await apiRead("documents")).documents;
+}
+
+export async function searchCatalog(query: string): Promise<Service[]> {
+  if (byPhone) {
+    const normalize = (text: string) =>
+      text.toLocaleLowerCase("ru").replaceAll("ё", "е");
+    const words = normalize(query).match(/[а-яa-z0-9]+/g) || [];
+    return (phoneServices as Service[]).filter((s) => {
+      const text = normalize(
+        [s.name, s.category, s.description, ...s.synonyms].join(" "),
+      );
+      return words.every((word) => text.includes(word));
+    });
+  }
+  return (await apiRead("website/catalog?q=" + encodeURIComponent(query)))
+    .services;
 }

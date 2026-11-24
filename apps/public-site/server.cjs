@@ -26,9 +26,22 @@ async function start() {
     ? "http://terminal.local:4173"
     : process.env.WEBSITE_STAGING_ORIGIN || `http://127.0.0.1:${port}`;
   const stagingHttpsOrigin = process.env.WEBSITE_STAGING_HTTPS_ORIGIN || "";
-  if (stagingHttpsOrigin && (environment !== "staging" ||
-      process.env.WEBSITE_CONTAINER !== "1" || managed || stagingHttpsOrigin !== origin))
-    throw Error("HTTPS preview requires an explicit staging container and matching origin");
+  if (
+    stagingHttpsOrigin &&
+    (environment !== "staging" ||
+      process.env.WEBSITE_CONTAINER !== "1" ||
+      managed ||
+      stagingHttpsOrigin !== origin)
+  )
+    throw Error(
+      "HTTPS preview requires an explicit staging container and matching origin",
+    );
+  const booking = process.env.NEXT_PUBLIC_BOOKING_MODE || "online";
+  if (
+    !["phone", "online"].includes(booking) ||
+    (environment === "staging" && booking !== "online")
+  )
+    throw Error("Unknown website booking mode");
   let stage;
   if (environment === "staging") {
     const state = process.env.WEBSITE_STAGE_STATE
@@ -51,11 +64,27 @@ async function start() {
       publicOrigin.protocol !== "https:" ||
       publicOrigin.pathname !== "/" ||
       publicOrigin.username ||
-      !process.env.WEBSITE_INTERNAL_API_ORIGIN
+      publicOrigin.search ||
+      publicOrigin.hash ||
+      publicOrigin.password ||
+      (booking === "online" && !process.env.WEBSITE_INTERNAL_API_ORIGIN)
     )
-      throw Error("Production requires HTTPS site URL and internal API");
+      throw Error(
+        "HTTPS site URL required; online orders also need the customer API",
+      );
     // Customer requests are proxied by nginx, never by a generic user-selected URL.
   }
+  const intake = require("./lib/intake.cjs");
+  let callbackDb;
+  if (stage) {
+    await stage.db.exec(await fs.readFile(path.join(appDir, "lib/site-intake.sql"), "utf8"));
+    callbackDb = stage.db;
+  } else if (process.env.WEBSITE_INTAKE_DATABASE_URL) {
+    callbackDb = await intake.connectDatabase(process.env.WEBSITE_INTAKE_DATABASE_URL);
+  }
+  process.env.WEBSITE_CALLBACK_READY = callbackDb ? "1" : "0";
+  const callback = intake.handler(callbackDb, stage ? origin : new URL(process.env.NEXT_PUBLIC_SITE_URL).origin,
+    !stage && host === "127.0.0.1");
   const next = require("next");
   const app = next({
     dev: process.env.NODE_ENV !== "production",
@@ -66,14 +95,29 @@ async function start() {
   await app.prepare();
   const nextHandler = app.getRequestHandler();
   const staffAssets = new Set(
-    (await fs.readdir(root)).filter((f) =>
+    (stage ? await fs.readdir(root) : []).filter((f) =>
       /^[\w-][\w.-]*\.(js|css|svg|png|ico|webmanifest)$/.test(f),
     ),
   );
+  const portalDir = path.join(appDir, "public/client");
+  const portalFiles = new Map([
+    ["index.html", "text/html;charset=utf-8"],
+    ["app.js", "text/javascript;charset=utf-8"],
+    ["styles.css", "text/css"],
+    ["sw.js", "text/javascript;charset=utf-8"],
+    ["manifest.webmanifest", "application/manifest+json"],
+    ["icon.svg", "image/svg+xml"],
+    ["icon-192.png", "image/png"],
+    ["icon-512.png", "image/png"],
+  ]);
   const server = http.createServer(async (req, res) => {
     try {
       const url = new URL(req.url, origin),
         p = url.pathname;
+      if (p === "/api/callback") {
+        await callback(req, res);
+        return;
+      }
       if (stage && p === "/qa/mobile") {
         res.setHeader("content-type", "text/html;charset=utf-8");
         res.setHeader("cache-control", "no-store");
@@ -87,7 +131,13 @@ async function start() {
         res.setHeader("content-type", "application/json");
         res.setHeader("cache-control", "no-store");
         res.end(
-          JSON.stringify({ ok: true, service: "public-site", environment }),
+          JSON.stringify({
+            ok: true,
+            service: "public-site",
+            environment,
+            booking,
+            callback: Boolean(callbackDb),
+          }),
         );
         return;
       }
@@ -112,17 +162,24 @@ async function start() {
           "/articles",
           "/contacts",
           "/faq",
+          "/privacy",
+          "/callback-consent",
         ];
-        const response = await fetch(
-          new URL(
-            "/client-api/website/catalog",
-            process.env.WEBSITE_INTERNAL_API_ORIGIN,
-          ),
-          { signal: AbortSignal.timeout(8000) },
-        );
-        if (!response.ok) throw Error("Catalog unavailable");
-        const data = await response.json();
-        for (const s of data.services) {
+        let services;
+        if (booking === "phone") {
+          services = require("./lib/phone-catalog.cjs");
+        } else {
+          const response = await fetch(
+            new URL(
+              "/client-api/website/catalog",
+              process.env.WEBSITE_INTERNAL_API_ORIGIN,
+            ),
+            { signal: AbortSignal.timeout(8000) },
+          );
+          if (!response.ok) throw Error("Catalog unavailable");
+          services = (await response.json()).services;
+        }
+        for (const s of services) {
           paths.push(
             "/services/" + s.slug,
             "/categories/" + s.category_slug,
@@ -202,9 +259,41 @@ async function start() {
         res.end(Buffer.from(await response.arrayBuffer()));
         return;
       }
-      if (p.startsWith("/client-api/") || p.startsWith("/client/")) {
-        res.statusCode = 503;
-        res.end("Configure same-origin customer reverse proxy");
+      if (!stage && (p === "/client" || p.startsWith("/client/"))) {
+        res.setHeader("cache-control", "no-store");
+        res.setHeader("x-robots-tag", "noindex, nofollow");
+        if (booking === "phone" || p === "/client") {
+          res.writeHead(302, {
+            Location: booking === "phone" ? "/contacts" : "/client/",
+          });
+          res.end();
+          return;
+        }
+        const file = p.slice("/client/".length) || "index.html";
+        const type = portalFiles.get(file);
+        if (!type || !["GET", "HEAD"].includes(req.method)) {
+          res.writeHead(404).end();
+          return;
+        }
+        const body = await fs.readFile(path.join(portalDir, file));
+        res.setHeader(
+          "content-security-policy",
+          "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
+        );
+        res.setHeader("x-content-type-options", "nosniff");
+        res.setHeader("content-type", type);
+        res.end(req.method === "HEAD" ? undefined : body);
+        return;
+      }
+      if (
+        !stage &&
+        (p === "/client-api" ||
+          p.startsWith("/client-api/") ||
+          p === "/staff" ||
+          p.startsWith("/staff/") ||
+          p.startsWith("/stage-api/"))
+      ) {
+        res.writeHead(404, { "cache-control": "no-store" }).end();
         return;
       }
       const nonce = crypto.randomBytes(18).toString("base64");
@@ -238,13 +327,10 @@ async function start() {
     server.once("error", reject);
     server.listen(port, host, resolve);
   });
-  process.stdout.write(
-    "Public website ready; environment=" +
-      environment +
-      "; no production changes.\n",
-  );
+  process.stdout.write(`Public website ready (${environment}, ${booking})\n`);
   const stop = () =>
     server.close(async () => {
+      if (!stage && callbackDb) await callbackDb.end();
       await stage?.close();
       await app.close();
       process.exit(0);

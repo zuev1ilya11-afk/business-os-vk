@@ -1,4 +1,6 @@
 import type { GetServerSideProps } from "next";
+import CallbackForm from "../components/CallbackForm";
+import SitePrivacy from "../components/SitePrivacy";
 import { useEffect } from "react";
 import { Layout, Breadcrumbs } from "../components/Layout";
 import {
@@ -8,10 +10,10 @@ import {
   price,
 } from "../components/Catalog";
 import OrderForm, { BusinessForm } from "../components/OrderForm";
-import { company, faq } from "../lib/company";
+import { bookingLink, byPhone, company, faq, phoneHref } from "../lib/company";
 import { articles } from "../lib/content";
 import { track } from "../lib/analytics";
-import { catalog, documents, apiRead } from "../lib/data";
+import { catalog, documents, apiRead, searchCatalog } from "../lib/data";
 import type { PageData, Service } from "../lib/types";
 const categories = [
   "curtains",
@@ -51,6 +53,8 @@ const known = [
   "/faq",
   "/login",
   "/privacy",
+  "/request",
+  "/callback-consent",
   "/consent",
   "/terms",
   "/maintenance",
@@ -60,23 +64,40 @@ const known = [
 export const getServerSideProps: GetServerSideProps<PageData> = async (ctx) => {
   const path =
     "/" + ((ctx.params?.slug as string[] | undefined) || []).join("/");
+  const callbackReady = process.env.WEBSITE_CALLBACK_READY === "1";
+  if (path === "/request" && !callbackReady)
+    return { redirect: { destination: byPhone ? "/contacts" : "/order?quick=1", permanent: false } };
+  if (byPhone) {
+    if (["/order", "/login"].includes(path))
+      return { redirect: { destination: "/contacts", permanent: false } };
+    if (
+      ["/terms", "/consent"].includes(path) ||
+      path.startsWith("/documents/")
+    )
+      return { notFound: true };
+  }
   let services: Service[] = [],
     docs: PageData["documents"] = [],
     reviews: PageData["reviews"] = [],
     unavailable = false;
-  try {
-    services = await catalog();
-  } catch (e) {
-    console.warn(
-      "website_data_unavailable",
-      e instanceof Error ? e.message : "unknown",
-      (e as { cause?: { code?: string } })?.cause?.code || "",
-    );
-    unavailable = true;
+  const needsCatalog = !["/contacts", "/privacy", "/callback-consent"].includes(path) &&
+    (path !== "/request" || typeof ctx.query.service === "string");
+  if (needsCatalog) {
+    try {
+      services = await catalog();
+    } catch (e) {
+      console.warn(
+        "website_data_unavailable",
+        e instanceof Error ? e.message : "unknown",
+        (e as { cause?: { code?: string } })?.cause?.code || "",
+      );
+      unavailable = true;
+    }
   }
   if (
-    ["/order", "/business", "/privacy", "/consent", "/terms"].includes(path) ||
-    path.startsWith("/documents/")
+    !byPhone &&
+    (["/order", "/business", "/consent", "/terms"].includes(path) ||
+      path.startsWith("/documents/"))
   )
     try {
       docs = await documents();
@@ -88,7 +109,7 @@ export const getServerSideProps: GetServerSideProps<PageData> = async (ctx) => {
       );
       unavailable = true;
     }
-  if (path === "/")
+  if (path === "/" && !byPhone)
     try {
       reviews = (await apiRead("website/reviews")).reviews;
     } catch {
@@ -127,11 +148,9 @@ export const getServerSideProps: GetServerSideProps<PageData> = async (ctx) => {
   let matchedIds: string[] = [];
   if (path === "/search" && typeof ctx.query.q === "string")
     try {
-      matchedIds = (
-        await apiRead(
-          "website/catalog?q=" + encodeURIComponent(ctx.query.q.slice(0, 200)),
-        )
-      ).services.map((s: Service) => s.id);
+      matchedIds = (await searchCatalog(ctx.query.q.slice(0, 200))).map(
+        (s) => s.id,
+      );
     } catch (e) {
       console.warn(
         "website_data_unavailable",
@@ -145,6 +164,8 @@ export const getServerSideProps: GetServerSideProps<PageData> = async (ctx) => {
     props: {
       path,
       matchedIds,
+      callbackReady,
+      business: path === "/request" && ctx.query.kind === "business",
       query: typeof ctx.query.q === "string" ? ctx.query.q.slice(0, 200) : "",
       services,
       documents: docs,
@@ -152,7 +173,7 @@ export const getServerSideProps: GetServerSideProps<PageData> = async (ctx) => {
       unavailable,
       staging: process.env.WEBSITE_ENV !== "production",
       nonce: String(ctx.req.headers["x-csp-nonce"] || ""),
-      ...(path === "/order"
+      ...((path === "/order" || path === "/request")
         ? {
             quick: ctx.query.quick === "1",
             selected:
@@ -212,7 +233,9 @@ function Process() {
         [
           "03",
           "Встречайте мастера",
-          "Следите за заявкой и общайтесь с компанией в кабинете.",
+          byPhone
+            ? "Мастер приедет в согласованный интервал и выполнит заказанные работы."
+            : "Следите за заявкой и общайтесь с компанией в кабинете.",
         ],
       ].map(([n, t, p]) => (
         <article key={n}>
@@ -247,38 +270,33 @@ function CTA() {
   return (
     <section className="final-cta">
       <div>
-        <span className="eyebrow">ОСТАЛОСЬ ОПИСАТЬ ЗАДАЧУ</span>
-        <h2>
-          Пусть дома всё
-          <br />
-          будет в порядке.
-        </h2>
+        <h2>Обсудим вашу задачу?</h2>
       </div>
-      <a className="button light" href="/order?quick=1">
-        Вызвать мастера ↗
+      <a className="button light" href={bookingLink("/order?quick=1")}>
+        {byPhone ? "Позвонить" : "Вызвать мастера ↗"}
       </a>
     </section>
   );
 }
-function Home({ services, reviews, nonce, unavailable }: PageData) {
+function Home({ services, reviews, nonce, unavailable, callbackReady }: PageData) {
   return (
     <>
       <section className="hero">
         <div className="hero-copy">
-          <span className="eyebrow">
-            <i /> ПОМОЩЬ ПО ДОМУ В ПЕТЕРБУРГЕ
-          </span>
+          <span className="eyebrow">САНКТ-ПЕТЕРБУРГ</span>
           <h1>
-            Большие планы.
+            Мастер для
             <br />
-            <em>Маленькие</em>
-            <br />
-            дела по дому.
+            <em>вашего дома</em>
           </h1>
           <p>
-            Карниз, розетка или новая полка —<br />
-            поможем найти решение вашей задачи.
+            Установим карниз, повесим шторы, подключим технику и поможем с
+            мелким ремонтом.
           </p>
+          <div className="hero-actions">
+            <a className="button" href={callbackReady ? "/request" : bookingLink("/order?quick=1")}>{callbackReady ? "Оставить обращение" : byPhone ? "Позвонить мастеру" : "Оформить заявку"} <span aria-hidden="true">↗</span></a>
+            <a className="text-link" href="/services">Все услуги</a>
+          </div>
           <Search />
           <div className="hero-hints">
             <span>Часто ищут:</span>
@@ -287,37 +305,25 @@ function Home({ services, reviews, nonce, unavailable }: PageData) {
           </div>
         </div>
         <div className="hero-scene">
-          <img
-            src="/illustrations/home.svg"
-            alt="Уютная комната с карнизом, светильником и настенной полкой"
-            width="660"
-            height="620"
-            fetchPriority="high"
-          />
-          <div className="scene-note">
-            <span>✓</span>
-            <div>
-              <b>Заботы о доме — нам</b>
-              <small>А вам — время для своего</small>
-            </div>
-          </div>
-          <div className="scene-pill">Дома хорошо.</div>
+          <picture>
+            <source media="(max-width: 760px)" srcSet="/interior-small.webp" />
+            <img src="/interior.webp" alt="Льняные шторы на карнизе в светлой петербургской гостиной" width="1320" height="880" fetchPriority="high" />
+          </picture>
         </div>
       </section>
       <div className="promise-bar">
         <span>✓ Стоимость согласуем заранее</span>
-        <span>✓ Заявка и сообщения в кабинете</span>
+        <span>
+          {byPhone
+            ? "✓ Удобное время по договорённости"
+            : "✓ Заявка и сообщения в кабинете"}
+        </span>
         <span>✓ Гарантия на работы — 1 год</span>
       </div>
       <section className="section">
         <div className="section-title">
           <div>
-            <span className="eyebrow">ЧЕМ ПОМОЧЬ?</span>
-            <h2>
-              Дела найдутся.
-              <br />
-              Мастер тоже.
-            </h2>
+            <h2>Что нужно сделать?</h2>
           </div>
           <a className="text-link" href="/services">
             Все услуги ↗
@@ -345,13 +351,13 @@ function Home({ services, reviews, nonce, unavailable }: PageData) {
               </a>
             ))}
         </div>
-        <a className="help-banner" href="/order?quick=1">
+        <a className="help-banner" href={bookingLink("/order?quick=1")}>
           <span className="help-symbol">?</span>
           <div>
             <h3>Не знаете, что выбрать?</h3>
             <p>Опишите задачу. С составом работ поможем разобраться.</p>
           </div>
-          <b>Описать задачу ↗</b>
+          <b>{byPhone ? "Позвонить" : "Описать задачу ↗"}</b>
         </a>
       </section>
       <section className="section compact-top">
@@ -368,7 +374,6 @@ function Home({ services, reviews, nonce, unavailable }: PageData) {
       <section className="how-section">
         <div className="section-title">
           <div>
-            <span className="eyebrow">БЕЗ ЛИШНИХ ХЛОПОТ</span>
             <h2>От задачи — к результату</h2>
           </div>
           <a className="text-link" href="/how-it-works">
@@ -382,15 +387,16 @@ function Home({ services, reviews, nonce, unavailable }: PageData) {
           <span className="seal" aria-hidden="true">
             ✓
           </span>
-          <span className="eyebrow">МОЖНО ОБРАТИТЬСЯ СНОВА</span>
+
           <h2>
             Гарантия
             <br />
             на работы — 1 год.
           </h2>
           <p>
-            Если после выполнения появилась проблема, напишите по той же заявке.
-            История работ останется под рукой.
+            {byPhone
+              ? "Если возник вопрос по выполненной работе, позвоните нам и назовите дату и адрес заказа."
+              : "Если после выполнения появилась проблема, напишите по той же заявке. История работ останется под рукой."}
           </p>
           <a href="/guarantee" className="text-link">
             Как обратиться по гарантии ↗
@@ -466,7 +472,6 @@ function Home({ services, reviews, nonce, unavailable }: PageData) {
       </section>
       <section className="section faq-section">
         <div>
-          <span className="eyebrow">ПОМОЖЕМ РАЗОБРАТЬСЯ</span>
           <h2>Есть вопросы?</h2>
           <p>Здесь — ответы на самые частые.</p>
         </div>
@@ -489,7 +494,13 @@ export default function Page(
   let title = "Мастер для ваших домашних дел",
     body: React.ReactNode;
   if (path === "/") body = <Home {...data} />;
-  else if (path === "/order") {
+  else if (path === "/request") {
+    title = data.business ? "Обсудить сотрудничество" : "Вызвать мастера";
+    body = <CallbackForm business={!!data.business} service={services.find(s => s.id === data.selected)?.name || ""} />;
+  } else if (path === "/privacy" || path === "/callback-consent") {
+    title = path === "/privacy" ? "Политика конфиденциальности" : "Согласие на обработку персональных данных";
+    body = <SitePrivacy consent={path === "/callback-consent"} portal={!byPhone} />;
+  } else if (path === "/order") {
     title = "Оформить заявку";
     body = (
       <div className="section">
@@ -617,8 +628,11 @@ export default function Page(
                 ? "Точную стоимость согласуем после уточнения задачи."
                 : "Цена относится к указанной единице работ. Условия на объекте могут потребовать уточнения."}
             </p>
-            <a className="button" href={"/order?service=" + service.id}>
-              Оформить заявку ↗
+            <a
+              className="button"
+              href={byPhone && data.callbackReady ? "/request?service=" + encodeURIComponent(service.id) : bookingLink("/order?service=" + service.id)}
+            >
+              {byPhone && data.callbackReady ? "Оставить обращение" : byPhone ? "Заказать по телефону" : "Оформить заявку ↗"}
             </a>
           </div>
         </div>
@@ -684,9 +698,9 @@ export default function Page(
               <span>Сотрудничество</span>
             </div>
             <p>
-              Договор, документы, тарифы и формат обслуживания согласуются
-              индивидуально. Здесь можно направить запрос без оформления обычной
-              заявки.
+              Для обсуждения сотрудничества подготовьте адреса объектов,
+              перечень работ и желаемые сроки. Условия и стоимость согласуем
+              индивидуально.
             </p>
             {company.commercialProposal && (
               <a href={company.commercialProposal}>Коммерческое предложение</a>
@@ -700,7 +714,18 @@ export default function Page(
           />
         </section>
         <section className="section business-form-wrap">
-          <BusinessForm documents={data.documents} staging={data.staging} />
+          {byPhone ? (
+            <>
+              <h2>Обсудить сотрудничество</h2>
+              <p>Свяжитесь с диспетчером, чтобы согласовать работы на ваших объектах.</p>
+              {data.callbackReady && <a className="button" href="/request?kind=business">Оставить обращение</a>}
+              <a className="button" href={phoneHref}>
+                {company.phone}
+              </a>
+            </>
+          ) : (
+            <BusinessForm documents={data.documents} staging={data.staging} />
+          )}
         </section>
       </>
     );
@@ -764,17 +789,30 @@ export default function Page(
         <h1>Простой путь к порядку</h1>
         <Process />
         <div className="prose">
-          <h2>Одна заявка — вся история</h2>
-          <p>
-            После подтверждения телефона заявка появится в кабинете. Компания
-            уточнит задачу, предложит смету и согласует визит. Назначенный
-            мастер, сообщения и изменения будут доступны в этой же карточке.
-          </p>
-          <h2>Изменения — с согласованием</h2>
-          <p>
-            Если нужны дополнительные работы, компания подготовит новую версию
-            сметы. Проверьте её и подтвердите в кабинете.
-          </p>
+          {byPhone ? (
+            <>
+              <h2>До визита</h2>
+              <p>
+                Назовите адрес и опишите работы. Уточним стоимость, материалы и
+                подходящее время. Если объём изменится, согласуем это с вами.
+              </p>
+            </>
+          ) : (
+            <>
+              <h2>Одна заявка — вся история</h2>
+              <p>
+                После подтверждения телефона заявка появится в кабинете.
+                Компания уточнит задачу, предложит смету и согласует визит.
+                Назначенный мастер, сообщения и изменения будут доступны в этой
+                же карточке.
+              </p>
+              <h2>Изменения — с согласованием</h2>
+              <p>
+                Если нужны дополнительные работы, компания подготовит новую
+                версию сметы. Проверьте её и подтвердите в кабинете.
+              </p>
+            </>
+          )}
         </div>
         <CTA />
       </section>
@@ -786,15 +824,30 @@ export default function Page(
         <span className="eyebrow">ПОМОЩЬ ПО ВЫПОЛНЕННЫМ РАБОТАМ</span>
         <h1>{company.guarantee}</h1>
         <p>{company.guaranteeNote}</p>
-        <ol className="large-list">
-          <li>Откройте завершённую заявку в кабинете.</li>
-          <li>Нажмите «Помощь по работе» и опишите проблему.</li>
-          <li>Добавьте фотографии в заявку и удобное время связи.</li>
-          <li>Ответ компании появится в истории обращения.</li>
-        </ol>
-        <a className="button" href={company.cabinet + "#orders"}>
-          Открыть мои заявки ↗
-        </a>
+        {byPhone ? (
+          <>
+            <p>
+              Назовите диспетчеру дату и адрес работ или номер заявки.
+              Расскажите, что произошло. Мы найдём заказ и согласуем дальнейшие
+              действия.
+            </p>
+            <a className="button" href={phoneHref}>
+              {company.phone}
+            </a>
+          </>
+        ) : (
+          <>
+            <ol className="large-list">
+              <li>Откройте завершённую заявку в кабинете.</li>
+              <li>Нажмите «Помощь по работе» и опишите проблему.</li>
+              <li>Добавьте фотографии в заявку и удобное время связи.</li>
+              <li>Ответ компании появится в истории обращения.</li>
+            </ol>
+            <a className="button" href={company.cabinet + "#orders"}>
+              Открыть мои заявки ↗
+            </a>
+          </>
+        )}
         <p className="fine">
           Подробные условия указываются в согласованных документах по услугам.
         </p>
@@ -812,15 +865,12 @@ export default function Page(
           height={360}
         />
         <p className="lede">
-          Укажите район и точный адрес в заявке. Компания подтвердит возможность
-          выезда и его условия.
+          При обращении назовите район и адрес. Диспетчер уточнит условия выезда
+          и предложит время визита.
         </p>
-        <p>
-          Не обещаем выезд по адресу до согласования. Список районов с
-          отдельными тарифами пока не утверждён.
-        </p>
-        <a className="button" href="/order?quick=1">
-          Указать адрес ↗
+
+        <a className="button" href={bookingLink("/order?quick=1")}>
+          {byPhone ? "Уточнить выезд" : "Указать адрес ↗"}
         </a>
       </section>
     );
@@ -828,13 +878,15 @@ export default function Page(
     title = "Контакты";
     body = (
       <section className="section prose">
-        <h1>На связи по вашим делам</h1>
+        <h1>Контакты</h1>
         <p className="lede">
           {company.name} · {company.city}
         </p>
         {company.phone && (
           <p>
-            <a href={"tel:" + company.phone}>{company.phone}</a>
+            <a className="contact-number" href={phoneHref}>
+              {company.phone}
+            </a>
           </p>
         )}
         {company.email && (
@@ -842,10 +894,18 @@ export default function Page(
             <a href={"mailto:" + company.email}>{company.email}</a>
           </p>
         )}
+        <p>ИП Шагалина И.Б.</p>
         {company.address && <p>{company.address}</p>}
-        <a className="button" href={company.cabinet + "#messages"}>
-          Написать компании ↗
-        </a>
+        {data.callbackReady && <p><a className="button" href="/request">Заказать обратный звонок</a></p>}
+        <p>
+          Для расчёта назовите район, опишите задачу и укажите удобный день для
+          визита.
+        </p>
+        {!byPhone && (
+          <a className="button" href={company.cabinet + "#messages"}>
+            Написать компании ↗
+          </a>
+        )}
         {!company.phone && (
           <p className="note">
             Контактный телефон, email и реквизиты будут размещены после
@@ -872,13 +932,12 @@ export default function Page(
       </section>
     );
   } else if (
-    ["/privacy", "/consent", "/terms"].includes(path) ||
+    ["/consent", "/terms"].includes(path) ||
     path.startsWith("/documents/")
   ) {
     const id =
       (
         {
-          "/privacy": "privacy",
           "/consent": "personal-data",
           "/terms": "services",
         } as Record<string, string>
@@ -922,6 +981,7 @@ export default function Page(
   return (
     <Layout
       title={title}
+      callbackReady={data.callbackReady}
       description={service?.seo_description || article?.seo_description}
       path={path}
       nonce={nonce}
@@ -929,6 +989,7 @@ export default function Page(
       noindex={[
         "/order",
         "/login",
+        "/request",
         "/search",
         "/maintenance",
         "/500",
