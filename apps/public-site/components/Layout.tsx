@@ -8,6 +8,7 @@ const navigation = [
   ["Наши работы", "/#works"],
   ["О компании", "/how-it-works"],
   ["Для бизнеса", "/business"],
+  ["Статьи", "/articles"],
   ["Контакты", "/contacts"],
 ];
 export function Layout({ children, title, description, path = "/", staging = false, nonce = "", noindex = false }: {
@@ -35,7 +36,7 @@ export function Layout({ children, title, description, path = "/", staging = fal
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="ru_RU" />
         {canonical && <meta property="og:url" content={canonical} />}
-        <link rel="icon" href="/brand-logo.svg" type="image/svg+xml" />
+        <link rel="icon" href="/brand-house.svg" type="image/svg+xml" />
         {company.siteUrl && <script nonce={nonce} type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({
           "@context": "https://schema.org", "@type": "HomeAndConstructionBusiness",
           name: company.name, url: company.siteUrl, telephone: company.phone,
@@ -67,9 +68,9 @@ export function Layout({ children, title, description, path = "/", staging = fal
       <main id="main">{children}</main>
       <footer className="hm-footer">
         <div className="hm-shell hm-footer-grid">
-          <div><a className="hm-brand hm-footer-brand" href="/"><img src="/brand-house.svg" width="44" height="44" alt=""/><span>Домашний мастер</span></a><p>Монтаж, ремонт и забота о доме.<br/>Санкт-Петербург</p></div>
-          <div><h2>Компания</h2><a href="/services">Услуги</a><a href="/facades">Фасадные работы</a><a href="/#works">Примеры работ</a><a href="/how-it-works">Как мы работаем</a><a href="/business">Сотрудничество</a><a href="/guarantee">Гарантия</a></div>
-          <div><h2>Информация</h2><a href="/areas">Районы обслуживания</a><a href="/articles">Полезные статьи</a><a href="/faq">Вопросы и ответы</a><a href="/contacts">Контакты</a></div>
+          <div><a className="hm-brand hm-footer-brand" href="/"><img src="/brand-house.svg" width="44" height="44" alt=""/><span>Домашний мастер</span></a><p>Бытовые, монтажные и фасадные работы.<br/>Санкт-Петербург</p></div>
+          <div><h2>Компания</h2><a href="/services">Услуги</a><a href="/facades">Фасадные работы</a><a href="/#works">Примеры работ</a><a href="/how-it-works">Как мы работаем</a><a href="/business">Сотрудничество</a><a href="/quality">Контроль качества</a><a href="/guarantee">Гарантия</a></div>
+          <div><h2>Информация</h2><a href="/areas">Районы обслуживания</a><a href="/articles">Полезные статьи</a><a href="/faq">Вопросы и ответы</a><a href="/feedback">Обратная связь</a><a href="/careers">Мастерам</a><a href="/documents">Документы</a><a href="/contacts">Контакты</a></div>
           <div><h2>Связаться</h2><a className="hm-footer-phone" href={phoneHref}>{company.phone}</a><a href={"mailto:" + company.email}>{company.email}</a><p>ИП Шагалина И.Б.</p></div>
         </div>
         <div className="hm-shell hm-footer-bottom"><span>© {new Date().getFullYear()} Домашний мастер</span><a href="/privacy">Политика конфиденциальности</a><span>Санкт-Петербург</span></div>

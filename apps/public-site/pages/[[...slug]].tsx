@@ -7,6 +7,7 @@ import { articles } from "../lib/content";
 import SitePrivacy from "../components/SitePrivacy";
 import ApprovedHome, { ServicePhoto } from "../components/ApprovedHome";
 import { BusinessDetails, CompanyProfile, FacadeDetails, FacadeHighlight, facadeDescription } from "../components/CompanyProfile";
+import { CareersContent, CompanyFacts, DocumentsContent, FeedbackContent, QualitySection, TeamSection, siteFaq } from "../components/CompanyContent";
 
 const groups = [
   { id: "curtains", name: "Карнизы и шторы", note: "Потолочные и настенные карнизы, рулонные шторы и жалюзи." },
@@ -22,21 +23,14 @@ const steps = [
   ["Выполняем работу", "Мастер приезжает в согласованное время и выполняет работы."],
   ["Проверяем результат", "Вы принимаете выполненную работу. При необходимости остаёмся на связи."],
 ];
-const questions = [
-  ["Выполняете фасадные работы?", "Да. Выполняем мокрые и вентилируемые фасады, утепление и отделку. Состав работ и стоимость обсуждаем для конкретного объекта."],
-  ["Работаете с компаниями?", "Да. Сотрудничаем с магазинами, поставщиками и ремонтными компаниями. Условия обсуждаем отдельно."],
-  ["Как договориться о визите?", "Позвоните или напишите нам. Расскажите, какие работы нужны, и назовите удобное время."],
-  ["Как узнать стоимость?", "Стоимость зависит от объёма работ, размеров, материала основания и необходимых дополнительных операций. Уточним детали и согласуем стоимость перед началом работ."],
-  ["Нужно ли покупать крепёж самостоятельно?", "Это зависит от комплекта и поверхности. Сообщите нам модель изделия и имеющиеся крепления, чтобы заранее обсудить недостающие материалы."],
-  ["Что делать, если требуется демонтаж?", "Сообщите об этом при первом обращении. Демонтаж и другие дополнительные работы согласуем отдельно."],
-  ["Как обратиться по гарантии?", "Позвоните в компанию, сообщите дату и адрес выполненных работ. Уточним условия и порядок дальнейших действий."],
-];
+const questions = siteFaq;
 const fixedPages: Record<string, string> = {
   "/": "Бытовые, монтажные и фасадные работы", "/services": "Наши услуги", "/facades": "Фасадные работы и утепление в Санкт-Петербурге",
   "/business": "Сотрудничество", "/how-it-works": "О компании и наш подход",
   "/guarantee": "Гарантия", "/areas": "Районы обслуживания",
   "/articles": "Полезные статьи", "/contacts": "Контакты",
   "/faq": "Вопросы и ответы", "/privacy": "Политика конфиденциальности",
+  "/quality": "Контроль качества", "/careers": "Сотрудничество с мастерами", "/documents": "Документы и реквизиты", "/feedback": "Отзывы и обратная связь",
   "/maintenance": "Временные работы на сайте", "/500": "Временная ошибка",
 };
 type Props = {path: string; staging: boolean; nonce: string};
@@ -72,7 +66,7 @@ function ContactBanner() {
   return <section className="hm-contact-band"><div className="hm-shell hm-contact-inner"><div><span className="hm-kicker">СВЯЗЬ С КОМПАНИЕЙ</span><h2>Обсудим вашу задачу.</h2><p>Расскажите, что нужно установить или отремонтировать.</p></div><div><a className="hm-large-phone" href={phoneHref}>{company.phone}</a><a className="hm-mail" href={"mailto:" + company.email}>{company.email} ↗</a></div></div></section>;
 }
 function ArticleList() {
-  return <div className="hm-article-grid">{articles.filter(a => a.published).map(a => <a className="hm-article-card" href={"/articles/" + a.slug} key={a.slug}><div className="hm-article-art"><img src={a.cover} alt="" width="100" height="100" loading="lazy"/></div><span className="hm-kicker">{a.category}</span><h3>{a.title}</h3><p>{a.excerpt}</p><span className="hm-link">Читать статью ↗</span></a>)}</div>;
+  return <div className="hm-article-grid">{articles.filter(a => a.published).map(a => <a className="hm-article-card" href={"/articles/" + a.slug} key={a.slug}><div className="hm-article-art"><img src={a.cover} alt="" width="420" height="240" loading="lazy"/></div><span className="hm-kicker">{a.category}</span><h3>{a.title}</h3><p>{a.excerpt}</p><span className="hm-link">Читать статью ↗</span></a>)}</div>;
 }
 function Intro({title, text, kicker = "ДОМАШНИЙ МАСТЕР"}: {title:string; text?:string; kicker?:string}) {
   return <div className="hm-page-intro"><span className="hm-kicker">{kicker}</span><h1>{title}</h1>{text && <p>{text}</p>}</div>;
@@ -98,7 +92,11 @@ export default function Page({path, staging, nonce}: Props) {
       inner = <><Intro title={group.name} text={group.note}/><ServiceRows list={serviceList.filter(s => s.category_slug === group.id && (!sub || s.subcategory_slug === sub))}/></>;
     }
     else if (service) inner = <><Intro title={service.name} text={service.description} kicker={service.category}/><div className="hm-detail"><ServicePhoto key={service.category_slug} category={service.category_slug} alt={service.name}/><div><h2>Что важно знать</h2><p>Объём установки, необходимые материалы и дополнительные работы уточняем перед визитом.</p><p>Стоимость зависит от конкретной задачи и условий на месте.</p><ContactButtons/></div></div></>;
-    else if (path === "/how-it-works") inner = <><Intro title="О компании «Домашний мастер»" text="Бытовые, монтажные и фасадные работы в Санкт-Петербурге."/><CompanyProfile/><div className="hm-prose"><h2>Как организуем работы</h2><p>Заранее обсуждаем объём работ, стоимость и время. После выполнения вы принимаете результат, а при необходимости можете связаться с компанией.</p></div><Process/><FacadeHighlight/></>;
+    else if (path === "/how-it-works") inner = <><Intro title="О компании «Домашний мастер»" text="Бытовые, монтажные и фасадные работы в Санкт-Петербурге."/><CompanyProfile/><CompanyFacts/><QualitySection/><TeamSection/><div className="hm-prose"><h2>Как организуем работы</h2><p>Заранее обсуждаем объём работ, стоимость и время. После выполнения вы принимаете результат, а при необходимости можете связаться с компанией.</p></div><Process/><FacadeHighlight/></>;
+    else if (path === "/quality") inner = <><Intro title="Контроль качества" text="Организация работ, согласование и проверка результата."/><QualitySection/><ContactButtons/></>;
+    else if (path === "/careers") inner = <><Intro title="Сотрудничество с мастерами" text="Для специалистов по бытовому монтажу и фасадных бригад."/><CareersContent/></>;
+    else if (path === "/documents") inner = <><Intro title="Документы и реквизиты" text="Информация об исполнителе и документы для обсуждения сотрудничества."/><DocumentsContent/></>;
+    else if (path === "/feedback") inner = <><Intro title="Отзывы и обратная связь" text="Связь с компанией после выполненных работ."/><FeedbackContent/></>;
     else if (path === "/business") inner = <><Intro title="Сотрудничество" text="Работаем с компаниями в Санкт-Петербурге: бытовой монтаж, ремонт и фасадные работы."/><BusinessDetails/></>;
     else if (path === "/contacts") inner = <><Intro title="Контакты" text="Свяжитесь с нами напрямую — по телефону или электронной почте."/><div className="hm-contact-cards"><div><span className="hm-kicker">ТЕЛЕФОН</span><a href={phoneHref}>{company.phone}</a><p>Для обсуждения работ и визита мастера.</p></div><div><span className="hm-kicker">ЭЛЕКТРОННАЯ ПОЧТА</span><a href={"mailto:" + company.email}>{company.email}</a><p>Для вопросов и делового сотрудничества.</p></div><div><span className="hm-kicker">КОМПАНИЯ</span><strong>ИП Шагалина И.Б.</strong><p>Санкт-Петербург</p></div></div></>;
     else if (path === "/guarantee") inner = <><Intro title="Гарантия на работы" text="На бытовые работы — 1 год с учётом применимых условий."/><div className="hm-prose"><p>{company.guaranteeNote} Гарантийные условия по фасадным работам согласовываем для конкретного объекта.</p><p>Если после визита возник вопрос по выполненной работе, свяжитесь с нами, сообщите дату и адрес работ. Уточним ситуацию и дальнейшие действия.</p><ContactButtons/></div></>;

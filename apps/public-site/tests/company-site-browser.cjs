@@ -13,11 +13,14 @@ const screens = process.env.COMPANY_PREVIEW_DIR || "company-preview";
       assert.equal(res.status, 307, route + " must redirect");
       assert.equal(new URL(res.headers.get("location"), origin).pathname, "/contacts");
     }
+    const proposal = await fetch(origin + "/company-proposal.pdf");
+    assert.equal(proposal.status, 200);
+    assert.ok(Buffer.from(await proposal.arrayBuffer()).subarray(0,5).toString() === "%PDF-", "proposal PDF");
     for (const width of [1440, 768, 390, 360]) {
       const page = await browser.newPage({viewport: {width, height: 900}, deviceScaleFactor: 1});
       const errors = [];
       page.on("pageerror", error => errors.push(error.message));
-      for (const route of ["/", "/services", "/categories/curtains", "/services/ustanovka-karniza", "/facades", "/how-it-works", "/business", "/contacts", "/privacy", "/articles/podgotovit-zayavku", "/faq"]) {
+      for (const route of ["/", "/services", "/categories/curtains", "/services/ustanovka-karniza", "/facades", "/how-it-works", "/business", "/quality", "/careers", "/documents", "/feedback", "/contacts", "/privacy", "/articles/podgotovit-zayavku", "/articles/mokryy-ili-ventiliruemyy-fasad", "/articles/podklyuchenie-tehniki-podgotovka", "/faq"]) {
         const res = await page.goto(origin + route, {waitUntil: "networkidle"});
         assert.equal(res.status(), 200, route);
         assert.equal(await page.locator("h1").count(), 1, route + " h1");
@@ -42,6 +45,12 @@ const screens = process.env.COMPANY_PREVIEW_DIR || "company-preview";
             assert.equal(await page.getByRole("heading", {name:heading,exact:true}).count(), 1);
         }
         if (route === "/") {
+          assert.equal(await page.locator(".hm-approved-service").count(), 6, "all household services");
+          assert.equal(await page.locator(".hm-approved-service:visible").count(), 6, "all services visible");
+          assert.ok(await page.locator(".hm-quality").count(), "quality section");
+          assert.ok(await page.locator(".hm-useful").count(), "article preview");
+          assert.ok(await page.locator(".hm-team").count(), "team section");
+          assert.ok(await page.locator(".hm-hero-photo img").evaluate((img,w)=>img.naturalWidth >= (w <= 600 ? 800 : 1200), width), "new hero resolution");
           const grid = page.locator(".hm-gallery-card");
           assert.equal(await grid.count(), 6);
           await page.getByRole("button", {name:"Сантехника",exact:true}).click();
@@ -62,12 +71,20 @@ const screens = process.env.COMPANY_PREVIEW_DIR || "company-preview";
           assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "gallery overflow");
         }
         if (route === "/" || route === "/contacts" || route === "/facades" || route === "/how-it-works" || route === "/business") {
+          await page.evaluate(async () => { const root=document.documentElement; root.style.scrollBehavior="auto"; window.scrollTo(0,0); for(let y=0;y<root.scrollHeight;y+=Math.max(400,innerHeight-80)){window.scrollTo(0,y);await new Promise(r=>setTimeout(r,45));}window.scrollTo(0,0);root.style.removeProperty("scroll-behavior"); });
+          await page.waitForTimeout(1000);
           await page.screenshot({path: screens + "/" + (route === "/" ? "home" : route.slice(1)) + "-" + width + ".png", fullPage: true});
         }
       }
       assert.deepEqual(errors, [], width + "px client errors");
       await page.close();
     }
-    console.log("Information site: page and redirect checks passed at 1440, 768, 390 and 360px");
+    const reduced = await browser.newPage({viewport:{width:390,height:844},reducedMotion:"reduce"});
+    await reduced.goto(origin + "/", {waitUntil:"networkidle"});
+    assert.equal(await reduced.locator(".hm-approved-hero h1").evaluate(el=>getComputedStyle(el).animationName), "none");
+    assert.equal(await reduced.locator(".hm-intro-motion").count(), 0);
+    assert.equal(await reduced.locator(".hm-hero-photo img").evaluate(el=>getComputedStyle(el).transform), "none");
+    await reduced.close();
+    console.log("Information site: pages, local images, PDF, gallery, responsive layout and reduced motion checks passed.");
   } finally { await browser.close(); }
 })().catch(error => {console.error(error); process.exitCode=1;});
