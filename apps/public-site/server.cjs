@@ -155,6 +155,7 @@ async function start() {
         let paths = [
           "/",
           "/services",
+          "/facades",
           "/business",
           "/how-it-works",
           "/guarantee",

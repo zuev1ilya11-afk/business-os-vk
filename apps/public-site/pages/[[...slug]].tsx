@@ -6,6 +6,7 @@ import serviceList from "../lib/service-list.json";
 import { articles } from "../lib/content";
 import SitePrivacy from "../components/SitePrivacy";
 import ApprovedHome, { ServicePhoto } from "../components/ApprovedHome";
+import { BusinessDetails, CompanyProfile, FacadeDetails, FacadeHighlight, facadeDescription } from "../components/CompanyProfile";
 
 const groups = [
   { id: "curtains", name: "Карнизы и шторы", note: "Потолочные и настенные карнизы, рулонные шторы и жалюзи." },
@@ -22,6 +23,8 @@ const steps = [
   ["Проверяем результат", "Вы принимаете выполненную работу. При необходимости остаёмся на связи."],
 ];
 const questions = [
+  ["Выполняете фасадные работы?", "Да. Выполняем мокрые и вентилируемые фасады, утепление и отделку. Состав работ и стоимость обсуждаем для конкретного объекта."],
+  ["Работаете с компаниями?", "Да. Сотрудничаем с магазинами, поставщиками и ремонтными компаниями. Условия обсуждаем отдельно."],
   ["Как договориться о визите?", "Позвоните или напишите нам. Расскажите, какие работы нужны, и назовите удобное время."],
   ["Как узнать стоимость?", "Стоимость зависит от объёма работ, размеров, материала основания и необходимых дополнительных операций. Уточним детали и согласуем стоимость перед началом работ."],
   ["Нужно ли покупать крепёж самостоятельно?", "Это зависит от комплекта и поверхности. Сообщите нам модель изделия и имеющиеся крепления, чтобы заранее обсудить недостающие материалы."],
@@ -29,7 +32,7 @@ const questions = [
   ["Как обратиться по гарантии?", "Позвоните в компанию, сообщите дату и адрес выполненных работ. Уточним условия и порядок дальнейших действий."],
 ];
 const fixedPages: Record<string, string> = {
-  "/": "Мастерские услуги для дома", "/services": "Наши услуги",
+  "/": "Бытовые, монтажные и фасадные работы", "/services": "Наши услуги", "/facades": "Фасадные работы и утепление в Санкт-Петербурге",
   "/business": "Сотрудничество", "/how-it-works": "О компании и наш подход",
   "/guarantee": "Гарантия", "/areas": "Районы обслуживания",
   "/articles": "Полезные статьи", "/contacts": "Контакты",
@@ -82,22 +85,23 @@ export default function Page({path, staging, nonce}: Props) {
   const group = groups.find(g => path === "/categories/" + g.id || path.startsWith("/categories/" + g.id + "/"));
   const article = articles.find(a => a.published && path === "/articles/" + a.slug);
   const title = service ? service.name : group ? group.name : article ? article.title : fixedPages[path] || "Домашний мастер";
-  const description = service?.description || article?.excerpt || group?.note;
+  const description = path === "/facades" ? facadeDescription : service?.description || article?.excerpt || group?.note;
   let body: ReactNode;
   if (path === "/") body = <ApprovedHome/>;
   else if (path === "/privacy") body = <SitePrivacy consent={false} portal={false}/>;
   else {
     let inner: ReactNode;
-    if (path === "/services") inner = <><Intro title="Наши услуги" text="Монтаж, ремонт и подключение оборудования для дома. Выберите нужное направление."/><Categories/></>;
+    if (path === "/services") inner = <><Intro title="Наши услуги" text="Бытовой монтаж, ремонт и подключение оборудования, фасадные работы. Выберите нужное направление."/><Categories/><FacadeHighlight/></>;
+    else if (path === "/facades") inner = <><Intro title="Фасадные работы и утепление" text={facadeDescription} kicker="СТРОИТЕЛЬНОЕ НАПРАВЛЕНИЕ"/><FacadeDetails/></>;
     else if (group) {
       const sub = path.split("/")[3];
       inner = <><Intro title={group.name} text={group.note}/><ServiceRows list={serviceList.filter(s => s.category_slug === group.id && (!sub || s.subcategory_slug === sub))}/></>;
     }
     else if (service) inner = <><Intro title={service.name} text={service.description} kicker={service.category}/><div className="hm-detail"><ServicePhoto key={service.category_slug} category={service.category_slug} alt={service.name}/><div><h2>Что важно знать</h2><p>Объём установки, необходимые материалы и дополнительные работы уточняем перед визитом.</p><p>Стоимость зависит от конкретной задачи и условий на месте.</p><ContactButtons/></div></div></>;
-    else if (path === "/how-it-works") inner = <><Intro title="Работаем с вниманием к деталям." text="«Домашний мастер» — сервис бытового монтажа и ремонта в Санкт-Петербурге."/><Process/><div className="hm-prose"><h2>Наш подход</h2><p>Заранее обсуждаем объём работ, стоимость и время. После выполнения вы принимаете результат, а при необходимости можете связаться с компанией.</p></div></>;
-    else if (path === "/business") inner = <><Intro title="Сотрудничество" text="Вместе с партнёрами помогаем клиентам организовать монтаж и бытовые работы."/><div className="hm-business-grid">{["Магазины и поставщики","Ремонтные компании","Дизайнеры интерьера"].map(s=><div key={s}><h2>{s}</h2><p>Обсудим формат совместной работы, перечень услуг и порядок взаимодействия.</p></div>)}</div><div className="hm-prose"><h2>Связаться по вопросам сотрудничества</h2><p>Расскажите о вашей компании и предполагаемом формате сотрудничества.</p><ContactButtons/></div></>;
+    else if (path === "/how-it-works") inner = <><Intro title="О компании «Домашний мастер»" text="Бытовые, монтажные и фасадные работы в Санкт-Петербурге."/><CompanyProfile/><div className="hm-prose"><h2>Как организуем работы</h2><p>Заранее обсуждаем объём работ, стоимость и время. После выполнения вы принимаете результат, а при необходимости можете связаться с компанией.</p></div><Process/><FacadeHighlight/></>;
+    else if (path === "/business") inner = <><Intro title="Сотрудничество" text="Работаем с компаниями в Санкт-Петербурге: бытовой монтаж, ремонт и фасадные работы."/><BusinessDetails/></>;
     else if (path === "/contacts") inner = <><Intro title="Контакты" text="Свяжитесь с нами напрямую — по телефону или электронной почте."/><div className="hm-contact-cards"><div><span className="hm-kicker">ТЕЛЕФОН</span><a href={phoneHref}>{company.phone}</a><p>Для обсуждения работ и визита мастера.</p></div><div><span className="hm-kicker">ЭЛЕКТРОННАЯ ПОЧТА</span><a href={"mailto:" + company.email}>{company.email}</a><p>Для вопросов и делового сотрудничества.</p></div><div><span className="hm-kicker">КОМПАНИЯ</span><strong>ИП Шагалина И.Б.</strong><p>Санкт-Петербург</p></div></div></>;
-    else if (path === "/guarantee") inner = <><Intro title="Гарантия на работы" text={company.guarantee}/><div className="hm-prose"><p>{company.guaranteeNote}</p><p>Если после визита возник вопрос по выполненной работе, свяжитесь с нами, сообщите дату и адрес работ. Уточним ситуацию и дальнейшие действия.</p><ContactButtons/></div></>;
+    else if (path === "/guarantee") inner = <><Intro title="Гарантия на работы" text="На бытовые работы — 1 год с учётом применимых условий."/><div className="hm-prose"><p>{company.guaranteeNote} Гарантийные условия по фасадным работам согласовываем для конкретного объекта.</p><p>Если после визита возник вопрос по выполненной работе, свяжитесь с нами, сообщите дату и адрес работ. Уточним ситуацию и дальнейшие действия.</p><ContactButtons/></div></>;
     else if (path === "/areas") inner = <><Intro title="Работаем в Санкт-Петербурге" text="Возможность выезда по конкретному адресу и время визита уточняйте по телефону."/><ContactButtons/></>;
     else if (path === "/faq") inner = <><Intro title="Вопросы и ответы"/><FAQ/></>;
     else if (path === "/articles") inner = <><Intro title="Полезные статьи" text="Как подготовиться к визиту мастера и заранее обсудить детали работ."/><ArticleList/></>;

@@ -17,7 +17,7 @@ const screens = process.env.COMPANY_PREVIEW_DIR || "company-preview";
       const page = await browser.newPage({viewport: {width, height: 900}, deviceScaleFactor: 1});
       const errors = [];
       page.on("pageerror", error => errors.push(error.message));
-      for (const route of ["/", "/services", "/categories/curtains", "/services/ustanovka-karniza", "/business", "/contacts", "/privacy", "/articles/podgotovit-zayavku", "/faq"]) {
+      for (const route of ["/", "/services", "/categories/curtains", "/services/ustanovka-karniza", "/facades", "/how-it-works", "/business", "/contacts", "/privacy", "/articles/podgotovit-zayavku", "/faq"]) {
         const res = await page.goto(origin + route, {waitUntil: "networkidle"});
         assert.equal(res.status(), 200, route);
         assert.equal(await page.locator("h1").count(), 1, route + " h1");
@@ -33,6 +33,14 @@ const screens = process.env.COMPANY_PREVIEW_DIR || "company-preview";
         });
         assert.equal(await page.locator(".hm-photo-fallback").count(), 0, route + " local photo fallback");
         assert.ok(await page.locator("img").evaluateAll(imgs => imgs.every(img => img.naturalWidth > 0)), route + " broken image");
+        if (route === "/" || route === "/business") {
+          assert.ok(await page.getByText("Лемана ПРО", {exact:true}).count(), route + " partner");
+          assert.ok(await page.getByText("Петрович", {exact:true}).count(), route + " partner");
+        }
+        if (route === "/facades") {
+          for (const heading of ["Мокрый фасад", "Вентилируемый фасад", "Утепление фасадов"])
+            assert.equal(await page.getByRole("heading", {name:heading,exact:true}).count(), 1);
+        }
         if (route === "/") {
           const grid = page.locator(".hm-gallery-card");
           assert.equal(await grid.count(), 6);
@@ -53,8 +61,8 @@ const screens = process.env.COMPANY_PREVIEW_DIR || "company-preview";
           assert.equal(await grid.count(), 6);
           assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "gallery overflow");
         }
-        if (route === "/" || route === "/contacts") {
-          await page.screenshot({path: screens + "/" + (route === "/" ? "home" : "contacts") + "-" + width + ".png", fullPage: true});
+        if (route === "/" || route === "/contacts" || route === "/facades" || route === "/how-it-works" || route === "/business") {
+          await page.screenshot({path: screens + "/" + (route === "/" ? "home" : route.slice(1)) + "-" + width + ".png", fullPage: true});
         }
       }
       assert.deepEqual(errors, [], width + "px client errors");

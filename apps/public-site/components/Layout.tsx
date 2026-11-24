@@ -4,6 +4,7 @@ import { company, phoneHref } from "../lib/company";
 
 const navigation = [
   ["Услуги", "/services"],
+  ["Фасады", "/facades"],
   ["Наши работы", "/#works"],
   ["О компании", "/how-it-works"],
   ["Для бизнеса", "/business"],
@@ -20,7 +21,7 @@ export function Layout({ children, title, description, path = "/", staging = fal
   noindex?: boolean;
 }) {
   const canonical = company.siteUrl ? new URL(path, company.siteUrl).href : "";
-  const summary = description || "Монтаж карнизов и штор, сантехника, электрика, подключение техники, сборка мебели и мелкий ремонт в Санкт-Петербурге.";
+  const summary = description || "Бытовые, монтажные и фасадные работы в Санкт-Петербурге: монтаж карнизов и штор, сантехника, электрика, подключение техники, утепление и отделка фасадов.";
   return (
     <div className="hm-site">
       <Head>
@@ -47,7 +48,7 @@ export function Layout({ children, title, description, path = "/", staging = fal
         <div className="hm-shell hm-header-inner">
           <a className="hm-brand" href="/" aria-label="Домашний мастер — главная">
             <img src="/brand-house.svg" width="44" height="44" alt="" />
-            <span>Домашний мастер<small>Монтаж, установка и бытовые работы</small></span>
+            <span>Домашний мастер<small>Монтаж, ремонт и фасадные работы</small></span>
           </a>
           <nav className="hm-desktop-nav" aria-label="Основная навигация">
             {navigation.map(([label, url]) => <a key={url} href={url} aria-current={path === url ? "page" : undefined}>{label}</a>)}
@@ -67,7 +68,7 @@ export function Layout({ children, title, description, path = "/", staging = fal
       <footer className="hm-footer">
         <div className="hm-shell hm-footer-grid">
           <div><a className="hm-brand hm-footer-brand" href="/"><img src="/brand-house.svg" width="44" height="44" alt=""/><span>Домашний мастер</span></a><p>Монтаж, ремонт и забота о доме.<br/>Санкт-Петербург</p></div>
-          <div><h2>Компания</h2><a href="/services">Услуги</a><a href="/#works">Примеры работ</a><a href="/how-it-works">Как мы работаем</a><a href="/business">Сотрудничество</a><a href="/guarantee">Гарантия</a></div>
+          <div><h2>Компания</h2><a href="/services">Услуги</a><a href="/facades">Фасадные работы</a><a href="/#works">Примеры работ</a><a href="/how-it-works">Как мы работаем</a><a href="/business">Сотрудничество</a><a href="/guarantee">Гарантия</a></div>
           <div><h2>Информация</h2><a href="/areas">Районы обслуживания</a><a href="/articles">Полезные статьи</a><a href="/faq">Вопросы и ответы</a><a href="/contacts">Контакты</a></div>
           <div><h2>Связаться</h2><a className="hm-footer-phone" href={phoneHref}>{company.phone}</a><a href={"mailto:" + company.email}>{company.email}</a><p>ИП Шагалина И.Б.</p></div>
         </div>
