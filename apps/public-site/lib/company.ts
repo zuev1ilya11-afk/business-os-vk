@@ -1,8 +1,8 @@
 import terms from "./intake-terms.json";
-const phone = process.env.NEXT_PUBLIC_COMPANY_PHONE || "+7 (981) 684-97-19";
-export const phoneHref = "tel:" + phone.replace(/[^+0-9]/g, "");
+const phone = process.env.NEXT_PUBLIC_SHOW_PHONE === "0" ? "" : (process.env.NEXT_PUBLIC_COMPANY_PHONE || "+7 (981) 684-97-19");
+export const phoneHref = phone ? "tel:" + phone.replace(/[^+0-9]/g, "") : "";
 export const byPhone = process.env.NEXT_PUBLIC_BOOKING_MODE === "phone";
-export const bookingLink = (path = "/order") => (byPhone ? phoneHref : path);
+export const bookingLink = (path = "/order") => (byPhone ? (phoneHref || "mailto:" + company.email) : path);
 export const company = {
   name: "Домашний мастер",
   city: "Санкт-Петербург",

@@ -201,3 +201,9 @@ html{scroll-behavior:smooth}
 @media(max-width:370px){.hm-site .hm-brand{font-size:16px}.hm-site .hm-brand small{font-size:7px}.hm-site .hm-approved-actions a{padding-inline:10px}.hm-site .hm-approved-service-copy{padding:11px 9px}.hm-useful-grid>a{grid-template-columns:1fr}.hm-useful-photo{height:150px}.hm-site .hm-approved-hero{min-height:550px}.hm-premium-partner-strip>.hm-shell{gap:10px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}.hm-site *, .hm-intro-motion,.hm-intro-motion *{animation:none!important;transition:none!important;scroll-behavior:auto!important}.hm-site .hm-hero-photo img{transform:none!important;will-change:auto}.hm-intro-motion{display:none!important}}
 @media print{.hm-site .hm-header,.hm-site .hm-mobile-contact,.hm-intro-motion{display:none!important}.hm-site *{animation:none!important;transform:none!important;opacity:1!important}}
+
+/* Single contact action when the public phone is temporarily hidden. */
+.hm-site .hm-approved-actions.hm-email-only a{background:#dfc08a;border-color:#dfc08a;color:#17271f!important}
+.hm-site .hm-approved-actions.hm-email-only a:hover{background:#ebd0a1}
+.hm-site .hm-mobile-contact.hm-email-only{grid-template-columns:minmax(0,1fr)}
+.hm-site .hm-mobile-contact.hm-email-only a{background:#20362a;color:#fff!important;border-color:#20362a}

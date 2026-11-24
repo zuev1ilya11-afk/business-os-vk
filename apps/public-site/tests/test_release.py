@@ -58,7 +58,7 @@ class ReleaseTransaction(unittest.TestCase):
         self.enterContext(patch.object(r, "staff_signature", return_value="same staff"))
         self.wait = self.enterContext(patch.object(r, "wait_site"))
         self.enterContext(patch.object(r, "container_info", side_effect=self.docker.get))
-        self.enterContext(patch.object(r, "build_image", side_effect=lambda mode, rev: "img:" + rev))
+        self.enterContext(patch.object(r, "build_image", side_effect=lambda mode, rev, hide_phone=False: "img:" + rev + ("-email" if hide_phone else "")))
         self.enterContext(patch.object(r, "run_image", side_effect=self.run_image))
         self.enterContext(patch.object(r, "run", side_effect=self.run_command))
 
@@ -131,18 +131,23 @@ class ReleaseTransaction(unittest.TestCase):
         self.assertTrue(r.is_information(self.docker[4187]))
         self.assertFalse(r.is_information(self.docker[4186]))
         self.assertNotIn(b"127.0.0.1:4181", self.gateway.path.read_bytes())
-        self.wait.assert_any_call(4187, "phone", tls=True, gateway=self.gateway, check_intake=False, information=True)
+        self.wait.assert_any_call(4187, "phone", tls=True, gateway=self.gateway, check_intake=False, information=True, hide_phone=False)
         self.rollback()
         self.assertEqual(self.gateway.path.read_bytes(), old)
         self.assertTrue(self.docker[4186]["State"]["Running"])
-        self.wait.assert_called_with(4186, "phone", information=False)
+        self.wait.assert_called_with(4186, "phone", information=False, hide_phone=False)
 
     def test_rollback_to_information_release(self):
         self.deploy_information(4186)
         self.deploy_information(4187)
         self.rollback()
         self.assertTrue(r.is_information(self.docker[4186]))
-        self.wait.assert_called_with(4186, "phone", information=True)
+        self.wait.assert_called_with(4186, "phone", information=True, hide_phone=False)
+
+    def test_hidden_phone_image_has_distinct_tag(self):
+        self.assertNotEqual(r.image_tag("phone", "a" * 40), r.image_tag("phone", "a" * 40, True))
+        self.assertTrue(r.is_phone_hidden({"Config": {"Env": ["NEXT_PUBLIC_SHOW_PHONE=0"]}}))
+        self.assertFalse(r.is_phone_hidden({"Config": {"Env": ["NEXT_PUBLIC_SHOW_PHONE=1"]}}))
 
     def test_rollback_preserves_independent_configuration(self):
         self.deploy(4186)

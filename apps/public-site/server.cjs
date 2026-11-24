@@ -144,7 +144,7 @@ async function start() {
             environment,
             booking,
             callback: Boolean(callbackDb),
-            ...(informationOnly ? { informationOnly: true } : {}),
+            ...(informationOnly ? { informationOnly: true, phoneHidden: process.env.NEXT_PUBLIC_SHOW_PHONE === "0" } : {}),
           }),
         );
         return;

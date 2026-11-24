@@ -9,7 +9,13 @@ jobs:
   preview:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        show_phone: ["0", "1"]
     env:
+      COMPANY_EXPECT_PHONE: ${{ matrix.show_phone }}
+      NEXT_PUBLIC_SHOW_PHONE: ${{ matrix.show_phone }}
       NEXT_TELEMETRY_DISABLED: '1'
       WEBSITE_ENV: staging
     steps:
@@ -26,7 +32,7 @@ jobs:
         run: python3 -m unittest discover -s apps/public-site/tests -p test_release.py
       - name: Build production information-only image
         run: |
-          docker build -f apps/public-site/Dockerfile --build-arg NEXT_PUBLIC_BOOKING_MODE=phone --build-arg NEXT_PUBLIC_SITE_URL=https://site.homemaster.qd.je -t hm-company-release-check .
+          docker build -f apps/public-site/Dockerfile --build-arg NEXT_PUBLIC_BOOKING_MODE=phone --build-arg NEXT_PUBLIC_SHOW_PHONE="$COMPANY_EXPECT_PHONE" --build-arg NEXT_PUBLIC_SITE_URL=https://site.homemaster.qd.je -t hm-company-release-check .
       - name: Start isolated production-style preview
         run: |
           docker run -d --name hm-company-release-check --network host --read-only --cap-drop=ALL --security-opt no-new-privileges --tmpfs /tmp --tmpfs /app/apps/public-site/.next/cache -e HOST=127.0.0.1 -e PORT=4173 -e WEBSITE_INFORMATION_ONLY=1 hm-company-release-check
@@ -38,13 +44,13 @@ jobs:
           exit 1
       - name: Verify release preflight against the actual image
         run: |
-          python3 -c 'import sys;sys.path.insert(0,"apps/public-site/ops");import release;release.wait_site(4173,"phone",information=True)'
+          python3 -c 'import sys;sys.path.insert(0,"apps/public-site/ops");import os,release;release.wait_site(4173,"phone",information=True,hide_phone=os.environ["COMPANY_EXPECT_PHONE"]=="0")'
           test "$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:4173/api/callback)" = 404
       - run: node apps/public-site/tests/company-site-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: company-site-preview
+          name: company-site-preview-phone-${{ matrix.show_phone }}
           path: company-preview/
           if-no-files-found: ignore
           retention-days: 14

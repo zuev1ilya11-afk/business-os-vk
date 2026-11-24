@@ -4,6 +4,7 @@ const fs = require("node:fs/promises");
 const { chromium } = require("@playwright/test");
 const origin = process.env.COMPANY_PREVIEW_ORIGIN || "http://127.0.0.1:4173";
 const screens = process.env.COMPANY_PREVIEW_DIR || "company-preview";
+const expectPhone = process.env.COMPANY_EXPECT_PHONE !== "0";
 (async () => {
   await fs.mkdir(screens, {recursive: true});
   const browser = await chromium.launch({headless: true});
@@ -26,7 +27,14 @@ const screens = process.env.COMPANY_PREVIEW_DIR || "company-preview";
         assert.equal(await page.locator("h1").count(), 1, route + " h1");
         assert.equal(await page.locator("form, input, textarea").count(), 0, route + " intake controls");
         assert.equal(await page.locator('a[href^="/request"], a[href^="/order"], a[href^="/client/"]').count(), 0, route + " hidden booking");
-        assert.ok(await page.locator('a[href="tel:+79816849719"]').count(), route + " telephone");
+        if (expectPhone) {
+          assert.ok(await page.locator('a[href="tel:+79816849719"]').count(), route + " telephone");
+        } else {
+          assert.equal(await page.locator('a[href^="tel:"]').count(), 0, route + " no telephone links");
+          const html = await page.content();
+          assert.ok(!html.includes("684-97-19") && !html.includes("79816849719"), route + " no phone in HTML or metadata");
+          assert.equal(await page.getByRole("link", {name:/Позвонить/}).count(), 0, route + " no call CTA");
+        }
         assert.ok(await page.locator('a[href="mailto:home_master92@mail.ru"]').count(), route + " mail");
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), width + "px overflow: " + route);
         await page.evaluate(async () => {

@@ -39,7 +39,7 @@ export function Layout({ children, title, description, path = "/", staging = fal
         <link rel="icon" href="/brand-house.svg" type="image/svg+xml" />
         {company.siteUrl && <script nonce={nonce} type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({
           "@context": "https://schema.org", "@type": "HomeAndConstructionBusiness",
-          name: company.name, url: company.siteUrl, telephone: company.phone,
+          name: company.name, url: company.siteUrl, ...(company.phone ? { telephone: company.phone } : {}),
           email: company.email, areaServed: company.city
         }).replace(/</g, "\\u003c")}} />}
       </Head>
@@ -54,12 +54,12 @@ export function Layout({ children, title, description, path = "/", staging = fal
           <nav className="hm-desktop-nav" aria-label="Основная навигация">
             {navigation.map(([label, url]) => <a key={url} href={url} aria-current={path === url ? "page" : undefined}>{label}</a>)}
           </nav>
-          <a className="hm-header-call" href={phoneHref}>{company.phone} <span aria-hidden="true">↗</span></a>
+          {company.phone ? <a className="hm-header-call" href={phoneHref}>{company.phone} <span aria-hidden="true">↗</span></a> : <a className="hm-header-call" href={"mailto:" + company.email}>Написать <span aria-hidden="true">↗</span></a>}
           <details className="hm-mobile-menu">
             <summary>Меню <span aria-hidden="true">+</span></summary>
             <nav aria-label="Мобильная навигация">
               {navigation.map(([label, url]) => <a key={url} href={url}>{label}</a>)}
-              <a href={phoneHref}>{company.phone}</a>
+              {company.phone && <a href={phoneHref}>{company.phone}</a>}
               <a href={"mailto:" + company.email}>{company.email}</a>
             </nav>
           </details>
@@ -71,11 +71,11 @@ export function Layout({ children, title, description, path = "/", staging = fal
           <div><a className="hm-brand hm-footer-brand" href="/"><img src="/brand-house.svg" width="44" height="44" alt=""/><span>Домашний мастер</span></a><p>Бытовые, монтажные и фасадные работы.<br/>Санкт-Петербург</p></div>
           <div><h2>Компания</h2><a href="/services">Услуги</a><a href="/facades">Фасадные работы</a><a href="/#works">Примеры работ</a><a href="/how-it-works">Как мы работаем</a><a href="/business">Сотрудничество</a><a href="/quality">Контроль качества</a><a href="/guarantee">Гарантия</a></div>
           <div><h2>Информация</h2><a href="/areas">Районы обслуживания</a><a href="/articles">Полезные статьи</a><a href="/faq">Вопросы и ответы</a><a href="/feedback">Обратная связь</a><a href="/careers">Мастерам</a><a href="/documents">Документы</a><a href="/contacts">Контакты</a></div>
-          <div><h2>Связаться</h2><a className="hm-footer-phone" href={phoneHref}>{company.phone}</a><a href={"mailto:" + company.email}>{company.email}</a><p>ИП Шагалина И.Б.</p></div>
+          <div><h2>Связаться</h2>{company.phone && <a className="hm-footer-phone" href={phoneHref}>{company.phone}</a>}<a href={"mailto:" + company.email}>{company.email}</a><p>ИП Шагалина И.Б.</p></div>
         </div>
         <div className="hm-shell hm-footer-bottom"><span>© {new Date().getFullYear()} Домашний мастер</span><a href="/privacy">Политика конфиденциальности</a><span>Санкт-Петербург</span></div>
       </footer>
-      <div className="hm-mobile-contact"><a href={phoneHref}>Позвонить <span aria-hidden="true">↗</span></a><a href={"mailto:" + company.email}>Написать <span aria-hidden="true">↗</span></a></div>
+      <div className={"hm-mobile-contact"+(company.phone?"":" hm-email-only")}>{company.phone && <a href={phoneHref}>Позвонить <span aria-hidden="true">↗</span></a>}<a href={"mailto:" + company.email}>Написать <span aria-hidden="true">↗</span></a></div>
     </div>
   );
 }

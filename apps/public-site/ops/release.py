@@ -178,7 +178,7 @@ def container_info(port):
     return item
 
 
-def wait_site(port, mode, tls=False, gateway=None, check_intake=False, information=False):
+def wait_site(port, mode, tls=False, gateway=None, check_intake=False, information=False, hide_phone=False):
     deadline = time.monotonic() + (260 if tls else 70)
     started = str(int(time.time()) - 1)
     while True:
@@ -193,18 +193,25 @@ def wait_site(port, mode, tls=False, gateway=None, check_intake=False, informati
             if information:
                 require(status.get("informationOnly") is True and status.get("callback") is False,
                         "Информационный сайт не изолирован от приёма заявок.")
+                require(bool(status.get("phoneHidden", False)) == hide_phone, "Не совпадает режим публикации телефона.")
             if check_intake:
                 require(status.get("callback") is True, "Короткая форма не подключена к Business OS.")
                 code, _, body = get("/request")
                 require(code == 200 and b'class="form-panel callback-form"' in body, "Короткая форма недоступна.")
             code, _, body = get("/contacts")
-            require(code == 200 and b'href="tel:+79816849719"' in body, "Контакты компании недоступны.")
+            if hide_phone:
+                require(code == 200 and b'mailto:home_master92@mail.ru' in body and b'href="tel:' not in body and b"684-97-19" not in body,
+                        "Номер телефона не скрыт или почта недоступна.")
+            else:
+                require(code == 200 and b'href="tel:+79816849719"' in body, "Контакты компании недоступны.")
             code, _, body = get("/services")
             if information:
                 require(code == 200 and b'class="hm-service-card' in body, "Каталог услуг не загрузился.")
                 code, _, body = get("/")
                 require(code == 200 and b'class="hm-approved-hero"' in body and b"<form" not in body.lower(),
                         "Новая главная страница не загрузилась или содержит форму.")
+                if hide_phone:
+                    require(b'href="tel:' not in body and b"684-97-19" not in body, "Телефон остался на главной.")
                 code, _, body = get("/facades")
                 require(code == 200 and b'class="hm-facade-details"' in body, "Фасадные работы недоступны.")
                 for route in ("/request", "/order", "/login", "/client/"):
@@ -268,7 +275,8 @@ def restore(gateway, receipt):
                 run_image(old_port, saved["previous_image"], information=True)
             else:
                 run_image(old_port, saved["previous_image"])
-        wait_site(old_port, old_mode, information=saved.get("previous_information", False))
+        wait_site(old_port, old_mode, information=saved.get("previous_information", False),
+                  hide_phone=saved.get("previous_phone_hidden", False))
     if gateway.path.read_bytes() != before:
         write_atomic(gateway.path, before)
     if gateway.get_active() != previous:
@@ -280,14 +288,19 @@ def restore(gateway, receipt):
     print("Восстановлена предыдущая конфигурация сайта.")
 
 
-def build_image(mode, revision):
-    image = f"hm-public:{revision[:12]}-{mode}"
+def image_tag(mode, revision, hide_phone=False):
+    return f"hm-public:{revision[:12]}-{mode}" + ("-email" if hide_phone else "")
+
+
+def build_image(mode, revision, *, hide_phone=False):
+    image = image_tag(mode, revision, hide_phone)
     # Building the image first leaves the current route and its fallback running.
     print("Сборка сайта. Журнал: /var/lib/homemaster-site/build.log", flush=True)
     with (STATE / "build.log").open("w") as log:
         result = subprocess.run(["docker", "build", "-f", "apps/public-site/Dockerfile",
                                  "--build-arg", "NEXT_PUBLIC_SITE_URL=" + ORIGIN,
                                  "--build-arg", "NEXT_PUBLIC_BOOKING_MODE=" + mode,
+                                 "--build-arg", "NEXT_PUBLIC_SHOW_PHONE=" + ("0" if hide_phone else "1"),
                                  "-t", image, "."], cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
     require(result.returncode == 0, "Ошибка сборки. См. " + str(STATE / "build.log"))
     return image
@@ -326,12 +339,17 @@ def run_image(port, image, *, information=False):
          *website_env, "-e", "HOST=127.0.0.1", "-e", f"PORT={port}", image])
 
 
-def apply(gateway, original, part, mode, port, *, information=False):
+def is_phone_hidden(container):
+    return "NEXT_PUBLIC_SHOW_PHONE=0" in (container or {}).get("Config", {}).get("Env", [])
+
+
+def apply(gateway, original, part, mode, port, *, information=False, hide_phone=False):
     prior, old_mode, old_port = part
     revision = run(["git", "rev-parse", "HEAD"], cwd=ROOT).strip()
     require(not run(["git", "status", "--porcelain", "--untracked-files=normal"], cwd=ROOT).strip(),
             "Для публикации используйте чистую копию ветки сайта.")
     require(not information or mode == "phone", "Информационный выпуск допускает только телефонный маршрут.")
+    require(not hide_phone or information, "Скрытие телефона доступно для информационного сайта.")
     check_intake = not information and INTAKE_CONFIG.exists()
     if old_port and old_mode == mode:
         current = container_info(old_port)
@@ -340,8 +358,9 @@ def apply(gateway, original, part, mode, port, *, information=False):
         container_connection = next((entry for entry in (current or {}).get("Config", {}).get("Env", [])
                                      if entry.startswith("WEBSITE_INTAKE_DATABASE_URL=")), None)
         if (current and is_information(current) == information and container_connection == desired_connection
-                and current["Config"]["Image"] == f"hm-public:{revision[:12]}-{mode}"):
-            wait_site(old_port, mode, tls=True, gateway=gateway, check_intake=check_intake, information=information)
+                and is_phone_hidden(current) == hide_phone
+                and current["Config"]["Image"] == image_tag(mode, revision, hide_phone)):
+            wait_site(old_port, mode, tls=True, gateway=gateway, check_intake=check_intake, information=information, hide_phone=hide_phone)
             print("Эта версия уже опубликована:", ORIGIN)
             return
     updated = original.replace(prior, block(mode, port), 1) if prior else original + b"\n" + block(mode, port)
@@ -355,9 +374,10 @@ def apply(gateway, original, part, mode, port, *, information=False):
     require(not old_port or previous, "Контейнер действующей версии не найден.")
     write_atomic(receipt / "release.json", json.dumps({
         "port": port, "previous": pointer("current"), "previous_image": previous["Image"] if previous else None,
-        "previous_information": is_information(previous)
+        "previous_information": is_information(previous),
+        "previous_phone_hidden": is_phone_hidden(previous)
     }).encode())
-    image = build_image(mode, revision)
+    image = build_image(mode, revision, hide_phone=hide_phone)
     backup_slot = container_info(port)
     require(not backup_slot or not backup_slot["State"]["Running"], "Резервный порт занят активным выпуском.")
     require(gateway.path.read_bytes() == original and gateway.get_active() == active,
@@ -368,14 +388,14 @@ def apply(gateway, original, part, mode, port, *, information=False):
             run_image(port, image, information=True)
         else:
             run_image(port, image)
-        wait_site(port, mode, check_intake=check_intake, information=information)
+        wait_site(port, mode, check_intake=check_intake, information=information, hide_phone=hide_phone)
         require(gateway.path.read_bytes() == original and gateway.adapt() == active == gateway.get_active(),
                 "Конфигурация Caddy изменилась во время сборки.")
         write_atomic(gateway.path, updated)
         adapted = gateway.adapt()
         write_atomic(receipt / "active-after.json", json.dumps(adapted).encode())
         gateway.load(adapted)
-        wait_site(port, mode, tls=True, gateway=gateway, check_intake=check_intake, information=information)
+        wait_site(port, mode, tls=True, gateway=gateway, check_intake=check_intake, information=information, hide_phone=hide_phone)
         require(staff_signature() == before_staff, "Изменился ответ сайта сотрудников.")
         if old_port:
             require(container_info(old_port), "Предыдущий контейнер сайта недоступен.")
@@ -395,6 +415,7 @@ def main():
     actions.add_argument("--rollback", action="store_true")
     parser.add_argument("--online", action="store_true", help="прежний режим; недоступен в этой редакции")
     parser.add_argument("--information", action="store_true", help="информационный сайт без форм и подключения к БД")
+    parser.add_argument("--hide-phone", action="store_true", help="убрать номер и звонки, оставить электронную почту")
     parser.add_argument("--public-ip", action="append", default=[], help="проверенный у провайдера адрес для NAT")
     args = parser.parse_args()
     require(os.geteuid() == 0, "Запустите на сервере от root или с sudo.")
@@ -429,10 +450,10 @@ def main():
                 "Резервный порт занят активным выпуском.")
         with socket.socket() as test:
             test.bind(("127.0.0.1", port))
-        print("Режим: информационный сайт, только телефон и почта; резервный порт", port)
+        print("Режим: информационный сайт, " + ("только почта" if args.hide_phone else "телефон и почта") + "; резервный порт", port)
         if args.apply:
             require_certificate_quota(certificate_events(gateway.container))
-            apply(gateway, original, part, mode, port, information=True)
+            apply(gateway, original, part, mode, port, information=True, hide_phone=args.hide_phone)
         else:
             print("Проверка пройдена. Для публикации добавьте --apply.")
 
