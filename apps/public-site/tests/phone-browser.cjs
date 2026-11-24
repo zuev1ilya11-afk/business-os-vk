@@ -48,6 +48,11 @@ async function check() {
       await page.goto(origin + path);
       assert.equal(new URL(page.url()).pathname, "/contacts");
     }
+    await page.goto(origin + "/contacts");
+    assert.equal(await page.locator('main a[href="mailto:home_master92@mail.ru"]').count(), 1);
+    await page.locator('footer a[href="/privacy"]').click();
+    assert(await page.getByRole("heading", { name: "Политика конфиденциальности" }).isVisible());
+    assert(await page.locator("main").getByText(/ИП Шагалина И.Б./).count() > 0);
     await page.goto(origin + "/business");
     assert.equal(await page.locator("main form").count(), 0);
     assert(await page.locator("main " + phone).isVisible());

@@ -52,5 +52,7 @@ export interface PageData {
   unavailable: boolean;
   staging: boolean;
   nonce: string;
+  callbackReady: boolean;
+  business?: boolean;
   matchedIds?: string[];
 }

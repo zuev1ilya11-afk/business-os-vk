@@ -74,6 +74,17 @@ async function start() {
       );
     // Customer requests are proxied by nginx, never by a generic user-selected URL.
   }
+  const intake = require("./lib/intake.cjs");
+  let callbackDb;
+  if (stage) {
+    await stage.db.exec(await fs.readFile(path.join(appDir, "lib/site-intake.sql"), "utf8"));
+    callbackDb = stage.db;
+  } else if (process.env.WEBSITE_INTAKE_DATABASE_URL) {
+    callbackDb = await intake.connectDatabase(process.env.WEBSITE_INTAKE_DATABASE_URL);
+  }
+  process.env.WEBSITE_CALLBACK_READY = callbackDb ? "1" : "0";
+  const callback = intake.handler(callbackDb, stage ? origin : new URL(process.env.NEXT_PUBLIC_SITE_URL).origin,
+    !stage && host === "127.0.0.1");
   const next = require("next");
   const app = next({
     dev: process.env.NODE_ENV !== "production",
@@ -103,6 +114,10 @@ async function start() {
     try {
       const url = new URL(req.url, origin),
         p = url.pathname;
+      if (p === "/api/callback") {
+        await callback(req, res);
+        return;
+      }
       if (stage && p === "/qa/mobile") {
         res.setHeader("content-type", "text/html;charset=utf-8");
         res.setHeader("cache-control", "no-store");
@@ -121,6 +136,7 @@ async function start() {
             service: "public-site",
             environment,
             booking,
+            callback: Boolean(callbackDb),
           }),
         );
         return;
@@ -146,6 +162,8 @@ async function start() {
           "/articles",
           "/contacts",
           "/faq",
+          "/privacy",
+          "/callback-consent",
         ];
         let services;
         if (booking === "phone") {
@@ -312,6 +330,7 @@ async function start() {
   process.stdout.write(`Public website ready (${environment}, ${booking})\n`);
   const stop = () =>
     server.close(async () => {
+      if (!stage && callbackDb) await callbackDb.end();
       await stage?.close();
       await app.close();
       process.exit(0);

@@ -1,4 +1,6 @@
 import type { GetServerSideProps } from "next";
+import CallbackForm from "../components/CallbackForm";
+import SitePrivacy from "../components/SitePrivacy";
 import { useEffect } from "react";
 import { Layout, Breadcrumbs } from "../components/Layout";
 import {
@@ -51,6 +53,8 @@ const known = [
   "/faq",
   "/login",
   "/privacy",
+  "/request",
+  "/callback-consent",
   "/consent",
   "/terms",
   "/maintenance",
@@ -60,11 +64,14 @@ const known = [
 export const getServerSideProps: GetServerSideProps<PageData> = async (ctx) => {
   const path =
     "/" + ((ctx.params?.slug as string[] | undefined) || []).join("/");
+  const callbackReady = process.env.WEBSITE_CALLBACK_READY === "1";
+  if (path === "/request" && !callbackReady)
+    return { redirect: { destination: byPhone ? "/contacts" : "/order?quick=1", permanent: false } };
   if (byPhone) {
     if (["/order", "/login"].includes(path))
       return { redirect: { destination: "/contacts", permanent: false } };
     if (
-      ["/privacy", "/terms", "/consent"].includes(path) ||
+      ["/terms", "/consent"].includes(path) ||
       path.startsWith("/documents/")
     )
       return { notFound: true };
@@ -85,7 +92,7 @@ export const getServerSideProps: GetServerSideProps<PageData> = async (ctx) => {
   }
   if (
     !byPhone &&
-    (["/order", "/business", "/privacy", "/consent", "/terms"].includes(path) ||
+    (["/order", "/business", "/consent", "/terms"].includes(path) ||
       path.startsWith("/documents/"))
   )
     try {
@@ -153,6 +160,8 @@ export const getServerSideProps: GetServerSideProps<PageData> = async (ctx) => {
     props: {
       path,
       matchedIds,
+      callbackReady,
+      business: path === "/request" && ctx.query.kind === "business",
       query: typeof ctx.query.q === "string" ? ctx.query.q.slice(0, 200) : "",
       services,
       documents: docs,
@@ -160,7 +169,7 @@ export const getServerSideProps: GetServerSideProps<PageData> = async (ctx) => {
       unavailable,
       staging: process.env.WEBSITE_ENV !== "production",
       nonce: String(ctx.req.headers["x-csp-nonce"] || ""),
-      ...(path === "/order"
+      ...((path === "/order" || path === "/request")
         ? {
             quick: ctx.query.quick === "1",
             selected:
@@ -265,7 +274,7 @@ function CTA() {
     </section>
   );
 }
-function Home({ services, reviews, nonce, unavailable }: PageData) {
+function Home({ services, reviews, nonce, unavailable, callbackReady }: PageData) {
   return (
     <>
       <section className="hero">
@@ -280,6 +289,10 @@ function Home({ services, reviews, nonce, unavailable }: PageData) {
             Установим карниз, повесим шторы, подключим технику и поможем с
             мелким ремонтом.
           </p>
+          <div className="hero-actions">
+            <a className="button" href={callbackReady ? "/request" : bookingLink("/order?quick=1")}>{callbackReady ? "Оставить обращение" : byPhone ? "Позвонить мастеру" : "Оформить заявку"} <span aria-hidden="true">↗</span></a>
+            <a className="text-link" href="/services">Все услуги</a>
+          </div>
           <Search />
           <div className="hero-hints">
             <span>Часто ищут:</span>
@@ -288,13 +301,10 @@ function Home({ services, reviews, nonce, unavailable }: PageData) {
           </div>
         </div>
         <div className="hero-scene">
-          <img
-            src="/illustrations/home.svg"
-            alt="Уютная комната с карнизом, светильником и настенной полкой"
-            width="660"
-            height="620"
-            fetchPriority="high"
-          />
+          <picture>
+            <source media="(max-width: 760px)" srcSet="/interior-small.webp" />
+            <img src="/interior.webp" alt="Льняные шторы на карнизе в светлой петербургской гостиной" width="1320" height="880" fetchPriority="high" />
+          </picture>
         </div>
       </section>
       <div className="promise-bar">
@@ -480,7 +490,13 @@ export default function Page(
   let title = "Мастер для ваших домашних дел",
     body: React.ReactNode;
   if (path === "/") body = <Home {...data} />;
-  else if (path === "/order") {
+  else if (path === "/request") {
+    title = data.business ? "Обсудить сотрудничество" : "Вызвать мастера";
+    body = <CallbackForm business={!!data.business} service={services.find(s => s.id === data.selected)?.name || ""} />;
+  } else if (path === "/privacy" || path === "/callback-consent") {
+    title = path === "/privacy" ? "Политика конфиденциальности" : "Согласие на обработку персональных данных";
+    body = <SitePrivacy consent={path === "/callback-consent"} portal={!byPhone} />;
+  } else if (path === "/order") {
     title = "Оформить заявку";
     body = (
       <div className="section">
@@ -610,9 +626,9 @@ export default function Page(
             </p>
             <a
               className="button"
-              href={bookingLink("/order?service=" + service.id)}
+              href={byPhone && data.callbackReady ? "/request?service=" + encodeURIComponent(service.id) : bookingLink("/order?service=" + service.id)}
             >
-              {byPhone ? "Заказать по телефону" : "Оформить заявку ↗"}
+              {byPhone && data.callbackReady ? "Оставить обращение" : byPhone ? "Заказать по телефону" : "Оформить заявку ↗"}
             </a>
           </div>
         </div>
@@ -697,7 +713,8 @@ export default function Page(
           {byPhone ? (
             <>
               <h2>Обсудить сотрудничество</h2>
-              <p>Позвоните, чтобы согласовать работы на ваших объектах.</p>
+              <p>Свяжитесь с диспетчером, чтобы согласовать работы на ваших объектах.</p>
+              {data.callbackReady && <a className="button" href="/request?kind=business">Оставить обращение</a>}
               <a className="button" href={phoneHref}>
                 {company.phone}
               </a>
@@ -873,7 +890,9 @@ export default function Page(
             <a href={"mailto:" + company.email}>{company.email}</a>
           </p>
         )}
+        <p>ИП Шагалина И.Б.</p>
         {company.address && <p>{company.address}</p>}
+        {data.callbackReady && <p><a className="button" href="/request">Заказать обратный звонок</a></p>}
         <p>
           Для расчёта назовите район, опишите задачу и укажите удобный день для
           визита.
@@ -909,13 +928,12 @@ export default function Page(
       </section>
     );
   } else if (
-    ["/privacy", "/consent", "/terms"].includes(path) ||
+    ["/consent", "/terms"].includes(path) ||
     path.startsWith("/documents/")
   ) {
     const id =
       (
         {
-          "/privacy": "privacy",
           "/consent": "personal-data",
           "/terms": "services",
         } as Record<string, string>
@@ -959,6 +977,7 @@ export default function Page(
   return (
     <Layout
       title={title}
+      callbackReady={data.callbackReady}
       description={service?.seo_description || article?.seo_description}
       path={path}
       nonce={nonce}
@@ -966,6 +985,7 @@ export default function Page(
       noindex={[
         "/order",
         "/login",
+        "/request",
         "/search",
         "/maintenance",
         "/500",

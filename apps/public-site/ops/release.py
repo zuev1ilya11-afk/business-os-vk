@@ -31,6 +31,7 @@ PREVIEW = b"# BEGIN BOS PUBLIC SITE PREVIEW"
 PREVIEW_END = b"# END BOS PUBLIC SITE PREVIEW"
 SLOTS = (4186, 4187)
 API_PORT = 4181
+INTAKE_CONFIG = Path("/etc/homemaster-site/intake.env")
 
 
 def block(mode, port):
@@ -177,7 +178,7 @@ def container_info(port):
     return item
 
 
-def wait_site(port, mode, tls=False, gateway=None):
+def wait_site(port, mode, tls=False, gateway=None, check_intake=False):
     deadline = time.monotonic() + (260 if tls else 70)
     started = str(int(time.time()) - 1)
     while True:
@@ -189,6 +190,10 @@ def wait_site(port, mode, tls=False, gateway=None):
             require(code == 200 and status.get("service") == "public-site" and
                     status.get("environment") == "production" and status.get("booking") == mode,
                     "Ответил другой сервис.")
+            if check_intake:
+                require(status.get("callback") is True, "Короткая форма не подключена к Business OS.")
+                code, _, body = get("/request")
+                require(code == 200 and b'class="form-panel callback-form"' in body, "Короткая форма недоступна.")
             code, _, body = get("/contacts")
             require(code == 200 and b'href="tel:+79816849719"' in body, "Контакты компании недоступны.")
             code, _, body = get("/services")
@@ -263,6 +268,19 @@ def build_image(mode, revision):
     return image
 
 
+def intake_environment():
+    if not INTAKE_CONFIG.exists():
+        return []
+    info = INTAKE_CONFIG.lstat()
+    require(INTAKE_CONFIG.is_file() and not INTAKE_CONFIG.is_symlink()
+            and info.st_uid == 0 and info.st_mode & 0o077 == 0,
+            "Для intake.env нужны владелец root и права 0600.")
+    lines = INTAKE_CONFIG.read_text().splitlines()
+    require(len(lines) == 1 and re.fullmatch(r"WEBSITE_INTAKE_DATABASE_URL=postgres(?:ql)?://hm_site_intake:[^\s]+", lines[0]),
+            "В intake.env ожидается только подключение hm_site_intake.")
+    return ["--env-file", str(INTAKE_CONFIG)]
+
+
 def run_image(port, image):
     old = container_info(port)
     if old:
@@ -273,7 +291,7 @@ def run_image(port, image):
     run(["docker", "run", "-d", "--name", name(port), "--label", f"{LABEL}={port}",
          "--network", "host", "--restart", "unless-stopped", "--read-only", "--cap-drop=ALL",
          "--security-opt", "no-new-privileges", "--tmpfs", "/tmp", "--tmpfs", "/app/apps/public-site/.next/cache",
-         "-e", "HOST=127.0.0.1", "-e", f"PORT={port}",
+         *intake_environment(), "-e", "HOST=127.0.0.1", "-e", f"PORT={port}",
          "-e", f"WEBSITE_INTERNAL_API_ORIGIN=http://127.0.0.1:{API_PORT}", image])
 
 
@@ -282,10 +300,12 @@ def apply(gateway, original, part, mode, port):
     revision = run(["git", "rev-parse", "HEAD"], cwd=ROOT).strip()
     require(not run(["git", "status", "--porcelain", "--untracked-files=normal"], cwd=ROOT).strip(),
             "Для публикации используйте чистую копию ветки сайта.")
+    check_intake = INTAKE_CONFIG.exists()
     if old_port and old_mode == mode:
         current = container_info(old_port)
-        if current and current["Config"]["Image"] == f"hm-public:{revision[:12]}-{mode}":
-            wait_site(old_port, mode, tls=True, gateway=gateway)
+        configured = any(v.startswith("WEBSITE_INTAKE_DATABASE_URL=") for v in (current or {}).get("Config", {}).get("Env", []))
+        if current and configured == check_intake and current["Config"]["Image"] == f"hm-public:{revision[:12]}-{mode}":
+            wait_site(old_port, mode, tls=True, gateway=gateway, check_intake=check_intake)
             print("Эта версия уже опубликована:", ORIGIN)
             return
     updated = original.replace(prior, block(mode, port), 1) if prior else original + b"\n" + block(mode, port)
@@ -308,14 +328,14 @@ def apply(gateway, original, part, mode, port):
     point("pending", receipt.name)
     try:
         run_image(port, image)
-        wait_site(port, mode)
+        wait_site(port, mode, check_intake=check_intake)
         require(gateway.path.read_bytes() == original and gateway.adapt() == active == gateway.get_active(),
                 "Конфигурация Caddy изменилась во время сборки.")
         write_atomic(gateway.path, updated)
         adapted = gateway.adapt()
         write_atomic(receipt / "active-after.json", json.dumps(adapted).encode())
         gateway.load(adapted)
-        wait_site(port, mode, tls=True, gateway=gateway)
+        wait_site(port, mode, tls=True, gateway=gateway, check_intake=check_intake)
         require(staff_signature() == before_staff, "Изменился ответ сайта сотрудников.")
         if old_port:
             require(container_info(old_port), "Предыдущий контейнер сайта недоступен.")
@@ -364,8 +384,12 @@ def main():
             require(not args.online and part[1] != "online", "Рабочий API недоступен: " + str(error))
             mode = "phone"
             print("Клиентский API ещё не готов:", str(error))
+        intake = bool(intake_environment())
+        if mode == "phone" and not intake:
+            print("Для обращений в Business OS подключите форму: см. apps/public-site/README.md.")
+            require(not args.apply, "Публикация без канала передачи обращений остановлена.")
         port = SLOTS[1] if part[2] == SLOTS[0] else SLOTS[0]
-        print("Приём заявок:", "на сайте и по телефону" if mode == "online" else "по телефону")
+        print("Приём заявок:", "в Business OS и по телефону" if mode == "online" or intake else "только по телефону")
         if args.apply:
             require_certificate_quota(certificate_events(gateway.container))
             apply(gateway, original, part, mode, port)

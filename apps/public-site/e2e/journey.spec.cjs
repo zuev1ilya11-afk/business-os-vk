@@ -432,6 +432,9 @@ for (const width of [360, 390, 768, 1440])
       "/services",
       "/services/zamena-smesitelya",
       "/order",
+      "/request",
+      "/contacts",
+      "/privacy",
       "/business",
     ]) {
       await page.goto(route);
@@ -478,4 +481,23 @@ test("404, staged robots, noindex and CSP", async ({ request, page }) => {
     "content",
     "noindex,nofollow",
   );
+});
+
+test("callback reaches the dispatcher once without SMS", async ({ page, request }) => {
+  await page.goto("/request");
+  const phone = "+7999777" + String(crypto.randomInt(1000, 9999));
+  await page.getByLabel("Как к вам обращаться").fill("Тест формы");
+  await page.getByLabel("Телефон для связи").fill(phone);
+  await page.getByLabel("Что нужно сделать?").fill("Проверка обратного звонка — повесить карниз");
+  await page.getByRole("checkbox").check();
+  const sent = page.waitForRequest(req => req.method() === "POST" && req.url().endsWith("/api/callback"));
+  await page.getByRole("button", { name: "Отправить обращение" }).click();
+  const body = (await sent).postDataJSON();
+  await expect(page.getByRole("heading", { name: "Обращение принято" })).toBeVisible();
+  const retry = await request.post(origin + "/api/callback", { headers: { Origin: origin }, data: body });
+  expect(retry.status()).toBe(201);
+  const { orders } = await edgeRequest(request, "mini-app-api", { action: "bootstrap" });
+  const matching = orders.filter(o => o.phone === phone);
+  expect(matching).toHaveLength(1);
+  expect(matching[0]).toMatchObject({ source: "website", work: body.description, status: "В работе", master_staff_id: null });
 });

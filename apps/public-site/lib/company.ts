@@ -1,3 +1,4 @@
+import terms from "./intake-terms.json";
 const phone = process.env.NEXT_PUBLIC_COMPANY_PHONE || "+7 (981) 684-97-19";
 export const phoneHref = "tel:" + phone.replace(/[^+0-9]/g, "");
 export const byPhone = process.env.NEXT_PUBLIC_BOOKING_MODE === "phone";
@@ -6,7 +7,7 @@ export const company = {
   name: "Домашний мастер",
   city: "Санкт-Петербург",
   phone,
-  email: process.env.NEXT_PUBLIC_COMPANY_EMAIL || "",
+  email: process.env.NEXT_PUBLIC_COMPANY_EMAIL || terms.email,
   address: process.env.NEXT_PUBLIC_COMPANY_ADDRESS || "",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "",
   cabinet: "/client/",

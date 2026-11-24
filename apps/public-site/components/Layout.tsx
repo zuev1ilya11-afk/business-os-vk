@@ -4,6 +4,7 @@ import { track } from "../lib/analytics";
 import type { ReactNode } from "react";
 export function Layout({
   children,
+  callbackReady = false,
   title,
   description,
   path = "/",
@@ -12,6 +13,7 @@ export function Layout({
   noindex = false,
 }: {
   children: ReactNode;
+  callbackReady?: boolean;
   title: string;
   description?: string;
   path?: string;
@@ -151,22 +153,24 @@ export function Layout({
             ) : (
               <a href={company.cabinet + "#messages"}>Написать компании</a>
             )}
+            <a href={"mailto:" + company.email}>{company.email}</a>
+            {callbackReady && <a href="/request">Заказать звонок</a>}
             {!byPhone && <a href="/order?quick=1">Описать задачу →</a>}
           </div>
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Домашний мастер</span>
+          <a href="/privacy">Политика конфиденциальности</a>
           {!byPhone && (
             <>
-              <a href="/privacy">Конфиденциальность</a>
               <a href="/consent">Обработка данных</a>
               <a href="/terms">Условия услуг</a>
             </>
           )}
         </div>
       </footer>
-      <a className="mobile-cta" href={bookingLink()}>
-        {byPhone ? "Позвонить мастеру" : "Оформить заявку"} <span>↗</span>
+      <a className="mobile-cta" href={callbackReady ? "/request" : bookingLink()}>
+        {callbackReady ? "Оставить обращение" : byPhone ? "Позвонить мастеру" : "Оформить заявку"} <span>↗</span>
       </a>
     </>
   );
