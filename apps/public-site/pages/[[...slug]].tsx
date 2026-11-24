@@ -80,15 +80,19 @@ export const getServerSideProps: GetServerSideProps<PageData> = async (ctx) => {
     docs: PageData["documents"] = [],
     reviews: PageData["reviews"] = [],
     unavailable = false;
-  try {
-    services = await catalog();
-  } catch (e) {
-    console.warn(
-      "website_data_unavailable",
-      e instanceof Error ? e.message : "unknown",
-      (e as { cause?: { code?: string } })?.cause?.code || "",
-    );
-    unavailable = true;
+  const needsCatalog = !["/contacts", "/privacy", "/callback-consent"].includes(path) &&
+    (path !== "/request" || typeof ctx.query.service === "string");
+  if (needsCatalog) {
+    try {
+      services = await catalog();
+    } catch (e) {
+      console.warn(
+        "website_data_unavailable",
+        e instanceof Error ? e.message : "unknown",
+        (e as { cause?: { code?: string } })?.cause?.code || "",
+      );
+      unavailable = true;
+    }
   }
   if (
     !byPhone &&

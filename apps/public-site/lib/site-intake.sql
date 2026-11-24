@@ -2,6 +2,16 @@
 BEGIN;
 DO $setup$
 BEGIN
+  -- Resolve the staff schema before installing an intake function in this database.
+  PERFORM id, client, phone, address, work, city, status, source, external_source, external_id,
+    received_date, source_updated_at, sync_status, comment, amount_confirmed, amount,
+    original_amount, master_payout, manager_payout, dispatcher_payout
+    FROM public.orders LIMIT 0;
+  PERFORM id, role FROM public.business_staff LIMIT 0;
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'hm_site_intake'
+      AND (rolsuper OR rolcreaterole OR rolcreatedb OR rolreplication OR rolbypassrls OR NOT rolcanlogin)) THEN
+    RAISE EXCEPTION 'Use a dedicated, unprivileged login for hm_site_intake';
+  END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'hm_site_intake') THEN
     CREATE ROLE hm_site_intake LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
   END IF;

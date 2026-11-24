@@ -303,8 +303,12 @@ def apply(gateway, original, part, mode, port):
     check_intake = INTAKE_CONFIG.exists()
     if old_port and old_mode == mode:
         current = container_info(old_port)
-        configured = any(v.startswith("WEBSITE_INTAKE_DATABASE_URL=") for v in (current or {}).get("Config", {}).get("Env", []))
-        if current and configured == check_intake and current["Config"]["Image"] == f"hm-public:{revision[:12]}-{mode}":
+        # A rotated password must reach a new container even on the same revision.
+        desired_connection = INTAKE_CONFIG.read_text().strip() if check_intake else None
+        container_connection = next((entry for entry in (current or {}).get("Config", {}).get("Env", [])
+                                     if entry.startswith("WEBSITE_INTAKE_DATABASE_URL=")), None)
+        if (current and container_connection == desired_connection
+                and current["Config"]["Image"] == f"hm-public:{revision[:12]}-{mode}"):
             wait_site(old_port, mode, tls=True, gateway=gateway, check_intake=check_intake)
             print("Эта версия уже опубликована:", ORIGIN)
             return
@@ -386,8 +390,7 @@ def main():
             print("Клиентский API ещё не готов:", str(error))
         intake = bool(intake_environment())
         if mode == "phone" and not intake:
-            print("Для обращений в Business OS подключите форму: см. apps/public-site/README.md.")
-            require(not args.apply, "Публикация без канала передачи обращений остановлена.")
+            raise RuntimeError("Подключите форму к Business OS перед выпуском: см. apps/public-site/README.md.")
         port = SLOTS[1] if part[2] == SLOTS[0] else SLOTS[0]
         print("Приём заявок:", "в Business OS и по телефону" if mode == "online" or intake else "только по телефону")
         if args.apply:

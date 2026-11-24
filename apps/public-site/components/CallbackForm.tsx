@@ -38,8 +38,9 @@ export default function CallbackForm({ business, service }: { business: boolean;
       if (result.ok && response.accepted === true) {
         setDone(true);
         try { sessionStorage.removeItem(pendingKey); } catch { /* Optional storage. */ }
+      } else {
+        setError(response.error || "Не удалось подтвердить отправку. Попробуйте ещё раз.");
       }
-      else setError(response.error || "Не удалось подтвердить отправку. Попробуйте ещё раз.");
     } catch {
       setError("Связь прервалась. Проверьте интернет и повторите отправку.");
     } finally {
