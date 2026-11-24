@@ -145,7 +145,7 @@ async function start() {
         res.setHeader("content-type", "text/plain");
         res.end(
           environment === "production"
-            ? `User-agent: *\nDisallow: /client/\nDisallow: /client-api/\nDisallow: /order\nDisallow: /search\nDisallow: /login\nDisallow: /staff/\nDisallow: /maintenance\nDisallow: /500\nSitemap: ${process.env.NEXT_PUBLIC_SITE_URL}/sitemap.xml\n`
+            ? `User-agent: *\nDisallow: /client/\nDisallow: /client-api/\nDisallow: /order\nDisallow: /request\nDisallow: /search\nDisallow: /login\nDisallow: /staff/\nDisallow: /maintenance\nDisallow: /500\nSitemap: ${process.env.NEXT_PUBLIC_SITE_URL}/sitemap.xml\n`
             : "User-agent: *\nDisallow: /\n",
         );
         return;
@@ -163,22 +163,8 @@ async function start() {
           "/contacts",
           "/faq",
           "/privacy",
-          "/callback-consent",
         ];
-        let services;
-        if (booking === "phone") {
-          services = require("./lib/phone-catalog.cjs");
-        } else {
-          const response = await fetch(
-            new URL(
-              "/client-api/website/catalog",
-              process.env.WEBSITE_INTERNAL_API_ORIGIN,
-            ),
-            { signal: AbortSignal.timeout(8000) },
-          );
-          if (!response.ok) throw Error("Catalog unavailable");
-          services = (await response.json()).services;
-        }
+        const services = require("./lib/phone-catalog.cjs");
         for (const s of services) {
           paths.push(
             "/services/" + s.slug,
