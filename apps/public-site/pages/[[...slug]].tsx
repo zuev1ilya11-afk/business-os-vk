@@ -83,7 +83,7 @@ function Home() {
         <div className="hm-actions"><a className="hm-btn" href="/services">Наши услуги <span aria-hidden="true">↗</span></a><a className="hm-btn hm-btn-outline" href={phoneHref}>Позвонить <span aria-hidden="true">↗</span></a></div>
         <div className="hm-hero-note"><span className="hm-dot"/> Согласовываем стоимость и время до начала работ.</div>
       </div>
-      <div className="hm-hero-visual"><img src="/interior.webp" alt="Светлый современный интерьер с оконным текстилем" width="960" height="960" fetchPriority="high"/><div className="hm-visual-label"><span>ДОМАШНИЙ МАСТЕР</span><span>01 / 06</span></div></div>
+      <div className="hm-hero-visual"><img src="/interior.webp" alt="Светлый современный интерьер с оконным текстилем" width="960" height="960" fetchPriority="high"/><div className="hm-visual-label"><span>ДОМАШНИЙ МАСТЕР</span><span>САНКТ-ПЕТЕРБУРГ</span></div></div>
     </section>
     <div className="hm-shell hm-values"><div><span>01</span><strong>Понятные условия</strong><small>Обсуждаем объём и стоимость</small></div><div><span>02</span><strong>Аккуратный монтаж</strong><small>Учитываем особенности помещения</small></div><div><span>03</span><strong>Ответственность</strong><small>Гарантия на работы — 1 год*</small></div></div>
     <section className="hm-shell hm-section" id="services"><Heading kicker="01 / НАПРАВЛЕНИЯ" title="Что мы делаем"><a className="hm-link" href="/services">Все услуги ↗</a></Heading><Categories/></section>

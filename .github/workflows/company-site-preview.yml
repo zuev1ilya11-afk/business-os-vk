@@ -1,0 +1,42 @@
+name: Company site preview (no deployment)
+on:
+  push:
+    branches: [feat/site-company-redesign-20261124]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      WEBSITE_ENV: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm ci --prefix apps/public-site --ignore-scripts --no-audit --no-fund
+      - run: npm --prefix apps/public-site run typecheck
+      - run: npm --prefix apps/public-site run build
+      - run: npx playwright install --with-deps chromium
+      - name: Start isolated Next.js preview
+        working-directory: apps/public-site
+        run: |
+          ./node_modules/.bin/next start --hostname 127.0.0.1 --port 4173 > /tmp/company-site.log 2>&1 &
+          for i in {1..45}; do
+            if curl -fsS http://127.0.0.1:4173/ > /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/company-site.log
+          exit 1
+      - run: node apps/public-site/tests/company-site-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: company-site-preview
+          path: company-preview/
+          if-no-files-found: ignore
+          retention-days: 14

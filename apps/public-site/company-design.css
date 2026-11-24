@@ -1,4 +1,7 @@
 /* Public company information site, isolated from the Business OS employee UI. */
+html,body{margin:0;padding:0;background:#f7f6f0}
+body{-webkit-text-size-adjust:100%}
+.hm-site a,.hm-site summary{-webkit-tap-highlight-color:transparent}
 .hm-site{--hm-ink:#18332f;--hm-muted:#50625b;--hm-paper:#f7f6f0;--hm-white:#fff;--hm-line:#dce0d6;--hm-accent:#dc754d;--hm-dark:#142e29;color:var(--hm-ink);background:var(--hm-paper);min-height:100vh;font-family:Arial,"Helvetica Neue",sans-serif;line-height:1.55;overflow-wrap:break-word}
 .hm-site *{box-sizing:border-box}
 .hm-site a{color:inherit;text-decoration:none}
