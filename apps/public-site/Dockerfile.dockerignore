@@ -10,6 +10,10 @@
 !apps/public-site/public/
 !apps/public-site/public/**
 !apps/public-site/styles.css
+!apps/public-site/company-design.css
+!apps/public-site/approved-home.css
+!apps/public-site/company-profile.css
+!apps/public-site/premium-site.css
 !apps/public-site/server.cjs
 !apps/public-site/next*.*
 !apps/public-site/package*.json

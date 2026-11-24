@@ -178,7 +178,7 @@ def container_info(port):
     return item
 
 
-def wait_site(port, mode, tls=False, gateway=None, check_intake=False):
+def wait_site(port, mode, tls=False, gateway=None, check_intake=False, information=False):
     deadline = time.monotonic() + (260 if tls else 70)
     started = str(int(time.time()) - 1)
     while True:
@@ -190,6 +190,9 @@ def wait_site(port, mode, tls=False, gateway=None, check_intake=False):
             require(code == 200 and status.get("service") == "public-site" and
                     status.get("environment") == "production" and status.get("booking") == mode,
                     "Ответил другой сервис.")
+            if information:
+                require(status.get("informationOnly") is True and status.get("callback") is False,
+                        "Информационный сайт не изолирован от приёма заявок.")
             if check_intake:
                 require(status.get("callback") is True, "Короткая форма не подключена к Business OS.")
                 code, _, body = get("/request")
@@ -197,7 +200,26 @@ def wait_site(port, mode, tls=False, gateway=None, check_intake=False):
             code, _, body = get("/contacts")
             require(code == 200 and b'href="tel:+79816849719"' in body, "Контакты компании недоступны.")
             code, _, body = get("/services")
-            require(code == 200 and b'class="service-card"' in body, "Каталог услуг не загрузился.")
+            if information:
+                require(code == 200 and b'class="hm-service-card' in body, "Каталог услуг не загрузился.")
+                code, _, body = get("/")
+                require(code == 200 and b'class="hm-approved-hero"' in body and b"<form" not in body.lower(),
+                        "Новая главная страница не загрузилась или содержит форму.")
+                code, _, body = get("/facades")
+                require(code == 200 and b'class="hm-facade-details"' in body, "Фасадные работы недоступны.")
+                for route in ("/request", "/order", "/login", "/client/"):
+                    code, headers, _ = get(route)
+                    require(code in (302, 307, 308) and headers.get("location") == "/contacts",
+                            "Маршрут оформления не отключён: " + route)
+                for route in ("/api/callback", "/client-api/health", "/staff/"):
+                    code, _, _ = get(route)
+                    require(code == 404, "Внутренний маршрут не закрыт: " + route)
+                code, _, body = get("/company-proposal.pdf")
+                require(code == 200 and body.startswith(b"%PDF-"), "PDF-предложение недоступно.")
+                code, _, body = get("/work-photos/hero-premium.webp")
+                require(code == 200 and body[:4] == b"RIFF" and body[8:12] == b"WEBP", "Главное изображение недоступно.")
+            else:
+                require(code == 200 and b'class="service-card"' in body, "Каталог услуг не загрузился.")
             if tls and mode == "online":
                 code, _, body = get("/client/")
                 require(code == 200 and b'/client/app.js' in body, "Кабинет недоступен.")
@@ -242,8 +264,11 @@ def restore(gateway, receipt):
         if old and old["Image"] == saved["previous_image"]:
             run(["docker", "start", name(old_port)])
         else:
-            run_image(old_port, saved["previous_image"])
-        wait_site(old_port, old_mode)
+            if saved.get("previous_information", False):
+                run_image(old_port, saved["previous_image"], information=True)
+            else:
+                run_image(old_port, saved["previous_image"])
+        wait_site(old_port, old_mode, information=saved.get("previous_information", False))
     if gateway.path.read_bytes() != before:
         write_atomic(gateway.path, before)
     if gateway.get_active() != previous:
@@ -281,35 +306,42 @@ def intake_environment():
     return ["--env-file", str(INTAKE_CONFIG)]
 
 
-def run_image(port, image):
+def is_information(container):
+    return "WEBSITE_INFORMATION_ONLY=1" in (container or {}).get("Config", {}).get("Env", [])
+
+
+def run_image(port, image, *, information=False):
     old = container_info(port)
     if old:
         require(not old["State"]["Running"], "Резервный контейнер уже запущен. Смена остановлена.")
         run(["docker", "rm", name(port)])
     with socket.socket() as test:
         test.bind(("127.0.0.1", port))
+    # Information-only containers receive neither intake credentials nor a customer API origin.
+    website_env = (["-e", "WEBSITE_INFORMATION_ONLY=1"] if information else
+                   [*intake_environment(), "-e", f"WEBSITE_INTERNAL_API_ORIGIN=http://127.0.0.1:{API_PORT}"])
     run(["docker", "run", "-d", "--name", name(port), "--label", f"{LABEL}={port}",
          "--network", "host", "--restart", "unless-stopped", "--read-only", "--cap-drop=ALL",
          "--security-opt", "no-new-privileges", "--tmpfs", "/tmp", "--tmpfs", "/app/apps/public-site/.next/cache",
-         *intake_environment(), "-e", "HOST=127.0.0.1", "-e", f"PORT={port}",
-         "-e", f"WEBSITE_INTERNAL_API_ORIGIN=http://127.0.0.1:{API_PORT}", image])
+         *website_env, "-e", "HOST=127.0.0.1", "-e", f"PORT={port}", image])
 
 
-def apply(gateway, original, part, mode, port):
+def apply(gateway, original, part, mode, port, *, information=False):
     prior, old_mode, old_port = part
     revision = run(["git", "rev-parse", "HEAD"], cwd=ROOT).strip()
     require(not run(["git", "status", "--porcelain", "--untracked-files=normal"], cwd=ROOT).strip(),
             "Для публикации используйте чистую копию ветки сайта.")
-    check_intake = INTAKE_CONFIG.exists()
+    require(not information or mode == "phone", "Информационный выпуск допускает только телефонный маршрут.")
+    check_intake = not information and INTAKE_CONFIG.exists()
     if old_port and old_mode == mode:
         current = container_info(old_port)
         # A rotated password must reach a new container even on the same revision.
         desired_connection = INTAKE_CONFIG.read_text().strip() if check_intake else None
         container_connection = next((entry for entry in (current or {}).get("Config", {}).get("Env", [])
                                      if entry.startswith("WEBSITE_INTAKE_DATABASE_URL=")), None)
-        if (current and container_connection == desired_connection
+        if (current and is_information(current) == information and container_connection == desired_connection
                 and current["Config"]["Image"] == f"hm-public:{revision[:12]}-{mode}"):
-            wait_site(old_port, mode, tls=True, gateway=gateway, check_intake=check_intake)
+            wait_site(old_port, mode, tls=True, gateway=gateway, check_intake=check_intake, information=information)
             print("Эта версия уже опубликована:", ORIGIN)
             return
     updated = original.replace(prior, block(mode, port), 1) if prior else original + b"\n" + block(mode, port)
@@ -322,7 +354,8 @@ def apply(gateway, original, part, mode, port):
     previous = container_info(old_port) if old_port else None
     require(not old_port or previous, "Контейнер действующей версии не найден.")
     write_atomic(receipt / "release.json", json.dumps({
-        "port": port, "previous": pointer("current"), "previous_image": previous["Image"] if previous else None
+        "port": port, "previous": pointer("current"), "previous_image": previous["Image"] if previous else None,
+        "previous_information": is_information(previous)
     }).encode())
     image = build_image(mode, revision)
     backup_slot = container_info(port)
@@ -331,15 +364,18 @@ def apply(gateway, original, part, mode, port):
             "Конфигурация Caddy менялась во время сборки.")
     point("pending", receipt.name)
     try:
-        run_image(port, image)
-        wait_site(port, mode, check_intake=check_intake)
+        if information:
+            run_image(port, image, information=True)
+        else:
+            run_image(port, image)
+        wait_site(port, mode, check_intake=check_intake, information=information)
         require(gateway.path.read_bytes() == original and gateway.adapt() == active == gateway.get_active(),
                 "Конфигурация Caddy изменилась во время сборки.")
         write_atomic(gateway.path, updated)
         adapted = gateway.adapt()
         write_atomic(receipt / "active-after.json", json.dumps(adapted).encode())
         gateway.load(adapted)
-        wait_site(port, mode, tls=True, gateway=gateway, check_intake=check_intake)
+        wait_site(port, mode, tls=True, gateway=gateway, check_intake=check_intake, information=information)
         require(staff_signature() == before_staff, "Изменился ответ сайта сотрудников.")
         if old_port:
             require(container_info(old_port), "Предыдущий контейнер сайта недоступен.")
@@ -357,7 +393,8 @@ def main():
     actions = parser.add_mutually_exclusive_group()
     actions.add_argument("--apply", action="store_true")
     actions.add_argument("--rollback", action="store_true")
-    parser.add_argument("--online", action="store_true", help="требовать подключённый производственный API")
+    parser.add_argument("--online", action="store_true", help="прежний режим; недоступен в этой редакции")
+    parser.add_argument("--information", action="store_true", help="информационный сайт без форм и подключения к БД")
     parser.add_argument("--public-ip", action="append", default=[], help="проверенный у провайдера адрес для NAT")
     args = parser.parse_args()
     require(os.geteuid() == 0, "Запустите на сервере от root или с sudo.")
@@ -381,21 +418,21 @@ def main():
         require(part[0] or SITE not in json.dumps(gateway.get_active()), "Поддомен уже описан в импортированном конфиге.")
         verify_dns(args.public_ip)
         staff_signature()
-        try:
-            production_api()
-            mode = "online"
-        except (OSError, ValueError, RuntimeError, http.client.HTTPException) as error:
-            require(not args.online and part[1] != "online", "Рабочий API недоступен: " + str(error))
-            mode = "phone"
-            print("Клиентский API ещё не готов:", str(error))
-        intake = bool(intake_environment())
-        if mode == "phone" and not intake:
-            raise RuntimeError("Подключите форму к Business OS перед выпуском: см. apps/public-site/README.md.")
+        require(args.information and not args.online,
+                "Эта редакция — информационный сайт. Укажите --information.")
+        # Intentionally do not call production_api or read intake.env.
+        # The existing database credentials and old containers are left intact for rollback.
+        mode = "phone"
         port = SLOTS[1] if part[2] == SLOTS[0] else SLOTS[0]
-        print("Приём заявок:", "в Business OS и по телефону" if mode == "online" or intake else "только по телефону")
+        backup_slot = container_info(port)
+        require(not backup_slot or not backup_slot["State"]["Running"],
+                "Резервный порт занят активным выпуском.")
+        with socket.socket() as test:
+            test.bind(("127.0.0.1", port))
+        print("Режим: информационный сайт, только телефон и почта; резервный порт", port)
         if args.apply:
             require_certificate_quota(certificate_events(gateway.container))
-            apply(gateway, original, part, mode, port)
+            apply(gateway, original, part, mode, port, information=True)
         else:
             print("Проверка пройдена. Для публикации добавьте --apply.")
 

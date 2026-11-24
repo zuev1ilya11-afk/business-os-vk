@@ -22,16 +22,24 @@ jobs:
       - run: npm --prefix apps/public-site run typecheck
       - run: npm --prefix apps/public-site run build
       - run: npx playwright install --with-deps chromium
-      - name: Start isolated Next.js preview
-        working-directory: apps/public-site
+      - name: Release transaction and rollback tests
+        run: python3 -m unittest discover -s apps/public-site/tests -p test_release.py
+      - name: Build production information-only image
         run: |
-          ./node_modules/.bin/next start --hostname 127.0.0.1 --port 4173 > /tmp/company-site.log 2>&1 &
+          docker build -f apps/public-site/Dockerfile --build-arg NEXT_PUBLIC_BOOKING_MODE=phone --build-arg NEXT_PUBLIC_SITE_URL=https://site.homemaster.qd.je -t hm-company-release-check .
+      - name: Start isolated production-style preview
+        run: |
+          docker run -d --name hm-company-release-check --network host --read-only --cap-drop=ALL --security-opt no-new-privileges --tmpfs /tmp --tmpfs /app/apps/public-site/.next/cache -e HOST=127.0.0.1 -e PORT=4173 -e WEBSITE_INFORMATION_ONLY=1 hm-company-release-check
           for i in {1..45}; do
-            if curl -fsS http://127.0.0.1:4173/ > /dev/null; then exit 0; fi
+            if curl -fsS http://127.0.0.1:4173/healthz > /dev/null; then exit 0; fi
             sleep 2
           done
-          cat /tmp/company-site.log
+          docker logs hm-company-release-check
           exit 1
+      - name: Verify release preflight against the actual image
+        run: |
+          python3 -c 'import sys;sys.path.insert(0,"apps/public-site/ops");import release;release.wait_site(4173,"phone",information=True)'
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:4173/api/callback)" = 404
       - run: node apps/public-site/tests/company-site-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
@@ -40,3 +48,7 @@ jobs:
           path: company-preview/
           if-no-files-found: ignore
           retention-days: 14
+
+      - name: Remove isolated preview
+        if: always()
+        run: docker rm -f hm-company-release-check || true

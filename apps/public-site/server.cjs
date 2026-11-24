@@ -37,6 +37,9 @@ async function start() {
       "HTTPS preview requires an explicit staging container and matching origin",
     );
   const booking = process.env.NEXT_PUBLIC_BOOKING_MODE || "online";
+  const informationOnly = process.env.WEBSITE_INFORMATION_ONLY === "1";
+  if (informationOnly && (environment !== "production" || booking !== "phone"))
+    throw Error("Information-only website requires production phone mode");
   if (
     !["phone", "online"].includes(booking) ||
     (environment === "staging" && booking !== "online")
@@ -79,7 +82,7 @@ async function start() {
   if (stage) {
     await stage.db.exec(await fs.readFile(path.join(appDir, "lib/site-intake.sql"), "utf8"));
     callbackDb = stage.db;
-  } else if (process.env.WEBSITE_INTAKE_DATABASE_URL) {
+  } else if (!informationOnly && process.env.WEBSITE_INTAKE_DATABASE_URL) {
     callbackDb = await intake.connectDatabase(process.env.WEBSITE_INTAKE_DATABASE_URL);
   }
   process.env.WEBSITE_CALLBACK_READY = callbackDb ? "1" : "0";
@@ -114,6 +117,10 @@ async function start() {
     try {
       const url = new URL(req.url, origin),
         p = url.pathname;
+      if (informationOnly && (p === "/api/callback" || p.startsWith("/api/callback/"))) {
+        res.writeHead(404, { "cache-control": "no-store" }).end();
+        return;
+      }
       if (p === "/api/callback") {
         await callback(req, res);
         return;
@@ -137,6 +144,7 @@ async function start() {
             environment,
             booking,
             callback: Boolean(callbackDb),
+            ...(informationOnly ? { informationOnly: true } : {}),
           }),
         );
         return;

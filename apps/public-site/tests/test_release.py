@@ -65,8 +65,8 @@ class ReleaseTransaction(unittest.TestCase):
     def load(self, config):
         self.active = config
 
-    def run_image(self, port, image):
-        self.docker[port] = {"State": {"Running": True}, "Image": image, "Config": {"Image": image}}
+    def run_image(self, port, image, *, information=False):
+        self.docker[port] = {"State": {"Running": True}, "Image": image, "Config": {"Image": image, "Env": ["WEBSITE_INFORMATION_ONLY=1"] if information else []}}
 
     def run_command(self, args, **kwargs):
         if args[0] == "git":
@@ -79,6 +79,11 @@ class ReleaseTransaction(unittest.TestCase):
         self.revision += 1
         before = self.gateway.path.read_bytes()
         r.apply(self.gateway, before, r.managed_part(before), "phone", port)
+
+    def deploy_information(self, port):
+        self.revision += 1
+        before = self.gateway.path.read_bytes()
+        r.apply(self.gateway, before, r.managed_part(before), "phone", port, information=True)
 
     def rollback(self):
         r.restore(self.gateway, r.STATE / r.pointer("current"))
@@ -119,6 +124,26 @@ class ReleaseTransaction(unittest.TestCase):
         self.assertEqual(self.docker[4186]["Image"], first)
         self.assertTrue(self.docker[4186]["State"]["Running"])
 
+    def test_information_release_and_rollback_to_legacy(self):
+        self.deploy(4186)
+        old = self.gateway.path.read_bytes()
+        self.deploy_information(4187)
+        self.assertTrue(r.is_information(self.docker[4187]))
+        self.assertFalse(r.is_information(self.docker[4186]))
+        self.assertNotIn(b"127.0.0.1:4181", self.gateway.path.read_bytes())
+        self.wait.assert_any_call(4187, "phone", tls=True, gateway=self.gateway, check_intake=False, information=True)
+        self.rollback()
+        self.assertEqual(self.gateway.path.read_bytes(), old)
+        self.assertTrue(self.docker[4186]["State"]["Running"])
+        self.wait.assert_called_with(4186, "phone", information=False)
+
+    def test_rollback_to_information_release(self):
+        self.deploy_information(4186)
+        self.deploy_information(4187)
+        self.rollback()
+        self.assertTrue(r.is_information(self.docker[4186]))
+        self.wait.assert_called_with(4186, "phone", information=True)
+
     def test_rollback_preserves_independent_configuration(self):
         self.deploy(4186)
         independent = self.gateway.path.read_bytes() + b"# subsequent admin edit\n"
@@ -126,6 +151,19 @@ class ReleaseTransaction(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             self.rollback()
         self.assertEqual(self.gateway.path.read_bytes(), independent)
+
+
+class InformationContainer(unittest.TestCase):
+    def test_no_credentials_or_internal_api_are_passed(self):
+        with patch.object(r, "container_info", return_value=None), patch.object(r, "socket") as sock, \
+             patch.object(r, "intake_environment", side_effect=AssertionError("must not read credentials")), \
+             patch.object(r, "run") as command:
+            r.run_image(4186, "hm-public:test-phone", information=True)
+            args = command.call_args.args[0]
+            self.assertIn("WEBSITE_INFORMATION_ONLY=1", args)
+            self.assertNotIn("--env-file", args)
+            self.assertFalse(any("WEBSITE_INTERNAL_API_ORIGIN" in arg for arg in args))
+            sock.socket.return_value.__enter__.return_value.bind.assert_called_once_with(("127.0.0.1", 4186))
 
 
 if __name__ == "__main__":
