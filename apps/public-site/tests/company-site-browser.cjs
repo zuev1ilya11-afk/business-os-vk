@@ -26,6 +26,33 @@ const screens = process.env.COMPANY_PREVIEW_DIR || "company-preview";
         assert.ok(await page.locator('a[href="tel:+79816849719"]').count(), route + " telephone");
         assert.ok(await page.locator('a[href="mailto:home_master92@mail.ru"]').count(), route + " mail");
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), width + "px overflow: " + route);
+        await page.evaluate(async () => {
+          const photos = [...document.querySelectorAll("img")];
+          for (const img of photos) img.loading = "eager";
+          await Promise.all(photos.map(img => img.decode().catch(() => {})));
+        });
+        assert.equal(await page.locator(".hm-photo-fallback").count(), 0, route + " local photo fallback");
+        assert.ok(await page.locator("img").evaluateAll(imgs => imgs.every(img => img.naturalWidth > 0)), route + " broken image");
+        if (route === "/") {
+          const grid = page.locator(".hm-gallery-card");
+          assert.equal(await grid.count(), 6);
+          await page.getByRole("button", {name:"Сантехника",exact:true}).click();
+          assert.equal(await grid.count(), 3);
+          await grid.first().click();
+          assert.equal(await page.locator(".hm-gallery-detail").count(), 1);
+          await page.getByRole("button", {name:"Закрыть подробности"}).click();
+          assert.equal(await page.locator(".hm-gallery-detail").count(), 0);
+          await page.getByRole("button", {name:"Бытовая техника",exact:true}).click();
+          assert.equal(await grid.count(), 1);
+          await page.getByRole("button", {name:"Прочие",exact:true}).click();
+          assert.equal(await grid.count(), 4);
+          await page.getByRole("button", {name:"Все",exact:true}).click();
+          await page.getByRole("button", {name:"Показать ещё работы"}).click();
+          assert.equal(await grid.count(), 10);
+          await page.getByRole("button", {name:"Свернуть",exact:true}).click();
+          assert.equal(await grid.count(), 6);
+          assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "gallery overflow");
+        }
         if (route === "/" || route === "/contacts") {
           await page.screenshot({path: screens + "/" + (route === "/" ? "home" : "contacts") + "-" + width + ".png", fullPage: true});
         }
