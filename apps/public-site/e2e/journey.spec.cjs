@@ -485,6 +485,7 @@ test("404, staged robots, noindex and CSP", async ({ request, page }) => {
 
 test("callback reaches the dispatcher once without SMS", async ({ page, request }) => {
   await page.goto("/request");
+  await page.screenshot({ path: path.join(root, "docs/public-site/screenshots/callback-form.png") });
   const phone = "+7999777" + String(crypto.randomInt(1000, 9999));
   await page.getByLabel("Как к вам обращаться").fill("Тест формы");
   await page.getByLabel("Телефон для связи").fill(phone);

@@ -33,6 +33,15 @@ jobs:
       - run: npx playwright install chromium
       - name: Public website browser journey
         run: npx playwright test --config apps/public-site/playwright.config.cjs
+      - name: Save public website previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-preview
+          path: |
+            docs/public-site/screenshots/home-desktop.jpg
+            docs/public-site/screenshots/home-390.png
+            docs/public-site/screenshots/callback-form.png
+          retention-days: 14
       - name: Validate isolated Compose configuration
         run: docker compose -f apps/public-site/compose.staging.yml config --quiet
       - name: Build and boot synthetic staging only
@@ -59,6 +68,8 @@ jobs:
           trap 'docker rm -f hm-phone-smoke' EXIT
           curl -fsS --retry 20 --retry-all-errors --retry-delay 1 http://127.0.0.1:4186/healthz
           node apps/public-site/tests/phone-browser.cjs 4186
+      - name: Check callback in the production image with a disposable PostgreSQL
+        run: bash apps/public-site/tests/callback-container.sh
       - name: Check nginx template syntax
         run: docker run --rm -v "$PWD/apps/public-site/ops/nginx.conf.example:/etc/nginx/conf.d/default.conf:ro" nginx:1.28 nginx -t
       - name: Existing employee browser suite with network isolation
